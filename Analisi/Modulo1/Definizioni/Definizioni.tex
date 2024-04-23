@@ -1,0 +1,343 @@
+\documentclass[12pt, a4paper]{report}
+
+\input{../../LatexTemp/preamble}
+\input{../../LatexTemp/macros}
+\input{../../LatexTemp/letterfonts}
+
+\usepackage{parskip}
+
+\title{\Huge{Analisi 1}\\Definizioni Modulo 1}
+\author{\huge{Alex Bastianini}}
+\date{}
+
+\begin{document}
+
+\maketitle
+\newpage% or \cleardoublepage
+% \pdfbookmark[<level>]{<title>}{<dest>}
+\pdfbookmark[section]{\contentsname}{toc}
+\tableofcontents
+\pagebreak
+
+\chapter{}
+\section{Successioni}
+\dfn{Successione di numeri}{
+  Una successione di numeri reali e' una funzione:
+  \[ 
+  f:\NN\to\RR
+  .\]
+  \[ 
+  n\to f(n) =: a_n
+  .\]
+}
+\nt{
+  $(a_n)_n$ non e' da confondere con l'insieme $Im(f)=\{a_n|n\in\mathbb{N}\}$ dato che conta l'ordine degli elementi.
+}
+\dfn{Successione limitata}{
+  Data $(a_n)_n$ e $A = \{a_n|n\in\mathbb{N}\}$:\\
+  \begin{itemize}
+    \item $(a_n)_n$ e' \textbf{superiormente limitata} se:
+      \[\text{A e' superiormente limitato}\]
+    \item $(a_n)_n$ e' \textbf{inferiormente limitata} se:
+      \[ 
+      \text{A e' inferiormente limitato}
+      .\]
+    \item $(a_n)_n$ e' \textbf{limitata} se:
+      \[ 
+      \text{A e' limitato}
+      .\]
+      
+  \end{itemize}
+}
+\dfn{Limite finito di una successione}{
+  Dati $(a_n)_n$ e $L \in \mathbb{R}$, si dice che:
+  \[ 
+  \lim_{n\to\infty}a_n=L
+  .\]
+  Se:
+  \[ 
+  \forall\epsilon>0.\exists\delta=\delta(\epsilon)\in\mathbb{R}_+:\forall n>\delta:
+  \]
+  \[ 
+  |a_n - L| < \epsilon
+  \]
+  In questo caso $(a_n)_n$ si dice \textbf{convergente}
+}
+\dfn{Limite infinito di una successione}{
+  Data $(a_n)_n$:
+  \begin{itemize}
+  \item Si dice:
+    \[ 
+      \lim_{n\to+\infty}a_n=+\infty
+    .\]
+    Se:
+      \[ 
+      \forall k \in \mathbb{R}.\exists\delta=\delta(k)\in\mathbb{R}_+: \forall n > \delta:
+      .\]
+      \[ 
+      a_n \geq k
+      .\]
+  \item Si dice:
+    \[ 
+      \lim_{n\to-\infty}a_n=-\infty
+    .\]
+    Se:
+      \[ 
+      \forall k \in \mathbb{R}.\exists\delta=\delta(k)\in\mathbb{R}_+: \forall n > \delta:
+      .\]
+      \[ 
+      a_n \leq k
+      .\]
+      
+  \end{itemize}
+}
+\dfn{Successione monotona}{
+  Una successione $(a_n)_n$ si dice \textbf{monotona} quando:
+  \begin{itemize}
+    \item $(a_n)_n$ e' \textbf{crescente} [$(a_n)_n \nearrow$]:
+      \[ 
+      \forall n \in \mathbb{N}: a_n \leq a_{n+1}
+      .\]
+    \item $(a_n)_n$ e' \textbf{decrescente} [$(a_n)_n \searrow$]:
+      \[ 
+      \forall n \in \mathbb{N}: a_n \geq a_{n+1}
+      .\]
+      
+  \end{itemize}
+}
+\section{Intorni e punti di accumolo}
+\dfn{Intorno sferico di un punto}{
+  Dato un punto $x_0\in\mathbb{R}$, e un raggio $r\in\mathbb{R}: r>0$,\\
+  Si dice \textbf{intorno sferico} di centro $x_0$ e raggio $r$:
+  \[ 
+  I_r(x_o) := \{x\in\mathbb{R}||x-x_0|<r\}
+  .\]
+  
+}
+\dfn{Punto di accumolazione}{
+  Un punto $x_0\in\mathbb{R}$ si dice \textbf{punto di accumolazione} di un insieme A se:
+  \[ 
+  \forall\epsilon>0:
+  .\]
+  \[ 
+  (I_\epsilon(x_0)\backslash\{x_0\}) \cap A \neq \emptyset
+  .\]
+ $\mathcal{D}(A)=\{x\in\mathbb{R}|\text{x e' un punto di accumolazione di A}\}$
+}
+\section{Limiti di funzioni}
+\dfn{Limite di una funzione (tutti i casi)}{
+  Si dice:
+  \[ 
+  \lim_{x\to x_0}f(x)=l
+  .\]
+  Se:
+  \[\forall\epsilon>0.\exists\delta>0:\forall x\in D(f):\]
+  \begin{itemize}
+  \item $x_0 \in \mathbb{R}$, $l \in \mathbb{R}$:
+    \[ 
+      0<|x-x_0|<\delta\Rightarrow |f(x)-l|<\epsilon
+    .\]
+  \item $x_0\in\mathbb{R}$, $l = \infty$
+    \[ 
+      0<|x-x_0|<\delta\Rightarrow |f(x)| > \epsilon
+    .\]
+
+  \end{itemize}
+  Nei casi $x_0^-$ e $x_0^+$ la condizione diventa:
+  \begin{enumerate}
+  \item $x_0-\delta < x < x_0$
+  \item $x_0<x<x_0+\delta$
+  \end{enumerate}
+  Mentre se $x_0 = \infty$:
+  \begin{enumerate}
+  \item $x > \delta$
+  \item $x < -\delta$
+  \end{enumerate}
+}
+\section{Continuita}
+\dfn{Punto isolato}{
+  Un punto $x_0\in A$ si dice \textbf{punto isolato} se:
+  \[ 
+  x_0 \notin \mathcal{D}(A)
+  .\]
+  Ovvero quando $x_0$ non fa parte dei punti di accumolazione di A, \underline{pur facendo parte dell'insieme A}. Quindi si tratta di un punto i cui punti subito a destra e sinistra \underline{non} appartengono ad A (ecco perche' "isolato").
+}
+\dfn{Funzione continua in un punto}{
+  Una funzione $f(x)$ si dice \textbf{continua} in un punto $x_0\in D(f)$ se:
+  \begin{itemize}
+    \item $x_0 \notin \mathcal{D}$ (punto isolato)
+    \item $x_0 \in \mathcal{D}$
+      \[ 
+      \Rightarrow \lim_{x\to x_0}f(x)=f(x_0)
+      .\]
+      
+  \end{itemize}
+}
+\dfn{Funzione continua}{
+  Data una funzione $f$ con dominio $A$, se $\forall x\in A$: $f$ e' continua in $x_0$:
+  \[ 
+  f\in C^0(A) = \{f:A\to\mathbb{R}|\text{f e' continua in A, } \forall x \in A\}
+  .\]
+  
+}
+\subsection{Teoremi sulle funzioni continue}
+\thm{Teorema degli zeri}{
+  Data una funzione $f:[a, b]\to\mathbb{R}$ continua su [a, b]: 
+  \[ 
+  f(a)*f(b)<0\]
+  \[ 
+  \Rightarrow\exists c\in[a, b]: f(c)=0
+  .\]
+  
+}
+\dfn{Punti di massimo e minimo assoluti}{
+  Data una funzione $f:A\to\mathbb{R}$ e un punto $x_0\in A$:
+  \begin{itemize}
+  \item $x_0$ e' punto di \textbf{massimo assoluto} se:
+    \[ 
+      \forall x \in A: f(x_0) \geq f(x)
+    .\]
+  \item $x_0$ e' punto di \textbf{minimo assoluto} se:
+    \[ 
+      \forall x \in a: f(x_0) \leq f(x)
+    .\]
+    
+  \end{itemize}
+}
+\thm{Weierstrass}{
+  Data una funzione $f:[a, b]\to\mathbb{R}$ continua su [a,b]:
+  \begin{itemize}
+    \item $\exists x_1 \in [a, b]:$ $x_1$ e' \textbf{massimo assoluto}
+    \item $\exists x_2 \in [a, b]:$ $x_2$ e' \textbf{minimo assoluto}
+  \end{itemize}
+  Usando il teorema degli zeri si puo provare che:
+  \[ 
+  f([a,b]) = [x_1, x_2]
+  .\]
+  
+}
+\section{Derivate}
+\dfn{Punto interno}{
+  Un punto $x_0\in I$ si dice \textbf{punto interno} a $I$ se:
+  \[ 
+  \exists I_r(x_0): I_r(x_0) \subseteq I
+  .\]
+  L' insieme di punti interni di $I$ si scrive \r I.
+}
+\nt{
+  Questa definizione differisce da quella di punto di accumolazione in quando $x_0$ deve appartenere all' insieme e deve avere elementi appartenenti all' inseme sia a destra che a sinistra (quindi di sicuro sono esclusi gli estremi).
+}
+\dfn{Derivata in un punto}{
+  Data $f: I \to \mathbb{R}$ continua su $I$ e un punto $x_0\in$\r I, $f$ si dice \textbf{derivabile} nel punto $x_0$ se: 
+  \[ 
+  \exists\lim_{x\to x_0}\frac{f(x)-f(x_0)}{x-x_0}\in\mathbb{R}
+  .\]
+  Se esiste, tale limite (chiamato $f^{'}(x_0)$, $\frac{df}{dx}(x_0)$) si chiama \textbf{derivata di f} in $x_0$.
+}
+Essendo dei limiti, le derivate possono essere anche "da destra" o "da sinistra" ($f^{'}_+(x_0)$ o $f^{'}_-(x_0)$). Ugualmente al caso dei limiti, $\exists f^{'}(x_0) \Leftrightarrow \left\{\begin{array}{l}\text{f e' derivabile sia a destra che a sinistra di }x_0 \\ f^{'}_-(x_0) = f^{'}_+(x_0) = f^{'}(x_0)\end{array}\right.$
+\dfn{Derivata}{
+  $f:I\to\mathbb{R}$ si dice derivabile (su $I$) se:
+  \[ 
+  \forall x \in I: \exists f^{'}(x) \in \mathbb{R}
+  .\]
+  In tal caso possiamo associare a $f$ una nuova funzione, la sua \textbf{derivata}.
+}
+\nt{
+  Per poter usare questa definizione di funzione derivata, diciamo che $f$ e' dervabile nei punti estremi del suo dominio se esiste la sua derivata a destra o a sinistra (per estremo sinistro e destro).
+}
+\dfn{Classe $C^k$}{
+  $f\in C^k(I) \Leftrightarrow \left\{\begin{array}{l}
+    f\text{ e' derivabile k-volte su I} \\ 
+    f^k\text{ e' continua su I}
+  \end{array}\right.$ 
+}
+\dfn{Massimo e minimo relativi}{
+  $f:A\to\mathbb{R}$
+  \begin{itemize}
+    \item $x_0\in A$ si dice \textbf{punto di massimo relativo}se:
+      \[ 
+      \exists r>0:\ \forall x \in I_r(x_0) \cap A:\ f(x_0) \geq f(x)
+      .\]
+    \item $x_0 \in A$ si dice \textbf{punto di minimo relativo} se:
+      \[ 
+      \exists r > 0:\ \forall x \in I_r(x_0) \cap A:\ f(x_0) \leq f(x)
+      .\]
+      
+  \end{itemize}
+}
+\subsection{Teoremi di funzioni derivabili}
+\thm{Fermat}{
+   \begin{itemize}
+  \item $f:[a,b]\to\mathbb{R}$ continua su [a,b] e derivabile su ]a, b[
+  \item $x_0 \in ]a, b[$ punto di massimo o minimo
+  \end{itemize}
+  \[ 
+  f^{'}(x_0)=0
+  .\]
+ \textit{Ogni punto di massimo o minimo sono punti di stazionamento.}
+
+}
+\thm{Rolle}{
+  \begin{itemize}
+  \item $f:[a,b]\to\mathbb{R}$ continua su [a,b] e derivabile su ]a,b[
+  \item $f(a) = f(b)$
+  \end{itemize}
+  \[ 
+  \exists c \in ]a,b[:\ f^{'}(c)=0
+  .\]
+}
+\thm{Lagrange}{
+  \begin{itemize}
+    \item $f:[a,b]\to\mathbb{R}$ continua su [a,b] e derivabile su ]a, b[
+  \end{itemize}
+  \[ 
+  \exists c \in ]a,b[:\ f^{'}(c)=\frac{f(b)-f(a)}{b-a}
+  .\]
+}
+\cor{}{
+  \begin{itemize}
+    \item $f\colon]a,b[\to\mathbb{R}$ continua e derivabile su ]a,b[
+    \item $\forall x \in ]a,b[.f'(x)=0$
+  \end{itemize}
+  \[
+    \forall x \in ]a,b[.f(x) = k \text{ (la funzione e' costante)}
+  \]
+  
+}
+\thm{Cauchy}{
+  \begin{itemize}
+  \item $g,f:[a,b]\to\mathbb{R}$ continue su [a,b] e derivabili su ]a,b[
+  \item $\forall x \in ]a,b[.g^{'}(x) \neq 0$
+  \end{itemize}
+  \[ 
+  \exists c \in ]a,b[:\ \frac{f^{'}(c)}{g^{'}(c)} = \frac{f(b)-f(a)}{g(b)-g(a)}
+  .\]
+  
+}
+\thm{Hopital}{
+  \begin{itemize}
+    \item $f,g:\ I\to\mathbb{R}$, $\overline{x}\in$ \r I
+    \item $f(\overline{x})=g(\overline{x})=0$ or $\pm\infty$
+    \item $f,g$ sono derivabili in $I\backslash \{\overline{x}\}$ e $\forall x \in I\backslash \{\overline{x}\}\colon g(x) \neq 0$
+    \item $\exists \lim_{x\to \overline{x}} \frac{f^{'}(x)}{g^{'}(x)}$
+  \end{itemize}
+    \[ 
+      \exists \lim_{x\to \overline{x}} \frac{f(x)}{g(x)} = \lim_{x\to \overline{x}} \frac{f'(x)}{g'(x)}
+    .\]
+}
+\section{Approssimazione di funzioni}
+\thm{Peano}{
+  \begin{itemize}
+    \item $f\colon ]a,b[\to\mathbb{R}$ 
+    \item $f$ derivabile n-volte in $\overline{x}\in]a,b[$
+    \[ 
+      T_{n}(x) = \sum_{j = 0}^{n} \frac{f^{(j)}(\overline{x})(x-\overline{x})^j}{j!}
+    .\]
+  $T_n(x)$ detto anche \textbf{polinomio di Taylor} e' l'unico polinomio tale che:
+      \[ 
+      f(x) = T_n(x) + o((x-\overline{x})^n) \text{   (per $x\to \overline{x}$)}
+      .\]
+      
+  \end{itemize}   
+}
+\end{document}

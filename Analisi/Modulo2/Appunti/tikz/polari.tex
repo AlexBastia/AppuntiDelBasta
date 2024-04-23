@@ -1,0 +1,43 @@
+\documentclass[10pt]{article}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.15}
+\usepackage{mathrsfs}
+\usetikzlibrary{arrows}
+\pagestyle{empty}
+\begin{document}
+\definecolor{qqwuqq}{rgb}{0,0.39215686274509803,0}
+\definecolor{ffzzqq}{rgb}{1,0.6,0}
+\definecolor{xdxdff}{rgb}{0.49019607843137253,0.49019607843137253,1}
+\definecolor{ududff}{rgb}{0.30196078431372547,0.30196078431372547,1}
+\definecolor{uuuuuu}{rgb}{0.26666666666666666,0.26666666666666666,0.26666666666666666}
+\begin{tikzpicture}[line cap=round,line join=round,>=triangle 45,x=1cm,y=1cm]
+\begin{axis}[
+x=1cm,y=1cm,
+axis lines=middle,
+ymajorgrids=true,
+xmajorgrids=true,
+xmin=-1.9463970592044204,
+xmax=2.085095819143829,
+ymin=-1.448098059739673,
+ymax=1.5702585534884266,
+xtick={-1.8,-1.6,...,2},
+ytick={-1.4000000000000001,-1.2000000000000002,...,1.4000000000000001},]
+\clip(-1.9463970592044204,-1.448098059739673) rectangle (2.085095819143829,1.5702585534884266);
+\draw [shift={(0,0)},line width=2pt,color=qqwuqq,fill=qqwuqq,fill opacity=0.10000000149011612] (0,0) -- (0:0.1973642074909391) arc (0:26.565051177077994:0.1973642074909391) -- cycle;
+\draw [line width=4.4pt] (0,0) circle (1cm);
+\draw [->,line width=4pt] (0,0) -- (1.4,0.7);
+\draw [->,line width=3.6pt,color=ffzzqq] (0,0) -- (0.8979307755149483,0.4489653877574742);
+\begin{scriptsize}
+\draw [fill=uuuuuu] (0,0) circle (1pt);
+\draw[color=uuuuuu] (-0.09380503155613869,0.08344819039001652) node {$O$};
+\draw [fill=ududff] (1.4,0.7) circle (2.5pt);
+\draw[color=black] (0.8798583920658276,0.5360701062359041) node {$v$};
+\draw [fill=xdxdff] (0.8979307755149483,0.4489653877574742) circle (2.5pt);
+\draw[color=ffzzqq] (0.39039515748829856,0.2939700117136852) node {$r$};
+\draw [fill=uuuuuu] (-1,0) circle (2pt);
+\draw [fill=uuuuuu] (1,0) circle (2pt);
+\draw[color=qqwuqq] (0.32197556555810636,0.0729220993238331) node {$\Theta$};
+\end{scriptsize}
+\end{axis}
+\end{tikzpicture}
+\end{document}

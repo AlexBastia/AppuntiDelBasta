@@ -1,0 +1,12 @@
+/Algoritmi
+*.crt
+/appuntiObs
+/Logica
+/Architettura
+/Programmazione
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.gz
+*.toc
