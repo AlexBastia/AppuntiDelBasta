@@ -439,12 +439,12 @@ Considero due vettori $ (x,y) = (r cos\theta, r sin \theta) $ e $ (n,o) = (\rho 
 \[
   |(x,y)|\cdot|(n,o)|\cdot cos(\gamma - \theta)
 \]
-\mprop{Disuguaglianza di Cauchy-Schwarz}{
+\mprop{Disuguaglianza di Cauchy-Schwarz}{ \label{cauchySchwarz}
   Dati $ x,y \in \mathbb{R}^n $, vale:
   \[
   |<x,y>| \leq \lVert x \rVert \cdot \lVert y \rVert
   \]
-  L'uguaglianza vale solo se $ x $ e $ y $ sono linearmente indipendenti.
+  L'uguaglianza vale solo se $ x $ e $ y $ sono linearmente dipendenti.
 }
 \nt{
   Vale in ogni $ \mathbb{R}^n \forall n \in \mathbb{N}$
@@ -650,7 +650,7 @@ Sappiamo che l'esistenza delle derivate parziali non implica la continuita' dell
 \pf{}{
 
 }
-\section{Condizioni sufficenti per la derivabilita'}
+\section{Condizioni sufficenti per la differenziabilita'}
 \thm{}{
   Sia $ f:\mathbb{R}^2\to\mathbb{R} $. Assumo $ \exists \partial_xf(\overline{x}, \overline{y}), \partial_yf(\overline{x}, \overline{y}) $ per ogni $ (\overline{x}, \overline{y}) \in \mathbb{R}^2 $. Suppongo che le derivate siano continue. Allora:
   \[
@@ -660,24 +660,80 @@ Sappiamo che l'esistenza delle derivate parziali non implica la continuita' dell
 \nt{
   Questo teorema vale anche in $ \mathbb{R}^n $. Inoltre le funzioni elementari soddisfano sempre le ipotesi nel loro dominio, quindi sono differenziabili.
 }
-
+Per dimostrare questo teorema, ci serve prima una proposizione che equivale al teorema di Lagrange, pero' in piu' dimensioni. Usando le derivate parziali, ci riduciamo a due casi (uno dove ci si muove lungo $ x $, e uno lungo $ y $) dove ci riduciamo ad una funzione $ \mathbb{R}\to\mathbb{R} $ che sappiamo gia' dimostrare.
 \mprop{Lagrange per derivate parziali}{
-
+  Sia $ f:\mathbb{R}^2\to\mathbb{R} $ una funzione con derivate parziali $ \partial_xf, \partial_yf $ continue, $ \forall (\overline{x}, \overline{y}), (h,k) \in \mathbb{R}^2. \exists \delta,\overline{\delta} \in ]0,1[ $ tali che:
+  \[
+  \begin{cases}
+    \frac{f(\overline{x}+h,\overline{y}) - f(\overline{x}, \overline{y})}{h} = \partial_xf(\overline{x}+\delta h, \overline{y}) & \\
+    \frac{f(\overline{x}, \overline{y}+k) - f(\overline{x}, \overline{y})}{k} = \partial_yf(\overline{x}, \overline{y}+\overline{\delta}k) & 
+  \end{cases}
+  \]
+}
+Ora che abbiamo Lagrange per le derivate parziali, possiamo dimostrare il teorema:
+\pf{Dimostrazione teo. differenziabilita'}{
+  Sia $ (\overline{x}, \overline{y}) \in \mathbb{R}^2 $ e siano le derivate parziali di $ f $ continue, dobbiamo dimostrare che:
+  \[
+    f(\overline{x}+h, \overline{y}+k) - f(\overline{x}, \overline{y}) = <\nabla f(\overline{x}, \overline{y}), (h,k)> + o(|(h,k)|)  
+  \]
+  Riscriviamo la parte sinistra:
+  \[
+    f(\overline{x}+h, \overline{y}+k) - f(\overline{x}, \overline{y}) = [f(\overline{x}+h, \overline{y}+k)-f(\overline{x}+h, \overline{y})]_1 + [f(\overline{x}+h, \overline{y})-f(\overline{x}, \overline{y})]_2 
+  \]
+  Ci riduciamo a dimostrare che:
+  \begin{align*}
+    []_1 = \partial_y f(\overline{x}, \overline{y})k + o(|(h,k)|) \\
+    []_2 = \partial_x f(\overline{x}, \overline{y})h + o(|(h,k)|)
+  \end{align*}
+  Analizziamo il caso $ []_2 $: usiamo Lagrange, che ci dice che $ \exists \theta \in ]1,0[.[]_2 = \partial_x f(\overline{x}+\theta h,\overline{y})h $, quindi dimostriamo che questo equivale a $ \partial f(\overline{x}, \overline{y})h + o(|(h,k)|) $:
+  \begin{align*}
+    [\partial f(\overline{x}+\theta h, \overline{y})-\partial f(\overline{x}, \overline{y})]h &= o(|(h,k)|) \\
+      g(h,k) &= o(|(h,k)|)
+  \end{align*}
+  Sappiamo che $ g(0,0) = 0 $, quindi data una successione $ (h_n,k_n) \xlongrightarrow{n\longrightarrow\infty} (0,0) $ con $ (h_n,k_n) \neq \underline{0} \forall n \in \mathbb{N}$ dimostriamo che:
+  \[
+    \lim_{n\to +\infty} \left|\frac{[\partial f(\overline{x}+\theta h_n, \overline{y})-\partial f(\overline{x}, \overline{y})]h_n}{|(h_n,k_n)|}\right| = 0
+  \]
+  Grazie al valore assoluto sappiamo che la funzione sara' sempre $ \geq 0 $, e se la riscriviamo in questo modo:
+  \[
+    |[\partial f(\overline{x}+\theta h_n, \overline{y})-\partial f(\overline{x}, \overline{y})]|\frac{|h_n|}{|(h_n,k_n)|}
+  \]
+  possiamo dire che sara' sempre $ \leq |\partial f(\overline{x}+\theta h_n, \overline{y})-\partial f(\overline{x}, \overline{y})| $, dato che $ \frac{|h_n|}{|(h_n, k_n)|} \leq 1 $, $ \forall n \in \mathbb{N},\theta\in]0,1[ $. Usiamo quindi il teorema dei carabinieri e ci riduciamo a dimostrare che questo upper-bound tenda a $ 0 $ per $ n $ che tende a infinito. Grazie alla continuita' della derivata parziale, possiamo dire che:
+  \[
+    \lim_{n\to +\infty}\partial f(\overline{x}+\theta h_n, \overline{y}) = \partial f(\overline{x}, \overline{y})
+  \]
+  Quindi la loro differenza e' $ 0 $. Si possono fare passaggi simili per dimostrare $ []_1 $.
 }
 
 \section{Derivate direzionali}
-
+Fino ad ora abbiamo visto il valore di crescita della funzione solo lungo le assi principali $ x,y $ (le derivate parziali), vediamo ora cosa succede se ci allontaniamo da un punto cambiando entrambe le sue coordinate:
+\dfn{Derivata direzionale}{
+  Sia $ f:\mathbb{R}^2\to\mathbb{R} $ e $ (\overline{x}, \overline{y}) \in \mathbb{R}^2 $. Dato un vettore unitario $ v=(v_1,v_2) $ $ (|v|=1) $, $ f $ si dice derivabile lungo la direzione $ v $ nel punto $ (\overline{x}, \overline{y}) $ se esiste finito:
+  \[
+    \frac{\partial f}{\partial v}(\overline{x}, \overline{y}) = \lim_{h\to 0}\frac{f((\overline{x}, \overline{y}) + hv)-f(\overline{x}, \overline{y})}{h}
+  \]
+}
 \thm{Formula del gradiente}{
   Sia $ f:\mathbb{R}^2\to\mathbb{R} $ differenziabile in $ (\overline{x}, \overline{y}) $, allora:
   \[
     \forall v = (v_1,v_2) \neq (0,0). |v| = 1:
   \]
   \[
-    \frac{\partial f}{\partial v}(\overline{x}, \overline{y}) = <gradf(\overline{x}, \overline{y}), (v_1,v_2)>
+    \frac{\partial f}{\partial v}(\overline{x}, \overline{y}) = <\nabla f(\overline{x}, \overline{y}), (v_1,v_2)>
   \]
 }
 \nt{
-  Lineare $ v_1,v_2 $ ,tutte le $ \partial_vf $ si scrivono conoscendo solo $ \partial_xf $ e $ \partial_yf $.
+  Lineare in $ v_1,v_2 $ con coefficenti $ \partial_xf, \partial_yf $, quindi tutte le $ \partial_vf $ si scrivono conoscendo solo $ \partial_xf $ e $ \partial_yf $.
+}
+\subsection{Direzione di massima crescita}
+\underline{Problema}: trovare la direzione di massima crescita di una funzione $ f $ in un assegnato punto.\\
+Per rispondere a questa domanda, dobbiamo trovare il vettore unitario $ v $ la cui derivata direzionale e' massima, ovvero dobbiamo massimizzare la funzione $ <\nabla f(\overline{x}, \overline{y}), (v_1,v_2)> = \partial_x f(\overline{x}, \overline{y}) v_1 + \partial_yf(\overline{x}, \overline{y}) v_2 $. Riscrivendo il gradiente e $ v $ usando coordinate polari, otteniamo $ <r(cos\theta, sin\theta), (cos\gamma, sin\gamma)> = r(cos\theta cos\gamma+sin\theta sin\gamma) $, che per la formula del coseno di una differenza diventa $ rcos(\theta - \gamma) $, che raggiunge il suo valore massimo $ r $ quando $ \theta = \gamma $. Questo vuol dire che la direzione di massima crescita in un punto e' quella dove giace il vettore gradiente, e il valore di questa crescita e' dato dal modulo dello stesso vettore. Possiamo generalizzare questa scoperta in $ n $ dimensioni (usando la disuguaglianza di Cauchy-Schwarz \ref{cauchySchwarz}):
+\mprop{}{
+  Sia $ f:\mathbb{R}^n\to\mathbb{R} $ differenziabile in $ x \in \mathbb{R}^n $ e sia $ \nabla f(x) \neq \underline{0} $, allora:
+  \begin{itemize}
+    \item $ v_{\text{max}} = \frac{\nabla f(x)}{|\nabla f(x)|} $
+    \item $ \frac{\partial f}{\partial v}(x) = |\nabla f(x)| $
+  \end{itemize}
 }
 
 \chapter{Integrali su piu' variabili}

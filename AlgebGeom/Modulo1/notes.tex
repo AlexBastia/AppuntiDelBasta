@@ -1492,7 +1492,7 @@ Fattorizziamo $ p_A(x) $ e troviamo i suoi zeri. $ m_a(\lambda) $ ci dice quante
     1 \leq m_g(\lambda) \leq m_a(\lambda)
   \]
 }
-Per avere una base di autovettori, se $ \lambda_1, ..., \lambda_k $ sono gli autovalori, deve essere $ dimV_\lambda_{\lambda_1} + ... + dimV_{\lambda_k} $. Deve valere che $ m_a(\lambda_1) + ... + m_a(\lambda_k) = n $ e $ m_a(\lambda_i) = m_g(\lambda_i) $. La prima condizione vuol dire che $ p_A(x) $ si fattorizza completamente, ovvero che ha $ n $ zeri, la seconda ci dice che la dimensione dell'autospazio deve essere quello "massimo".
+Per avere una base di autovettori, se $ \lambda_1, ..., \lambda_k $ sono gli autovalori, deve essere $ dimV_{\lambda_1} + ... + dimV_{\lambda_k} $. Deve valere che $ m_a(\lambda_1) + ... + m_a(\lambda_k) = n $ e $ m_a(\lambda_i) = m_g(\lambda_i) $. La prima condizione vuol dire che $ p_A(x) $ si fattorizza completamente, ovvero che ha $ n $ zeri, la seconda ci dice che la dimensione dell'autospazio deve essere quello "massimo".
 \mprop{}{
   sia $ F\colon\mathbb{R}^n\to\mathbb{R}^n $, con autovalore $ 0 $, $ \exists v \in \mathbb{R}^n.v\neq \underline{0} \land F(v) = 0v = \underline{0} \implies v \in kerF $
 }
@@ -1506,7 +1506,15 @@ Quindi $ V_0 = kerF \neq \{0\} \implies F $ non e' iniett $ \implies F $ non e' 
 \nt{
   Quindi cambiando le basi ad una matrice, il polinomio non cambia (purche' siano le stesse al dominio e codominio)
 }
-
+\chapter{Prodotto Scalare Euclideo}
+Sul libro si chiama 'prodotto scalare definito positivo', ma non lo seguiamo esattamente.\\
+Siano $ v=(v_1,v_2), w=(w_1,w_2) $, il prodotto scalare si indica con $ <v,w> $ (non e' il sottospazio!) ed e' un numero. Osserviamo che $ <v,w> = |v||w|cos\theta $, dove $ \theta $ e' l'angolo convesso formato dalle semirette di $ v $ e $ w $.
+\dfn{Base ortonormale}{
+  I vettori $ v_1,...,v_n $ si dicono \textbf{ortonormali} se $ <v_i,v_j> = \begin{cases}
+  1 & i = j\\
+  0 & i\neq j
+  \end{cases} $. Cioe' se sono tutti lunghi $ 1 $ e perpendicolari
+}
 \chapter{Ortogonalita'}
 \chapter{Aritmetica modulare}
 
