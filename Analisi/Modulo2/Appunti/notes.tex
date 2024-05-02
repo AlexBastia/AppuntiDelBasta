@@ -648,7 +648,7 @@ Sappiamo che l'esistenza delle derivate parziali non implica la continuita' dell
   Data $ f:\mathbb{R}^2\to\mathbb{R} $, se $ f $ e' differenziabile in $ (\overline{x}, \overline{y}) \in \mathbb{R}^2 $, allora $ f $ e' continua in $ (\overline{x}, \overline{y}) $.
 }
 \pf{}{
-
+  
 }
 \section{Condizioni sufficenti per la differenziabilita'}
 \thm{}{
@@ -714,16 +714,19 @@ Fino ad ora abbiamo visto il valore di crescita della funzione solo lungo le ass
   \]
 }
 \thm{Formula del gradiente}{
-  Sia $ f:\mathbb{R}^2\to\mathbb{R} $ differenziabile in $ (\overline{x}, \overline{y}) $, allora:
+  Sia $ f:\mathbb{R}^n\to\mathbb{R} $ differenziabile in $ \overline{x} $, allora:
   \[
-    \forall v = (v_1,v_2) \neq (0,0). |v| = 1:
+    \forall v = (v_1,...,v_n) \neq \underline{0}. |v| = 1:
   \]
   \[
-    \frac{\partial f}{\partial v}(\overline{x}, \overline{y}) = <\nabla f(\overline{x}, \overline{y}), (v_1,v_2)>
+    \frac{\partial f}{\partial v}(\overline{x}) = <\nabla f(\overline{x}), v>
   \]
 }
+\pf{}{
+  Dobbiamo dimostrare che $ \lim_{t\to 0}\frac{f(\overline{x}+tv)}{t} = <\nabla f(\overline{x}), v> $. Essendo $ f $ differenziabile possiamo dire che $ f(\overline{x}+tv) = f(\overline{x}) + <\nabla f(\overline{x}), tv> + o(|vt|) $. Dato che $ |vt| = |v||t| = 1|t| = |t| $, possiamo riscrivere l'o-piccolo come $ o(|t|) $. Sostituendo, rimane $ \lim_{t\to 0}\frac{<\nabla f(\overline{x}), vt> + o(|t|)}{t} $. Possiamo dividere il limite, ottenendo $ <\nabla f(\overline{x}), v> $ (abbiamo diviso per $ t $) e $ \lim_{t\to 0}\frac{o(|t|)}{t} $ che per definizione e' $ 0 $. L'uguaglianza quindi vale.
+}
 \nt{
-  Lineare in $ v_1,v_2 $ con coefficenti $ \partial_xf, \partial_yf $, quindi tutte le $ \partial_vf $ si scrivono conoscendo solo $ \partial_xf $ e $ \partial_yf $.
+  Lineare in $ v_1,...,v_n $ con coefficenti le derivate parziali, quindi tutte le derivate direzionali $ \partial_vf $ si possono scrivere conoscendo solo le derivate parziali.
 }
 \subsection{Direzione di massima crescita}
 \underline{Problema}: trovare la direzione di massima crescita di una funzione $ f $ in un assegnato punto.\\
@@ -736,6 +739,85 @@ Per rispondere a questa domanda, dobbiamo trovare il vettore unitario $ v $ la c
   \end{itemize}
 }
 
+\section{Curve in $ \mathbb{R}^n $}
+Una curva in $ \mathbb{R}^n $ e' una "funzione" (non sempre) $ r $ (oppure $ s, \gamma $):
+\[
+  r: (a,b)\to\mathbb{R}^n
+\]
+Che prende quindi un numero reale e ci da un punto in $ \mathbb{R}^n $, ed e' definita da un parametro $ t \in (a,b) $, quindi si puo' scrivere come $ r(t) = (r_1(t),...,r_n(t)) $. Esempio:
+\[
+  r:\begin{cases}
+  x=t & \\
+  y=2-t & \\
+  z=2t & 
+  \end{cases} \text{ equazione parametrica di retta in $ \mathbb{R}^3 $}
+\]
+Oppure come intersezione di due piani:
+\[
+r = \pi + \sigma \implies \begin{cases}
+y=2-x & \\
+z = 2x & 
+\end{cases} \implies \begin{cases}
+x+y-2=0 & \\
+2x-z=0 & 
+\end{cases}
+\]
+Una curva e' una "funzione" di classe $ C^1((a,b)) $, quindi esistono tutte le derivate prime e sono continue (in $ (a,b) $). 
+\dfn{Velocita di una curva}{
+  La velocita' di una curva e' il vettore tangente alla curva data:
+  \[
+    r'(t) = (r_1'(t),...,r_n'(t))
+  \]
+}
+\dfn{Velocita' scalare (instantanea)}{
+  Non e' altro che la norma del vettore tangente, cioe':
+  \[
+    ||v(t)|| = ||r'(t)|| = \sqrt{(r_1'(t))^2+...+(r_n'(t))^2}
+  \]
+}
+\dfn{Curva regolare}{
+  Una curva e' detta \textbf{regolare} in $ t_0 \in (a,b) $ se:
+  \[
+    r'(t_0) \neq \underline{0}
+  \]
+}
+\nt{
+  Una curva regolare $ r:(a,b)\to\mathbb{R}^n $ e' anche detta essere una \textbf{immersione} di $ (a,b) $ in $ \mathbb{R}^n $.}
+\dfn{Punto singolare}{
+  Se $ t_0 \in (a,b) $ e' tale per cui
+  \[
+    r'(t_0) = \underline{0}
+  \]
+  Allora $ t_0 $ e' chiamato \textbf{punto singolare}
+}
+\dfn{Curve semplici}{
+  Una curva e' detta \textbf{semplice} se e' iniettiva. (Cioe' la curva non si interseca)
+}
+Nelle curve almeno $ C^2 $, si definiscono:
+\dfn{Curvatura}{
+  Si definisce \textbf{curvatura} di $ r:(a,b)\to\mathbb{R}^n $ il modulo della accelerazione
+  \[
+    k = ||a(t)|| = ||v'(t)|| = |||r''(t)|
+  \]
+}
+\dfn{Raggio di curvatura}{
+  Si chiama \textbf{raggio di curvatura}
+  \[
+  R = \frac{1}{k}
+  \]
+  Bisogna considerarlo nella retta reale estesa $ \overline{\mathbb{R}} = [-\infty,+\infty] $, dato che le rette hanno il raggio di curvatura e ha senso che questo sia $ \infty $
+}
+\subsection{Derivata lungo una curva}
+\thm{}{
+  Sia $ \omega \subseteq \mathbb{R}^n $ (aperto e non vuoto) (alla fine deve coincidere con $ \mathbb{R} $), se $ f:\omega\to\mathbb{R} $ e' differenziabile, allora data una curva $ r:(a,b)\to\mathbb{R}^n $ (derivabile), allora:
+  \[
+    f \circ r:(a,b)\to\mathbb{R}
+  \]
+  E' derivabile, e la sua derivata e' la \textbf{derivata lungo la curva} $ r $, e si ha:
+  \[
+    (f \circ r)'(t)=\frac{d}{dt}(f \circ r) = <\nabla f(r(t)), r'(t)>
+  \]
+}
 \chapter{Integrali su piu' variabili}
 
 \end{document} 
