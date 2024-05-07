@@ -1506,7 +1506,8 @@ Quindi $ V_0 = kerF \neq \{0\} \implies F $ non e' iniett $ \implies F $ non e' 
 \nt{
   Quindi cambiando le basi ad una matrice, il polinomio non cambia (purche' siano le stesse al dominio e codominio)
 }
-\chapter{Prodotto Scalare Euclideo}
+\chapter{Ortogonalita'}
+\section{Prodotto scalare euclideo}
 Sul libro si chiama 'prodotto scalare definito positivo', ma non lo seguiamo esattamente.\\
 Siano $ v=(v_1,v_2), w=(w_1,w_2) $, il prodotto scalare si indica con $ <v,w> $ (non e' il sottospazio!) ed e' un numero. Osserviamo che $ <v,w> = |v||w|cos\theta $, dove $ \theta $ e' l'angolo convesso formato dalle semirette di $ v $ e $ w $.
 \mprop{}{
@@ -1524,7 +1525,7 @@ In altre parole si puo' vedere il prodotto scalare fra due vettori come il prodo
   w_n\\
   \end{pmatrix} = v_1w_1+...+v_nw_n
 \]
-\section{Proprieta'}
+\section{Proprieta' del prodotto scalare}
 Possiamo quindi vedere il prodotto scalare come una funzione che prende due vettori di $ \mathbb{R}^n $ e ci restituisce uno scalare: $ <\cdot,\cdot>: \mathbb{R}^n \times \mathbb{R}^n \to \mathbb{R} $, che gode di varie proprieta':
 \begin{itemize}
 \item \textbf{Simmetria}: $ \forall x,y \in \mathbb{R}^n. <x,y> = <y,x> $
@@ -1542,7 +1543,7 @@ Questa ultima proprieta' ci dice che il prodotto scalare ha forma \textbf{defini
   ||v|| = \sqrt{<v,v>} = \sqrt{v_1^2+...+v_n^2}
   \]
 }
-\section{Ortogonalita'}
+\section{Vettori e basi ortogonali}
 \dfn{Vettori ortogonali}{
   Due vettori $ v,w \in \mathbb{R}^n $ si dicono \textbf{ortogonali} se l'angolo compreso fra di loro e' $ \frac{\pi}{2} $, ovvero quando:
   \[
@@ -1598,11 +1599,6 @@ Cio' coincide con l'interpretazione geometrica del prodotto scalare, in quanto i
 \pf{}{
   Si dimostra usando la dipendenza lineare e la bilinearita' del prodotto scalare.
 }
-\subsection{Algoritmo di Gram-Schmidt}
-Grazie a questa proposizione, abbiamo un modo per trovare la base del sottospazio ortogonale data la base di qualunque sottospazio. Vediamo un algoritmo per ottenere proprio questo:
-(algoritmo di gram)
-
-
 \mprop{Dimensione sottospazio ortogonale}{
   Dato un sottospazio $ W $ di $ \mathbb{R}^n $, allora:
   \[
@@ -1610,6 +1606,130 @@ Grazie a questa proposizione, abbiamo un modo per trovare la base del sottospazi
   \]
   Inoltre, $ W \cap W^\perp = \{\underline{0}\} $
 }
+\pf{}{
+  La $ dimW^\perp $ e' l'insieme delle soluzioni del sistema rappresentato dalla matrice omogenea che ha come righe la base di $ W $, che quindi ha dimensione $ n - r(W^\perp) $. Ma noi sappiamo che il rango righe e il rango colonne di una matrice coincidono, quindi $ r(W^\perp) = r(W) = k = dimW $. Allora per il teorema della dimensione $ dimW^\perp = n - dimW $. \\
+  Per dimostrare la seconda parte, e' subito ovvio che dato un vettore $ v \in W^\perp $ per cui $ \forall w \in W. \innerproduct{v}{w} = 0 $ puo' appartenere anche a $ W $ solo se $ v = \underline{0} $.
+}
+\section{Proiezione ortogonale}  
+\dfn{Proiezione ortogonale}{
+  Dati due vettori $ v,w \in \mathbb{R}^n $, si dice \textbf{proiezione di v su w} il vettore $ \overline{v} $ dato da:
+  \[
+    proj_w(v) = \overline{v} = \frac{\innerproduct{v}{w}}{\innerproduct{w}{w}}w
+  \]
+}
+Inoltre, se noi togliamo dal vettore $ v $ la sua proiezione su $ w $, allora rimane solo la componente di $ v $ ortogonale a $ w $, quindi in generale:
+\mprop{}{
+  Dati due vettori $ v,w \in \mathbb{R}^n $, il vettore $ \overline{v} $ dato da:
+  \[
+    \overline{v} = v - proj_w(v)
+  \]
+  E' ortogonale rispetto a $ w $.
+}
+
+\section{Algoritmo di Gram-Schmidt}
+Algoritmo per trovare una base ortonormale di un sottospazio data una sua qualunque base. Utilizza la proposizione precedente per trovare la componente di ogni vettore che e' perpendicolare a tutti i vettori precedenti, formalmente:
+\mprop{}{
+  Dato un SV $ W $ e una sua base $ \{v_1,...,v_k\} $, e' possibile trovare una base ortonormale di $ W $ seguendo questo procedimento:
+  \begin{itemize}
+  \item Prima di tutto troviamo una base ortogonale:
+    \[
+    w_i = \begin{cases}
+    w_1 & i = 1\\
+      v_i - proj_{v_1}(v_i) - ... - proj_{v_{i-1}}(v_i) & i \neq 1
+    \end{cases}
+    \]
+    \item Ora basta normalizzare i vettori $ w_1,...,w_k $ per ottenere una base ortonormale:
+      \[
+      f_i = \frac{w_i}{||w_i||}
+      \]
+  \end{itemize}
+  Quindi $ \{f_1,...,f_k\} $ e' una base ortonormale di $ W $.
+}
+
+
+\section{Applicazioni e matrici ortogonali}
+\dfn{}{
+  Una app. lin. $ F:\mathbb{R}^n\to\mathbb{R}^n $ si dice ortogonale se:
+  \[
+   \forall u,v \in \mathbb{R}^n. \innerproduct{F(u)}{F(v)} = \innerproduct{u}{v}
+  \]
+}
+Quindi $ F $ e' una applicazione lineare che conserva le lunghezze $ (||F(v)|| = \sqrt{\innerproduct{F(v)}{F(v)}} = \sqrt{\innerproduct{v}{v}} = ||v||) $ e che conserva gli angoli $ (\innerproduct{F(v)}{F(w)} = ||F(v)||||F(w)||cos\theta = ||v||||w||cos\gamma \implies cos\theta = cos\gamma) $.
+\dfn{Matrice ortogonale}{
+  Una matrice $ A \in M_n(\mathbb{R}) $ si dice ortogonale se:
+  \[
+    \forall u, v \in \mathbb{R}^n. \innerproduct{Au}{Av} = \innerproduct{u}{v}
+  \]
+}
+E' ovvio per definizione che:
+\mprop{}{
+  Una applicazione lineare $ L_A $ e' ortogonale $ \iff $ la sua matrice associata $ A $ e' ortogonale
+}
+Vediamo delle implicazioni interessanti riguardo le matrici ortogonali: 
+\mprop{}{
+  Data una matrice quadrata $ A \in M_n(\mathbb{R}) $, sono equivalenti:
+  \begin{itemize}
+  \item $ A $ e' ortogonale
+  \item $ \forall x \in \mathbb{R}^n. <Ax,Ax> = <x,x> $
+  \item $ A A^T = I $, cioe' $ A^{-1} = A^T $
+  \item Le colonne e le righe di $ A $ formano due basi ortogonali di $ \mathbb{R}^n $
+  \end{itemize}
+}
+\pf{}{
+  $ 3 \iff 4 $
+}
+\section{Simmetria}
+\dfn{Endomorfismo simmetrico}{
+  Dato un endomorfismo $ F:\mathbb{R}^n\to\mathbb{R}^n $, si dice simmetrico se:
+  \[
+    \forall u,v \in \mathbb{R}^n. \innerproduct{F(u)}{v} = \innerproduct{u}{F(v)}
+  \]  
+}
+\dfn{Matrice simmetrica}{
+  Una matrice quadrata $ A \in M_n(\mathbb{R}) $ si dice simmetrica se:
+  \[
+  \forall i,j = 1,...,n. c_{ij} = c_{ji}
+  \]
+}
+\mprop{}{
+  Sia $ F:\mathbb{R}^n\to\mathbb{R}^n $ un endomorfismo e sia $ A = M_\mathcal{C}^\mathcal{C}(F) $:
+  \[
+  F \text{ e' simmetrica } \iff A \text{ e' simmetrica}
+  \]
+}
+\section{Teorema spettrale}
+\thm{Spettrale}{
+  Sia $ F:\mathbb{R}^n\to\mathbb{R}^n $ un endomorfismo simmetrico, allora esiste una base di $ \mathbb{R}^n $ costituita da autovettori di $ F $. Piu' in particolare:
+  \begin{itemize}
+    \item $ F $ e' diagonalizzabile
+  \item Se $ \lambda_1, \lambda_2 $ sono due autovalori distinti, allora gli autospazi relativi $ V_{\lambda_1}, V_{\lambda_2} $ sono ortogonali
+  \item Se $ A = M_\mathcal{C}^\mathcal{C}(F) $, allora esiste una matrice ortogonale $ P $ per cui esiste una matrice diagonale $ D $ tale che $ D = P^{-1}AP = P^TAP $. Ovvero, $ A $ e' "ortogonalmente simile" a una matrice diagonale.
+  \end{itemize}
+}
+
+\chapter{Divisione Euclidea}
+Dati $ a,b \in \mathbb{N}, b\neq 0 $, $ \exists! q,m \in \mathbb{N} $ tali che $ a = bq+r $ dove q e' il \textbf{quoziente} e $ 0 \leq r < b $ e' il \textbf{resto} sono unici.
+
+  Dati $ a,b \in \mathbb{Z} $ diciamo che b divide $ a $ e scriviamo $ b|a $ se $ \exists c \in \mathbb{Z} $ tale che $ a = bc $
+
+\nt{
+  $ b|0 $ perche' $ 0=b 0 $
+}
+\thm{Bezout}{
+  Dati $ a,b \in \mathbb{N} $ (vale anche con $ a,b \in \mathbb{Z} $), $ \exists r,s \in \mathbb{Z} $ tali che:
+  \[
+    mcd(a,b) = ra + sb
+  \]
+}
+\nt{
+  $ r $ e $ s $ non sono unici
+}
+\subsection{Relazione di congruenza}
+Dati $ a,b \in \mathbb{Z} $, $ n \in \mathbb{N}, n\neq 0 $ diciamo che $ a $ e' congruo a $ b $ modulo $ n $:
+\[
+a congruent _n b se n|a-b
+\]
+
 \chapter{Aritmetica modulare}
 
 

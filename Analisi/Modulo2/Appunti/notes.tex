@@ -762,19 +762,41 @@ x+y-2=0 & \\
 2x-z=0 & 
 \end{cases}
 \]
-Una curva e' una "funzione" di classe $ C^1((a,b)) $, quindi esistono tutte le derivate prime e sono continue (in $ (a,b) $). 
+\subsection{Derivata di una curva}
+Una curva e' una "funzione" di classe $ C^1((a,b)) $, quindi esistono tutte le derivate prime e sono continue (in $ (a,b) $). Il significato di derivata e' sempre lo stesso: e' il cambiamento del valore della funzione quando si incrementa l'input di un valore infinitesimo. Vediamo graficamente cosa succede (con $ r:\mathbb{R}\to\mathbb{R}^2 $ per semplicita'):
+\begin{center}
+    \includegraphics[width=0.5\textwidth]{ img/2024-05-05-15-17-31.png}
+\end{center}
+Vediamo che la differenza fra i valori di $ r $ e' rappresentata da un vettore $ r(t+h)-r(t) $, che puo' essere scomposto come la somma del cambiamento rispetto alle direzioni della base ortonormale di riferimento, in questo caso le direzioni delle assi:\\
+\begin{center}
+\includegraphics[width=0.25\textwidth]{img/2024-05-05-15-54-02.png}
+\end{center}
+
+Quindi possiamo applicare la definizione di limite e calcolare il rapporto incrementale in questo modo:
+\[
+  \lim_{h \to 0}\frac{r(t+h)-r(t)}{h} = \lim_{h\to 0}\frac{r_1(t+h)-r_1(t)}{h} + \lim_{h \to 0}\frac{r_2(t+h)-r_2(t)}{h}
+\]
+Ovvero, la derivata un punto $ t $ di una curva $ r:\mathbb{R}\to\mathbb{R}^n $ e' data dalla somma delle derivate delle $ n $ funzioni parametriche di $ r $. Quindi diamo la definizione:
 \dfn{Velocita di una curva}{
-  La velocita' di una curva e' il vettore tangente alla curva data:
+  La velocita' (o derivata) di una curva e' il vettore tangente alla curva data:
   \[
     r'(t) = (r_1'(t),...,r_n'(t))
   \]
 }
+Quindi la direzione del vettore velocita' e' tangente alla curva nel punto dato, ma la sua lunghezza cosa indica?\\
+Prendiamo due curve $ r(t) = (t, t^2),r' = (2t, 4t^2) $ e consideriamo il parametro $ t $ come il tempo trascorso. Notiamo che le due curve tracciate sono identiche, ma che una ci mette la meta' del tempo per percorrerla rispetto all'altra:
+\begin{center}
+  \includegraphics[width=0.2\textwidth]{img/2024-05-05-17-05-56.png}
+  \includegraphics[width=0.2\textwidth]{img/2024-05-05-17-02-33.png}
+\end{center}
+Inoltre, la lunghezza del vettore velocita' nello stesso punto sulla curva e' doppia nella funzione piu' "veloce". Quindi possiamo intuire che la norma della derivata ci indica quanto "velocemente" ci stiamo muovendo nel punto dato della curva, chiamata anche \textbf{velocita' instantanea}:
 \dfn{Velocita' scalare (instantanea)}{
   Non e' altro che la norma del vettore tangente, cioe':
   \[
     ||v(t)|| = ||r'(t)|| = \sqrt{(r_1'(t))^2+...+(r_n'(t))^2}
   \]
 }
+\subsection{Altre definizioni}
 \dfn{Curva regolare}{
   Una curva e' detta \textbf{regolare} in $ t_0 \in (a,b) $ se:
   \[
@@ -793,6 +815,7 @@ Una curva e' una "funzione" di classe $ C^1((a,b)) $, quindi esistono tutte le d
 \dfn{Curve semplici}{
   Una curva e' detta \textbf{semplice} se e' iniettiva. (Cioe' la curva non si interseca)
 }
+\subsection{Curvatura}
 Nelle curve almeno $ C^2 $, si definiscono:
 \dfn{Curvatura}{
   Si definisce \textbf{curvatura} di $ r:(a,b)\to\mathbb{R}^n $ il modulo della accelerazione
@@ -807,17 +830,200 @@ Nelle curve almeno $ C^2 $, si definiscono:
   \]
   Bisogna considerarlo nella retta reale estesa $ \overline{\mathbb{R}} = [-\infty,+\infty] $, dato che le rette hanno il raggio di curvatura e ha senso che questo sia $ \infty $
 }
-\subsection{Derivata lungo una curva}
+\subsection{Derivata di una funzione scalare lungo una curva}
+Prendiamo una funzione scalare $ f:\mathbb{R}^2\to\mathbb{R} $, definita come $ f(x,y) = x^2y $. Ora al posto delle due variabili di input $ x $ e $ y $ mettiamo due funzioni $ x(t)=cos(t) $ e $ y(t)=sin(t) $. Abbiamo ottenuto ora una funzione che dipende da un solo parametro $ (t) $, quindi e' possibile calcolare la sua derivata rispetto a questo parametro. Nel nostro esempio, possiamo espandere la nostra funzione in questo modo:
+\[
+  f(cos(t), sin(t)) = cos^2(t)sin(t)
+\]
+Quindi per calcolare la sua derivata basta applicare le classiche regole di derivazione:
+\[
+  \frac{d}{dt}f(cos(t), sin(t)) = -2cos(t)sin^2(t) + cos^3(t)
+\]
+Ma esiste un modo piu' generale per descrivere questo procedimento? Possiamo iniziare considerando una curva $ r:\mathbb{R}\to\mathbb{R}^2 $, che per seguire l'esempio sopra puo' essere definito come $ r(t) = (cos(t), sin(t)) $. Quindi ora possiamo usare il vettore dato dalla curva $ r $ come input alla nostra funzione scalare $ f $, creando quindi una composizione $ f \circ r: \mathbb{R}\to\mathbb{R} $ di cui vogliamo studiare la derivata. Analizziamo la situazione:
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2024-05-05-18-09-45.png}
+\end{center}
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2024-05-05-18-18-30.png}
+\end{center}
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2024-05-05-18-08-01.png}
+\end{center}
+Le tre figure ci mostrano, dall'alto verso il basso, come si propaga un aumento (infinitesimo) del parametro iniziale $ dt $, prima nella curva $ r $, poi dal valore spostato di $ r $ in $ f $. Alla fine otteniamo lo spostamento totale, chiamato $ df $ che ora vediamo come calcolare:
+\begin{itemize}
+  \item Prima di tutto, dobbiamo calcolare il valore del vettore $ r(t+h)-r(t) $, ovvero dobbiamo trovare lo "spostamento" causato da un aumento infinitesimo del parametro di input di $ r $. Se conosciamo la derivata della curva in quel punto, basta moltiplicarla per $ dt $ e otteniamo il vettore $ dr $:
+    \[
+      dr = r'(t)dt = (\frac{dx}{dt}dt, \frac{dy}{dt}dt)
+    \]
+  \item Ora che abbiamo il cambiamento in $ r $, dobbiamo vedere come calcolare il cambiamento che questo causa in $ f $. Puo' essere utile considerare le due componenti di $ dr $, in modo da avere il delta del primo e del secondo parametro di $ f $ separatamente. In modo analogo al primo passo moltiplichiamo le derivate parziali con gli spostamenti dei parametri corrispondenti, sommandoli per trovare $ df $:
+    \[
+    df = \frac{\partial f}{\partial x}\frac{dx}{dt}dt + \frac{\partial f}{\partial y}\frac{dy}{dt}dt
+    \]
+  \item Ci rimane soltanto dividere l'equazione per $ dt $ per trovare la derivata:
+    \[
+    \frac{df}{dt} = \frac{\partial f}{\partial x}\frac{dx}{dt}+\frac{\partial f}{\partial y}\frac{dy}{dt}
+    \]
+    Che puo' essere riscritta come un prodotto scalare:
+    \[
+      \frac{df}{dt} = \innerproduct{\nabla f(r(t))}{r'(t)}
+    \]
+\end{itemize}
 \thm{}{
-  Sia $ \omega \subseteq \mathbb{R}^n $ (aperto e non vuoto) (alla fine deve coincidere con $ \mathbb{R} $), se $ f:\omega\to\mathbb{R} $ e' differenziabile, allora data una curva $ r:(a,b)\to\mathbb{R}^n $ (derivabile), allora:
+  Sia $ f:\mathbb{R}^n\to\mathbb{R} $ differenziabile, allora data una curva $ r:(a,b)\to\mathbb{R}^n $ (derivabile) si ha che:
   \[
     f \circ r:(a,b)\to\mathbb{R}
   \]
   E' derivabile, e la sua derivata e' la \textbf{derivata lungo la curva} $ r $, e si ha:
   \[
-    (f \circ r)'(t)=\frac{d}{dt}(f \circ r) = <\nabla f(r(t)), r'(t)>
+    (f \circ r)'(t)= <\nabla f(r(t)), r'(t)>
   \]
 }
+\pf{Dimostrazione formale}{
+dimostra
+}
+\subsection{Ortogonalita' gradiente-insiemi di livello}
+Possiamo utilizzare questo nuovo teorema per dimostrare la relazione di ortogonalita' fra il gradiente di una funzione calcolata in un punto e la curva di livello che passa per quel punto.\\
+Come esempio, prendiamo una funzione $ f:\mathbb{R}^2\to\mathbb{R} $ e tracciamone delle curve di livello:
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2024-05-05-19-15-56.png}
+\end{center}
+Pensiamo ora di "zoomare" sul punto $ A $ e consideriamo la prossima curva di livello. Se ci avviciniamo abbastanza, possiamo considerare le due sezioni di curva come due linee parallele, quindi il segmento piu' corto che parte dal punto $ A $ e arriva alla prossima curva di livello e' quello perpendicolare alla curva di livello di $ A $:
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2024-05-05-19-33-43.png}
+\end{center}
+Dato che la direzione perpendicolare alla curva di livello in $ A $ coincide con la direzione che ci porta piu' velocemente alla prossima curva di livello (direzione di massima crescita), possiamo intuire che il vettore gradiente in $ A $ e' perpendicolare alla curva che passa per $ A $:
+\mprop{}{
+  Data una funzione $ f:\mathbb{R}^n\to\mathbb{R} $ differenziabile, si ha che:
+  \[
+    \forall \underline{x} \in \mathbb{R}^n. \nabla f(\underline{x}) \perp L_{f(\underline{x})}
+  \]
+  Dove $ L_{f(\underline{x})} $ e' la curva di livello $ \{x \in \mathbb{R}^n|f(x)=f(\underline{x})\} $
+}
+\pf{Dimostrazione formale}{
+dimostra
+}
+\section{Punti di massimo e minimo in piu' dimensioni}
+La definizione di punti di massimo/minimo in piu' dimensioni e' molto simile a quella in $ \mathbb{R} $:
+\dfn{Maxima e minima}{
+  Data $ f:A\to\mathbb{R}^n $, con $ A \subseteq \mathbb{R} $, $ \underline{x} \in A $ si dice punto di massimo/minimo se:
+  \[
+    \exists \delta > 0. \forall x \in D(\underline{x},\delta) \cup A. f(x) \geq (\leq) f(\underline{x})
+  \]
+}
+Come facciamo a trovare questi punti? Guardiamo i metodi usati in una dimensione per vedere se sono generalizzabili:
+\begin{itemize}
+  \item Studio del segno della derivata prima: se $ f(\underline{x}) = 0 $ e in un intorno di $ \underline{x} $ si ha che $ f(x) > (<) 0 $, allora $ \underline{x} $ e' un punto di massimo (minimo)
+  \item Utilizziamo il segno della derivata seconda per trovare la concavita' del grafico nei punti di stazionamento:
+    \[
+    \begin{cases}
+      f'(\underline{x}) = 0& \\
+      f''(\underline{x}) > (<) 0 & 
+    \end{cases} \iff \underline{x} \text{ e' punto di massimo (minimo)} 
+    \]
+\end{itemize}
+Quando $ n \geq 2 $, $ f'(x) $ viene sostituito dal gradiente $ \nabla f(x) $, che e' un vettore e non uno scalare. Dato che non ha senso chiedersi se un vettore e' $ \geq 0 $,  il concetto di "crescente" e "decrescente" non puo' essere applicato in piu' dimensioni (perche' puo' essere diversa in direzioni diverse). Quindi dobbiamo utilizzare il secondo metodo, che ci da' due condizioni da rispettare (una sulla derivata di primo grado, una sulla seconda). Vediamo come generalizzare queste condizioni in piu' dimensioni:
+\subsection{Condizioni del primo ordine}
+Guardiamo la prima condizione relativa alla derivata di primo grado. Questa ci dice che e' condizione necessaria (ma non sufficente) per un punto di massimo/minimo avere la derivata prima nulla, vediamo se cio' vale anche in piu' dimensioni:
+\thm{Fermat}{
+  Data $ f:A\to\mathbb{R} $, con $ A \subseteq \mathbb{R}^n $ aperto, si ha che se un punto $ \underline{x} \in A $ e' massimo o minimo, allora:
+  \[ 
+    \nabla f(\underline{x}) = 0
+  \]
+}
+\pf{Dimostrazione}{
+  dimostra
+}
+Pero' questa e' solo una condizione necessaria, non sufficente per essere un punto di massimo/minimo. Vedremo infatti che esistono dei punti "di sella" che sono stazionari ma che non sono ne massimi ne minimi (sono una generalizzazione dei punti di flesso a tg orizzontale). Per distinguere i tipi di punti stazionari, dobbiamo guardare la derivata seconda:
+\subsection{Condizioni di secondo ordine}
+Introduciamo le derivate seconde in n dimensioni, ovvero il calcolo due volte di fila delle derivate (parziali). La differenza questa volta e' che ci sono diverse derivate parziali, che quindi possiamo applicare in sequenza in $ n^2 $ modi diversi. Introduciamo la notazione:
+\dfn{Derivate seconde in n dimensioni}{
+  Sia $ f:\mathbb{R}^n\to\mathbb{R} $, assumiamo che $ \forall k \in \{1,...,n\}. \exists \frac{\partial f}{\partial x_k} $ in ogni punto di $ \mathbb{R}^n $. Consideriamo una nuova variabile $ x_j $, con $ j \in \{1,...,n\} $, si ha che:
+  \begin{itemize}
+    \item Se $ j \neq k $ (ovvero se stiamo applicando due derivate parziali diverse) scriviamo:
+      \[
+        \frac{\partial }{\partial x_j}(\frac{\partial f}{\partial x_k}) = \frac{\partial^2 f}{\partial x_j \partial x_k}
+      \]
+    \item Nel caso $ j = k $ (applichiamo due volte la stessa derivata parziale) scriviamo:
+      \[
+        \frac{\partial }{\partial x_j}(\frac{\partial f}{\partial x_k}) = \frac{\partial^2 f}{\partial x_k^2}
+      \]
+  \end{itemize} 
+}
+Seppure sembrano tante, in verita' si puo' dimostrare che l'ordine in cui applichiamo le derivate non cambia il valore finale:
+\thm{Schwarz}{
+  Sia $ f:\mathbb{R}^n\to\mathbb{R} $ tale che $ f, \frac{\partial f}{\partial x_j}, \frac{\partial f}{\partial x_j \partial x_k} $ sono continue in $ \mathbb{R}^n $ $ \forall k,j \in \{1,...,n\} $, allora:
+  \[
+  \frac{\partial^2 f}{\partial x_k \partial x_j} = \frac{\partial^2 f}{\partial x_j \partial x_k}
+  \]
+}
+Come abbiamo visto sopra, con $ n $ derivate parziali diverse esistono $ n^2 $ combinazioni di derivate seconde. Queste derivate seconde le possiamo mettere in una matrice (detta "hessiana") quadrata $ Hf(\overline{x}) \in M_n(\mathbb{R}) $ definita cosi':
+\[
+  Hf(\overline{x})_{jk} = \frac{\partial^2 f}{\partial x_j \partial x_k }
+\]
+
+\thm{Taylor secondo Lagrange}{
+  (n=1) $ f:\mathbb{R}\to\mathbb{R} $ assumo $ f,f',f''' $ continue. Dati $ \overline{x} $ e $ \overline{x} +h \in \mathbb{R} $, esiste $ \theta \in (0,1) $.
+  \[
+    f(\overline{x}+h) = f(\overline{x}) + f'(\overline{x})h + \frac{1}{2}f''(\overline{x}+\theta h)h^2
+  \]
+}
+\nt{
+  $ \overline{x} + \theta h $ appartiene all'intervallo di estremi $ \overline{x} $ e $ \overline{x} + h $ (aperto)
+}
+\nt{
+  Ricordiamo la formula nota: $ f(\overline{x} + h) = f(\overline{x}) = f'(\overline{x})h+\frac{1}{2}f''(\overline{x})h^2 + o(h^2) $ per $ h \to 0 $. Questa perde significato se $ h $ non tende a $ 0 $, mentre quella di Lagrange vale per punti qualsiasi.
+}
+\nt{
+  Osserviamo che dalla formula di Lagrange possiamo ricondurci a quella sopra, quindi possiamo dire che contiene piu' "informazioni". Infatti sottraendo la seconda dalla prima rimane $ \frac{h^2}{2}(f''(\overline{x})-f''(\overline{x}+\theta h)) = o(h^2) $. Per verificarlo dividiamo la parte sinistra per $ h^2 $ e facciamo il limite per $ h \to 0 $, e si nota che effettivamente il limite e' $ 0 $ (usando la continuita' di $ f'' $). 
+}
+Nella parte quadratica della formula di Taylor in $ \mathbb{R}^n $ compare una "forma quadratica" che dobbiamo studiare per trovare massimi/minimi:
+\dfn{Forma quadratica}{
+  Sia $ A \in M_n(\mathbb{R}) $ simmetrica ($ A = A^T $), definiamo la funzione $ q_A: \mathbb{R}^n\to\mathbb{R} $:
+  \[
+    q_A(h) = \innerproduct{Ah}{h} \in \mathbb{R} 
+  \] 
+}
+\nt{
+  $ p(h) = 3h_1^2 + \frac{1}{3}h_1h_2 - 7h_2^2 $, quindi $ p = q_A $ con $ A = \begin{pmatrix}
+  3 & 1/6\\
+  1/6 & -7\\
+  \end{pmatrix} $
+}
+Per generalizzare la condizione $ f''(\overline{x})> 0 $ in $ \mathbb{R} $ dobbiamo dare una nozione di segno di una forma quadratica:
+\dfn{}{
+  Sia $ A = A^T \in M_n(\mathbb{R}) $. Allora si dice che:
+  \begin{itemize}
+  \item $ A $ e' definita positiva se $ \innerproduct{Ah}{h} > 0 $ $ \forall h \neq 0 $
+  \item $ A  $ e' definita negativa se $ \innerproduct{Ah}{h} < 0 $ $ \forall h \neq 0 $
+  \item $ A $ e' indefinita se $ \exists h', h'' \in \mathbb{R}^n. \innerproduct{Ah'}{h'} < 0 < \innerproduct{Ah''}{h''} $
+  \end{itemize}
+}
+\nt{
+  Tutte le disuguaglianze sono strette
+}
+\subsection{Classificazione forme quadratiche (n=2)}
+\mprop{}{
+  Sia $ A = \begin{pmatrix}
+  a & b\\
+  b & c\\
+  \end{pmatrix} $. Allora:
+  \begin{itemize}
+  \item $ A > 0 \iff \begin{cases}
+  a > 0 & \\
+  detA > 0 & 
+  \end{cases} $
+    \item $ A < 0 \iff \begin{cases}
+    a < 0 & \\
+    detA > 0 & 
+    \end{cases} $
+    \item $ A $ e' indefinita $ \iff $ $ detA < 0 $ (punto di sella)
+  \end{itemize}
+}
+\pf{Dimostrazione del primo punto}{
+  Si calcola la forma quadratica
+}
+\section{Forma quadratica Hessiana}
+
 \chapter{Integrali su piu' variabili}
 
 \end{document} 
