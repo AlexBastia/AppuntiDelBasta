@@ -31,7 +31,6 @@
 \pagebreak
 
 \chapter{Introduzione agli appunti}
-Questo e' un \textbf{test} per vedere come viene fuori un paragrafo di testo normale. Il testo sembra troppo piccolo pero.
 \section{Le varie parti degli appunti}
 Diversi box colorati per indicare diverse parti degli appunti:
 \dfn{Definizione}{}
@@ -648,11 +647,11 @@ Sappiamo che l'esistenza delle derivate parziali non implica la continuita' dell
   Data $ f:\mathbb{R}^2\to\mathbb{R} $, se $ f $ e' differenziabile in $ (\overline{x}, \overline{y}) \in \mathbb{R}^2 $, allora $ f $ e' continua in $ (\overline{x}, \overline{y}) $.
 }
 \pf{}{
-  
+  Verifichiamo che la proposizione valga. Per ipotesi, sappiamo che $ f $ e' differenziabile in $ (\overline{x}, \overline{y}) \in \mathbb{R}^2 $. Quindi $ f(\overline{x}+h, \overline{y}+k) = f(\overline{x}, \overline{y}) + \innerproduct{\nabla f(\overline{x}, \overline{y})}{(h,k)} + o(|h,k|) $ (TODO: capire perche' questa vale solo quando (h,k) tende a (0,0)). Dobbiamo dimostrare che $ f $ sia continua in $ (\overline{x}, \overline{y}) $, ovvero che (usando la definizione di continuita' per successioni): $ \forall (h_j, k_j): \mathbb{N} \to \mathbb{R}^2. (h_j, k_j) \xlongrightarrow{j\to +\infty}(0,0). \lim_{j\to +\infty} f(\overline{x}+h_j, \overline{y}+k_j) = f(\overline{x}, \overline{y}) $. Quindi usando la nostra ipotesi possiamo ridurci a dimostrare che $ \lim_{j \to +\infty} \innerproduct{\nabla f(\overline{x}, \overline{y})}{(h_j,k_j)} + o(|h_j,k_j|) = 0 $. Dato che $ (h_j, k_j) $ tende a $ (0,0) $ per $ j $ che tende a $ +\infty $, il prodotto scalare diventa nullo. Per quanto riguarda l'o-piccolo, possiamo usare la sua proprieta' per cui $ \lim_{j\to +\infty} \frac{o(|h_j, k_j|)}{|h_j, k_j|}  = 0 $ riscrivendolo come $ \frac{o(|h_j, k_j|)}{|h_j, k_j|}|h_j, k_j| $. Con $ j \to +\infty $ sia la frazione che il fattore moltiplicativo tendono a $ 0 $. 
 }
 \section{Condizioni sufficenti per la differenziabilita'}
 \thm{}{
-  Sia $ f:\mathbb{R}^2\to\mathbb{R} $. Assumo $ \exists \partial_xf(\overline{x}, \overline{y}), \partial_yf(\overline{x}, \overline{y}) $ per ogni $ (\overline{x}, \overline{y}) \in \mathbb{R}^2 $. Suppongo che le derivate siano continue. Allora:
+  Sia $ f:\mathbb{R}^2\to\mathbb{R} $. Assumo che esistano continue $ \partial_xf(\overline{x}, \overline{y}), \partial_yf(\overline{x}, \overline{y}) $ per ogni $ (\overline{x}, \overline{y}) \in \mathbb{R}^2 $, allora:
   \[
   f \text{ e' differenziabile in ogni punto di } \mathbb{R}^2
   \]
@@ -878,8 +877,16 @@ Le tre figure ci mostrano, dall'alto verso il basso, come si propaga un aumento 
     (f \circ r)'(t)= <\nabla f(r(t)), r'(t)>
   \]
 }
-\pf{Dimostrazione formale}{
-dimostra
+Prima di dare una dimostrazione formale di questo teorema, dobbiamo definire lo sviluppo di Taylor al primo ordine di una curva:
+\dfn{}{
+  Data $ r:]a,b[\to\mathbb{R}^n $ derivabile, sia $ k \in \{1,...,n\} $. Lo sviluppo di Taylor per $ r_k:]a,b[\to\mathbb{R} $ in $ t \in ]a,b[ $ e':
+  \[
+    r_k(t+s) = r_k(t) + r_k'(t)s + o_k(s)
+  \]
+  Quindi $ r(t+s) = r(t) + r'(t)s + o(s) $ (dove $ o(s) = (o_1(s),...,o_n(s)) $). 
+}
+\pf{Dimostrazione formale}{ 
+  Usando la definizione di derivata, $ (f \circ r)'(t) = \lim_{s\to 0} \frac{f(r(t+s)) - f(r(t))}{s} $. Dato che $ f $ e' differenziabile, possiamo sostituire il numeratore con $ \innerproduct{f'(r(t))}{r(t+s)-r(t)} + o(|r(t+s)-r(t)|) $. Essendo derivabile, possiamo usare lo sviluppo di Taylor al primo ordine della curva $ r $ per sostituire $ r(t+s)-r(t) $ con $ r'(t)s + o(s) $. Usando la proprieta' distributiva e raccogliendo il fattore $ s $, il limite diventa $ \innerproduct{f(r(t))}{r'(t)} + \lim_{s\to 0}\frac{\innerproduct{f(r(t))}{o(s)}+o(|r'(t)s+o(s)|)}{s} $. Dividendo la frazione, nel primo addendo possiamo spostare il divisore all'interno del prodotto scalare che diventa $ \innerproduct{f(r(t))}{\frac{o(s)}{s}} $, che per definizione di o-piccolo diventa nullo. Per il secondo addendo, con $ s\to 0 $ abbiamo che $ o(|r'(t)s+o(s)|) = o(s) $, quindi sempre per definizione di o-piccolo anche il secondo addendo si annulla e il limite si azzera. 
 }
 \subsection{Ortogonalita' gradiente-insiemi di livello}
 Possiamo utilizzare questo nuovo teorema per dimostrare la relazione di ortogonalita' fra il gradiente di una funzione calcolata in un punto e la curva di livello che passa per quel punto.\\
@@ -900,9 +907,9 @@ Dato che la direzione perpendicolare alla curva di livello in $ A $ coincide con
   Dove $ L_{f(\underline{x})} $ e' la curva di livello $ \{x \in \mathbb{R}^n|f(x)=f(\underline{x})\} $
 }
 \pf{Dimostrazione formale}{
-dimostra
+  Assumiamo di avere una funzione $ f:\mathbb{R}^n\to\mathbb{R} $ differenziabile e un punto $ \overline{x} \in \mathbb{R}^n $. Supponiamo di poter costruire una curva $ r: ]-1,1[\to\mathbb{R}^n $ tale che: $ \forall t \in ]-1,1[. r(t) \in L_b $, $ r(0) = \overline{x} $ e $ r'(0) \in \mathbb{R}^n \neq \underline{0} $ (direzione tangente a $ L_{f(\overline{x})} $ nel punto $ \overline{x} $). Dato che tutti i punti della curva $ r $ fanno parte dello stesso insieme di livello, $ \forall t \in ]-1,1[. (f\circ r)(t) = f(\overline{x}) $. Essendo una funzione costante, sul suo dominio la derivata e' nulla, ovvero $ \forall t \in ]-1,1[. (f\circ r)'(t) = 0 $, che puo' essere scritta come $ \innerproduct{\nabla f(r(t))}{r'(t)} = 0 $ (usando il teorema di derivata lungo una curva). In altre parole, sappiamo che il prodotto scalare fra il gradiente di $ f $ in un punto e la derivata della curva di livello nello stesso punto e' sempre nullo. Quindi il gradiente in $ \overline{x} $ e' ortogonale alla tangente della curva di livello in $ \overline{x} $.
 }
-\section{Punti di massimo e minimo in piu' dimensioni}
+\chapter{Punti di massimo e minimo in piu' dimensioni}
 La definizione di punti di massimo/minimo in piu' dimensioni e' molto simile a quella in $ \mathbb{R} $:
 \dfn{Maxima e minima}{
   Data $ f:A\to\mathbb{R}^n $, con $ A \subseteq \mathbb{R} $, $ \underline{x} \in A $ si dice punto di massimo/minimo se:
@@ -922,7 +929,7 @@ Come facciamo a trovare questi punti? Guardiamo i metodi usati in una dimensione
     \]
 \end{itemize}
 Quando $ n \geq 2 $, $ f'(x) $ viene sostituito dal gradiente $ \nabla f(x) $, che e' un vettore e non uno scalare. Dato che non ha senso chiedersi se un vettore e' $ \geq 0 $,  il concetto di "crescente" e "decrescente" non puo' essere applicato in piu' dimensioni (perche' puo' essere diversa in direzioni diverse). Quindi dobbiamo utilizzare il secondo metodo, che ci da' due condizioni da rispettare (una sulla derivata di primo grado, una sulla seconda). Vediamo come generalizzare queste condizioni in piu' dimensioni:
-\subsection{Condizioni del primo ordine}
+\section{Condizioni del primo ordine}
 Guardiamo la prima condizione relativa alla derivata di primo grado. Questa ci dice che e' condizione necessaria (ma non sufficente) per un punto di massimo/minimo avere la derivata prima nulla, vediamo se cio' vale anche in piu' dimensioni:
 \thm{Fermat}{
   Data $ f:A\to\mathbb{R} $, con $ A \subseteq \mathbb{R}^n $ aperto, si ha che se un punto $ \underline{x} \in A $ e' massimo o minimo, allora:
@@ -931,10 +938,39 @@ Guardiamo la prima condizione relativa alla derivata di primo grado. Questa ci d
   \]
 }
 \pf{Dimostrazione}{
-  dimostra
+  Presa una funzione $ f:A\to\mathbb{R} $ ($ A \subseteq \mathbb{R}^n $ aperto) con punto minimo in $ \overline{x} $, devo dimostrare che le derivate parziali in quel punto siano nulle. Semplicemente basta guardare la funzione sui piani paralleli alle direzioni canoniche passanti per $ \overline{x} $ e usare Fermat per le funzioni semplici. Per fare cio' creiamo una funzione $ h_k:]-\delta, \delta[\to\mathbb{R} $, definita $ \forall k \in \{1,...,n\} $ come $ h_k(t) = f(\overline{x} + te_k) $. Il $ \delta $ scelto e' quello garantito dalla definizione di punto minimo, quindi si ha che $ \forall x  $ che dista meno di $ \delta $ da $ \overline{x} $ si ha che $ f(x) \leq (\geq) f(\overline{x}) $. Quindi $ h $ ha max/min con $ t=0 $, ed essendo una funzione semplice abbiamo che $ h_k'(0) = 0 $. Ora dimostriamo che cio' implica che tutte le derivate parziali sono nulle: $ h_k'(0)=\lim_{t\to 0}\frac{h_k(t)+h_k(0)}{t} = \lim_{t\to 0}\frac{f(\overline{x}+te_k)+f(\overline{x})}{t} = \frac{\partial f}{\partial x_k}(\overline{x}) = 0 $.
 }
 Pero' questa e' solo una condizione necessaria, non sufficente per essere un punto di massimo/minimo. Vedremo infatti che esistono dei punti "di sella" che sono stazionari ma che non sono ne massimi ne minimi (sono una generalizzazione dei punti di flesso a tg orizzontale). Per distinguere i tipi di punti stazionari, dobbiamo guardare la derivata seconda:
-\subsection{Condizioni di secondo ordine}
+\section{Condizioni di secondo ordine}
+\subsection{In una variabile}
+Diamo un attimo una intuizione al perche' la condizione di secondo ordine funziona in una variabile. Per fare cio', prendiamo una funzione $ f $ e scriviamone il polinomio di Taylor nel punto stazionario $ x_0 $ fino al secondo grado (dato che stiamo facendo solo un ragionamento informale, l'errore possiamo anche tralasciarlo):
+\[
+   f(x) \approx f(x_0) + f'(x_0)(x-x_0) + \frac{1}{2}f''(x_0)(x-x_0)^2 
+\]
+Dato che siamo interessati ai punti stazionari, $ f'(x_0) = 0 $, quindi possiamo semplificare l'approssimazione cosi':
+\[
+  f(x) \approx f(x_0) + \frac{1}{2}f''(x_0)(x-x_0)^2
+\]
+Dato che questa e' un'approssimazione di un piccolo intorno centrato nel punto $ x_0 $, se vediamo che $ x_0 $ e' un max/min nell'approssimazione, allora significa che nella funzione effettiva $ f $ esiste un intervallo contenente $ x_0 $ dove questo e' maggiore/minore di tutti i punti dell'intervallo. Guardiamo i vari casi:
+\begin{itemize}
+  \item Se $ f''(x_0) > 0 $, allora $ x_0 $ e' un punto di minimo, dato che $ (x-x_0)^2 $ e' sempre positivo tranne quando $ x = x_0 $, che ci darebbe il valore del minimo $ f(x_0) \approx f(x_0) + 0 $.
+    \begin{center}
+      \includegraphics[width=0.5\textwidth]{img/2024-05-10-12-37-28.png}
+    \end{center}
+  \item Se $ f''(x_0) < 0 $, allora $ x_0 $ e' un punto di massimo, dato che siamo nella situazione precedente ma $ (x-x_0)^2 $ e' moltiplicato per una costante negativa. Quindi il polinomio descrive una parabola "all'ingiu'", con vertice in $ x_0 $.
+    \begin{center}
+      \includegraphics[width=0.5\textwidth]{img/2024-05-10-12-38-04.png}
+    \end{center}
+  \item Se $ f''(x_0) = 0 $, allora siamo in un caso particolare dove la derivata seconda non riesce a darci informazioni aggiuntive rispetto alla natura del punto stazionario.
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2024-05-10-12-38-41.png}
+  \end{center}
+\end{itemize}
+Quindi, per riassumere: quando $ f'(x_0) = 0 $, sappiamo che se il termine quadratico dell'approssimazione di Taylor $ \frac{1}{2}f''(x_0)(x-x_0)^2 $ e' sempre positivo/negativo (includendo lo 0), allora $ x_0 $ e' un punto di massimo/minimo.
+
+\section{Approssimazione quadratica in piu' dimensioni}
+Proviamo a seguire lo stesso procedimento per funzioni in una sola variabile. La prima cosa da fare e' scrivere un'approssimazione quadratica (Taylor al secondo ordine) di una funzione in piu' dimensioni. Partiamo prima con la definizione delle derivate seconde in n dimensioni:
+\subsection{Derivate seconde e hessiana}
 Introduciamo le derivate seconde in n dimensioni, ovvero il calcolo due volte di fila delle derivate (parziali). La differenza questa volta e' che ci sono diverse derivate parziali, che quindi possiamo applicare in sequenza in $ n^2 $ modi diversi. Introduciamo la notazione:
 \dfn{Derivate seconde in n dimensioni}{
   Sia $ f:\mathbb{R}^n\to\mathbb{R} $, assumiamo che $ \forall k \in \{1,...,n\}. \exists \frac{\partial f}{\partial x_k} $ in ogni punto di $ \mathbb{R}^n $. Consideriamo una nuova variabile $ x_j $, con $ j \in \{1,...,n\} $, si ha che:
@@ -951,18 +987,29 @@ Introduciamo le derivate seconde in n dimensioni, ovvero il calcolo due volte di
 }
 Seppure sembrano tante, in verita' si puo' dimostrare che l'ordine in cui applichiamo le derivate non cambia il valore finale:
 \thm{Schwarz}{
-  Sia $ f:\mathbb{R}^n\to\mathbb{R} $ tale che $ f, \frac{\partial f}{\partial x_j}, \frac{\partial f}{\partial x_j \partial x_k} $ sono continue in $ \mathbb{R}^n $ $ \forall k,j \in \{1,...,n\} $, allora:
+  Sia $ f:\mathbb{R}^n\to\mathbb{R} $ tale che per qualche (almeno uno) intorno centrato in $ p \in \mathbb{R}^n $ la derivata seconda (non mista!) di $ f $ e' continua, allora:
   \[
-  \frac{\partial^2 f}{\partial x_k \partial x_j} = \frac{\partial^2 f}{\partial x_j \partial x_k}
+   \forall k,j \in \{1,...,n\}. \frac{\partial^2 f}{\partial x_k \partial x_j} = \frac{\partial^2 f}{\partial x_j \partial x_k}
   \]
 }
 Come abbiamo visto sopra, con $ n $ derivate parziali diverse esistono $ n^2 $ combinazioni di derivate seconde. Queste derivate seconde le possiamo mettere in una matrice (detta "hessiana") quadrata $ Hf(\overline{x}) \in M_n(\mathbb{R}) $ definita cosi':
 \[
   Hf(\overline{x})_{jk} = \frac{\partial^2 f}{\partial x_j \partial x_k }
 \]
-
+\ex{}{
+  Data una funzione in due dimensioni $ f:\mathbb{R}^2\to\mathbb{R} $, la sua matrice hessiana associata nel punto $ x_0 $ e':
+  \[
+    H_{f(x_0)} = \begin{pmatrix}
+    \frac{\partial^2 f}{\partial x^2} & \frac{\partial^2 f}{\partial x \partial y} \\
+    \frac{\partial^2 f}{\partial y \partial x} & \frac{\partial^2 f}{\partial y^2}\\
+    \end{pmatrix}
+  \]
+  Ho omesso l'esplicitazione del punto da derivare nella matrice perche' spesso si fa cosi'.
+}
+\subsection{Taylor secondo Lagrange}
+Torniamo un attimo in una dimensione per dare una nuova formula di approssimazione, che come noteremo da' informazioni aggiuntive rispetto a Taylor con il resto di Peano:
 \thm{Taylor secondo Lagrange}{
-  (n=1) $ f:\mathbb{R}\to\mathbb{R} $ assumo $ f,f',f''' $ continue. Dati $ \overline{x} $ e $ \overline{x} +h \in \mathbb{R} $, esiste $ \theta \in (0,1) $.
+  (n=1) $ f:\mathbb{R}\to\mathbb{R} $ assumo $ f,f',f'' $ continue. Dati $ \overline{x} $ e $ \overline{x} +h \in \mathbb{R} $, esiste $ \theta \in (0,1) $.
   \[
     f(\overline{x}+h) = f(\overline{x}) + f'(\overline{x})h + \frac{1}{2}f''(\overline{x}+\theta h)h^2
   \]
@@ -976,9 +1023,29 @@ Come abbiamo visto sopra, con $ n $ derivate parziali diverse esistono $ n^2 $ c
 \nt{
   Osserviamo che dalla formula di Lagrange possiamo ricondurci a quella sopra, quindi possiamo dire che contiene piu' "informazioni". Infatti sottraendo la seconda dalla prima rimane $ \frac{h^2}{2}(f''(\overline{x})-f''(\overline{x}+\theta h)) = o(h^2) $. Per verificarlo dividiamo la parte sinistra per $ h^2 $ e facciamo il limite per $ h \to 0 $, e si nota che effettivamente il limite e' $ 0 $ (usando la continuita' di $ f'' $). 
 }
-Nella parte quadratica della formula di Taylor in $ \mathbb{R}^n $ compare una "forma quadratica" che dobbiamo studiare per trovare massimi/minimi:
+(decidere se ha senso fare prima la forma quadratica e poi scrivere taylor in n dimensioni o se ci possiamo arrivare prima alla formula senza abbreviarla e poi fare la forma quadratica per scriverla meglio)
+\subsection{Forma quadratica}
+Per classificare i punti stazionari dobbiamo analizzare la parte quadratica dello sviluppo di Taylor, che come poi dimostreremo ha la seguente forma:
+\[
+ax^2 + 2bxy + cy^2
+\]
+Un'equazione di questo tipo e' chiamata una \textbf{forma quadratica}, che puo' essere rappresentata anche tramite il prodotto scalare fra una matrice e due vettori, che e' utile in quanto una sola scrittura vale per qualsiasi numero di variabili. Vediamo che in questo modo l'equazione diventa:
+\[
+  \innerproduct{\begin{pmatrix}
+  a & b\\
+  b & c\\
+  \end{pmatrix}\begin{pmatrix}
+  x\\
+  y\\
+  \end{pmatrix}}{\begin{pmatrix}
+  x\\
+  y\\
+  \end{pmatrix}}
+\]
+Notiamo che la matrice associata alle forme quadratiche e' sempre una matrice simmetrica. Vediamo ora la definizione di forma quadratica usando questa nuova scrittura:
+
 \dfn{Forma quadratica}{
-  Sia $ A \in M_n(\mathbb{R}) $ simmetrica ($ A = A^T $), definiamo la funzione $ q_A: \mathbb{R}^n\to\mathbb{R} $:
+  Sia $ A \in M_n(\mathbb{R}) $ simmetrica ($ A = A^T $) e $ h \in \mathbb{R}^n $ (vettore colonna $ n\times 1 $), definiamo la funzione $ q_A: \mathbb{R}^n\to\mathbb{R} $:
   \[
     q_A(h) = \innerproduct{Ah}{h} \in \mathbb{R} 
   \] 
@@ -989,20 +1056,32 @@ Nella parte quadratica della formula di Taylor in $ \mathbb{R}^n $ compare una "
   1/6 & -7\\
   \end{pmatrix} $
 }
+\subsubsection{Segno}
 Per generalizzare la condizione $ f''(\overline{x})> 0 $ in $ \mathbb{R} $ dobbiamo dare una nozione di segno di una forma quadratica:
 \dfn{}{
   Sia $ A = A^T \in M_n(\mathbb{R}) $. Allora si dice che:
   \begin{itemize}
   \item $ A $ e' definita positiva se $ \innerproduct{Ah}{h} > 0 $ $ \forall h \neq 0 $
   \item $ A  $ e' definita negativa se $ \innerproduct{Ah}{h} < 0 $ $ \forall h \neq 0 $
-  \item $ A $ e' indefinita se $ \exists h', h'' \in \mathbb{R}^n. \innerproduct{Ah'}{h'} < 0 < \innerproduct{Ah''}{h''} $
+  \item $ A $ e' indefinita se $ \exists h, t \in \mathbb{R}^n. \innerproduct{Ah}{h} < 0 < \innerproduct{At}{t} $
   \end{itemize}
 }
 \nt{
   Tutte le disuguaglianze sono strette
 }
-\subsection{Classificazione forme quadratiche (n=2)}
-\mprop{}{
+Per ora restringiamoci a solo due variabili. E' possibile sapere il segno di una forma quadratica conoscendo solo la sua matrice? Si, si puo' dimostrare trattando inizialmente $ y $ come una costante, chiamiamola $ y_0 $, e calcolando gli zeri:
+\[
+  y_0\left(\frac{-b \pm \sqrt{b^2-ac}}{a}\right)
+\]
+Vediamo subito che se $ y_0 = 0 $, allora abbiamo entrambe gli zeri nel punto $ (0,0) $. Notiamo inoltre che il segno della parabola dipende interamente dal segno del meno-delta (studiamo $ ac-b^2 $ per motivi che vedremo dopo) e dal segno di $ a $:
+\begin{itemize}
+\item se $ ac-b^2 < 0 $, allora esistono due zeri distinti $ \forall y_0 \neq 0 $ e la parabola e' sia negativa che positiva, quindi in questo caso la forma quadratica e' indefinita
+  \item se $ ac-b^2 > 0 $, non esistono zeri reali e quindi la parabola e' tutta positiva se $ a>0 $ o tutta negativa se $ a < 0 $. Quindi il segno della forma quadratica dipende dal segno di $ a $.
+    \item se $ ac-b^2 = 0 $ la parabola sara' sempre o positiva o negativa a seconda del segno di $ a $ in teoria ma in realta non e' definita? Why?
+
+\end{itemize}
+Il valore $ ac-b^2 $ in realta' corrisponde al determinante della matrice associata alla forma quadratica, quindi possiamo riscrivere i casi sopra in modo piu' breve:
+\mprop{Regola dei segni delle forme quadratiche}{
   Sia $ A = \begin{pmatrix}
   a & b\\
   b & c\\
@@ -1019,11 +1098,158 @@ Per generalizzare la condizione $ f''(\overline{x})> 0 $ in $ \mathbb{R} $ dobbi
     \item $ A $ e' indefinita $ \iff $ $ detA < 0 $ (punto di sella)
   \end{itemize}
 }
-\pf{Dimostrazione del primo punto}{
-  Si calcola la forma quadratica
+
+\subsubsection{Forma quadratica Hessiana}
+Essendo una matrice simmetrica, anche la matrice hessiana che abbiamo definito insieme alle derivate seconde in $ n $ dimensioni ha una forma quadratica associata:
+\[
+  q(h) = \innerproduct{H_{f(\overline{x})}h}{h}
+\]
+dove $ H_{f(\overline{x})} $ e la matrice hessiana di ordine $ n $ e $ h $ e' un qualunque vettore di $ \mathbb{R}^n $.
+
+\subsection{Taylor di secondo ordine in n dimensioni}
+\thm{Formula di Taylor con resto di Lagrange di secondo ordine in n dimensioni}{
+  Data una funzione $ f:\mathbb{R}^n\to\mathbb{R} $ con tutte le derivate seconde continue, si ha che $ \forall x_0, h \in \mathbb{R}^n $, $ \exists \delta \in (0,1) $ tale che:
+  \[
+    f(x_0 + h) = f(x_0) + \innerproduct{\nabla f(x_0)}{h} + \frac{1}{2} \innerproduct{H_{f(x_0 + \delta h)}h}{h}
+  \]  
 }
-\section{Forma quadratica Hessiana}
+\nt{
+  Come avevamo visto in una dimensione, questa formula e' "globale", ovvero vale anche per $ h $ "lontani" da $ x_0 $.
+}
+\pf{}{
+  Usiamo una funzione $ h: \mathbb{R}\to\mathbb{R} $ che ha derivata seconda continua (?). Per Taylor in una variabile sappiamo che: $ \forall t_0, t_0+t \in \mathbb{R}. \exists \theta \in ]0,1[: h(t_0+t) = h(t_0) + h'(t_0)t + \frac{1}{2}h''(t_0+\theta t)t^2 $. Prendendo come $ f $ la funzione del teorema e dati $ x_0, x_0+h \in \mathbb{R}^n $, definisco la funzione $ h(t) = f(x_0+th) $ (stare attenti a non confondere $ h $-funzione con $ h $-variabile). Scriviamo Taylor di $ h $ ponendo $ t_0 = 0 $ e $ t = 1 $: $ h(1) = h(0) + h'(0) + \frac{1}{2}h''(\theta) $. Usando la definizione di $ h(t) $, otteniamo $ h(1) = f(x_0 + h) $, $ h(0) = f(x_0) $, $ h'(0) = \innerproduct{\nabla f(x_0)}{h} $ (derivata di f lungo la curva $ v(t) = x_0+th $) e $ h''(\theta) = \innerproduct{H_{f(x_0+\theta h)h}}{h} $. Sostituendo otteniamo la tesi del teorema. 
+}
+\cor{Taylor di secondo ordine in n dimensioni con resto di Peano}{
+  Data una funzione $ f:\mathbb{R}^n\to\mathbb{R} $ con tutte le derivate seconde continue, si ha che $ \forall x_0,h \in \mathbb{R}^n $ si ha che:
+  \[
+    f(x_0 + h) = f(x_0) + \innerproduct{\nabla f(x_0)}{h} + \frac{1}{2} \innerproduct{H_{f(x_0)}h}{h} + o(\norm{h}^2)
+  \]
+  Dove $ \forall \epsilon > 0. \exists \delta > 0. \forall 0 < \norm{h} < \delta \implies \left|\frac{o(\norm{h}^2)}{\norm{h}^2}\right| < \epsilon $
+}
+\pf{}{
+  Scriviamo Taylor nelle due versioni:
+  \[
+    f(x_0+h) = f(x_0) + \innerproduct{\nabla f(x_0)}{h} + \frac{1}{2} \innerproduct{H_{f(x_0 + \theta h)}h}{h}
+  \]
+  \[
+    f(x_0+h) = f(x_0) + \innerproduct{\nabla f(x_0)}{h} + \frac{1}{2} \innerproduct{H_{f(x_0)}h}{h} + o(|h|^2)
+  \]
+  Sostituiamo il membro a sinistra del secondo con il membro di destra del primo, e semplificando otteniamo:
+  \[
+    \frac{1}{2} \innerproduct{H_{f(x_0 + \theta h)}h}{h} - \frac{1}{2}\innerproduct{H_{f(x_0)}h}{h} = o(|h|^2)
+  \]
+  Moltiplichiamo per 2 e scriviamo le forme quadratiche per esteso raccogliendo i termini con le stesse derivate seconde. Otteniamo una somma di tre forme di questo tipo (dove $ j,k \in \{1,...,n\} $):
+  \[
+    h_jh_k(\partial_{jk}f(x_0+\theta h)-\partial_{jk}f(x_0))
+  \]
+  Dobbiamo mostrare che questa somma sia un o-piccolo di $ |h|^2 $, quindi basta controllare che $ \forall j,k \in \{,...,n\} $:
+  \[
+    \lim_{h\to(0,0)} \frac{h_jh_k}{|h|^2}(\partial_{jk}f(x_0+\theta h)-\partial f(x_0)) = 0
+  \]
+  Per analisi asintotica, $ \frac{h_jh_k}{|h|^2} $ tende a un numero reale, mentre il fattore a destra tende a 0.
+}
+
+\section{Classificazione di punti stazionari}
+Diamo prima di tutto una definizione formale di punto di sella:
+\dfn{Punto di sella}{
+  Data una funzione $ f:\mathbb{R}^n\to\mathbb{R} $ con derivate seconde continue, il punto critico $ \overline{x} \in \mathbb{R}^n $ ($ \nabla f(\overline{x}) = \underline{0} $) si dice di \textbf{sella} se:
+  \[
+    \forall \delta > 0. \exists \overline{x}^-,\overline{x}^+.f(\overline{x}^-) < f(\overline{x}) < f(\overline{x}^+)
+  \]
+}
+Ci serve anche una proprieta' delle forme quadratiche:
+\mprop{}{ \label{valoreMinimo}
+  Sia $ A = A^T $ definita positiva di ordine $ n $, allora $ \exists \lambda \in \mathbb{R} > 0 $ tale che $ \forall h \in \mathbb{R}^n $:
+  \[
+  \innerproduct{Ah}{h} \geq \lambda \norm{h}
+  \]
+  Possiamo anche scrivere $ \innerproduct{A\frac{h}{\norm{h}}}{\frac{h}{\norm{h}}} \geq \lambda $.
+}
+\pf{Dimostrazione in $ \mathbb{R}^2 $}{
+  Prendiamo una matrice simmetrica di ordine 2 $ A $ definita positiva, con $ a,b,c \in \mathbb{R} $. Dobbiamo dimostrare che esiste un $ \lambda \in \mathbb{R} > 0 $ tale che per ogni vettore unitario $ v = (cos\theta, sin\theta) $ si ha che $ \innerproduct{Av}{v} \geq \lambda $. Chiamiamo $ g: [0,2\pi]\to\mathbb{R} $ la forma quadratica ottenuta. Essendo $ g $ continua su un intervallo chiuso possiamo applicare Weierstrass e dire che esiste un minimo assoluto, ovvero $ \exists \overline{\theta} \in [0,2\pi].\forall \theta \in [0,2\pi]: g(\theta) \geq g(\overline{\theta}) $. Inoltre, dato che $ g $ e' definita positiva, $ \forall \theta \in [0,2\pi]. g(\theta) > 0 $, quindi $ g(\overline{\theta}) $ e' strettamente positiva ed equivale al valore $ \lambda $ cercato.
+}
+\nt{
+  $ \lambda $ puo' essere scelto come l'autovalore minore di $ A $.
+}
+Ora siamo in grado di dimostrare come il segno della matrice hessiana puo' classificare un punto critico:
+\thm{Classificazione dei punti critici}{
+  Data una funzione $ f:\mathbb{R}^n\to\mathbb{R} $ con derivate seconde continue, sia $ \overline{x} \in \mathbb{R}^n $ un punto critico, allora:
+  \begin{itemize}
+    \item Se $ H_{f(\overline{x})} > 0 $, allora $ \overline{x} $ e' un punto di minimo
+    \item Se $ H_{f(\overline{x})} < 0 $, allora $ \overline{x} $ e' un punto di massimo
+    \item Se $ H_{f(\overline{x})}  $ e' indefinita, allora $ \overline{x} $ e' un punto di sella  
+  \end{itemize}
+}
+\pf{}{
+  \begin{itemize}
+    \item $ 1) $ Per ipotesi sappiamo che $ \nabla f(\overline{x}) = 0 $ e che $ H_{f(\overline{x})} > 0 $. Dobbiamo dimostrare che $ \exists \delta \in \mathbb{R} > 0. \forall h \in \mathbb{R}^n.\norm{h} < \delta: f(\overline{x}+h) - f(\overline{x}) \geq 0 $ (definizione di minimo). Dato che $ f $ ha derivate seconde continue per ipotesi, possiamo scrivere il suo sviluppo di Taylor di secondo ordine: $ f(\overline{x}+h)-f(\overline{x}) = \frac{1}{2}\innerproduct{H_{f(\overline{x})}h}{h} + o(\norm{h}^2) $ (dato che il gradiente e' nullo). Per \ref{valoreMinimo} sappiamo che $ \innerproduct{H_{f(\overline{x})}h}{h} \geq \lambda \norm{h} $, quindi possiamo continuare l'equazione sopra aggiungendo $ \geq \frac{1}{2}\lambda \norm{h}^2 + o(\norm{h}^2) = \norm{h}^2 \left(\lambda+\frac{o(\norm{h}^2)}{\norm{h}^2}\right) $. Usiamo la definizione di o-piccolo, scegliendo come $ \epsilon $ il valore $ \frac{\lambda}{2} $ e attribuiamo al $ \delta $ che stiamo cercando il valore positivo per cui $ \forall h \in \mathbb{R}^n.\norm{h} < \delta: \left|\frac{o(\norm{h^2})}{\norm{h}^2}\right| < \frac{\lambda}{2} $. Controlliamo che $ \forall h . \norm{h} < \delta $ valga la proprieta' di minimo: $ \geq \frac{\norm{h}^2}{2}\left(\lambda - \frac{\lambda}{2}\right) \geq 0 $.
+    \item $ 2) $ (Uguale a quello sopra)
+    \item $ 3) $ 
+  \end{itemize}
+}
+
 
 \chapter{Integrali su piu' variabili}
+Vediamo ora come generalizzare il concetto di integrale definito in due dimensioni. Considero $ f: A\to\mathbb{R} $, $ A \subseteq \mathbb{R}^2 $, $ \forall (x,y) \in A. f(x,y) \geq 0 $, il nostro scopo e' quello di trovare il volume del sottografico rispetto all'area $ A $, ovvero dell'insieme di punti $ \{(x,y,z) \in \mathbb{R}^3 | (x,y) \in A, 0 \leq z \leq f(x,y)\} $.
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2024-05-13-14-46-04.png}
+\end{center}
+Si dimostra che, se $ A $ e' \textbf{opportuno} ed $ f $ e' continua, il colume del sottografico e' dato da:
+\[
+  \int_{A}^{} f(x,y)dxdy = \text{ integrale doppio}
+\]
+Se mettiamo $ f = 1 $ costante, si trova $ \int_{A}^{} 1dxdy $ che ha lo stesso valore dell' area di A (come $ \int_{a}^{b}1dx = b-a $ = lunghezza di $ [a,b] $).
+\section{Insiemi semplici}
+\dfn{Insieme y-semplice nel piano $ xy $}{
+  Sia $ [a,b] \subseteq \mathbb{R} $, siano $ g_1,g_2:[a,b]\to\mathbb{R} $, tali che $ g_1(x) \leq g_2(x) \forall x \in [a,b] $ (con $ g_1,g_2 $ continue). 
+  \[
+    A = \{(x,y) \in \mathbb{R}^2 | x \in [a,b], g_1(x) \leq y \leq g_2(x)\}
+  \]
+}
+Si chiama y-semplice perche' intersecandolo con una retta verticale otteniamo sempre un segmento continuo:
+\begin{center}
+  \includegraphics[width=0.35\textwidth]{img/2024-05-15-10-01-35.png}
+\end{center}
+Se abbiamo la stessa proprieta' ma per le rette orizzontali, allora sono insiemi x-semplici:
+\dfn{Insieme x-semplice nel piano xy}{
+  Sia $ [c,d] \subseteq \mathbb{R}_y $, siano $ h_1,h_2:[c,d]\to\mathbb{R} $, tali che $ h_1(y) \leq h_2(y) \forall y \in [c,d] $ (con $ h_1,h_2 $ continue). 
+  \[
+    A = \{(x,y) \in \mathbb{R}^2 | y \in [c,d], h_1(y) \leq x \leq h_2(y)\}
+  \]
+}
+\begin{center}
+  \includegraphics[width=0.35\textwidth]{img/2024-05-15-10-02-41.png}
+\end{center}
+\nt{
+  Esistono insiemi che non sono ne' x, ne' y -semplici (corona circolare):
+  \begin{center}
+    \includegraphics[width=0.25\textwidth]{img/2024-05-15-10-03-29.png}
+  \end{center}
+}
+
+\section{Formule di riduzione}
+Vediamo ora come le proprieta' degli insiemi semplici possano aiutarci a calcolare il volume di un sottografo in tre dimensioni. L'obbiettivo principale e' quello di calcolare l'area sotto il grafico fissando la $ x $ o la $ y $ usando un integrale in una variabile, e poi di sommare tutte queste aree lungo la direzione opposta utilizzando ancora un integrale semplice. Vediamo come applicare questa intuizione formalmente:
+\mprop{Riduzione y-semplice}{
+  Siano $ g_1,g_2:[a,b]\to\mathbb{R} $ due funzioni continue t.c. $ \forall x \in [a,b]. g_1(x) \leq g_2(x) $. Sia $ A \in \mathbb{R}^2 $ un insieme y-semplice e sia $ f:A\to\mathbb{R} $ continua, allora vale:
+  \[
+    \int_{A}^{}f(x,y)dxdy = \int_{a}^{b}\left(\int_{g_1(x)}^{g_2(x)}f(x,y)dy\right)dx
+  \]
+}
+Quindi, dato un insieme $ A $ y-semplice e una funzione $ f:A\to\mathbb{R} $ continua, per trovare il volume del sottografo relativo ad $ A $ bisogna prima di tutto trovare la formula che ci da' l'area sotto il grafico dato un valore di $ x $. Quindi consideriamo la $ x $ come costante e applichiamo l'integrale in $ dy $:
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2024-05-15-11-29-57.png}
+\end{center}
+Da notare come questi integrali sono calcolati sull'intervallo $ [g_1(x), g_2(x)] $, che sono sempre gli estremi dell'area dato che $ A $ e' y-semplice. Ora ci basta sommare tutte le aree trovate per tutti gli $ x $ nell'intervallo $ [a,b] $, che possiamo fare con un secondo integrale in $ dx $ questa volta:
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2024-05-15-11-45-00.png}
+\end{center}
+Se dobbiamo calcolare il volume sopra un'area x-semplice, basta ripetere gli stessi passi trovando prima le aree fissando $ y $ e poi sommarle tutte lungo l'asse $ y $:
+\mprop{Riduzione x-semplice}{
+  Siano $ h_1,h_2:[c,d]\to\mathbb{R} $ due funzioni continue t.c. $ \forall y \in [c,d]. h_1(y) \leq h_2(y) $. Sia $ A \in \mathbb{R}^2 $ un insieme x-semplice e sia $ f:A\to\mathbb{R} $ continua, allora vale:
+  \[
+    \int_{A}^{}f(x,y)dxdy = \int_{c}^{b}\left(\int_{h_1(y)}^{h_2(y)}f(x,y)dx\right)dy
+  \]
+}
+
 
 \end{document} 
