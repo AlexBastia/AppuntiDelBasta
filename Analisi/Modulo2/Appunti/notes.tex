@@ -149,6 +149,7 @@ Se $f:[a,b]\to\mathbb{R}$ e $\forall x \in [a,b]. f(x) \geq 0$, allora:
   \[
     \exists x_1, x_2 \in [a,b].\forall x \in [a,b]. f(x_1) \leq f(x) \leq f(x_2)
   \]
+  Quindi una funzione continua su dominio chiuso e limitato ha massimo e minimo assoluti.
 }
 \begin{figure}[h!]
     \centering
@@ -246,7 +247,7 @@ D'ora in poi $ A = ]a,b[ $.
     \item $ f:A\to\mathbb{R}, c\in A, I_c(x) = \int_{c}^{x}f \implies I_c(c)=\int_{c}^{c}f(t)dt = 0 $.
     \item Dati $ c,c' \in A, f:A\to\mathbb{R} \implies I_c(x)-I_{c'}(x) $ = costante. Infatti:
       \[
-        I_c(x) - I_{c'}(x) = \int_{c}^{x}f - \int_{c'}^{x}f = \int_{c}^{x}f + \int_{x}^{c'}f = \int_{c}^{c'}f(t)dt = k
+        I_c(x) - I_{c'}(x) = \int_{c}^{x}f(t)dt - \int_{c'}^{x}f(t)dt = \int_{c}^{x}f(t)dt + \int_{x}^{c'}f(t)dt = \int_{c}^{c'}f(t)dt = k
       \]
   \end{enumerate}
 }
@@ -262,7 +263,7 @@ Una possibile interpretazione di questo teorema e' quello della derivata dell'ar
 \[
   \forall x. f(x) \geq 0 \implies \frac{d}{dx} \text{Area} = f(x)
 \]
-$ A = [-2,2], f(x)=\frac{x^2}{5} + 1 $:\\
+$ A = ]-2,2[, f(x)=\frac{x^2}{5} + 1 $:\\
 \begin{tikzpicture}
   \fill[gray!40, domain=-2:2, variable=\x]
    (-2,0)
@@ -284,7 +285,7 @@ $ A = [-2,2], f(x)=\frac{x^2}{5} + 1 $:\\
   Il teorema assicura che ogni funzione $ f:A\to\mathbb{R} $ continua ammette primitive.
 }
 \pf{Dimostrazione}{
-  $ f:A\to\mathbb{R}, c\in A, I_c:A\to\mathbb{R} $. Devo calcolare la derivata di $ I_c $. Calcolo $ \lim_{h\to 0^+}\frac{I_c(x+h)-I_c(x)}{h} $, che equivale a $ \lim_{h\to 0^+}\frac{1}{h} \int_{x}^{x+h}f(t)dt $. Per teo. media integrale sappiamo che $ \exists c \in [x,x+h]. f(c) = \frac{1}{h}\int_{x}^{x+h}f(t)dt $, quindi possiamo riscrivere la formula come $ \lim_{h\to 0^+}f(c_h) $. Dato che $ h \to 0^+ $ e $ x \leq c \leq x+h $, per il teo. dei carabinieri $ c=x $, quindi $ \frac{d}{dx}I_c(x) = f(x) $.
+  $ f:A\to\mathbb{R}, c\in A, I_c:A\to\mathbb{R} $. Devo calcolare la derivata di $ I_c $. Calcolo $ \lim_{h\to 0^+}\frac{I_c(x+h)-I_c(x)}{h} $, che equivale a $ \lim_{h\to 0^+}\frac{1}{h} \int_{x}^{x+h}f(t)dt $. Per teo. media integrale sappiamo che $ \exists c \in [x,x+h]. f(c) = \frac{1}{h}\int_{x}^{x+h}f(t)dt $, quindi possiamo riscrivere la formula come $ \lim_{h\to 0^+}f(c_h) $. Dato che $ h \to 0^+ $ e $ x \leq c \leq x+h $, per il teo. dei carabinieri $ c=x $, quindi (grazie alla continuita' di $ f $), $ \lim_{h\to 0+}f(c_h) = f(x) $.
 }
 
 \thm{Fondamentale del calcolo per integrali definiti}{
@@ -481,31 +482,78 @@ Considero due vettori $ (x,y) = (r cos\theta, r sin \theta) $ e $ (n,o) = (\rho 
 }
 
 \subsection{Punto di minima distanza da una retta}
-Problema $ \mathbb{R}^n, v\neq 0, x \in \mathbb{R}^n $. Considero le linee $ l_v = \{tv|t\in\mathbb{R}\} $, cerco fra tutti i punti di $ l_v $ quello che ha minima distanza da $ x $. Devo minimizzare la funzione $ h:\mathbb{R}\to\mathbb{R}, h(t)=|x-tv| = \text{distanza fra x e tv} $
-\mprop{}{
-  Dati $ v\neq 0 $ e $ x \in \mathbb{R}^n $, il punto di minima distanza $ \frac{<x,v>}{|v|^2}v $ soddisfa:
+Problema $ \mathbb{R}^n, v\neq 0, x \in \mathbb{R}^n $. Considero le linee $ l_v = \{tv|t\in\mathbb{R}\} $, cerco fra tutti i punti di $ l_v $ quello che ha minima distanza da $ x $. Devo minimizzare la funzione $ h:\mathbb{R}\to\mathbb{R}, h(t)=|x-tv| = \text{distanza fra x e tv} $, che (essendo non negativa), equivale a minimizzare la funzione alla seconda $ g(t) = |x-tv|^2 $. Usando il quadrato di binomio, otteniamo $ g(t) = |x|^2 + t^2|v|^2-2t \innerproduct{x}{v} $, ovvero una parabola con concavita' verso l'alto. Quindi il punto di minimo e' l'unico punto stazionario:
+\[
+  g'(t) = 2t|v|^2 -2 \innerproduct{x}{v} = 0 \iff t = \frac{\innerproduct{x}{v}}{|v|^2} = \overline{t}
+\]
+Quindi basta moltiplicare $ \overline{t} $ per $ v $ per trovare il punto di minima distanza:
+\mprop{Punto di minima distanza da una retta}{
+  Dati $ v \neq 0, x \in \mathbb{R}^n $ e la retta $ l_v = \{tv | t \in \mathbb{R}\} $, il punto $ \overline{t}v $ di minima distanza da $ x $ e':
   \[
-  <x-\frac{<x,v>}{|v|^2}v, v> = 0
+  \overline{t}v = \frac{\innerproduct{x}{v}}{|v|^2}v
+  \]
+  E la distanza vale $ \sqrt{|x|^2 - \frac{\innerproduct{x}{v}^2}{|v|^2}} $.
+}
+Inoltre, come possiamo intuire, il vettore della minima distanza da $ l_v $ a $ x $ e' ortogonale a $ v $:
+\mprop{Ortogonalita' distanza minima}{
+  Dati $ v\neq 0 $ e $ x \in \mathbb{R}^n $, il punto di minima distanza $ \overline{t}v $ soddisfa:
+  \[
+  <x-\overline{t}v, v> = 0
   \]
   Quindi il vettore che parte dal punto di minima distanza e arriva al punto x e' perpendicolare alla retta $ l_v $.
 }
+\pf{Verifica}{
+  (Basta svolgere i calcoli)
+}
 
 \section{Intorni}
+Generalizziamo in $ \mathbb{R}^n $ il concetto di intorno di un punto e di insiemi aperti/chiusi, che ci saranno utili per definire derivate in $ n $ dimensioni:
 \dfn{Intorno sferico di un punto}{
-  Dato $ x \in \mathbb{R}^n $, $ r > 0 $, poniamo
+  Dato $ x \in \mathbb{R}^n $, $ r > 0 \in \mathbb{R} $, poniamo
   \[
     D(x,r) = \{y\in \mathbb{R}^n | |x-y| < r\}
   \]
   $ D(x,r) $ si dice disco di centro $ x $ e raggio $ r $.
 }
+\begin{center}
+  \includegraphics[width=0.2\textwidth]{img/2024-05-20-12-26-27.png}
+\end{center}
 \dfn{Insiemi aperti}{
   $ A \subseteq \mathbb{R}^n $ si dice aperto se:
   \[
     \forall x \in A. \exists \epsilon > 0.D(x,\epsilon) \subseteq A
   \]
 }
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2024-05-20-12-32-06.png}
+\end{center}
 \section{Successioni in $ \mathbb{R}^n $}
-Una successione $ (x_k)_{k\in \mathbb{N}} $ e' un vettore di $ k $ successioni: $ x_k = (x_k^1, x_k^2, ..., x_k^n) $ con $ k \in \mathbb{N} $
+\dfn{Successione}{
+  Una funzione $ x(k):\mathbb{N}\to\mathbb{R}^n $, indicata come $ x_k $, si chiama successione in $ n $ dimensioni ed e' un vettore di $ k $ successioni:
+  \[
+   x_k = (x_k^1, x_k^2, ..., x_k^n) \text{ con } k \in \mathbb{N} 
+  \]
+}
+Come in una dimensione, una successione in $ n $ dimensioni e' convergente se:
+\dfn{Successione convergente}{
+   Sia $ x_k $ una successione in $ \mathbb{R}^n $ e $ x \in \mathbb{R}^n $. Si dice che $ x_k $ \textbf{converge} a $ x $ se $ \lim_{k\to +\infty}x_k = x $, ovvero se si verifica:
+   \[
+   \begin{cases}
+   \lim_{k\to+\infty}x_k^1 = x^1 & \\
+    \vdots & \\
+    \lim_{k\to+\infty}x_k^n = x^n &
+   \end{cases}
+   \]
+}
+\mprop{}{
+  Sia $ x_k $ una successione in $ \mathbb{R}^n $ e sia $ x \in \mathbb{R}^n $, si ha che:
+  \[
+  \lim_{k \to +\infty} x_k = x \iff \lim_{k\to+\infty} \norm{x_k - x} = 0
+  \]
+}
+\nt{
+  Per vedere se una successione in $ \mathbb{R}^n $ e' convergente, basta studiare la convergenza di una successione in $ \mathbb{R} $ ($ \norm{x_k-x}_k $)
+}
 \chapter{Funzioni a piu' variabili}
 Dati $ A \subseteq \mathbb{R}^n, B \subseteq \mathbb{R}^q $, consideriamo funzioni $ f:A\to B $ (A = dominio, B = codominio).
 
@@ -528,19 +576,17 @@ Se cammino lungo l'insieme di livello, la funzione corrispondente non cambia
   $ A \subseteq \mathbb{R}^n, f:A\to\mathbb{R}, k \in A $. Si dice che $ f $ e' continua in $ k \in A $ se $ \forall (x_n)_{n\in\mathbb{N}} \in \mathbb{R}^n $ vale:
   \[
   \begin{cases}
-  x_n \in A & \forall n \in \mathbb{N}\\
-  x_n \longrightarrow k & k \longrightarrow +\infty
-  \end{cases} \implies f(x_n)\longrightarrow f(k)
+  \forall n \in \mathbb{N}.x_n \in A & \\
+    x_n \xlongrightarrow{n\to+\infty} k & 
+  \end{cases} \implies f(x_n)\xlongrightarrow{n\to+\infty} f(k)
   \]
 }
 \mprop{}{
   Sia $ A \subseteq \mathbb{R}^n, f:A\to\mathbb{R}, k\in A $. Allora $ f $ e' continua in $ k $ se:
   \[
-  \forall \epsilon > 0\exists\delta>0. \begin{cases}
-  x \in A & \\
-    |x-k|<\delta & 
-  \end{cases} \implies |f(x)-f(k)|<\epsilon
+  \forall \epsilon > 0\exists\delta>0.\forall x \in A:|x-k|<\delta \implies |f(x)-f(k)|<\epsilon
   \]
+  Ovvero, $ \lim_{x\to k}f(x) = f(k) $.
 }
 
 \section{Derivata parziale}
@@ -762,7 +808,7 @@ x+y-2=0 & \\
 \end{cases}
 \]
 \subsection{Derivata di una curva}
-Una curva e' una "funzione" di classe $ C^1((a,b)) $, quindi esistono tutte le derivate prime e sono continue (in $ (a,b) $). Il significato di derivata e' sempre lo stesso: e' il cambiamento del valore della funzione quando si incrementa l'input di un valore infinitesimo. Vediamo graficamente cosa succede (con $ r:\mathbb{R}\to\mathbb{R}^2 $ per semplicita'):
+Supponiamo di avere una curva di classe $ C^1((a,b)) $, quindi esistono tutte le derivate prime e sono continue (in $ (a,b) $). Il significato di derivata e' sempre lo stesso: e' il cambiamento del valore della funzione quando si incrementa l'input di un valore infinitesimo. Vediamo graficamente cosa succede (con $ r:\mathbb{R}\to\mathbb{R}^2 $ per semplicita'):
 \begin{center}
     \includegraphics[width=0.5\textwidth]{ img/2024-05-05-15-17-31.png}
 \end{center}
@@ -771,11 +817,11 @@ Vediamo che la differenza fra i valori di $ r $ e' rappresentata da un vettore $
 \includegraphics[width=0.25\textwidth]{img/2024-05-05-15-54-02.png}
 \end{center}
 
-Quindi possiamo applicare la definizione di limite e calcolare il rapporto incrementale in questo modo:
+Il valore del cambiamento lungo l'asse $ x $ e' dato dalla derivata di $ r_1(t) $, mentre il valore lungo l'asse $ y $ e' dato dalla derivata di $ r_2(t) $. Quindi possiamo applicare la definizione di limite e calcolare il rapporto incrementale in questo modo:
 \[
-  \lim_{h \to 0}\frac{r(t+h)-r(t)}{h} = \lim_{h\to 0}\frac{r_1(t+h)-r_1(t)}{h} + \lim_{h \to 0}\frac{r_2(t+h)-r_2(t)}{h}
+  \lim_{h \to 0}\frac{r(t+h)-r(t)}{h} = \left(\lim_{h\to 0}\frac{r_1(t+h)-r_1(t)}{h}, \lim_{h \to 0}\frac{r_2(t+h)-r_2(t)}{h}\right) = (r_1'(t), r_2'(t))
 \]
-Ovvero, la derivata un punto $ t $ di una curva $ r:\mathbb{R}\to\mathbb{R}^n $ e' data dalla somma delle derivate delle $ n $ funzioni parametriche di $ r $. Quindi diamo la definizione:
+Ovvero, la derivata un punto $ t $ di una curva $ r:\mathbb{R}\to\mathbb{R}^n $ e' data dalla somma delle derivate delle $ n $ funzioni parametriche di $ r $ moltiplicate per il corrispondente vettore base $ e_k $. Quindi diamo la definizione:
 \dfn{Velocita di una curva}{
   La velocita' (o derivata) di una curva e' il vettore tangente alla curva data:
   \[
@@ -912,9 +958,9 @@ Dato che la direzione perpendicolare alla curva di livello in $ A $ coincide con
 \chapter{Punti di massimo e minimo in piu' dimensioni}
 La definizione di punti di massimo/minimo in piu' dimensioni e' molto simile a quella in $ \mathbb{R} $:
 \dfn{Maxima e minima}{
-  Data $ f:A\to\mathbb{R}^n $, con $ A \subseteq \mathbb{R} $, $ \underline{x} \in A $ si dice punto di massimo/minimo se:
+  Data $ f:A\to\mathbb{R} $, con $ A \subseteq \mathbb{R} $, $ \underline{x} \in A $ si dice punto di massimo/minimo se:
   \[
-    \exists \delta > 0. \forall x \in D(\underline{x},\delta) \cup A. f(x) \geq (\leq) f(\underline{x})
+    \exists \delta > 0. \forall x \in D(\underline{x},\delta) \cap A. f(x) \geq (\leq) f(\underline{x})
   \]
 }
 Come facciamo a trovare questi punti? Guardiamo i metodi usati in una dimensione per vedere se sono generalizzabili:
@@ -932,7 +978,7 @@ Quando $ n \geq 2 $, $ f'(x) $ viene sostituito dal gradiente $ \nabla f(x) $, c
 \section{Condizioni del primo ordine}
 Guardiamo la prima condizione relativa alla derivata di primo grado. Questa ci dice che e' condizione necessaria (ma non sufficente) per un punto di massimo/minimo avere la derivata prima nulla, vediamo se cio' vale anche in piu' dimensioni:
 \thm{Fermat}{
-  Data $ f:A\to\mathbb{R} $, con $ A \subseteq \mathbb{R}^n $ aperto, si ha che se un punto $ \underline{x} \in A $ e' massimo o minimo, allora:
+  Data $ f:A\to\mathbb{R} $ differenziabile, con $ A \subseteq \mathbb{R}^n $ aperto, si ha che se un punto $ \underline{x} \in A $ e' massimo o minimo, allora:
   \[ 
     \nabla f(\underline{x}) = 0
   \]
@@ -1018,12 +1064,11 @@ Torniamo un attimo in una dimensione per dare una nuova formula di approssimazio
   $ \overline{x} + \theta h $ appartiene all'intervallo di estremi $ \overline{x} $ e $ \overline{x} + h $ (aperto)
 }
 \nt{
-  Ricordiamo la formula nota: $ f(\overline{x} + h) = f(\overline{x}) = f'(\overline{x})h+\frac{1}{2}f''(\overline{x})h^2 + o(h^2) $ per $ h \to 0 $. Questa perde significato se $ h $ non tende a $ 0 $, mentre quella di Lagrange vale per punti qualsiasi.
+  Ricordiamo la formula nota: $ f(\overline{x} + h) = f(\overline{x}) = f'(\overline{x})h+\frac{1}{2}f''(\overline{x})h^2 + o(h^2) $. Per $ h $ che non sono vicini a $ 0 $, la formula col resto di Peano non ci da molte informazioni riguardo all'errore, mentre con il resto di Lagrange abbiamo sempre una informazione quantitativa per qualunque $ h $ scelto.
 }
 \nt{
   Osserviamo che dalla formula di Lagrange possiamo ricondurci a quella sopra, quindi possiamo dire che contiene piu' "informazioni". Infatti sottraendo la seconda dalla prima rimane $ \frac{h^2}{2}(f''(\overline{x})-f''(\overline{x}+\theta h)) = o(h^2) $. Per verificarlo dividiamo la parte sinistra per $ h^2 $ e facciamo il limite per $ h \to 0 $, e si nota che effettivamente il limite e' $ 0 $ (usando la continuita' di $ f'' $). 
 }
-(decidere se ha senso fare prima la forma quadratica e poi scrivere taylor in n dimensioni o se ci possiamo arrivare prima alla formula senza abbreviarla e poi fare la forma quadratica per scriverla meglio)
 \subsection{Forma quadratica}
 Per classificare i punti stazionari dobbiamo analizzare la parte quadratica dello sviluppo di Taylor, che come poi dimostreremo ha la seguente forma:
 \[
@@ -1073,11 +1118,11 @@ Per ora restringiamoci a solo due variabili. E' possibile sapere il segno di una
 \[
   y_0\left(\frac{-b \pm \sqrt{b^2-ac}}{a}\right)
 \]
-Vediamo subito che se $ y_0 = 0 $, allora abbiamo entrambe gli zeri nel punto $ (0,0) $. Notiamo inoltre che il segno della parabola dipende interamente dal segno del meno-delta (studiamo $ ac-b^2 $ per motivi che vedremo dopo) e dal segno di $ a $:
+Vediamo subito che se $ y_0 = 0 $, allora abbiamo entrambe gli zeri nel punto $ (0,0) $, mentre se $ y_0 \neq 0 $ il numero di zeri dipende dal delta (in realta' studiamo il meno-delta per poter usare il determinante dopo). La concavita' della parabola, invece, dipende come al solito dal segno di $ a $:
 \begin{itemize}
-\item se $ ac-b^2 < 0 $, allora esistono due zeri distinti $ \forall y_0 \neq 0 $ e la parabola e' sia negativa che positiva, quindi in questo caso la forma quadratica e' indefinita
+  \item se $ ac-b^2 < 0 $, allora esistono due zeri distinti $ \forall y_0 \neq 0 $ e la parabola e' sia negativa che positiva, quindi in questo caso la forma quadratica e' indefinita.
   \item se $ ac-b^2 > 0 $, non esistono zeri reali e quindi la parabola e' tutta positiva se $ a>0 $ o tutta negativa se $ a < 0 $. Quindi il segno della forma quadratica dipende dal segno di $ a $.
-    \item se $ ac-b^2 = 0 $ la parabola sara' sempre o positiva o negativa a seconda del segno di $ a $ in teoria ma in realta non e' definita? Why?
+  \item se $ ac-b^2 = 0 $, allora esistono punti $ (x,y) \neq (0,0) $ per cui il valore della forma quadratica e' $ 0 $ e il resto dell'immagine e' tutta positiva o tutta negativa. Per questo motivo non riusciamo a dire che sia sempre positiva o negativa, ne che sia indefinita.
 
 \end{itemize}
 Il valore $ ac-b^2 $ in realta' corrisponde al determinante della matrice associata alla forma quadratica, quindi possiamo riscrivere i casi sopra in modo piu' breve:
@@ -1100,7 +1145,7 @@ Il valore $ ac-b^2 $ in realta' corrisponde al determinante della matrice associ
 }
 
 \subsubsection{Forma quadratica Hessiana}
-Essendo una matrice simmetrica, anche la matrice hessiana che abbiamo definito insieme alle derivate seconde in $ n $ dimensioni ha una forma quadratica associata:
+Essendo una matrice simmetrica, anche la matrice hessiana, che abbiamo definito insieme alle derivate seconde in $ n $ dimensioni, ha una forma quadratica associata:
 \[
   q(h) = \innerproduct{H_{f(\overline{x})}h}{h}
 \]
