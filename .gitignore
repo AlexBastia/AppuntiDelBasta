@@ -1,7 +1,10 @@
 /Algoritmi
-*.crt
 /appuntiObs
 /Logica
+/Reti
+/OS
+/Web
+/Linguaggi
 /Architettura
 /Programmazione
 *.aux
@@ -10,3 +13,4 @@
 *.log
 *.gz
 *.toc
+*.crt

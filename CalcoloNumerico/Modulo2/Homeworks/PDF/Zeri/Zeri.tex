@@ -1,0 +1,44 @@
+
+\documentclass{report}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{codeBG}{RGB}{48,52,70}
+\definecolor{codeCom}{RGB}{81,87,109}
+\definecolor{codeKey}{RGB}{140,170,238}
+\definecolor{codeTxt}{RGB}{198,208,245}
+
+\lstdefinestyle{codeStyle} 
+    {
+      basicstyle = \ttfamily\linespread{1.15}\footnotesize\color{codeTxt},
+        breaklines = true,
+        breakatwhitespace = false,
+        breaklines = true,
+        keepspaces = true,
+        showspaces = false,
+        showstringspaces = false,
+        showtabs = false,
+        tabsize = 2,
+        backgroundcolor = \color{codeBG},
+        commentstyle = \color{codeCom},
+        keywordstyle = \color{codeKey},
+        stringstyle = \color{codeTxt},
+        xleftmargin = 0.7cm,
+        frame = tlbr,
+        framesep = 0.2cm,
+        framerule = 0pt,
+    }
+
+\lstset{style=codeStyle}
+
+\setlength{\parindent}{0pt}
+\title{Zeri di funzioni}
+\date{}
+\pagenumbering{gobble}
+
+\begin{document}
+\Huge{\textbf{Zeri di funzioni}}
+\section*{Bisezione}
+\lstinputlisting[language=Python]{../../Bisezione.py}
+\end{document}
+

@@ -1,8 +1,8 @@
 \documentclass{report}
 
-\input{../../Analisi/LatexTemp/preamble}
-\input{../../Analisi/LatexTemp/macros}
-\input{../../Analisi/LatexTemp/letterfonts}
+\input{../../LatexTemp/preamble}
+\input{../../LatexTemp/macros}
+\input{../../LatexTemp/letterfonts}
 
 \setlength{\parindent}{0pt}
 
@@ -339,6 +339,7 @@ Dalla definizione di spazio vettoriale seguono altre proprieta' interessanti:
   \item Si puo' dimostrare che valgono la prop. ass. e distr. del prodotto scalare
   \item L'elemento neutro della somma e' il vettore $ v=(0,0) $, e ogni vettore (x,y) ha il suo opposto (-x,-y)
   \item L'elemento neutro del prodotto e' lo scalare 1
+  \item Sappiamo che $ \mathbb{R}^2 $ e' chiuso rispetto alla somma e al prodotto per uno scalare.
   \end{itemize}
   Si nota che esiste una corrispondenza biunivoca fra i vettori di $ \mathbb{R}^2 $ e i punti del piano cartesiano, quindi ogni vettore puo' essere rappresentato come una "freccia" che parte dall'origine (il vettore nullo) e arriva al punto cartesiano corrispondente:\\
   \begin{align*}
@@ -448,10 +449,10 @@ Sia $ U \leq \mathbb{R}^2 $, si ha che:
   \]
 }
 \mprop{}{ \label{siSV}
-  Sia V SV e $ \{v_1,...,v_n\} \in V $, allora:
+  Sia V SV e $ \{v_1,...,v_n\} \subseteq V $, allora:
   \[ <v_1,...,v_n> \leq V \]
-  Inoltre, se $ Z \leq V \land v_1,...,v_n \in Z $, allora:
-  \[ <v_1,...,v_n> \leq Z \] 
+  Inoltre, se $ Z \leq V \land \{v_1,...,v_n\} \subseteq Z $, allora:
+  \[ <v_1,...,v_n> \subseteq Z \] 
 }
 Cio' significa che l'insieme di combinazioni di \textbf{qualunque} sotto-insieme di vettori di uno spazio vettoriale e' un sottospazio vettoriale. Inoltre tale sotto-spazio e' il piu' piccolo contenente i vettori del sotto-insieme.
 \dfn{Generatore}{
@@ -488,7 +489,7 @@ Cio' significa che l'insieme di combinazioni di \textbf{qualunque} sotto-insieme
   \end{itemize}
 }
 \cor{}{
-  \textbf{Due} vettori sono lin dip $ \iff $ unodi essi e' multiplo dell'altro
+  \textbf{Due} vettori sono lin dip $ \iff $ uno di essi e' multiplo dell'altro
 }
 \ex{}{
   $ (a,b,c) $ e $ (d,e,f) $ sono linearmente dipendenti solo se (con $ \lambda, \mu \neq 0 $):
@@ -808,7 +809,7 @@ Ci permette di trovare una base del sottospazio generato da alcunni vettori di $
     \item $ F(0,1,0) = (1,0) $
     \item $ F(0,0,1) = (0,-1) $
   \end{itemize}
-  Dato che $ \{(1,0,0),(0,1,0),(0,0,-1)\} $ e' base (canonica) di $ \mathbb{R}^3 $, e dato che conosco $ F(v) $ per ogni vettore di tale base, allora posso trovare $ F $ lineare per ogni $ v \in \mathbb{R}^3 $:
+  Dato che $ \{(1,0,0),(0,1,0),(0,0,1)\} $ e' base (canonica) di $ \mathbb{R}^3 $, e dato che conosco $ F(v) $ per ogni vettore di tale base, allora posso trovare $ F(v) $ per ogni $ v \in \mathbb{R}^3 $ usando la linearita':
   \[
     F(v_1,v_2,v_3) = v_1(1,1) + v_2(1,0) + v_3(0,-1) = (v_1+v_2,v_1-v_3)
   \]

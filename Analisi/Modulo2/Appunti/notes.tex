@@ -1,8 +1,8 @@
 \documentclass{report}
 
-\input{../../LatexTemp/preamble}
-\input{../../LatexTemp/macros}
-\input{../../LatexTemp/letterfonts}
+\input{../../../LatexTemp/preamble}
+\input{../../../LatexTemp/macros}
+\input{../../../LatexTemp/letterfonts}
 
  \title{\Huge{Analisi (M2)}\\Appunti}
 \author{\huge{Alex Bastianini}}
@@ -59,10 +59,13 @@ Le nostre figure curvilinee sono sottografici di funzioni.
 Speziamo un intervallo [a,b] in $n\in \mathbb{N}$ sottointervalli uguali. L'ampiezza di ciuascun intervallo e' di $\frac{b-a}{n}$. 
 \begin{itemize}
 \item $x_0 = a$
-\item $x_1 = a + \frac{b-a}{n}$
+\item $x_1 = a + \frac{b-a}{n}$\\
+  \vdots
+  \item $ x_i = x_{i-1} + \frac{b-a}{n} = a + i \frac{b-a}{n} $\\
+  \vdots
 \item $x_n = b$
 \end{itemize}
-In ogni intervallo fisso un punto arbirario $\epsilon_n$ 
+In ogni intervallo, fisso un punto arbirario $\epsilon_n$:
 \dfn{Somma di Riemann associata a una scomposizione}{
   Data una funzione $f:[a,b]\to\mathbb{R}$, fatta la costruzione precedente (spezzettamento), $\forall n \in \mathbb{N}$ la somma di Riemann n-esima di f e' il numero seguente:
   \[
@@ -96,6 +99,10 @@ In ogni intervallo fisso un punto arbirario $\epsilon_n$
   \]
   E non dipende da quale $\epsilon_n$ scegliamo per ogni segmento.
 }
+\nt{
+  In realta', una funzione e' Riemann integrabile anche se non e' continua, basta che l'insieme di punti di discontinuita' sia al massimo numerabile.
+}
+Possiamo esprimere il limite infinito di questa somma di rettangoli infinitesimi con il simbolo di \textbf{integrale}:
 \dfn{Integrale}{
   \[
     \int_{a}^{b} f(x)dx = \lim_{n\to+\infty} S_n
@@ -207,7 +214,7 @@ Quindi esiste un punto c in [a,b] t.c. il rettangolo che ha come base b-a e come
 \section{Primitive di una funzione}
 \dfn{Primitiva di f}{
   Sia $ f: A \to \mathbb{R}, A \subseteq \mathbb{R} $\\
-  Una funcione $ F: A \to \mathbb{R} $ si dice primitiva di f su A se vale
+  Una funzione $ F: A \to \mathbb{R} $ derivabile si dice primitiva di f su A se vale
   \[
     \forall x \in A. F'(x) = f(x)
   \]
@@ -218,7 +225,7 @@ Quindi esiste un punto c in [a,b] t.c. il rettangolo che ha come base b-a e come
 \nt{
   $ \forall k \in \mathbb{R}\text{, la funzione }G(x) = sin(x)+k $ e' anchessa primitiva di $ f $. Quindi se $ F $ e' primitiva di $ f $ su A allora ci sono infinite primitive di $ f $ su A (una per ogni $ k \in \mathbb{R} $).\\
 }
-Domanda: sono tutte le possibili primitive?
+Possiamo essere sicuri che queste sono tutte le possibili primitive?
 \mprop{Caratterizzazione delle primitive di una funzione su un intervallo}{
   Sia $ f:]a,b[\to\mathbb{R}$. Siano $F:]a,b[\to\mathbb{R}\text{ e }G:]a,b[\to\mathbb{R}$ due primitive di $ f $ su $ ]a,b[ $.\\
   Allora $ \exists k \in \mathbb{R} $ tale che:
@@ -304,7 +311,7 @@ $ A = ]-2,2[, f(x)=\frac{x^2}{5} + 1 $:\\
 \subsection{Integrazione per parti}
 Si parte dalla regola del prodotto delle derivate ($ \frac{d}{dx}f(x)\cdot g(x) = f'(x)g(x)+f(x)g'(x) $) per trovare una regola di integrazione.
 \thm{Integrazione per parti}{
-  Dati $ f,g:A\to\mathbb{R} $, A intervallo aperto e sia $ F $ primitiva di $ f $ su $ A $ con F,f,g continue, g derivabile e g' continua:
+  Dati $ f,g:A\to\mathbb{R} $, A intervallo aperto e sia $ F $ primitiva di $ f $ su $ A $ con $g$ derivabile e $ f,F,g' $ continue:
   \[
     \int_{a}^{b}\frac{d}{dx}(F(x)g(x))dx = \int_{a}^{b}f(x)g(x)dx + \int_{a}^{b}F(x)g'(x)dx
   \]
