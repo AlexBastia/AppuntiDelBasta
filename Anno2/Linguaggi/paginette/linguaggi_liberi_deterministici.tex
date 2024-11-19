@@ -35,11 +35,6 @@ Quindi un PDA:
             \node[state, right of=q1] (q2) {\(q_2\)};
             \node[state, accepting, right of=q2] (q3) {\(q_3\)};
             
-            % Extra circles around states
-            \draw[thick, dashed] (q0) circle[radius=1cm];
-            \draw[thick, dashed] (q1) circle[radius=1cm];
-            \draw[thick, dashed] (q2) circle[radius=1cm];
-            \draw[thick, dashed] (q3) circle[radius=1cm];
         
             % Transitions
             \draw (q0) edge[loop above] node[align=center] {\(a, Z \to aZ\) \\ \(b, Z \to bZ\)} (q0);
