@@ -322,7 +322,6 @@ Adesso introduciamo la \textbf{Semantica delle espressioni aritmetiche}, un tipo
         \item \textbf{Somma 2}:
         \[
             \frac{\langle e_1, \sigma \rangle \rightarrow_e \langle e_1', \sigma' \rangle}{\langle m + e_1, \sigma \rangle \rightarrow_e \langle m + e_1', \sigma' \rangle}
-           
         \]
         Stessa roba ma con un numero $m$
         \item \textbf{Somma 3}:
@@ -482,7 +481,7 @@ e $\to_b$ è la minima relazione generata dai seguenti assiomi e regole di infer
     \item \textbf{Eq3}
     \[  
         \frac{}
-        {\langle m = m, \sigma \rangle \to_b \langle t, \sigma \rangle} && \text{ dove } t = \begin{cases} 
+        {\langle m = m, \sigma \rangle \to_b \langle t, \sigma \rangle} \text{ dove } t = \begin{cases} 
             \text{tt} & \text{se } m = n \\
             \text{ff} & \text{se } m \neq n 
         \end{cases}  
