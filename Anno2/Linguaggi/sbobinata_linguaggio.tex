@@ -1,0 +1,48 @@
+\documentclass{report}
+
+\input{../Analisi/LatexTemp/preamble}
+\input{../Analisi/LatexTemp/macros}
+\input{../Analisi/LatexTemp/letterfonts}
+\usepackage{xcolor}
+\usepackage{tikz-qtree}
+\usepackage{graphicx}
+
+
+
+\newcommand{
+    \red
+    }[1]{
+        \textcolor{red}{#1}
+        }
+        \newcommand{\esempio}[1]{
+            \ex{}{#1}
+}
+\newcommand{\teorema}[1]{\thm{}{#1}}
+\newcommand{\dimostrazione}[1]{\pf{Dimostrazione}{#1}}
+\setlength{\parindent}{0pt}
+\newcommand{\osservazione}[1]{\nt{#1}}
+
+\title{\Huge{Linguaggi di programmazione}\\Appunti}
+\author{\huge{GioLaPalma}}
+\date{}
+\pagenumbering{gobble}
+
+\graphicspath{{paginette/img/}}
+
+\begin{document}
+
+\maketitle
+\newpage% or \cleardoublepage
+% \pdfbookmark[<level>]{<title>}{<dest>}
+\pdfbookmark[section]{\contentsname}{toc}
+
+\tableofcontents
+
+\pagebreak
+\includegraphics{alberello_1.png}
+
+\include{paginette/introduzione_ai_linguaggi_normali_grammatiche}
+\include{paginette/struttura_di_un_compilatore_sematica_statica_semantica_dinamica}
+\include{paginette/linguaggi_liberi_deterministici}
+\include{paginette/top_down_parser}
+\end{document}
