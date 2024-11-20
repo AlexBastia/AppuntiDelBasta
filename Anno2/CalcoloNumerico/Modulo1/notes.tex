@@ -238,9 +238,11 @@ Come si vede dal grafico della mappa continua $ g(x) $ su $ [-4, 4] $, e' possib
   $ C $ e' detta costante contrattiva 
 }
 Questo significa che per ogni due punti che prendiamo dal dominio, la loro distanza sara' sempre maggiore (o uguale) alla distanza fra i due punti corrispondenti nel codominio. Graficamente (in $ \mathbb{R}^2 $):
-\begin{center}
-  \includegraphics[width=0.5\textwidth]{img/2024-09-28-17-12-32.png}
-\end{center}
+\begin{figure}[h!]
+  \centering
+  \input{./PGF/PuntoFisso4.pgf}
+  \caption{La distanza $ \norm{x_1 - x_2} $ e' sempre maggiore o uguale a $ \norm{g(x_1) - g(x_2)} $}
+\end{figure}
 \thm{}{
   Data una mappa contrattiva $ g $ su un intervallo chiuso $ D $, esiste un solo punto fisso $ p $ a cui converge la successione $ x_n $ dove $ x_{k+1} = g(x_k) $, scegliendo $ x_0 $ come qualunque punto in $ D $.
 }

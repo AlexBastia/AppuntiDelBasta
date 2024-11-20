@@ -50,9 +50,19 @@ plt.plot(x, x, label='$y=x$')
 ignore_me = plt.legend()
 plt.savefig("../PGF/PuntoFisso3.pgf")
 
-a = -1
-b = 0
+a = 0
+b = 1
 plt.clf()
-punti_x = [-0.75, -0.25]
-label_x = ['x_1', 'x_2']
-plt.xticks(x, )
+plt.figure(figsize=(3, 3))
+punti_x = [0.25, 0.75]
+label_x = ['$x_1$', '$x_2$']
+plt.xticks(punti_x, label_x)
+plt.yticks(g_1(punti_x), ['$g(x_1)$', '$g(x_2)$'])
+x = np.linspace(a, b)
+plt.plot(x, g_1(x))
+plt.plot([punti_x[0], punti_x[0]], [0, g_1(punti_x[0])], '--g')
+plt.plot([punti_x[1], punti_x[1]], [0, g_1(punti_x[1])], '--g')
+plt.plot([a, punti_x[0]], [g_1(punti_x[0]), g_1(punti_x[0])], '--g')
+plt.plot([a, punti_x[1]], [g_1(punti_x[1]), g_1(punti_x[1])], '--g')
+plt.tight_layout()
+plt.savefig("../PGF/PuntoFisso4.pgf")
