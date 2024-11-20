@@ -18,8 +18,8 @@ Quindi un PDA:
     \item non ha conflitti tra transizioni $\epsilon$ e transizioni che leggono un simbolo
 \end{itemize}
 \subsection{linguaggi liberi deterministici}
-\definizione{
-    Un linguaggio è \textbf{liebro deterministico} se è accettato per stato finale da un DPDA
+\dfn{Linguaggio libero deterministico}{
+    Un linguaggio è \textbf{libero deterministico} se è accettato per stato finale da un DPDA
 }
 \teorema{
     la classe dei linguaggi liberi deterministici è includa propriamente nella classe dei linguaggi liberi :)
@@ -35,11 +35,6 @@ Quindi un PDA:
             \node[state, right of=q1] (q2) {\(q_2\)};
             \node[state, accepting, right of=q2] (q3) {\(q_3\)};
             
-            % Extra circles around states
-            \draw[thick, dashed] (q0) circle[radius=1cm];
-            \draw[thick, dashed] (q1) circle[radius=1cm];
-            \draw[thick, dashed] (q2) circle[radius=1cm];
-            \draw[thick, dashed] (q3) circle[radius=1cm];
         
             % Transitions
             \draw (q0) edge[loop above] node[align=center] {\(a, Z \to aZ\) \\ \(b, Z \to bZ\)} (q0);
@@ -73,7 +68,7 @@ Pertanto si ha che:
     \item Se $L$ è libero deterministico, allora $L\$ =\{w\$ \mid w\in L\}$ gode della prefix propriety, infatti $L\$$ può essere riconosciuto da un $PDPA$ per pila vuota
 \end{itemize}
 
-\pn{dimostrare}{
+\pf{dimostrazione}{
     Se $L$ è regoalre, allora $\exists$ DFA $M$ tale che $L=L[M]$. A partire da $M$, posso costruire un DPDA $N$ si compore come $M$ senza mai manipolare lo stack, allora si che $L=L[N]$ per stato finale 
 }
 \section{Semplificazione delle grammatiche}
@@ -257,7 +252,7 @@ Esempietto:
     Pertanto $G'$ sarà:
     \[
         G' = \begin{cases}
-            E\to EèT | T\times A|a|b|(E)\\
+            E\to E+T | T\times A|a|b|(E)\\
             T\to T\times A|a|b|(E) \\
             A\to a | b | (E)
         \end{cases}    
@@ -488,7 +483,7 @@ o anche
 \subsection{forme normali}
 le \textbf{forme normali} sono particolari configurazioni di rappresentazione di un linguaggio formale o di un'espressione logica che rispettano determinate regole e strutture. Ne studieremo di due tipi:
 \begin{itemize}
-    \item \textb{Chomsky}: Una grammatica è in forma normale di Chomsky se ogni produzione ha la forma $A\to BC$ o $A\to a$, dove $A, B,C\in NT$ e $a\in T$. Ogni produzione deriva quindi o una coppia di variabili o un singolo terminale. Questa forma è utile, per esempio, negli algoritmi di parsing
+    \item \textbf{Chomsky}: Una grammatica è in forma normale di Chomsky se ogni produzione ha la forma $A\to BC$ o $A\to a$, dove $A, B,C\in NT$ e $a\in T$. Ogni produzione deriva quindi o una coppia di variabili o un singolo terminale. Questa forma è utile, per esempio, negli algoritmi di parsing
     \item \textbf{Greibach}: Una grammatica è in forma normale di Greibach se ogni produzione ha la forma $A\to a\alpha$, dove $A\in NT$, $a\in T$ e $\alpha$ è (eventualmente) una stringa di variabili. La GNF è usata in particolare per costruire parser discendenti
 \end{itemize}
 \subsubsection{Forma normale di Chomsky}
@@ -581,7 +576,6 @@ Esempi concreti:
             A\to bA'\\
             A' \to aA'|\epsilon    
         \end{array}
-            
     \]
     Poi
     \[
@@ -591,7 +585,7 @@ Esempi concreti:
             A\to dA'\\
             A'\to b A'|cA'|\epsilon
         \end{array}    
-    \]
+      \]
 }
 
 \osservazione{
@@ -732,7 +726,6 @@ Se, in un top-down parsing, sulla pila ha $A$ e leggo in input $a$, non sono in 
                             A\to \alpha A'| \gamma_1|\dots|\gamma_h\\
                             A'\to \beta_1|\dots|\beta_k    
                         \end{array}
-                         
                     \]
                 } 
             }

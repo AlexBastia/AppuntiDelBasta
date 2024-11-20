@@ -101,7 +101,7 @@ Ad esempio quando e a chi dare del "tu" o del "lei" quando ci rivolgiamo a delle
 \subsection{Implementazione}
 L'implementazione è \red{l'esecuzione di una frase sintatticamente corretta rispettandone la semantica}
 
-%todo   FINIRE LA FIGURA
+%todo   FINIRE LA FIGURA (ZIO PERA)
 \begin{tikzpicture}
     \draw(0,0) circle (1cm);
     
@@ -371,10 +371,9 @@ Una $expr$ può essere:
         \item ($expr$)
     \end{itemize}
     \item \textbf{bnf}:
-    \[
+      \[
         \langle E \rangle ::= a\mid b\mid \langle E \rangle\times \langle E \rangle \mid \langle E \rangle + \langle E \rangle\mid (\langle E \rangle)
-        
-    \]
+      \]
     \item Grammatica:
     \[
         E\to a\mid b\mid E\times E\mid E+E\mid (E)    
@@ -392,7 +391,7 @@ Quelle più utili sono le cosiddette grammatiche libere (in rapporto tra facilit
         \item \textbf{NT} è un insieme finito di simboli non terminali
         \item $T$ è un insieme finito di simboli terminali
         \item $S\in NT$ è detto simbolo iniziale
-        \item $R$ è un insieme finito di produzione (o regole) della forma:\\
+        \item $R$ è un insieme finito di produzione (o regole) della forma:
         \[
             V \to w \text{ dove }V\in NT \land w\in (T\cup NT)^*    
         \]

@@ -95,10 +95,12 @@ Qui vi è riportato un esempietto:
         A\to aB|bC       
     \]
     Si ha che:
+    \[
     \begin{array}{l}
         First(aB)= \{a\} \\
         First(bC) = \{b\} 
     \end{array}
+    \]
     Pertanto abbiamo del determinismo con un solo carattere in lettura
 }
 \subsubsection{algoritmo per calcolare il first}
@@ -122,9 +124,9 @@ Qui vi è riportato un esempietto:
                 \ForEach{$i=1$\KwTo $k$}{
                     \tcp{se ciascuno di questi simboli $y_1,\dots,Y_{i-1}$ può derivare la stringa vuota $\epsilon$}
                     \If{$Y_1,\dots,Y_{i-1}\in N(G)$ }{
-                        $First(X)\gets First(X)\cup (First(Y_i)\backslash\{\epsilon\})$\tcp*{allora è possibile aggiungere gli elementi di $FIRST(Y_i)$ a $FIRST(X)$ per la produzione y_1,\dots,y_k}
+                        $First(X)\gets First(X)\cup (First(Y_i)\backslash\{\epsilon\})$\tcp*{allora è possibile aggiungere gli elementi di $FIRST(Y_i)$ a $FIRST(X)$ per la produzione $y_1,\dots,y_k$}
                     }
-                    \tcp{Se invece uno dei simboli da $Y_1$ a $Y_{i-1}$ non è annullabile, si interrompe la ricerca per quella produzione, perché non possiamo "saltare" i simboli non annullabili per arrivare a Y_i}
+                    \tcp{Se invece uno dei simboli da $Y_1$ a $Y_{i-1}$ non è annullabile, si interrompe la ricerca per quella produzione, perché non possiamo "saltare" i simboli non annullabili per arrivare a $Y_i$}
                 }
             }
         }
@@ -350,20 +352,18 @@ Si ha che \red{se $G=LL(1)$ allora il parser è predittivo e deterministico}, qu
     \esempio{
         \begin{center}
             \begin{tikzpicture}[shorten >=1pt,node distance=2cm,on grid,auto] 
-               \node[state,initial] (q_0)   {$q_0$}; 
-               \node[state,accepting] (q_1) [right=of q_0] {$q_1$}; 
-                \path[->] 
+              \node[state,initial] (q_0)   {$q_0$}; 
+              \node[state,accepting] (q_1) [right=of q_0] {$q_1$}; 
+              \path[->] 
                 (q_0) edge [loop above] node {a} ()
                       edge [bend left]  node {a} (q_1)
                 (q_1) edge [bend left]  node {a} (q_0);
             \end{tikzpicture}
-            \end{center}
-            Le produzioni corrispondenti sono:
+        \end{center} 
+            Le produzioni corrispondenti sono: (TODO: perche' si rompe se metto due righe??)
             \[
                 \begin{array}{l}
-                    [q_0] \to a[q_1]  a[q_0] \\
-                    [q_1] \to a[q_0] \mid \epsilon
-                    
+                    [q_0] \to a[q_1]\mid a[q_0] [q_1] \to a[q_0] \mid \epsilon
                 \end{array}
             \]
             
@@ -577,7 +577,7 @@ w \in \text{First}_k(\alpha).
         \hline
         Simbolo & aa & ab & ac & c \\
         \hline
-        S & S \to aSb& S\to ab&S\to aSb & S\to c
+        S & S \to aSb& S\to ab&S\to aSb & S\to c \\
         \hline
         \end{array}
     \]
@@ -617,17 +617,18 @@ Viene qui riportato il funzionamento del parser con pila:
 
 \esempio{
     \[
-        \begin{array}
-            S\to Asb!ab!c\\
-        \end{array}       
-        
+      \begin{array}{l}
+        S\to Asb\mid ab\mid c\\
+      \end{array}       
     \]
     $G$ è un $LL(2)$ ma non $LL(1)$
     Si fattorizza
+    \[
     \begin{array}{l}
         S\to aT|c\\
         T\to Sb|b
     \end{array}
+    \]
     Ottenuta fattorizzando $G$ è $LL(1)$ infatti:
     \begin{itemize}
         \item $First(aT)\cap First(c)=\varnothing$
