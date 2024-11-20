@@ -10,7 +10,7 @@ matplotlib.rcParams.update({
     'pgf.rcfonts': False,
 })
 
-plt.figure(figsize=(3.4, 1.7))
+plt.figure(figsize=(5, 2.5))
 
 
 def f_1(x): return x - np.cos(x)
@@ -34,3 +34,25 @@ plt.plot(x, g(x))
 plt.plot(x, x)
 plt.grid(True)
 plt.savefig("../PGF/PuntoFisso2.pgf")
+
+
+def g_4(x): return 4*np.cos(x)
+
+
+a = -4
+b = 4
+plt.clf()
+x = np.linspace(a, b)
+plt.title('Fixed points of the map $g_4(x) = 4 \cos(x)$')
+plt.plot(x, g_4(x), label='$y=g_4(x)$')
+plt.plot(x, x, label='$y=x$')
+# Note: the bogus output value "ignore_me" supresses some useless output
+ignore_me = plt.legend()
+plt.savefig("../PGF/PuntoFisso3.pgf")
+
+a = -1
+b = 0
+plt.clf()
+punti_x = [-0.75, -0.25]
+label_x = ['x_1', 'x_2']
+plt.xticks(x, )

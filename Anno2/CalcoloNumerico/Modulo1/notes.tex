@@ -108,9 +108,11 @@ Che possiamo riscrivere come:
   (f(x) = x-cos x), x \in \mathbb{R}. f(x) = 0
 \]
 Dato l'intervallo $ [-1, 1] $, otteniamo il seguente grafico:
-\begin{center}
-  \includegraphics[width=0.5\textwidth]{img/2024-09-23-12-11-58.png}
-\end{center}
+\begin{figure}[h!]
+  \centering
+  \input{./PGF/PuntoFisso1.pgf}
+  \label{fig:func_og}
+\end{figure}
 \subsection{Algoritmo di bisezione}
 L'algoritmo di bisezione usa un approccio simile alla ricerca binaria per avvicinarsi sempre di piu' al valore dello zero. Dato in input la funzione continua $ f:\mathbb{R}\to\mathbb{R} $ e un intervallo $ [a,b]. f(a)f(b)<0 $, viene calcolato il valore della funzione nel punto di mezzo $ c $. L'intervallo viene poi ristretto, prendendo $ c $ come uno dei limiti e scegliendo l'altro fra $ a $ e $ b $ in modo che i valori della funzione agli estremi abbiano sempre segno opposto. In pseudocodice:
 
@@ -166,15 +168,15 @@ Presa la funzione $ f $ di cui vogliamo trovare lo zero, possiamo definire una f
   f(x) = 0 \iff g(x) = x
 \]
 
-\begin{figure}[H]
+
+\begin{figure}[h!]
   \centering
-  \begin{subfigure}[b]{0.45\textwidth}
-      \input{./PGF/PuntoFisso1.pgf}
-  \end{subfigure}
-  \begin{subfigure}[b]{0.45\textwidth}
-      \input{./PGF/PuntoFisso2.pgf}
-  \end{subfigure}
+  \input{./PGF/PuntoFisso2.pgf}
+  \caption{Funzione derivata "a punto fisso" della funzione originale \ref{fig:func_og}}
 \end{figure}
+
+
+
 Quindi siamo passati dal cercare uno zero di una funzione a trovare il \textbf{punto fisso}:
 \dfn{Punto fisso}{
   Data $ g:D \to C $, si chiamano \textbf{punti fissi} tutti i punti $ x \in D: $
@@ -222,9 +224,10 @@ Ma come facciamo ad assicurarci che la successione converga? Ecco che entrano in
 \pf{Dimostrazione}{
   Consideriamo la funzione $ f(x) = x - g(x) $, dove $ g $ e' una mappa continua sull'intervallo $ [a,b] $. Quindi $ f(a) = a - g(a) \leq 0 $ e $ f(b) = b - g(b) \geq 0 $, dato che per definizione di mappa $ g(a), g(b) \in [a,b] $. Quindi per teorema degli zeri $ \exists p \in [a,b]. f(p) = 0 $. Quindi $ g(p) = p $ e' un punto fisso.
 }
-\begin{center}
-  \includegraphics[width=0.5\textwidth]{img/2024-09-28-14-56-48.png}
-\end{center}
+\begin{figure}[h!]
+  \centering
+  \input{./PGF/PuntoFisso3.pgf}
+\end{figure}
 
 Come si vede dal grafico della mappa continua $ g(x) $ su $ [-4, 4] $, e' possibile che una mappa abbia piu' di un punto fisso. Per assicurarci l'esistenza di una soluzione unica, dobbiamo aggiugere un'ultima condizione:
 \dfn{Mappa contrattiva}{
