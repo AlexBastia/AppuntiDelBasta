@@ -1,0 +1,35 @@
+\documentclass{report}
+
+\input{../../../LatexTemp/preamble.tex}
+\input{../../../LatexTemp/macros}
+\input{../../../LatexTemp/letterfonts}
+
+\usepackage[utf8]{inputenc}
+
+\usepackage{float}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\def\mathdefault#1{#1}
+
+\setlength{\parindent}{0pt}
+
+\title{\Huge{Calcolo Numerico}\\Appunti}
+\author{\huge{Alex Bastianini}}
+\date{}
+\pagenumbering{gobble}
+
+\begin{document}
+
+\maketitle
+\newpage% or \cleardoublepage
+% \pdfbookmark[<level>]{<title>}{<dest>}
+\pdfbookmark[section]{\contentsname}{toc}
+\tableofcontents
+
+\pagebreak
+
+\input{capitoli/numeri_finiti.tex}
+\input{capitoli/risoluzioni_equazioni.tex}
+\input{capitoli/sistemi_lineari.tex}
+\end{document}

@@ -61,7 +61,7 @@ A questo proposito ci vengono in aiuto diversi metodi per il calcolo:
 \end{itemize}
 \subsection{Metodi diretti}
 Iniziamo con la definizione di matrici triangolari:
-\definizione{
+\dfn{Matrice triangolare inferiore}{
     Una matrice $M\in \mathbb{R}^{n\times n}$ è detta \textbf{triangolare inferiore} se:
     \[
         L = \begin{pmatrix}
@@ -76,7 +76,7 @@ Iniziamo con la definizione di matrici triangolari:
     Dove $l_{ij}$ per $i < j$, ossia tutti gli elementi sopra la diagonale (con $j>i$) sono nulli
 }
 Da cui discende la definizione di \textbf{sistema triangolare inferiore}:
-\definizione{
+\dfn{sistema triangolare inferiore}{
     Un \textbf{sistema triangolare inferiore} è un sistema lineare di equazioni in cui la matrice dei coefficienti è una matrice triangolare inferiore, e si presenta nella seguente forma:
     \[
         \begin{pmatrix}
@@ -108,7 +108,7 @@ Da cui discende la definizione di \textbf{sistema triangolare inferiore}:
 }
 
 Adesso c'è contrapposto con il \textbf{sistema triangolare superiore}
-\definizione{
+\dfn{matrice triangolare superiore}{
     Una matrice \( M \in \mathbb{R}^{n \times n} \) è detta triangolare superiore se:
     \[
         L = \begin{pmatrix}
@@ -123,7 +123,7 @@ Adesso c'è contrapposto con il \textbf{sistema triangolare superiore}
 
 }
 Da cui discende la definizione di \textbf{sistema triangolare superiore}
-\definizione{
+\dfn{sistema triangolare superiore}{
     Un \textbf{sistema triangolare superiore} è un sistema lineare di equazioni in cui la matrice dei coefficienti è una matrice triangolare superiore, e si presenta nella seguente forma:
 
     \[
@@ -159,7 +159,9 @@ Da cui discende la definizione di \textbf{sistema triangolare superiore}
 
 \subsubsection{algortimo delle sostituzioni}
 Quando si ha a che fare con matrici triangolari la soluzione può essere facilmente calcolata attraverso \textbf{l'algoritmo delle sostituzioni}, che si differenzia nel caso di matrici triangolari inferiori o superiori
-\begin{itemize}
+
+\teorema{
+    \begin{itemize}
     \item Nel caso di matrici triangolari inferiori l'algoritmo prende il nome di \textbf{sostituzioni all'indietro} ed è descritto dal sistema qui sotto:
     \[
         \begin{cases}
@@ -175,117 +177,10 @@ Quando si ha a che fare con matrici triangolari la soluzione può essere facilme
         \end{cases}    
     \]
 
+\end{itemize}    
     In entrambi i casi il numero di operazioni richiesto è $\simeq \frac{n(n+1)}{n} = O(n^2)$
-\end{itemize}
-
-\subsubsection{Fattorizzazione LU}
-\definizione{
-    Considerata una matrice $A\in \mathbb{R}^{n\times n}$, una fattorizzazione $LU$ fattorizza la matrice $A$ nella forma
-    \[
-            A = LU
-    \]
-    con 
-    \begin{itemize}
-        \item $L$ matrice $n\times n$ triangolare inferiore
-        \item $U$ matrice $n \times n$ triangolare superiore
-    \end{itemize}    
 }
 
-Per trasformare una matrice $A$ in una matrice $LU$, è possibile utilizzare \red{l'algoritmo di Gauss per ridurla a una matrice triangolare superiore $U$} ed occorrerà \red{inserire le operazioni di eliminazione nella matrice $L$ (inizializzata a una matrice identità)}. È possibile dimostrare che $A = L\times U$
-
-Ecco l'algoritmo in pseudocodice, assumendo che la matrice $A$ sia ben condizionata e pertanto non si necessita uno scambio di righe:
-
-\begin{algorithm}[H]
-    \SetAlgoNlRelativeSize{-1}
-    \SetNlSty{textbf}{}{}
-    \caption{Fattorizzazione LU}
-    \KwIn{Intero $n$, Matrice $A[1..n,1..n]$}
-    \KwOut{Array $B[1,2]$ contenente le matrici $L$ e $U$}
-    
-        Let $B$ be a new Array[2]\;
-        Let $L$ be a new Matrix[1..n, 1..n]\;
-        Let $U$ be a new Matrix[1..n, 1..n]\;
-    
-        % Inizializza L come matrice identità
-        \For{$i = 1$ \KwTo $n$}{
-            \For{$j = 1$ \KwTo $n$}{
-                \If{$i == j$}{
-                    $L[i, j] \gets 1$\;
-                }
-                \Else{
-                    $L[i, j] \gets 0$\;
-                }
-            }
-        }
-        Let $p$ be a new Real\tcp*{dichiaro il pivot}
-        \tcp{colonne per pivot}
-        \For{$i = 1$ \KwTo $n$}{
-            $p\gets A[i,i]$\tcp*{aggiorno il pivot}
-            \tcp{righe}
-            \For{$j = i+1$ \KwTo $n$}{
-                $L[j,i] \gets \frac{A[j,i]}{p}$\tcp*{fattore moltiplicativo in L}
-                \For{$k=i$ \KwTo $n$}{
-                    $A[j,k] \gets A[j,k] - L[j,i] \times A[i,k]$\;
-                }
-            }
-        }
-    
-        $B[1] \gets L$\;
-        $B[2] \gets A$\;
-        \KwRet{$B$}\;
-    \end{algorithm}
-
-    Ecco un esempio pratico:
-    \esempio{
-        Supponiamo di voler fattorizzare la matrice:
-        \[
-            A = \begin{pmatrix}
-                2&3\\
-                4&7
-            \end{pmatrix}   
-        \]
-        Poi inizializzo $L$ come una matrice identità e$U=A$
-        \[
-            L=\begin{pmatrix}
-                1&0\\
-                0&1
-            \end{pmatrix}
-            \quad
-            A = \begin{pmatrix}
-                2&3\\
-                4&7
-            \end{pmatrix}   
-        \]
-        Poi eseguo l'algoritmo di Gauss in $U$ avendo come pivot $2$, in questo caso occorre solo modificare solo la seconda in quanto la matrice ha solo 2 righe. Il fattore moltiplicativo nella riga 2 e colonna 1 è $l_{2,1} =  \frac{4}{2} = 2$, si può procedere così con l'eliminazione Gaussiana ottenendo:
-        \[
-            U =\begin{pmatrix}
-                1&0\\
-                2&1
-            \end{pmatrix} 
-        \]
-        Si inserisca, inoltre, $l_{2,1}$ nella matrice $L$:
-        \[
-            L=\begin{pmatrix}
-                1&0\\
-                2&1
-            \end{pmatrix}    
-        \]
-        La fattorizzazione, così, è finita e si ha $A=L\times U$:
-        \[
-            \begin{pmatrix}
-                2&3\\
-                4&7
-            \end{pmatrix} = 
-            \begin{pmatrix}
-                1&0\\
-                2&1
-            \end{pmatrix} 
-            \begin{pmatrix}
-                1&0\\
-                2&1
-            \end{pmatrix} 
-        \]
-    }
 \subsubsection{Eliminazione di Gauss}
 
 Si eliminano le incognite in modo sistematico per trasformare i sistema lineare in uno equivalente con matrice a struttura triangolare superiore, più precisamente si introduce una successione di matrici tale che:
@@ -333,6 +228,11 @@ Dove:
         \end{cases}    
     \]
 \end{itemize}
+
+\teorema{
+    Sia $A\in\mathbb{R^{n\times n}}$ una matrice, è possibile fattorizzarla come spiegato poc'anizi 
+}
+
 \dimostrazione{
     Sia $M_k = I - m_k e^T_k$, dove:
     \begin{itemize}
@@ -356,3 +256,57 @@ Dove:
         a_{ij}^{(k+1)} = a^{(k)}_{ij}- m_{ij}^{(k)}a_{ij}^{(k)} = a_{ij}^{(k)} - m_{ik}\delta_{kk}a^{(k)}a_{kj}^{(k)} = \sum_{p}(\delta_{ip}-m_{ik}\delta_{kp})a_{pj}^{(k)}
     \]    
 }
+\esempio{
+    Supponiamo di voler fattorizzare la matrice:
+    \[
+        A = \begin{pmatrix}
+            2&3\\
+            4&7
+        \end{pmatrix}   
+    \]
+    Poi inizializzo $L$ come una matrice identità e$U=A$
+    \[
+        L=\begin{pmatrix}
+            1&0\\
+            0&1
+        \end{pmatrix}
+        \quad
+        A = \begin{pmatrix}
+            2&3\\
+            4&7
+        \end{pmatrix}   
+    \]
+    Poi eseguo l'algoritmo di Gauss in $U$ avendo come pivot $2$, in questo caso occorre solo modificare solo la seconda in quanto la matrice ha solo 2 righe. Il fattore moltiplicativo nella riga 2 e colonna 1 è $l_{2,1} =  \frac{4}{2} = 2$, si può procedere così con l'eliminazione Gaussiana ottenendo:
+    \[
+        U =\begin{pmatrix}
+            1&0\\
+            2&1
+        \end{pmatrix} 
+    \]
+    Si inserisca, inoltre, $l_{2,1}$ nella matrice $L$:
+    \[
+        L=\begin{pmatrix}
+            1&0\\
+            2&1
+        \end{pmatrix}    
+    \]
+    La fattorizzazione, così, è finita e si ha $A=L\times U$:
+    \[
+        \begin{pmatrix}
+            2&3\\
+            4&7
+        \end{pmatrix} = 
+        \begin{pmatrix}
+            1&0\\
+            2&1
+        \end{pmatrix} 
+        \begin{pmatrix}
+            1&0\\
+            2&1
+        \end{pmatrix} 
+    \]
+}
+
+
+
+

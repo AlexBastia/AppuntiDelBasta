@@ -1,0 +1,301 @@
+\chapter{Risoluzione di equazioni}
+\section{Calcolo dello zero di una funzione}
+Come primo metodo per risolvere (approssimativamente) equazioni, usiamo il metodo della \textbf{bisezione}. Questo sfrutta il teorema degli zeri per trovare uno dei possibili zeri di una funzione continua su un intervallo chiuso con valori discordi di segno agli estremi. Come esempio, prendiamo questa equazione:
+\[
+x = cos x
+\]
+Che possiamo riscrivere come:
+\[
+  (f(x) = x-cos x), \quad x \in \mathbb{R}. f(x) = 0
+\]
+Dato l'intervallo $ [-1, 1] $, otteniamo il seguente grafico:
+\begin{center}
+    no puede soportar este sufrimento
+  %\includegraphics[width=0.5\textwidth]{img/2024-09-23-12-11-58.png}
+\end{center}
+\subsection{Algoritmo di bisezione}
+L'algoritmo di bisezione usa un approccio simile alla ricerca binaria per avvicinarsi sempre di piu' al valore dello zero. Dato in input la funzione continua $ f:\mathbb{R}\to\mathbb{R} $ e un intervallo $ [a,b]. f(a)f(b)<0 $, viene calcolato il valore della funzione nel punto di mezzo $ c $. L'intervallo viene poi ristretto, prendendo $ c $ come uno dei limiti e scegliendo l'altro fra $ a $ e $ b $ in modo che i valori della funzione agli estremi abbiano sempre segno opposto. In pseudocodice:
+
+\begin{algorithm}[H]
+\caption{Bisezione semplice}
+  \KwIn{$ f: \mathbb{R}\to\mathbb{R} $ continua su $ [a,b] \subset \mathbb{R} $, tale che $ f(a)f(b)<0 $. $ N > 0 $ (numero di iterazioni)}
+  \KwOut{Valore approssimato di uno zero di $ f $ su $ [a,b] $}
+\SetAlgoLined
+\SetNoFillComment
+\vspace{3mm}
+$c \leftarrow 0$\;
+\For{$ N $ times} {
+    $ c \gets \frac{a+b}{2} $\;
+    \uIf{$ f(a)f(c)<0 $} {
+      $ b \gets c $
+    }
+    \Else {
+      $ a \gets c $
+    }
+}
+\Return $ c $
+\end{algorithm}
+
+\vspace{3mm}
+Se volgiamo assicurarci che il risultato $ r' $ che otteniamo abbia al massimo un errore $ E_{tol} $ rispetto al valore reale $ r $ della radice, basta porre una condizione d'arresto nel ciclo di bisezione. Sapendo che ad ogni ciclo lo zero si trova fra $ a $ e $ b $, scegliendo $ r' $ come punto di mezzo rende l'errore massimo $ E_{max} = \frac{b-a}{2} $, quindi:
+
+\vspace{3mm}
+\begin{algorithm}[H]
+\caption{Bisezione con errore}
+  \KwIn{$ f: \mathbb{R}\to\mathbb{R} $ continua su $ [a,b] \subset \mathbb{R} $, tale che $ f(a)f(b)<0 $. $ E_{tol} $}
+  \KwOut{Valore approssimato di uno zero di $ f $ su $ [a,b] $ con errore assoluto al massimo $ E_{tol} $}
+\SetAlgoLined
+\SetNoFillComment
+\vspace{3mm}
+$c \leftarrow 0$\;
+$ E_{max} = \frac{b-a}{2} $\;
+\While{$ E_{max} > E_{tol} $} {
+    $ c \gets \frac{a+b}{2} $\;
+    \uIf{$ f(a)f(c)<0 $} {
+      $ b \gets c $
+    }
+    \Else {
+      $ a \gets c $
+    }
+    $ E_{max} = \frac{b-a}{2} $
+}
+\Return $ c $
+\end{algorithm}
+
+\section{Iterazione di punto fisso}
+Presa la funzione $ f $ di cui vogliamo trovare lo zero, possiamo definire una funzione $ g(x) = x-w(x)f(x) $ dove $ w $ e' una funzione peso \textit{positiva} e \textit{limitata}. Quindi:
+\[
+  f(x) = 0 \iff g(x) = x
+\]
+
+%\begin{figure}[H]
+ % \centering
+  %\begin{subfigure}[b]{0.45\textwidth}
+    no puede soportar este sufrimento
+      %\input{./PGF/PuntoFisso1.pgf}
+  %\end{subfigure}
+  %\begin{subfigure}[b]{0.45\textwidth}
+   % no puede soportar este sufrimento
+      %\input{./PGF/PuntoFisso2.pgf}
+ % \end{subfigure}
+%\end{figure}
+Quindi siamo passati dal cercare uno zero di una funzione a trovare il \textbf{punto fisso}:
+\dfn{Punto fisso}{
+  Data $ g:D \to C $, si chiamano \textbf{punti fissi} tutti i punti $ x \in D: $
+  \[
+    g(x) = x
+  \]
+}
+Per trovare il punto fisso, bisogna quasi sempre usare un metodo \textit{iterativo}, ovvero di approssimazioni successive, seguendo questa procedura:
+\begin{itemize}
+\item Iniziare con una prima approssimazione $ x_0 $
+\item Iterare con la seguente formula: $ x_{k+1} = g(x_{k}) $
+\end{itemize}
+
+\mprop{}{
+  Data una funzione $ g:D\to C $ continua e una successione $ x_n \in D. x_{k+1} = g(x_k) $ tale che $ x_n \xlongrightarrow{n \to +\infty} p $, allora:
+  \[
+    g(p) = p
+  \]
+  Ovvero $ p $ e' un \textbf{punto fisso} di $ g $.
+}
+\pf{Dimostrazione}{
+  Per proprieta' delle successioni e per ipotesi, sappiamo che $ \lim_{k\to+\infty}x_k = p $. Quindi, per continuita' di $ g $:
+  \[
+    \lim_{k\to+\infty} g(x_k) = g(p)
+  \]
+  Inoltre, per costruzione della successione $ x_n $, sappiamo che $ g(x_k) = x_{k+1} $, quindi:
+  \[
+    \lim_{k\to +\infty} x_{k+1} = \lim_{k\to+\infty} g(x_k)
+  \]
+  \[
+    p = g(p)
+  \]
+}
+\subsection{Mappe contrattive}
+Ma come facciamo ad assicurarci che la successione converga? Ecco che entrano in gioco le \textbf{mappe contrattive}.
+\dfn{Mappa}{
+  Una \textbf{mappa} e' una funzione $ g: D \to D $ dove $ D $ e' un intervallo chiuso $ [a,b] $.
+}
+\mprop{}{
+  Presa una mappa continua su un intervallo $ [a,b] $, allora:
+  \[
+    \exists p \in [a,b]. p \text{ e' un punto fisso}
+  \]
+}
+\pf{Dimostrazione}{
+  Consideriamo la funzione $ f(x) = x - g(x) $, dove $ g $ e' una mappa continua sull'intervallo $ [a,b] $. Quindi $ f(a) = a - g(a) \leq 0 $ e $ f(b) = b - g(b) \geq 0 $, dato che per definizione di mappa $ g(a), g(b) \in [a,b] $. Quindi per teorema degli zeri $ \exists p \in [a,b]. f(p) = 0 $. Quindi $ g(p) = p $ e' un punto fisso.
+}
+\begin{center}
+    no puede soportar este sufrimento
+  %\includegraphics[width=0.5\textwidth]{img/2024-09-28-14-56-48.png}
+\end{center}
+
+Come si vede dal grafico della mappa continua $ g(x) $ su $ [-4, 4] $, e' possibile che una mappa abbia piu' di un punto fisso. Per assicurarci l'esistenza di una soluzione unica, dobbiamo aggiugere un'ultima condizione:
+\dfn{Mappa contrattiva}{
+  Una mappa $ g: D \to D $ si dice \textbf{contrattiva} se esiste $ C < 1 $ tale che:
+  \[
+    \forall x, y \in D. |g(x)-g(y)| \leq C|x-y|
+  \]
+  $ C $ e' detta costante contrattiva 
+}
+Questo significa che per ogni due punti che prendiamo dal dominio, la loro distanza sara' sempre maggiore (o uguale) alla distanza fra i due punti corrispondenti nel codominio. Graficamente (in $ \mathbb{R}^2 $):
+\begin{center}
+ % \includegraphics[width=0.5\textwidth]{img/2024-09-28-17-12-32.png}
+ no puede soportar este sufrimento
+\end{center}
+\thm{}{
+  Data una mappa contrattiva $ g $ su un intervallo chiuso $ D $, esiste un solo punto fisso $ p $ a cui converge la successione $ x_n $ dove $ x_{k+1} = g(x_k) $, scegliendo $ x_0 $ come qualunque punto in $ D $.
+}
+\pf{Dimostrazione (singolo punto fisso)}{
+Assumiamo che $ g $ abbia piu' di un punto fisso e dimostriamo l'assurdo. Consideriamo il seguente grafico:
+\begin{center}
+ % \includegraphics[width=0.5\textwidth]{img/2024-09-28-17-27-59.png}
+
+ no puede soportar este sufrimento
+\end{center}
+Prendendo due dei punti fissi, $ p_1, p_2 $, notiamo che $ \frac{|g(p_1) - g(p_2)|}{|p_1 - p_2|} = \frac{|p_1 - p_2|}{|p_1 - p_2|} = 1 $, ma dato che la costante $ C $ deve essere minore di $ 1 $, abbiamo dimostrato l'assurdo. 
+}
+La seconda parte della dimostrazione la vediamo piu' avanti.
+
+\subsubsection{Come controllare se una funzione differenziabile e' una mappa contrattiva}
+Nella dimostrazione precedente e' apparsa una forma che somigliava molto a una derivata. Infatti, se la funzione $ g $ e' derivabile possiamo usare il seguente teorema:
+\thm{}{
+  Se una funzione $ g: [a,b] \to [a,b] $ e' differenziabile e esiste una costante $ C < 1 $ tale che $ \forall x \in [a,b]. |g'(x)|<C $, allora $ g $ e' una \textbf{mappa contrattiva}
+}
+\pf{Dimostrazione}{
+  Per il teorema di Lagrange, $ \forall x < y \in [a,b]. \exists c \in [x,y]. g(y)-g(x) = g'(c)(y-x) $. Quindi, aggiungendo valori assoluti, $|g(y)-g(x)| = |g'(c)|\cdot |y-x| \leq C \cdot |y-x|$ per ipotesi. Quindi, per definizione, $ g $ e' una mappa contrattiva.
+}
+
+\subsection{Velocita' del miglioramento dell'approssimazione}
+Chiamiamo l'errore assoluto $ |E_k| $ la differenza assoluta fra $ x_k $ e il valore effettivo del punto fisso $ p $.
+\mprop{}{
+  $ |E_{k+1}| \leq C|E_k| $, quindi 
+  \[
+  |E_k| = C^k|E_0|
+  \]
+  Dove $ E_0 = x_0 - p $.
+}
+Quindi per ogni iterazione, l'errore iniziale diminuisce almeno di un fattore $ C $ (che ricordo e' sempre $ <1 $ quindi e' una cosa buona). Cio' implica che piu' e' piccolo $ C $, piu' ci avviciniamo in fretta a $ p $. 
+\pf{Dimostrazione}{
+  Per definizione di errore $ E_{k+1} = x_{k+1} - p $, che possiamo riscrivere come $ g(x_k) - g(p) $, quindi per definizione di mappa contrattiva $ |E_{k+1}| = |g(x_k) - g(p)| \leq C|x_k - p| = C|E_k| $. Se sostituiamo $ k = 0 $ abbiamo il caso base:
+  \[
+  |E_1| = C|x_0 - p|
+  \]
+  Da cui ricorsivamente: 
+  \[
+    |E_k| = C\cdot C \cdot ... \cdot C|x_0 - p| = C^k|x_0 - p|
+  \]
+}
+
+Ora siamo in grado di finire la dimostrazione di prima:
+\pf{Diostrazione (convergenza)}{
+  Usando la proposizione precedente, $ \lim_{k \to +\infty} |E_k| = \lim_{k \to +\infty} C^k|x_0 - p| = 0 $. Quindi:
+  \[
+    x_k \xlongrightarrow{k \to +\infty} p
+  \]
+}
+
+\subsection{Metodo di Newton}
+Vediamo ora il metodo di Newton, che rispetto alla bisezione e' generalmente piu' veloce (ma non abbiamo la garanzia). Puo' essere dimostrato come una specifica mappa contrattiva o come approssimazione a linee tangenti, vediamo la prima:\\\\
+Prendiamo una funzione differenziabile $ f $ e costruiamole una mappa contrattiva $ g $. Per migliorare l'efficenza, vogliamo fare in modo che la costante $ C $ abbia valore minimo dato un intorno della radice $ r $ di $ f $, come facciamo? Dato che $ C $ assume il valore della derivata massima della mappa, vogliamo fare in modo che la derivata di $ g $ sia minima per quell'intorno. Un modo per fare cio' e' assicurarci che $ g'(r) = 0 $, vediamo come:
+\[
+  g'(r) = 1 - w'(r)f(r) - w(r)f'(r) = 1 - w(r)f'(r)
+\]
+dato che $ f(r) = 0 $ per definizione, quindi:
+\[
+  w(r) = \frac{1}{f'(r)}
+\]
+Dato che non sappiamo il valore di $ r $, poniamo $ w(x) = \frac{1}{f'(x)} $ per ogni $ x $ nel dominio. Da notare che $ w(x) $ non esiste quando $ f'(x) = 0 $. Facendo cosi', la formula di iterazione diventa:
+\[
+  x_{k+1} = x_k - \frac{f(x_k)}{f'(x_k)}
+\]
+che e' la formula per il metodo di Newton.
+\section{Risolvere sistemi lineari}
+\begin{itemize}
+\item Metodi Diretti: +accurati, -efficenti
+\item Metodi Iterativi: -accurati, +efficenti
+\end{itemize}
+
+\subsection{Fattorizzazione LU}
+Per risolvere sistemi lineari, il metodo diretto piu' efficente risulta essere la \textbf{fattorizzazione LU}. Purche' abbia un numero maggiore di operazioni floating-point (flops) rispetto al Gaussian-Jordan, permette di calcolare multiple soluzioni di un sistema $ Ax = b $ decomponendo una sola volta la matrice $ A $. 
+
+\subsubsection{Algoritmo}
+Dobbiamo fattorizzare la matrice $ A $ e ottenere due matrici triangolari, una superiore ($ U $) e l'altra inferiore ($ L $). In piu', $ L $ deve avere tutti $ 1 $ sulla diagonale principale. 
+\[
+A = LU = \begin{pmatrix}
+1 & 0 & 0 & 0\\
+* & 1 & 0 & 0\\
+* & * & 1 & 0\\
+* & * & * & 1\\
+\end{pmatrix} \cdot \begin{pmatrix}
+* & * & * & *\\
+0 & * & * & *\\
+0 & 0 & * & *\\
+0 & 0 & 0 & *\\
+\end{pmatrix}
+\]
+
+In modo da essere fattorizzabile, $ A $ non deve essere \textit{singolare} ($ detA \neq 0 $) e deve avere i minori principali diversi da 0. Per fare cio', moltiplichiamo la matrice $ A $ per $ n-1 $ matrici $ E_1, E_2, ..., E_{n-1} $ (che per costruzione sono tutte lower) in modo che $ A $ diventi triangolare superiore (sara' il valore di $ U $), mentre $ L $ sara' l'inversa del prodotto $ E_{n-1}\cdot ... \cdot E_2 \cdot E_1 $ (dato che $ L^{-1}A = U $). Quindi per prop dell'inversa $ L = E_1^{-1} \cdot E_2^{-1} \cdot ... \cdot E_{n-1}^{-1} $:
+\begin{center}
+    no puede soportar este sufrimento
+%  \includegraphics[width=0.5\textwidth]{img/2024-10-04-12-23-45.png}
+\end{center}
+Dato che $ E_1, E_2, ..., E_{n-1} $ sono triangolari con solo 1 sulla diagonale, per trovare l'inversa basta cambiare di segno i loro valori (tranne gli 1 diagonali). Per evitare di dividere per numeri troppo piccoli durante la costruzione delle matrici lower, e' possibile usare una matrice $ P $ di cambio di righe:
+\[
+PA = LU \implies A = P^{-1}LU \implies A = PLU
+\]
+
+($ P = P^{-1} = P^{T} $). Infine ci resta risolvere il sistema:
+\[
+Ax = b \implies LUx = b \implies \begin{cases}
+Ux = y & \\
+Ly = b & 
+\end{cases}
+\]
+
+Per cui usiamo il metodo di sostituzione avanti, dato che sono sistemi triangolari:
+\begin{center}
+    no puede soportar este sufrimento
+  %\includegraphics[width=0.5\textwidth]{img/2024-10-14-16-43-56.png}
+\end{center}
+\subsection{Fattorizzazione di Cholesky}
+Si puo' usare solo nel caso speciale in cui $ A $ sia \textbf{definita semi-positiva}:
+\dfn{Matrice semi-definita positiva}{
+  $ A $ $ n \times n $ simmetrica e' \textbf{semi-definita positiva} se $ \forall x \in \mathbb{R}^n: $
+  \[
+  x^T A x \geq 0
+  \]
+}
+
+Per cui vale:
+\mprop{Autovalori di matrici semi-definite positive}{
+ Data una matrice $ A $ semi-definita positiva, ogni autovalore di $ A $ e' positivo o nullo
+}
+
+Grazie a queste proprieta', possiamo dire che $ \exists L: $
+\[
+A = L \cdot L^T
+\]
+e trovarlo e' circa due volte piu' efficente rispetto a LU.
+
+\section{Approssimazione}
+\subsection{SVD}
+Prima di iniziare ad introdurre metodi di approssimazione, e' necessario esplorare uno dei teoremi finali dell'algebra lineare: la \textbf{SVD} (Single Value Decomposition). Questo teorema sara' fondamentale per descrivere vari modelli di ottimizzazione e approssimazione per motivi che vedremo dopo.\\
+\\
+\thm{Single Value Decomposition}{
+  Data una qualunque matrice reale $ A $ $ m \times n $ (per comodita' stabiliamo $ m \geq n $) di rango $ k $, allora esistono:
+  \begin{itemize}
+    \item $ \mathcal{U} $ ortonormale $ m \times m $
+    \item $ V $ ortonormale $ n \times n $
+    \item $ \Sigma $ rettangolare diagonale $ m \times n $
+  \end{itemize}
+  Tali che:
+  \[
+    A = \mathcal{U}\Sigma V^T
+  \]
+}
+Quindi \textbf{qualunque} matrice puo' essere espressa come una matrice della stessa dimensione diagonale, moltiplicata per due matrici ortonormali (di cui una trasposta). Proviamo a vedere perche':
+\pf{}{
+
+}
