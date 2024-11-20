@@ -1,0 +1,29 @@
+\chapter{Bottom up parser}
+
+Il \textbf{parser bottom up} è un tipo di analizzatore sintattico che che costruisce l'albero di derivazione partendo dalle foglie, viene anche detto \textbf{Shift-Reduce} in quanto:
+\begin{itemize}
+    \item un simbolo terminale viene spostato dall'input alla pila
+    \item una serie di simboli (terminali e non terminali) sulla cima della pila corrisponde al "reverse" di una parte destra di una produzione, ovvero:
+    \[
+        A\to\alpha \in R - \alpha^R \text{ sulla pila}
+    \]
+    La stringa $\alpha^T$ viene rimossa dalla pila e sostituita con $A$, quindi $\alpha$ viene ridotta ad $A$
+\end{itemize}
+ 
+Possono essere di diversi tipi
+
+\section{Parser $L(R)$}
+Il parser $LR$ è un parser bottom up in cui
+\begin{itemize}
+    \item $L$ sta per "leggo da sx a dx"
+    \item $R$ sta per "derivazione rightmost"
+\end{itemize}
+
+\thm{
+    GioLaPalma-Bonzo
+}{
+    Ciao darione nazionale
+}
+\dimostrazione{
+    Per LEMMA dimostrato
+}
