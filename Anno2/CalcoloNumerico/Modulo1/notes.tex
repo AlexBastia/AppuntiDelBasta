@@ -4,6 +4,14 @@
 \input{../../LatexTemp/macros}
 \input{../../LatexTemp/letterfonts}
 
+\usepackage[utf8]{inputenc}
+
+\usepackage{float}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\def\mathdefault#1{#1}
+
 \setlength{\parindent}{0pt}
 
 \title{\Huge{Calcolo Numerico}\\Appunti}
@@ -91,7 +99,7 @@ Nel caso di somma di numeri di grandezza molto diversa, le cifre piu' significat
 
 \chapter{Risoluzione di equazioni}
 \section{Calcolo dello zero di una funzione}
-Come primo metodo per risolvere (approssimativamente) equazioni, usiamo il metodo della \textbf{bisezione}. Questo sfrutta il teorema degli zeri per trovare uno dei possibili zeri di una funzione continua su un intervallo chiuso. Come esempio, prendiamo questa equazione:
+Come primo metodo per risolvere (approssimativamente) equazioni, usiamo il metodo della \textbf{bisezione}. Questo sfrutta il teorema degli zeri per trovare uno dei possibili zeri di una funzione continua su un intervallo chiuso con valori discordi di segno agli estremi. Come esempio, prendiamo questa equazione:
 \[
 x = cos x
 \]
@@ -153,14 +161,20 @@ $ E_{max} = \frac{b-a}{2} $\;
 \end{algorithm}
 
 \section{Iterazione di punto fisso}
-Presa la funzione $ f $ di cui vogliamo trovare lo zero, possiamo definire una funzione $ g(x) = x-w(x)f(x) $ dove $ w $ e' una funzione peso \textit{positiva} e \textit{limitata}. Quindi
+Presa la funzione $ f $ di cui vogliamo trovare lo zero, possiamo definire una funzione $ g(x) = x-w(x)f(x) $ dove $ w $ e' una funzione peso \textit{positiva} e \textit{limitata}. Quindi:
 \[
   f(x) = 0 \iff g(x) = x
 \]
-\begin{center}
-  \includegraphics[width=0.4\textwidth]{img/2024-09-28-13-06-45.png}
-  \includegraphics[width=0.4\textwidth]{img/2024-09-28-13-07-12.png}
-\end{center}
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[b]{0.45\textwidth}
+      \input{./PGF/PuntoFisso1.pgf}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.45\textwidth}
+      \input{./PGF/PuntoFisso2.pgf}
+  \end{subfigure}
+\end{figure}
 Quindi siamo passati dal cercare uno zero di una funzione a trovare il \textbf{punto fisso}:
 \dfn{Punto fisso}{
   Data $ g:D \to C $, si chiamano \textbf{punti fissi} tutti i punti $ x \in D: $
