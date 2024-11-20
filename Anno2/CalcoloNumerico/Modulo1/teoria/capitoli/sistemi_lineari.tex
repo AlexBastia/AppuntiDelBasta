@@ -195,20 +195,18 @@ Con $A^{(1)} = A$ e $A^{(n)} = U$ e dove la matrice $A^{(k+1)}$ ha tutti gli ele
     \end{array}
 \]
 
-Per portare a termine 
-
-
-
 Inoltre è possibile che bisogni scambiare le righe, ad esempio quando $det(A_k) = 0$ e pertanto il $a_{kk} = 0$, Perciò occorre scambiarli con altre righe (ad esempio la riga $p$). Si noti che lo scambio di righe $i,j$ di una matrice $A$ equivale a moltiplicarla per una matrice $P^{ij}$ tale che:
 \[
-    
-        (P^{ik})_{km} = \begin{cases}
-            \delta_{km} & k\neq i,j\\
-            0 & k=m=i,j\\
-            1 & k=i, m=j\\
-            1 & k=j, m=i
-        \end{cases}
+    (P^{(ik)})_{km} =
+    \begin{cases} 
+    \delta_{km} & \text{se } k \neq i \text{ e } k \neq j, \\ 
+    0 & \text{se } k = m \text{ e } (k = i \text{ o } k = j), \\ 
+    1 & \text{se } k = i \text{ e } m = j, \\ 
+    1 & \text{se } k = j \text{ e } m = i.
+    \end{cases}
 \]
+
+
 La quale verrà chiamata \textbf{matrice di permutazione}
 
 \subsubsection{algoritmo di gauss rivisto come mettodo di fattorizzazione LU}
