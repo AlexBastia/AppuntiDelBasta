@@ -1,0 +1,430 @@
+\section{Robe}
+
+
+
+\subsection{Ricerca della radice tramite bisezione :)}
+
+Prima di tutto si analizzi il calcolo della radice di una equazione (anche non lineare)
+\[
+f(x)=0
+\]
+
+\esempio{
+    Esempio: 
+        
+}
+Ci si chiede se esistono tali implicazioni:
+\begin{itemize}
+    \item Esistenza e unicità della soluzione
+    \item Esistenza di algoritmi per calcolare soluzione
+\end{itemize}
+
+Innanzi tutto si tenga conto di tale teorema 
+\teorema{
+    \textbf{Teorema di Bolzano}: \\
+        Sia $F:[a,b] \in \mathbb{R} \rightarrow \mathbb{R}$ continua in $[a,b]$ e $f(a)\cdot f(b)<0 \Rightarrow \exists x^*:F(x^*)=0$
+}
+Per la dimostrazione si vedano gli appunti/libri di analisi
+
+\subsubsection{Primo algoritmo di bisezione: n-iterativo}
+Intuitivamente l'algoritmo di bisezione ha due fasi:
+\begin{enumerate}
+    \item se $f(a)\cdot f(c)=0$ la radice è nell'intervallo $[a,c]$ che diventa la nuova versione dell'intervallo $[a,b]$
+    \item altrimenti, se  $f(c) \cdot f(b)=0$ la radice è nell'intervallo $[c,b]$ che diventa la nuova versione dell'intervallo $[a,b]$
+\end{enumerate}
+
+Ecco qui descritto l'algoritmo di bisezione in pseudocodice:
+
+\begin{algorithm}
+    \caption{primo algoritmo di Bisezione (Function f, int a, int b, int n)}
+    \KwData{Funzione continua $f(x)$, continua in $a$ e $b$ con $f(a) \cdot f(b) < 0$, un numero N di iterazioni}
+    \KwResult{Approssimazione della radice}
+
+
+
+    \For{1 to n}{
+        $c \leftarrow \frac{a + b}{2};$\\
+        \If{$f(c) = 0$}{
+            \Return $c$\ \tcp*{Trovata la radice esatta}
+        }
+        \If{$f(a) \cdot f(c) < 0$}{
+            $b \leftarrow c$\ \tcp*{La radice è nell'intervallo $[a, c]$}
+        }
+        \Else{
+            $a \leftarrow c$\ \tcp*{La radice è nell'intervallo $[c, b]$}
+        }
+    }
+    \Return $c$\tcp*{Approssimazione della radice}
+\end{algorithm}
+
+Questo tipo di soluzione per la bisezione ha un numero $n$ di iterazioni per approssimare la soluzione, questa soluzione è molto semplice ma non la migliore. Vi è tuttavia una soluzione migliore
+
+\subsubsection{Secondo algoritmo di bisezione: tolleranza d'errore}
+Nella pratica è molto più utile definire una costante $\epsilon$ che vuole rappresentare l'errore di approssimazione massimo, di modo che un'approssimazione $\overline{r}$ della radice reale $r$ grantisca che $|r- \overline{r}| \leq \epsilon$. In altre parole si vuole garantire che $r\in [\overline{r}-\epsilon,\overline{r}+\epsilon]$. \\ Nel nostro caso $\overline{r}$ è il valore di $c=(b-a)/2$ mentre impostiamo $\epsilon = (b-a)/2$. Si imposti inoltre un \textbf{errore di tolleranza $e_{tol}$}  per iterare le operzione fino a che non si incontri. Di seguito è riportato l'algoritmo:
+
+%todo RIFARLO
+\begin{algorithm}
+    \caption{Algoritmo di Bisezione}
+    \KwData{Funzione continua $f(x)$, estremi $a$ e $b$ con $f(a) \cdot f(b) < 0$, tolleranza $\epsilon$}
+    \KwResult{Approssimazione della radice $x^*$ con $|f(x^*)| <Tocca la rivoluzione perle sighe del che a 2 euro
+ \epsilon$}
+    \While{$|b - a| > \epsilon$}{
+        $c \leftarrow \frac{a + b}{2}$;
+        \If{$f(c) = 0$}{
+            \Return $c$\; \tcp*{Trovata la radice esatta}
+        }
+        \If{$f(a) \cdot f(c) < 0$}{
+            $b \leftarrow c$\; \tcp*{La radice è nell'intervallo $[a, c]$}
+        }
+        \Else{
+            $a \leftarrow c$\; \tcp*{La radice è nell'intervallo $[c, b]$}
+        }
+    }
+    \Return $\frac{a + b}{2}$\; \tcp*{Approssimazione della radice}
+\end{algorithm}
+
+%! MANCANO DEI PEZZI
+
+\subsection{Autovalore e autovettori}
+\subsubsection{Definizione}
+\definizione{
+    Data una matrice $A$ di dimensione $n\times n$ se vale:
+    \[
+        Ax=\lambda x    
+    \]
+   con $\lambda \in \mathbb{R}$ e $x\in \mathbb{R}^n,\lambda$ si dice autovalore di $A$ e $x$ autovettore di $A$ associato a $\lambda$
+}
+Data questa definizione, e richiamando i vari concetti dell'algebra lineare, abbiamo che se vale $Av_{i} = \lambda_{i}v_{i},\forall i\in {1,\dots, n}$ allora vale anche:
+\[
+    [A v_1, A v_2, \dots, A v_n] &= [\lambda_1 v_1, \lambda_2 v_2, \dots, \lambda_n v_n] \\
+
+    \text{quindi:} \quad A[v_1, v_2, \dots, v_n] &= [v_1, v_2, \dots, v_n] \begin{pmatrix}
+        \lambda_1 & 0 & \cdots & 0 \\
+        0 & \lambda_2 & \cdots & 0 \\
+        \vdots & \vdots & \ddots & \vdots \\
+        0 & 0 & \cdots & \lambda_n
+        \end{pmatrix}        
+\]
+
+Questa bellissima scrittura si può tranquillamente riassumere come: \[AV=DV\]
+
+\subsubsection{decomposizione agli autovalori}
+\definizione{
+    sia $A\in M^{n\times n}$, allora una Una decomposizione agli autovalori di $A$ è una fattorizzazione (ovvero un prodtto) di questo tipo:
+    \[
+        A=VDV^-1
+    \]
+    Dove $V=[v_1, v_2, \dots, v_n]$ è la matrice con colonne gli autovettori $v_1$ di $A$ e $D$ è una matrice diagonale che ha sulla diagonale gli autovalori di $A$ associati alle colonne di $V$
+}
+Se $A$ ha una decomposizione agli autovalori
+allora si dice che $A$ è \textbf{diagonalizzabile}; in
+caso contrario $A$ si dice \textbf{non
+diagonalizzabile} (o defettiva). \\
+
+Se $A$ ha $n$ autivalori distinti, allora $A$ è diagonalizzabile
+
+\subsubsection{Vettori ortogonali e ortonormali}
+\definizione{
+    Siano $v_1, v_2, \dots, v_m$ vettori di $R^n$, si dicono \textbf{ortognonali} se:
+    \[
+        v_i^T v_j = 0, \quad \text{se } i \neq j
+    \]
+    Si può scrivere anche:
+    \[
+        \langle  v_i, v_j \rangle = 0, \quad \text{se } i \neq j
+    \]
+    Ovvero il prodotto scalare
+}
+Questa relazione di vettori si collega molto bene con i vettori ortonormali:
+\definizione{
+    Siano $v_1, v_2, \dots, v_m$ vettori di $R^n$, si dicono \textbf{ortonormali} se sono ortogonali w di lunghezza unitaria, ovvero $v_i^T v_j = \|v_i\|= \delta_{ij}$
+    dove
+    \[
+        \delta_{ij} = 
+            \begin{cases}
+                1 \quad \text{se } i=j \\
+                0 \quad \text{se } i\neq j
+            \end{cases}
+    \]
+}
+\subsubsection{Matrici ortogonali}
+\definizione{
+    Una matrice $W$ di dimensione $n \times n$ si dice ortogonale se le sue colonne sono vettori ortonormali
+}
+Un esempio semplice:
+\esempio{
+    W = \begin{pmatrix}
+        \frac{1}{\sqrt{3}} & 0 & \frac{1}{\sqrt{2}} \\
+        \frac{1}{\sqrt{3}} & 1 & \frac{1}{\sqrt{2}} \\
+        \frac{1}{\sqrt{3}} & 0 & 0
+        \end{pmatrix}
+}
+le matrici ortogonali hanno diverse proprietà:
+\begin{enumerate}
+    \item $W^T = W^{-1}$
+    \item $\forall x \in R^n, \|x\|_2=\|W x\|_2$
+\end{enumerate}
+
+\subsubsection{Fattorizzazione in Valori Singolar (SVD)}
+La fattorizzazione in valori singolari non è altro che uno strumento che permette di rappresentare una matrice $A\in M^{m\times n}$ attraverso una matrice diagonale. Vediamo come:
+\teorema{
+    Sia $A\in M^{m\times n}$ una matrice di rango $k$ con $k\leq n\leq m$. Allora esistono:
+    \begin{itemize}
+        \item una matrice ortognonale $U\in M^{m\times m}$
+        \item una matrice ortogonale $V\in M^{n\times n}$
+        \item una matrice diagonale $\Sigma \in M^{m\times n}$
+    \end{itemize}
+    tali che:
+    \[
+        A=U\Sigma V^T, \quad \Sigma = 
+        \begin{pmatrix}
+            \sigma_1 & 0 & \cdots & 0 \\
+            0 & \sigma_2 & \cdots & 0 \\
+            \vdots & \vdots & \ddots & \vdots \\
+            0 & 0 & \cdots & \sigma_n \\
+            \vdots & \vdots &  & \vdots & \\
+            0&0&\cdots&0
+        \end{pmatrix}
+    \]
+}
+\begin{itemize}
+    \item Gli elementi $\sigma_1\geq\sigma_2\geq\dots\sigma_n\geq 0$ sono i cosidetti  \textbf{valori singolari di $A$}
+    \item Mentre il rango $k$ è uguale al numero di valori singolari positivi, cioè $k=rango(A)\iff (\sigma_1\geq\sigma_2\geq\dots\sigma_k > 0\land \sigma_{k+1}=\dots = \sigma_n = 0)$
+    \item Le colonne si $U=(u_1,u_2,\dots, u_m)$ e di $V=(v_1,v_2,\dots,v_n)$ sono, rispettivamente, i \textbf{vettori singolari sinistri e destri di $A$} associati ai valori singolari $\sigma_i$ e formano una base ortonormale di $R^m$ e $R^n$ , rispettivamente, poichè vale la relazione:
+    \[
+            Au_i = \sigma_i v_i
+    \]
+\end{itemize}
+
+
+Questo teorema porta a un'implicazione piuttosto interessante, inffatti si ha: 
+
+\[
+    A^T A = (U\Sigma V^T)^T (U\Sigma V^T) = V\Sigma^T U^T U\Sigma V^T
+\]
+dato che $U$ è ortogonale si "annulla" con la sua trasposta, quindi continua con 
+\[
+    V\Sigma^T \Sigma V^T = V 
+    \begin{pmatrix}
+        \sigma_1^2 & 0 & \cdots & 0 \\
+        0 & \sigma_2^2 & \cdots & 0 \\
+        \vdots & \vdots & \ddots & \vdots \\
+        0 & 0 & \cdots & \sigma_n^2 \\
+    \end{pmatrix} V^T
+\]
+
+Inoltre:
+\[
+    \sigma_i =\sqrt{\lambda_i}, i=\dots,n 
+\]
+Dove $\lambda_i$ non è che l'autovalore di $A^TA$, si ha quindi:
+\begin{itemize}
+    \item $\sigma_1 =\sqrt{\lambda_{max}}=\sqrt{\rho}=\|A\|$
+    \item $\sigma_k =\sqrt{\lambda_{min}} \Rightarrow \|A^{-1}\| = \frac{1}{\sigma_k}$
+\end{itemize}
+
+\subsubsection{numero di condizione}
+
+\definizione{
+    Si dice \textbf{numero di condizione di $A$} tale valore:
+    \[
+        K_2(A)=\frac{\sigma_1}{\sigma_k}    
+    \]
+    Dove $\sigma_k$ è il valore singolare minimo di $A$ e $k$ è il rango della matrice, quindi $k\leq \min(m,n)$ \\
+    Un'altra definizione di questo valore è:
+    \[
+        K_2(A) = \|A\|\cdot \|A^{-1}\|
+    \]
+}
+Un \red{numero di condizionamento basso} (vicino a 1) indica che la matrice è ben condizionata. \red{Ciò significa che piccole variazioni negli input producono piccole variazioni negli output}, viceversa \red{un numero di condizionamento alto} indica che la matrice è mal condizionata. Ciò \red{significa che piccole variazioni negli input possono causare grandi variazioni negli output}
+
+\subsection{Problema dei minimi quadrati}
+Si consideri il seguente sistema:
+\[
+    Ax = b    
+\]
+Dove $A\in \mathbb{R}^{m\times n},b\in \mathbb{R}^m, x\in \mathbb{R}^n$ e $m > n$. È facile verificare che risulta indeterminato, dato che il numero di equazioni è superiore al numero di incognite, non ammettendo, quindi, alcuna soluzione. 
+
+Consci di questo fatto alquanto deprecabile e accettata la sua inalterabilità, si vuole però cercare la $x$ tale che l'espressione $Ax-b$ non sia $0$ ma "quasi", ovvero il più piccolo valore possibile. Si è così giunti al concetto di problema ai minimi quadrati:
+\definizione{
+    Si definisce il \textbf{problema ai minimi quadrati (LSQ)}, che consiste nel determinare il vettore $x \in R$ n che minimizzi il vettore dei residui $r = Ax - b$:
+    \[
+        \min_{x \in \mathbb{R}^n} \|Ax - b\|_2^2 = \min_{x \in \mathbb{R}^n} \|r\|_2^2
+    \]
+    dove $r = (r_1 , r_2 , \dots , r_n ) = (Ax_1 - b_1 , \dots , Ax_n - b_n)$
+}
+
+Si giunge così al seguente teorema:
+
+\teorema{
+    Sia $A\in \mathbb{R}^{m\times n}$ con $m>n$ e $rg(A)=k \leq n$, allora il problema
+    \[
+        \min_{x \in \mathbb{R}^n} \|Ax - b\|_2^2 = \min_{x \in \mathbb{R}^n} \|r\|_2^2    
+    \]
+    \textbf{Ammette sempre almeno una soluzione}, inltre:
+    \begin{itemize}
+        \item \textbf{$k=n$ (quindi ha rango massimo)}: il problema ha una ed una sola soluzione
+        \item \textbf{$k < n$}: il problema ha infinite soluzioni e tali soluzioni formano un sottospazio di $\mathbb{R}^n$ di dimensione $n-k$
+    \end{itemize}
+}
+\subsubsection{Equazioni  normali}
+Come si fa, quindi, a minimizzare questo di residuo? Bhe bisogna trovare un "punto di minimo" che ovviamente va trovato con le derivate (nel nostro caso dato che siamo in $\mathbb{R}^n$ il gradiente). Intanto sappiamo che:
+\begin{center}
+    \begin{math}
+        \|Ax - b\|_2^2 = (Ax - b)^T (Ax - b) \\
+        = \left( -b^T + x^T A^T \right) (Ax - b) \\
+        = -b^T A x + b^T b + x^T A^T A x \\
+        \text{(sommando i termini simili)} \\
+        b^T A x = x^T A^T b \\
+        = x^T A^T A x - 2 x^T A b + b^T b
+    \end{math}
+\end{center}
+
+Si pone:
+\[
+    f(x) = x^T A^T Ax - 2x^T Ab + b^T b
+\]
+Questa è un'equazione $f(x): \mathbb{R}^n -> \mathbb{R}$, condizione necessaria (ma non sufficiente) che un punto $x^*$ sia di minimo è che $\nabla f(x^*) = 0$ dove:
+\[
+    \nabla f = (\frac{\partial f}{\partial x_1}, \dots, \frac{\partial f}{\partial x_n}
+    )
+\]
+Dato che $f$ non è altro che una sommatoria di tre addendi, non mi resta che fare il gradiente di questi per poi addizionarli. Quindi:
+\begin{itemize}
+    \item $\nabla(x^TAx)=2A^TAx$
+    \item $\nabla(2x^T Ab)=2A^Tb$
+    \item $\nabla( b^T b)=0$
+\end{itemize}
+Allora:
+\[
+    \nabla f(x)=2A^TAx-2A^Tb
+\]
+Imponendo che il gradiente sia nullo si ottiene il cosiddetto \textbf{Sistema delle equazioni normali}
+\[
+    A^T Ax = A^T b    
+\]
+
+Se $ A^T A$ è simmetrica e definita positiva allora $A$ ha rango massimo, è possibile quindi risolvere il sistema con un opportuno metodo adatto alla matrice $A^T A$, ad esempio utilizzando la fattorizzazione di Cholesky, si ottiene una matrice $L$ t.c. $A^T A = LL^T$ e si risolvono nell’ordine i due sistemi:
+\[
+    \begin{cases}
+        Ly = A^T b \\
+        L^Tx = y  
+    \end{cases}
+\]
+Tuttavia, il calcolo di $A^TA$ può \red{rendere il problema eccessivamente mal condizionato} poiché $K(A^TA) = K(A)^2$, ovvero \red{il numero di condizionamento della matrice $A^T A$ è approssimativamente il quadrato del numero di condizionamento della matrice $A$}. Ricordiamo che un problema mal condizionato è più difficile da risolvere numericamente, poiché anche piccoli errori di arrotondamento nei calcoli possono causare errori significativi nella soluzione finale
+
+\subsubsection{Decomposizione in valori singolari (SVD)}
+Se il rango $k<\min(m,n)$ allora vi sono infinite di soluzioni, ma ne esiste una sola $\overline{x}$ di norma minima. Tale soluzione si può ittenere tramite SVD
+
+\teorema{
+    Sia $A\in \mathbb{R}^{m\times n}$, con $rg(A) = k \leq n$ e sia $A = U\Sigma V^T$ la sua decomposizione in valori singolari, allora il vettore:
+    \[
+        x^* = \sum^k_i=1 \frac{u_i^Tb}{\sigma_i} v_i   
+    \]
+    è la soluzione di minima norma al problema:
+    \[
+        \min_{x\in\mathbb{R^n}} \|Ax - b\|_2^2    
+    \]
+}
+
+per la proprietà dei vettore ortogonale di non alterare le norme di vettori e in corrispondenza di tale soluzione e si ottiene 
+\[
+    \|Ax-b\| = \|U^TAx-U^Tb\| = \|U^T AVV^T x - U^Tb\|
+\]
+
+Posto $y = V^T x \in \mathbb{R^n}$ e $g=U^Tb\in \mathbb{R^m}$ si ha:
+\[
+    \|r\| = \|Ax^* - b\|= \sum_{i=k+1}^{n}(u^T_i b)^2
+\]
+Moltiplicando $U^T$ a destra e a sinistra si ottiene:
+\[
+    \|Ax-b\|=\|\Sigma y- g\| = \sum^k_{i=i}(\sigma_1y_i - g_i) + \sum^n_{i=k+1} g^2_i
+\]
+
+Per minimizzare tale quantità è sufficiente scegliere:
+\[
+    y_i = \frac{g_i}{\sigma_i} = \frac{U^T b}{\sigma_i}    
+\]
+poichè $x^* =Vy$ risulta:
+\[
+    x*=\sum_{i=1}^{k} \frac{u^T_i b }{\sigma_i}v_i   
+\]
+
+Allora in corrispondenza di tale soluzione, la norma del residuo è:
+\[
+    \|r\| = \sum_{i=k+1}^{n}(g_i)^2 = \sum_{i=k+1}^{n} (u^T_i b)^2   
+\]
+\subsubsection{Matrice pseudoinversa}
+Qui viene riportata la definizione di una matrice con proprietà molto utili:
+\definizione{
+    Sia $A\in \mathbb{R}^{m\times n}$, con $rg(A) = k \leq n$ e sia $A = U\Sigma V^T$ la sua decomposizione in valori singolari. Si definisce \textbf{pseudoinversa} la matrice:
+    \[
+        A^+ = V\Sigma^+ U^T    
+    \]
+    Dove: 
+    \[
+        (\Sigma)_{ij}=\begin{cases}
+            \frac{1}{\sigma_i} \quad \text{se } i=j \land i\leq k \\
+            0 \quad \text{altrimenti}
+        \end{cases}
+    \]
+    Ovvero:
+    \[
+        \Sigma^+ = \begin{pmatrix}
+        \frac{1}{\sigma_1} & 0 & \cdots & 0 &\cdots & 0 \\
+        0 & \frac{1}{\sigma_2} & \cdots & 0&\cdots & 0  \\
+        \vdots & \vdots & \ddots & \vdots &\cdots & 0 \\
+        0 & 0 & \cdots & \frac{1}{\sigma_k} & \cdots & 0 \\
+        \vdots & \vdots & \vdots & \vdots &\ddots & 0 \\
+        0 & 0 & \cdots & 0 & \cdots & 0
+        \end{pmatrix}_{m \times n}
+    \]
+
+}
+Questa giga matrice gode delle seguenti proprietà:
+\begin{enumerate}
+    \item \( AA^+ A = A \)
+    \item \( A^+ AA^+ = A^+ \)
+    \item \( (AA^+)^T = AA^+ \)
+    \item \( (A^+ A)^T = A^+ A \)
+\end{enumerate}
+
+La pseudoinversa di una matrice rettangolare $A$ permette di scrivere la soluzione del problema dei minimi quadrati in modo simile alla soluzione $x=A^{-1}b$ di un sistema lineare quadrato, cioè
+\[
+    x^* = V\Sigma U^T b \implies x^* = A^+ b
+\]
+
+Tuttavia sebbene la pseudoinversa sia teoricamente potente per analizzare il problema dei minimi quadrati e comprendere le proprietà delle soluzioni, il calcolo diretto della pseudoinversa di una matrice è spesso inefficiente e computazionalmente oneroso, soprattutto per matrici di grandi dimensioni. Questo è dovuto principalmente al costo della decomposizione ai valori singolari (SVD), che richiede un notevole sforzo computazionale. Pertanto non è uno strumento adeguato per calcolarle poiché computazionalmente costoso.
+
+Si può inoltre definire il numero di condizionamento di $A \in \mathbb{R}^{m\times n}$ in termini di pseudoinversa:
+
+\[
+    K(A)  = \|A\|\|A^+\|
+\]
+ 
+E il numero di condizionamento in norma -2 (o condizionamento spettrale):
+
+\[
+    K(A)_2 = \|A\|_2 \cdot \| A^+\|_2 = \begin{cases}
+        \frac{\sigma_1}{\sigma_n} & k = vg (A) \\
+        \frac{\sigma_1}{\sigma_k} & k = rg(A)
+    \end{cases}
+\]
+
+Dove: 
+\begin{itemize}
+    \item \textbf{k=vg(A)}: quando $k$ è uguale al numero di colonne di $A$, si sta considerando la situazione in cui la matrice ha tutte le colonne sono linearmente indipendenti
+    \item \textbf{k=rg(A)}: quando $k$ è uguale al rango effettivo di $A$, ovvero il numero massimo di colonne linearmente indipendenti
+\end{itemize}
+
+Il parametro di regolarizzazione, come già visto nel caso dei problemi inversi 1D, può
+essere scelto in modo euristico oppure applicando il criterio di Massima Discrepanza.
+Per verificare sperimentalmente il parametro “ottimale” nel caso in cui si abbia la
+soluzione esatta (cioè in un problema test) è quello di verificare quale parametro
+rispetto a quelli scelti produce l’ errore minore rispetto alla “ground truth” x GT ,
+utilizzando per esempio l’ errore relativo già definito in precdenza:
+
+\[
+    ER = \frac{\|x-x_{GT}\|_2^2}{\|x_{GT}\|}    
+\]
+

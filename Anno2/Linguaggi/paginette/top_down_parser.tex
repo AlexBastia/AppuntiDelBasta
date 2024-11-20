@@ -360,12 +360,16 @@ Si ha che \red{se $G=LL(1)$ allora il parser è predittivo e deterministico}, qu
                 (q_1) edge [bend left]  node {a} (q_0);
             \end{tikzpicture}
         \end{center} 
-            Le produzioni corrispondenti sono: (TODO: perche' si rompe se metto due righe??)
-            \[
-                \begin{array}{l}
-                    [q_0] \to a[q_1]\mid a[q_0] [q_1] \to a[q_0] \mid \epsilon
-                \end{array}
-            \]
+            Le produzioni corrispondenti sono:
+                \begin{center}
+                    \begin{tabular}{ ll }
+                        $[q_0] \to a[q_1] \mid a[q_0]$\\
+                        $[q_1] \to a[q_0] \mid \epsilon$ \\  
+
+                \end{tabular}
+            \end{center}
+            
+               
             
             La grammatica \( G \) è \( LL(1) \), perché:
             \[

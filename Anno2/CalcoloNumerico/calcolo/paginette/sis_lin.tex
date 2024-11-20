@@ -1,0 +1,358 @@
+\chapter{Sistemi lineari}
+
+\section{Algoritmi per il calcolo di sistemi lineari}
+\begin{center}
+    \begin{math}
+        \begin{cases}
+            a_{11}x_1+ a_{12}x_2 +\dots + a_{1n}x_n = b_1\\
+            a_{21}x_1+ a_{12}x_2 +\dots + a_{1n}x_n = b_2\\
+            \vdots \\
+            a_{n1}x_1+ a_{12}x_2 +\dots + a_{1n}x_n = b_n
+        \end{cases}
+    \end{math}
+\end{center}
+
+Con $m$ equazioni ed $n$ incognite. E sia $m=n$, corrispondente ad un sistema quadrato
+
+Sia $Ax= b$ con
+\[
+    A = \begin{pmatrix}
+        a_{11} && \dots && a_{1n} \\
+        a_{21} && \dots && a_{2n} \\ 
+        \vdots && \vdots && \vdots \\
+        a_{n1} && \dots && a_{nn}
+    \end{pmatrix}
+\]
+e 
+\[
+    x \in \mathbb{R}^n =\begin{pmatrix}
+        x_1 \\
+        x_2 \\
+        \vdots \\
+        x_n
+    \end{pmatrix},
+    b \in \mathbb{R}^n = \begin{pmatrix}
+        b_1 \\
+        b_2 \\
+        \vdots \\
+        b_n
+    \end{pmatrix}
+\]
+Allora su ha che il sistema $Ax=b$ ha \red{una ed una sola soluzione sse $A$ non è singolare} ($detA\neq 0$)
+
+\[
+    Ax = b \iff A^{-1}Ax = A^{-1} b \iff x =A^{-1}b    
+\]
+
+Dove \red{il Calcolo di $A^{-1}$ complessità computazionale $O(n^3)$}
+
+A questo proposito ci vengono in aiuto diversi metodi per il calcolo:
+\begin{itemize}
+    \item \textbf{Metodi Diretti}: la soluzione viene calcolata in un numero finito di passi modificando la matrice del problema in modo da rendere piú agevole il calcolo della soluzione. 
+    
+    Es. 
+    \begin{itemize}
+        \item Matrici triangolari: Metodi di Sostituzione
+        \item Fattorizzazione LU
+        \item  fattorizzazione di Cholesky, 
+    \end{itemize}
+
+    \item \textbf{Metodi Iterativi}: Calcolo di una soluzione come limite di una successione di approssimazioni $x_k$, senza modificare la struttura della matrice $A$. Adatti per sistemi di grandi dimensioni con matrici sparse (pochi elementi non nulli)
+\end{itemize}
+\subsection{Metodi diretti}
+Iniziamo con la definizione di matrici triangolari:
+\definizione{
+    Una matrice $M\in \mathbb{R}^{n\times n}$ è detta \textbf{triangolare inferiore} se:
+    \[
+        L = \begin{pmatrix}
+            l_{11} & 0 & 0 & \dots & 0 \\
+            l_{21} & l_{22} & 0 & \dots & 0 \\
+            l_{31} & l_{32} & l_{33} & \dots & 0 \\
+            \vdots & \vdots & \vdots & \ddots & \vdots \\
+            l_{n1} & l_{n2} & l_{n3} & \dots & l_{nn}
+        \end{pmatrix}
+    \]
+
+    Dove $l_{ij}$ per $i < j$, ossia tutti gli elementi sopra la diagonale (con $j>i$) sono nulli
+}
+Da cui discende la definizione di \textbf{sistema triangolare inferiore}:
+\definizione{
+    Un \textbf{sistema triangolare inferiore} è un sistema lineare di equazioni in cui la matrice dei coefficienti è una matrice triangolare inferiore, e si presenta nella seguente forma:
+    \[
+        \begin{pmatrix}
+            a_{1,1} & 0 & 0 & \dots & 0 \\
+            a_{2,1} & l_{2,2} & 0 & \dots & 0 \\
+            \vdots & \vdots & \ddots & \ddots & \vdots \\
+            a_{n-1,1} & a_{n-1,2} & \dots & a_{n-1,n-1} & 0 \\
+            a_{n,1} & a_{n,2} & a_{n,3} & \dots & a_{n,n}
+        \end{pmatrix}    
+        \begin{pmatrix}
+            x_1 \\ x_2 \\ \vdots \\x_{n-1} \\ x_{n}
+        \end{pmatrix}
+        = 
+        \begin{pmatrix}
+            b_1 \\ b_2 \\ \vdots \\b_{n-1} \\ b_{n}
+        \end{pmatrix}
+    \]
+
+    e in un sistema lineare:
+    \[
+        \begin{cases}
+            a_{1,1} x_1 = b_1 \\
+            a_{2,1} x_1 + a_{2,2}x_2 = b_2 \\
+            a_{3,1} x_1 + a_{3,2} x_2 + a_{3,3}x_3 = b_3 \\
+            \vdots \\
+            a_{n,1} x_1 + a_{n,2} x_2 + \dots + a_{n,n}x_n = b_n   
+        \end{cases}
+    \]
+}
+
+Adesso c'è contrapposto con il \textbf{sistema triangolare superiore}
+\definizione{
+    Una matrice \( M \in \mathbb{R}^{n \times n} \) è detta triangolare superiore se:
+    \[
+        L = \begin{pmatrix}
+        a_{11} & a_{12} & a_{13} & \cdots & a_{1,n} \\
+        0 & a_{2,2} & a_{2,3} & \cdots & a_{2,n} \\
+        0 & 0 & a_{3,3} & \cdots & a_{3,n} \\
+        \vdots & \vdots & \vdots & \ddots & \vdots \\
+        0 & 0 & 0 & \cdots & a_{n,n} \\
+        \end{pmatrix}
+    \]
+    Dove \( u_{ij} = 0 \) per \( i > j \), ossia tutti gli elementi sotto la diagonale (con \( i > j \)) sono nulli.
+
+}
+Da cui discende la definizione di \textbf{sistema triangolare superiore}
+\definizione{
+    Un \textbf{sistema triangolare superiore} è un sistema lineare di equazioni in cui la matrice dei coefficienti è una matrice triangolare superiore, e si presenta nella seguente forma:
+
+    \[
+        \begin{pmatrix}
+            a_{1,1} & a_{1,2} & a_{1,3} & \cdots & a_{1,n-1} & a_{1,n} \\
+            0 & a_{2,2} & a_{2,3} & \cdots & a_{2,n-1} & a_{2,n} \\
+            0 & 0 & a_{3,3} & \cdots & a_{3,n-1} & a_{3,n} \\
+            \vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+            0 & 0 & 0 & \cdots & a_{n-1,n-1} & a_{n-1,n} \\
+            0 & 0 & 0 & \cdots & 0 & a_{n,n} \\
+        \end{pmatrix}
+        \begin{pmatrix}
+            x_1 \\ x_2 \\ x_3 \\ \vdots \\ x_{n-1} \\ x_n
+        \end{pmatrix}
+        =
+        \begin{pmatrix}
+            b_1 \\ b_2 \\ b_3 \\ \vdots \\ b_{n-1} \\ b_n
+        \end{pmatrix}
+    \]
+
+    e in un sistema lineare:
+
+    \[
+    \begin{cases}
+        a_{1,1} x_1 + a_{1,2} x_2 + \cdots + a_{1,n} x_n = b_1 \\
+        a_{2,2} x_2 + a_{2,3} x_3 + \cdots + a_{2,n} x_n = b_2 \\
+        a_{3,3} x_3 + \cdots + a_{3,n} x_n = b_3 \\
+        \ \ \ \vdots \\
+        a_{n,n} x_n = b_n
+        \end{cases}
+    \]
+}
+
+\subsubsection{algortimo delle sostituzioni}
+Quando si ha a che fare con matrici triangolari la soluzione può essere facilmente calcolata attraverso \textbf{l'algoritmo delle sostituzioni}, che si differenzia nel caso di matrici triangolari inferiori o superiori
+\begin{itemize}
+    \item Nel caso di matrici triangolari inferiori l'algoritmo prende il nome di \textbf{sostituzioni all'indietro} ed è descritto dal sistema qui sotto:
+    \[
+        \begin{cases}
+            x_n = \frac{b_n}{a_{nn}}\\
+            x_i = \frac{b_i - \sum_{k=i+1}^{n}}{a_{ii}} & i = n-1, n-2, \dots 1
+        \end{cases}    
+    \]
+    \item Nel caso di matrici triangolari superiori l'algoritmo prende il nome di \textbf{sostituzioni in avanti} ed è descritto dal sistema qui sotto:
+    \[
+        \begin{cases}
+            x_1 = \frac{b_1}{a_{nn}}\\
+            x_i = \frac{b_i - \sum_{k=1}^{i-1}}{a_{ii}} & i = 2,3,\dots,n
+        \end{cases}    
+    \]
+
+    In entrambi i casi il numero di operazioni richiesto è $\simeq \frac{n(n+1)}{n} = O(n^2)$
+\end{itemize}
+
+\subsubsection{Fattorizzazione LU}
+\definizione{
+    Considerata una matrice $A\in \mathbb{R}^{n\times n}$, una fattorizzazione $LU$ fattorizza la matrice $A$ nella forma
+    \[
+            A = LU
+    \]
+    con 
+    \begin{itemize}
+        \item $L$ matrice $n\times n$ triangolare inferiore
+        \item $U$ matrice $n \times n$ triangolare superiore
+    \end{itemize}    
+}
+
+Per trasformare una matrice $A$ in una matrice $LU$, è possibile utilizzare \red{l'algoritmo di Gauss per ridurla a una matrice triangolare superiore $U$} ed occorrerà \red{inserire le operazioni di eliminazione nella matrice $L$ (inizializzata a una matrice identità)}. È possibile dimostrare che $A = L\times U$
+
+Ecco l'algoritmo in pseudocodice, assumendo che la matrice $A$ sia ben condizionata e pertanto non si necessita uno scambio di righe:
+
+\begin{algorithm}[H]
+    \SetAlgoNlRelativeSize{-1}
+    \SetNlSty{textbf}{}{}
+    \caption{Fattorizzazione LU}
+    \KwIn{Intero $n$, Matrice $A[1..n,1..n]$}
+    \KwOut{Array $B[1,2]$ contenente le matrici $L$ e $U$}
+    
+        Let $B$ be a new Array[2]\;
+        Let $L$ be a new Matrix[1..n, 1..n]\;
+        Let $U$ be a new Matrix[1..n, 1..n]\;
+    
+        % Inizializza L come matrice identità
+        \For{$i = 1$ \KwTo $n$}{
+            \For{$j = 1$ \KwTo $n$}{
+                \If{$i == j$}{
+                    $L[i, j] \gets 1$\;
+                }
+                \Else{
+                    $L[i, j] \gets 0$\;
+                }
+            }
+        }
+        Let $p$ be a new Real\tcp*{dichiaro il pivot}
+        \tcp{colonne per pivot}
+        \For{$i = 1$ \KwTo $n$}{
+            $p\gets A[i,i]$\tcp*{aggiorno il pivot}
+            \tcp{righe}
+            \For{$j = i+1$ \KwTo $n$}{
+                $L[j,i] \gets \frac{A[j,i]}{p}$\tcp*{fattore moltiplicativo in L}
+                \For{$k=i$ \KwTo $n$}{
+                    $A[j,k] \gets A[j,k] - L[j,i] \times A[i,k]$\;
+                }
+            }
+        }
+    
+        $B[1] \gets L$\;
+        $B[2] \gets A$\;
+        \KwRet{$B$}\;
+    \end{algorithm}
+
+    Ecco un esempio pratico:
+    \esempio{
+        Supponiamo di voler fattorizzare la matrice:
+        \[
+            A = \begin{pmatrix}
+                2&3\\
+                4&7
+            \end{pmatrix}   
+        \]
+        Poi inizializzo $L$ come una matrice identità e$U=A$
+        \[
+            L=\begin{pmatrix}
+                1&0\\
+                0&1
+            \end{pmatrix}
+            \quad
+            A = \begin{pmatrix}
+                2&3\\
+                4&7
+            \end{pmatrix}   
+        \]
+        Poi eseguo l'algoritmo di Gauss in $U$ avendo come pivot $2$, in questo caso occorre solo modificare solo la seconda in quanto la matrice ha solo 2 righe. Il fattore moltiplicativo nella riga 2 e colonna 1 è $l_{2,1} =  \frac{4}{2} = 2$, si può procedere così con l'eliminazione Gaussiana ottenendo:
+        \[
+            U =\begin{pmatrix}
+                1&0\\
+                2&1
+            \end{pmatrix} 
+        \]
+        Si inserisca, inoltre, $l_{2,1}$ nella matrice $L$:
+        \[
+            L=\begin{pmatrix}
+                1&0\\
+                2&1
+            \end{pmatrix}    
+        \]
+        La fattorizzazione, così, è finita e si ha $A=L\times U$:
+        \[
+            \begin{pmatrix}
+                2&3\\
+                4&7
+            \end{pmatrix} = 
+            \begin{pmatrix}
+                1&0\\
+                2&1
+            \end{pmatrix} 
+            \begin{pmatrix}
+                1&0\\
+                2&1
+            \end{pmatrix} 
+        \]
+    }
+\subsubsection{Eliminazione di Gauss}
+
+Si eliminano le incognite in modo sistematico per trasformare i sistema lineare in uno equivalente con matrice a struttura triangolare superiore, più precisamente si introduce una successione di matrici tale che:
+\[
+            A^{(k)} = (a_{ij}^{(k)}), \quad k = 1,\dots,n
+\]
+Con $A^{(1)} = A$ e $A^{(n)} = U$ e dove la matrice $A^{(k+1)}$ ha tutti gli elementi $\{a_{ij}^{(k+1)}, j+1 \leq i\leq n, 1\leq j \leq k\}$ nulli. Ovvero essa differisce da $A^{(k)}$ per avere \red{gli elementi sottodiagonali della colonna k-esima nulli}. Risparmio ulteriori spiegazioni di come funziona e passo direttamente alla formula:
+\[
+    \begin{array}{l}
+        m_{ik} = \frac{q_{ik} ^ {(k)}}{q_{kk} ^ {(k)}} \\
+        a_{ij}^{(k+1)} = a_{ij}^{(k)} - m_{ik} a_{kj} ^ {(k)}
+    \end{array}
+\]
+
+Per portare a termine 
+
+
+
+Inoltre è possibile che bisogni scambiare le righe, ad esempio quando $det(A_k) = 0$ e pertanto il $a_{kk} = 0$, Perciò occorre scambiarli con altre righe (ad esempio la riga $p$). Si noti che lo scambio di righe $i,j$ di una matrice $A$ equivale a moltiplicarla per una matrice $P^{ij}$ tale che:
+\[
+    
+        (P^{ik})_{km} = \begin{cases}
+            \delta_{km} & k\neq i,j\\
+            0 & k=m=i,j\\
+            1 & k=i, m=j\\
+            1 & k=j, m=i
+        \end{cases}
+\]
+La quale verrà chiamata \textbf{matrice di permutazione}
+
+\subsubsection{algoritmo di gauss rivisto come mettodo di fattorizzazione LU}
+Si può dimostrare che l'algortimo di Gauss realizza la seguente fattorizzazione della matrice $A$:
+\[
+        A = LU
+\]
+Dove:
+\begin{itemize}
+    \item $U=A^{(n)}$ è una matrice triangolare superiore
+    \item $L$ è la matrice triangolare inferiore dei moltiplicatori, ovvero:
+    \[
+        L = \begin{cases}
+            L_{ij} = m_{ij} & i<J\\
+            L_{ij} = 1 & i=j\\
+            L_{ij} = L_{ij} & j>i
+        \end{cases}    
+    \]
+\end{itemize}
+\dimostrazione{
+    Sia $M_k = I - m_k e^T_k$, dove:
+    \begin{itemize}
+        \item $(e_k)_j=\delta_{kj}$ quindi $e_k^T = [0,0,\dots,1,\dots,0]$ Dove 1 è alla posizione 
+        
+        \item $m_k = \begin{pmatrix}
+            0\\
+            \dots \\
+            m_{k+1,k}\\
+            m_{k+2,k}\\
+            \dots\\
+            m_{nk}
+        \end{pmatrix}$
+    \end{itemize}
+    Che equivale in termini di componenti è uguale a:
+    \[
+        (M_k)_{ip} = \delta_{ip} - (m_k e^T_k)_{ip} = \delta_{ip} - m_{ik}\delta_{kp}    
+    \]
+    Dalle formule dell'algortimo di gauss si ha:
+    \[
+        a_{ij}^{(k+1)} = a^{(k)}_{ij}- m_{ij}^{(k)}a_{ij}^{(k)} = a_{ij}^{(k)} - m_{ik}\delta_{kk}a^{(k)}a_{kj}^{(k)} = \sum_{p}(\delta_{ip}-m_{ik}\delta_{kp})a_{pj}^{(k)}
+    \]    
+}
