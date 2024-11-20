@@ -1,0 +1,113 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{multicol}
+\usepackage{tcolorbox}
+\usepackage{multicol}
+\usepackage{xcolor}
+\usepackage{soul}
+\usepackage{amsmath}
+\usepackage{pgfplots}
+\usepackage{caption}
+
+
+\usepackage{titlesec}
+
+% Define a new command for subsubsubsection
+\titleclass{\subsubsubsection}{straight}[\subsubsection]
+\newcounter{subsubsubsection}[subsubsection]
+\renewcommand\thesubsubsubsection{\thesubsubsection.\arabic{subsubsubsection}}
+\titleformat{\subsubsubsection}[runin]
+  {\normalfont\normalsize\bfseries}{\thesubsubsubsection}{1em}{}
+\titlespacing*{\subsubsubsection}{0pt}{1ex}{1ex}
+
+
+\usepackage[linesnumbered, ruled, vlined]{algorithm2e}
+\usepackage{inconsolata} % Usa il font Inconsolata per il monospace
+\SetAlFnt{\ttfamily} % Imposta il font monospace per l'algoritmo
+
+
+\graphicspath{ {./paginette/img} }
+\tcbuselibrary{breakable}
+
+
+% color
+
+\definecolor{verdeoscuro}{rgb}{0.0, 0.1, 0.0}
+\newcommand{\red}[1]{
+    \textcolor{red}{#1}
+}
+
+\newcommand{\fab}{
+    f : \in [a, b] \rightarrow \mathbb{R}
+}
+\newcommand{\mathcenter}[1]{
+    \begin{center}
+        \begin{math}
+            #1
+        \end{math}
+    \end{center}
+}
+\newcommand{\real}{
+\mathbb{R}
+}
+\newcommand{\reali}{
+    $\mathbb{R}$
+}
+
+\newcommand{\razionali}{
+    $\mathbb{Q}$
+}
+
+\newcommand{\definizione}[1]{
+    \begin{tcolorbox}[colback=orange!10!white,  colframe=orange!50!black, colframe=white, sharp corners, title=Definizione]
+        #1
+    \end{tcolorbox}
+}
+
+\newcommand{\esempio}[1]{
+    \begin{tcolorbox}[colback=green!10!white, colframe=white, sharp corners, breakable]
+        #1
+    \end{tcolorbox}
+}
+
+\newcommand{\dimostrazione}[1]{
+    \begin{tcolorbox}[colback=blue!10!white, colframe=blue!50!black, title= dimostrazione, breakable]
+    
+    #1
+    \end{tcolorbox}
+}
+
+\newcommand{\teorema}[1]{
+\begin{tcolorbox}[colback=violet!10!white, colframe=violet!50!black, title= teorema, breakable]
+#1
+\end{tcolorbox}
+}
+
+\newcommand{\lemma}[1]{
+\begin{tcolorbox}[colback=yellow!10!white, colframe=yellow!50!black, title= lemma, breakable]
+#1
+\end{tcolorbox}
+}
+
+%title
+
+
+
+
+
+\begin{document}
+\tableofcontents
+
+
+\include{paginette/numeri_finiti}
+\include{paginette/floating_point}
+\include{paginette/sistemi_lineari}
+\include{paginette/sis_lin}
+\include{paginette/problema_di_interpolazione}
+\include{paginette/problemi_inversi}
+
+\include{paginette/immagini}
+\end{document}
