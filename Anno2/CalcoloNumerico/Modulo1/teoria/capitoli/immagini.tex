@@ -2,7 +2,7 @@
 Un problema piuttosto complesso è la conversione di una immagine da analogica a digitale che, ovviamente, deve essere gestita tramite i pixel. Astraendo matematicamente un'immagine, infatti, è possibile trarre una matrice $M\times N$ che rappresenta i vari pixel ed i suoi coefficienti, ai fatti, rappresentano quali sfumature di colore verranno mostrate ed in quale posizione. Tuttavia se un'immagine di grigi è rappresentabile da un'unica matrice che avrà come coefficienti soltanto valori interi da un minimo di 0 ad un massimo di
 255 ( 0 rappresenta il colore nero e 255 rappresenta il colore bianco), un'immagine a colore è ottenuta tramite la sovrapposizione di tre rappresentazioni della stessa immagine: una in scala di rossi, una in scala di verdi ed una in scala di blu; sarà quindi richiesto che il colore di ogni pixel di questa immagine sia rappresentato da vettore di tre valori, ciascuno per ogni intensità del colore rosso, verde e blu
 
-\definizione{
+\dfn{}{
     Sia $A\in \mathbb{R}^{M\times N}$ e sia $k\in \mathbb{N}$, diremo che: una matrice $B$ di dimensioni $(M+2k)\times (N+2k)$ \textbf{estende} la matrice $A$ se e solo se vale:
     \[
         \forall (i,j)\in \{\,\dots,M\}\times \{1,\dots, N\}. A_{(i,j)} = B_{(i+k, j+k)}
@@ -32,7 +32,7 @@ Esempietto:
     estende $A$, dove si ha $k=1$
 }
 Chiaramente, per ogni matrice ne esistono infinite che la estendono
-\definizione{
+\dfn{}{
     Sia $K\in\mathbb{R}^{D\times D}$ con $D$ dispari. Si definisce il \textbf{centro di matrice} della matrice $K$ come l'elemento di coordinate $(\frac{D+1}{2}, \frac{D+1}{2})$
 }
 \esempio{
@@ -50,7 +50,7 @@ Chiaramente, per ogni matrice ne esistono infinite che la estendono
     Il suo centro di matrice è $(\frac{5+1}{2}, \frac{5+1}{2}): = 13$
 }
 
-\definizione{
+\dfn{}{
     Sia $A\in\mathbb{R}^{M\times N}$ e sia $B\in\mathbb{R}^{(M+(D-1))\times (N+(D-1))}$ con $D$ dispari che estenda $A$. $\forall(i,j)\in\{1,\dots, M\}\times\{1,\dots, N\}$ si definisce $W_{(i,j)}\in\mathbb{R}^{D\times D}$ si definiscono \textbf{sotto-matrici} di $B$, il cui centro è $B_{(i + \frac{D-1}{2}, j + \frac{D-1}{2})}$
 }
 \esempio{
@@ -86,7 +86,7 @@ Chiaramente, per ogni matrice ne esistono infinite che la estendono
     \]
 }
 
-\definizione{
+\dfn{}{
     Sia $A\in \real^{M \times N}$ e $K\in\real^{D \times D}$, con $D$ un numero naturale dispari. Sia $B$ una matrice di dimensioni $(M + (D - 1)) \times (N + (D - 1))$ che estenda $A$. $\forall (i,j)\in \{1, … , M\} \times \{1, … , N\}$, siano $W_{(i,j)}$ le sotto-matrici di dimensione $D\times D$ definite precedentemente.
 
     Definiamo la matrice $C\in\real^{M\times N}$, come segue:
@@ -100,7 +100,7 @@ Chiaramente, per ogni matrice ne esistono infinite che la estendono
 
 \section{Estensione di una matrice}
 
-\definizione{
+\dfn{}{
     Sia $k$ un numero naturlae e $B$ una matrice di dimensioni $(M + 2k) \times (N + 2k)$. Definiamo la funzione:
     \[
         \mathcal{P}:\real^{M\times N}\to \real^{(M+2k)\times (N+2k)}\quad X\to \mathcal{P}(X)
@@ -120,7 +120,7 @@ Chiaramente, per ogni matrice ne esistono infinite che la estendono
 }
 È chiaro che, per come è definita la funzione $\mathcal{P}(X)$, questa estenderà sempre la matrice $X$
 
-\definizione{
+\dfn{}{
     Definiamo \textbf{funzione di convoluzione} la seguente:
     \[
         [K*(\cdot)|\mathcal{P}]:\real^{M\times N}\to \real^{M\times N} \quad X\to [K*X|\mathcal{P}(X)]   
@@ -133,7 +133,7 @@ Chiaramente, per ogni matrice ne esistono infinite che la estendono
 \esempio{
     Si prendi come esempio tale immagine
     \begin{center}
-        \includegraphics[width=7cm]{bro_foto.png}
+        \includegraphics[width=7cm]{img/bro_foto.png}
     \end{center}
     E si supponi sia una matrice $A$ e si supponga tale matrice abbia, come nucleo di convoluzione $K$, tale matrice:
     \[
@@ -154,27 +154,27 @@ Chiaramente, per ogni matrice ne esistono infinite che la estendono
         \item rimuovere le condizioni al bordo
     \end{itemize}
     \begin{center}
-        \includegraphics[width=7cm]{convoluzione_zio_pera.png}
+        \includegraphics[width=7cm]{img/convoluzione_zio_pera.png}
     \end{center}
     In questo caso, il kernel utilizzato sostituisce il valore di ogni pixel con la media aritmetica dei valori contenuti nei quattro pixel ad esso adiacenti
 
     Ottenendo il seguente effetto di sfocatura:
     \begin{center}
-        \includegraphics[width=7cm]{sfocatura.png}
+        \includegraphics[width=7cm]{img/sfocatura.png}
     \end{center}
 
     Se si considera, invece, il seguente kernel:
     \[
-        K = \pmatrix{
+      K = \begin{pmatrix}
             0&1&0\\
             1&-4&1 \\
             0&1&0
-        }  
+      \end{pmatrix}
     \]
     Osserviamo che, poiché la somma dei coefficienti è 0, sappiamo che se un pixel ha approssimativamente lo stesso colore dei quattro che gli sono adiacenti, allora verrà rimpiazzato da un valore prossimo a zero; in altre parole, il pixel diverrà di colore nero.
     Ne segue che tutti e soli i pixel che avranno un valore non nullo, saranno quelli posizionati in mezzo a due regioni di colori contrastanti. Pertanto, questo è un filtro che evidenzia i bordi dell’immagine
     \begin{center}
-        \includegraphics[width=7cm]{bordizzatura.png}
+        \includegraphics[width=7cm]{img/bordizzatura.png}
     \end{center}
 }
 
@@ -192,7 +192,7 @@ Sia $X$ la prima immagine e $Y$ la seconda, matematicamente si ha che:
     A(X) = Y    
 \]
 Dove $\mathcal{A}$ è una funzione chiamata \textbf{Point Spread Function}. Ad essere più precisi riporterò qui la definizione di Point Spread Function
-\definizione{
+\dfn{}{
     Sia $x$ un immagine che rappresenta perfettamente il nostro
     oggetto originale. È definita $\mathcal{A}$ Point Spread Function, tale funzione:
     \[
@@ -243,7 +243,7 @@ Il sistema ha matrice simmetrica e definita positiva (supponiamo A di rango mass
 \subsection{Metriche di valutazione}
 Le \textbf{metriche di valutazione} sono strumenti matematici utilizzati per quantificare la qualità di una ricostruzione, come nel caso della ricostruzione di un'immagine. Servono per confrontare un'immagine ottenuta (ricostruita) con il "ground truth" (l'immagine originale), con l'obiettivo di avere un numero che rappresenti quanto la ricostruzione sia accurata o fedele rispetto all'originale. Ci sono diverse metriche, proprio per avere diversi punti di vista
 \subsubsection{errore relativo}
-\definizione{
+\dfn{}{
     siano $x_{GT}$ il "ground truth" e $x$ l'immagine ricostruita, viene definito l'errore relativo $ER$ tale valore:
     \[
         ER= \frac{\| x - x_{GT} \|_2^2}{\| x_{GT} \|_2^2}
@@ -252,7 +252,7 @@ Le \textbf{metriche di valutazione} sono strumenti matematici utilizzati per qua
 }
 \subsubsection{Rapporto Segnale-Rumore di Picco}
 Prima di definire il Rapporto Segnale-Rumore di Picco occorre prima deifinire \textbf{l'errore quadratico medio} 
-\definizione{
+\dfn{}{
     Siano $M$ e $N$ le dimensioni dell'immagine, si definisce \textbf{ l'Errore Quadratico Medio} il seguente valore:
     \[
         MSE = \frac{\|x-x_{GT}\|_2^2}{MN}
@@ -260,7 +260,7 @@ Prima di definire il Rapporto Segnale-Rumore di Picco occorre prima deifinire \t
 }
 Questo valore misura la differenza media al quadrato tra i pixel dell’immagine originale e quelli della ricostruzione. adesso si può introdurre il PSNR
 
-\definizione{
+\dfn{}{
     Sia $\max_{i,j}|x_{i,j}|$ è il valore massimo dell’immagine ricostruita (ad esempio, 255 per immagini in scala di grigi a 8 bit) e $MNE$ l'errore quadratico medio, si definisce \textbf{Rapporto Segnale-Rumore di Picco} tale valore:
     \[
         PSNR = 10 \cdot \log_{10}{(\frac{(\max_{i,j}|x_{i,j}|)^2}{MSE})}    
@@ -272,7 +272,7 @@ Un valore di PSNR più alto indica una qualità della ricostruzione migliore, pe
 Il Structural Similarity Index (SSIM) è una metrica più complessa, progettata per essere più coerente con la percezione visiva umana. Considera non solo le differenze di intensità dei pixel, ma anche la struttura, luminanza e contrasto delle immagini. In altre parole, valuta quanto due immagini sono simili in termini di caratteristiche visive piuttosto che pixel per pixel. Più è vicino a uno, migliore è la qualità dell’immagine
 
 \subsubsection{Roba}
-\definizione{
+\dfn{}{
     Sia \( A \) una matrice \( M \times N \), definiamo la funzione \( \mathcal{L} : \mathbb{R}^{M \times N} \rightarrow \mathbb{R}^{N \ast M} \) come segue:
 
 \[

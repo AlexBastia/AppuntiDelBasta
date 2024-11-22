@@ -1,13 +1,13 @@
 
 
 \section{Problema di interpolazione}
-\definizione{
+\dfn{}{
     Dati $n+1$ punti distinti $(x_0), (x_1,y_1), \dots, (x_n, y_n)$ con $x_0 < x_1 < \dots < x_n$ chiamati \textbf{nodi}, si definisce il \textbf{problema di interpolazione} quel problema che consiste nel trovare una funzione (polinomiale) $p(x)$ chiamata \textbf{interpolante}, tale che $\forall k \in [0,n],p(x_k) = y_k$
 }
 
 Esempietto con alcuni nodi:
 \esempio{
-    \includegraphics[width=10cm]{problema_interpolazione_esempio.png}
+    \includegraphics[width=10cm]{img/problema_interpolazione_esempio.png}
 }
 
 Si può risolvere il polinomio di grado $n$ come: 
@@ -29,7 +29,7 @@ Per identificare questo polinomio, ordunque, serve \red{calcolare i coefficienti
 }
 
 Per la dimostrazione serve prima enunciare un lemma (che non verrà dimostrato)
-\lemma{
+\mlenma{}{
     Sia $r_n(x)$ un polinomio a coefficienti reali di grado $n$, il numero massimo di zeri distinti è $n$, ovvero:
     \begin{itemize}
         \item Un polinomio di grado $n$ può annullarsi in al massimo $n$ punti distinti.
@@ -61,7 +61,7 @@ Tuttavia la matrice dei coefficienti di questo sistema, detta \textbf{matrice di
 \subsubsection{Metodo del polinomio interpolatore di Lagrange}
 
 Introduciamo i polinomi base di lagrange
-\definizione{
+\dfn{}{
     Si chiamano \textbf{polinomi base di Lagrange} di grado $n$ particolari funzioni tali che:
     \[
         \phi_k(x_j) = \delta_{k,j}
@@ -76,7 +76,7 @@ La funzione $\phi_k(x)$ può essere scritta come:
 Si può notare, infatti, che include tutti i punti $x_j$ tranne $x_k$, quindi l'indice $j$ percorre tutti gli indici da $0$ a $n$ e nel caso in cui la $x$ in input sia diversa da $x_k$ vi sarà un $x_j$ tale che $x_j = x$, in quel caso il numeratore farà $0$ e renderà nulla la productoria. Nel caso, invece, la $x$ in input sia uguale a $x_k$ avremo $\frac{x_k - x_j}{x_k - x_j} \forall j$ rendendo la productoria uguale ad $1$.
 
 Definito il polinomio posso scrivere il polinomio di interpolazione di Lagrange:
-\definizione{
+\dfn{}{
     Si chiama \textbf{polinomio interpolatore di Lagrange} tale funzione:
     \[
         p_n(x) = y_0\phi_0(x) + y_1\phi_1(x) + \dots + y_n\phi_n(x) = \sum_{k=0}^n y_k\phi_k(x)
@@ -91,7 +91,7 @@ Infatti soddisfa le condizioni di interpolazione
 
 Iniziamo con la definizione di un polinomio interpolatore di una funzione
 
-\definizione{
+\dfn{}{
     Sia $f[0,n] \to \mathbb{R}$ una funzione continua nel suo dominio e sia $y_i = f(x_i), \forall i \in [0,n]$. Sia anche $p_n(x)$ il polinomio interpolatore nei punti $(x_0, y_0), (x_1,y_1), \dots, (x_n, y_n)$
 
     Allora $p_n(x)$ è detto \textbf{polinomio interpolatore di $f$} e si denota:
@@ -120,7 +120,7 @@ Runge, in cui per determinate scelte dei nodi, per esempio equidistanti dove  $m
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=8cm]{runge_interpolato_male.png}
+    \includegraphics[width=8cm]{img/runge_interpolato_male.png}
     \caption{In questa immagine troviamo la funzione di Runge (in arancione) e il suo polinomio interpolante (in verde), dove la scelta dei nodi ha causato un errore di interpolazione elevato.}
     \label{fig:runge_interpolazione}
 \end{figure}
@@ -136,7 +136,7 @@ Notiamo che $x_i = \cos{(\frac{i\pi}{n})}$ se $[a,b] = [-1,1]$. Si può dimostra
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=8cm]{runge_interpolato_bene.png}
+    \includegraphics[width=8cm]{img/runge_interpolato_bene.png}
     \caption{in questa immagina la scelta dei nodi ha causato un errore di interpolazione relativamente basso}
     \label{fig:runge_interpolazione_bella}
 \end{figure}
