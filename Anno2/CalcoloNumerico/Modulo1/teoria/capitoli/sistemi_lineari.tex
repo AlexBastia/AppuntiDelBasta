@@ -198,12 +198,12 @@ Con $A^{(1)} = A$ e $A^{(n)} = U$ e dove la matrice $A^{(k+1)}$ ha tutti gli ele
 Inoltre è possibile che bisogni scambiare le righe, ad esempio quando $det(A_k) = 0$ e pertanto il $a_{kk} = 0$, Perciò occorre scambiarli con altre righe (ad esempio la riga $p$). Si noti che lo scambio di righe $i,j$ di una matrice $A$ equivale a moltiplicarla per una matrice $P^{ij}$ tale che:
 \[
     (P^{(ik)})_{km} =
-    \begin{cases} 
-    \delta_{km} & \text{se } k \neq i \text{ e } k \neq j, \\ 
-    0 & \text{se } k = m \text{ e } (k = i \text{ o } k = j), \\ 
-    1 & \text{se } k = i \text{ e } m = j, \\ 
-    1 & \text{se } k = j \text{ e } m = i.
-    \end{cases}
+        \begin{cases} 
+            \delta_{km} & \text{se } k \neq i \text{ e } k \neq j, \\ 
+            0 & \text{se } k = m \text{ e } (k = i \text{ o } k = j), \\ 
+            1 & \text{se } k = i \text{ e } m = j, \\ 
+            1 & \text{se } k = j \text{ e } m = i.
+        \end{cases}
 \]
 
 
@@ -212,8 +212,19 @@ La quale verrà chiamata \textbf{matrice di permutazione}
 \subsubsection{algoritmo di gauss rivisto come mettodo di fattorizzazione LU}
 Si può dimostrare che l'algortimo di Gauss realizza la seguente fattorizzazione della matrice $A$:
 \[
-        A = LU
+    A = LU = \begin{pmatrix}
+    1 & 0 & 0 & 0\\
+    * & 1 & 0 & 0\\
+    * & * & 1 & 0\\
+    * & * & * & 1\\
+    \end{pmatrix} \cdot \begin{pmatrix}
+    * & * & * & *\\
+    0 & * & * & *\\
+    0 & 0 & * & *\\
+    0 & 0 & 0 & *\\
+    \end{pmatrix}
 \]
+
 Dove:
 \begin{itemize}
     \item $U=A^{(n)}$ è una matrice triangolare superiore
@@ -249,10 +260,34 @@ Dove:
     \[
         (M_k)_{ip} = \delta_{ip} - (m_k e^T_k)_{ip} = \delta_{ip} - m_{ik}\delta_{kp}    
     \]
-    Dalle formule dell'algortimo di gauss si ha:
+    Dalle formule dell'algoritmo di gauss si ha:
     \[
         a_{ij}^{(k+1)} = a^{(k)}_{ij}- m_{ij}^{(k)}a_{ij}^{(k)} = a_{ij}^{(k)} - m_{ik}\delta_{kk}a^{(k)}a_{kj}^{(k)} = \sum_{p}(\delta_{ip}-m_{ik}\delta_{kp})a_{pj}^{(k)}
-    \]    
+    \]   
+    e quindi è facile verificare che:
+    \[
+        A^{(k+1)} = M_kA^{(k)}    
+    \]
+    Si prenda osservi, intatti, che moltiplicare $M_k$ a sinistra di $A$ ha come effetto la sottrazione da ogni riga $R_i, (i=k+1, \dots, n)$ della riga $m_{ik}$. Allora:
+    \[
+        U = A^{(n)} = \underbrace{M_{n-1}M_{n-2}\dots,M_1}_{M}A    
+    \] 
+    Ovvero: 
+    \[
+        A = M^{-1} U    
+    \]
+    E dato che il prodotto di matrici triangoli e l'inversa di una matrice triangolare sono ancora matrici triangolare, si ha che $M^{-1}$ è triangolare, quindi definiamo $M^{-1}=L$.
+    
+    Le cose si complicano quando si adotta una strategia pivotale (ovvero lo scambio per righe durante il processo dell'eliminazione di Gauss), ricordando quindi la formula relativa alla matrice di permutazione si ha:
+    \[
+        A^{(k+1)} = M_k P_k A^{(k)}
+    \]
+
+    Per $U$ quindi si avrà la seguente espressione:
+    \[
+        U = M_{n-1}P_{n-1}\dots M_1P_1A    
+    \]
+
 }
 \esempio{
     Supponiamo di voler fattorizzare la matrice:
@@ -304,6 +339,25 @@ Dove:
         \end{pmatrix} 
     \]
 }
+\subsection{Fattorizzazione di Cholesky}
+Si puo' usare solo nel caso speciale in cui $ A $ sia \textbf{definita semi-positiva}:
+\dfn{Matrice semi-definita positiva}{
+  $ A $ $ n \times n $ simmetrica e' \textbf{semi-definita positiva} se $ \forall x \in \mathbb{R}^n: $
+  \[
+  x^T A x \geq 0
+  \]
+}
+
+Per cui vale:
+\mprop{Autovalori di matrici semi-definite positive}{
+ Data una matrice $ A $ semi-definita positiva, ogni autovalore di $ A $ e' positivo o nullo
+}
+
+Grazie a queste proprieta', possiamo dire che $ \exists L: $
+\[
+A = L \cdot L^T
+\]
+e trovarlo e' circa due volte piu' efficente rispetto a LU.
 
 
 
