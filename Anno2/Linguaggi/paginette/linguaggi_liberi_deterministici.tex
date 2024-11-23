@@ -17,7 +17,7 @@ Quindi un PDA:
     \item ha al massimo una transizione
     \item non ha conflitti tra transizioni $\epsilon$ e transizioni che leggono un simbolo
 \end{itemize}
-\subsection{linguaggi liberi deterministici}
+\subsection{Definizione di linguaggi liberi deterministici}
 \dfn{Linguaggio libero deterministico}{
     Un linguaggio è \textbf{libero deterministico} se è accettato per stato finale da un DPDA
 }
@@ -47,15 +47,35 @@ Quindi un PDA:
     \end{itemize}
 }
 \teorema{
-    Se $L$ è regolare, allora $\exists$ DPDA. $N$ tale che $L=L[N]$ per stato finale
+    Se $L$ è regolare, allora $\exists\; DPDA$ $N$ tale che $L=L[N]$ per stato finale
     
-    \begin{center}
-        \includegraphics[width=10cm]{gerarchia_automi.png}
-    \end{center}
+  %  \begin{center}
+   %     \includegraphics[width=10cm]{gerarchia_automi.png}
+    %\end{center}
+    \begin{tikzpicture}
+        % Cerchi per gli automi
+        \draw[thick] (0, 0) circle (1.25cm) node[pos=0, yshift=0cm] {\textbf{DFA}};
+        \draw[thick] (0, 0) circle (2.5cm) node[pos=0, yshift=1.75cm] {\textbf{DPDA}};
+        \draw[thick] (0, 0) circle (3.75cm) node[pos=0, yshift=3.25cm] {\textbf{PDA}};
+    
+        % Cerchi per i linguaggi
+        %\draw[thick] (8, 0) circle (1.5cm) node[pos=0, below right, xshift=-1.3cm] {\textbf{Linguaggi regolari}};
+        %\draw[thick] (8, 0) circle (3cm) node[pos=0, above right, xshift=-2.1cm] {\textbf{Linguaggi liberi deterministici}};
+        %\draw[thick] (8, 0) circle (4.5cm) node[pos=0, above right, xshift=-2.8cm] {\textbf{Linguaggi liberi}};
+        
+        % Annotazioni linguaggi
+        \node[right] at (8, -1) {\(a^*b^*\)};
+        \node[below] at (7, -2) {\(wcw^R\)};
+        \node[below right] at (8.5, -3.5) {\(ww^R\)};
+    \end{tikzpicture}
+    
 }
-
-Si giunge così alla seguente osservazione:
-\nt{
+\pf{dimostrazione}{
+    Se $L$ è regoalre, allora $\exists$ DFA $M$ tale che $L=L[M]$. A partire da $M$, posso costruire un DPDA $N$ si compore come $M$ senza mai manipolare lo stack, allora si che $L=L[N]$ per stato finale 
+}
+\subsubsection{Prefix propriety}
+Si giunge così al seguente fatto:
+\clm{}{}{
     Un linguaggio libero deterministico $L$ è riconosciuto da un $DPDA$ per pila vuota sse $L$ gode della "perfix propriety", ovvero 
     \[
         \nexists x,y\in L : x \text{ è prefisso di }y       
@@ -65,12 +85,542 @@ Pertanto si ha che:
 \begin{itemize}
     \item Se $L$ è non gode della prefix propriety non può essere riconosciuto da un $PDPA$ per pila vuota
     \item Se $L$ è libero deterministico gode della prefix propriety, allora può essere riconosciuto da un $PDPA$ per pila vuota
-    \item Se $L$ è libero deterministico, allora $L\$ =\{w\$ \mid w\in L\}$ gode della prefix propriety, infatti $L\$$ può essere riconosciuto da un $PDPA$ per pila vuota
+    \item Se $L$ è libero deterministico, allora $L\$ =\{w\$ \mid w\in L\}$ gode della prefix propriety, infatti $L\$$ può essere riconosciuto da un $PDPA$ per pila vuota.
+    
+    Dove $\$\notin\Sigma$ ovvero $\$$ non è un simbolo dell'alfabeto di $L$, ma grazie ad esso alla fine di ogni linguaggio regolare vale la prefix propriety
 \end{itemize}
 
-\pf{dimostrazione}{
-    Se $L$ è regoalre, allora $\exists$ DFA $M$ tale che $L=L[M]$. A partire da $M$, posso costruire un DPDA $N$ si compore come $M$ senza mai manipolare lo stack, allora si che $L=L[N]$ per stato finale 
+\esempio{
+    Sia $L_1 = \{a^nb^n\mid n\geq 0\}$ il seguente linguaggio che non gode della prefix propriety, in quanto $\epsilon\in L_1$ e $\epsilon$ è prefisso di $ab$
+
+    \begin{tikzpicture}
+        % States
+        \node[state, initial, accepting] (q0) {\(q_0\)};
+        \node[state, right of=q0] (q1) {\(q_1\)};
+        \node[state, right of=q1] (q2) {\(q_2\)};
+        \node[state, accepting, right of=q2] (q3) {\(q_3\)};
+        
+    
+        % Transitions
+        
+        \draw (q0) edge[below] node {$\epsilon, Z/Z$} (q1);
+        \draw (q1) edge[loop above] node[align=center] {$a,Z/AZ$} (q1);
+        \draw (q1) edge[loop below] node[align=center] {$a,A/AA$} (q1);
+        \draw (q1) edge[below] node {$b,A/\epsilon$} (q2);
+        \draw (q2) edge[loop above] node[align=center] {$b,A/\epsilon$} (q2);
+        \draw (q2) edge[below] node[align=center] {$\epsilon,Z/\epsilon$} (q3);
+    
+    \end{tikzpicture}
+    
+    Si ha quindi che il seguente linguaggio è riconosciuto da un DPDA \textit{per stato finale} e non \textit{per pila vuota}. Tuttavia il seguente linguaggio con il $\$\notin\Sigma$ è riconosciuto da un DPDA per \textit{per pila vuota}
+
+    Sia $L_1\$$:
+
+
+    \begin{tikzpicture}
+        % States
+        \node[state, initial] (q0) {\(q_0\)};
+        \node[state, accepting, below of=q0] (q1) {\(q_1\)};
+        \node[state, right of=q0] (q2) {\(q_2\)};
+        \node[state, right of=q2] (q3) {\(q_3\)};
+        
+    
+        % Transitions
+        
+        \draw (q0) edge[below] node {$a, Z/AZ$} (q2);
+        \draw (q0) edge[left] node {$\$,Z/\epsilon$} (q1);
+        \draw (q3) edge[loop above] node[align=center] {$b,A/\epsilon$} (q3);
+        \draw (q3) edge[left] node[align=right] {$\$, Z/\epsilon$} (q1);
+        \draw (q2) edge[loop above] node[align=center] {$a,A/AA$} (q2);
+        \draw (q2) edge[below] node[align=center] {$b,A/\epsilon$} (q3);
+    
+    \end{tikzpicture}
+
+    Si verifichi, infatti, come egli venga riconosciuto per pila vuota
+
 }
+
+\esempio{
+    Sia $L_3 = \{a^nb^m\mid n\geq m \geq 0\}$ e dato che $\epsilon\in L_3$ tale linguaggio non gode della prefix propriety
+
+    \begin{tikzpicture}
+        \node[state, initial, accepting] (q0) {$q_0$};
+        \node[state,  accepting, right of=q0] (q1) {$q_1$};
+        \node[state,  accepting, right of=q1] (q2) {$q_2$};
+        \node[state,  accepting, right of=q2] (q3) {$q_3$};
+
+        \draw (q0) edge[above] node[align=center] {$a,Z/AZ$} (q1);
+        \draw (q1) edge[above] node[align=center] {$b,A/\epsilon$} (q2);
+        \draw (q2) edge[above] node[align=center] {$\epsilon, Z/\epsilon$} (q3);
+        \draw (q2) edge[loop above] node[align=center] {$b,A/\epsilon$} (q2);
+        \draw (q1) edge[loop above] node[align=center] {$b,A/AA$} (q1);
+        
+    \end{tikzpicture}
+
+    e sia $L_3\$$:
+
+    \begin{tikzpicture}
+        \node[state, initial] (q0) {$q_0$};
+        \node[state,  right of=q0] (q1) {$q_1$};
+        \node[state,  right of=q1] (q2) {$q_2$};
+        \node[state,  above of=q1] (q3) {$q_3$};
+        \node[state,  below of=q1] (q4) {$q_4$};
+
+        \draw (q0) edge[above] node[align=center] {$a,Z/AZ$} (q1);
+        \draw (q0) edge[left] node[align=center] {$\$,Z/\epsilon$} (q3);
+        \draw (q1) edge[above] node[align=center] {$b,A/\epsilon$} (q2);
+        \draw (q1) edge[left] node[align=center] {$\$,A/\epsilon$} (q4);
+        \draw (q2) edge[right] node[align=center] {$\$, Z/\epsilon$} (q3);
+        \draw (q2) edge[right] node[align=center] {$\$, A/\epsilon$} (q4);
+
+        \draw (q2) edge[loop right] node[align=center] {$b,A/\epsilon$} (q2);
+        \draw (q1) edge[loop above] node[align=center] {$b,A/AA$} (q1);
+        \draw (q4) edge[loop left] node[align=center] {$\epsilon,X/\epsilon$} (q4);
+
+        
+    \end{tikzpicture}
+
+
+}
+
+\subsubsection{non ambiguità dei linguaggi liberi deterministici}
+\mprop{}{
+    Se $L$ è libero deterministico, ovvero riconosciuto da un $DPDA$ per \textit{stato finale}, allora $L$ è generabile da una \textbf{grammatica libera non ambigua}.
+    
+    Si ha quindi che i \red{linguaggi liberi deterministici non sono ambigui}
+}
+
+
+%! errori e non capisco il motivo puercos zios
+\subsubsection{Proprietà dei linguaggi liberi deterministici}
+
+I lunguaggi liberi deterministici presentano le seguenti proprietà:
+\mprop{chiusura solo per complementazione}{
+    Sia $L$ un linguaggio libero deterministico, allora questo è chiuso per complementazione, ovvero:
+    \[
+        (\exists \; \text{DPDA} \; N \; : \; L = L(N)) \implies (\exists \; \text{DPDA} \; N' \; : \; \overline{L} = L(N')) \quad \text{dove} \quad \overline{L} = \Sigma^* \setminus L
+
+    \]
+}
+\dimostrazione{
+    Bisogna rendere totale la $\delta$ di $N$, eventualmente aggiungendo stati non finali, e poi $N'$ si ottiene da questo $N$ "aumentato", semplicemente scambiando \red{finali e non finali} 
+}
+
+\mprop{
+    Non chiusura per intersezione
+}{
+    Un linguaggio libero deterministico non è chiuso per intersezione
+}
+\esempio{
+    $L_1 =\{a^nb^nc^m\mid n,m\geq 0\}$ è libero deterministico\\
+    $L_2 =\{a^mb^nc^n\mid n,m\geq 0\}$ è libero deterministico\\
+    ma\\
+    $L_1\cap L_2 =\{a^nb^nc^n\mid n\geq 0\}$ non è libero!
+
+}
+
+\mprop{
+    non chiusura per unione
+}{
+    Un linguaggio libero deterministico non è chiuso per unione
+}
+\dimostrazione{
+    Assumiamo per assurdo che un linguaggio libero deterministico sia chiuso per unione, allora:
+    \[
+        L_1\cap L_2 = \overline{\overline{L_1}\cup \overline{L_2}}    
+    \]
+
+    Per questo fatto e la proprosizione precedente si è verificato un assurdo
+}
+
+\subsection{Analizzatori sintattici: parser}
+\begin{tikzpicture}[node distance=2cm]
+
+        % Nodes
+        \node (grammar) [startstop] {Grammatica Libera};
+        \node (algorithm) [process, right of=grammar, xshift=4cm] {Algoritmo di \\ Costruzione (YACC)};
+        \node (parser) [startstop, right of=algorithm, xshift=4cm] {Parser};
+        \node (tokens) [startstop, below of=grammar, yshift=-2.5cm] {Lista di Token};
+        \node (parser2) [process, right of=tokens, xshift=4cm] {Parser};
+        \node (tree) [startstop, right of=parser2, xshift=4cm] {Albero di Derivazione};
+        \node (additional) [below of=parser] {fondamentalmente un \\$DPDA$ con output};
+        
+        % Arrows
+        \draw [arrow] (grammar) -- (algorithm);
+        \draw [arrow] (algorithm) -- (parser);
+        \draw [arrow] (tokens) -- (parser2);
+        \draw [arrow] (parser2) -- (tree);
+        \draw [wavearrow] (additional) -- (parser)
+        
+        % Additional text
+        
+        
+        
+        
+\end{tikzpicture}
+
+I parser possono essere:
+\begin{itemize}
+    \item \textbf{nondeterministici}: se, durante la ricerca di una derivazione, si scopre che una scelta è improduttiva e non porta a riconoscere l'input, \red{il parser torna indietro} (\textit{backtracking}), disfa parte della derivazione appena costruita e scegli un'altra produzione, \red{tornando a leggere parte dell'input}
+    \item \textbf{deterministici}: leggono l'input una sola volta ed \red{ogni loro decisione è definitiva}
+\end{itemize}
+
+entrambi cercano di sfruttare informazioni dall'input per guidare la ricerca della derivazione
+
+\subsubsection{introduzione al top-down parsing}
+\dfn{}{
+    Data $G=(NT,T,S,R)$ lebera, costruiamo il $PDA\;M=(T,\{q\}, T\cup NT, \delta, q, S, \varnothing)$, che riconosce per pila vuota, dove $\delta:Q\times(\Sigma\cup\{\epsilon\})\times\Gamma→Q\times\Gamma^*$ è definita:
+    \begin{itemize}
+        \item \textbf{espandi}: $(q,\beta)\in \delta(q,\epsilon, A)$ se $A\to\beta\in R$ 
+        \item \textbf{consuma}: $\forall a\in T((q,\epsilon)\in \delta(q,a, a))$ 
+    \end{itemize} 
+    Tale che $L(G)=P[M]$ (riconoscimento per pila vuota)
+}
+
+Quindi, grazie alla prima regola se il simbolo in cima alla pila è un non terminale $A$, l'automa può espanderlo sostituendolo con la produzione $\beta$, come descritto nelle regole $R$ della grammatica, mentre secondo la regola di consumazione si ha che se il simbolo sulla cima della pila e il simbolo corrente della stringa in input sono entrambi a, allora l'automa può eliminare quel simbolo dalla pila e procedere nella lettura dell'input.
+
+\esempio{
+    Sia $G$ la seguente grammatica:
+    \[
+        \begin{array}{l}
+            S\to aSb\mid \epsilon
+        \end{array}    
+    \]
+
+    Si ha che $S\implies aSb \implies aaSbb \implies aabb$
+
+    \begin{center}
+       \begin{tikzpicture}
+        \node[state] (q) {$q_0$};
+        \draw (q) edge[loop right] node[align=center] {$b,b/\epsilon$} (q);
+        \draw (q) edge[loop above] node[align=center] {$a,a/\epsilon$} (q);
+        \draw (q) edge[loop left] node[align=center] {$\epsilon,S/\epsilon$} (q);
+        \draw (q) edge[loop below] node[align=center] {$\epsilon,S/aSb$} (q);
+    \end{tikzpicture} 
+    \end{center}
+
+    Si osservi che il seguente automa che riconosce il linguaggio della grammatica $S$ non è un PDPA
+
+    Nella maggior parte delle configurazioni standard di un Pushdown Automaton (PDA) utilizzato per il parsing top-down, la pila viene inizializzata con il simbolo iniziale della grammatica, nel nostro caso, quindi, la serie di passaggi che porteranno a riconoscere il linguaggio sarà:
+    \[
+        \begin{array}{l}
+            (q,aabb,S) \vdash (q,aabb,aSb)\\
+            \vdash (q,abb,Sb)\vdash (q,abb,aSbb)\\
+            \vdash  (q,bb,Sbb)\vdash (q,bb,bb)\\
+            \vdash (q,b,b)\vdash (q,\epsilon,\epsilon)
+        \end{array}
+    \]
+    che costruisce il seguente albero di derivazione 
+    \begin{center}
+        \begin{tikzpicture}
+            \Tree [.S 
+                        a
+                        [.S
+                            a
+                            [.S
+                                $\epsilon$
+                            ]
+                            b
+                        ]
+                        b
+                ]
+        \end{tikzpicture}
+    \end{center} 
+
+    Si ha, quindi:
+    \begin{itemize}
+        \item derivazione canonica a sx (leftmost)
+        \item costruzione dell'albero dall'alto in basso
+    \end{itemize}
+
+    %TODO triangolo
+}
+
+Tuttavia in questo esempio è facile verificare che il parser è nondeterministico, infatti l'automa è un $PDA$, tuttavia questo nondeterminismo può essere risolto \red{scegliendo la produzione in baso al simbolo di lettura nell'input} (\textbf{look-ahead}), ad esempio:
+\begin{itemize}
+    \item se leggo $a$, espando $S\to aSb$
+    \item se leggo $b$, espando $S\to \epsilon$
+\end{itemize}
+
+\begin{center}
+  \begin{tabular}{rrr}
+    \textbf{input} & \textbf{stack}&\textbf{azione}\\
+    $\underline{a}abb\$$&$S$&leggo $a$ e espando in $aSb$ \\
+    & $\underline{a}Sb$&consumo\\
+    $\underline{a}bb\$$&$Sb$&leggo $a$ e espando in $aSb$\\
+    &$\underline{a}Sbb$&conumo\\
+    $\underline{b}b\$$ & $Sbb$&leggo $b$ e espando in $\epsilon$\\
+    &$\underline{b}b$&consumo\\
+    $b\$$&$b$&leggo $b$ e espando in $\epsilon$ \\
+    $\$$ & $\epsilon$& fin
+\end{tabular}  
+\end{center}
+
+\nt{
+    Non tutte le grammatiche sono adatte per il top down-parser
+}
+\esempio{
+    Sia $G$ la segnuete grammatica:
+    \[
+        S\to Sb\mid a        
+    \]
+    e $L(G)=ab^*$ (linguaggio regolare semplice)
+
+    L'automa che riconosce il linguaggio è:
+    \begin{center}
+        \begin{tikzpicture}
+         \node[state] (q) {$q$};
+         \draw (q) edge[loop right] node[align=center] {$b,b/\epsilon$} (q);
+         \draw (q) edge[loop above] node[align=center] {$a,a/\epsilon$} (q);
+         \draw (q) edge[loop left] node[align=center] {$\epsilon,S/a$} (q);
+         \draw (q) edge[loop below] node[align=center] {$\epsilon,S/Sb$} (q);
+     \end{tikzpicture} 
+     \end{center}
+
+     Con i seguenti passaggi:
+     \[
+        (q,ab,S)\vdash(q,ab,Sb)\vdash(q,ab,Sbb)\vdash\dots   
+     \]
+     Qui il determinismo non funziona, infatti se vogliamo espandere quando leggiamo $a$ in input non possiamo anche consumare, pertnato l'automa espanderà all'infinito
+
+     Occorre manipolare la grammatica affinche non vi siano ricorsioni sinistre
+}
+
+\subsubsection{
+    Introduzione al botto-up parsing
+}
+\clm{}{}{
+    Data una grammatica libera $G = (NT, T, R, S)$, costruiamo un $PDPA\;M = (T,\{q\},T\cup NT\cup\{Z\},\delta,q,Z,\varnothing)$ che riconosce $L(G).\$$ dove:
+    \begin{itemize}
+        \item \textbf{shift}: $\forall a \in T,\Big(\forall X\in T\cup NT\cup Z,\big((q,aX)\in \delta(q,a,Z)\big)\Big)$
+        \item \textbf{reduce}: $(A\to\alpha R)\implies(q,A)\in\delta (q,\epsilon,\alpha^R)$ 
+        
+        Con $\alpha^R$ una generalizzazione dei $PDA$ in cui si consuma una stringa sulla pila anziché solo il top
+        \item \textbf{accept}: \((q,\epsilon)\in \delta (q,\$,SZ)\)
+        
+        Con $S$ che deve essere alla fine sulla pila e $\$$ simbolo di fine input
+    \end{itemize}
+}
+
+Cominciamo subito con un esempio
+\esempio{
+    Sia $G$ la seguente grammatica:
+    \[S\to aSb\mid ab\]
+
+    
+\begin{center}
+    \begin{tikzpicture}
+        % Nodo centrale
+        \node[state] (q) {$q$};
+        
+        % 5 loop disposti attorno al nodo
+        \draw (q) edge[loop above] node[align=center] {$a,a/\epsilon$} (q);
+        \draw (q) edge[loop right] node[align=center] {$b,b/\epsilon$} (q);
+        \draw (q) edge[loop below right] node[align=center] {$c,c/\epsilon$} (q);
+        \draw (q) edge[loop below left] node[align=center] {$d,d/\epsilon$} (q);
+        \draw (q) edge[loop left] node[align=center] {$e,e/\epsilon$} (q);
+    \end{tikzpicture}
+\end{center}
+
+\begin{center}
+    \begin{tabular}{lll}
+        \textbf{stack}&\textbf{input}&\textbf{azione}\\
+        $Z$ & $aabb\$$ & shift\\
+        $Za$ & $abb\$$ & shift\\
+        $Zaa$ & $bb\$$ & shift\\
+        $Zaab$ & $b\$$ & reduce $S\to ab$\\
+        $ZaS$&$b\$$ & shift \\
+        $ZaSb$ & $\$$ & reduce $S\to aSb$\\
+        $ZS$ & $\$$ & \textit{accept}\\
+        $\epsilon$ & $\epsilon$ &
+    \end{tabular}
+\end{center}
+
+In passaggi, $S\implies aSb \implies aabb$. Viene prodotto il seguente albero di derivazione:
+
+\begin{center}
+    \begin{tikzpicture}
+    \Tree[.S 
+        a
+        [.S
+            a
+            b
+        ]
+        b
+    ]
+    \end{tikzpicture}    
+\end{center}
+
+Si può verificare come come la costruzione dell'input sia:
+\begin{itemize}
+    \item \textbf{left-to-right} (come leggo l'input)
+    \item \textbf{right-derivatione}
+    \item 
+\end{itemize}
+
+Tuttavia  è facile verificare che c'è molto nondeterminismo:
+\begin{itemize}
+    \item Conflitti: Shift-Reduce
+    \begin{enumerate}
+        \item $zaab \quad b\$ \quad$ (può fare shift)
+        \item $zaabb \quad \$ \quad$ (ma è un percorso infruttuoso)
+    \end{enumerate}
+    \item Conflitti: Reduce-Reduce
+    
+    Più riduzioni possibili (non ci sono in quest'esempio, ma con grammatiche più complesse è possibile)
+
+\end{itemize}
+}
+
+Per ottenere un DPDA, serve introdurre informazioni aggiuntive per risolvere i conflitti:
+\begin{itemize}
+    \item \textbf{Più stati:} (o strutture particolari di supporto alle decisioni, come un DFA dei prefissi validi).
+    \item \textbf{Look-ahead:} (guardare l'input in avanti).
+\end{itemize}
+
+Vediamo un esempio più corposo relativo alle grammatiche delle espressioni aritmetiche:
+
+\esempio{
+    Sia $G$ tale grammatica:
+    \[
+        \begin{aligned}
+            & E \to T + E \mid T \\
+            & T \to T \times A \mid A \\
+            & A \to a \mid b \mid (E)
+        \end{aligned}
+    \]
+    Si ha:
+
+    %! modificare il reduce
+    \[
+        \begin{array}{|c|l|}
+        \hline
+        \textbf{G} & \textbf{M} \\
+        \hline
+        & t_0 : \delta(q, a, X) = (q, aX) \; \forall aX \quad \text{SHIFT} \\
+        \text{(R1)} \; E \to T + E  & t_1 : \delta(q, \epsilon, E + T) = (q, E) \\
+         \text{(R2)} \; E \to T & t_2 : \delta(q, \epsilon, T) = (q, E) \\
+        \text{(R3)} \; T \to T \ast A & t_3 : \delta(q, \epsilon, A \ast T) = (q, T) \quad \text{REDUCE} \\
+        \text{(R4)} \; T \to A & t_4 : \delta(q, \epsilon, A) = (q, T) \\
+        \text{(R5)} \; A \to (E) & t_5 : \delta(q, \epsilon, (E)) = (q, A) \\
+        \text{(R6)} \; A \to a & t_6 : \delta(q, \epsilon, a) = (q, A) \\
+        \text{(R7)} \; A \to b & t_7 : \delta(q, \epsilon, b) = (q, A) \\
+                            & t_8 : \delta(q, \$, EZ) = (q, \epsilon) \quad \text{ACCEPT} \\
+        \hline
+        \end{array}
+    \]
+    La cui sequenza è:
+    \[
+        a*(b)\Leftarrow A*(b) \Leftarrow T*(b)\Leftarrow T*(A) \Leftarrow T*(T)\Leftarrow T*(E)\Leftarrow T*A \Leftarrow T \Leftarrow E
+    \]
+
+    La cui pila-stack-input è:
+    \[
+        \begin{array}{|c|c|c|}
+            \hline
+            \textbf{Stack} & \textbf{Input} & \textbf{Action} \\
+            \hline
+            Z & a \ast (b) \$ & \text{shift} \\
+            Z a & \ast (b) \$ & \text{reduce } R_6 \\
+            Z A & \ast (b) \$ & \text{reduce } R_4 \\
+            Z T & \ast (b) \$ & \text{shift} \\
+            Z T \ast & (b) \$ & \text{shift} \\
+            Z T \ast ( & b) \$ & \text{shift} \\
+            Z T \ast ( b & ) \$ & \text{shift} \\
+            Z T \ast ( b ) & \$ & \text{reduce } R_7 \\
+            Z T \ast ( A & ) \$ & \text{reduce } R_4 \\
+            Z T \ast ( T & ) \$ & \text{reduce } R_2 \\
+            Z T \ast ( E & ) \$ & \text{shift} \\
+            Z T \ast ( E ) & \$ & \text{reduce } R_5 \\
+            Z T \ast A & \$ & \text{reduce } R_3 \\
+            Z T & \$ & \text{reduce } R_2 \\
+            Z E & \$ & \text{accept} \\
+            \epsilon &\epsilon & \\
+            \hline
+        \end{array}
+    \]
+
+    Il cui albero di derivazione:
+    \begin{center}
+        \begin{tikzpicture}
+        \Tree[.E 
+            [.T
+                [.T
+                    [
+                        .A
+                        [
+                            .a
+                        ]
+                    ]
+                ]
+                *
+                [
+                    .A
+                    $($
+                    [
+                        .E
+                        [
+                            .T
+                            [
+                                .A
+                                [
+                                    .b
+                                ]
+                            ]
+                        ]
+                    ]
+                    $)$
+                ]
+            ]
+        ]
+        \end{tikzpicture}    
+    \end{center}
+
+
+
+}
+
+L'automa è non deterministico perché:
+\begin{enumerate}
+    \item Chi ha precedenza tra \textit{shift} e \textit{reduce}?
+    
+    \textbf{Ad esempio:}
+    \begin{enumerate}
+        \item[1)] $Z a \quad * \, (b) \, \$ \quad$ \textit{shift}
+        \item[2)] $Z a * \quad (b) \, \$ \quad$ non buono! Qui \textit{reduce} è in conflitto con \textit{shift}!
+    \end{enumerate}
+    
+    \textbf{Altro esempio:}
+    \begin{enumerate}
+        \item $Z T \quad * \, (b) \, \$ \quad$ \textit{reduce } $R_2$
+        \item $Z E \quad * \, (b) \, \$ \quad$ non buono! Qui \textit{shift} è in conflitto con \textit{reduce}!
+    \end{enumerate}
+    
+    \item Chi ha precedenza tra due diverse \textit{reduce}?
+    
+    \textbf{Ad esempio:}
+    \begin{enumerate}
+        \item $Z T * A \quad \$ \quad$ \textit{reduce } $R_3$
+        \item $Z T \quad \$$
+        \item $Z T * T \quad \$ \quad$ se faccio, \textit{reduce } $R_4$ \\
+        Qui \textit{reduce} $R_3$ è in conflitto con \textit{reduce} $R_4$!
+    \end{enumerate}
+    
+    È buona norma scegliere in modo tale che ciò che si trova nella pila sia un prefisso (a rovescio) di una parte destra di una produzione della grammatica.
+    
+    \textbf{Ad esempio:}
+    \begin{enumerate}
+        \item $Z a$
+        \item $Z A$ con la ``norma'' produco chi coincide con ciò che è un prefisso di una parte destra che comincia con $A$.
+    \end{enumerate}
+\end{enumerate}
+
+\subsubsection{problema con le pruzioni $\epsilon$}
+Sia la produzione $S\to \epsilon$
+
+TODO! NON HO CAPITO
+
+
 \section{Semplificazione delle grammatiche}
 Per avere \textbf{PDA} efficienti e con minor non determinismo è necessario semplificare le grammatiche. Ad esempio:
 \begin{itemize}
@@ -135,8 +685,8 @@ Una volta calcolato \( N(G) \) per \( G = (N, T, S, R) \), costruiamo la grammat
     \[
         G = \begin{cases}
             S \to AB \\
-            A\to aAA|\epsilon\\
-            B\to bBB|\epsilon
+            A\to aAA\mid\epsilon\\
+            B\to bBB\mid\epsilon
         \end{cases}    
         \quad
         N_0(G)=\{A,B\} \text{ e }N_1(G)=\{A,B,S\} = N(G)
