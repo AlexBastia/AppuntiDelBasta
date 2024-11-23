@@ -1,5 +1,5 @@
-\chapter{Risoluzione di equazioni}
-\section{Calcolo dello zero di una funzione}
+\chapter{Risoluzione di equazioni (generale)}
+\section{Bisezione}
 Come primo metodo per risolvere (approssimativamente) equazioni, usiamo il metodo della \textbf{bisezione}. Questo sfrutta il teorema degli zeri per trovare uno dei possibili zeri di una funzione continua su un intervallo chiuso con valori discordi di segno agli estremi. Come esempio, prendiamo questa equazione:
 \[
 x = cos x
@@ -13,72 +13,92 @@ Dato l'intervallo $ [-1, 1] $, otteniamo il seguente grafico:
     no puede soportar este sufrimento
   %\includegraphics[width=0.5\textwidth]{img/2024-09-23-12-11-58.png}
 \end{center}
-\subsection{Algoritmo di bisezione}
-L'algoritmo di bisezione usa un approccio simile alla ricerca binaria per avvicinarsi sempre di piu' al valore dello zero. Dato in input la funzione continua $ f:\mathbb{R}\to\mathbb{R} $ e un intervallo $ [a,b]. f(a)f(b)<0 $, viene calcolato il valore della funzione nel punto di mezzo $ c $. L'intervallo viene poi ristretto, prendendo $ c $ come uno dei limiti e scegliendo l'altro fra $ a $ e $ b $ in modo che i valori della funzione agli estremi abbiano sempre segno opposto. In pseudocodice:
+
+Ci si chiede se esistono tali implicazioni:
+\begin{itemize}
+    \item Esistenza e unicità della soluzione
+    \item Esistenza di algoritmi per calcolare soluzione
+\end{itemize}
+
+Innanzi tutto si tenga conto di tale teorema 
+\teorema{
+    \textbf{Teorema di Bolzano}: \\
+        Sia $F:[a,b] \in \mathbb{R} \rightarrow \mathbb{R}$ continua in $[a,b]$ e $f(a)\cdot f(b)<0 \Rightarrow \exists x^*:F(x^*)=0$
+}
+Per la dimostrazione si vedano gli appunti/libri di analisi
+
+\subsubsection{Primo algoritmo di bisezione: n-iterativo}
+Intuitivamente l'algoritmo di bisezione ha due fasi:
+\begin{enumerate}
+    \item se $f(a)\cdot f(c)=0$ la radice è nell'intervallo $[a,c]$ che diventa la nuova versione dell'intervallo $[a,b]$
+    \item altrimenti, se  $f(c) \cdot f(b)=0$ la radice è nell'intervallo $[c,b]$ che diventa la nuova versione dell'intervallo $[a,b]$
+\end{enumerate}
+
+Ecco qui descritto l'algoritmo di bisezione in pseudocodice:
 
 \begin{algorithm}[H]
-\caption{Bisezione semplice}
-  \KwIn{$ f: \mathbb{R}\to\mathbb{R} $ continua su $ [a,b] \subset \mathbb{R} $, tale che $ f(a)f(b)<0 $. $ N > 0 $ (numero di iterazioni)}
-  \KwOut{Valore approssimato di uno zero di $ f $ su $ [a,b] $}
-\SetAlgoLined
-\SetNoFillComment
-\vspace{3mm}
-$c \leftarrow 0$\;
-\For{$ N $ times} {
-    $ c \gets \frac{a+b}{2} $\;
-    \uIf{$ f(a)f(c)<0 $} {
-      $ b \gets c $
+    \caption{primo algoritmo di Bisezione (Function f, int a, int b, int n)}
+    \KwData{Funzione continua $f(x)$, continua in $a$ e $b$ con $f(a) \cdot f(b) < 0$, un numero N di iterazioni}
+    \KwResult{Approssimazione della radice}
+
+
+
+    \For{1 to n}{
+        $c \leftarrow \frac{a + b}{2};$\\
+        \If{$f(c) = 0$}{
+            \Return $c$\ \tcp*{Trovata la radice esatta}
+        }
+        \If{$f(a) \cdot f(c) < 0$}{
+            $b \leftarrow c$\ \tcp*{La radice è nell'intervallo $[a, c]$}
+        }
+        \Else{
+            $a \leftarrow c$\ \tcp*{La radice è nell'intervallo $[c, b]$}
+        }
     }
-    \Else {
-      $ a \gets c $
-    }
-}
-\Return $ c $
+    \Return $c$\tcp*{Approssimazione della radice}
 \end{algorithm}
 
-\vspace{3mm}
-Se volgiamo assicurarci che il risultato $ r' $ che otteniamo abbia al massimo un errore $ E_{tol} $ rispetto al valore reale $ r $ della radice, basta porre una condizione d'arresto nel ciclo di bisezione. Sapendo che ad ogni ciclo lo zero si trova fra $ a $ e $ b $, scegliendo $ r' $ come punto di mezzo rende l'errore massimo $ E_{max} = \frac{b-a}{2} $, quindi:
+Questo tipo di soluzione per la bisezione ha un numero $n$ di iterazioni per approssimare la soluzione, questa soluzione è molto semplice ma non la migliore. Vi è tuttavia una soluzione migliore
 
-\vspace{3mm}
+\subsubsection{Secondo algoritmo di bisezione: tolleranza d'errore}
+Nella pratica è molto più utile definire una costante $\epsilon$ che vuole rappresentare l'errore di approssimazione massimo, di modo che un'approssimazione $\overline{r}$ della radice reale $r$ grantisca che $|r- \overline{r}| \leq \epsilon$. In altre parole si vuole garantire che $r\in [\overline{r}-\epsilon,\overline{r}+\epsilon]$. \\ Nel nostro caso $\overline{r}$ è il valore di $c=(b-a)/2$ mentre impostiamo $\epsilon = (b-a)/2$. Si imposti inoltre un \textbf{errore di tolleranza $e_{tol}$}  per iterare le operzione fino a che non si incontri. Di seguito è riportato l'algoritmo:
+
+%todo RIFARLO
 \begin{algorithm}[H]
-\caption{Bisezione con errore}
-  \KwIn{$ f: \mathbb{R}\to\mathbb{R} $ continua su $ [a,b] \subset \mathbb{R} $, tale che $ f(a)f(b)<0 $. $ E_{tol} $}
-  \KwOut{Valore approssimato di uno zero di $ f $ su $ [a,b] $ con errore assoluto al massimo $ E_{tol} $}
-\SetAlgoLined
-\SetNoFillComment
-\vspace{3mm}
-$c \leftarrow 0$\;
-$ E_{max} = \frac{b-a}{2} $\;
-\While{$ E_{max} > E_{tol} $} {
-    $ c \gets \frac{a+b}{2} $\;
-    \uIf{$ f(a)f(c)<0 $} {
-      $ b \gets c $
+    \caption{Algoritmo di Bisezione}
+    \KwData{Funzione continua $f(x)$, estremi $a$ e $b$ con $f(a) \cdot f(b) < 0$, tolleranza $\epsilon$}
+    \KwResult{Approssimazione della radice $x^*$ con $|f(x^*)| <Tocca la rivoluzione perle sighe del che a 2 euro
+ \epsilon$}
+    \While{$|b - a| > \epsilon$}{
+        $c \leftarrow \frac{a + b}{2}$;
+        \If{$f(c) = 0$}{
+            \Return $c$\; \tcp*{Trovata la radice esatta}
+        }
+        \If{$f(a) \cdot f(c) < 0$}{
+            $b \leftarrow c$\; \tcp*{La radice è nell'intervallo $[a, c]$}
+        }
+        \Else{
+            $a \leftarrow c$\; \tcp*{La radice è nell'intervallo $[c, b]$}
+        }
     }
-    \Else {
-      $ a \gets c $
-    }
-    $ E_{max} = \frac{b-a}{2} $
-}
-\Return $ c $
+    \Return $\frac{a + b}{2}$\; \tcp*{Approssimazione della radice}
 \end{algorithm}
+
+%! MANCANO DEI PEZZI
 
 \section{Iterazione di punto fisso}
 Presa la funzione $ f $ di cui vogliamo trovare lo zero, possiamo definire una funzione $ g(x) = x-w(x)f(x) $ dove $ w $ e' una funzione peso \textit{positiva} e \textit{limitata}. Quindi:
 \[
   f(x) = 0 \iff g(x) = x
 \]
+\begin{center}
+  \input{./PGF/PuntoFisso1.pgf}
+\end{center}
 
-%\begin{figure}[H]
- % \centering
-  %\begin{subfigure}[b]{0.45\textwidth}
-    no puede soportar este sufrimento
-      %\input{./PGF/PuntoFisso1.pgf}
-  %\end{subfigure}
-  %\begin{subfigure}[b]{0.45\textwidth}
-   % no puede soportar este sufrimento
-      %\input{./PGF/PuntoFisso2.pgf}
- % \end{subfigure}
-%\end{figure}
+\begin{center}
+  \input{./PGF/PuntoFisso2.pgf}
+\end{center}
+
 Quindi siamo passati dal cercare uno zero di una funzione a trovare il \textbf{punto fisso}:
 \dfn{Punto fisso}{
   Data $ g:D \to C $, si chiamano \textbf{punti fissi} tutti i punti $ x \in D: $
@@ -127,8 +147,7 @@ Ma come facciamo ad assicurarci che la successione converga? Ecco che entrano in
   Consideriamo la funzione $ f(x) = x - g(x) $, dove $ g $ e' una mappa continua sull'intervallo $ [a,b] $. Quindi $ f(a) = a - g(a) \leq 0 $ e $ f(b) = b - g(b) \geq 0 $, dato che per definizione di mappa $ g(a), g(b) \in [a,b] $. Quindi per teorema degli zeri $ \exists p \in [a,b]. f(p) = 0 $. Quindi $ g(p) = p $ e' un punto fisso.
 }
 \begin{center}
-    no puede soportar este sufrimento
-  %\includegraphics[width=0.5\textwidth]{img/2024-09-28-14-56-48.png}
+  \input{./PGF/PuntoFisso3.pgf}
 \end{center}
 
 Come si vede dal grafico della mappa continua $ g(x) $ su $ [-4, 4] $, e' possibile che una mappa abbia piu' di un punto fisso. Per assicurarci l'esistenza di una soluzione unica, dobbiamo aggiugere un'ultima condizione:
@@ -141,8 +160,7 @@ Come si vede dal grafico della mappa continua $ g(x) $ su $ [-4, 4] $, e' possib
 }
 Questo significa che per ogni due punti che prendiamo dal dominio, la loro distanza sara' sempre maggiore (o uguale) alla distanza fra i due punti corrispondenti nel codominio. Graficamente (in $ \mathbb{R}^2 $):
 \begin{center}
- % \includegraphics[width=0.5\textwidth]{img/2024-09-28-17-12-32.png}
- no puede soportar este sufrimento
+ \input{./PGF/PuntoFisso4.pgf}
 \end{center}
 \thm{}{
   Data una mappa contrattiva $ g $ su un intervallo chiuso $ D $, esiste un solo punto fisso $ p $ a cui converge la successione $ x_n $ dove $ x_{k+1} = g(x_k) $, scegliendo $ x_0 $ come qualunque punto in $ D $.
@@ -150,13 +168,11 @@ Questo significa che per ogni due punti che prendiamo dal dominio, la loro dista
 \pf{Dimostrazione (singolo punto fisso)}{
 Assumiamo che $ g $ abbia piu' di un punto fisso e dimostriamo l'assurdo. Consideriamo il seguente grafico:
 \begin{center}
- % \includegraphics[width=0.5\textwidth]{img/2024-09-28-17-27-59.png}
-
- no puede soportar este sufrimento
+ \includegraphics[width=0.5\textwidth]{img/2024-09-28-17-27-59.png}
 \end{center}
 Prendendo due dei punti fissi, $ p_1, p_2 $, notiamo che $ \frac{|g(p_1) - g(p_2)|}{|p_1 - p_2|} = \frac{|p_1 - p_2|}{|p_1 - p_2|} = 1 $, ma dato che la costante $ C $ deve essere minore di $ 1 $, abbiamo dimostrato l'assurdo. 
 }
-La seconda parte della dimostrazione la vediamo piu' avanti.
+Manca la dimostrazione della garanzia dell'esistenza del punto fisso, che vedremo piu' avanti. (\ref{dimConvergPtFisso})
 
 \subsubsection{Come controllare se una funzione differenziabile e' una mappa contrattiva}
 Nella dimostrazione precedente e' apparsa una forma che somigliava molto a una derivata. Infatti, se la funzione $ g $ e' derivabile possiamo usare il seguente teorema:
@@ -189,15 +205,15 @@ Quindi per ogni iterazione, l'errore iniziale diminuisce almeno di un fattore $ 
 }
 
 Ora siamo in grado di finire la dimostrazione di prima:
-\pf{Diostrazione (convergenza)}{
+\pf{Diostrazione (convergenza)}{ \label{dimConvergPtFisso}
   Usando la proposizione precedente, $ \lim_{k \to +\infty} |E_k| = \lim_{k \to +\infty} C^k|x_0 - p| = 0 $. Quindi:
   \[
     x_k \xlongrightarrow{k \to +\infty} p
   \]
 }
 
-\subsection{Metodo di Newton}
-Vediamo ora il metodo di Newton, che rispetto alla bisezione e' generalmente piu' veloce (ma non abbiamo la garanzia). Puo' essere dimostrato come una specifica mappa contrattiva o come approssimazione a linee tangenti, vediamo la prima:\\\\
+\section{Metodo di Newton}
+Vediamo ora il metodo di Newton, che rispetto alla bisezione e' generalmente piu' veloce (ma non abbiamo la garanzia). Puo' essere dimostrato ricorrendo alle mappe contrattive o come approssimazione a linee tangenti, vediamo la prima:\\\\
 Prendiamo una funzione differenziabile $ f $ e costruiamole una mappa contrattiva $ g $. Per migliorare l'efficenza, vogliamo fare in modo che la costante $ C $ abbia valore minimo dato un intorno della radice $ r $ di $ f $, come facciamo? Dato che $ C $ assume il valore della derivata massima della mappa, vogliamo fare in modo che la derivata di $ g $ sia minima per quell'intorno. Un modo per fare cio' e' assicurarci che $ g'(r) = 0 $, vediamo come:
 \[
   g'(r) = 1 - w'(r)f(r) - w(r)f'(r) = 1 - w(r)f'(r)
@@ -211,207 +227,4 @@ Dato che non sappiamo il valore di $ r $, poniamo $ w(x) = \frac{1}{f'(x)} $ per
   x_{k+1} = x_k - \frac{f(x_k)}{f'(x_k)}
 \]
 che e' la formula per il metodo di Newton.
-\section{Risolvere sistemi lineari}
-\begin{itemize}
-\item Metodi Diretti: +accurati, -efficenti
-\item Metodi Iterativi: -accurati, +efficenti
-\end{itemize}
 
-\subsection{Fattorizzazione LU}
-Per risolvere sistemi lineari, il metodo diretto piu' efficente risulta essere la \textbf{fattorizzazione LU}. Purche' abbia un numero maggiore di operazioni floating-point (flops) rispetto al Gaussian-Jordan, permette di calcolare multiple soluzioni di un sistema $ Ax = b $ decomponendo una sola volta la matrice $ A $. 
-
-\subsubsection{Algoritmo}
-Dobbiamo fattorizzare la matrice $ A $ e ottenere due matrici triangolari, una superiore ($ U $) e l'altra inferiore ($ L $). In piu', $ L $ deve avere tutti $ 1 $ sulla diagonale principale. 
-\[
-A = LU = \begin{pmatrix}
-1 & 0 & 0 & 0\\
-* & 1 & 0 & 0\\
-* & * & 1 & 0\\
-* & * & * & 1\\
-\end{pmatrix} \cdot \begin{pmatrix}
-* & * & * & *\\
-0 & * & * & *\\
-0 & 0 & * & *\\
-0 & 0 & 0 & *\\
-\end{pmatrix}
-\]
-
-In modo da essere fattorizzabile, $ A $ non deve essere \textit{singolare} ($ detA \neq 0 $) e deve avere i minori principali diversi da 0. Per fare cio', moltiplichiamo la matrice $ A $ per $ n-1 $ matrici $ E_1, E_2, ..., E_{n-1} $ (che per costruzione sono tutte lower) in modo che $ A $ diventi triangolare superiore (sara' il valore di $ U $), mentre $ L $ sara' l'inversa del prodotto $ E_{n-1}\cdot ... \cdot E_2 \cdot E_1 $ (dato che $ L^{-1}A = U $). Quindi per prop dell'inversa $ L = E_1^{-1} \cdot E_2^{-1} \cdot ... \cdot E_{n-1}^{-1} $:
-\begin{center}
-    no puede soportar este sufrimento
-%  \includegraphics[width=0.5\textwidth]{img/2024-10-04-12-23-45.png}
-\end{center}
-Dato che $ E_1, E_2, ..., E_{n-1} $ sono triangolari con solo 1 sulla diagonale, per trovare l'inversa basta cambiare di segno i loro valori (tranne gli 1 diagonali). Per evitare di dividere per numeri troppo piccoli durante la costruzione delle matrici lower, e' possibile usare una matrice $ P $ di cambio di righe:
-\[
-PA = LU \implies A = P^{-1}LU \implies A = PLU
-\]
-
-($ P = P^{-1} = P^{T} $). Infine ci resta risolvere il sistema:
-\[
-Ax = b \implies LUx = b \implies \begin{cases}
-Ux = y & \\
-Ly = b & 
-\end{cases}
-\]
-
-Per cui usiamo il metodo di sostituzione avanti, dato che sono sistemi triangolari:
-\begin{center}
-    no puede soportar este sufrimento
-  %\includegraphics[width=0.5\textwidth]{img/2024-10-14-16-43-56.png}
-\end{center}
-\subsection{Fattorizzazione di Cholesky}
-Si puo' usare solo nel caso speciale in cui $ A $ sia \textbf{definita semi-positiva}:
-\dfn{Matrice semi-definita positiva}{
-  $ A $ $ n \times n $ simmetrica e' \textbf{semi-definita positiva} se $ \forall x \in \mathbb{R}^n: $
-  \[
-  x^T A x \geq 0
-  \]
-}
-
-Per cui vale:
-\mprop{Autovalori di matrici semi-definite positive}{
- Data una matrice $ A $ semi-definita positiva, ogni autovalore di $ A $ e' positivo o nullo
-}
-
-Grazie a queste proprieta', possiamo dire che $ \exists L: $
-\[
-A = L \cdot L^T
-\]
-e trovarlo e' circa due volte piu' efficente rispetto a LU.
-
-\section{Approssimazione}
-\subsection{SVD}
-\nt{
-  Fonti: 
-  \begin{itemize}
-      \item \href{https://www.youtube.com/watch?v=vSczTbgc8Rc}{Visualizzazione geometrica}
-      \item \href{https://www.youtube.com/watch?v=vSczTbgc8Rc}{Visualizzazione vettori ortogonali e dimostrazione minimo quadrato}
-      \item \href{https://gregorygundersen.com/blog/2018/12/20/svd-proof}{Dimostrazione SVD}
-  \end{itemize}
-}
-Prima di iniziare ad introdurre metodi di approssimazione, e' necessario esplorare uno dei teoremi finali dell'algebra lineare: la \textbf{SVD} (Singular Value Decomposition). Questo teorema sara' fondamentale per descrivere vari modelli di ottimizzazione e approssimazione per motivi che vedremo dopo.\\
-\\
-\subsubsection{Introduzione}
-Un modo per arrivare alla SVD e' porci la seguente domanda: data una matrice $ A \in M(\mathbb{R})_{n \times m} $, esistono $ m $ vettori ortonormali in $ \mathbb{R}^m $ la cui immagine e' sempre un insieme di $ m $ vettori ortogonali (se $ m > n $ allora $ m -n $ vettori dell'immagine saranno nulli) in $ \mathbb{R}^n $? Proviamo a scrivere la domanda in modo piu' matematico:
-\[
-  \exists V \in M(\mathbb{R})_{m}, U \in M(\mathbb{R})_n, \Sigma \in M(\mathbb{R})_{n \times m}. V, U \text{ ortonormali, } \Sigma \text{ diagonale (rettangolare)}. \forall A \in M(\mathbb{R})_{n \times m}:
-\]
-\[
- AV = U\Sigma
-\]
-dove $ V $ ha come colonne i vettori ortonormali del dominio, $ U $ ha come colonne vettori ortonormali (se $ n > m $ le ultime $ n-m $ colonne non importano e possono essere nulle) che moltiplicate per i corrispondenti scalari sulla diagonale della matrice $ \Sigma $ formano l'immagine ortogonale di $ V $. Dato che $ V $ e' ortonormale, posso riscrivere l'equazione come scomposizione di $ A $:
-\[
-A = U\Sigma V^T
-\]
-Questa e' la scomposizione di cui la SVD ci assicura l'esistenza per qualsiasi matrice $ A $, formalmente:
-\thm{Singular Value Decomposition}{
-  Per qualsiasi $ A \in M(\mathbb{R})_{n \times m} $, esistono:
-  \begin{itemize}
-    \item $ U $ ortonormale $ n \times n $
-    \item $ V $ ortonormale $ m \times m $
-    \item $ \Sigma $ rettangolare diagonale $ n \times m $
-  \end{itemize}
-  Tali che:
-  \[
-    A = U\Sigma V^T
-  \]
-}
-\mlenma{Lemma 1}{
-  Per una qualsiasi matrice $ A \in M(\mathbb{R})_{n \times m} $, si ha che:
-  \begin{itemize}
-    \item $ A^T A \in M(\mathbb{R})_n $ semidefinita positiva
-    \item $ A A^T \in (\mathbb{R})_m $ semidefinita positiva
-  \end{itemize}
-}
-\pf{}{
-  Dimostra (forse)
-}
-
-\pf{Dimostrazione SVD}{
-  Sia $ A \in M(\mathbb{R})_{n \times m} $. Per Lemma 1, sappiamo che $ A^T A $ e' una matrice semidefinita positiva, quindi, per il teorema spettrale, puo' essere scomposta come:
-  \[
-  A^T A = V \Lambda V^T
-  \]
-  dove $ V \in M(\mathbb{R})_m $ e' una matrice ortonormale e $ \Lambda \in M(\mathbb{R})_m $ e' la matrice diagonale di autovettori ordinati $ \lambda_1 \geq ... \geq \lambda_m $ tali che $ Av_1 = \lambda_1 v_1 $. Definiamo ora $ n $ vettori $ u_i $ nel seguente modo, dove $ \sigma_i = \sqrt{\lambda_i} $:
-  \[
-  u_i = \begin{cases}
-  \frac{Av_i}{\sigma_i} & \lambda_i \neq 0 \\
-  \underline{0} & \lambda_i = 0
-  \end{cases} 
-  \]
-  Dato che $ A^T A $ ha lo stesso rango di $ A $ (dim. nella fonte), se $ A $ ha rango massimo allora $ \forall i. \sigma_i > 0 $ (perche' si puo' dimostrare che $ A^T A $ diventa \textbf{definita} positiva); se $ r = rank(A) < min(n, m) $, allora gli ultimi $ min(n, m) - r $ valori singolari saranno nulli. (Da riguardare perche non sono sicurissimo)
-  Si puo' dimostrare che $ u_i $ sono autovettori di $ A A^T $:
-  \begin{align*}
-    A A^T u_i &= A A^T \frac{Av_i}{\sigma_i} \\
-    &= A \frac{\sigma_i^2 v_i}{\sigma_i} \\
-    &= \sigma^2\frac{A v_i}{\sigma_i} \\
-    &= \sigma^2 u_i
-  \end{align*}
-  E che sono unitari:
-  \begin{align*}
-    u_i^T u_i &= \frac{v_i^T A^T}{\sigma_i} \frac{Av_i}{\sigma_i} \\
-    &= \frac{v_i^T \sigma^2 v_i}{\sigma^2} \\
-    &= v_i^T v_i = 1
-  \end{align*}
-
-  Essendo autovettori unitari di una matrice semidefinita positiva ($ A A^T $), la matrice $ U \in M(\mathbb{R})_n $ che ha come colonne $ u_i $ e' ortonormale. Usando le matrici possiamo scrivere:
-  \[
-   Av_i = \sigma_i u_i \implies AV = U \Sigma 
-  \]
-  dove $ \Sigma \in M(\mathbb{R})_{n \times m} $ ha sulla diagonale $ min(n, m) $ valori singolari ($ \sigma_1,...,\sigma_{min(n, m)} $) e il resto e' 0.
-  \[
-  A = U \Sigma V^T
-  \]
-}
-
-\subsubsection{Interpretazione geometrica}
-Questa scomposizione puo' essere interpretata in modo geometrico. Immaginiamo di moltiplicare un vettore $ x $ per la scomposizione di $ A $:
-\begin{itemize}
-  \item La matrice $ V^T $, essendo ortonormale, applica una rotazione a $ x $ senza variarne il modulo. Essendo trasposta, che per le matrici ortonormali corrisponde con l'inversa, al posto di spostare i vettori base ai vettori di $ V $ fa il contrario.
-  \item La matrice $ \Sigma $ puo' essere scomposta in due parti:
-    \begin{itemize}
-      \item La matrice $ m \times m $ diagonale, che ha come valori diagonali gli $ m $ valori singolari. Dato che e' diagonale, applica solo un'allungamento/restrizione di x ruotato.
-      \item Una matrice $ n \times m $ rettangolare diagonale con solo valore $ 1 $. Serve per portare il vettore nel nuovo spazio vettoriale. 
-      \begin{center}
-        \includegraphics[width=0.5\textwidth]{img/2024-11-20-17-27-02.png}
-      \end{center}
-    \end{itemize}
-  \item Infine la matrice $ U $ ortonormale ruota il vettore nello spazio del codominio $ \mathbb{R}^n $, spostando la base sui vettori di $ U $.
-\end{itemize}
-
-\ex{Mappa da sfere a elissoidi}{
-  Consideriamo una cironferenza unitaria in $ \mathbb{R}^2 $:
-\begin{center}
-  \includegraphics[width=0.3\textwidth]{img/2024-11-21-09-53-22.png}
-\end{center}
-Applichiamo la trasformazione lineare definita dalla matrice $ A \in M(\mathbb{R})_{3 \times 2} $. Come abbiamo visto, qualunque matrice puo' essere scomposta come due matrici di rotazione e una di "allungamento". Vediamo i vari passaggi:
-\begin{itemize}
-  \item Applicando la prima rotazione, la nostra figura non cambia dato che e' una circonferenza:
-
-\begin{center}
-  \includegraphics[width=0.3\textwidth]{img/2024-11-21-10-02-10.png}
-\end{center}
-  \item Moltiplicando per la matrice diagonale, la circonferenza viene allungata lungo due assi principali (i vettori della base canonica che sono stati roteati da $ V^T $). Abbiamo quindi un'ellisse:
-
-\begin{center}
-  \includegraphics[width=0.3\textwidth]{img/2024-11-21-10-02-40.png}
-\end{center}
-  \item Spostiamo l'ellisse in $ \mathbb{R}^3 $:
-
-\begin{center}
-  \includegraphics[width=0.3\textwidth]{img/2024-11-21-10-03-11.png}
-\end{center}
-  \item Manca solo l'ultima rotazione applicata da $ U $, questa volta in $ 3 $ dimensioni:
-
-\begin{center}
-  \includegraphics[width=0.3\textwidth]{img/2024-11-21-10-03-38.png}
-\end{center}
-  
-\end{itemize}
-  Per questo motivo, possiamo dire che le matrici $ n \times m $ trasformano sfere in $ \mathbb{R}^m $ in elissoidi a $ n $ dimensioni.
-}
-
-Quindi i \textbf{valori singolari} $ \sigma_1,...,\sigma_{min(n, m)} $ sono i coefficenti scalari che moltiplicano i vettori lungo $ min(n, m) $ assi ortogonali. 
-
-\subsubsection{Applicazioni}
-La SVD e' uno strumento utilizzato moltissimo per problemi di ottimizzazione e di aprossimazione, in quanto e' applicabile universalmente e fornisce informazioni molto importanti per l'analisi dei dati. La lista ordinata in modo discendente rispetto a quanto la matrice "allunga" i vettori lungo una certa direzione (vettori singolari destri e sinistri ???) e' utilizzata per la PCA (Principal Component Analisis ???) e per l'aprossimazione di matrici. Inoltre, la SVD e' utilizzata per risolvere il problema dei minimi (o massimi) quadrati, come vedremo prossimamente.

@@ -53,7 +53,7 @@ plt.savefig("../PGF/PuntoFisso3.pgf")
 a = 0
 b = 1
 plt.clf()
-plt.figure(figsize=(3, 3))
+plt.figure(figsize=(3, 2.5))
 punti_x = [0.25, 0.75]
 label_x = ['$x_1$', '$x_2$']
 plt.xticks(punti_x, label_x)

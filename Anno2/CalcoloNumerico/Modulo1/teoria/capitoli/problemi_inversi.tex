@@ -17,7 +17,7 @@ Quindi acquisisco in input l'origine dell'effetto (ovvero la forza) attraverso u
     Ax \to y    
 \]
 Si giunge così alla definizione di \textbf{problema diretto}
-\definizione{
+\dfn{}{
 Si definisce \textbf{problema diretto} il processo mediante il quale si determina l'effetto dato un sistema e le cause iniziali
 }
 In altre parole: input -> output
@@ -26,7 +26,7 @@ In altre parole: input -> output
 
 D'altra parte esistono dei casi in cui si riesce solo ad osservare l'effetto di un fenomeno ed occorre, partendo da questo, risalire alla causa, da questo concetto abbiamo la definizione di \textbf{problema inverso}
 
-\definizione{
+\dfn{}{
     Un \textbf{problema inverso} è un tipo di problema matematico3 in cui, dato l'effetto o l'output osservato, si cerca di determinare le cause o i parametri del sistema che lo hanno generato
 }
 
@@ -60,7 +60,7 @@ A causa di un mal condizionamento di $A$ si ha che, in presenza di un errore  $\
 
     Ecco il grafico di questo scempio:
     \begin{center}
-        \includegraphics[width=10cm]{errore_amplificato.png}    
+        \includegraphics[width=10cm]{img/errore_amplificato.png}    
     \end{center}
     
 }
@@ -78,7 +78,7 @@ La cui soluzione è:
 \subsubsection{Condizioni di Picard}
 La \textbf{condizione discreta di Picard} è un criterio utilizzato per diagnosticare la "malcondizionatura" nei problemi inversi lineari e per capire la stabilità della soluzione. La condizione discreta di Picard si basa sull'analisi dei \red{valori singolari $\sigma_i$ e i cosidetti coefficienti di Fourier $u_i^Ty^\delta$} 
 
-\definizione{
+\dfn{}{
     La \textbf{condizione discreta di Picard} afferma che che, affinché il problema sia ben posto, i coefficienti di Fourier  $u_i^Ty^\delta$devono decrescere almeno altrettanto velocemente dei valori singolari $\sigma_i$
 }
 
@@ -86,14 +86,14 @@ La \textbf{condizione discreta di Picard} è un criterio utilizzato per diagnost
     Si consideri questo esempio:
     
     \begin{center}
-        \includegraphics[width=10cm]{picard.png}
+        \includegraphics[width=10cm]{img/picard.png}
     \end{center}
 
     In questo caso la condizione di Picard è rispettata fino all’ indice $i=15$
 
     Si consideri quest'altro esempio:
     \begin{center}
-        \includegraphics[width=10cm]{picard_2.png}
+        \includegraphics[width=10cm]{img/picard_2.png}
     \end{center} 
     In questo caso la condizione di Picard è rispettata fino all’ indice $i=5$
   
@@ -184,7 +184,7 @@ Non esiste un metodo sempre efficiente per scegliere il parametro di regolarizza
 Sicuramente in pratica spesso si usa una tecnica euristica che consiste nel provare
 alcuni parametri e scegliere quello che produce la soluzione che ci sembra migliore (trial and test). La tecnica sicuramente più utilizzata in pratica è il principio di massima discrepanza.
 
-\definizione{
+\dfn{}{
     Il \textbf{Principio di Massima Discrepanza} afferma che il parametro di regolarizzazione $\lambda$ dovrebbe essere scelto in modo tale che la norma del residuo (cioè la differenza tra i dati osservati e quelli ricostruiti) sia proporzionale alla stima della norma del rumore nei dati
 
     Formalmente:
