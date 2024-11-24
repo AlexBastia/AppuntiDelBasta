@@ -19,7 +19,7 @@ Data questa definizione, e richiamando i vari concetti dell'algebra lineare, abb
         \end{pmatrix}        
 \end{align*}
 
-Questa bellissima scrittura si può tranquillamente riassumere come: \[AV=DV\]
+Questa bellissima scrittura si può tranquillamente riassumere come: \[AV=VD\]
 
 \subsection{Decomposizione agli autovalori}
 \dfn{}{
@@ -90,10 +90,9 @@ le matrici ortogonali hanno diverse proprietà:
       \item \href{https://gregorygundersen.com/blog/2018/12/20/svd-proof}{Dimostrazione SVD}
   \end{itemize}
 }
-Prima di iniziare ad introdurre metodi di approssimazione, e' necessario esplorare uno dei teoremi finali dell'algebra lineare: la \textbf{SVD} (Singular Value Decomposition). Questo teorema sara' fondamentale per descrivere vari modelli di ottimizzazione e approssimazione per motivi che vedremo dopo.\\
-\\
+Prima di iniziare ad introdurre metodi pratici per l'approssimazione dei dati, e' necessario esplorare uno dei teoremi finali dell'algebra lineare: la \textbf{SVD} (Singular Value Decomposition). Questo teorema sara' fondamentale per descrivere vari modelli di ottimizzazione e approssimazione per motivi che vedremo dopo.
 \subsection{Introduzione}
-Un modo per arrivare alla SVD e' porci la seguente domanda: data una matrice $ A \in M(\mathbb{R})_{n \times m} $, esistono $ m $ vettori ortonormali in $ \mathbb{R}^m $ la cui immagine e' sempre un insieme di $ m $ vettori ortogonali (se $ m > n $ allora $ m -n $ vettori dell'immagine saranno nulli) in $ \mathbb{R}^n $? Proviamo a scrivere la domanda in modo piu' matematico:
+Un modo per arrivare alla SVD e' porci la seguente domanda: "Data una matrice $ A \in M(\mathbb{R})_{n \times m} $, esistono $ m $ vettori ortonormali in $ \mathbb{R}^m $ la cui immagine e' sempre un insieme di $ m $ vettori ortogonali (se $ m > n $ allora $ m -n $ vettori dell'immagine saranno nulli) in $ \mathbb{R}^n $?" Proviamo a scrivere la domanda in modo piu' matematico:
 \[
   \exists V \in M(\mathbb{R})_{m}, U \in M(\mathbb{R})_n, \Sigma \in M(\mathbb{R})_{n \times m}. V, U \text{ ortonormali, } \Sigma \text{ diagonale (rettangolare)}. \forall A \in M(\mathbb{R})_{n \times m}:
 \]
@@ -114,9 +113,18 @@ Questa e' la scomposizione di cui la SVD ci assicura l'esistenza per qualsiasi m
   \end{itemize}
   Tali che:
   \[
-    A = U\Sigma V^T
-  \]
+        A=U\Sigma V^T, \quad \Sigma = 
+        \begin{pmatrix}
+            \sigma_1 & 0 & \cdots & 0 \\
+            0 & \sigma_2 & \cdots & 0 \\
+            \vdots & \vdots & \ddots & \vdots \\
+            0 & 0 & \cdots & \sigma_n \\
+            \vdots & \vdots &  & \vdots & \\
+            0&0&\cdots&0
+        \end{pmatrix}
+    \]
 }
+Prima di poter dimostrare l'esistenza della SVD per ogni matrice, ci serve un lemma:
 \mlenma{Lemma 1}{
   Per una qualsiasi matrice $ A \in M(\mathbb{R})_{n \times m} $, si ha che:
   \begin{itemize}
@@ -164,6 +172,43 @@ Questa e' la scomposizione di cui la SVD ci assicura l'esistenza per qualsiasi m
   A = U \Sigma V^T
   \]
 }
+\subsection{Valori Singolari}
+\begin{itemize}
+    \item Gli elementi $\sigma_1\geq\sigma_2\geq\dots\sigma_n\geq 0$ sono i cosidetti  \textbf{valori singolari di $A$}
+    \item Mentre il rango $k$ è uguale al numero di valori singolari positivi, cioè $k=rango(A)\iff (\sigma_1\geq\sigma_2\geq\dots\sigma_k > 0\land \sigma_{k+1}=\dots = \sigma_n = 0)$
+    \item Le colonne si $U=(u_1,u_2,\dots, u_m)$ e di $V=(v_1,v_2,\dots,v_n)$ sono, rispettivamente, i \textbf{vettori singolari sinistri e destri di $A$} associati ai valori singolari $\sigma_i$ e formano una base ortonormale di $R^m$ e $R^n$ , rispettivamente, poichè vale la relazione:
+    \[
+            Au_i = \sigma_i v_i
+    \]
+\end{itemize}
+
+
+Questo teorema porta a un'implicazione piuttosto interessante, inffatti si ha: 
+
+\[
+    A^T A = (U\Sigma V^T)^T (U\Sigma V^T) = V\Sigma^T U^T U\Sigma V^T
+\]
+dato che $U$ è ortogonale si "annulla" con la sua trasposta, quindi continua con 
+\[
+    V\Sigma^T \Sigma V^T = V 
+    \begin{pmatrix}
+        \sigma_1^2 & 0 & \cdots & 0 \\
+        0 & \sigma_2^2 & \cdots & 0 \\
+        \vdots & \vdots & \ddots & \vdots \\
+        0 & 0 & \cdots & \sigma_n^2 \\
+    \end{pmatrix} V^T
+\]
+
+Inoltre:
+\[
+    \sigma_i =\sqrt{\lambda_i}, i=\dots,n 
+\]
+Dove $\lambda_i$ non è che l'autovalore di $A^TA$, si ha quindi:
+\begin{itemize}
+    \item $\sigma_1 =\sqrt{\lambda_{max}}=\sqrt{\rho}=\|A\|$
+    \item $\sigma_k =\sqrt{\lambda_{min}} \Rightarrow \|A^{-1}\| = \frac{1}{\sigma_k}$
+\end{itemize}
+
 
 \subsection{Interpretazione geometrica}
 Questa scomposizione puo' essere interpretata in modo geometrico. Immaginiamo di moltiplicare un vettore $ x $ per la scomposizione di $ A $:
@@ -212,71 +257,12 @@ Applichiamo la trasformazione lineare definita dalla matrice $ A \in M(\mathbb{R
   Per questo motivo, possiamo dire che le matrici $ n \times m $ trasformano sfere in $ \mathbb{R}^m $ in elissoidi a $ n $ dimensioni.
 }
 
-Quindi i \textbf{valori singolari} $ \sigma_1,...,\sigma_{min(n, m)} $ sono i coefficenti scalari che moltiplicano i vettori lungo $ min(n, m) $ assi ortogonali. 
+Quindi i \textbf{valori singolari} $ \sigma_1,...,\sigma_{min(n, m)} $ sono i coefficenti scalari che moltiplicano i vettori lungo $ min(n, m) $ assi ortogonali, e solo $ rk(A) = k $ di questi saranno non nulli, quindi le restanti assi si azzerano.
 
 \subsection{Applicazioni}
 La SVD e' uno strumento utilizzato moltissimo per problemi di ottimizzazione e di aprossimazione, in quanto e' applicabile universalmente e fornisce informazioni molto importanti per l'analisi dei dati. La lista ordinata in modo discendente rispetto a quanto la matrice "allunga" i vettori lungo una certa direzione (vettori singolari destri e sinistri ???) e' utilizzata per la PCA (Principal Component Analisis ???) e per l'aprossimazione di matrici. Inoltre, la SVD e' utilizzata per risolvere il problema dei minimi (o massimi) quadrati, come vedremo prossimamente.
 
-\section{Fattorizzazione in Valori Singolar (SVD)}
-La fattorizzazione in valori singolari non è altro che uno strumento che permette di rappresentare una matrice $A\in M^{m\times n}$ attraverso una matrice diagonale. Vediamo come:
-\teorema{
-    Sia $A\in M^{m\times n}$ una matrice di rango $k$ con $k\leq n\leq m$. Allora esistono:
-    \begin{itemize}
-        \item una matrice ortognonale $U\in M^{m\times m}$
-        \item una matrice ortogonale $V\in M^{n\times n}$
-        \item una matrice diagonale $\Sigma \in M^{m\times n}$
-    \end{itemize}
-    tali che:
-    \[
-        A=U\Sigma V^T, \quad \Sigma = 
-        \begin{pmatrix}
-            \sigma_1 & 0 & \cdots & 0 \\
-            0 & \sigma_2 & \cdots & 0 \\
-            \vdots & \vdots & \ddots & \vdots \\
-            0 & 0 & \cdots & \sigma_n \\
-            \vdots & \vdots &  & \vdots & \\
-            0&0&\cdots&0
-        \end{pmatrix}
-    \]
-}
-\begin{itemize}
-    \item Gli elementi $\sigma_1\geq\sigma_2\geq\dots\sigma_n\geq 0$ sono i cosidetti  \textbf{valori singolari di $A$}
-    \item Mentre il rango $k$ è uguale al numero di valori singolari positivi, cioè $k=rango(A)\iff (\sigma_1\geq\sigma_2\geq\dots\sigma_k > 0\land \sigma_{k+1}=\dots = \sigma_n = 0)$
-    \item Le colonne si $U=(u_1,u_2,\dots, u_m)$ e di $V=(v_1,v_2,\dots,v_n)$ sono, rispettivamente, i \textbf{vettori singolari sinistri e destri di $A$} associati ai valori singolari $\sigma_i$ e formano una base ortonormale di $R^m$ e $R^n$ , rispettivamente, poichè vale la relazione:
-    \[
-            Au_i = \sigma_i v_i
-    \]
-\end{itemize}
-
-
-Questo teorema porta a un'implicazione piuttosto interessante, inffatti si ha: 
-
-\[
-    A^T A = (U\Sigma V^T)^T (U\Sigma V^T) = V\Sigma^T U^T U\Sigma V^T
-\]
-dato che $U$ è ortogonale si "annulla" con la sua trasposta, quindi continua con 
-\[
-    V\Sigma^T \Sigma V^T = V 
-    \begin{pmatrix}
-        \sigma_1^2 & 0 & \cdots & 0 \\
-        0 & \sigma_2^2 & \cdots & 0 \\
-        \vdots & \vdots & \ddots & \vdots \\
-        0 & 0 & \cdots & \sigma_n^2 \\
-    \end{pmatrix} V^T
-\]
-
-Inoltre:
-\[
-    \sigma_i =\sqrt{\lambda_i}, i=\dots,n 
-\]
-Dove $\lambda_i$ non è che l'autovalore di $A^TA$, si ha quindi:
-\begin{itemize}
-    \item $\sigma_1 =\sqrt{\lambda_{max}}=\sqrt{\rho}=\|A\|$
-    \item $\sigma_k =\sqrt{\lambda_{min}} \Rightarrow \|A^{-1}\| = \frac{1}{\sigma_k}$
-\end{itemize}
-
-\subsubsection{numero di condizione}
-
+\section{Numero di condizione}
 \dfn{Numero di condizione}{
     Si dice \textbf{numero di condizione di $A$} tale valore:
     \[

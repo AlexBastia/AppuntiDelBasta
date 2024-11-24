@@ -190,35 +190,32 @@ Sia l'insieme $\mathbb{F}(\beta, t, L, U) =\{ \{\emptyset\} \cup n = \pm \beta^p
 
 Inoltre sia $x \in \mathbb{R}$ dove $x = \pm \beta^p \cdot d_0 d_1 \dots d_t, d_{t+1}, \dots$ con $L\leq p \leq U$, nel caso in cui $x \notin \mathbb{F} $ rappresento $x$ con un elemento di $\mathbb{F} $ che indico con $fl(x) = \pm \beta^p \cdot d_0 d_1 \dots d_t$. Questa operzione si chiama \textbf{troncamento}
 
-\subsection{Errore relativo di arrotondamento}
-Il sistema floating point dato che è un'approssimazione è ovvio che la precisione di rappresentazione che offre non è perfetta, in quanto i numeri infiniti (come il $\pi$) vengono delineati con una serie finita di numeri finiti. La differenza tra la sua approssimazione e il suo valore reale è detta \textbf{errore di arrotondamento}  
-\subsubsection{definizione}
-\dfn{}{
-    Sia $x\in \mathbb{R}$ un numero reale e sia $fl(x)$ (dove $fl()$ è la funzione arrotondamento) il numero $x$ arrotondato, allora l'errore realtivo di arrotondamento è definito dalla seguente formula:
-    \[
-        \frac{|fl(x)-x|}{|x|} \leq \frac{1}{2}\beta^{1-t}
-    \]
-}
+\subsection{Errore di arrotondamento}
+Essendo un'approssimazione, il sistema floating point non puo' rappresentare perfettamente tutti i valori reali, in quanto i numeri infiniti (come il $\pi$) vengono delineati con una serie finita di numeri finiti. La differenza tra la sua approssimazione e il suo valore reale è detta \textbf{errore di arrotondamento}. Sia $x\in \mathbb{R}$ un numero reale e sia $fl(x)$ (dove $fl()$ è la funzione arrotondamento) il numero $x$ arrotondato, allora l'errore di arrotondamento puo' essere espresso come:
+\begin{itemize}
+\item L'errore \textbf{assoluto}, che e' piu' grande piu' e' grande l'ordine di $ x \in \mathbb{R}$
+  \[
+    |fl(x)-x|<\beta^{p-t}
+  \]
+\item E quello \textbf{relativo}, che dipende solo da $ t $
+  \[
+    \frac{|fl(x)-x|}{|x|} < \frac{1}{2}\beta^{1-t}
+  \]
+\end{itemize}
  La quantità $esp=\frac{1}{2}\beta^{1-t}$ è detta  \textbf{precisione macchina} nel sistema floating point, ed è il più piccolo numero macchina positivo tale che: 
  \[
     fl(1+esp)>1
  \]
-
 \subsection{artimetica floating point}
-Il calcolatore esegue operazioni solo con numeri rappresentabili da calcolatore stesso, quindi in questo caso dai numeri scritti in forma floating ponti (per i nuemri reali), il punto è che \red{le usuali operazioni aritmetiche non sono chiuse nell'insieme $\mathbb{F}$}, quindi presi 2 numeri dall'insieme $\mathbb{F}$ e computati tramite operazioni aritmetiche, il risultato di tale computazione potrebbe appartenere nell'insieme $\mathbb{R}$. Pertanto \red{i risultati delle varie computazioni dovranno essere sempre arrotondati ad un numero che stia in $\mathbb{F}$}
-\subsubsection{operazione floating point} 
-L'operazione floating point (o di macchina) è definita
-\dfn{Operazione floating point}{
-    \[
-        \odot :\mathbb{R}\times\mathbb{R}\rightarrow\mathbb{R}
-    \]
-}
-Ogni operazione provoca un piccolo errore detto \textbf{errore di arrotondamento}:
-\[
-    |\frac{(x\odot y)-(x\cdot y)}{x\cdot y}|<eps
-\]
-
-l'operazione floating point nei calcolatori viene strutturata in due fase:
+Il calcolatore esegue operazioni solo con numeri rappresentabili da calcolatore stesso, quindi in questo caso dai numeri scritti in forma floating ponti (per i nuemri reali), il punto è che \red{le usuali operazioni aritmetiche non sono chiuse nell'insieme $\mathbb{F}$}, quindi presi 2 numeri dall'insieme $\mathbb{F}$ e computati tramite operazioni aritmetiche, il risultato di tale computazione potrebbe appartenere nell'insieme $\mathbb{R}$. Pertanto \red{i risultati delle varie computazioni dovranno essere sempre arrotondati ad un numero che stia in $\mathbb{F}$}. Definiamo due operazioni generiche, una per i reali e l'altra per i floating-point:
+\begin{itemize}
+\item $ \cdot: \mathbb{R} \times \mathbb{R} \to \mathbb{R} $
+\item $ \circ: \mathbb{F} \times \mathbb{F} \to \mathbb{F} $
+  \[
+    x \circ y = fl(x \cdot y)
+  \]
+\end{itemize}
+L'operazione floating point nei calcolatori viene strutturata in due fase:
 \begin{enumerate}
     \item \textbf{Eseguo l'operazione esatta}: (es. $z=x+y$) dove viene fatta utilizzando più bit utilizzati di quelli utilizzati per memorizzare il risultato, non è accessibile all'utente ma viene memorizzato in un registro interno alla cpu
     \item \textbf{Trocamento del risultato}: (es. $x\oplus y = fl(z)$), dove una volta che il calcolo è stato fatto in precisione estesa il risultato viene arrotondato alla precisione del risultato
@@ -228,34 +225,10 @@ l'operazione floating point nei calcolatori viene strutturata in due fase:
 }
 
 Se un numero $ x \in \mathbb{R} $ ha un numero di cifre decimali maggiore di $ t $, allora $ x \not\in \mathcal{F} $ e deve essere approssimato (solitamente col troncamento).
-
-\section{Errori di rappresentazione (da fondere con quelli del giova)}
-
-Abbiamo due modi per indicare l'accuratezza con la quale possiamo rappresentare un valore $ x \in \mathbb{R} $:
-\begin{itemize}
-\item L'errore \textbf{assoluto}, che e' piu' grande piu' e' grande l'ordine di $ x $
-  \[
-    |fl(x)-x|<\\beta^{p-t}
-  \]
-\item E quello \textbf{relativo}, che dipende solo da $ t $
-  \[
-    \frac{|fl(x)-x|}{|x|} < \frac{1}{2}\beta^{1-t} = \text{\textbf{eps}}
-  \]
-\end{itemize}
-Il valore \textbf{eps} e' detto \textbf{precisione macchina}, ed e' il numero macchina piu' piccolo positivo tale che
-\[
-  fl(1+\text{eps}) > 1
-\]
-Quindi, definite due operazioni generiche, una per i reali e l'altra per i floating-point:
-\begin{itemize}
-\item $ \cdot: \mathbb{R} \times \mathbb{R} \to \mathbb{R} $
-\item $ \circ: \mathbb{F} \times \mathbb{F} \to \mathbb{F} $
-  \[
-    x \circ y = fl(x \cdot y)
-  \]
-\end{itemize}
-Abbiamo che ogni operazione fra floating-point genera un errore (di \textbf{arrotondamento}):
+Percio' in generale le operazioni floating-point generano un errore (di \textbf{arrotondamento}):
 \[
   \left|\frac{(x \circ y) - (x \cdot y)}{x \cdot y}\right| < \text{eps}
 \]  
 Nel caso di somma di numeri di grandezza molto diversa, le cifre piu' significative del numero piu' piccolo possono essere perse. Per una sola operazione questo non causa un errore troppo grande, ma se l'operazione viene eseguita molte volte l'errore si \textbf{amplifica} e puo' diventare catastrofico.
+
+
