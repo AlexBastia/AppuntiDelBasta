@@ -7,7 +7,7 @@ La descrizione di un linguaggio avviene su 3 dimensioni:
 \begin{itemize}
     \item \textbf{Sintassi}: regole di formazione, ovvero la relazione tra segni
     \item \textbf{Semantica}: attribuzione di significato
-    \item \textbf{Pregmatica}: in quale modo frasi corrette e sensate sono usate
+    \item \textbf{Pragmatica}: in quale modo frasi corrette e sensate sono usate
     \item \textbf{Implementazione}: come eseguire una frase corretta rispettandone la semantica
 \end{itemize}
 
@@ -135,13 +135,13 @@ Si ci si può ora astrarre e definire un linguaggio formale:
     \]
     con $A\cdot A^n = \{aw|a\in A \land w \in A^n\}$
 }
-Si osservi che \red{$A^*$ è un insieme infinito contabile} dato un ordinamento < sui simboli di $A$, possiamo elencare tutt le parole come segue:
+Si osservi che \red{$A^*$ è un insieme infinito contabile} dato un ordinamento $ < $ sui simboli di $A$, possiamo elencare tutt le parole come segue:
 \begin{enumerate}
     \item elenco la parola vuota $\epsilon$ ($A^0$)
-    \item poi elenco le parole di lunghezza 1 ($A^1$) secondo l'ordinamento <
+    \item poi elenco le parole di lunghezza 1 ($A^1$) secondo l'ordinamento $ < $
     
     Es. $a,b,c,\dots$
-    \item poi elenco le parole in $A^2$ secondo <
+    \item poi elenco le parole in $A^2$ secondo $ < $
     
     Es. $aa, ab, ac, \dots, ba, bb, bc, \dots$
     \item così via
@@ -335,7 +335,7 @@ Una frase palindroma è una parola che letta da $sx$ a $dx$ è uguale a se stess
 
 Es. "I topi non avevano nipoti"
 \begin{itemize}
-    \item $A=\{a,b\} \quad L=\{\epsilon, a, b, aa, bb, aba, bab, dots\}$. Come si nota è piuttosto scomodo
+    \item $A=\{a,b\} \quad L=\{\epsilon, a, b, aa, bb, aba, bab, \dots\}$. Come si nota è piuttosto scomodo
     \item Una palindroma può essere: 
         \begin{itemize}
             \item o è la stringa $\epsilon$
@@ -383,9 +383,9 @@ Una $expr$ può essere:
 \section{Grammatiche}
 Una grammatica è un insieme di regole che descrivono come le parole e le frasi possono essere combinate per formare espressioni valide. Queste regole determinano la struttura sintattica di un linguaggio, specificando come le unità di base (come le parole o i simboli) si connettono per formare frasi o espressioni più complesse. Ogni grammatica \red{segue lo stesso pattern definito} differenziandosi solo per come sono caratterizzate le produzioni.
 
-Quelle più utili sono le cosiddette grammatiche libere (in rapporto tra facilità di analisi ed espressività) 
+Quelle più utili sono le cosiddette grammatiche libere dal contesto (in rapporto tra facilità di analisi ed espressività) 
 
-\dfn{grammatiche libere}{
+\dfn{grammatiche libere (dal contesto)}{
     Una \textbf{grammatica libera} da contesto è una quadrupla $(NT,T,R,S)$ dove:
     \begin{itemize}
         \item \textbf{NT} è un insieme finito di simboli non terminali
@@ -437,7 +437,7 @@ Alcuni esempi:
     \]
 }
 
-\subsection{Algoritmo di Naif}
+\subsection{Algoritmo di Naif (TODO: o e' "Algoritmo naive (nel senso ingenuo)"?)}
 
 Data una grammatica $G$ è opportuno chiedersi come si fa a determinare un linguaggio $L(G)$ e a verificare se $w\in L(G)$. La domanda può essere complessa, tuttavia in casi semplici ci viene in aiuto \textbf{l'algoritmo di Naif} che consiste nel partire da $S$ e provare ad applicare in tutti i modi possibili le produzione (regole) per trovare una derivazione che generi $w$
 
