@@ -573,7 +573,7 @@ Si osservi che
        \begin{tikzpicture}
         % Cerchi per gli automi
         \draw[thick] (0, 0) circle (0.75cm) node[pos=0, yshift=0cm] {\textbf{DFA}};
-        \draw[thick] (0, 0) circle (1.25cm) node[pos=0, yshift=1.75cm] {\textbf{NFA}};
+        \draw[thick] (0, 0) circle (1.25cm) node[pos=0, yshift=1cm] {\textbf{NFA}};
     \end{tikzpicture} 
     \end{center}
     
@@ -707,21 +707,14 @@ Qui è presentato l'algoritmo per calcolare la $\epsilon$-closure:
     Con $A$ un insieme di stati e $b$ una transizione
 }
 
-\subsubsection{costruzione per sottoinsiemi}
+\subsubsection{costruzione per sottoinsiemi del DFA}
 Qua di seguito l’algoritmo per la costruzione di sottoinsiemi, che serve per passare da un NFA a un DFA equivalente
 
-
-
-
-
-
-
-
-
-
 \begin{algorithm}
-    Sia $N=(\Sigma, Q,\delta,q_0,F)$ un NFA\;
-    $S\gets\epsilon\text{-closure}$\tcp*{stato iniziale del DFA}
+    \caption{costruzionePerSottoinsiemi()}
+    \KwIn{NFA $N=(\Sigma, Q,\delta,q_0,F)$}
+    \KwOut{DFA $M_N=(\Sigma,T,\Delta, \epsilon\text{-closure}(q_0), \mathcal{F})$}
+    $S\gets\epsilon\text{-closure}(q_0)$\tcp*{stato iniziale del DFA}
     $T=\{S\}$\tcp*{$T$ è il l'insieme degli stati del DFA}
     \While{c'è un $P\in T$ non marcato}{
         marca $P$\;
@@ -735,16 +728,21 @@ Qua di seguito l’algoritmo per la costruzione di sottoinsiemi, che serve per p
 }
 \end{algorithm}
 
-
-
-
-
+Definiamo quindi il DFA equivalente:
+\dfn{DFA quivalente}{
+    Si definisce il DFA equivalente tale automa:
+    \[
+        M_n = (\Sigma, T,\Delta, \epsilon\text{-closure}(q_0), \mathcal{F})    
+    \]
+    dove $R\in \mathcal{F}\iff \exists q\in R$ con $q\in F$
+}
 
 Si può notare come l'algoritmo che definisce la funzione di transizione (vista poch'anzi) rispetta le limitazioni dei DFA: non ci sono mosse epsilon e per ogni caraere dell’alfabeto esiste una ed
 una sola mossa in qualunque stato
 \esempio{
-    Consideriamo l’NFA seguente (relativo all’espressione regolare $(a|b)^*ab)$:
-    \begin{tikzpicture}
+    Consideriamo l’NFA seguente (relativo all’espressione regolare $((a|b)^*ab)$:
+    \begin{center}
+        \begin{tikzpicture}[node distance=1cm]
         \node[state, initial] (q0) {$q_0$};
         \node[state] (q1) [right=of q0] {$q_1$};
         \node[state, accepting] (q2) [right=of q1] {$q_2$};
@@ -754,8 +752,10 @@ una sola mossa in qualunque stato
         (q0) edge[loop above] node {$a$} ()
             edge[loop below] node {$b$} ()
             edge[above] node {$b$} (q1)
-        (q1) edge node {$a$} (q2);
+        (q1) edge node[above] {$a$} (q2);
     \end{tikzpicture}
+    \end{center}
+    
 
     Vogliamo ora trovare un DFA equivalente ad esso, applichiamo l’algoritmo di costruzioni per sottoinsiemi:
     \begin{itemize}
@@ -844,79 +844,113 @@ esempio bello corposo:
         \end{center}
         
         si noti i seguenti calcoli
-        \[
-        A = \varepsilon\text{-closure}(q_0) = \{q_0, q_1, q_2, q_3\}
-        \]
-        \[
-        \Delta(A, a) = \varepsilon\text{-closure}(\text{move}(A, a)) = \varepsilon\text{-closure}(\{q_0, q_4\}) = \{q_0, q_1, q_2, q_3, q_4\} = B
-        \]
-        \[
-        \Delta(A, b) = \varepsilon\text{-closure}(\text{move}(A, b)) = \varepsilon\text{-closure}(\{q_2, q_3, q_4\}) = \{q_2, q_3, q_4\} = C
-        \]
-        \[
-        \Delta(B, a) = \varepsilon\text{-closure}(\text{move}(B, a)) = \varepsilon\text{-closure}(\{q_0, q_4\}) = B
-        \]
-        \[
-        \Delta(B, b) = \varepsilon\text{-closure}(\text{move}(B, b)) = \varepsilon\text{-closure}(\{q_2, q_4\}) = C
-        \]
-        \[
-        \Delta(C, a) = \varepsilon\text{-closure}(\text{move}(C, a)) = \varepsilon\text{-closure}(\{ q_4\})=\{q_3, q_4\} = D
-        \]
-        \[
-        \Delta(C, b) = \varepsilon\text{-closure}(\text{move}(C, b)) = \varepsilon\text{-closure}(\{q_4\}) = D
-        \]
-        \[
-        \Delta(D, a) = \varepsilon\text{-closure}(\text{move}(D, a)) = \varepsilon\text{-closure}(\{q_4\}) = \varnothing = D
-        \]
-        \[
-        \Delta(D, b) = \varepsilon\text{-closure}(\text{move}(D, b)) = \varepsilon\text{-closure}(\varnothing) = \varnothing = E
-        \]
-        \[
-        \Delta(E, a) = \varepsilon\text{-closure}(\text{move}(E, a)) = \varepsilon\text{-closure}(\varnothing) = \varnothing = E
-        \]
-        \[
-        \Delta(E, b) = \varepsilon\text{-closure}(\text{move}(E, b)) = \varepsilon\text{-closure}(\varnothing) = \varnothing = E
-        \]
+
+        \vspace{0.5cm}
+        \begin{math}
+            A = \epsilon\text{-closure}(q_0) = \{q_0, q_1, q_2, q_3\} \\
+            \Delta(A, a) = \epsilon\text{-closure}(\text{move}(A, a)) = \epsilon\text{-closure}(\{q_0, q_4\}) = \{q_0, q_1, q_2, q_3, q_4\} = B \\
+            \Delta(A, b) = \epsilon\text{-closure}(\text{move}(A, b)) = \epsilon\text{-closure}(\{q_2, q_3, q_4\}) = \{q_2, q_3, q_4\} = C \\
+            \Delta(B, a) = \epsilon\text{-closure}(\text{move}(B, a)) = \epsilon\text{-closure}(\{q_0, q_4\}) = B \\
+            \Delta(B, b) = \epsilon\text{-closure}(\text{move}(B, b)) = \epsilon\text{-closure}(\{q_2, q_4\}) = C \\
+            \Delta(C, a) = \epsilon\text{-closure}(\text{move}(C, a)) = \epsilon\text{-closure}(\{q_4\}) = \{q_3, q_4\} = D \\
+            \Delta(C, b) = \epsilon\text{-closure}(\text{move}(C, b)) = \epsilon\text{-closure}(\{q_4\}) = D \\
+            \Delta(D, a) = \epsilon\text{-closure}(\text{move}(D, a)) = \epsilon\text{-closure}(\{q_4\}) = \varnothing = D \\
+            \Delta(D, b) = \epsilon\text{-closure}(\text{move}(D, b)) = \epsilon\text{-closure}(\varnothing) = \varnothing = E \\
+            \Delta(E, a) = \epsilon\text{-closure}(\text{move}(E, a)) = \epsilon\text{-closure}(\varnothing) = \varnothing = E \\
+            \Delta(E, b) = \epsilon\text{-closure}(\text{move}(E, b)) = \epsilon\text{-closure}(\varnothing) = \varnothing = E
+        \end{math}
+        \vspace{0.5cm}
+
+        il cui DFA $M_N$ è:
         
-        DFA $M_N$:
-        
-        TODO SISTEMARE
         \begin{center}
-        \begin{tikzpicture}[shorten >=1pt, node distance=3cm, on grid, auto]
+        \begin{tikzpicture}[shorten >=1pt, node distance=2cm, on grid, auto]
             % Stati
             \node[state, initial] (A) {$A$};
-            \node[state] (B) [above right=of A] {$B$};
-            \node[state] (C) [below right=of A] {$C$};
-            \node[state] (D) [right=of C] {$D$};
-            \node[state, accepting] (E) [right=of D] {$E$};
+            \node[state, accepting] (B) [above right=of A] {$B$};
+            \node[state, accepting] (C) [below right=of A] {$C$};
+            \node[state, accepting] (D) [right=of C] {$D$};
+            \node[state] (E) [right=of D] {$E$};
         
             % Transizioni
             \path[->]
-                (A) edge[bend left] node {$a$} (B)
-                    edge[bend right] node[below] {$b$} (C)
+                (A) edge[above] node {$a$} (B)
+                    edge[above] node[below] {$b$} (C)
                 (B) edge[loop above] node {$a$} ()
-                    edge[bend left] node {$b$} (C)
-                (C) edge[bend left] node {$a$} (D)
-                    edge[loop below] node {$b$} ()
-                (D) edge[bend left] node {$a, b$} (E)
-                (E) edge[loop below] node {$a, b$} ();
+                    edge node[left] {$b$} (C)
+                (C) edge[below] node {$a,b$} (D)
+                (D) edge[above] node {$b$} (E)
+                    edge[loop above] node {$a$} ()
+                (E) edge[loop above] node {$a, b$} ();
         \end{tikzpicture}
         \end{center}
 }
 
+\subsubsection{casi pessimi}
 
-
-Definiamo quindi il DFA equivalente:
-\dfn{DFA equivalente}{
-    Si definisce il DFA equivalente ad un NFA tale automa:
-    \[
-        M_n = (\Sigma, T,\Delta, \epsilon\text{-closure}(q_0), \mathcal{F})    
-    \]
-    dove $R\in \mathcal{F}\iff \exists q\in R$ con $q\in F$
+\clm{}{
+    Vi sono tuttavia casi pessimi in cui il DFA equivalente è esponenzialmente più grande di del DFA, ovvero che se il NFA $N$ ha $n$ stati il suo $M_n$ può averne $2^n$
 }
 
+\esempio{
+        Sia $N$ il seguente NFA con 2 stati:
+        \begin{center}
+            \begin{tikzpicture}
+            \node[state, initial] (q0) {$q_0$};
+            \node[state, accepting] (q1) [right=of q0] {$q_1$};
+
+            \path[->]
+                (q0) 
+                    edge node[below] {$b$} (q1)
+                    edge[loop below] node {$b$} ()
+                    edge[loop above] node {$a$} ()
+                (q1) 
+                    edge[loop above] node {$c$} (); 
+        \end{tikzpicture}
+        \end{center}
+        
+
+        per costruire il suo $M_N$ si hanno i seguenti nodi
+        \begin{itemize}
+            \item $A=\{q_0\}$
+            \item $B=\{q_0, q_1\}$
+            \item $A=\{q_1\}$
+            \item $D=\varnothing$
+        \end{itemize} 
+
+        in diagramma di transazione diventa:
+        \begin{center}
+            \begin{tikzpicture}[node distance=1cm]
+            \node[state, initial] (a) {$A$};
+            \node[state, accepting] (b) [right=of a] {$B$};
+            \node[state] (d) [below=of a] {$D$};
+            \node[state, accepting] (c) [right=of d] {$C$};
+
+            \path[->]
+                (a) 
+                    edge[bend left] node[below] {$b$} (b)
+                    edge[loop above] node {$a$} ()
+                    edge[above] node[left] {$c$} (d)
+                (b) 
+                    edge[loop above] node {$b$} ()
+                    edge[above] node[left] {$c$} (c)
+                    edge[bend left] node[below] {$a$} (a)
+                (d) 
+                    edge[loop below] node {$a,b,c$} ()
+                (c) 
+                    edge[loop below] node {$c$} ()
+                    edge[bend right] node[above] {$b$} (d)
+                    edge[bend left] node[below] {$a$} (d);
+        \end{tikzpicture}
+        \end{center}
+        
+
+}
+
+
+
 Adesso si può dimostrare il teorema dell'equivalenza
-\subsubsection{teorema d'equivalenza}
+\subsubsection{teorema d'equivalenza tra NFA e DFA}
 
 \thm{
     Bonzo-GioLaPalma
@@ -950,52 +984,55 @@ Vogliamo dimostrare che $\forall w\in \Sigma^*$
 \]
 per induzione sulla lunghezza di $w$
 \begin{itemize}
-    \item \textbf{Caso base}: \( |w| = 0 \text{ cioè } (w = \epsilon) \):
+    \item \textbf{Caso base}: \( |w| = 0 \text{ cioè } w=\epsilon \):
     \[
-    \Delta(A, \varepsilon) = \epsilon\text{-closure}(q_0) = A.
+        \hat{\delta}(A, \epsilon) = \epsilon\text{-closure}(q_0)
     \]
     \[
-        \hat{\Delta} (i_m,\epsilon) =     \epsilon\text{-closure}(i_m)= \epsilon\text{-closure}(q_0)
+        \hat{\Delta} (i_m,\epsilon) =     \epsilon\text{-closure}(i_m)= i_M=<\epsilon\text{-closure}(q_0)
     \]
     \item \textbf{Caso induttivo}:\( w = xa \) con \( x \in \Sigma^*, a \in \Sigma \)
-
-    Per ipotesi induttiva, sappiamo che
+    Per ipotesi induttiva, sappiamo che:
     \[
-        \hat{\delta}(q_0, x) = \hat{\Delta}(i_M,x) =\{P_1,\dots.P_k\}
-    \] 
-    Per definizione di di $\hat{\delta}$ si ha che
-    \[
-        \hat{\delta}(q_0, xa)  =\epsilon\text{-closure}\left(\bigcup^k_{i=1}\delta (P_i, a)\right)
+        \hat{\delta}(q_0, x) = \Delta(\{q_0\}, x) = \{p_1, \dots, p_k\}
     \]
-    similmente 
+    
+    Per definizione di \(\hat{\delta}\):
     \[
-        \hat{\Delta(i_M, xa)} = \Delta(\{P_1, \dots, P_k\}, a)
+        \hat{\delta}(q_0, xa) = \Delta\big(\varepsilon\text{-closure}\big(\bigcup_{i=1}^{k} \delta(p_i, a)\big)\big)
     \]
-    In base all'algoritmo presentato prima, la definizione di $\Delta$ ci dice che 
+    
+    Similmente:
     \[
-        \Delta (\{P_1, \dots, P_k\},a)=\epsilon\text{-closure}(mossa(\{P_1,\dots, P_k\},a)) = \epsilon\text{-closure} \left(\bigcup^k_{i=1}\delta(P_i, a)\right) = \hat{q_0, xa}
+        \Delta(\{q_0\}, xa) = \Delta(\{p_1, \dots, p_k\}, a)
     \]
-
-    Infine abbiamo che:
-
+    
+    In base all'algoritmo, la definizione di \(\Delta\) ci dice che:
     \[
-        w\in L[N] \iff \exists p \in \hat{\delta}(q_0, w) \text{ con }p\in F
+        \Delta(\{p_1, \dots, p_k\}, a) = \varepsilon\text{-closure}\big(\text{mossa}(\{p_1, \dots, p_k\}, a)\big)= \varepsilon\text{-closure}\big(\bigcup_{i=1}^{k} \delta(p_i, a)\big)= \hat{\delta}(q_0, xa)
     \]
-    Che è equivalente a 
+    OK.
+    
+    ---
+    
+    Infine, abbiamo che:
     \[
-        w\in L[N] \iff \exists p \in \hat{\Delta}(i_M, w) \text{ con }p\in F
+        w \in L[N] \iff \exists p \in \hat{\delta}(q_0, w) \text{ con } p \in F
     \]
-    che è equivalente a
+    
     \[
-        w\in L[N] \iff \exists p \in \hat{\delta}(i_M, w)\in\mathcal{F}
+        \iff \exists p \in \Delta(i_H, w) \text{ con } p \in F
     \]
-    che è equivalente a 
+    
     \[
-        w\in L[N] \iff w\in L[M_N]\quad \forall w \in \Sigma^*
+        \iff w \in L[M_N] \quad \forall w \in \Sigma^*
     \]
-
-    Quindi $L[N] = L[M_N]$
-
+    
+    Quindi:
+    \[
+        L[N] = L[M_N] \quad \text{c.v.d.}
+    \]
+    
 \end{itemize}
 
 }
@@ -1155,6 +1192,215 @@ per induzione sulla lunghezza di $w$
             (\mathcal{L}[r])^* = (L[N[r]])^* = L[N[r^*]]
         \]
     \end{itemize}
+}
+\esempio{
+    Sia $S= (a|b^*)ba$ un'espressione regoalre e costruiamnone l'albero sintattico
+
+    \begin{center}
+       \begin{tikzpicture}
+        \Tree[
+                .$\cdot$
+                [
+                    .$*$
+                    [
+                        .$|$
+                        a
+                        b
+                    ]
+                ]
+                [
+                    .$\cdot$
+                    b
+                    a
+                ]
+        ]
+    \end{tikzpicture} 
+    \end{center}
+
+    Partiamo dalle foglie e risaliamo alla radice (bottom-up)
+    Si ha:
+
+    \begin{itemize}
+        \item $N[a]$:
+        \begin{center}
+            \begin{tikzpicture}
+                \node[state, initial] (A) {};
+                \node[state, accepting] (B) [right of=A] {};
+
+                \path[->]
+                    (A) edge[above] node{$a$} (B);
+            \end{tikzpicture}
+        \end{center}
+
+        \item $N[b]$:
+        \begin{center}
+            \begin{tikzpicture}
+                \node[state, initial] (A) {};
+                \node[state, accepting] (B) [right of=A] {};
+
+                \path[->]
+                    (A) edge[above] node{$b$} (B);
+            \end{tikzpicture}
+        \end{center}
+
+        \item  $N[a|b]$:
+        
+        \begin{center}
+            \begin{tikzpicture}[shorten >=1pt, node distance=2cm, on grid, auto]
+                % Stati
+                \node[state, initial] (qi) {};
+                \node[state] (ir) [above right=of qi] {};
+                \node[state] (fr) [right=of ir] {};
+                \node[state] (it) [below right=of qi] {};
+                \node[state] (ft) [right=of it] {};
+                \node[state, accepting] (qf) [right=5cm of qi] {};
+            
+                % Transizioni
+                \path[->]
+                (qi) edge[above] node {$\varepsilon$} (ir)
+                     edge[below] node {$\varepsilon$} (it)
+                (ir) edge[above] node {$a$} (fr)
+                (fr) edge[above] node {$\varepsilon$} (qf)
+                (it) edge[above] node {$b$} (ft)
+                (ft) edge[below] node {$\varepsilon$} (qf);
+
+                %TODO inserire cerchi per contenere gli automi
+                
+            \end{tikzpicture}
+            
+        \end{center}
+
+        \item  $N[(a|b)^*]$:
+        
+        \begin{center}
+            \begin{tikzpicture}[shorten >=1pt, node distance=2cm, on grid, auto]
+                % Stati
+                \node[state, initial] (i) {};
+                \node[state] (qi) [right=of i] {};
+                \node[state] (ir) [above right=of qi] {};
+                \node[state] (fr) [right=of ir] {};
+                \node[state] (it) [below right=of qi] {};
+                \node[state] (ft) [right=of it] {};
+                \node[state] (qf) [right=5cm of qi] {};
+                \node[state, accepting] (f) [right=of qf] {};
+            
+                % Transizioni
+                \path[->]
+                (i) edge[above] node {$\epsilon$} (qi)
+                (qi) edge[above] node {$\varepsilon$} (ir)
+                     edge[below] node {$\varepsilon$} (it)
+                (ir) edge[above] node {$a$} (fr)
+                (fr) edge[above] node {$\varepsilon$} (qf)
+                (it) edge[above] node {$b$} (ft)
+                (ft) 
+                    edge[below] node {$\varepsilon$} (qf)
+                    
+                (qf) edge[below] node {$\epsilon$} (f)
+                    edge[below] node {$\varepsilon$} (qi);
+
+            \end{tikzpicture}
+            
+        \end{center}
+        \item $N[ba]$:
+        \begin{center}
+            \begin{tikzpicture}
+                \node[state, initial] (A) {};
+                \node[state] (B) [right=of A] {};
+                \node[state, accepting] (C) [right=of B] {};
+
+                \path[->]
+                    (A) edge[above] node{$b$} (B)
+                    (B) edge[above] node{$a$} (C);
+            \end{tikzpicture}
+        \end{center}
+
+        \item $N[s]$:
+        \begin{center}
+            \begin{tikzpicture}[shorten >=1pt, node distance=2cm, on grid, auto]
+                % Stati
+                \node[state, initial] (i) {};
+                \node[state] (qi) [right=of i] {};
+                \node[state] (ir) [above right=of qi] {};
+                \node[state] (fr) [right=of ir] {};
+                \node[state] (it) [below right=of qi] {};
+                \node[state] (ft) [right=of it] {};
+                \node[state] (qf) [right=5cm of qi] {};
+                \node[state] (f) [right=of qf] {};
+                \node[state] (B) [right=of f] {};
+                \node[state, accepting] (C) [right=of B] {};
+            
+                % Transizioni
+                \path[->]
+                (i) edge[above] node {$\epsilon$} (qi)
+                (qi) edge[above] node {$\varepsilon$} (ir)
+                     edge[below] node {$\varepsilon$} (it)
+                (ir) edge[above] node {$a$} (fr)
+                (fr) edge[above] node {$\varepsilon$} (qf)
+                (it) edge[above] node {$b$} (ft)
+                (ft) 
+                    edge[below] node {$\varepsilon$} (qf)
+                    
+                (qf) 
+                    edge[below] node {$\epsilon$} (f)
+                    edge[below] node {$\varepsilon$} (qi)
+                (f) edge[above] node{$b$} (B)
+                (B) edge[above] node{$a$} (C);
+
+            \end{tikzpicture}
+            
+        \end{center}
+
+
+        
+    \end{itemize}
+
+    
+
+
+}
+
+Altro esempietto:
+\esempio{
+        TODO da fare l'automa diretto qui
+
+\[
+\begin{aligned}
+    &\text{Costruiamo il DFA associato a } N[s]: \\
+    &A = \varepsilon\text{-closure}(0) = \{0\} \\
+    &\Delta(A, a) = \varepsilon\text{-closure}(\{1\}) = \{1, 2, 3\} = B \\
+    &\Delta(A, b) = \varepsilon\text{-closure}(\varnothing) = \varnothing = C \\
+    &\Delta(B, a) = \varepsilon\text{-closure}(\{5\}) = \{5\} = D \\
+    &\Delta(B, b) = \varepsilon\text{-closure}(\{3\}) = \{3, 4, 2\} = E \\
+    &\Delta(D, a) = \varnothing = C, \quad \Delta(D, b) = \varnothing = C \\
+    &\Delta(E, a) = \varepsilon\text{-closure}(\{5\}) = D, \quad \Delta(E, b) = \varepsilon\text{-closure}(\{3\}) = E \\
+    &\Delta(C, a) = \varnothing = C, \quad \Delta(C, b) = \varnothing = C
+\end{aligned}
+\]
+
+\begin{tikzpicture}[shorten >=1pt, node distance=0.5cm, on grid, auto]
+    % Stati
+    \node[state, initial] (A) {$A$};
+    \node[state] (B) [above right=of A] {$B$};
+    \node[state, accepting] (D) [below right=of A] {$D$};
+    \node[state] (C) [below of=D] {$C$};
+    \node[state] (E) [right=of B] {$E$};
+
+    % Transizioni
+    \path[->]
+        (A) edge node {$a$} (B)
+            edge[bend right] node[below] {$b$} (C)
+        (B) edge node {$a$} (D)
+            edge[bend left] node[above] {$b$} (E)
+        (D) edge[loop below] node {$a,b$} (D)
+        (C) edge[loop below] node {$a,b$} (C)
+        (E) edge[loop above] node {$b$} (E)
+            edge[bend left] node {$a$} (D);
+\end{tikzpicture}
+
+\[
+\text{DFA associato a } N[a \; b^* \; a]
+\]
+
 }
 
 \subsection{Da NFA a espressione regolare}
@@ -1324,3 +1570,348 @@ Come nei primi due casi, vogliamo dimostrare per costruzione che esiste un NFA $
 
   Gia lo sapete cosa ci dicono il Basta e il Darione, $ A_1^* $ e' regolare.
 }
+
+\section{Grammatiche regolari}
+
+\dfn{grammatiche regoalre}{
+    Una grammatica libero si definisce \textbf{regoalre} sse ogni produzione è della forma $V\to aW$ oppure $V\to a$  dove $V,W\in NT\land a\in T$. Per il simbolo iniziale $S$ è ammessa anche la produzione $S\to \epsilon$
+}
+
+\nt{
+    A volte si userà la definizione più lasca che permette produzione $V\to \epsilon$ anche per nonterminali diversi da $S$ 
+}
+
+Di seguito riportati degli esempi
+\esempio{
+    Sia $G$ la seguente grammatica regolare:
+    \[
+        \begin{array}{l}
+            A \to aA\mid bB\mid bA\\
+            B\to a
+        \end{array}
+    \]
+
+    Si ha che $L(G)= (A|b)^*ba$!!
+
+    Adesso si costruisca un NFA a $G$:
+    \begin{center}
+        \begin{tikzpicture}
+            \node[state, initial] (A) {$A$};
+            \node[state] (B) [right=of A] {$B$};
+            \node[state, accepting] (C) [right=of B] {$\epsilon$};
+
+            \path[->]
+                (A) edge[loop below] node {$a$} ()
+                    edge[loop above] node {$a$} ()
+                    edge[below] node {$b$} (B)
+                (B) edge[below] node {$a$} (C);
+        \end{tikzpicture}
+    \end{center}
+
+    si ha che:
+    \begin{itemize}
+        \item abbiamo associato a ogni nonterminale uno stato dell'NFA
+        \item abbiamo aggiunto stato finale $\epsilon$
+    \end{itemize}
+}
+
+Esempio 2:
+\esempio{
+    Sia $G$ la seguente grammatica regolare:
+    \[
+        \begin{array}{l}
+            A\to aA\mid bB \\
+            B\to bB\mid aC\mid a\\
+            c\to aA \mid bB
+        \end{array}
+    \]
+    l'NFA è:
+
+    \begin{center}
+       \begin{tikzpicture}[shorten >=1pt, node distance=2.3cm, on grid, auto]
+        \node[state, initial] (A) {$A$};
+        \node[state] (B) [right=of A] {$B$};
+        \node[state] (C) [below=of A] {$C$};
+        \node[state, accepting] (D) [below=of B] {$\epsilon$};
+
+        \path[->]
+                (A) edge[loop above] node {$a$} ()
+                    edge[above] node {$b$} (B)
+                (B) 
+                    edge[loop above] node {$b$} ()
+                    edge[below] node {$a$} (D)
+                    edge[bend left] node[align=left] {$a$} (C)
+                (C)
+                    edge[above] node {$a$} (A)
+                    edge[bend left] node[align=left] {$b$} (B);
+
+    \end{tikzpicture} 
+    \end{center}
+    
+}
+
+\subsection{da grammatiche regolari a NFA equivalenti}
+\thm{}{
+    Data una grammatica regoalre $G$ si può costruire un NFA $N_G$ equivalente
+}
+\dimostrazione{
+    Sia $G=(NT, T, R, S)$, definiamo inoltre $N_G=(T,Q,\delta, S,\{\epsilon\})$ come segue:
+    \begin{itemize}
+        \item $Q=NT\cup \{\epsilon\}$
+        \item $\delta$ definita come segue:
+            \begin{itemize}
+                \item $(V\to aZ\in R)\implies (Z\in\delta (V,a))$
+                \item $(V\to a\in R)\implies (\epsilon\in\delta (V,a))$
+                \item $(V\to \epsilon\in R)\implies (\epsilon\in\delta (V,\epsilon))$
+            \end{itemize}
+    \end{itemize}
+    Si può dimostrare che
+    \[
+        S\implies^*_G w \text{ con la grammatica} G \iff (S,w)\vdash_{N_G}^* \text{ con l'automa }N_G
+    \]
+
+    non verrà dimostrata quest'ultima parte cazzo
+}
+
+\subsection{Da DFA a grammatiche regolari}
+\thm{}{
+    Da un DFA $M$ possiamo definire una grammatica regolare $G_M$ tale che:
+    \[
+        L[M] = L(G_M)
+    \]
+}
+\dimostrazione{
+    Sia $\mathcal{M} = (\Sigma, Q, \delta, q_0, F)$ il DFA. La grammatica $G_{\mathcal{M}} = (Q, \Sigma, R, q_0)$ ha:
+    \begin{itemize}
+        \item \textbf{Per non terminali:} gli stati di $\mathcal{M}$.
+        \item \textbf{Per terminali:} l'alfabeto di $\mathcal{M}$.
+        \item \textbf{Per simbolo iniziale:} lo stato iniziale di $\mathcal{M}$.
+        \item \textbf{Per produzioni $R$:}
+        \begin{itemize}
+            \item Per ogni $\delta(q_i, a) = q_j$, la produzione $q_i \to a q_j \in R$.
+            \item Inoltre, se $q_j \in F$, anche $q_i \to a \in R$.
+            \item Se $q_0 \in F$, allora $q_0 \to \varepsilon \in R$.
+        \end{itemize}
+    \end{itemize}
+
+    Versione alternativa che usa la definizione di grammatica regolare più lasca:
+    \begin{itemize}
+        \item Per ogni $\delta(q_i, a) = q_j$, la produzione $q_i \to a q_j \in R$.
+        \item Se $q \in F$, allora $q \to \varepsilon \in R$.
+    \end{itemize}
+
+    Si può dimostrare che:
+    \[
+        w \in L[\mathcal{M}] \iff w \in L(G_{\mathcal{M}})
+    \]
+}
+
+\esempio{
+    Sia $M$:
+    \begin{center}
+        \begin{tikzpicture}
+            \node[state, initial] (A) {$A$};
+            \node[state, accepting] (B) [right=of A]{$B$};
+
+            \path[->]
+                (A) edge[below] node {$a$}(B)
+                (B) edge[loop above] node{$a$}(); 
+        \end{tikzpicture}
+    \end{center}
+
+    Si ha che $aa^*$ è l'espressione regolare che descrive $L[M]$ 
+
+    Secondo la costruzione appena descritta $G_M$ è:
+    \[
+        \begin{array}{l}
+            A\to aB\mid a\\
+            B\to aB\mid a
+        \end{array}
+    \]
+    secondo la variante, invece:
+    \[
+        \begin{array}{l}
+            A \to aB\\
+            B\to aB\mid \epsilon
+        \end{array}
+    \]
+}
+
+\esempio{
+    sia il seguente automa $M$:
+    \begin{center}
+        \begin{tikzpicture}[shorten >=1pt, node distance=2.3cm, on grid, auto]
+            \node[state, initial] (a) {$A$};
+            \node[state] (b) [above right=of a] {$B$};
+            \node[state] (c) [below right=of a] {$C$};
+            \node[state, accepting] (d) [below right=of b] {$C$};
+
+            \path[->]
+                (a) 
+                    edge[below] node {$a$} (b)
+                    edge[below] node {$b$} (c)
+                (b)
+                    edge[loop above] node {$a$} ()
+                    edge[above] node {$c$} (c)
+                (c)
+                    edge[loop below] node {$b$} ()
+                    edge[bend left] node {$a$} (d)
+                (d)
+                    edge[below] node {$a$} (b)
+                    edge[bend left] node {$b$} (c);
+        \end{tikzpicture}
+    \end{center}
+}
+
+secondo il metodo descritto si ha che $G_M$ è:
+\[
+    \begin{array}{l}
+        A\to aB \mid bC\\
+        B\to aB\mid bC\\
+        C\to bC\mid aD\mid a\\
+        D\to aB\mid bC
+    \end{array}
+\]
+alternativamente:
+\[
+    A\to aB\mid bC\\
+    B\to aBmid bC\\
+    C\to bC\mid aD\\
+    D\to aB\mid bC\mid \epsilon
+\]
+\subsection{Grammatiche regolari ed espressioni regolari}
+\thm{}{
+    Il linguagio definito da una grammatica regolare $G$ è un linguaggio regolare, cioè è possibile costruire una espressione regolare $S_G$ tale che:
+    \[
+        L(G)= \mathcal{L}[S_G]
+    \] 
+}
+\pf{sketch della dimostrazione}{
+    idea della prova:
+    \begin{itemize}
+        \item \textbf{caso semplice}: un solo non terminale:
+        \[
+            A\to aA\mid b\mid \epsilon
+        \]
+        è intuitivo vedere che $a^*(b|\epsilon)$ è la espressione regolare associata
+        \item \textbf{caso medio}: due non terminali
+        \[
+            \begin{array}{l}
+                A\to aA\mid bB\mid c\\
+                B\to cA\mid aB\mid d
+            \end{array}
+        \]
+        ricaviamo $B$ dalla seconda equzione 
+        \[
+            B\approx a^*(cA|d) \text{ dove }A\text{ compare nella espressione regolare}
+        \]
+        ora sostituiamo $B$ nella prima "equazione"
+        \[
+            A\approx aA\mid ba^*(cA\mid d)\mid c
+        \]
+        con opportune manipolazioni su espressioni regolari, usando leggi che abbiamo visto, possiamo scrivere
+        \[
+            A\approx aA\mid ba^*cA\mid ba^*d \mid c
+        \]
+        e quindi 
+        \[
+            a\approx (a\mid ba^*c)A \mid ba^*d\mid c
+        \]
+        ora siamo nella forma "semplice"-
+
+        $A$ ha associata la espressione regolare
+        \[
+            (a\mid ba^*c)^*(ba^*d\mid c) 
+        \]
+        \item \textbf{in generale}
+        
+        \[
+        A_1 \simeq a_{11} A_1 \mid \dots \mid a_{1m} A_m \mid b_{1} \mid \dots \mid b_{1p_1}
+        \]
+        \[
+        A_2 \simeq a_{21} A_1 \mid \dots \mid a_{2n} A_n \mid b_{21} \mid \dots \mid b_{2p_2}
+        \]
+        \[
+            \vdots
+        \]
+        \[
+        A_m \simeq a_{m1} A_1 \mid \dots \mid a_{mn} A_n \mid b_{n1} \mid \dots \mid b_{np_n}
+        \]
+
+        Si parte con:
+        \[
+            A_m \simeq S_m \big[ A_1, \dots, A_{n-1} \big]
+        \]
+        cioè si costruisce una espressione regolare per \( A_m \) che usa \( A_1, \dots, A_{n-1} \).
+
+        Poi si procede sostituendo \( A_n \) (o meglio \( S_n \big[ A_1, \dots, A_{n-1} \big] \)) al posto di \( A_n \) nell'equazione per \( A_{n-1} \), cioè:
+        \[
+            A_{n-1} \simeq S_{n-1} \big[ A_1, \dots, A_{n-2} \big]
+        \]
+
+        e così via fino ad arrivare ad \( A_1 \) (che è il simbolo iniziale).
+
+
+    \end{itemize}
+}
+
+\esempio{
+    Sia $G$ la seguente grammatica
+    \[
+        \begin{array}{l}
+            A\to aB\mid \epsilon\\
+            B\to bA\mid \epsilon
+        \end{array}   
+    \]
+    PEr $B$ la espressione regoalre associata è $(bA\mid \epsilon)$, sostituisco questa al posto di $B$ nella prima equazione
+
+    \[
+        A\approx a (bA\mid \epsilon)\mid \epsilon
+    \]
+    manipolo la espressione regoalre
+    \[
+        A\approx abA\mid a\mid \epsilon
+    \]
+    siamo ora nel caso semplice
+    \[
+        A\approx (ab)^*(a\mid \epsilon)_{S_G}
+    \]
+}
+
+\nt{
+    la grammatica regolare $G$ con unica prodizone $A\to aA$ definisce il linguaggio vuoto, non $a^*$ quindi $S_G = \varnothing$
+}
+
+\subsection{Per riassumere le relazione tra espressioni regolari, linguaggi regolari e automi NFA e DFA}
+\vspace{0.5cm}
+\begin{center}
+    \begin{tikzpicture}[node distance=2cm]
+        % Nodes
+        \node (regexp) [startstop] {Espressioni regolari};
+        \node (nfa) [startstop, right=of regexp] {NFA};
+        \node (reggram) [startstop, below=of regexp] {Grammatiche regolari};
+        \node (dfa) [startstop, below=of nfa] {DFA};
+        
+        % Arrows
+        \draw [arrow] (regexp) -- (nfa);
+        \draw [arrow] (nfa) -- (dfa);
+        \draw [arrow] (dfa) -- (reggram);
+        \draw [arrow] (reggram) -- (regexp);
+    \end{tikzpicture}
+\end{center}
+
+\clm{}{}{
+    Si osservi che tutti questi formalismi sono equivalenti
+
+    \red{Tutti generano/riconoscono/descrivono la stessa classe di linguaggi, ovvero i linguaggi regolari} 
+}
+
+Tuttavia vi è un serio problema, infatti, per costruire uno scanner si parte dalla specifica dei pattern associati alle categorie sintattiche del linguaggio, mediante espressioni regolari. Per poi
+\[
+    \text{\texttt{regexp}}\to \text{\texttt{NFA}} \to \text{\texttt{DFA}}
+\]
+
+ma se l'NFA ha $n$ stati il DFA potrebbe averne al più $2^n$, pertanto serve trovare un DFA equivalente più piccolo possibile
+\[
+    \min(\text{\texttt{DFA}}) \text{ minimizzato}
+\] 
