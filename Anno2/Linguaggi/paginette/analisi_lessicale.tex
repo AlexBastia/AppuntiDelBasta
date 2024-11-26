@@ -552,7 +552,7 @@ Si osservi che
        \begin{tikzpicture}
         % Cerchi per gli automi
         \draw[thick] (0, 0) circle (0.75cm) node[pos=0, yshift=0cm] {\textbf{DFA}};
-        \draw[thick] (0, 0) circle (1.25cm) node[pos=0, yshift=1.75cm] {\textbf{NDA}};
+        \draw[thick] (0, 0) circle (1.25cm) node[pos=0, yshift=1cm] {\textbf{NDA}};
     \end{tikzpicture} 
     \end{center}
     
@@ -686,21 +686,14 @@ Qui è presentato l'algoritmo per calcolare la $\epsilon$-closure:
     Con $A$ un insieme di stati e $b$ una transizione
 }
 
-\subsubsection{costruzione per sottoinsiemi}
+\subsubsection{costruzione per sottoinsiemi del DFA}
 Qua di seguito l’algoritmo per la costruzione di sottoinsiemi, che serve per passare da un NFA a un DFA equivalente
 
-
-
-
-
-
-
-
-
-
 \begin{algorithm}
-    Sia $N=(\Sigma, Q,\delta,q_0,F)$ un NFA\;
-    $S\gets\epsilon\text{-closure}$\tcp*{stato iniziale del DFA}
+    \caption{costruzionePerSottoinsiemi()}
+    \KwIn{NFA $N=(\Sigma, Q,\delta,q_0,F)$}
+    \KwOut{DFA $M_N=(\Sigma,T,\Delta, \epsilon\text{-closure}(q_0), \mathcal{F})$}
+    $S\gets\epsilon\text{-closure}(q_0)$\tcp*{stato iniziale del DFA}
     $T=\{S\}$\tcp*{$T$ è il l'insieme degli stati del DFA}
     \While{c'è un $P\in T$ non marcato}{
         marca $P$\;
@@ -714,16 +707,21 @@ Qua di seguito l’algoritmo per la costruzione di sottoinsiemi, che serve per p
 }
 \end{algorithm}
 
-
-
-
-
+Definiamo quindi il DFA equivalente:
+\dfn{DFA quivalente}{
+    Si definisce il DFA equivalente tale automa:
+    \[
+        M_n = (\Sigma, T,\Delta, \epsilon\text{-closure}(q_0), \mathcal{F})    
+    \]
+    dove $R\in \mathcal{F}\iff \exists q\in R$ con $q\in F$
+}
 
 Si può notare come l'algoritmo che definisce la funzione di transizione (vista poch'anzi) rispetta le limitazioni dei DFA: non ci sono mosse epsilon e per ogni caraere dell’alfabeto esiste una ed
 una sola mossa in qualunque stato
 \esempio{
-    Consideriamo l’NFA seguente (relativo all’espressione regolare $(a|b)^*ab)$:
-    \begin{tikzpicture}
+    Consideriamo l’NFA seguente (relativo all’espressione regolare $((a|b)^*ab)$:
+    \begin{center}
+        \begin{tikzpicture}[node distance=1cm]
         \node[state, initial] (q0) {$q_0$};
         \node[state] (q1) [right=of q0] {$q_1$};
         \node[state, accepting] (q2) [right=of q1] {$q_2$};
@@ -733,8 +731,10 @@ una sola mossa in qualunque stato
         (q0) edge[loop above] node {$a$} ()
             edge[loop below] node {$b$} ()
             edge[above] node {$b$} (q1)
-        (q1) edge node {$a$} (q2);
+        (q1) edge node[above] {$a$} (q2);
     \end{tikzpicture}
+    \end{center}
+    
 
     Vogliamo ora trovare un DFA equivalente ad esso, applichiamo l’algoritmo di costruzioni per sottoinsiemi:
     \begin{itemize}
@@ -823,79 +823,113 @@ esempio bello corposo:
         \end{center}
         
         si noti i seguenti calcoli
-        \[
-        A = \varepsilon\text{-closure}(q_0) = \{q_0, q_1, q_2, q_3\}
-        \]
-        \[
-        \Delta(A, a) = \varepsilon\text{-closure}(\text{move}(A, a)) = \varepsilon\text{-closure}(\{q_0, q_4\}) = \{q_0, q_1, q_2, q_3, q_4\} = B
-        \]
-        \[
-        \Delta(A, b) = \varepsilon\text{-closure}(\text{move}(A, b)) = \varepsilon\text{-closure}(\{q_2, q_3, q_4\}) = \{q_2, q_3, q_4\} = C
-        \]
-        \[
-        \Delta(B, a) = \varepsilon\text{-closure}(\text{move}(B, a)) = \varepsilon\text{-closure}(\{q_0, q_4\}) = B
-        \]
-        \[
-        \Delta(B, b) = \varepsilon\text{-closure}(\text{move}(B, b)) = \varepsilon\text{-closure}(\{q_2, q_4\}) = C
-        \]
-        \[
-        \Delta(C, a) = \varepsilon\text{-closure}(\text{move}(C, a)) = \varepsilon\text{-closure}(\{ q_4\})=\{q_3, q_4\} = D
-        \]
-        \[
-        \Delta(C, b) = \varepsilon\text{-closure}(\text{move}(C, b)) = \varepsilon\text{-closure}(\{q_4\}) = D
-        \]
-        \[
-        \Delta(D, a) = \varepsilon\text{-closure}(\text{move}(D, a)) = \varepsilon\text{-closure}(\{q_4\}) = \varnothing = D
-        \]
-        \[
-        \Delta(D, b) = \varepsilon\text{-closure}(\text{move}(D, b)) = \varepsilon\text{-closure}(\varnothing) = \varnothing = E
-        \]
-        \[
-        \Delta(E, a) = \varepsilon\text{-closure}(\text{move}(E, a)) = \varepsilon\text{-closure}(\varnothing) = \varnothing = E
-        \]
-        \[
-        \Delta(E, b) = \varepsilon\text{-closure}(\text{move}(E, b)) = \varepsilon\text{-closure}(\varnothing) = \varnothing = E
-        \]
+
+        \vspace{0.5cm}
+        \begin{math}
+            A = \epsilon\text{-closure}(q_0) = \{q_0, q_1, q_2, q_3\} \\
+            \Delta(A, a) = \epsilon\text{-closure}(\text{move}(A, a)) = \epsilon\text{-closure}(\{q_0, q_4\}) = \{q_0, q_1, q_2, q_3, q_4\} = B \\
+            \Delta(A, b) = \epsilon\text{-closure}(\text{move}(A, b)) = \epsilon\text{-closure}(\{q_2, q_3, q_4\}) = \{q_2, q_3, q_4\} = C \\
+            \Delta(B, a) = \epsilon\text{-closure}(\text{move}(B, a)) = \epsilon\text{-closure}(\{q_0, q_4\}) = B \\
+            \Delta(B, b) = \epsilon\text{-closure}(\text{move}(B, b)) = \epsilon\text{-closure}(\{q_2, q_4\}) = C \\
+            \Delta(C, a) = \epsilon\text{-closure}(\text{move}(C, a)) = \epsilon\text{-closure}(\{q_4\}) = \{q_3, q_4\} = D \\
+            \Delta(C, b) = \epsilon\text{-closure}(\text{move}(C, b)) = \epsilon\text{-closure}(\{q_4\}) = D \\
+            \Delta(D, a) = \epsilon\text{-closure}(\text{move}(D, a)) = \epsilon\text{-closure}(\{q_4\}) = \varnothing = D \\
+            \Delta(D, b) = \epsilon\text{-closure}(\text{move}(D, b)) = \epsilon\text{-closure}(\varnothing) = \varnothing = E \\
+            \Delta(E, a) = \epsilon\text{-closure}(\text{move}(E, a)) = \epsilon\text{-closure}(\varnothing) = \varnothing = E \\
+            \Delta(E, b) = \epsilon\text{-closure}(\text{move}(E, b)) = \epsilon\text{-closure}(\varnothing) = \varnothing = E
+        \end{math}
+        \vspace{0.5cm}
+
+        il cui DFA $M_N$ è:
         
-        DFA $M_N$:
-        
-        TODO SISTEMARE
         \begin{center}
-        \begin{tikzpicture}[shorten >=1pt, node distance=3cm, on grid, auto]
+        \begin{tikzpicture}[shorten >=1pt, node distance=2cm, on grid, auto]
             % Stati
             \node[state, initial] (A) {$A$};
-            \node[state] (B) [above right=of A] {$B$};
-            \node[state] (C) [below right=of A] {$C$};
-            \node[state] (D) [right=of C] {$D$};
-            \node[state, accepting] (E) [right=of D] {$E$};
+            \node[state, accepting] (B) [above right=of A] {$B$};
+            \node[state, accepting] (C) [below right=of A] {$C$};
+            \node[state, accepting] (D) [right=of C] {$D$};
+            \node[state] (E) [right=of D] {$E$};
         
             % Transizioni
             \path[->]
-                (A) edge[bend left] node {$a$} (B)
-                    edge[bend right] node[below] {$b$} (C)
+                (A) edge[above] node {$a$} (B)
+                    edge[above] node[below] {$b$} (C)
                 (B) edge[loop above] node {$a$} ()
-                    edge[bend left] node {$b$} (C)
-                (C) edge[bend left] node {$a$} (D)
-                    edge[loop below] node {$b$} ()
-                (D) edge[bend left] node {$a, b$} (E)
-                (E) edge[loop below] node {$a, b$} ();
+                    edge node[left] {$b$} (C)
+                (C) edge[below] node {$a,b$} (D)
+                (D) edge[above] node {$b$} (E)
+                    edge[loop above] node {$a$} ()
+                (E) edge[loop above] node {$a, b$} ();
         \end{tikzpicture}
         \end{center}
 }
 
+\subsubsection{casi pessimi}
 
-
-Definiamo quindi il DFA equivalente:
-\dfn{DFA quivalente}{
-    Si definisce il DFA equivalente tale automa:
-    \[
-        M_n = (\Sigma, T,\Delta, \epsilon\text{-closure}(q_0), \mathcal{F})    
-    \]
-    dove $R\in \mathcal{F}\iff \exists q\in R$ con $q\in F$
+\clm{}{}{
+    Vi sono tuttavia casi pessimi in cui il DFA equivalente è esponenzialmente più grande di del DFA, ovvero che se il NFA $N$ ha $n$ stati il suo $M_n$ può averne $2^n$
 }
 
+\esempio{
+        Sia $N$ il seguente NFA con 2 stati:
+        \begin{center}
+            \begin{tikzpicture}
+            \node[state, initial] (q0) {$q_0$};
+            \node[state, accepting] (q1) [right=of q0] {$q_1$};
+
+            \path[->]
+                (q0) 
+                    edge node[below] {$b$} (q1)
+                    edge[loop below] node {$b$} ()
+                    edge[loop above] node {$a$} ()
+                (q1) 
+                    edge[loop above] node {$c$} (); 
+        \end{tikzpicture}
+        \end{center}
+        
+
+        per costruire il suo $M_N$ si hanno i seguenti nodi
+        \begin{itemize}
+            \item $A=\{q_0\}$
+            \item $B=\{q_0, q_1\}$
+            \item $A=\{q_1\}$
+            \item $D=\varnothing$
+        \end{itemize} 
+
+        in diagramma di transazione diventa:
+        \begin{center}
+            \begin{tikzpicture}[node distance=1cm]
+            \node[state, initial] (a) {$A$};
+            \node[state, accepting] (b) [right=of a] {$B$};
+            \node[state] (d) [below=of a] {$D$};
+            \node[state, accepting] (c) [right=of d] {$C$};
+
+            \path[->]
+                (a) 
+                    edge[bend left] node[below] {$b$} (b)
+                    edge[loop above] node {$a$} ()
+                    edge[above] node[left] {$c$} (d)
+                (b) 
+                    edge[loop above] node {$b$} ()
+                    edge[above] node[left] {$c$} (c)
+                    edge[bend left] node[below] {$a$} (a)
+                (d) 
+                    edge[loop below] node {$a,b,c$} ()
+                (c) 
+                    edge[loop below] node {$c$} ()
+                    edge[bend right] node[above] {$b$} (d)
+                    edge[bend left] node[below] {$a$} (d);
+        \end{tikzpicture}
+        \end{center}
+        
+
+}
+
+
+
 Adesso si può dimostrare il teorema dell'equivalenza
-\subsubsection{teorema d'equivalenza}
+\subsubsection{teorema d'equivalenza tra NFA e DFA}
 
 \thm{
     Bonzo-GioLaPalma
@@ -928,52 +962,55 @@ Vogliamo dimostrare che $\forall w\in \Sigma^*$
 \]
 per induzione sulla lunghezza di $w$
 \begin{itemize}
-    \item \textbf{Caso base}: \( |w| = 0 \text{ cioè } (w = \epsilon) \):
+    \item \textbf{Caso base}: \( |w| = 0 \text{ cioè } w=\epsilon \):
     \[
-    \Delta(A, \varepsilon) = \epsilon\text{-closure}(q_0) = A.
+        \hat{\delta}(A, \epsilon) = \epsilon\text{-closure}(q_0)
     \]
     \[
-        \hat{\Delta} (i_m,\epsilon) =     \epsilon\text{-closure}(i_m)= \epsilon\text{-closure}(q_0)
+        \hat{\Delta} (i_m,\epsilon) =     \epsilon\text{-closure}(i_m)= i_M=<\epsilon\text{-closure}(q_0)
     \]
     \item \textbf{Caso induttivo}:\( w = xa \) con \( x \in \Sigma^*, a \in \Sigma \)
-
-    Per ipotesi induttiva, sappiamo che
+    Per ipotesi induttiva, sappiamo che:
     \[
-        \hat{\delta}(q_0, x) = \hat{\Delta}(i_M,x) =\{P_1,\dots.P_k\}
-    \] 
-    Per definizione di di $\hat{\delta}$ si ha che
-    \[
-        \hat{\delta}(q_0, xa)  =\epsilon\text{-closure}\left(\bigcup^k_{i=1}\delta (P_i, a)\right)
+        \hat{\delta}(q_0, x) = \Delta(\{q_0\}, x) = \{p_1, \dots, p_k\}
     \]
-    similmente 
+    
+    Per definizione di \(\hat{\delta}\):
     \[
-        \hat{\Delta(i_M, xa)} = \Delta(\{P_1, \dots, P_k\}, a)
+        \hat{\delta}(q_0, xa) = \Delta\big(\varepsilon\text{-closure}\big(\bigcup_{i=1}^{k} \delta(p_i, a)\big)\big)
     \]
-    In base all'algoritmo presentato prima, la definizione di $\Delta$ ci dice che 
+    
+    Similmente:
     \[
-        \Delta (\{P_1, \dots, P_k\},a)=\epsilon\text{-closure}(mossa(\{P_1,\dots, P_k\},a)) = \epsilon\text{-closure} \left(\bigcup^k_{i=1}\delta(P_i, a)\right) = \hat{q_0, xa}
+        \Delta(\{q_0\}, xa) = \Delta(\{p_1, \dots, p_k\}, a)
     \]
-
-    Infine abbiamo che:
-
+    
+    In base all'algoritmo, la definizione di \(\Delta\) ci dice che:
     \[
-        w\in L[N] \iff \exists p \in \hat{\delta}(q_0, w) \text{ con }p\in F
+        \Delta(\{p_1, \dots, p_k\}, a) = \varepsilon\text{-closure}\big(\text{mossa}(\{p_1, \dots, p_k\}, a)\big)= \varepsilon\text{-closure}\big(\bigcup_{i=1}^{k} \delta(p_i, a)\big)= \hat{\delta}(q_0, xa)
     \]
-    Che è equivalente a 
+    OK.
+    
+    ---
+    
+    Infine, abbiamo che:
     \[
-        w\in L[N] \iff \exists p \in \hat{\Delta}(i_M, w) \text{ con }p\in F
+        w \in L[N] \iff \exists p \in \hat{\delta}(q_0, w) \text{ con } p \in F
     \]
-    che è equivalente a
+    
     \[
-        w\in L[N] \iff \exists p \in \hat{\delta}(i_M, w)\in\mathcal{F}
+        \iff \exists p \in \Delta(i_H, w) \text{ con } p \in F
     \]
-    che è equivalente a 
+    
     \[
-        w\in L[N] \iff w\in L[M_N]\quad \forall w \in \Sigma^*
+        \iff w \in L[M_N] \quad \forall w \in \Sigma^*
     \]
-
-    Quindi $L[N] = L[M_N]$
-
+    
+    Quindi:
+    \[
+        L[N] = L[M_N] \quad \text{c.v.d.}
+    \]
+    
 \end{itemize}
 
 }
