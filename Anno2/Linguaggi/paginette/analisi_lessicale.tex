@@ -80,11 +80,26 @@ vedremo che ad ogni nome di categoria sintattica è associato un pattern che spe
 In realtà, normalmente lo scanner \red{associa agli identificatori un indirizzo della tabella dei simboli}, quindi  $\inside{ide, x}$ è in realta  $\inside{ide, \text{puntatore alla tabello dei simboli}}$
 
 \subsection{espressioni regolari}
+Nello stesso modo in cui possiamo scrivere espressioni matematiche utilizzando operatori matematici ($ +, \times,... $) e' possibile, utilizzando appositi operatori regolari, definire \textbf{espressioni regolari} che descrivono un linguaggio. Ad esempio:
+\[
+  (a \mid b)c^*
+\]
+dove 'a', 'b' e 'c' vengono intesi come i linguaggi $ \{a\} $, $ \{b\} $ e $ \{c\} $, '$ \mid $' e' l'operazione di unione, quindi $ \{a\} \cup \{b\} = \{a, b\} $. Fra le parentesi e la 'c' e' sottintesa l'operazione di congiunzione '$ \cdot $', ma ha priorita' l'operatore $ ^* $ che ha lo stesso effetto della stella di Kleene. Quindi diventa:
+\[
+  \{a, b\}\cdot \{c\}^* = \{a, b, ac, bc, acc, bcc, ...\}
+\]
+Definiamo formalmente questo tipo di espressioni e i linguaggi che definiscono:
 \dfn{espressioni regolari}{
     fissato un alfabeto $A =\{a_1,a_2,\dots,a_n\}$, definiamo le espressioni regolari su $A$ con la seguente $BNF$
     \[
         r::= \varnothing\mid\epsilon\mid a\mid r\cdot r\mid r|r\mid r^*    
     \]
+}
+\nt{
+  La definizione non e' ciclica perche' le espressioni sono definite da altre espressioni piu' piccole.
+}
+\nt{
+  Non confondere le ER $ \emptyset $ e $ \epsilon $: la prima identifica il linguaggio vuoto, che non accetta nessuna stringa, mentre il linguaggio associato alla seconda accetta la stringa vuota.
 }
 \nt{
     Si tenga presente che questa è una sintassi astratta ambigua, ci vorrebbero le parentesi per disanbiguare, tuttavia noi assumiamo che:
@@ -205,8 +220,14 @@ Si osservi che esistono anche linguaggi regolari infiniti:
     \end{itemize}
 }
 \subsubsection{altri operatori ausiliari}
-% TODO non ho voglia 
-\dfn{}{}
+% TODO non ho voglia, ma io si
+\dfn{}{
+  \begin{itemize}
+    \item Ripetizione positiva: $ r^+ = rr* $
+    \item Possibilita': $ r? = r \mid \epsilon $
+    \item Elenco: $ [a_1, ..., a_n] = a_1 \mid ... \mid a_n $
+  \end{itemize}
+}
 
 \subsection{equivalenza tra espressioni regolari}
 \dfn{
@@ -552,7 +573,7 @@ Si osservi che
        \begin{tikzpicture}
         % Cerchi per gli automi
         \draw[thick] (0, 0) circle (0.75cm) node[pos=0, yshift=0cm] {\textbf{DFA}};
-        \draw[thick] (0, 0) circle (1.25cm) node[pos=0, yshift=1.75cm] {\textbf{NDA}};
+        \draw[thick] (0, 0) circle (1.25cm) node[pos=0, yshift=1.75cm] {\textbf{NFA}};
     \end{tikzpicture} 
     \end{center}
     
@@ -886,8 +907,8 @@ esempio bello corposo:
 
 
 Definiamo quindi il DFA equivalente:
-\dfn{DFA quivalente}{
-    Si definisce il DFA equivalente tale automa:
+\dfn{DFA equivalente}{
+    Si definisce il DFA equivalente ad un NFA tale automa:
     \[
         M_n = (\Sigma, T,\Delta, \epsilon\text{-closure}(q_0), \mathcal{F})    
     \]
@@ -900,10 +921,11 @@ Adesso si può dimostrare il teorema dell'equivalenza
 \thm{
     Bonzo-GioLaPalma
 }{
-    Sia $N=(\Sigma, Q,\delta,q_0, F)$ un NFA  e sia $;_n$ l'automa ottenuto con la costruzione per sottoinsiemi. allora $M_n$ è un DFA e si ha che 
+    Sia $N=(\Sigma, Q,\delta,q_0, F)$ un NFA  e sia $M_n$ l'automa ottenuto con la costruzione per sottoinsiemi. allora $M_n$ è un DFA e si ha che 
     \[
         L[N]=L[M_n]    
     \]
+    In altre parole, $ N $ e $ M_n $ sono equivalenti.
 }
 \dimostrazione{
     Sia \( N = (Z, \Sigma, \delta, q_0, F) \) un NFA e sia \( M_N = (\Gamma, \Sigma, \Delta, A, F') \) l'automa ottenuto con l'algoritmo.
@@ -1133,4 +1155,172 @@ per induzione sulla lunghezza di $w$
             (\mathcal{L}[r])^* = (L[N[r]])^* = L[N[r^*]]
         \]
     \end{itemize}
+}
+
+\subsection{Da NFA a espressione regolare}
+Come anticipato precedentemente, e' possibile anche dimostrare la direzione inversa del teorema, ovvero che dato un NFA che riconosce un linguaggio $ L[N] $, e' sempre possibile generare un'espressione regolare che riconosca lo stesso linguaggio. Quindi vale il teorema generale:
+\thm{Teoremone Piccolomini}{
+  Un linguaggio e regolare sse esiste un automa a stati finiti che lo riconosce.
+}
+Sopra abbiamo gia dimostrato che preso un linguaggio regolare (ovvero descritto da un'espressione regolare) possiamo sempre costruire un NFA equivalente. Ci tocca dimostrare la direzione inversa, ovvero che preso un qualsiasi NFA, il linguaggio che riconosce e' regolare e quindi esiste un'espressione regolare che lo descrive.
+
+Dato che abbiamo dimostrato col teorema Bonzo-GiolaPalma che un NFA e' sempre convertibile a un DFA, possiamo partire proprio da un DFA e definire un procedimento per ottenere un'espressione regolare equivalente. Dividiamo in due parti questo processo: prima convertiamo il DFA in un GNFA (General Nondeterministic Finite Automata), che ora defineremo, poi convertiamo il GNFA in un'ER.
+
+\subsubsection{Automi finiti nondeterministici generali}
+I GNFA sono praticamente dei NFA con funzione di transizione che funziona utilizzando le ER. Possono leggere blocchi alla volta dall'input, non solo caratteri, e se tale blocco soddisfa l' ER di una transizione che parte dallo stato corrente, allora si puo' seguire l'arco e cambiare stato. Ovviamente e' fortemente nondeterministico e possono esserci molti modi per elaborare la stessa sequenza di caratteri. 
+
+TODO: esempio di GNFA
+
+Formalmente:
+\dfn{GNFA}{
+  Un \textbf{automa finito nondeterministico generale} e' una quintupla $ (Q, \Sigma, \delta, q_{\text{start}}, q_{\text{accept}}) $ tale che:
+  \begin{itemize}
+    \item $ Q $ e' un insieme finito di stati
+    \item $ \Sigma $ e' l'alfabeto dell'input
+    \item $ \delta: (Q - q_{\text{accept}}) \times (Q - q_{\text{start}}) \to \mathcal{R}_\Sigma $ e' la funzione di transizione
+  \end{itemize}
+  
+  Dove $ \mathcal{R}_\Sigma $ e' l'insieme di tutte le ER sull'alfabeto $ \Sigma $.
+}
+ 
+Un GNFA riconosce una stringa $ w \in \Sigma^* $ se esitono una suddivisione $ w = w_1w_2...w_k $ con $ w_i \in \Sigma^* $ e una serie di stati $ q_0,q_1,...,q_k $ tali che:
+\begin{enumerate}
+  \item $ q_0 = q_{\text{start}} $
+  \item $ q_k = q_{\text{accept}} $
+  \item $ \forall i > 0. w_i \in \mathcal[R_i] $, dove $ R_i = \delta(q_{i-1}, q_i) $
+\end{enumerate}
+
+
+Per i fini della dimostrazione, ci interessiamo solo di GNFA specifici che rispettano le seguenti condizioni:
+\begin{itemize}
+  \item Lo stato iniziale ha archi che vanno verso tutti gli altri stati, ma nessuno entrante.
+  \item Lo stato finale e' unico e ha archi entranti da tutti gli altri stati, ma nessuno uscente. Inoltre e' distinto dallo stato iniziale.
+  \item Senza contare lo stato iniziale e lo stato finale, gli stati hanno archi che vanno verso tutti gli altri stati e anche verso loro stessi.
+\end{itemize}
+
+\subsubsection{Da DFA a GNFA}
+Convertire un DFA in un GNFA in forma speciale e' semplice: basta aggiungere uno stato iniziale con arco $ \epsilon $ verso lo stato iniziale vecchio, aggiungere uno stato finale con archi $ \epsilon $ entranti da tutti i vecchi stati finali e se ce piu' di un arco nella stessa direzione fra due nodi, fonderli insieme creando un unico arco la cui ER corrispondente e' l'unione delle ER dei vecchi archi. Infine, se mancano degli archi, aggiungere transizioni segnati dall'ER $ \emptyset $, che non puo' essere mai usata. 
+
+\subsubsection{Da GNFA a ER}
+Per ottenere l'ER a partire dal GNFA, l'idea principale e' la seguente:\\
+Diciamo che il GNFA ha $ k $ stati. Sappiamo che $ k \geq 2 $ perche ci devono essere uno stato finale e uno iniziale distinti. Se riusciamo a rimuovere uno stato alla volta, che non sia finale o iniziale, mantenendo il nuovo GNFA appena ottenuto equivalente a quello prima, arriviamo ad un punto dove $ k=2 $ e l'automa e' costituito semplicemente da un arco che applica l'ER che ci porta dallo stato iniziale direttamente a quello finale, e che descrive quindi il linguaggio riconosciuto dal DFA iniziale.
+
+Dobbiamo fare in modo che quando uno stato $ q_{\text{rip}} $ viene rimosso, le ER sugli archi vengano modificate in modo da simulare tutti i percorsi che sono stati rimossi. Quindi le nuove ER devono considerare sia le stringhe che portano direttamente dallo stato $ q_i $ allo stato $ q_j $, che le stringhe che portavano da $ q_i $ a $ q_j $ passando da $ q_{\text{rip}} $.
+
+TODO: copia figure 1.63 del libro
+
+Quindi, se nel vecchio GNFA:
+\begin{enumerate}
+  \item $ q_i $ va da $ q_{\text{rip}} $ per l'ER $ R_1 $
+  \item $ q_{\text{rip}} $ va a se stesso per $ R_2 $
+  \item $ q_{\text{rip}} $ va a $ q_j $ per $ R_3 $
+  \item $ q_i $ va a $ q_j $ per $ R_4 $
+\end{enumerate}
+allora nel nuovo GNFA dobbiamo etichettare l'arco da $ q_i $ a $ q_j $ con l'ER:
+\[
+  (R_1)(R_2)^*(R_3)\cup (R_4)
+\]
+Ad ogni iterazione applichiamo questa trasformazione per ogni arco fra una coppia $ q_i q_j $ (anche quando $ i = j $). Formalizziamo tutto cio' (zio perone):
+\pf{Dimostrazione formale}{
+  Sia $ M $ il DFA equivalente all'NFA del teorema. Usando la procedura descritta sopra trasformiamo $ M $ in un GNFA $ G $. Usiamo la procedura ricorsiva CONVERT($ G $) per ottenere l'ER equivalente:
+  \begin{enumerate}
+    \item Sia $ k $ il numero di stati di $ G $
+    \item Se $ k = 2 $, ritorna l'espressione regolare associata ai due nodi
+    \item Se $ k > 2 $, seleziona uno stato $ q_{\text{rip}} \in Q $ che sia diverso dallo stato iniziale e finale e sia $ G' = (Q', \Sigma, \delta', q_{\text{start}}, q_{\text{accept}}) $ tale che:
+      \begin{itemize}
+        \item $ Q' = Q \setminus \{q_{\text{rip}}\} $
+        \item $ \forall q_i \in Q' \setminus \{q_{\text{start}}\}, \forall q_j \in Q' \setminus \{q_{\text{accept}}\}: $
+          \[
+            \delta'(q_i, q_j) = (R_1)(R_2)^*(R_3)\cup(R_4)
+          \]
+          con $ R_1 = \delta(q_i, q_{\text{rip}}), R_2 = \delta(q_{\text{rip}}, q_{\text{rip}}), R_3 = \delta(q_{\text{rip}}, q_j), R_4 = \delta(q_i, q_j) $
+      \end{itemize}
+  \end{enumerate}
+
+  Ora dimostriamo che CONVERT($ G $) ritorni il valore corretto. 
+
+  Dimostriamo per induzione su $ k $, il numero di stati del GNFA $ G $:
+  \begin{itemize}
+    \item \textbf{Caso base:}
+
+      Se $ k = 2 $, per la definizione di GNFA specifico abbiamo uno stato iniziale e un arco che lo collega allo stato finale. L'ER dell'arco descrive tutte le stringhe che portano $ G $ allo stato finale, quindi e' equivalente a $ G $.
+    \item \textbf{Caso induttivo su $ k $:}
+
+      Assumiamo che CONVERT($ G' $) = $ G' $, dove $ G' $ e' il caso con $ k-1 $ stati. Dimostriamo che $ G' $ e $ G $ sono equivalenti. 
+  \end{itemize}
+}
+
+
+\subsection{Chiusura dei linguaggi regolari rispetto alle operazioni regolari}
+Per aiutarci ad architettare automi finiti o per distinguere linguaggi regolari da altri tipi di linguaggi che vedremo piu' avanti, puo' tornare utile sapere se sono chiusi rispetto alle operazioni regolari (concatenazione, unione, stella di Kleene). Generalmente, diciamo che un'insieme di oggetti e' chiusa rispetto a un'operazione se applicando quest'ultima a qualunque elemento dell'insieme, il risultato appartiene sempre allo stesso insieme. Quindi se consideriamo come macro-insieme l'insieme di tutti i linguaggi regolari e dimostriamo la chiusura rispetto a una certa operazione, allora siamo sicuri che il risultato di questa operazione applicata a linguaggi regolari sara' sempre un linguaggio regolare. Partiamo con l'operazione di unione:
+\thm{Chiusura di linguaggi regolari rispetto all'unione}{
+  La classe dei linguaggi regolari e' chiusa sotto l'unione.
+
+  In altre parole, se $ A_1 $ e $ A_2 $ sono linguaggi regolari, lo e' anche $ A_1 \cup A_2 $.
+}
+Dato che abbiamo gia' dimostrato l'equivalenza fra DFA e NFA, possiamo usare il nondeterminismo per dimostrare il teorema sopra (e' possibile anche usare solo DFA, ma e' piu' lunga). L'idea della dimostrazione e' quella di creare due NFA, $ N_1, N_2 $ che riconoscono rispettivamente i linguaggi $ A_1, A_2 $, e poi di unirli per creare un nuovo NFA $ N $ che riconosca $ A_1 \cup A_2 $. Quindi, $ N $ deve riconoscere sia le stringhe di $ A_1 $ che di $ A_2 $. Creando un nuovo stato iniziale e collegandolo ai due stati iniziali di $ N_1 $ e $ N_2 $ con mosse $ \epsilon $, quindi usando il nondeterminismo per accettare sia i casi in cui l'input appartiene ad $ A_1 $, sia quando appartiene ad $ A_2 $. 
+\pf{Dimostrazione formale}{
+  Siano $ N_1 = \{Q_1, \Sigma, \delta_1, q_1, F_1\} $ e $ N_2 = \{Q_2, \Sigma, \delta_2, q_2, F_2\} $ NFA che riconoscono rispettivamente $ A_1 $ e $ A_2 $.
+
+  Costruisco un nuovo NFA $ N = \{Q, \Sigma, \delta, q_0, F\} $ per riconoscere $ A_1 \cup A_2 $ in tale modo:
+  \begin{enumerate}
+    \item $ Q = \{q_0\} \cup Q_1 \cup Q_2 $
+    \item $ F = F_1 \cup F_2 $
+    \item $ \forall q \in Q. \forall a \in \Sigma. \delta(q, a) = \begin{cases}
+    \delta_1(q, a) & q \in Q_1\\
+    \delta_2(q, a) & q \in Q_2\\
+      \{q_1, q_2\} & q = q_0 \land a = \epsilon\\
+      \emptyset & q = q_0 \land a \neq \epsilon
+    \end{cases} $
+  \end{enumerate}
+
+  Quindi per il teorema Basta-Dario e' sVenuto, $ A_1 \cup A_2 $ e' un linguaggio regolare.
+}
+Ora passiamo alla concatenazione:
+\thm{Chiusura dei linguaggi regolari rispetto alla concatenazione}{
+  I linguaggi regolari sono chiusi sotto la concatenzazione.
+
+  In altre parole, se $ A_1 $ e $ A_2 $ sono linguaggi regolari, anche $ A_1 \cdot A_2 $ e' regolare.
+}
+Il punto chiave di questa dimostrazione e' come sapere quando finisce la parola di $ A_1 $ e inizia una stringa di $ A_2 $. Infatti, con i DFA risulta molto piu' complicato, ma dato che possiamo usare i NFA risulta abbastanza banale. Come prima, vogliamo costruire un NFA $ N $ utilizzando altri due NFA $ N_1 $ e $ N_2 $ che riconoscono $ A_1 $ e $ A_2 $. Possiamo fare cio' collegando tutti gli stati finali di $ N_1 $ allo stato iniziale di $ N_2 $, usando transizioni $ \epsilon $ per accettare tutti i possibili casi. E' possibile, infatti, che una sotto-strina di una parola in $ A_1 $ appartenga anch'essa ad $ A_1 $, quindi senza il nondeterminismo sarebbe impossibile sapere quando passare a $ N_2 $. Se alla fine dell'input $ N_2 $ e' su uno stato finale, allora la parola appartiene a $ A_1 \cdot A_2 $.
+\pf{Dimostrazione formale}{
+  Siano $ N_1 = \{Q_1, \Sigma, \delta_1, q_1, F_1\}, N_2 = \{Q_2, \Sigma, \delta_2, q_2, F_2\} $ NFA che riconoscono rispettivamente $ A_1, A_2 $.
+
+  Costruisco il NFA $ N = \{Q, \Sigma, \delta, q_1, F_2\} $ che riconosce $ A_1 \cdot A_2 $ in tale modo:
+  \begin{enumerate}
+    \item $ Q = Q_1 \cup Q_2 $
+    \item $ \forall q \in Q. \forall a \in \Sigma: \delta(q, a) = \begin{cases}
+        \delta_1(q, a) & q \in Q_1\setminus F_1\\
+      \delta_1(q, a) \cup \{q_2\} & q \in F_1 \land a = \epsilon\\
+      \delta_1(q, a) & q \in F_1 \land a \neq \epsilon\\
+      \delta_2(q, a) & q \in Q_2
+    \end{cases} $
+  \end{enumerate}
+
+  Sempre per il teorema Basta-Dario e' sVenuto, $ A_1 \cdot A_2 $ e' regolare.
+}
+Finiamo con la stella di Kleene:
+\thm{Chiusura dei linguaggi regolari rispetto alla stella di Kleene}{
+  I linguaggi regolari sono chiusi rispetto alla stella di Kleene.
+
+  In altre parole, se $ A_1 $ e' un linguaggio regolare, allora lo e' anche $ A_1^* $.
+}
+Come nei primi due casi, vogliamo dimostrare per costruzione che esiste un NFA $ N $ che riconosce $ A_1^* $. Considero l' automa $ N_1 $ che riconosce $ A_1 $. Noi vogliamo che $ N $ riconosca una concatenazione di qualunque lunghezza di parole in $ A_1 $, quindi possiamo usare l'idea della dimostrazione precedente e collegare tutti gli stati finali di $ N_1 $ questa volta al proprio stato iniziale, sempre con transizioni $ \epsilon $. Non possiamo dimenticarci pero' che anche $ \epsilon \in A_1^* $, quindi basta aggiungere un nuovo stato iniziale che sia pure finale e collegarlo al vecchio stato iniziale con un'altra transizione $ \epsilon $.
+\pf{Dimostrazione formale}{
+  Sia $ N_1 = \{Q_1, \Sigma, \delta_1, q_1, F_1\} $ un NFA che riconosce il linguaggio regolare $ A_1 $.
+
+  Costruisco $ N = \{Q, \Sigma, \delta, q_0, F\} $ che riconosce $ A_1^* $ nel seguente modo:
+  \begin{enumerate}
+    \item $ Q = \{q_0\} \cup Q_1 $
+    \item $ F = \{q_0\} \cup F_1 $
+    \item $ \forall q \in Q, \forall a \in \Sigma: \delta(q, a) = \begin{cases}
+    \delta(q, a) & q \in Q_1 \setminus F_1\\
+    \delta(q, a) & q \in F_1 \land a \neq \epsilon\\
+      \delta(q, a) \cup \{q_1\} & q \in F_1 \land a = \epsilon\\
+      \{q_1\} & q = q_0 \land a = \epsilon\\
+      \emptyset & q = q_0 \land a \neq \epsilon
+    \end{cases} $
+  \end{enumerate}
+
+  Gia lo sapete cosa ci dicono il Basta e il Darione, $ A_1^* $ e' regolare.
 }
