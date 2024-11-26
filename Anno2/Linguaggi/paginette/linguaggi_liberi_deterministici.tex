@@ -409,10 +409,8 @@ Cominciamo subito con un esempio
     
 \begin{center}
     \begin{tikzpicture}
-        % Nodo centrale
         \node[state] (q) {$q$};
         
-        % 5 loop disposti attorno al nodo
         \draw (q) edge[loop above] node[align=center] {$a,a/\epsilon$} (q);
         \draw (q) edge[loop right] node[align=center] {$b,b/\epsilon$} (q);
         \draw (q) edge[out=330, in=300, looseness=8] node[align=center] {$c,c/\epsilon$} (q);

@@ -857,7 +857,7 @@ esempio bello corposo:
         \Delta(E, b) = \varepsilon\text{-closure}(\text{move}(E, b)) = \varepsilon\text{-closure}(\varnothing) = \varnothing = E
         \]
         
-        \subsection*{DFA $M_N$}
+        DFA $M_N$:
         
         TODO SISTEMARE
         \begin{center}
@@ -900,7 +900,7 @@ Adesso si può dimostrare il teorema dell'equivalenza
 \thm{
     Bonzo-GioLaPalma
 }{
-    Sia $N=(\Sigma), Q,\delta,q_0, F$ un NFA  e sia $;_n$ l'automa ottenuto con la costruzione per sottoinsiemi. allora $M_n$ è un DFA e si ha che 
+    Sia $N=(\Sigma, Q,\delta,q_0, F)$ un NFA  e sia $;_n$ l'automa ottenuto con la costruzione per sottoinsiemi. allora $M_n$ è un DFA e si ha che 
     \[
         L[N]=L[M_n]    
     \]
@@ -912,7 +912,7 @@ Adesso si può dimostrare il teorema dell'equivalenza
     \item \( M_N \) è \textbf{deterministico}: Infatti $\Delta(A, a)$ con $A\in T\land a\in \Sigma$ è definita in modo univoco 
         
 
-    \item  Quindi mi riduco a disimostrare che $L[N]=L[M_n]$
+    \item  Quindi mi riduco a dimostrare che $L[N]=L[M_n]$
     \begin{itemize}
         \item si osservi che per un DFA, $\epsilon$-closure$(R)=R$
         \item chiamiamo $i_m=\epsilon$-closure$(q_0)$ lo stato iniziale di $M_n$
@@ -937,9 +937,200 @@ per induzione sulla lunghezza di $w$
     \]
     \item \textbf{Caso induttivo}:\( w = xa \) con \( x \in \Sigma^*, a \in \Sigma \)
 
-    Per ipotesi induttiva, ammettiamo che:
-    %TODO da fare cazzo
+    Per ipotesi induttiva, sappiamo che
+    \[
+        \hat{\delta}(q_0, x) = \hat{\Delta}(i_M,x) =\{P_1,\dots.P_k\}
+    \] 
+    Per definizione di di $\hat{\delta}$ si ha che
+    \[
+        \hat{\delta}(q_0, xa)  =\epsilon\text{-closure}\left(\bigcup^k_{i=1}\delta (P_i, a)\right)
+    \]
+    similmente 
+    \[
+        \hat{\Delta(i_M, xa)} = \Delta(\{P_1, \dots, P_k\}, a)
+    \]
+    In base all'algoritmo presentato prima, la definizione di $\Delta$ ci dice che 
+    \[
+        \Delta (\{P_1, \dots, P_k\},a)=\epsilon\text{-closure}(mossa(\{P_1,\dots, P_k\},a)) = \epsilon\text{-closure} \left(\bigcup^k_{i=1}\delta(P_i, a)\right) = \hat{q_0, xa}
+    \]
+
+    Infine abbiamo che:
+
+    \[
+        w\in L[N] \iff \exists p \in \hat{\delta}(q_0, w) \text{ con }p\in F
+    \]
+    Che è equivalente a 
+    \[
+        w\in L[N] \iff \exists p \in \hat{\Delta}(i_M, w) \text{ con }p\in F
+    \]
+    che è equivalente a
+    \[
+        w\in L[N] \iff \exists p \in \hat{\delta}(i_M, w)\in\mathcal{F}
+    \]
+    che è equivalente a 
+    \[
+        w\in L[N] \iff w\in L[M_N]\quad \forall w \in \Sigma^*
+    \]
+
+    Quindi $L[N] = L[M_N]$
+
 \end{itemize}
 
+}
 
+\subsection{Da espressioni regolarei a NFA equivalenti}
+
+\thm{Basta - Dario è sVenuto}{
+    Data un'espressione regolare $S$, possiamo costruire un NFA $N[s]$ tale che:
+    \[
+        \mathcal{L}[s] = L[N[s]]
+    \]
+
+    ovvero un linguaggio individuato da un linguaggio regolare è equivalente ad un linguaggio riconosciuto da un automa non deterministico a stati finiti costruito a partire da $S$, questo significa che \red{gli NFA riconoscono TUTTI i linguaggi regolari}, vedremo poi che riconoscono solo i linguaggi regolari
+}
+\dimostrazione{
+    Dimostreremo il teorema per induzione sulla sintassi astratta della espressione regolare $S$.
+
+    Si costruisca un possibile NFA associato all'espressione regolare $S$, in modo da mantenere i seguente due invarianti:
+    \begin{itemize}
+        \item lo stato iniziale non ha archi entranti
+        \item $N[s]$ ha un solo stato finale senza archi uscenti
+    \end{itemize}
+
+    Procedo ad esaminare i vari casi 
+    \begin{itemize}
+        \item Sia $s=\varnothing$
+        
+        In questo caso sarà possibile costruire un NFA con due stati (iniziale e finale) non connessi, quindi $N[s]$:
+        \begin{center}
+            \begin{tikzpicture}
+                \node[state, initial] (A) {};
+                \node[state, accepting] (B) [right of=A] {};
+            \end{tikzpicture}
+        \end{center}
+        Si osservi che $\mathcal{L}[\varnothing]=\varnothing=L[N[s]]$
+        \item Sia $s=\epsilon$
+        
+        In questo caso sarà possibile costruire un NFA con due stati (iniziale e finale) connessi da un $\epsilon$, quindi $N[s]$:
+
+        \begin{center}
+            \begin{tikzpicture}
+                \node[state, initial] (A) {};
+                \node[state, accepting] (B) [right of=A] {};
+
+                \path[->]
+                    (A) edge[above] node{$\epsilon$} (B);
+            \end{tikzpicture}
+
+
+        \end{center}
+        Si osservi che, in questo caso, $\mathcal{L}[\epsilon] = \{\epsilon\}=L[N[s]]$
+        \item Sia $S = a$
+        
+        In questo caso sarà possibile costruire un NFA con due stati (iniziale e finale) connessi da una transizione $a$, quindi $N[s]$:
+
+        \begin{center}
+            \begin{tikzpicture}
+                \node[state, initial] (A) {};
+                \node[state, accepting] (B) [right of=A] {};
+
+                \path[->]
+                    (A) edge[above] node{$a$} (B);
+            \end{tikzpicture}
+        \end{center}
+
+        Si osservi che, in questo caso, $\mathcal{L}[a] = \{a\}=L[N[s]]$
+        \item caso $s= r|t$
+        
+        Ipotizziamo di avere già costruito gli automi $N[t]$ ed $N[r]$, per costruire "l'or" è possibile partire da uno stato iniziale $i$ e collegarlo con transizioni $\epsilon$ ai due automi, da entrambi si confluisce in uno stato finale $f$ con transazioni $\epsilon$
+        
+        \begin{center}
+            \begin{tikzpicture}[shorten >=1pt, node distance=2cm, on grid, auto]
+                % Stati
+                \node[state, initial] (qi) {$q_i$};
+                \node[state] (ir) [above right=of qi] {$i_r$};
+                \node[state] (fr) [right=of ir] {$f_r$};
+                \node[state] (it) [below right=of qi] {$i_t$};
+                \node[state] (ft) [right=of it] {$f_t$};
+                \node[state, accepting] (qf) [right=5cm of qi] {$q_f$};
+            
+                % Transizioni
+                \path[->]
+                (qi) edge[above] node {$\varepsilon$} (ir)
+                     edge[below] node {$\varepsilon$} (it)
+                (ir) edge[above] (fr)
+                (fr) edge[above] node {$\varepsilon$} (qf)
+                (it) edge[above] (ft)
+                (ft) edge[below] node {$\varepsilon$} (qf);
+
+                %TODO inserire cerchi per contenere gli automi
+                
+            \end{tikzpicture}
+            
+        \end{center}
+
+        Algebricamente si può dimostrare che $\mathcal{L}[r|t]=\mathcal{L}[t]\cup \mathcal{L}[r]$
+
+        e per ipotesi induttiva si ha:
+        \[
+            \mathcal{L}[t]\cup \mathcal{L}[r] =L[N[r]]\cup L[N[t]] =L[N[r|t]]
+        \]
+        \item Sia $s=r\cdot t$
+        
+        Ipotizziamo di avere già costruito gli automi $N[t]$ ed $N[r]$, per costruire la concatenazione è possibile fondere lo stato finale del primo automa con quello del secondo automa, si ha, quindi, che $N[s]$:
+
+        \begin{center}
+            \begin{tikzpicture}
+                [shorten >=1pt, node distance=2cm, on grid, auto]
+                % Stati
+                \node[state, initial] (ir) {$q_i$};
+                \node[state] (frit) [right=of ir] {$f_r = i_t$};
+                \node[state, accepting] (ft) [right=of frit] {$f_t$};
+                
+                % Transizioni
+                \path[->]
+                    (ir) edge (frit)
+                    (frit) edge (ft);
+            \end{tikzpicture}            
+        \end{center}
+
+        %TODO inserire cerchi per gli automi probabile libreria FIT
+
+        \item Sia $s=r^*$
+        
+        Ipotizzando di aver già costruito $N[r]$ è possibile costruire l'automa creando un ciclo $\epsilon$ dalla fine di $N[r]$ al suo inizio
+
+        \begin{center}
+            \begin{tikzpicture}
+                [shorten >=1pt, node distance=2cm, on grid, auto]
+                % Stati
+                \node[state, initial] (i) {$i$};
+                \node[state] (it) [right=of i] {$i_r$};
+                \node[state] (ft) [right=of it] {$f_r$};
+                \node[state, accepting] (f) [right=of ft] {$f$};
+
+                
+                % Transizioni
+                \path[->]
+                    (i) edge node {$\epsilon$} (it)
+                        edge[bend left] node {$\epsilon$} (f)
+                    (it) edge (ft)
+                    (ft) 
+                        edge node {$\epsilon$} (f)
+                        edge[bend left] node {$\epsilon$} (it);
+                    
+            \end{tikzpicture}            
+        \end{center}
+
+        Si osservi che:
+
+        \[
+            \mathcal{L}[r^*] = (\mathcal{L}[r])^* 
+        \]
+        per ipotesi induttiva
+
+        \[
+            (\mathcal{L}[r])^* = (L[N[r]])^* = L[N[r^*]]
+        \]
+    \end{itemize}
 }
