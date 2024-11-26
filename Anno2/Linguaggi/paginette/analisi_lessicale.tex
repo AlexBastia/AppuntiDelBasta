@@ -72,7 +72,7 @@ vedremo che ad ogni nome di categoria sintattica è associato un pattern che spe
         \item $\inside{const-num, 0}$
         \item $\inside{\text{\texttt{)}}}$
         \item $\inside{Ide, \text{\texttt{printf}}}$
-        \item $\inseide{\text{\texttt{(}}}$
+        \item $\inside{\text{\texttt{(}}}$
         \item $\inside{const-string, \text{\texttt{zero}}}$
         \item $\inside{\text{\texttt{)}}}$
     \end{itemize}
@@ -164,7 +164,6 @@ In realtà, normalmente lo scanner \red{associa agli identificatori un indirizzo
     Sia $L=\{a,bc\}$ con $r=a\mid bc$
     si ha che:
     \[
-        
             \mathcal{L}[a\mid bc] = \mathcal{L}[a]\cup \mathcal{L}[bc] =\{a\}\cup \mathcal{L}[b]\cdot \mathcal{L}[c] = \{a\}\cup\{b\}\cdot\{c\} = \{a,bc\}=L
     \]
 }
@@ -328,7 +327,7 @@ Riconoscere una stringa $w$ significa trovare un cammino etichettato $w$ sul gra
             (q0) edge [bend left] node {$0$} (q2)
 
             (q1) edge [bend left] node {$0$} (q3)
-            (q3) edge [bend left] node {$0$} (q1)
+            (q3) edge [bend left] node {$0$} (q1);
             
         \end{tikzpicture}
         \end{center}
@@ -580,7 +579,7 @@ Per dimostrare questa cosa occorre prima introdurre diversi concetti
         \epsilon\text{-closure}(q) = \{ q' \in Q \mid q \xrightarrow{\epsilon^*} q' \},
     \]
 
-    In altre parole si puo defnire come il minimo insieme che rispetta le seguenti regole:
+    In altre parole si puo defnire come il minimo insieme che rispetta le seguenti regole:
     \[
         \frac{}{\{q\}\subseteq \epsilon\text{-closure}(q)}\quad\frac{p\in \epsilon\text{-closure}(q)}{\delta(p,\epsilon)\subseteq \epsilon\text{-closure}(q)}    
     \]
@@ -674,9 +673,8 @@ Qui è presentato l'algoritmo per calcolare la $\epsilon$-closure:
             mossa:\mathcal{P}(Q)\times \Sigma\to \mathcal{P}(Q)\\
             mossa(P,a) = \bigcup_{p\in P}\delta (p,a)
         \end{array}
-        
     \]
-    Cioe l’insieme delle mosse $a$ da un insieme di nodi $P$ e l’unione di tue le mosse $a$ di ogni nodo dell’insieme. `
+    Cioe l’insieme delle mosse $a$ da un insieme di nodi $P$ e l’unione di tutte le mosse $a$ di ogni nodo dell’insieme. `
 }
 
 \subsubsection{funzione transazione}
@@ -721,7 +719,7 @@ Qua di seguito l’algoritmo per la costruzione di sottoinsiemi, che serve per p
 
 
 
-Si può notare come l'algoritmo che definisce la funzione di transizione (vista poch'anzi) rispetta le limitazioni dei DFA: non ci sono mosse epsilon e per ogni caraere dell’alfabeto esiste una ed
+Si può notare come l'algoritmo che definisce la funzione di transizione (vista poch'anzi) rispetta le limitazioni dei DFA: non ci sono mosse epsilon e per ogni caraere dell’alfabeto esiste una ed
 una sola mossa in qualunque stato
 \esempio{
     Consideriamo l’NFA seguente (relativo all’espressione regolare $(a|b)^*ab)$:
@@ -738,41 +736,39 @@ una sola mossa in qualunque stato
         (q1) edge node {$a$} (q2);
     \end{tikzpicture}
 
-    Vogliamo ora trovare un DFA equivalente ad esso, applichiamo l’algoritmo di costruzioni per sottoinsiemi:
+    Vogliamo ora trovare un DFA equivalente ad esso, applichiamo l’algoritmo di costruzioni per sottoinsiemi:
     \begin{itemize}
         \item calcoliamo lo stato iniziale $S=\epsilon\text{-closure}(q_0)$, che è $S=q_0$. 
         \item Creiamo $T$ e gli inseriamo $S$ marcandolo
         \item Per ogni simbolo dobbiamo calcolare $\epsilon\text{-closure}(mossa(P,a))$, ma visto che l'alfabeto è $\{a,b\}$ lo facciamo 2 volte:
         \begin{itemize}
             \item per il carattere $a$ calcoliamo con $P=S=\{q_0\}$:
-            \[
+              \[
                 \begin{array}{l}
                     R = \epsilon\text{-closure}(mossa(P,a)) = \epsilon\text{-closure}\left(\bigcup_{p\in\{q_0\}}\delta (p,a)\right)\\
                     =\epsilon\text{-closure}(\delta(q_0,a)) =\epsilon\text{-closure}(\{q_0\}) =\{q_0\}
                 \end{array}
+              \]
                  
-            \]
             Si definisca $\delta(S,a)=\{q_0\}$ e visto che $\{q_0\}\in T$ non lo andiamo a ri-aggiungere
             \item per il carattere $a$ calcoliamo con $P=S=\{q_0\}$:
-            \[
+              \[
                 \begin{array}{l}
                     R = \epsilon\text{-closure}(mossa(P,b)) = \epsilon\text{-closure}\left(\bigcup_{p\in\{q_0\}}\delta (p,b)\right) \\                
                     =\epsilon\text{-closure}(\delta(q_0,b)) =\epsilon\text{-closure}(\{q_0, q_1\}) =\{q_0,q_1\}
-
                 \end{array}
-            \]
+              \]
             visto che $\{q_0,q_1\}\notin T$ lo andiamo ad aggiungere
         \end{itemize}
         \item si calcoli ora con $P=\{q_0, q_1\}$ andando a calcolare la stessa cosa:
         \begin{itemize}
             \item per $a$ si ha:
-            \[
+              \[
                 \begin{array}{l}
                     R=    \epsilon\text{-closure} (mossa(P,a)) = \epsilon\text{-closure}\left(\bigcup_{p\in\{q_0, q_1\}}\delta(p,a)\right)\\                 
                     = \epsilon\text{-closure} (\{q_0\}\cup\{ q_2\}) = \{q_0,q_2\}
-
                 \end{array}
-            \]
+              \]
             quindi $\Delta(\{q_0,q_1\}, a)=\{q_0,q_2\}$. Visto $\{q_0,q_2\}\notin T$ lo aggiungiamo 
             \item  per $b$ si ha $R=\{q_0,q_1\}$. Quindi $\Delta(\{q_0, q_1\}, b) = \{q_0,q_1\}$ e non lo si raggiunge
         \end{itemize}

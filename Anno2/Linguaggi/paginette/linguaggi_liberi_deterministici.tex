@@ -197,10 +197,9 @@ Pertanto si ha che:
 I lunguaggi liberi deterministici presentano le seguenti proprietà:
 \mprop{chiusura solo per complementazione}{
     Sia $L$ un linguaggio libero deterministico, allora questo è chiuso per complementazione, ovvero:
-    \[
+\[
         (\exists \; \text{DPDA} \; N \; : \; L = L(N)) \implies (\exists \; \text{DPDA} \; N' \; : \; \overline{L} = L(N')) \quad \text{dove} \quad \overline{L} = \Sigma^* \setminus L
-
-    \]
+\]
 }
 \dimostrazione{
     Bisogna rendere totale la $\delta$ di $N$, eventualmente aggiungendo stati non finali, e poi $N'$ si ottiene da questo $N$ "aumentato", semplicemente scambiando \red{finali e non finali} 
@@ -250,7 +249,7 @@ I lunguaggi liberi deterministici presentano le seguenti proprietà:
         \draw [arrow] (algorithm) -- (parser);
         \draw [arrow] (tokens) -- (parser2);
         \draw [arrow] (parser2) -- (tree);
-        \draw [wavearrow] (additional) -- (parser)
+        \draw [wavearrow] (additional) -- (parser);
         
         % Additional text
         
@@ -416,8 +415,8 @@ Cominciamo subito con un esempio
         % 5 loop disposti attorno al nodo
         \draw (q) edge[loop above] node[align=center] {$a,a/\epsilon$} (q);
         \draw (q) edge[loop right] node[align=center] {$b,b/\epsilon$} (q);
-        \draw (q) edge[loop below right] node[align=center] {$c,c/\epsilon$} (q);
-        \draw (q) edge[loop below left] node[align=center] {$d,d/\epsilon$} (q);
+        \draw (q) edge[out=330, in=300, looseness=8] node[align=center] {$c,c/\epsilon$} (q);
+        \draw (q) edge[out=210, in=240, looseness=8] node[align=center] {$d,d/\epsilon$} (q);
         \draw (q) edge[loop left] node[align=center] {$e,e/\epsilon$} (q);
     \end{tikzpicture}
 \end{center}
