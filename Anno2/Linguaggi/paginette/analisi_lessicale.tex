@@ -1915,3 +1915,121 @@ ma se l'NFA ha $n$ stati il DFA potrebbe averne al più $2^n$, pertanto serve tr
 \[
     \min(\text{\texttt{DFA}}) \text{ minimizzato}
 \] 
+
+\subsection{minimizzazione}
+Alle volte per minimizzare degli automi occorre individuare stati equivalenti nello stesso automa, eliminarli e fonderli insieme costruendo, così, l'automa minimo. Prima della definizione formale occorre definire la seguente notazione:
+\dfn{notazione $\hat{\delta}$}{
+    Per un DFA $N=(\Sigma, Q,\delta,q_0, F)$ si ha che
+    \[
+        \begin{array}{ll}
+            & \hat{\delta}:Q\times\Sigma^*\to Q \text{ è definita come}\\
+            &\hat{\delta}(q,\epsilon) = q\\
+            & \hat{\delta}(q,xa) = \delta(\hat{\delta}(q,x)a)
+        \end{array}
+    \]
+
+    Si ha quindi 
+    \[
+        w\in L[N] \iff \hat{\delta}(q_0, w)\in F
+    \]
+}
+\subsubsection{equivalenza/indistinguibilità}
+\dfn{stati equivalenti/indistinguibili}{
+    due stati si dicono $q_1$ e $q_2$ di un DFA $N$ si definiscono \textbf{equivalenti (o indistinguibili)} se 
+    \[
+        \forall x\in \Sigma^*\;(\hat{\delta}(q_1,x)\in F\iff \hat{\delta}(q_2, x)\in F)  
+    \]
+}
+Simmetricamente si può definire la non equivalenza
+\dfn{
+    non equivalenza/indistinguibilità
+}{
+    due stati $q_1$ e $q_2$ \textbf{non sono equivalenti (o indistinguibili)} se
+    \[
+        \exists x\in\Sigma^*\;((\hat{\delta}(q_1,x)\in F \land \hat{\delta}(q_2,x)\notin F)\lor (\hat{\delta}(q_1,x)\notin F \land \hat{\delta}(q_2,x)\in F))
+    \]
+    $q_1$ e $q_2$ pertanto sono distinguibili
+}
+
+\nt{
+    Una strategia per individuare la distinguibilità tra due stati è cercare di distinguere due stati a partire da $x\in \Sigma^*$ partendo dalla più corta $\epsilon$
+}
+
+Si noti questo esempio
+\esempio{
+    Sia $N$ il seguente DFA:
+    \begin{center}
+        \begin{tikzpicture} [node distance=1cm]
+            \node[state, initial] (a) {$A$};
+            \node[state] (b) [above right=of a] {$B$};
+            \node[state] (c) [below right=of a] {$C$};
+            \node[state, accepting] (d) [above right=of c] {$D$};
+
+            \path[->]
+                (a) 
+                    edge node[above] {$a$} (b)
+                    edge node[above] {$b$} (c)
+                (b)
+                    edge[loop above] node {$a$} ()
+                    edge node[left] {$b$} (c)
+                (c)
+                    edge[loop below] node {$b$} ()
+                    edge[bend left] node[below] {$a$} (d)
+                (d)
+                    edge[bend left] node[below] {$b$} (c)
+                    edge node[above] {$a$} (b);
+        \end{tikzpicture}
+    \end{center}
+
+    Inanzi tutto cerco di vedere quali coppie di stati NON sono equivalenti, a partire dalla stringa $\epsilon$:
+
+    \begin{itemize}
+        \item $\epsilon$ distingue ogni stato in $F$ da ogni stato in $Q\backslash F$, dato ceh $\hat{\delta}(q,\epsilon)=\epsilon$, sicuramente non sono equivalenti:
+        \[
+            \cancel{(A,D)} \quad \cancel{(B,D)} \quad \cancel{(C,D)}
+        \]
+
+        Infatti $A\notin F\land D\in F$, $B\notin F\land D\in F$ e $C\notin F\land D\in F$
+        \item adesso si consideri le stringhe di lunghezza q, ovvero $a$ e $b$
+        \begin{itemize}
+            \item si parti con la lettera $a$:
+            \begin{itemize}
+                \item $a$ distingue $B$ e $C$ perché
+                \[
+                    \delta(B,a) = A \text{ e }\delta(C, a) = D
+                \]
+                E $(B,D)$ l'avevo già cancellata del primo punto
+                \item $a$ distingue anche $A$ e $C$ perché
+                \[
+                    \delta(A,a) = B \text{ e }\delta(C, a) = D
+                \]
+                E $(B,D)$ l'avevo già cancellata del primo punto
+            \end{itemize}
+            \item $b$ non permette di fare ulteriori distinzioni
+        \end{itemize}
+        \item procedo con le stringhe di lunghezza lunghe 2, ma non riesco a fare nessuna ulteriore distinzione. quindi ho finito
+    \end{itemize}
+
+    Non sono riuscito a distinguere solo $A$ e $B$, quindi sono equivalenti e li fondo. Il nostro automa finale sarà
+
+    \begin{center}
+        \begin{tikzpicture}[node distance=1cm]
+            \node[state, initial] (ab) {$A,B$};
+            \node[state] (c) [right=of ab] {$C$};
+            \node[state, accepting] (d) [right=of d] {$D$};
+
+            \path[->]
+                (ab)
+                    edge[loop above] node {$a$} ()
+                    edge node[above] {$b$} (c)
+                (c)
+                    edge[loop above] node {$b$} ()
+                    edge[bend left] node[above] {$a$} (d)
+                (d)
+                    edge[bend left] node[above] {$b$} (c)
+                    edge[bend left] node[below] {$a$} (ab);
+        \end{tikzpicture}
+    \end{center}
+}
+
+\subsubsection{Famiglia di relazioni}
