@@ -1923,3 +1923,63 @@ ma se l'NFA ha $n$ stati il DFA potrebbe averne al più $2^n$, pertanto serve tr
 \[
     \min(\text{\texttt{DFA}}) \text{ minimizzato}
 \] 
+
+\section{Espressivita' dei linguaggi regolari e pumping lemma}
+Finora abbiamo parlato solo di linguaggi regolari, senza dimostrare l'esistenza di altri tipi di linguaggi piu' espressivi. In questa sezione, faremo vedere che esistono linguaggi che non possono essere riconosciuti da automi finiti.
+
+Prendiamo come esempio il linguaggio $ B = \{0^n 1^n \mid n \geq 0\} $. Per costruire un automa che lo riconosca, dobbiamo ricordarci il numoro di $ 0 $ inseriti all'inizio per controllare che il numero di $ 1 $ sia uguale. Ma, dato che il valore di $ n $ non ha un limite superiore, dobbiamo rappresentare un numero infinito di valori di $ n $ con un numero finito di stati, che dimostreremo essere impossibile in questo caso.
+
+Potrebbe sembrare che qualunque linguaggio simile a $ B $ con $ n $ illimitato sia non regolare, ma questo non e' corretto. Anche se a prima apparenza puo' sembrare che un linguaggio necessiti di memoria infinita, ci possono essere modi intelligenti per circonvenire questa apparente necessita'. Prendiamo, ad esempio, il linguaggio $ C = \{w \mid w \text{ha un ugual numero di sottostringhe 01 e 10}\} $, si puo' dimostrare che questo linguaggio sia regolare! Quindi la nostra intuizione puo' spesso sbagliare, vediamo ora un modo per dimostrare per certo che certi linguaggi non sono regolari:
+
+\subsection{Pumping lemma}
+Il pumping lemma e' un teorema che attribuisce una proprieta' speciale a tutti i linguaggi regolari. Se un linguaggio non ha questa proprieta', allora sappiamo per certo che non e' regolare. In breve, la proprieta' dice che ogni stringa di un linguaggio regolare puo' essere "pompata" se e' almeno lunga quanto una specifica lunghezza chiamata \textbf{lunghezza di pompaggio HHahaHAahaha}. Ovvero, ognuna di queste stringhe ha una sezione che puo' essere concatenata a se stessa un numero illimitato di volte e la stringa risultante fa sempre parte dello stesso linguaggio. 
+
+\thm{Pumping lemma}{
+  Sia $ A $ un linguaggio regolare, allora $ \exists p $ tale che $ \forall s \in A. s \geq p $, $ s $ puo' essere suddivisa in tre parti $ s = xyz $ tali che:
+  \begin{enumerate}
+    \item $ \forall i \geq 0. xy^iz \in A $
+    \item $ |y| > 0 $
+    \item $ |xy| \leq p $
+  \end{enumerate}
+}
+In questa formalizzazione, $ y $ e' la parte della stringa che puo' essere ripetuta (condizione 1), che deve essere non nulla per non rendere trivialmente vero il teorema (condizione 2). La terza condizione sara' utile per dimostrare che certi linguaggi non sono regolari, e ci dira' che prendiamo la \textbf{prima} porzione della stringa che puo' essere ripetuta. Vediamo perche':
+
+\subsubsection{Dimostrazione}
+Prima della dimostrazione formale, proviamo a capire l'idea di base. Sia $ M = (Q, \Sigma, \delta, q_1, F) $ un DFA che riconosce $ A $. Poniamo che la lunghezza di pompaggio sia uguale al numero di stati di $ M $ ($ p = |Q| $). Se in $ A $ non ci sono stringhe di tale lunghezza, allora il teorema e' ovviamente vero perche' vale per tutte le zero stringhe a cui puo' essere applicato.
+
+Altrimenti, $ \exists w \in A. |w| = n \geq p $ che viene accettato da $ M $ passando da una serie di stati $ q_1, q_3, q_{20}, q_9, ..., q_{13} $ (dove $ q_1 $ e' lo stato iniziale e $ q_{13} \in F $), che avra' lunghezza uguale a $ n+1 $. Dato che $ n \geq p $, siamo sicuri che $ n+1 > p $, quindi ci sono piu' stati nella sequenza di quanti stati distinti esistano. Allora, ci deve essere per forza uno stato che si ripete (per il \textbf{pigeonhole principle}):
+\[
+s = \mid_{q_1} s_1  \mid_{q_3} s_2 \mid_{q_{20}} s_3 \mid_{q_9} s_4 \mid_{q_{17}} s_5 \mid_{q_9} s_6 \mid_{q_6} ... \mid_{q_{35}} s_n \mid_{q_{13}}
+\]
+in questo caso, lo stato $ q_9 $ e' il primo che si ripete. Possiamo ora dividere $ s $ in tre parti $ x, y $ e $ z $: $ x $ e' la parte di $ s $ prima di di $ q_9 $, $ y $ e' la parte fra le due ripetizioni di $ q_9 $ e $ z $ e' la parte rimanente. 
+
+TODO: figure 1.72 dal libro
+
+Vediamo perche' questa suddivisione rispetta le tre condizioni. Consideriamo l'input $ xyyz $ passato a $ M $: $ x $ ci porta da $ q_1  $ a $ q_9 $, la prima $ y $ ci porta da $ q_9 $ a $ q_9 $, anche la seconda ci porta da $ q_9 $ a $ q_9 $, infine $ z $ ci porta da $ q_9 $ a $ q_{13} $ (lo stato finale). Quindi $ xyyz $ e' accettato da $ M $, ma anche $ xy^iz $ per lo stesso motivo. Nel caso $ xy^0z $ vediamo che viene riconosciuto anche lui, quidi la prima condizione e' verificata. Dato che $ y $ e' la parte della stringa che ci porta da $ q_9 $ a $ q_9 $, deve essere per forza non nulla perche $ M $ e' deterministico. Infine, la terza condizione e' rispettata dato che, per la \textbf{pigeonhole principle} la prima ripetizione deve avvenire per forza entro i primi $ p+1 $ stati, quindi $ |xy| \leq p $.
+
+\pf{Dimostrazione formale}{
+  Sia $ M = (Q, \Sigma, \delta, q_1, F) $ un DFA che riconosce il linguaggio regolare $ A $ e $ p = |Q| $.
+
+  Sia $ s = s_1s_2...s_n $ una stringa in $ A $ tale che $ |s| = n \geq p $ e siano $ r_1, r_2, ..., r_{n+1} $ la sequenza di stati che attraversa $ M $ quando viene dato $ s $ come input, quindi $ r_{i+1} = \delta(r_i, s_i) $. Dato che $ n+1 \geq p+1 $, per il pigeonhole principle fra i primi $ p+1 $ stati ce ne deve essere uno che si ripete. Chimiamo $ r_j $ il primo e $ r_l $ la ripetizione, quindi abbiamo che $ l \leq p+1 $. 
+
+  Ora siano $ x = s_1 ... s_{j-1} $, $ y = s_j ... s_{l-1} $ e $ z = s_l ... s_{n} $. Dato che $ x $ porta $ M $ da $ r_1 $ a $ r_j $, $ y $ porta da $ r_j $ a $ r_l $ e $ z $ porta da $ r_l $ a $ r_{n+1} $ e siccome $ r_j $ e $ r_l $ sono lo stesso stato, $ M $ deve accettare $ xy^iz $ $ \forall i \geq 0 $. Siccome $ j \neq l $, $ |y| > 0 $; e $ l \leq p+1 $, quindi $ |xy| \leq p $. Abbiamo quindi soddisfatto tutte le condizioni del pumping lemma.
+}
+
+\subsubsection{Utilizzo ed esempi}
+Per dimostrare che $ B $ non e' un linguaggio regolare, prima assumiamo che $ B $ sia regolare e poi dimostriamo che non vale la proprieta' $ P $ del pumping lemma:
+\[
+\lnot P \implies B \text{ non e' regolare}
+\]
+Dato che porprio per il lemma, $ B $ e' regolare $ \implies P $. Quindi, bisogna assumere che $ p $ sia la lunghezza garantita dal pumping lemma e prendere una stringa $ s \in B. |s| \geq p $ tale che noi sappiamo che $ z $ non puo' essere pompata. Dimostriamo questo mostrando che per qualunque suddivisione $ xyz $ che rispetti le ultime due condizioni, la prima condizione non vale mai. Solitamente possiamo raggruppare i tipi di suddivisione in diverse categorie che possono essere analizzate individualmente, in modo da non dover controllare davvero ogni suddivisione. Trovando $ s $, abbiamo dimostrato $ \lnot P $ e quindi che $ B $ non e' regolare. 
+
+Per trovare $ s $, solitamente ci vuole un po' di creativita. Bisogna provare a trovare una stringa che raccolga l'"essenza" dell'irregolarita' del linguaggio, vediamo un paio di esempi per chiarire:
+\ex{}{
+  $ B = \{0^n 1^n \mid n \geq 0\} $
+}
+\ex{}{
+  $ C = \{w \mid w \text{ ha lo stesso numero di 0 e 1}\} $
+}
+\ex{}{
+  $ F = \{ww \mid w \in \{0, 1\}^*\} $
+}
+TODO: fai esercizi (che sono risolti sul libro)
