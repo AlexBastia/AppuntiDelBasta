@@ -2033,3 +2033,235 @@ Si noti questo esempio
 }
 
 \subsubsection{Famiglia di relazioni}
+\dfn{famiglia di relazioni}{
+    Dato un DFA $M=(\Sigma, Q, delta, q_0, F)$, defininiamo una famiglia relazione $\sim_i \subseteq Q\times Q$ nel seguente modo:
+    \begin{itemize}
+        \item $\sim_0 = F\times F\cup (Q\setminus F)\times (Q\setminus F)$ 
+        
+        ovvero stati che non possono essere distinti da $\epsilon$
+        \item $q_1 \sim_{i+1} q_2 \iff \forall a\in \Sigma\quad \delta(q_1, a)\sim_i\delta(q_2, a)$
+        
+        ovvero $q_1$ e $q_2$ sono in relazione $\sim,_{i+1}$ se $\forall x \in \Sigma^*$ cin $|x|\leq i+1$
+        
+        \[
+            \hat{\delta}(q_1, x)\in F \iff \hat{\delta}(q_2, x)\in F
+        \]
+    \end{itemize}
+}
+
+\nt{
+    Si osservi che:
+    \begin{itemize}
+        \item La relazione $Id =\{(q,q)\mid q\in Q\}$ è tale che $Id\subseteq \sim_i \forall i$. Si ha in fatti che uno stato è sempre equivalente a se stesso 
+        \item $\sim_i$ è una relazione d'equivalenza $\forall i$
+        \item \begin{itemize}
+                \item $\sim_0$ ha solo 2 classi d'equivalenza, ovvero $F$ e $Q\setminus F$
+                \item Per $\sim_i$, riflessività e simmetria sono ovvie, mentre la transitività è meno banale:
+                \[
+                    q_1 \sim_i q_2 \text{ e }q_2\sim_i q_3 \implies q_1 \sim_i q_3
+                \]
+            \end{itemize}
+        \item Ad ogni passo, rimuovo qualche coppia! \\
+            Si verifica che:
+            \[
+                \sim_0 \supseteq \sim_1 \supseteq \sim_2 \supseteq \sim_3 \supseteq \dots
+            \]
+            Ossia una \textbf{catena decrescente} (o non crescente) di relazioni di equivalenza.
+    
+        \item Se esiste un \(K\) tale che \(\sim_K = \sim_{K+1}\), allora per ogni \(j > K\) vale che \(\sim_j = \sim_K\). \\
+            In altre parole: Non appena la relazione non viene modificata in un passo, ho trovato la soluzione
+    
+        \item Un tale \(K\) esiste sicuramente ed è minore di:
+            \[
+            |\sim_0| = |F \times F| + |(Q \setminus F) \times (Q \setminus F)| = |F|^2 + |Q \setminus F|^2
+            \]
+            Questo perché, nella peggiore delle ipotesi, ad ogni passo iterativo si rimuove solo una (o al massimo due) coppia.
+        
+            In realtà si può dimostrare che \(K < |Q| - 1\), poiché \(|Q|\) è la lunghezza del massimo cammino aciclico. Infatti, negli esempi che abbiamo visto, ho considerato solo stringhe che non portavano a cicli.
+    
+    \end{itemize}
+}
+
+\teorema{
+    Siano $\sim_2$, $\sim_1$ e $\sim_3$ le relazioni d'equivalenza mostrate poc'anzi si ha che
+    \[
+        \sim_2=\sim_1 \implies \sim_3=\sim_2
+    \]
+}
+\pf{Dimostrazione con un esempio}{
+    Supponiamo, per assurdo, che \(r_2 = r_1\) ma che \(r_3 \neq r_2\), cioè esistano \(A, B\) tali che:
+    \[
+    A \sim_2 B \quad \text{ma} \quad A \not\sim_3 B,
+    \]
+    ossia:
+    \[
+    \sim_3 \subset r_2 = r_1.
+    \]
+
+    Allora, poiché \(A \not\sim_3 B\), deve essere:
+    \[
+    A \xrightarrow{a_1} A_1 \xrightarrow{a_2} A_2 \xrightarrow{a_3} A_3
+    \]
+    \[
+    B \xrightarrow{a_1} B_1 \xrightarrow{a_2} B_2 \xrightarrow{a_3} B_3
+    \]
+    con \(A_3 \in F\) e \(B_3 \notin F\) (ovviamente).
+
+    Ma allora \(A_1 \not\sim_2 B_1\) e poiché \(r_2 = r_1\), deve essere:
+    \[
+    A_1 \not\sim_1 B_1.
+    \]
+    Ma allora:
+    \[
+    A_1 \xrightarrow{b} A_u \quad B_1 \xrightarrow{b} B_u
+    \]
+    con \(A_u \in F\) e \(B_u \notin F\) (ovviamente).
+
+    Ma allora \(A \not\sim_2 B\) perché:
+    \[
+    A \xrightarrow{a_1} A_1 \xrightarrow{b} A_u \quad B \xrightarrow{a_1} B_1 \xrightarrow{b} B_u,
+    \]
+    contraddicendo l'ipotesi iniziale.
+
+    \[
+    \implies \text{non è possibile che } r_1 = r_2 \text{ e } r_3 \subset r_2.
+    \]
+
+    \bigskip
+
+    Quindi, se \(\sim_{K+1} = \sim_K\), allora per ogni \(j > K\) vale \(\sim_j = \sim_K\)
+}
+
+\esempio{
+    Proviamo a minimizzare il DFA seguente:
+    \begin{center}
+        \begin{tikzpicture}[shorten >=1pt, node distance=2cm, on grid, auto]
+           \node[state, initial] (A)   {A}; 
+           \node[state] (B) [right=of A] {B}; 
+           \node[state, accepting] (C) [below=of A] {C}; 
+           \node[state, accepting] (D) [right=of C] {D};
+           \node[state, accepting] (E) [below=of C] {E}; 
+           \node[state] (F) [right=of E] {F};
+            
+            \path[->] 
+            (A) edge [bend left] node[above] {0} (B)
+                edge node {1} (C)
+            (B) edge [bend left] node[above] {0} (A)
+                edge node {1} (D)
+            (C) edge node[above left] {1} (F)
+                edge node[left] {0} (E)
+            (D) edge node[above right] {0} (E)
+                edge node[right] {1} (F)
+            (E) edge [loop below] node {0} ()
+                edge node {1} (F)
+            (F) edge [loop below] node {0,1} ();
+        \end{tikzpicture}
+    \end{center}
+    Costruiamo ora l'insieme \(\sim_0\) come per definizione:
+    \[
+        \sim_0 = \{(A,A), (B,B), (A,F), (B,A), (B,F), (F,F), (F,A), (F,B)\} 
+    \]
+    \[
+        \cup
+    \]
+    \[
+        \{(C,C), (C,D), (C,E), (D,C), (D,D), (D,E), (E,C), (E,D), (E,E)\}.
+    \]
+
+    Procediamo ora per costruire l'insieme \(\sim_1\). Per velocizzare controlliamo solo le coppie in \(\sim_0\) e ovviamente non quelle identiche (tipo \((A,A)\)). Per ora consideriamo solo stringhe di lunghezza \(1\) ("0" e "1"). Otteniamo:
+    \[
+    \sim_1 = \{(A,A), (A,B), (B,B), (A,F), (B,A), (B,F), (F,F)\} \cup
+    \]
+    \[
+    \{(C,C), (C,D), (C,E), (D,C), (D,D), (D,E), (E,C), (E,D), (E,E)\}.
+    \]
+
+    Si ha che \(\sim_2 = \sim_1\), quindi possiamo terminare e ridisegnare il DFA. Gli stati equivalenti sono quindi quelli che non compaiono nelle coppie \((A,B), (F)\), \((C,D,E)\). Otteniamo quindi:
+
+    \begin{center}
+    \begin{tikzpicture}[shorten >=1pt, node distance=2cm, on grid, auto]
+    \node[state, initial] (AB)   {A, B}; 
+    \node[state] (CDE) [right=of AB] {C, D, E}; 
+    \node[state, accepting] (F) [right=of CDE] {F};
+        
+        \path[->] 
+        (AB) edge [loop above] node {0} ()
+            edge node {1} (CDE)
+        (CDE) edge [loop above] node {0} ()
+            edge node {1} (F)
+        (F) edge [loop above] node {0,1} ();
+    \end{tikzpicture}
+    \end{center}
+
+    È semplice anche dire che la regex associata è \(0^*10^*\). Inoltre, lo stato \(F\) rappresenta uno stato di errore a cui si arriva con stringhe del tipo \(0^*10^*10^+\).
+}
+
+\subsubsection{tabella d'equivalenza}
+
+Le tabella di equivalenza sono un modo per memorizzare l'equivalenza ,di modo, da costruire un algoritmo per la minimizzazione poi, l'idea è la seguente 
+
+\begin{itemize}
+    \item \textbf{Tabella con solo coppie "vere".}
+    \item Al round 0 dell'algoritmo iterativo, metto una marca \( X_0 \) per indicare che la coppia è distinta:
+
+          \((\text{finale}, \text{non finale})\) oppure \((\text{non finale}, \text{finale})\).
+    \item Al round 1, metto la marca \( X_1 \) per distinguere le coppie \((q_1, q_2)\) non ancora marcate che, per qualche \( a \in \Sigma \), 
+          hanno \((\delta(q_1, a), \delta(q_2, a))\) già marcata.
+    \item Al round 2, metto la marca \( X_2 \) e così via per le coppie successive.
+    \item \textbf{Condizione di arresto:} se non riesco a mettere nessuna nuova marca in un round, l'algoritmo termina.
+\end{itemize}
+\esempio{
+    Prendiamo in esame il DFA dell'esempio precedente
+
+    Prima di tuo costruiamo una tabella con solo delle coppie che non sono identiche per far ciò la costruiamo a scaletta. Si ha che:
+
+    %TODO disegnare la tabella bella
+}
+
+Per calcolarla è possibile utilizzare il seguente algoritmo
+\begin{algorithm}
+    \caption{Costruzione di una tabella d'equivalenza}
+    \KwIn{DFA N}
+    \KwOut{tabella d'equivalenza}
+
+    Sia $T^{n\times n}$ dove $T$ è il numero di stati in $n$\;
+    marca $x_0$ ogni coppia $(q_1, q_2)$ tale che $q_1\in F$ e $q_2\in Q\setminus F$ o viceversa\;
+    $b \gets true$\;
+    $i\gets 1$\;
+    \While{b}{
+        $b\gets false$\;
+        \ForEach{$(q_1, q_2)$ non marcata}{
+            \If{$\exists a\in \Sigma$ con $(\delta(q_1,a),\delta(q_2,a))$ già marcate}{
+                marca $(q_1, q_2)$ con $x_i$\;
+                $b\gets true$\;
+            }
+        $i\gets i+1$\;
+        }
+    }
+\end{algorithm}
+
+\thm{}{
+    Dato un DFA $M=(\Sigma, Q, \delta, q_0, F)$  l’algoritmo della tabella a scala termina, inoltre due stati $p$ e $q$ sono distinguibili se e solo se la casella $(p, q)$ (o la casella $(q, p))$ e marcata 
+}
+\dimostrazione{
+    Procedo a dimostrare le due parti parte 
+    \begin{itemize}
+        \item Poiché abbiamo visto che $\exists k.\sim_k=\sim_{k+1}$ e quando l'algoritmo iterativo termina entro $k$ iterazioni
+        \item procedo a dimostrare la distinguibilità:
+        \begin{itemize}
+            \item $\Rightarrow$
+            Se $p$ e $q$ sono distinguibili, allora $\exists x\in \Sigma^*.\hat{\delta}(p,x)\in F$ e $\hat{\deltaq}(p,x \notin F)$ (o viceversa).
+
+            Se prendo $k=|x|$, allora di sicuro $(p,q)\notin \sim_k$ cioè $(p,q)$ viene marcata entro il round $k$
+            \item $\Leftarrow$
+            
+            Se $(p,q)$ sono marcati, allora sicuramente $(p,q)$ sono distinguibili:
+
+            occorre prendere la catena di coppie che portano ad una coppia non presente in $\sim_0$. ad esempio
+            \[
+                (p,q)\to (p',q')\to (p'', q'')
+            \]
+            Allora $ab$ è la stringa che distingua $p$ e $q$
+        \end{itemize} 
+    \end{itemize}
+}
