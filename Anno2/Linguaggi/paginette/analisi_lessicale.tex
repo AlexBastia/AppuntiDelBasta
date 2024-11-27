@@ -1404,6 +1404,8 @@ Altro esempietto:
 }
 
 \subsection{Da NFA a espressione regolare}
+Aggiungo una dimostrazione presa dal libro di Michael Sipser, "Introduction to the Theory of Computation", che descrive come creare un'espressione regolare partendo direttamente da un NFA. Nella sezione successiva introdurremo le grammatiche regolari con le quali e' possibile dimostrare lo stesso teorema, quindi questa parte non e' necessaria ma solo un'idea interessante e piu' diretta.
+
 Come anticipato precedentemente, e' possibile anche dimostrare la direzione inversa del teorema, ovvero che dato un NFA che riconosce un linguaggio $ L[N] $, e' sempre possibile generare un'espressione regolare che riconosca lo stesso linguaggio. Quindi vale il teorema generale:
 \thm{Teoremone Piccolomini}{
   Un linguaggio e regolare sse esiste un automa a stati finiti che lo riconosce.
@@ -1492,7 +1494,13 @@ Ad ogni iterazione applichiamo questa trasformazione per ogni arco fra una coppi
       Se $ k = 2 $, per la definizione di GNFA specifico abbiamo uno stato iniziale e un arco che lo collega allo stato finale. L'ER dell'arco descrive tutte le stringhe che portano $ G $ allo stato finale, quindi e' equivalente a $ G $.
     \item \textbf{Caso induttivo su $ k $:}
 
-      Assumiamo che CONVERT($ G' $) = $ G' $, dove $ G' $ e' il caso con $ k-1 $ stati. Dimostriamo che $ G' $ e $ G $ sono equivalenti. 
+      Assumiamo che CONVERT($ G' $) equivale a $ G' $, dove $ G' $ e' il caso con $ k-1 $ stati. Dimostriamo che $ G' $ e $ G $ sono equivalenti. Prendiamo una parola $ w \in \Sigma^* $ accettata da $ G $. Quindi siano
+      \[
+      q_{\text{start}}, q_1, q_2, q_3, ..., q_{\text{accept}}
+      \]
+      la sequenza di stati di $ G $ di un percorso che accetta $ w $. Se $ q_{\text{rip}} $ (lo stato rimosso da $ G $ per creare $ G' $) non appartiene a questa sequenza, allora chiaramente $ w $ e' riconosciuto anche da $ G' $. Questo e' perche' i nuovi archi fra tutti gli stati mantengono l'ER originale tramite un'unione. Altrimenti, se $ q_{\text{rip}} $ fa parte del percorso, basta rimuovere tutte le evenienze dalla sequenza per trovare un percorso per cui $ G' $ accetta $ w $. Questo e' perche' nella definizione di CONVERT, facciamo in modo che le nuove ER fra due nodi considerino descrivino anche tutte le stringhe che portavano fra i due stati passando da $ q_{\text{rip}} $. 
+
+      Al contrario, se $ G' $ riconosce $ w $, ad ogni arco e' associata un'ER che riconosce stringhe che in $ G $ fanno passare da $ q_i $ a $ q_i $ sia direttamente che tramite $ q_{\text{rip}} $. Quindi ovviamente anche $ G $ riconosce $ w $. Avendo dimostrato che $ G $ e $ G' $ sono equivalenti, possiamo usare l'ipotesi induttiva per dire che CONVERT($ G $) equivale a $ G $.
   \end{itemize}
 }
 
