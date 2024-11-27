@@ -180,26 +180,22 @@ Quando si ha a che fare con matrici triangolari la soluzione può essere facilme
 \end{itemize}    
     In entrambi i casi il numero di operazioni richiesto è $\simeq \frac{n(n+1)}{n} = O(n^2)$
 }
-\subsubsection{Fattorizzazione LU}
-\dfn{}{
-    Considerata una matrice $A\in \mathbb{R}^{n\times n}$, una fattorizzazione $LU$ fattorizza la matrice $A$ nella forma
-    \[
-            A = LU
-    \]
-    con 
-    \begin{itemize}
-        \item $L$ matrice $n\times n$ triangolare inferiore
-        \item $U$ matrice $n \times n$ triangolare superiore
-    \end{itemize}    
-}
 
-\nt{
-  Se $ A $ e' invertibile, la fattorizzazione LU esiste sse tutti i minimi principali (leading principal minor??) sono non nulli. Se $ A $ e' singolare ($ det(A) = 0 $) allora se i primi $ k = rk(A) $ minimi principali sono non nulli allora LU esiste, ma potrebbe esistere anche se ce ne sono di nulli. 
-}
+\subsubsection{Eliminazione di Gauss}
 
-Per trasformare una matrice $A$ in una matrice $LU$, è possibile utilizzare \red{l'algoritmo di Gauss per ridurla a una matrice triangolare superiore $U$} ed occorrerà \red{inserire le operazioni di eliminazione nella matrice $L$ (inizializzata a una matrice identità)}. È possibile dimostrare che $A = L\times U$
+Si eliminano le incognite in modo sistematico per trasformare i sistema lineare in uno equivalente con matrice a struttura triangolare superiore, più precisamente si introduce una successione di matrici tale che:
+\[
+            A^{(k)} = (a_{ij}^{(k)}), \quad k = 1,\dots,n
+\]
+Con $A^{(1)} = A$ e $A^{(n)} = U$ e dove la matrice $A^{(k+1)}$ ha tutti gli elementi $\{a_{ij}^{(k+1)}, j+1 \leq i\leq n, 1\leq j \leq k\}$ nulli. Ovvero essa differisce da $A^{(k)}$ per avere \red{gli elementi sottodiagonali della colonna k-esima nulli}. Risparmio ulteriori spiegazioni di come funziona e passo direttamente alla formula:
+\[
+    \begin{array}{l}
+        m_{ik} = \frac{q_{ik} ^ {(k)}}{q_{kk} ^ {(k)}} \\
+        a_{ij}^{(k+1)} = a_{ij}^{(k)} - m_{ik} a_{kj} ^ {(k)}
+    \end{array}
+\]
 
-Ecco l'algoritmo in pseudocodice, assumendo che la matrice $A$ sia ben condizionata e pertanto non si necessita uno scambio di righe:
+Ecco in pseudo codice l'algoritmo ipotizzando che $A$ non necessiti di uno scambio di righe
 
 \begin{algorithm}[H]
     \SetAlgoNlRelativeSize{-1}
@@ -241,98 +237,9 @@ Ecco l'algoritmo in pseudocodice, assumendo che la matrice $A$ sia ben condizion
         \KwRet{$B$}\;
     \end{algorithm}
 
-    Ecco un esempio pratico:
-    \esempio{
-        Supponiamo di voler fattorizzare la matrice:
-        \[
-            A = \begin{pmatrix}
-                2&3\\
-                4&7
-            \end{pmatrix}   
-        \]
-        Poi inizializzo $L$ come una matrice identità e$U=A$
-        \[
-            L=\begin{pmatrix}
-                1&0\\
-                0&1
-            \end{pmatrix}
-            \quad
-            A = \begin{pmatrix}
-                2&3\\
-                4&7
-            \end{pmatrix}   
-        \]
-        Poi eseguo l'algoritmo di Gauss in $U$ avendo come pivot $2$, in questo caso occorre solo modificare solo la seconda in quanto la matrice ha solo 2 righe. Il fattore moltiplicativo nella riga 2 e colonna 1 è $l_{2,1} =  \frac{4}{2} = 2$, si può procedere così con l'eliminazione Gaussiana ottenendo:
-        \[
-            U =\begin{pmatrix}
-                1&0\\
-                2&1
-            \end{pmatrix} 
-        \]
-        Si inserisca, inoltre, $l_{2,1}$ nella matrice $L$:
-        \[
-            L=\begin{pmatrix}
-                1&0\\
-                2&1
-            \end{pmatrix}    
-        \]
-        La fattorizzazione, così, è finita e si ha $A=L\times U$:
-        \[
-            \begin{pmatrix}
-                2&3\\
-                4&7
-            \end{pmatrix} = 
-            \begin{pmatrix}
-                1&0\\
-                2&1
-            \end{pmatrix} 
-            \begin{pmatrix}
-                1&0\\
-                2&1
-            \end{pmatrix} 
-        \]
-    }
-
-Fattorizzazione PLU ? (TODO)
-
-Non so dove mettere Cholesky aiutami @GIOPALLA
-\subsection{Fattorizzazione di Cholesky}
-Si puo' usare solo nel caso speciale in cui $ A $ sia \textbf{definita semi-positiva}:
-\dfn{Matrice semi-definita positiva}{
-  $ A $ $ n \times n $ simmetrica e' \textbf{semi-definita positiva} se $ \forall x \in \mathbb{R}^n: $
-  \[
-  x^T A x \geq 0
-  \]
-}
-
-Per cui vale:
-\mprop{Autovalori di matrici semi-definite positive}{
- Data una matrice $ A $ semi-definita positiva, ogni autovalore di $ A $ e' positivo o nullo
-}
-
-Grazie a queste proprieta', possiamo dire che $ \exists L: $
-\[
-A = L \cdot L^T
-\]
-e trovarlo e' circa due volte piu' efficente rispetto a LU.
 
 
-
-\subsubsection{Eliminazione di Gauss}
-
-Si eliminano le incognite in modo sistematico per trasformare i sistema lineare in uno equivalente con matrice a struttura triangolare superiore, più precisamente si introduce una successione di matrici tale che:
-\[
-            A^{(k)} = (a_{ij}^{(k)}), \quad k = 1,\dots,n
-\]
-Con $A^{(1)} = A$ e $A^{(n)} = U$ e dove la matrice $A^{(k+1)}$ ha tutti gli elementi $\{a_{ij}^{(k+1)}, j+1 \leq i\leq n, 1\leq j \leq k\}$ nulli. Ovvero essa differisce da $A^{(k)}$ per avere \red{gli elementi sottodiagonali della colonna k-esima nulli}. Risparmio ulteriori spiegazioni di come funziona e passo direttamente alla formula:
-\[
-    \begin{array}{l}
-        m_{ik} = \frac{q_{ik} ^ {(k)}}{q_{kk} ^ {(k)}} \\
-        a_{ij}^{(k+1)} = a_{ij}^{(k)} - m_{ik} a_{kj} ^ {(k)}
-    \end{array}
-\]
-
-Inoltre è possibile che bisogni scambiare le righe, ad esempio quando $det(A_k) = 0$ e pertanto il $a_{kk} = 0$, Perciò occorre scambiarli con altre righe (ad esempio la riga $p$). Si noti che lo scambio di righe $i,j$ di una matrice $A$ equivale a moltiplicarla per una matrice $P^{ij}$ tale che:
+Inoltre è possibile che bisogni scambiare le righe, ad esempio quando $det(A_k) = 0$ e pertanto il $a_{kk} = 0$, Perciò occorre scambiarli con altre righe. Si noti che lo scambio di righe $i,j$ di una matrice $A$ equivale a moltiplicarla per una matrice $P^{ij}$ tale che:
 \[
     (P^{(ik)})_{km} =
         \begin{cases} 
@@ -347,7 +254,7 @@ Inoltre è possibile che bisogni scambiare le righe, ad esempio quando $det(A_k)
 La quale verrà chiamata \textbf{matrice di permutazione}
 
 \subsubsection{algoritmo di gauss rivisto come mettodo di fattorizzazione LU}
-Si può dimostrare che l'algortimo di Gauss realizza la seguente fattorizzazione della matrice $A$:
+Si può dimostrare che l'Algoritmo di Gauss realizza la seguente fattorizzazione della matrice $A$ in due matrici triangolari:
 \[
     A = LU = \begin{pmatrix}
     1 & 0 & 0 & 0\\
@@ -362,21 +269,31 @@ Si può dimostrare che l'algortimo di Gauss realizza la seguente fattorizzazione
     \end{pmatrix}
 \]
 
-Dove:
-\begin{itemize}
-    \item $U=A^{(n)}$ è una matrice triangolare superiore
-    \item $L$ è la matrice triangolare inferiore dei moltiplicatori, ovvero:
-    \[
-        L = \begin{cases}
-            L_{ij} = m_{ij} & i<J\\
-            L_{ij} = 1 & i=j\\
-            L_{ij} = L_{ij} & j>i
-        \end{cases}    
-    \]
-\end{itemize}
+Passiamo dunque, direttamente al teorema esplicativo
 
 \teorema{
-    Sia $A\in\mathbb{R^{n\times n}}$ una matrice, è possibile fattorizzarla come spiegato poc'anizi 
+    Sia $A\in\mathbb{R^{n\times n}}$ una matrice, è possibile fattorizzarla nel seguente modo:
+    \[
+        A = L U
+    \]
+    Dove:
+    \begin{itemize}
+        \item $U=A^{(n)}$ è una matrice triangolare superiore (ovvero la matrice posto sotto l'eliminazione di gauss)
+        \item $L$ è la matrice triangolare inferiore dei moltiplicatori, ovvero:
+        \[
+            L = \begin{cases}
+                L_{ij} = m_{ij} & i<J\\
+                L_{ij} = 1 & i=j\\
+                L_{ij} = 0 & j>i
+            \end{cases}    
+        \]
+    \end{itemize}
+
+    Mentre se si necessita di uno scambio di righe durante l'eliminazione di gauss la fattorizzazione sarà:
+    \[
+        LU = PA
+    \]
+    Dove $P$ è la matrice di permutazione vista prima
 }
 
 \dimostrazione{
@@ -415,7 +332,7 @@ Dove:
     \]
     E dato che il prodotto di matrici triangoli e l'inversa di una matrice triangolare sono ancora matrici triangolare, si ha che $M^{-1}$ è triangolare, quindi definiamo $M^{-1}=L$.
     
-    Le cose si complicano quando si adotta una strategia pivotale (ovvero lo scambio per righe durante il processo dell'eliminazione di Gauss), ricordando quindi la formula relativa alla matrice di permutazione si ha:
+    Adesso dimostriamo la parte del teorema con la matrice di permutazione, ricordando quindi la formula relativa alla matrice di permutazione si ha:
     \[
         A^{(k+1)} = M_k P_k A^{(k)}
     \]
@@ -424,8 +341,16 @@ Dove:
     \[
         U = M_{n-1}P_{n-1}\dots M_1P_1A    
     \]
-
+    posto 
+    \[
+        P = P_{n-1}\dots P_1\text{ e }L = P(M_{n-1}P_{n-1}\dots M_1 P_1)^{-1}
+    \]
+    Si ha allora che $L$ è triangolare inferiore e si ottiene:
+    \[
+        LU = P(M_{n-1}P_{n-1\dots M_1P_1})^{-1} (M_{n-1}P_{n-1}\dots M_1P_1)A = PA
+    \]
 }
+
 \esempio{
     Supponiamo di voler fattorizzare la matrice:
     \[
@@ -476,6 +401,58 @@ Dove:
         \end{pmatrix} 
     \]
 }
+
+A che serve tutto questo? Perché tutto sto ambaradam? Restando calmi e senza farci prendere dalla disperazione dobbiamo prendere atto che il nostro bellissimo potere fattorizzante ci permette di ridurci a risolvere sistemi lineari triangolari per poi risolverli con il potere dell'algoritmo delle sostituzioni (evviva). Si noti il seguente corollario
+
+\cor{sistemi triangolari}{
+    Nel caso in cui non si ricorra ad uno scambio di righe si ha
+    \[
+        Ax = b \iff LU x = b \iff \begin{cases}
+            Ly = b\\
+            Ux = y
+        \end{cases}
+    \]
+
+    Nel caso in cui si ricorre ad uno scambio di righe si ha:
+    \[
+        Ax = b\iff PAx = Pb \iff LU x = Pb \iff \begin{cases}
+            Ly = Pb\\
+            Ux = y
+        \end{cases}
+    \]
+}
+
+
+
+\nt{
+  Se $ A $ e' invertibile, la fattorizzazione LU esiste sse tutti i minimi principali (leading principal minor??) sono non nulli. Se $ A $ e' singolare ($ det(A) = 0 $) allora se i primi $ k = rk(A) $ minimi principali sono non nulli allora LU esiste, ma potrebbe esistere anche se ce ne sono di nulli. 
+}
+
+Fattorizzazione PLU ? (TODO)
+
+Non so dove mettere Cholesky aiutami @GIOPALLA
+\subsection{Fattorizzazione di Cholesky}
+Si puo' usare solo nel caso speciale in cui $ A $ sia \textbf{definita semi-positiva}:
+\dfn{Matrice semi-definita positiva}{
+  $ A $ $ n \times n $ simmetrica e' \textbf{semi-definita positiva} se $ \forall x \in \mathbb{R}^n: $
+  \[
+  x^T A x \geq 0
+  \]
+}
+
+Per cui vale:
+\mprop{Autovalori di matrici semi-definite positive}{
+ Data una matrice $ A $ semi-definita positiva, ogni autovalore di $ A $ e' positivo o nullo
+}
+
+Grazie a queste proprieta', possiamo dire che $ \exists L: $
+\[
+A = L \cdot L^T
+\]
+e trovarlo e' circa due volte piu' efficente rispetto a LU.
+
+
+
 \subsection{Fattorizzazione di Cholesky}
 Si puo' usare solo nel caso speciale in cui $ A $ sia \textbf{definita semi-positiva}:
 \dfn{Matrice semi-definita positiva}{
