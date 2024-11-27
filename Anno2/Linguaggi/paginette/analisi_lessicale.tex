@@ -34,7 +34,7 @@ Esempietto:
     Un esempio di token è $\inside{Ide, x1}$, dove:
     \begin{itemize}
         \item $Ide$: è l'informazione che identifica una classe di token
-        \item $x1$: è l'infomrazione che identifica lo specifico token 
+        \item $x1$: è l'informazione che identifica lo specifico token 
         \item 
     \end{itemize}
 }
@@ -296,7 +296,7 @@ Dove inizialmente
 
 E funziona ciclicamente nel modo seguente:
 \begin{itemize}
-    \item leggi il carrattere in input e in baso allo stato in cui si trova decide:
+    \item leggi il carattere in input e in baso allo stato in cui si trova decide:
     \begin{itemize}
         \item di cambiare di stato
         \item di spostare la testina sull'input successivo
@@ -2215,7 +2215,17 @@ Le tabella di equivalenza sono un modo per memorizzare l'equivalenza ,di modo, d
 
     Prima di tuo costruiamo una tabella con solo delle coppie che non sono identiche per far ciò la costruiamo a scaletta. Si ha che:
 
-    %TODO disegnare la tabella bella
+    \[
+        \begin{array}{|c|c|c|c|c|c|c|}
+            \hline
+            & A & B & C & D & E \\ \hline
+            B  & X_0 &    &    &    &    \\ \hline
+            C  & X_0 & X_0 &    &    &    \\ \hline
+            D  & X_0 & X_0 & X_0 &    &    \\ \hline
+            E  & X_0 & X_0 & X_0 & X_0 &    \\ \hline
+            F  & X_1 & X_1 & X_0 & X_0 & X_0 \\ \hline
+        \end{array}
+    \]
 }
 
 Per calcolarla è possibile utilizzare il seguente algoritmo
@@ -2244,13 +2254,13 @@ Per calcolarla è possibile utilizzare il seguente algoritmo
     Dato un DFA $M=(\Sigma, Q, \delta, q_0, F)$  l’algoritmo della tabella a scala termina, inoltre due stati $p$ e $q$ sono distinguibili se e solo se la casella $(p, q)$ (o la casella $(q, p))$ e marcata 
 }
 \dimostrazione{
-    Procedo a dimostrare le due parti parte 
+    Procedo a dimostrare le due parti 
     \begin{itemize}
         \item Poiché abbiamo visto che $\exists k.\sim_k=\sim_{k+1}$ e quando l'algoritmo iterativo termina entro $k$ iterazioni
         \item procedo a dimostrare la distinguibilità:
         \begin{itemize}
             \item $\Rightarrow$
-            Se $p$ e $q$ sono distinguibili, allora $\exists x\in \Sigma^*.\hat{\delta}(p,x)\in F$ e $\hat{\deltaq}(p,x \notin F)$ (o viceversa).
+            Se $p$ e $q$ sono distinguibili, allora $\exists x\in \Sigma^*.\hat{\delta}(p,x)\in F$ e $\hat{\delta}(q,x \notin F)$ (o viceversa).
 
             Se prendo $k=|x|$, allora di sicuro $(p,q)\notin \sim_k$ cioè $(p,q)$ viene marcata entro il round $k$
             \item $\Leftarrow$
@@ -2263,5 +2273,116 @@ Per calcolarla è possibile utilizzare il seguente algoritmo
             \]
             Allora $ab$ è la stringa che distingua $p$ e $q$
         \end{itemize} 
+    \end{itemize}
+}
+
+\subsection{automa minimo}
+\dfn{Automa minimo}{
+    Dato un DFA $M = (\Sigma, Q, \delta, q_0, F)$, l'automa minimo equivalente $M_{min} = (\Sigma, Q_{min}, \delta_{min}, [q_0], F_{min})$ è dato da:
+    \begin{itemize}
+        \item $Q_{min} = \{[q]\mid q\in Q\}$ con $[q]=[q'\in Q\mid q\sim q']$
+        
+        Gli stati di $M_{min}$ sono classi di equivalenza di stati di $M$
+        \item $\delta_{min}([q],a) = [\delta(q,a)]$
+        \item $F_{min} = \{[q]\mid q\in F\}$
+    \end{itemize}
+}
+
+\nt{
+    non esistono 2 stati distinti in $M_{min}$ che siano tra loro equivalenti:
+    \[
+        [q]\neq[q'] \implies q \cancel{\sim} q'    
+    \]
+}
+
+Adesso estendiamo la notazione di $\hat{\delta}$ per i DFA $M_{min}$
+\[
+    \begin{array}{l}
+        \hat{\delta}_{min} : Q_{min}\times\Sigma^* \to Q_{min}\\
+        \hat{\delta}_{min}([q],\epsilon) = [q]\\
+        \hat{\delta}_{min}([q], xa) =\hat{\delta}_{min}(\hat{\delta}_{min}([q],x),a)\\
+        w\in L [M_{min}]\iff\hat{\delta}_{min}([q_0],w)\in F_{min}
+    \end{array}
+\]
+
+\thm{Morbidelli - Morigi (innamorato italiano, innamorata giapponese)}{
+    Dato un DFA $M=(\Sigma, Q, \delta, q_0, F)$ l'automa $M_{min} = (\Sigma, Q_{min}, \delta_{min}, [q_0], F_{min})$ riconosce lo stesso linguaggio di $M$, ed ha il minimo numero di stati tra tutti gli automi deterministici per questo linguaggio
+}
+
+\dimostrazione{
+    Dimostriamo per gradi:
+    \begin{itemize}
+        \item dimostro che $M_{min}$ è ben definito, cioè $\delta_{min}$ non dipende dallo specifico stato scelto per rappresentare la classe di equivalenza.
+        
+        Si ha se $q\sim q'$, allora:
+        \begin{itemize}
+            \item $[q] = [q']$
+            \item $\delta_{min}([q], a)=[\delta]=[\delta(q',a)] = \delta_{min}([q',a])$
+        \end{itemize}
+
+        Se non fosse vero allora $\delta(q,a)$ e $\delta(q', a)$ sarebbero distinguibili, quindi pure $q$ e $q'$
+        \item Per dimostrare che $L[M]=L[M_{min}]$, dimostrare che 
+        \[
+            \hat{\delta} (q_0, w) = r \iff \hat{\delta}([q_0], w) = [r]
+        \]
+        ovvero che
+        \[
+            \hat{\delta}([q_0], w) = [\hat{\delta}, w]
+        \]
+        si fa la dimostrazione per induzione su $|w|$
+        \begin{itemize}
+            \item Caso base: $|w| = 0$ cioè $e=\epsilon$
+            \[
+                \hat{\delta}(q_0,\epsilon) = q_0 \quad \hat{\delta}([q_0], \epsilon) =[q_0]  =[\hat{\delta}(q_0, \epsilon)]
+            \]
+            Dimostrato
+            \item Passo induttivo: $w = xa$
+            \[
+                \hat{\delta}(q_0, xa) = \delta(\hat{\delta}(q_0, x),a)
+            \]
+            e, per definizione di $\hat{\delta}_{min}$
+            \[
+                \hat{\delta} ( [q_0], xa) = \delta_{min}( \hat{\delta}([q_0],x),a) 
+            \]
+            Per ipotesi induttiva
+            \[
+                \delta_{min}( \hat{\delta}([q_0],x),a) = \delta_{min}([\hat{\delta}(q_0, x)],a)
+            \]
+            per definizione di $\delta_{min}$
+            \[
+                \delta_{min}([\hat{\delta}(q_0, x)],a) = [\delta(\hat{\delta}(q_0,x),a)]
+            \]
+            per definizione di $\hat{\delta}$
+            \[
+                [\delta(\hat{\delta}(q_0,x),a)] = [\hat{\delta}(q_0, xa)]
+            \]
+            Quindi
+            \[
+                w\in L[M]\iff \hat{\delta}(q_0,w) = r\in F \iff \hat{\delta}_{min}([q_0], w) = [r]\in F_{min} \iff w\in L[M_{min}]
+            \]
+        \end{itemize}
+        \item rimane da dimostrare che è minimo, ovvero che un qualunque altro automa deterministico $N$ non puà avere meno stati
+        Supponiamo esista un DFA $N$ tale che $L[N]=L[M_{min}]$, ma con un numero di stati inferiore a quelli di $M_{min}$
+        \begin{itemize}
+            \item Gli stati iniziali di \( N \) e \( M_{\text{min}} \) devono essere equivalenti (nell'automa \( N \cup M_{\text{min}} \)), poiché \( L[N] = L[M_{\text{min}}] \).
+                  \begin{itemize}
+                      \item Infatti, si suppone che \( N \) e \( M_{\text{min}} \) abbiano lo stesso linguaggio.
+                  \end{itemize}
+        
+            \item Se più \( q \in M_{\text{min}} \) e \( q' \in N \) sono equivalenti, nell'automa \( N \cup M_{\text{min}} \), allora sono equivalenti anche i loro successori per ogni \( a \in \Sigma \).
+        
+            \item \( N \) non ha stati inaccessibili dal suo iniziale (altrimenti si potrebbe costruire un automa \( N' \) con ancora meno stati). 
+                  \begin{itemize}
+                      \item \( M_{\text{min}} \) non ha stati inaccessibili per costruzione.
+                  \end{itemize}
+                  Di conseguenza, ogni stato di \( M_{\text{min}} \) è equivalente ad almeno uno stato di \( N \) (per il punto precedente).
+        
+            \item Poiché \( N \) ha meno stati di \( M_{\text{min}} \), due stati \( p \) e \( p' \) di \( M_{\text{min}} \) devono essere equivalenti ad uno stesso stato \( q \) di \( N \). 
+                  \begin{itemize}
+                      \item Ma la relazione di equivalenza \( \sim \) è transitiva, quindi \( p \sim p' \) e dunque \( p \) e \( p' \) devono essere equivalenti!
+                      \item Ma questo è impossibile!
+                  \end{itemize}
+                  Per costruzione di \( M_{\text{min}} \), non ci sono due stati diversi in \( M_{\text{min}} \) equivalenti tra loro.
+        \end{itemize}
     \end{itemize}
 }
