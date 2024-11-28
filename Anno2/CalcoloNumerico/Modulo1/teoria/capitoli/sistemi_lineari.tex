@@ -195,49 +195,6 @@ Con $A^{(1)} = A$ e $A^{(n)} = U$ e dove la matrice $A^{(k+1)}$ ha tutti gli ele
     \end{array}
 \]
 
-Ecco in pseudo codice l'algoritmo ipotizzando che $A$ non necessiti di uno scambio di righe
-
-\begin{algorithm}[H]
-    \SetAlgoNlRelativeSize{-1}
-    \SetNlSty{textbf}{}{}
-    \caption{Fattorizzazione LU}
-    \KwIn{Intero $n$, Matrice $A[1..n,1..n]$}
-    \KwOut{Array $B[1,2]$ contenente le matrici $L$ e $U$}
-    
-        Let $B$ be a new Array[2]\;
-        Let $L$ be a new Matrix[1..n, 1..n]\;
-        Let $U$ be a new Matrix[1..n, 1..n]\;
-    
-        % Inizializza L come matrice identità
-        \For{$i = 1$ \KwTo $n$}{
-            \For{$j = 1$ \KwTo $n$}{
-                \If{$i == j$}{
-                    $L[i, j] \gets 1$\;
-                }
-                \Else{
-                    $L[i, j] \gets 0$\;
-                }
-            }
-        }
-        Let $p$ be a new Real\tcp*{dichiaro il pivot}
-        \tcp{colonne per pivot}
-        \For{$i = 1$ \KwTo $n$}{
-            $p\gets A[i,i]$\tcp*{aggiorno il pivot}
-            \tcp{righe}
-            \For{$j = i+1$ \KwTo $n$}{
-                $L[j,i] \gets \frac{A[j,i]}{p}$\tcp*{fattore moltiplicativo in L}
-                \For{$k=i$ \KwTo $n$}{
-                    $A[j,k] \gets A[j,k] - L[j,i] \times A[i,k]$\;
-                }
-            }
-        }
-    
-        $B[1] \gets L$\;
-        $B[2] \gets A$\;
-        \KwRet{$B$}\;
-    \end{algorithm}
-
-
 
 Inoltre è possibile che bisogni scambiare le righe, ad esempio quando $det(A_k) = 0$ e pertanto il $a_{kk} = 0$, Perciò occorre scambiarli con altre righe. Si noti che lo scambio di righe $i,j$ di una matrice $A$ equivale a moltiplicarla per una matrice $P^{ij}$ tale che:
 \[
@@ -427,6 +384,47 @@ A che serve tutto questo? Perché tutto sto ambaradam? Restando calmi e senza fa
 \nt{
   Se $ A $ e' invertibile, la fattorizzazione LU esiste sse tutti i minimi principali (leading principal minor??) sono non nulli. Se $ A $ e' singolare ($ det(A) = 0 $) allora se i primi $ k = rk(A) $ minimi principali sono non nulli allora LU esiste, ma potrebbe esistere anche se ce ne sono di nulli. 
 }
+
+\begin{algorithm}[H]
+    \SetAlgoNlRelativeSize{-1}
+    \SetNlSty{textbf}{}{}
+    \caption{Fattorizzazione LU}
+    \KwIn{Intero $n$, Matrice $A[1..n,1..n]$}
+    \KwOut{Array $B[1,2]$ contenente le matrici $L$ e $U$}
+    
+        Let $B$ be a new Array[2]\;
+        Let $L$ be a new Matrix[1..n, 1..n]\;
+        Let $U$ be a new Matrix[1..n, 1..n]\;
+    
+        % Inizializza L come matrice identità
+        \For{$i = 1$ \KwTo $n$}{
+            \For{$j = 1$ \KwTo $n$}{
+                \If{$i == j$}{
+                    $L[i, j] \gets 1$\;
+                }
+                \Else{
+                    $L[i, j] \gets 0$\;
+                }
+            }
+        }
+        Let $p$ be a new Real\tcp*{dichiaro il pivot}
+        \tcp{colonne per pivot}
+        \For{$i = 1$ \KwTo $n$}{
+            $p\gets A[i,i]$\tcp*{aggiorno il pivot}
+            \tcp{righe}
+            \For{$j = i+1$ \KwTo $n$}{
+                $L[j,i] \gets \frac{A[j,i]}{p}$\tcp*{fattore moltiplicativo in L}
+                \For{$k=i$ \KwTo $n$}{
+                    $A[j,k] \gets A[j,k] - L[j,i] \times A[i,k]$\;
+                }
+            }
+        }
+    
+        $B[1] \gets L$\;
+        $B[2] \gets A$\;
+        \KwRet{$B$}\;
+    \end{algorithm}
+
 
 Fattorizzazione PLU ? (TODO)
 
