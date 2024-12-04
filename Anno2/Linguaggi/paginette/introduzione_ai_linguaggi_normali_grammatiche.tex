@@ -336,7 +336,7 @@ Una frase palindroma è una parola che letta da $sx$ a $dx$ è uguale a se stess
 Es. "I topi non avevano nipoti"
 \begin{itemize}
     \item $A=\{a,b\} \quad L=\{\epsilon, a, b, aa, bb, aba, bab, \dots\}$. Come si nota è piuttosto scomodo
-    \item Una palindroma può essere: 
+\item Una palindroma può essere: 
         \begin{itemize}
             \item o è la stringa $\epsilon$
             \item oppure a
@@ -380,12 +380,12 @@ Una $expr$ può essere:
     \]
 \end{itemize}
 
-\section{Grammatiche}
+\section{Grammatiche} 
 Una grammatica è un insieme di regole che descrivono come le parole e le frasi possono essere combinate per formare espressioni valide. Queste regole determinano la struttura sintattica di un linguaggio, specificando come le unità di base (come le parole o i simboli) si connettono per formare frasi o espressioni più complesse. Ogni grammatica \red{segue lo stesso pattern definito} differenziandosi solo per come sono caratterizzate le produzioni.
 
 Quelle più utili sono le cosiddette grammatiche libere dal contesto (in rapporto tra facilità di analisi ed espressività) 
 
-\dfn{grammatiche libere (dal contesto)}{
+\dfn{grammatiche libere (dal contesto)}{ \label{dfn: gramLib}
     Una \textbf{grammatica libera} da contesto è una quadrupla $(NT,T,R,S)$ dove:
     \begin{itemize}
         \item \textbf{NT} è un insieme finito di simboli non terminali
@@ -437,7 +437,7 @@ Alcuni esempi:
     \]
 }
 
-\subsection{Algoritmo di Naif (TODO: o e' "Algoritmo naive (nel senso ingenuo)"?)}
+\subsection{Algoritmo di Naif}
 
 Data una grammatica $G$ è opportuno chiedersi come si fa a determinare un linguaggio $L(G)$ e a verificare se $w\in L(G)$. La domanda può essere complessa, tuttavia in casi semplici ci viene in aiuto \textbf{l'algoritmo di Naif} che consiste nel partire da $S$ e provare ad applicare in tutti i modi possibili le produzione (regole) per trovare una derivazione che generi $w$
 
@@ -544,8 +544,8 @@ Si osservi inoltre che l'albero di derivazione fornisce informazioni semantiche:
 
 
 \subsection{Ambiguità}
-Per spiegare cos'è l'ambiguità partiamo con un esempio
-\esempio{
+Per generare una stringa $ w $, una grammatica libera $ G $ puo' avere diversi \textit{alberi di derivazione}, che quindi attribuiscono un significato diverso allo stesso input, vediamo un esempio:
+\esempio{ \label{ex: gramAmbi}
     Si consideri la seguente grammatica
     \[
         S\to a|b|c|S+S|S\times S    
@@ -584,25 +584,49 @@ Per spiegare cos'è l'ambiguità partiamo con un esempio
     \end{enumerate}
 
 }
-
-Per questa grammatica, la stringa $a\times b + c $ ha più di un albero di derivazione in questi casi si dice che la grammatica è quindi \textbf{ambigua} e \red{inutilizzabile per dare semantica a   $a\times b + c $}. Bisogna utilizzare grammatiche non ambigue, o manipolare grammatiche ambigue per disambiguarle
-
-\subsubsection{Grammatica ambigua}
+Nella grammatica dell'esempio \ref{ex: gramAmbi}, la stringa $a\times b + c $ ha più di un albero di derivazione. In questi casi si dice che la grammatica è quindi \red{inutilizzabile per dare semantica a $a\times b + c $} e viene definita \textbf{ambigua}. Bisogna utilizzare grammatiche non ambigue, o manipolare grammatiche ambigue per disambiguarle.
 \dfn{Grammatica ambigua}{
-    Una grammatica libera $G$ è \textbf{ambigua} se $\exists w \in L(G)$ che ammette più alberi di derivazione
+Una grammatica libera $G$ è \textbf{ambigua} se $\exists w \in L(G)$ che ammette più alberi di derivazione.
 }
+E di conseguenza:
 \dfn{Linguaggio ambiguo}{
     Un linguaggio $L$ è \textbf{ambiguo} se tutte le grammatiche $G$, tali che $L(G)=L$, sono ambigue
 }
 
+Attenzione! Abbiamo detto che una grammatica e' ambigua se, per lo stesso input, ha \textit{alberi} di derivazione diversi, \textbf{NON} \textit{derivazioni} diverse. Questa distinzione e' necessaria perche' due derivazioni possono differire semplicemente nell'ordine in cui sostituisono i nonterminali, generando pero' lo stesso albero di derivazione e quindi attribuendo lo stesso significato all'input. 
+
+\subsubsection{Derivazioni rightmost e leftmost}
+Per poter studiare l'ambiguita' di una grammatica guardando le sue derivazioni, ci e' utile fissare un'unica strategia per decidere quale nonterminale sostitiure ad ogni passaggio di derivazione. Una convenzione semplice e' quella di prendere il nonterminale piu' a sinistra (o a destra) della stringa intermedia di derivazione. Queste due strategie si chiamano derivazioni \textit{leftmost} e \textit{rightmost}:
+\dfn{Derivazione leftmost (e rightmost)}{
+  Sia $ G = (NT, T, R, S) $ una grammatica libera. Diciamo che $ u \Rightarrow_l v $ se $ u = xXy, v = xzy $, dove $ x \in T^*, y \in (T \cup NT)^* $ e $ X \to z \in R $. Se, invece, $ x \in (T \cup NT)^* $ e $ y \in T^* $, allora $ u \Rightarrow_r v $. 
+
+  Quindi, scriviamo $ u \Rightarrow_l v $ quando sostituiamo il nonterminale di $ u $ che si trova piu' a sinistra, e $ u \Rightarrow_r v $ quando sostituiamo quello piu' a destra. Detto cio', una \textbf{derivazione leftmost} e' una derivazione $ u_1 \Rightarrow^*_l u_n $ tale che:
+  \[
+  u_1 \Rightarrow_l u_2 \Rightarrow_l ... \Rightarrow_l u_n
+  \]
+  Quindi ad ogni passo sostituiamo il nonterminale piu' a sx (in modo analogo per rightmost).
+}
+Si puo' dimostrare che, se per una stringa $ w $ esiste un'albero di derivazione per una grammatica $ G $, allora esistono sicuramente derivazioni leftmost e rightmost di $ w $. In piu', possiamo dimostrare che i seguenti numeri sono uguali:
+\begin{itemize}
+  \item Il numero di derivazioni leftmost di $ w $
+  \item Il numero di derivazioni rightmost di $ w $
+  \item Il numero di alberi di derivazione distinti di $ w $
+\end{itemize}
+
+Detto cio', possiamo utilizzare la definizione di grammatica ambigua per arrivare alla seguente proposizione:
+\mprop{Derivazioni leftmost/rightmost e ambiguita'}{
+  Data una grammatica libera $ G $, questa' e \textbf{ambigua} sse $ \exists w \in L(G) $ tale che:
+  \begin{center}
+    $ w $ ha piu' di una derivazione leftmost/rightmost
+  \end{center}
+}
+
+\subsection{Rimuovere l'ambiguità}
 Alcune grammatiche possono essere manipolate di modo da \begin{itemize}
     \item rimuovere l'ambiguità
     \item generare lo stesso linguaggio
 \end{itemize}
-In altre, invece, ti tieni l'ambiguità (non è possibile rimuoverla (cazzo)) 
-
-\subsection{Rimuovere l'ambiguità}
-Questa CAZZATA viene spiegata con solo degli esempi
+In altre, invece, ti tieni l'ambiguità (non è possibile rimuoverla (cazzo)). Questa CAZZATA viene spiegata con solo degli esempi:
 
 \esempio{
     Sia $S$ la grammatica
