@@ -595,9 +595,9 @@ E di conseguenza:
 
 Attenzione! Abbiamo detto che una grammatica e' ambigua se, per lo stesso input, ha \textit{alberi} di derivazione diversi, \textbf{NON} \textit{derivazioni} diverse. Questa distinzione e' necessaria perche' due derivazioni possono differire semplicemente nell'ordine in cui sostituisono i nonterminali, generando pero' lo stesso albero di derivazione e quindi attribuendo lo stesso significato all'input. 
 
-\subsubsection{Derivazioni rightmost e leftmost}
+\subsubsection{Derivazioni rightmost e leftmost} 
 Per poter studiare l'ambiguita' di una grammatica guardando le sue derivazioni, ci e' utile fissare un'unica strategia per decidere quale nonterminale sostitiure ad ogni passaggio di derivazione. Una convenzione semplice e' quella di prendere il nonterminale piu' a sinistra (o a destra) della stringa intermedia di derivazione. Queste due strategie si chiamano derivazioni \textit{leftmost} e \textit{rightmost}:
-\dfn{Derivazione leftmost (e rightmost)}{
+\dfn{Derivazione leftmost (e rightmost)}{ 
   Sia $ G = (NT, T, R, S) $ una grammatica libera. Diciamo che $ u \Rightarrow_l v $ se $ u = xXy, v = xzy $, dove $ x \in T^*, y \in (T \cup NT)^* $ e $ X \to z \in R $. Se, invece, $ x \in (T \cup NT)^* $ e $ y \in T^* $, allora $ u \Rightarrow_r v $. 
 
   Quindi, scriviamo $ u \Rightarrow_l v $ quando sostituiamo il nonterminale di $ u $ che si trova piu' a sinistra, e $ u \Rightarrow_r v $ quando sostituiamo quello piu' a destra. Detto cio', una \textbf{derivazione leftmost} e' una derivazione $ u_1 \Rightarrow^*_l u_n $ tale che:
@@ -605,7 +605,7 @@ Per poter studiare l'ambiguita' di una grammatica guardando le sue derivazioni, 
   u_1 \Rightarrow_l u_2 \Rightarrow_l ... \Rightarrow_l u_n
   \]
   Quindi ad ogni passo sostituiamo il nonterminale piu' a sx (in modo analogo per rightmost).
-}
+}\label{dfn: derLeft}
 Si puo' dimostrare che, se per una stringa $ w $ esiste un'albero di derivazione per una grammatica $ G $, allora esistono sicuramente derivazioni leftmost e rightmost di $ w $. In piu', possiamo dimostrare che i seguenti numeri sono uguali:
 \begin{itemize}
   \item Il numero di derivazioni leftmost di $ w $

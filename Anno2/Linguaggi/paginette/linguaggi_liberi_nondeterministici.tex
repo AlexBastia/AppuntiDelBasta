@@ -145,7 +145,7 @@ Notare che potevamo anche scrivere $ L = L[N] $, dato che abbiamo dimostrato che
 \mlenma{}{
   Dato un PDA $ N $ tale che $ L = P[N] $, possiamo costruire una grammatica libera $ G $ tale che:
   \[
-    L = \mathcal{L}[G]
+    L = L[G]
   \]
 }
 Questa direzione e' molto piu' lunga e complessa rispetto alla prima, dato che "programmare" un automa e' molto piu' semplice rispetto a "programmare" una grammatica. E piu' semplice dimostrare il lemma se consideriamo un PDA con un solo stato, quindi ci torna utile il seguente lemma:
@@ -202,6 +202,35 @@ Come nei linguaggi regolari, anche i linguaggi liberi sono chiusi rispetto alle 
 
       Costruisco la grammatica libera $ G = (NT_1 \cup \{S\}, T_1, R_1 \cup \{S \to \epsilon \mid S_1S\}, S) $. Si puo' dimostrare che $ L(G) = L_1^* $.
   \end{enumerate}
+}
+Rispetto all'intersezione:
+\thm{}{
+  Dati un linguaggio libero $ L_1 $ e un linguaggio regolare $ L_2 $, la loro intersezione $ L_1 \cap L_2 $ e' un liguaggio libero.
+}
+Notare che questo teorema \textbf{NON} dice che i linguaggi liberi sono chiusi rispetto all'intersezione (infatti vedremo dopo che non lo sono). Dimostriamolo:
+\pf{Idea della dimostrazione}{
+  Vogliamo in qualche modo eseguire contemporaneamente sia il PDA che riconosce il linguaggio libero (per stato finale), sia il DFA che riconosce il linguaggio regolare. Se alla fine dell'input sono entrambe in stato di riconoscimento, allora significa che la stringa fa parte sia del linguaggio regolare che di quello libero, quindi appartiene all'intersezione.
+}
+\pf{Dimostrazione}{
+  Dati un PDA $ N_1 = (Q_1, \Sigma, \Gamma, \delta_1, q_1, Z, F_1) $ e un DFA $ N_2 = (Q_2, \Sigma, \delta_2, q_2, F_2) $ che riconoscono rispettivamente il linguaggio libero $ L_1 = L[N_1] $ e il linguaggio regolare $ L_2 = L[N_2] $, costruiamo un PDA $ N $ che riconosca il linguaggio $ L_1 \cap L_2 $:
+   \begin{itemize}
+      \item $ N = (Q_1 \times Q_2, \Sigma, \Gamma, \delta, \innerproduct{q_1}{q_2}, Z, F_1 \times F_2) $
+      \item $ \forall q \in Q_1, \forall p \in Q_2,\forall a \in \Sigma,\forall X \in \Gamma: $
+        \[
+          \delta(\innerproduct{q}{p}, a, X) = \{(\innerproduct{r}{s}, \gamma) \mid s = \delta_2(p, a) \land \innerproduct{r}{\gamma} \in \delta_1(q, a, X)\}
+        \]
+   \end{itemize}
+   Si puo' dimostrare che $ \forall w \in \Sigma^* $:
+   \[
+     (q_1, w, Z) \vdash_{N_1}^* (q, \epsilon, \gamma) \land \hat{\delta}_2(q_2, w) = q'
+   \]
+   \begin{center}
+     sse
+   \end{center}
+   \[
+     (\innerproduct{q_1}{q_2}, w, Z) \vdash_N^* (\innerproduct{q}{q'}, \epsilon, \gamma)
+   \]
+   Quindi, se $ q \in F_1 $ e $ q' \in F_2 $ e quindi $ w \in L_1 \cap L_2 $, anche $ N $ riconosce $ w $ dato che $ \innerproduct{q}{q'} \in F_1 \times F_2 $. Vale anche la direzione opposta, quindi $ L_1 \cap L_2 = L[N] $. 
 }
 \subsection{Pumping Theorem}
 
