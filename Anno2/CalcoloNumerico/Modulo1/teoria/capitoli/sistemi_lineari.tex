@@ -162,18 +162,18 @@ Quando si ha a che fare con matrici triangolari la soluzione può essere facilme
 
 \teorema{
     \begin{itemize}
-    \item Nel caso di matrici triangolari inferiori l'algoritmo prende il nome di \textbf{sostituzioni all'indietro} ed è descritto dal sistema qui sotto:
+    \item Nel caso di matrici triangolari superiori l'algoritmo prende il nome di \textbf{sostituzioni all'indietro} ed è descritto dal sistema qui sotto:
     \[
         \begin{cases}
             x_n = \frac{b_n}{a_{nn}}\\
-            x_i = \frac{b_i - \sum_{k=i+1}^{n}}{a_{ii}} & i = n-1, n-2, \dots 1
+            x_i = \frac{b_i - \sum_{k=i+1}^{n}a_{ik}x_k}{a_{ii}} & i = n-1, n-2, \dots 1
         \end{cases}    
     \]
-    \item Nel caso di matrici triangolari superiori l'algoritmo prende il nome di \textbf{sostituzioni in avanti} ed è descritto dal sistema qui sotto:
+    \item Nel caso di matrici triangolari inferiori l'algoritmo prende il nome di \textbf{sostituzioni in avanti} ed è descritto dal sistema qui sotto:
     \[
         \begin{cases}
-            x_1 = \frac{b_1}{a_{nn}}\\
-            x_i = \frac{b_i - \sum_{k=1}^{i-1}}{a_{ii}} & i = 2,3,\dots,n
+            x_1 = \frac{b_1}{a_{11}}\\
+            x_i = \frac{b_i - \sum_{k=1}^{i-1} a_{ik}x_k }{a_{ii}} & i = 2,3,\dots,n
         \end{cases}    
     \]
 
@@ -384,7 +384,7 @@ EOEOE
 
 
 \nt{
-  Se $ A $ e' invertibile, la fattorizzazione LU esiste sse tutti i minimi principali (leading principal minor??) sono non nulli. Se $ A $ e' singolare ($ det(A) = 0 $) allora se i primi $ k = rk(A) $ minimi principali sono non nulli allora LU esiste, ma potrebbe esistere anche se ce ne sono di nulli. 
+  Se $ A $ e' invertibile, la fattorizzazione LU esiste sse tutti i minimi principali (leading principal minor??) sono non nulli. Nel caso in cui $ A $ e' singolare ($ det(A) = 0 $), se i primi $ k = rk(A) $ minimi principali sono non nulli allora siamo sicuri che la fattorizzazione LU esiste, ma potrebbe esistere anche se ce ne sono di nulli. 
 }
 
 \begin{algorithm}[H]
@@ -426,11 +426,6 @@ EOEOE
         $B[2] \gets A$\;
         \KwRet{$B$}\;
     \end{algorithm}
-
-
-Fattorizzazione PLU ? (TODO)
-
-Non so dove mettere Cholesky aiutami @GIOPALLA
 \subsection{Fattorizzazione di Cholesky}
 Si puo' usare solo nel caso speciale in cui $ A $ sia \textbf{definita semi-positiva}:
 \dfn{Matrice semi-definita positiva}{
