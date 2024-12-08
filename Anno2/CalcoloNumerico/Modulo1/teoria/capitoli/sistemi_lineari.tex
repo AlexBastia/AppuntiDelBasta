@@ -453,12 +453,208 @@ e trovarlo e' circa due volte piu' efficente rispetto a LU.
 
 
 
-\subsection{Fattorizzazione di Cholesky}
-Si puo' usare solo nel caso speciale in cui $ A $ sia \textbf{definita semi-positiva}:
+\subsection{metodo Doolittle e Fattorizzazione di Cholesky}
+Allora sempre restando sulla cuazzo di fattorizzazione $LU$ esiste un bellissimo metodo in grado di fattorizzare agilmente la matrice di partenza $A$ attraverso formule ben preciso, ebbene date il benvenuto al \textbf{metodo Doolittle}:
+\thm{
+    metodo Doolittle
+}{
+    Sia $A\in\mathbb{R}^{n\times n}$, il metodo di Doolittle permette di decomporre la matrice $A$ come il prodotto di una matrice triangolare inferiore $L$ (dove $L_{ii}=1, \;\forall i \in\{1,\dots, n\}$) e una matrice triangolare superiore $U$ del tipo 
+    \[
+        A = LU
+    \]
+    attraverso le seguenti formule
+    \begin{enumerate}
+        \item \[
+            U_{pj} = A_{pj}- \sum_{k=1}^{p-1} L_{pk} U_{kj} \quad j\geq p
+        \]
+        \item \[
+            L_{ip} = \frac{1}{U_{pp}}\left(A_{ip}-\sum_{k=1}^{p-1}L_{ik}U_{kp}\right) \quad i>p
+        \]
+    \end{enumerate}
+}
+\dimostrazione{
+    Si noti innanzi tutto che per il normale prodotto riga per colonna dobbiamo trovare due matrici $L$ e $U$ tale che
+    \[
+        A_{ij} = \sum_{k=1}^{r}L_{ik}U_{kj}\quad r=\min(i,j)   
+    \]
+
+    che equivale a dire (per ovvia dimostrazione):
+    \[
+        \begin{array}{lll}
+            1)&A_{pj} = \sum_{k=1}^{p}L_{pk}U_{kj}& j\geq p\\
+            2)&A_{ip} = \sum_{k=1}^{p} L_{ik} U_{kp} & i>p
+        \end{array}
+    \]
+    Da queste formule mi riduco a dimostrare l'algoritmo:
+    \begin{enumerate}
+        \item \[
+            A_{pj} = \sum_{k=1}^{p}L_{pk}U_{kj}=\sum_{k=1}^{p-1}L_{pk}U_{kj} + L_{pp}U_{pj}
+        \]
+        Dato che gli elementi della diagonale nella matrice $L$ sono uguale a 1 si ha:
+        \[
+             A_{pj} = \sum_{k=1}^{p-1}L_{pk}U_{kj} + L_{pp}U_{pj} = \sum_{k=1}^{p-1}L_{pk}U_{kj} + U_{pj} \implies  U_{pj} =  A_{pj} - \sum_{k=1}^{p-1} L_{pk}U_{kj}
+        \]
+        ricordandosi $j\geq p$
+        \item \[
+            A_{ip} = \sum_{k=1}^{p} L_{ik} U_{kp} =  \sum_{k=1}^{p-1}L_{ik}U_{kp} + L_{ip}U_{pp}
+        \]
+        banalmente si ha che:
+        \[
+            L_{ip} = \frac{1}{U_{pp}}\left(A_{ip}-\sum_{k=1}^{p-1}L_{ik}U_{kp}\right)
+        \]
+        ricordandosi $i>p$
+    \end{enumerate} 
+}
+
+Si ha quindi una fattorizzazione che si ottiene formando le matrici sequenzialmente dalla 1 alla 2
+\esempio{
+    
+    Consideriamo la matrice \( A \):
+    \[
+    A = \begin{bmatrix}
+            2 & -1 & 1 \\
+            3 &  3 &  9 \\
+            3 &  3 &  5
+        \end{bmatrix}.
+    \]
+
+    Passo 1: Inizializzazione delle matrici \( L \) e \( U \):
+    \[
+        L = \begin{bmatrix}
+            1 & 0 & 0 \\
+            0 & 1 & 0 \\
+            0 & 0 & 1
+        \end{bmatrix}, \quad
+        U = \begin{bmatrix}
+                0 & 0 & 0 \\
+                0 & 0 & 0 \\
+                0 & 0 & 0
+            \end{bmatrix}.
+    \]
+
+    Passo 2: Calcolo degli elementi di \( U \) e \( L \) riga per riga.
+
+    Riga 1:
+    Gli elementi della prima riga di \( U \) si calcolano direttamente come:
+    \[
+        U_{11} = A_{11} = 2, \quad
+        U_{12} = A_{12} = -1, \quad
+        U_{13} = A_{13} = 1.
+    \]
+
+    Aggiorniamo \( U \):
+    \[
+        U = \begin{bmatrix}
+            2 & -1 & 1 \\
+            0 & 0 & 0 \\
+            0 & 0 & 0
+        \end{bmatrix}.
+    \]
+
+    Gli elementi di \( L \) nella colonna 1 si calcolano come:
+    \[
+        L_{21} = \frac{A_{21}}{U_{11}} = \frac{3}{2} = 1.5, \quad
+        L_{31} = \frac{A_{31}}{U_{11}} = \frac{3}{2} = 1.5.
+    \]
+
+    Aggiorniamo \( L \):
+    \[
+    L = \begin{bmatrix}
+            1 & 0 & 0 \\
+            1.5 & 1 & 0 \\
+            1.5 & 0 & 1
+        \end{bmatrix}.
+    \]
+
+    Riga 2:
+    Gli elementi della seconda riga di \( U \) si calcolano sottraendo il contributo della prima riga (già calcolata) da \( A \):
+    \[
+        U_{22} = A_{22} - L_{21}U_{12} = 3 - (1.5)(-1) = 4.5,
+    \]
+    \[
+        U_{23} = A_{23} - L_{21}U_{13} = 9 - (1.5)(1) = 7.5.
+    \]
+
+    Aggiorniamo \( U \):
+    \[
+    U = \begin{bmatrix}
+            2 & -1 & 1 \\
+            0 & 4.5 & 7.5 \\
+            0 & 0 & 0
+        \end{bmatrix}.
+    \]
+
+    Gli elementi di \( L \) nella colonna 2 si calcolano come:
+    \[
+        L_{32} = \frac{A_{32} - L_{31}U_{12}}{U_{22}} = \frac{3 - (1.5)(-1)}{4.5} = \frac{4.5}{4.5} = 1.
+    \]
+
+    Aggiorniamo \( L \):
+    \[
+        L = \begin{bmatrix}
+            1 & 0 & 0 \\
+            1.5 & 1 & 0 \\
+            1.5 & 1 & 1
+        \end{bmatrix}.
+    \]
+
+    Riga 3:
+    L'elemento \( U_{33} \) si calcola come:
+    \[
+        U_{33} = A_{33} - L_{31}U_{13} - L_{32}U_{23} = 5 - (1.5)(1) - (1)(7.5) = 5 - 1.5 - 7.5 = -4.
+    \]
+
+    Aggiorniamo \( U \):
+    \[
+        U = \begin{bmatrix}
+            2 & -1 & 1 \\
+            0 & 4.5 & 7.5 \\
+            0 & 0 & -4
+        \end{bmatrix}
+    \]
+
+    Risultato finale
+    La matrice \( A \) è stata scomposta come:
+    \[
+    L = \begin{bmatrix}
+        1 & 0 & 0 \\
+        1.5 & 1 & 0 \\
+        1.5 & 1 & 1
+    \end{bmatrix}, \quad
+    U = \begin{bmatrix}
+        2 & -1 & 1 \\
+        0 & 4.5 & 7.5 \\
+        0 & 0 & -4
+    \end{bmatrix}.
+    \]
+
+    Verifica:\\
+    Moltiplicando \( L \) e \( U \), si ottiene \( A \):
+    \[
+        A = LU = \begin{bmatrix}
+            1 & 0 & 0 \\
+            1.5 & 1 & 0 \\
+            1.5 & 1 & 1
+        \end{bmatrix}
+        \begin{bmatrix}
+            2 & -1 & 1 \\
+            0 & 4.5 & 7.5 \\
+            0 & 0 & -4
+        \end{bmatrix}
+        =
+        \begin{bmatrix}
+            2 & -1 & 1 \\
+            3 & 3 & 9 \\
+            3 & 3 & 5
+        \end{bmatrix}
+    \]
+}
+
+Adesso possiamo passare alla fattorizzazione di Cholesky, non prima di aver presentato un'importante definizione. Infatti si può usare solo nel caso speciale in cui $ A $ sia \textbf{definita semi-positiva}:
 \dfn{Matrice semi-definita positiva}{
   $ A $ $ n \times n $ simmetrica e' \textbf{semi-definita positiva} se $ \forall x \in \mathbb{R}^n: $
   \[
-  x^T A x \geq 0
+    x^T A x \geq 0
   \]
 }
 
@@ -467,12 +663,152 @@ Per cui vale:
  Data una matrice $ A $ semi-definita positiva, ogni autovalore di $ A $ e' positivo o nullo
 }
 
-Grazie a queste proprieta', possiamo dire che $ \exists L: $
-\[
-A = L \cdot L^T
-\]
-e trovarlo e' circa due volte piu' efficente rispetto a LU.
 
+\nt{
+    Grazie a questa proposizione si la matrice $A$ da fattorizzare può essere scomposta senza ricorrere alla pivotazione (scambio di righe e/o colonne)
+}
+
+tramite questa osservazione ci possiamo ricondurre al seguente teorema
+\thm{Metodo di Cholesky}{
+    Sia $A\in\mathbb{R}^{n\times n}$ una matrice \textit{simmetrica e definita semi-positiva} allora esiste una matrice $H$ triangolare inferiore tale che:
+    \[
+        A= H H^T
+    \]
+    Che si può calcolare attraverso tale algoritmo
+    \[
+        \text{1)}\quad H_{pp} =\sqrt{ A_{pp}- \sum_{k=1}^{p}H^2_{pk}} 
+    \]
+    \[
+        \text{2)}\quad H_{ip} = \left(A_{ip}-\sum_{k=1}^{p-1}H_{ik}H_{pk}\right) \frac{1}{H_{pp}}, \quad i\geq p + 1
+    \]
+
+    Con una complessità computazionale di $O\left(\frac{n^3}{6}\right)$
+}
+\dimostrazione{
+    Sia $A\in\mathbb{R}^{n\times n}$ una matrice \textit{simmetrica e definita semi-positiva}, devo dimostrare che $\exists H : A = HH^T$, ovvero che $\exists H : a_{ij} = \sum_{k=1}^{i}h_{ik}h^T_{kj}$ dove $a\in K$ e $h\in H$ 
+
+    Procedimento nel costruire tale matrice:
+    \begin{itemize}
+        \item elementi nella diagonale:
+        \[
+            a_{pp} = \sum_{k=1}^{p} h_{pk}h_{kp}^T = \sum_{k=1}^{p-1} h_{pk}h_{kp}^T +  h_{pp}h_{pp}^T 
+        \]
+        Per definizione di matrice trasposta si ha che $ h_{pp} = h_{pp}^T$, il che implica
+        \[
+            h_{pp} = \sqrt{a_{pp}- \sum_{k=1}^{p-1}h^2_{pk}}
+        \]
+        \item elementi sotto la diagonale:
+        \[
+            a_{ip} = \sum_{k=1}^{p} h_{ik}h_{kp}^T = \sum_{k=1}^{p-1} h_{ik}h_{kp}^T+ h_{ip}h_{pp}^T
+        \]
+        quindi
+        \[
+            h_{pp} = \left(a_{ip}-\sum_{k=1}^{p-1}h_{ik}h_{pk}\right)\frac{1}{h_{pp}}
+        \]
+    \end{itemize}
+    Inoltre si ha, per definizione di matrice trasposta e matrice triangolare inferiore, che:
+    \[
+        a_{ip} = \sum_{k=1}^{p} h_{ik}h_{kp}^T = \sum_{k=1}^{p} h_{ik}h_{pk} =\sum_{k=1}^{p} h_{pk}h_{ik} = \sum_{k=1}^{p} h_{pk}h_{ki}^T = a_{ip}
+    \]
+    Dato che per ipotesi la matrice $A$ è simmetrica si ha che questa proposizione è corretta
+}
+
+Come per la fattorizzazione $LU$ ci troviamo a discutere del sistema seguente:
+\cor{}{
+    La suluzione $x$ si ottiene attraverso la soluzione di due sistemi triangolari:
+    \[
+        \begin{cases}
+            Hy= b\\
+            H^Tx=y
+        \end{cases}
+    \] 
+}
+
+\subsection{metodi iterativi}
+I metodi iterativi si basano sull'idea di calcolare la soluzione del sistema 
+\[
+    Ax = b
+\]
+
+Come limite di una sucessione di vettori:
+\[
+    x = \lim_{k\to\infty}x^k
+\]
+e dove ci si fermerà al minimo $n$ per cui si abbia 
+\[
+    \|x^n-x\|<\epsilon 
+\]
+
+Una strategia generale per costruire una sucessiano $\{x^k\}$ è basata sulla tecnica dello "splitting" $A = P- N $ dove $P$ ed $N$ sono due matrici e $P$ è non singolare. Precisamente si ottiene
+\[
+    Px = Nx + b
+\]
+
+A questo punto, possiamo riscrivere il sistema in forma iterativa. L'idea è di utilizzare una stima iterativa \( x^{(k)} \) al passo \( k \) per sostituire \( x \) nel termine dipendente \( N x \), ottenendo una formula iterativa:
+
+\[
+P x^{(k+1)} = b + N x^{(k)}.
+\]
+
+Scomponendo ulteriormente:
+
+\[
+x^{(k+1)} = P^{-1}(b + N x^{(k)}).
+\]
+
+Questa è la \textbf{formula iterativa} per calcolare una nuova stima \( x^{(k+1)} \) a partire dalla stima precedente \( x^{(k)} \), adesso formalizziamo tutto in un teorema non prima di aver dichiarato un bel lemma
+
+\mlenma{}{
+    Sia $B = P^{-1}N$, allora si ha che 
+    \[
+        \lim_{k\to\infty} B^k = 0 \iff \|B\|<1
+    \]
+}
+
+\thm{}{
+    Sia $A = P - N$, si ha che assegnato $x^0$ si ottiene $x^k$ risolvendo tali sistemi 
+    \[
+        Px^k = Nx^{k-1} + b, \quad k\geq 1
+    \]
+    e si ha che $x^k$ è un'iterazione più vicina alla soluzione sse la matrice $\lim_{k\to\infty}{(P^{-1}N)}^k$ 
+}
+\dimostrazione{
+    Sia 
+    \[Px^k = Nx^{k-1}+b\]
+
+    Posto 
+    \[
+        e^k = x^k -x   
+    \]
+
+    usando \( e^k \), possiamo scrivere:
+    \[
+        x^{(k)} = x + e^k.
+    \]
+
+    Per il passo successivo \( x^{(k+1)} \), avremo:
+
+    \[
+        x^{(k+1)} = x + e^{(k+1)}.
+    \]
+    Sostituendo nella formula iterativa \( x^{(k+1)} = P^{-1}(b - N x^{(k)}) \), otteniamo:
+    \[
+        x + e^{k+1} = P^{-1} \left(b - N (x + e^k)\right) \iff x + e^{k+1} = P^{-1} \left(b - Nx + Ne^k\right)
+    \]
+
+    Poiché \( A x = b \), possiamo sostituire \( b = A x \), e quindi otteniamo:
+    \[
+        x + e^{k+1} = P^{-1} \left(A x - N x - N e^k \right) \iff x + e^{k+1} = P^{-1} \left(Px  - N x - N e^k \right)
+    \]
+
+
+
+    
+
+
+    
+}
+presentiamo qui il \textbf{metodo Jacobi}
 
 
 
