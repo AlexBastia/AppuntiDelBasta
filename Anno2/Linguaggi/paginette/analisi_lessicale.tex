@@ -1953,7 +1953,9 @@ s = \mid_{q_1} s_1  \mid_{q_3} s_2 \mid_{q_{20}} s_3 \mid_{q_9} s_4 \mid_{q_{17}
 \]
 in questo caso, lo stato $ q_9 $ e' il primo che si ripete. Possiamo ora dividere $ s $ in tre parti $ x, y $ e $ z $: $ x $ e' la parte di $ s $ prima di di $ q_9 $, $ y $ e' la parte fra le due ripetizioni di $ q_9 $ e $ z $ e' la parte rimanente. 
 
-TODO: figure 1.72 dal libro
+\begin{center}
+  \includegraphics[scale=0.3]{img/2024-12-08-17-37-33.png}
+\end{center}
 
 Vediamo perche' questa suddivisione rispetta le tre condizioni. Consideriamo l'input $ xyyz $ passato a $ M $: $ x $ ci porta da $ q_1  $ a $ q_9 $, la prima $ y $ ci porta da $ q_9 $ a $ q_9 $, anche la seconda ci porta da $ q_9 $ a $ q_9 $, infine $ z $ ci porta da $ q_9 $ a $ q_{13} $ (lo stato finale). Quindi $ xyyz $ e' accettato da $ M $, ma anche $ xy^iz $ per lo stesso motivo. Nel caso $ xy^0z $ vediamo che viene riconosciuto anche lui, quidi la prima condizione e' verificata. Dato che $ y $ e' la parte della stringa che ci porta da $ q_9 $ a $ q_9 $, deve essere per forza non nulla perche $ M $ e' deterministico. Infine, la terza condizione e' rispettata dato che, per la \textbf{pigeonhole principle} la prima ripetizione deve avvenire per forza entro i primi $ p+1 $ stati, quindi $ |xy| \leq p $.
 
