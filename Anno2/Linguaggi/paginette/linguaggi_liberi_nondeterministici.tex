@@ -232,5 +232,60 @@ Notare che questo teorema \textbf{NON} dice che i linguaggi liberi sono chiusi r
    \]
    Quindi, se $ q \in F_1 $ e $ q' \in F_2 $ e quindi $ w \in L_1 \cap L_2 $, anche $ N $ riconosce $ w $ dato che $ \innerproduct{q}{q'} \in F_1 \times F_2 $. Vale anche la direzione opposta, quindi $ L_1 \cap L_2 = L[N] $. 
 }
+Possiamo usare questa proprieta' per dimostrare che un linguaggio non e' libero. Infatti, dato un linguaggio $ L_1 $ che vogliamo analizzare, basta trovare un linguaggio $ L_2 $ regolare per cui $ L_1 \cap L_2 $ non e' libero. Se riusciamo a trovare tale linguaggio, allora siamo sicuri che $ L_1 $ non e' regolare:
+  \begin{align*}
+    & \forall L_1, \\
+    & \exists L_2 \text{ regolare } L_1 \cap L_2 \text{ non e' libero} \implies L_1 \text{ non e' libero}
+  \end{align*}
+
+I linguaggi liberi, come anticipato, non sono chiusi per intersezione. Per dimostrarlo, basta trovare una controprova:
+\pf{Controprova}{
+  Consideriamo i due linguaggi liberi $ L_1 = \{a^nb^nc^m \mid n,m\geq 0\} $ e $ L_2 = \{a^nb^mc^m \mid n,m\geq 0\} $. Le uniche stringhe che appartengono sia a $ L_1 $ che a $ L_2 $ sono quelle che hanno lo stesso numero di tutti e tre i caratteri, ovvero: $ L_1 \cap L_2 = \{a^nb^nc^n \mid n\geq 0\} $. Vediamo ora il \textbf{pumping thorem} per dimostrare che questo linguaggio non e' libero.
+}
 \subsection{Pumping Theorem}
+Il \textbf{pumping theorem} ci serve per dimostrare qundo linguaggio non fa parte della classe di linguaggi liberi. Si ricordi il pumping lemma (TODO: aggiungi ref), introdotto con i linguaggi regolari. Il pumping theorem e' abbastanza simile, dato che anche questo dimostra l'esistenza di una \textbf{lunghezza di pompaggio} per i linguaggi liberi, tale che ogni stringa di lunghezza maggiore o uguale puo' essere pompata. In questo caso, pero', non c'e' una sola sezione che puo' essere ripetuta, ma due. Vediamo in dettaglio:
+\thm{}{
+  Se $ L $ e' un linguaggio libero, allora esiste un numero $ p $ tale che, sia $ s \in L $ con $ |s| \geq p $, allora $ s $ puo' essere divisa in cinque sezioni $ s = uvxyz $ che soddisfano tali condizioni:
+  \begin{enumerate}
+    \item $ \forall i \geq 0, uv^ixy^iz \in L $
+    \item $ |vy| > 0 $
+    \item $ |vxy| \leq p $
+  \end{enumerate}
+}
+La seconda condizione ci dice che $ v $ o $ y $ devono essere non nulli, se no il teorema diventa ovviamente vero per ogni linguaggio. La terza condizione ci puo' aiutare in alcune dimostrazioni.
+\pf{Idea della dimostrazione}{
+  Per capire questa dimostrazione, e' necessario avere ben presente le grammatiche libere e i relativi alberi di derivazione (\ref{dfn: alberoDer}). Infatti dato che $ L $ e' un linguaggio libero, avra' anche una grammatica che lo genera. 
+
+  Consideriamo una parola $ s \in L $ "abbastanza lunga" (defineremo dopo cosa significa): questa avra' almeno un'\textbf{albero di derivazione} che la genera. Avendo scelto $ s $ abbastanza lunga, allora la distanza massima dalla radice $ S $ a una foglia (ovvero l'\textbf{altezza dell'albero}) e' tale da garantire, per il \textbf{pigeonhole principle}, il ripetersi di uno dei nonterminali fra i nodi del percorso.
+
+  Chiamiamo $ A $ il nonterminale ripetuto. Come si vede dalla figura, possiamo rimpiazzare il sottoalbero radicato nella seconda ripetizione di $ A $ con il sottoalbero radicato nella prima ripetizione di $ A $, ottenendo un albero di derivazione valido e quindi una stringa appartenente a $ L $. Possiamo ripetere questa procedura all' infinito, e vale anche se facciamo al contrario.
+
+  Quindi, se divido $ s $ in cinque sezioni $ uvxyz $ come indica la figura, e' possibile ripetere $ v $ e $ y $ e ottenere sempre parole che appartengono a $ L $.
+
+\begin{center}
+  \includegraphics[scale=0.3]{img/2024-12-07-18-52-41.png}
+\end{center}
+
+}
+
+Entriamo ora nei dettagli e proviamo a dimostrare in modo piu' formale tutte e tre le condizioni, oltre a vedere come calcolare la lunghezza di pompaggio $ p $:
+\pf{Dimostrazione}{
+  Sia $ G = (T, NT, R, S) $ una grammatica libera che genera $ L $. Sia $ b $ il massimo numero di simboli (sia $ T $ che $ NT $) che si trovano nella parte destra di una produzione in $ R $ ($ b = max \{|\alpha| \mid A \to \alpha \in R\} $). Possiamo assumere che $ b \geq 2 $, dato che altrimenti la grammatica sarebbe banale. In qualsiasi albero di derivazione generato da $ G $, il massimo numero di figli che puo' avere un nodo e' $ b $. In altre parole, ci saranno un massimo di $ b $ nodi che distano $ 1 $ dalla radice $ S $, al massimo $ b^2 $ che distano $ 2 $ e in generale un massimo di $ b^h $ nodi che distano esattamente $ h $ dalla radice. Quindi, se un albero e' alto $ h $ la stringa che genera e' lunga al massimo $ b^h $. Viceversa, se una stringa e' lunga almeno $ b^h + 1 $, allora il suo albero di derivazione sara' alto almeno $ h+1 $.
+  \[
+    |w| \geq b^h + 1 \implies \text{height(parseTree(w))} \geq h+1
+  \]
+  Sia $ |NT| $ il numero di nonterminali in $ G $, impostiamo la lunghezza di pompaggio nel seguente modo: $ p = b^{|NT|+1} $. Dato che $ b \geq 2 $, sappiamo che $ p > b^{|NT|} $, e quindi $ p \geq b^{|NT|}+1 $ (tecnicamente si puo' mettere maggiore stretto, ma per la dimostrazione non serve). Cosi' facendo, se $ s $ e' una stringa di $ L $ tale che $ |s| \geq p $, sappiamo che il suo albero di derivazione e' alto almeno $ |NT|+1 $:
+  \[
+    |w| \geq p = b^{|NT|+1} \geq b^{|NT|}+1 \implies \text{height(parseTree(w))} \geq |NT|+1
+  \]
+Notare che l'implicazione vale anche se poniamo $ b^{|NT|}+1 $ come pumping length, ma per garantire la terza condizione dobbiamo scegliere la lunghezza maggiore che puo' generare un albero alto $ |NT|+1 $, vedremo dopo perche'.
+
+Per vedere come pompare una stringa $ w \in L, |w| \geq p $, chiamiamo $ \tau $ il suo albero di derivazione che ha il minor numero di nodi (questa condizione serve per garantire la seconda condizione). Sappiamo che $ \text{heigth}(\tau) \geq |NT|+1 $, ovvero che esiste un percorso dalla radice a una foglia lungo almeno $ |NT|+1 $. Contando la radice, ci sono $ |NT|+2 $ nodi lungo questo percorso, di cui uno e' la foglia che e' quindi un terminale. Quindi i restanti $ |NT| + 1 $ nodi sono tutti nonterminali, e per il \textit{pigeonhole principle} almeno uno si deve ripetere. Chiamiamo $ A $ il nonterminale che si ripete entro i $ |NT|+1 $ nonterminali "piu' in basso", ovvero piu' vicini alla foglia, lungo il percorso (questa scelta serve per garantire la terza condizione).
+
+Dividiamo $ w $ in cinque parti $ uvxyz $ come nella figura. L' occorrenza superiore di $ A $ ha un sottoalbero piu' grande che genera $ vxy $, mentre quella piu' in basso ha un sottoalbero piu' piccolo e genera solo $ x $. Entrambe le sottostringhe sono generate dalla stessa variabile, quindi possiamo sostituire l'una con l'altra e ottenere un nuovo albero di derivazione valido. Sostituendo il minore con il maggiore ripetutamente ci da tutti gli alberi di derivazione per le stringhe $ uv^ixy^iz $ con $ i > 1 $. Sostituendo il maggiore con il minore otteniamo la stringa $ uxz $ (il caso in cui $ i = 0 $), quindi abbiamo stabilito che questa divisione soddisfa la prima condizione, vediamo le altre due:
+
+Per la condizione 2, dobbiamo accertarci che $ u $ e $ y $ non siano entrambe $ \epsilon $. Usando l'eliminazione del not, assumiamo che siano entrambe $ \epsilon $ e dimostriamo il falso. Se fosse cosi', potremmo sostituire il sottalbero minore a quello maggiore ottenendo comunque la stringa iniziale ($ uxz = uv^ixy^iz $), pero' con un albero piu' piccolo. Ma questo e' assurdo, perche' come ipotesi avevamo stabilito che $ \tau $ fosse l'albero di derivazione di $ w $ con meno nodi. 
+
+La terza condizione dice che $ |vxy| \leq p $. Questa e' la sottostringa generata dalla prima occorrenza di $ A $ (dalla radice verso le foglie), il cui sottoalbero e' alto al massimo $ |NT| + 1 $, dato che le due ripetizioni di $ A $ devono essere entro i $ |NT|+1 $ nonterminali piu' vicini alla foglia. La stringa piu' lunga che puo' generare un albero di quell'altezza e' $ b^{|NT|+1} = p $, quindi $ |vxy| \leq p $ come volevamo dimostrare.
+}
 
