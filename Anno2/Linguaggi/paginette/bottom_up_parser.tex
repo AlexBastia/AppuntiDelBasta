@@ -10,12 +10,6 @@ Il \textbf{parser bottom up} è un tipo di analizzatore sintattico che che costr
     La stringa $\alpha^T$ viene rimossa dalla pila e sostituita con $A$, quindi $\alpha$ viene ridotta ad $A$
 \end{itemize}
 
-Inoltre è un \textbf{parser LR} perché:
-\begin{itemize}
-    \item L: leggo da sx a dx
-    \item R: derivazione rightmost
-\end{itemize}
- 
 Possono essere di diversi tipi
 
 \section{Parser shift-reduce nondeterministico}
@@ -148,3 +142,184 @@ Possono essere di diversi tipi
 Per "risolvere" tale nondeterminismo occorre fornire al PDA una tabella parsing (struttura di controllo) che "aiuti" a scegliere l'azione giusta, ed è grazie all'uso di questa che nascono i cosiddetti \textbf{parser LR}
 
 \section{Parser LR}
+\dfn{Parser LR}{
+    Il \textbf{parser LR} è un tipo di analizzatore sintattico che utilizza un approccio bottom-up per analizzare un input e verificare se appartiene al linguaggio generato da una grammatica libera. Il termine LR indica che:
+    \begin{itemize}
+        \item L: sta per \textit{left-to-right}: l'analisi dell'input avviene da sinistra a destra
+        \item R: sta per \textit{Rightmost derivation}: l'analisi ricostruisce una derivazione più a destra in senso inverso
+    \end{itemize}
+}
+
+Presento, qui uno schema bellino bellino:
+
+%TODO DA FARE QUESTA GIGAMINCHIATA
+\begin{center}
+    \begin{tikzpicture}
+        % Input
+        \node at (-2.5, 3.5) {Input:};
+        \node[stack] (input1) at (-1,0) {$a_1$};
+        \node[stack, right of=input1] (input2) {$a_2$};
+
+
+
+        % \node[stack] (input2) at (0,1) {$a_2$};
+        % \node[stack] (dots) at (1, 2) {$\dots$};
+        % \node[stack] (inputn) at (2,3) {$a_i$};
+        % \node[stack] (end) at (3, 4) {$\dots$};
+        % \node[stack] (end) at (4, 5) {$a_k$};
+        % \node[stack] (end) at (5, 6) {$\$$};
+    
+        % Parser LR block
+        \node[block] (parserLR) at (0,1.5) {Parser LR};
+    
+        % Output
+        \node at (4.5, 1.5) {Output:};
+        \node[align=center] (output) at (6.7,1.5) {Derivazione \\ \textit{rightmost} \\ = albero di derivazione};
+    
+        % Parsing Table
+        \node[block] (table) at (0,-1.5) {Tabella di Parsing $M$ \\ \vspace{0.2cm} \textbf{Azione} (Shift/Reduce) \\ sui Terminali \\ \textbf{GOTO} sui Nonterminali};
+    
+        % Stack
+        \node at (-4.2, 1.5) {Pila:};
+        \node[stack] (stack0) at (-3.5,1.5) {$S_0$};
+        \node[stack] (stackdots) at (-3.5,0.7) {$\vdots$};
+        \node[stack] (stackn) at (-3.5,-0.1) {$S_m$};
+    
+        \node at (-4.2, -1.5) {Pila simboli:};
+        \node[stack] (symbol0) at (-3.5,-1.5) {$X_0$};
+        \node[stack] (symboldots) at (-3.5,-2.3) {$\vdots$};
+        \node[stack] (symboln) at (-3.5,-3.1) {$X_m$};
+    
+        % Arrows
+        \draw[arrow] (input1.south) -- (parserLR.north);
+        \draw[arrow] (parserLR.south) -- (table.north) node[midway,right] {consulta};
+        \draw[arrow] (parserLR.east) -- (output.west);
+    
+        \draw[arrow] (stack0.east) ++(0.2,0) -- (parserLR.west);
+        \draw[arrow] (symbol0.east) ++(0.2,0) -- (parserLR.west);
+    
+        % DFA note
+        \node[align=center] at (5,-2) {Generata a partire \\ da un DFA \\ (Automa canonico \\ degli stati \\ \textit{viabili})};
+    \end{tikzpicture}    
+\end{center}
+
+dove una configurazione di tale parser è:
+\[
+    (s_0, \dots, s_n, x_1 \dots x_m, a_1 \dots a_k \$)
+\]
+
+\nt{
+    $x_1 \dots x_m a_1 \dots a_k$ è una stringa intermedia della derivazione canonica destra
+}
+\subsection{Funzionamento del parsing LR}
+il parser LR funzione nel seguente modo:
+\begin{enumerate}
+    \item Legge lo stato nel top della pila $s_n$ e il simbolo corrente dell'input $a_i$
+    \item consulta la tabella di parsing LR $M[s_n, a_i]$
+    \begin{itemize}
+        \item Se $M[s_n, a_i] = \text{shift}\; s$, allora la nuova configurazione è:
+        \[
+            (s_0\dots s_n \underline{s}\;, x_1 \dots x_n \underline{a_i}, a_{i+1} \dots a_k \$)
+        \]
+        \item Se $M[s_n, a_i]= \underline{\text{reduce } A\to B}$, allora la nuova configurazione è
+        
+        \[
+            (s_0 \dots s_{n-r} \underline{s}, x_1 \dots x_{m-r}A, a_i\dots a_k \$)
+        \]
+        Dove $r=|\beta|$ e $M[s_{n-r}, A]=goto \; \underline{s}$
+
+        Cioè fa tre passi:
+        \begin{enumerate}
+            \item faccio "pop" di r elementi dai 2 stack
+            \item metto A in cima alla pila dei simboli
+            \item calcolo il nuovo stato top, guardando 
+            \[
+                M[s_{n-r}, A] = goto\; s \text{ e metto }s\text{ in cima alla pila degli stati}
+            \]
+        \end{enumerate}
+        \item se $M[s_n, a_i] = accept \implies$ fine!
+        \item se $M[s_n, a_i] = "bianco" \implies$ errore!
+    \end{itemize}
+\end{enumerate}
+\esempio{
+    Sia $G$ la seguente grammatica:
+    \[
+        \begin{array}{l}
+            S'\to S\\
+            Senza\to (S)\\
+            S\to ()
+        \end{array}
+    \]
+
+    % Tabella di Parsing LR(0)
+    Assumendo che siamo già forniti di questa \textbf{Tabella di Parsing}
+
+    \[
+    \begin{array}{|c|ccc|c|}
+    \hline
+    \text{Stato} & \multicolumn{3}{c|}{\textbf{Azione}} & \textbf{Goto} \\
+    \cline{2-4}
+    & ( & ) & \$ & S \\
+    \hline
+    0 & S2 &  &  & g1 \\
+    1 &  &  & \text{Accept} & g3 \\
+    2 & S2 & S5 &  &  \\
+    3 &  & S4 &  &  \\
+    4 & r2 & r2 & r2 &  \\
+    5 & r3 & r3 & r3 &  \\
+    \hline
+    \end{array}
+    \]
+
+    \vspace{0.5cm}
+
+    % Seconda tabella: Stato della pila, input, azione e output
+    \noindent\textbf{Esecuzione del Parsing}
+
+
+    \[
+        \begin{array}{|l|l|l|c|l|}
+        \hline
+        \text{Stato della pila} & \text{Stack simboli} & \text{Input} & \text{Azione} & \text{Output} \\
+        \hline
+        (0 & \varepsilon & (())\$ & S2 & - \\
+        (0,2 & ( & ())\$ & S2 & - \\
+        (0,2,2 & (( & ))\$ & S5 & - \\
+        (0,2,2,5 & (() & )\$ & r3 & S \to () \\
+        (0,2,3 & (S & )\$ & S4 & - \\
+        (0,2,3,4 & (S) & \$ & r2 & S \to (S) \\
+        (0,1 & S & \$ & Accept & - \\
+        \hline
+        \end{array}
+    \]
+}
+
+Tuttavia una domanda lecita è come si fa trovare questa tabella di parsing, bhe prima di presentarla occorre definire un automa dei prefissi variabili
+
+\subsection{DFA a prefissi variabili}
+
+\dfn{prefisso variabile}{
+    un prefisso variabile è una stringa $\in (T\cup NT)^*$ che può apparire sulla pila di un parser bottom-up per una computazione che accetta un input
+}
+
+\dfn{prefisso variabile su una grammatica $G$ libera }{
+    si definisce prefisso variabile su una grammatica $G$ libera una stringa $\gamma\in(T\cup NT)^* $ sse esiste una derivazione rightmost
+    \[
+        S\implies^* \delta A y \implies \delta \alpha \beta y = \gamma \beta y
+    \]
+    Dove: 
+    \begin{itemize}
+        \item $y\in T^*$
+        \item $\delta\in (T\cup NT)^*$
+        \item esiste una produzione $A\to \alpha \beta$
+    \end{itemize}
+
+    Inoltre $S$ è un prefisso variabile per definizione
+}
+\dfn{prefisso variabile completo e maniglia}{
+    un prefisso variabile si dice completo se $\beta=\epsilon$, in tal caso $\alpha$ è detta maniglia per $\gamma y$
+}
+Dopo sta sborodolata di definizioni si possa al teorema che lega i prefissi variabili con i DFA:
+\thm{}{
+    Data $G$ libera, i prefissi variabili di $G$ costituiscono un linguaggio regolare e può essere descritto con un DFA
+}

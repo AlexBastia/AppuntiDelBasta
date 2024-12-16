@@ -28,7 +28,7 @@ Quindi un PDA:
     \begin{itemize}
         \item Sia $L_1=\{ww^R\mid w\in\{a,b\}^*\}$ è libero, am si può dimostrare che non esiste un DPDA che lo riconosca, infatti con un DPDA non esiste un modo deterministico per riconoscere quando finisce $w$ e inizia $w^R$
         \item $L_2=\{wcw^R\mid w\in\{a,b\}^*\}$ è libero deterministico grazie al segnaposto $c$ è possibile riconoscere quando inizia $w^R$, si ha infatti:
-        \begin{tikzpicture}
+        \begin{tikzpicture}[node distance=0cm]
             % States
             \node[state, initial] (q0) {\(q_0\)};
             \node[state, right of=q0] (q1) {\(q_1\)};
