@@ -302,8 +302,8 @@ Tuttavia una domanda lecita è come si fa trovare questa tabella di parsing, bhe
     un prefisso variabile è una stringa $\in (T\cup NT)^*$ che può apparire sulla pila di un parser bottom-up per una computazione che accetta un input
 }
 
-\dfn{prefisso variabile su una grammatica $G$ libera }{
-    si definisce prefisso variabile su una grammatica $G$ libera una stringa $\gamma\in(T\cup NT)^* $ sse esiste una derivazione rightmost
+\dfn{prefisso viabile su una grammatica $G$ libera }{
+    si definisce prefisso viabile su una grammatica $G$ libera una stringa $\gamma\in(T\cup NT)^* $ sse esiste una derivazione rightmost
     \[
         S\implies^* \delta A y \implies \delta \alpha \beta y = \gamma \beta y
     \]
@@ -317,9 +317,243 @@ Tuttavia una domanda lecita è come si fa trovare questa tabella di parsing, bhe
     Inoltre $S$ è un prefisso variabile per definizione
 }
 \dfn{prefisso variabile completo e maniglia}{
-    un prefisso variabile si dice completo se $\beta=\epsilon$, in tal caso $\alpha$ è detta maniglia per $\gamma y$
+    un prefisso viabile si dice completo se $\beta=\epsilon$, in tal caso $\alpha$ è detta maniglia per $\gamma y$
 }
 Dopo sta sborodolata di definizioni si possa al teorema che lega i prefissi variabili con i DFA:
 \thm{}{
-    Data $G$ libera, i prefissi variabili di $G$ costituiscono un linguaggio regolare e può essere descritto con un DFA
+    Data $G$ libera, i prefissi viabili di $G$ costituiscono un linguaggio regolare e può essere descritto con un DFA. detto \textbf{DFA a prefissi viabili o automa canonico LR(0)}
 }
+
+Pertanto si ha questo corollario
+\begin{corollary}
+Il parser può consultare il DFA dei prefissi viabili (ovvero la tabella di parsing) per decidere cosa fare:
+\begin{itemize}
+    \item se la pila contiene un prefisso viabile completo il parser riduce
+    \item se la pila contiene un prefisso viabile incompleto, allora il parser shifta
+    \item se la pila non contiene un prefisso viabile, allora viene dato un errore
+\end{itemize}  
+\end{corollary}
+In base a come è fatto questo DFA (che eventualmente può usare informazioni di look-ahead e dei follow) il parser può risultare deterministico o meno
+
+Si noti, inoltre la seguente osservazione
+\nt{
+    si può dimostrare che un prefisso di un prefisso viabile è un prefisso viabile pertanto si ha che non è necessario ripartire da capo quando viene modificata la pila (ovvero il parser)
+}
+
+infatti la pila viene modificata in due modi:
+\begin{enumerate}
+    \item \textbf{shift}: la pila passa da $\$ \gamma$ a $\$\gamma x$. Dato che si trova in uno stato $s$ dopo aver elaborato un $\$\gamma$, occorre soltanto far ripartire il DFA da $S$ con input $x$
+    \item la pila passa da $\$ \gamma\alpha$ a $\$ \gamma A$. Dato che si trova in uno stato $s$ dopo aver elaborato $\$ \gamma \alpha$, non c'è bisogno di far ripartire il DFA dalla base della pila, ma basta ripristinare lo stato in cui si trovava subito prima di elaborare il primo simbolo di $\alpha$ e fornirgli il simbolo $A$ in input
+\end{enumerate}
+
+Pertanto occorre lo stack degli stati del DFA!
+
+Adesso introduciamo degli elementi fondamentali per l'automa canonico LR(0)
+
+\subsection{Item LR(0)}
+
+\dfn{Item $LR(0)$}{
+    Un item $LR(0)$ è una produzione con indicata, con un punto, una posizione sulla sua parte destra
+}
+
+\esempio{
+    La produzione $A\to XYZ$ genera 4 item diversi:
+    \[
+        \begin{array}{l}
+            A\to .XYZ\\
+            A\to X.YZ\\
+            A\to XY.Z\\
+            A\to XYZ.
+        \end{array}
+    \]
+    In questo caso l'item $A\to .XYZ$ è un item iniziale
+}
+
+La posizione del ”.” indica no a dove abbiamo gia analizzato di questa produzione, per questo abbiamo che: 
+\begin{itemize}
+    \item Se l'item $A\to\alpha . \beta$ è nello stato attuale del DFA vuol dire che $\alpha$ è in cima sulla pila dei simboli e che stiamo aimo aspettando $\beta$
+    \item Se invece abbiamo $A\to \alpha$. Vuol dire che abbiamo letto tutta la produzione e possiamo fare una reduce 
+\end{itemize}
+
+\subsection{Costruire l'NFA dei prefissi variabili}
+
+Per costruire il DFA dei prefissi variabili occorre prima costruire il suo corrispettivo NFA.
+
+Data $G=(NT, T, S, R)$ libera, l'NFA dei prefissi variabili di $G$ si costruisce partendo con un nuovo simbolo iniziale $S'$ ed una produzione $S' \to S$, inoltre;
+\begin{itemize}
+    \item $[S'\to .S]$ è lo stato iniziale 
+    \item dallo stato $[A\to \alpha.X\beta]$ c'è una transizione dello stato $[A\to \alpha X.\beta]$ etichettata $X$, per $X\in T\cup NT$
+    \item dallo stato $[A\to \alpha X. \beta]$, per $X\in NT$ e per ogni produzione $X\to \gamma$, c'è una $\epsilon$-transazione verso lo stato $[X\to .\gamma]$
+\end{itemize}
+
+\nt{
+    non serve definire degli stati finali, perché l'NFA come ausilio al parser
+}
+\esempio{
+    \[
+        \begin{array}{l}
+            S' \to S\\
+            S\to (S) \\
+            S\to ()
+        \end{array}
+    \]
+    Tale grammatica mi diventa
+    \[
+        \begin{array}{l}
+            S'\to .S\mid S.\\
+            S\to .(S)\mid (.S)\mid (S.)\mid (S).\\
+            S\to .()\mid (.)\mid ().
+        \end{array}
+    \]
+    Ed il corrispettivo automa è:
+    \begin{center}
+        \begin{tikzpicture}[>=stealth, node distance=2.5cm, on grid, auto]
+
+            % Stati
+            \node[state, initial] (q0) {$S' \rightarrow \cdot S$};
+            \node[state, above=of q0] (q1) {$S' \rightarrow S \cdot$};
+            \node[state, below=of q0] (q2) {$S \rightarrow \cdot ()$};
+            \node[state, below=of q2] (q6) {$S \rightarrow (\cdot  )$};
+            \node[state, right=of q0] (q3) {$S \rightarrow \cdot(S)$};
+
+            \node[state, right=of q3] (q4) {$S \rightarrow ( \cdot S  )$};
+            \node[state, right=of q4] (q5) {$S \rightarrow ( S \cdot) $};
+            \node[state, right=of q6] (q8) {$S \rightarrow ( ) \cdot$};
+            \node[state, right=of q5] (q9) {$S \rightarrow (S) \cdot$};
+            
+            % Transizioni
+            \path[->]
+                (q0) edge node {$S$} (q1)
+                     edge[bend left] node {$\varepsilon$} (q2)
+                     edge node {$\epsilon$} (q3)
+                (q2) 
+                     edge node[left] {$($} (q6)
+                (q3) edge[bend left] node {$($} (q4)
+                (q4) edge[bend left] node {$\epsilon$} (q3)
+                     edge[bend left] node {$S$} (q5)
+                     edge[bend left] node {$\epsilon$} (q2)
+                (q6) edge node {$)$} (q8)
+                (q5) edge node {$)$} (q9)
+            
+        \end{tikzpicture}
+    \end{center}
+}
+
+\section{Automa canonico $LR(0)$}
+l'automa canonico $LR(0)$ è il DFA DFA dei prefissi viabili. Per ottenerlo ci sono due metodi:
+\begin{itemize}
+    \item Costruire prima l’NFA e poi con la costruzione di sooinsiemi oenere il DFA
+    \item In un modo diretto usando due funzioni ausiliarle chiamate $clos(I)$ e $goto(I,X)$ dove $I$ è un insieme di item e $X\in T\cup NT$
+\end{itemize}
+\subsection{Costruzione diretta dell’automa canonico LR(0)}
+Andiamo prima a definire le due funzioni $clos(I)$ e $goto(I,X)$:
+
+\subsubsection{Clos()}
+\begin{algorithm}
+    \caption{$Clos()$}
+    \KwIn{$I$}
+    \KwOut{$I$}
+
+    \While{$I$ non è più modificato}{
+        \ForEach {item $A\to \alpha.X\beta \in I$}{
+            \ForEach{ produzione $X\to \gamma$}{
+                aggiungi $X\to ,\gamma$ ad $I$\;
+            }
+            
+        }
+    }
+    \Return I\;
+\end{algorithm}
+
+Si può notare come aggiungo ad $I$  tui gli item che sarebbero stati raggiungibili nel NFA con mosse $\epsilon$
+\subsubsection{Goto()}
+
+\begin{algorithm}
+    \caption{Goto}
+    \KwIn{Insieme di item $I$ e $X\in (T\cup NT)$}
+    \KwOut{Insieme $J$ di item completi}
+
+    $J \gets \emptyset$\;
+    \ForEach{ item $A\to \alpha. X\beta\in I$}{
+        aggiungi $A\to aX.\beta$ a $J$\tcp*{scorre tutti i punti, creando un nuovo nodo dove il punto si è mosso}
+    }
+    \Return $clos(j)$ \tcp*{restituisce la closure del $j$ appena creato}
+\end{algorithm}
+
+ciao
+
+
+\subsubsection{algoritmo per il lacolo del DFA LR(0)}
+Date queste due funzioni adesso possiamo costruire l’automa DFA direamente:
+
+\begin{algorithm}
+    \caption{DFA LR(0)}
+    $S \gets \{clos(\{S' \to .S\})\}$\;
+    $\delta\gets \emptyset$\;
+    \While{$S$ o $\delta$ non sono più modificati}{
+        \ForEach{$I\in S$}{
+            \ForEach{item $A\to \alpha.X\beta\in I$}{
+                $J\gets Goto(I,X)$\;
+                Aggiungi $J$ a $S$\;
+                Aggiungi $\delta(I, X)\gets J$ a $\delta$\; 
+            }
+        }
+    }
+\end{algorithm}
+
+% TODO INSERIRE DEGLI ESEMPI!!!!
+\section{tabella di parsing LR}
+\dfn{Tabella di parsing LR}{
+    Si definisce la tabella di parsign LR una matrice bidimensionale $M$ tale che:
+    \begin{itemize}
+        \item le righe rappresentantano gli stati dell'automa canoninco LR(0)/LR(1)
+        \item le colonne $T \cup\{\$\}\cup NT$
+    \end{itemize}
+
+    inoltre si ha che:
+    \begin{itemize}
+        \item $M[s,X]$ contiene le azioni che può compiere un parser LR con $S$ in cima alla pila degli stati e $x$ simbolo in inpu (o nonterminale)
+        \item Se $M[s,X]$ è "bianca"/ vuota, allora ERRORE
+        \item Se $M[s, X]$ contiene più automi, allora CONFLITTO
+    \end{itemize}
+}
+\subsection{Riempire la tabella di parsing}
+La tabella di parsing si riempe in base all’automa canonico LR(0). Per ogni stato $s$ va ripetuta la seguente cosa:
+\begin{itemize}
+    \item se $x\in T$ e $S\to t$ nell'automa $LR(0)$, inserisci shift in $M[s,x]$
+    \item se $A\to \alpha.\in s$ e $A\neq S'$, inserisci reduce $A\to alpha$ in $M[s,x]$ per tutti gli $x\in T \cup\{\$\}$
+    \item se $A\in NT$ e $S\tof$ nell'automa LR('), inserisci goto f
+\end{itemize}
+
+\dfn{Grammatica di classe LR(0)}{
+    una grammatica viene definita di classe $LR(0)$ se ogni casella nella tabella di parsing $LR(0)$ contiene al più un elemento 
+}
+
+\section{Algoritmo del parser}
+Il parser data la tabella di parsing LR esegue questo algoritmo per calcolare l’albero di derivazione. questo
+algoritmo e per un generico parser LR (quindi funziona anche per $LR(k)$)
+\begin{algorithm}
+        \caption{Parser LR}
+        Inizializza la pila con $\$ s_0$\;
+        inizializza $i_c$ con il primo carattere in input\;
+        \While{true}{
+            $S\gets Top(pila)$\;
+            \If{$M[S, i_c]== shift\text{ }t$ }{
+                push $t$ sulla pila\;
+                avanza $i_c$ sull'input\;
+            }
+            \If{$M[S, i_c]==accept$}{
+                output("accept")\;
+            }
+            \If{$M[S, i_c] == reduce A\to \alpha$}{
+                pop $|\alpha|$ stati dalla pila\;
+                $s_1 \gets Top(pila)$\;
+                $s_2 = M[s_1, A]$\;
+                push $s_2$ sulla pila \tcp*{$s_2$ è lo stato dato al goto}
+                output($A\to \alpha$)
+            }
+            \If{$M[S, i_c]==$" "}{
+                errore()\tcp*{casella vuota}
+            }
+        }
+\end{algorithm}
