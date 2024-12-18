@@ -863,3 +863,212 @@ La fusione di due stati $LR(1)$ con lo stesso core può causare conflitti
 \esempio{
     \includegraphics[width=10cm]{ultimo - LALR(1).png}
 }
+
+\section{Grammatiche $LR(k)$}
+Ci si può concentrare adesso alle grammatiche $LR$ con $k$ simboli di look-ahead, nessuno le usa perché molto confusionarie e macchinose, ma si possono andare a definire
+
+Prima della definizione di grammatica occorre definire \textbf{gli item $LR(k)$}
+
+\dfn{
+    Item $LR(k)$
+}{
+    Si definisce un \textbf{item $LR(k)$}, un item formato da una coppia formata da un item $LR(0)$ e una stringa $\beta$ la cui lunghezza è inferiore a $k$, e si denota nel seguente modo:
+    \[
+        [item\;LR(0), \beta] \text{ con }|\beta|\leq k
+    \]
+}
+
+Tali item hanno queste caratteristiche:
+\begin{itemize}
+    \item Lo stato iniziale è sempre $[S'\to.S, \$]$
+    \item Sia $s$ uno stato dell'automa canonico $LR(k)$, si che $([A\to \alpha.X\gamma, \beta]\in s\land \exists \text{ la produzione }X\to \gamma\land w\in First_k(\gamma\beta ) ) \implies [X\to.\gamma ,w]\in s$ 
+\end{itemize}
+
+Si può subito intuire che un automa canonico $LR(k)$ genera una quantità molto grande di stati molto difficili da gestire a mano
+
+Una volta costruito l'automa canonico $LR(k)$ si passa alla tabella di parsing $LR(k)$ con collonne su $T^k$ (cioè su stringhe di terminali lunghe $k$)
+
+\dfn{Grammatica $LR(k)$}{
+    Si definisce $G$ una grammatica $LR(k)$ una grammatica costruita a partire da una tabella di parsing $LR(k)$, ottenuta a partire dall'automa canonico $LR(k)$, con le seguenti caratteristiche:
+    \begin{itemize}
+        \item Contiene al più un'azioni per ogni entrata della tabella
+        \item non esistono sue $w_1$ e $w_2$ sulle colonne tali che $w_1$ è prefisso di $w_2$ e per almeno una righe le 2 corrispondenti entrate contengono un'azione
+    \end{itemize}
+}
+
+\nt{Ovviamente la tabella viene tiempita nel modo ovvio per le azioni di shift/accept, mentre le reduce sono messe solo in corrispondenza del lookahead, ad esempio $[A\to\alpha.,w]$}
+
+\subsection{Grammatiche $SLR(k)$}
+
+Si parte dell'automa canonico $LR(0)$ e si riempie la tabella di parsing $SLR(k)$ - che ha colonne su $T^k$ - secondo la seguente legge: 
+\[
+    ([A\to\alpha.]\in s\land A\neq S')\implies \forall w\in Follow_k(A).(M[s,w]=\text{ reduce } A\to\alpha)
+\] 
+
+\subsection{
+    Grammatiche $LALR(k)$
+}
+Si parte dall'automa canonico $LR(k)$ e si fondono insieme due stato con lo stesso nucleo, se non vi sono conflitti $G$ è $LALR(k)$
+
+\subsection{relazione tra le varie grammatiche}
+Si può noti il seguente schema riassuntivo:
+\begin{center}
+    \includegraphics[width=10cm]{inclusione_tra_grammatiche.png}
+\end{center}
+
+Si può concludere che:
+\[
+LR:
+\begin{cases}
+    \text{SLR}(k) \subset \text{LALR}(k) \subset \text{LR}(k) & \text{per ogni } k \geq 1 \\
+    \text{SLR}(1) \subset \text{SLR}(2) \subset \dots \subset \text{SLR}(k) \\
+    \text{LALR}(1) \subset \text{LALR}(2) \subset \dots \subset \text{LALR}(k) \\
+    \text{LR}(0) \subset \text{LR}(1) \subset \dots \subset \text{LR}(k)
+\end{cases}
+\]
+
+\textbf{LL vs LR:}
+\[
+LL vs LR:
+\begin{cases}
+    \text{LL}(k) \subset \text{LR}(k) & \text{per ogni } k \geq 0 \\
+    \text{LL}(k) \not\subset \text{LR}(k-1) & \text{per ogni } k \geq 1
+\end{cases}
+\]
+
+\mprop{}{
+    \begin{itemize}
+        \item Se $G$ è $LL(k)$, allora $G$ è non ambigua e $L(G)$ è deterministico
+        \item Se $G$ è $LR(k)$, allora $G$ è non ambigua e $L(G)$ è deterministico
+    \end{itemize}
+}
+\nt{
+    Esistono linguaggi generati da grammatiche non ambigue, ma nondeterministici
+}
+
+\esempio{
+    Sia $G$ la seguente grammatica:
+    \[
+        S\to aSa\mid bSb\mid\epsilon      
+    \]
+    Allora
+    \[
+        L(G) = \{ww^R\mid w\in\{a,b\}^*\}
+    \]
+}
+
+\section{Linguaggi generati dalle varie grammatiche}
+\dfn{
+    Linguaggio di classe $X$
+}{
+    Un linguaggio $L$ si definisce di classe $X$ se $\exists G$ di classe $X$ tale che $L=L(G)$
+
+    Dove $X$ sta per $LR(0)/SLR(1)/LL(1)/\dots$
+}
+Se classifichiamo i linguaggi anziché le grammatica, il diagramma si semplifica molto
+
+\esempio{
+    \begin{center}
+        \includegraphics[width=10cm]{esempio_linguaggio.png}
+    \end{center}
+}
+Si considerino queste note
+
+\nt{
+    Un linguaggio è libero deterministico se è accettato, per stato dinale 
+}
+\nt{
+    Ogni linguaggio regolare è generato da una grammatica di classe $LL(1)$
+}
+\nt{
+    esistono linguaggi regolari che non sono $LR(0)$ 
+
+    Ad es. $L=\{a,ab\}$
+}
+Si considerino i seguenti teoremi:
+\teorema{
+    Un linguaggio è libero deterministico sse è generato da una grammatica $LR(1)$ per qualche $k\geq 0$
+}
+\teorema{
+    Un linguaggio è libero deterministico sse è generato da una grammatica $SLR(1)$
+}
+\teorema{
+    I linguaggi generati da grammatica $LL(k)$ sono esattamente contenuti nei linguaggi generati da grammatiche $SLR(1),\forall k\geq 0$
+}
+\subsubsection{calssificazione dei linguaggi}
+Si noti il seguente schema:
+\begin{center}
+    \includegraphics[width=10cm]{classificazione_dei_linguaggi.png}
+\end{center}
+\nt{
+    Se $G$ è $LR(k)$, esiste $G'\in SLR(1)$ quivalente, ma $G'$ può essere molto più complessa di $G$ 
+}
+
+\esempio{
+    Sia $L=\{a^i b^j\mid i\geq j\geq 0\}$ libero deterministico
+
+    Si può notare che
+    \begin{center}
+        \begin{tikzpicture}
+            \node[state, inital] (q) {$q_0$}
+            \node[state, right of=q] (q1) {$q_1$}
+            
+            \path[->] 
+                    (q_0) edge [loop above] node {$a, X/aX$} ()
+                        edge  node {$b,a/\epsilon$} (q1)
+                    (q_1) edge [loop above]  node {$b,a/\epsilon$} ();
+        \end{tikzpicture}  
+    \end{center}
+    è il DPDA che riconosce $L$ per stato finale
+
+    $L$ però non è $LL(k)$ per nessun $k$, tuttavia $L$ è $SLR(1)$, infatti esiste $G$ $SLR(1)$ tale che $L(G)=L$:
+    \[
+        \begin{array}{l}
+            S\to aS\mid B\\
+            B\to aBb\mid \epsilon
+        \end{array}
+    \]
+    \begin{center}
+        \includegraphics[width=10cm]{automa_bellino.png}
+    \end{center}
+
+    La cui tabella di parsing è:
+    \[
+        \begin{array}{c|c|c|c|c|c}
+        & a & b & \$ & S & B \\
+        \hline
+        0 & S_3 & R_4 & R_4 & G_1 & G_2 \\
+        1 & & & \text{acc} & & \\
+        2 & & & R_2 & & \\
+        3 & S_3 & R_4 & & G_4 & G_5 \\
+        4 & & & R_4 & & \\
+        5 & S_3 & & R_2 & & \\
+        6 & R_3 & R_3 & & &
+        \end{array}
+    \]
+
+    \textit{Tabella di parsing SLR(1) senza conflitti} \\
+    $\Rightarrow G$ è SLR(1)
+}
+
+\nt{
+    \begin{enumerate}
+        \item $L_1 = \{ a^n b^n \mid n \geq 1 \} \in \text{LL}(1) \in \text{LR}(0)$ \\
+            $L_2 = \{ a^n c^m \mid n, m \geq 1 \} \in \text{LL}(1) \in \text{LR}(0)$ \\
+            
+            ma $L_1 \cup L_2$ non è $\text{LL}(k)$ per nessun $k$, \\
+            mentre $L_1 \cup L_2 \in \text{LR}(0)$ \\
+            $\Rightarrow$ l'unione di linguaggi $\text{LL}(1)$ può non essere $\text{LL}(1)$
+        \item $L_1 = \{ a \} \in \text{LL}(1) \in \text{LR}(0)$ \\
+            $L_2 = \{ a b \} \in \text{LL}(1) \in \text{LR}(0)$ \\
+            
+            ma $L_1 \cup L_2$ non è $\text{LR}(0)$ perché non gode della prefix-property, \\
+            mentre $L_1 \cup L_2 \in \text{LL}(1)$ \\
+            $\Rightarrow$ l'unione di linguaggi $\text{LR}(0)$ può non essere $\text{LR}(0)$
+        \item $L_1 = a^* = \{ a^n \mid n \geq 0 \} \in \text{LL}(1)$ \\
+            $L_2 = \{ a^n b^n \mid n \geq 0 \} \in \text{LL}(1)$ \\
+            
+            ma $L_1 \cdot L_2 = \{ a^i b^j \mid i \geq j \geq 0 \}$ non è $\text{LL}(k)$ per nessun $k$ \\
+            $\Rightarrow$ la concatenazione di due linguaggi $\text{LL}(1)$ può non essere $\text{LL}(1)$
+    \end{enumerate}
+}
