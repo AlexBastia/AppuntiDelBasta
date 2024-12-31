@@ -92,14 +92,14 @@ Definiamo formalmente questo tipo di espressioni e i linguaggi che definiscono:
 \dfn{espressioni regolari}{
     fissato un alfabeto $A =\{a_1,a_2,\dots,a_n\}$, definiamo le espressioni regolari su $A$ con la seguente $BNF$
     \[
-        r::= \varnothing\mid\epsilon\mid a\mid r\cdot r\mid r|r\mid r^*    
+        r::= \varnothing\mid\varepsilon\mid a\mid r\cdot r\mid r|r\mid r^*    
     \]
 }
 \nt{
   La definizione non e' ciclica perche' le espressioni sono definite da altre espressioni piu' piccole.
 }
 \nt{
-  Non confondere le ER $ \emptyset $ e $ \epsilon $: la prima identifica il linguaggio vuoto, che non accetta nessuna stringa, mentre il linguaggio associato alla seconda accetta la stringa vuota.
+  Non confondere le ER $ \emptyset $ e $ \varepsilon $: la prima identifica il linguaggio vuoto, che non accetta nessuna stringa, mentre il linguaggio associato alla seconda accetta la stringa vuota.
 }
 \nt{
     Si tenga presente che questa è una sintassi astratta ambigua, ci vorrebbero le parentesi per disanbiguare, tuttavia noi assumiamo che:
@@ -140,7 +140,7 @@ Definiamo formalmente questo tipo di espressioni e i linguaggi che definiscono:
     \begin{math}
         \begin{array}{l}
             \mathcal{L}[\varnothing]=\varnothing\text{ linguaggio vuoto}\\
-            \mathcal{L}[\epsilon]=\{\epsilon\} \text{ linguaggio che contiene solo la stringa vuota}\\
+            \mathcal{L}[\varepsilon]=\{\varepsilon\} \text{ linguaggio che contiene solo la stringa vuota}\\
             \mathcal{L}[a]=\{a\}\\
             \mathcal{L}[r_1\cdot r_2] = \mathcal{L}[r_1] \cdot \mathcal{L}[r_2]\\
             \mathcal{L}[r_1|r_2] = \mathcal{L}[r_1]\cup \mathcal{L}[r_2]\\
@@ -157,7 +157,7 @@ Definiamo formalmente questo tipo di espressioni e i linguaggi che definiscono:
         \begin{array}{l}
                 L_1\cdot L_2 =\{xy\mid x\in L_1,y\in L_2\}\\
                 L_1\cup L_2 =\{x\mid x\in L_1\text{\texttt{ or }}x\in L_2\}\\
-                L^\circ =\{\epsilon\}\\
+                L^\circ =\{\varepsilon\}\\
                 L^{n+1} = L\cdot L^n\\
                 L^*=\bigcup_{n\geq0}L^n
 
@@ -188,7 +188,7 @@ Si osservi che esistono anche linguaggi regolari infiniti:
 \begin{aligned}
     \mathcal{L}[a^*b] &= \mathcal{L}[a^*] \cdot \mathcal{L}[b] = (\mathcal{L}[a])^* \cdot \mathcal{L}[b] \\
     &= \{a\}^* \cdot \{b\} = \bigcup_{m \geq 0} \{a^m\} \cdot \{b\} \\
-    &= \{\epsilon, a, aa, \ldots\} \cdot \{b\} = \{a^m b \mid n \geq 0\}.
+    &= \{\varepsilon, a, aa, \ldots\} \cdot \{b\} = \{a^m b \mid n \geq 0\}.
 \end{aligned}
 \]
 
@@ -224,7 +224,7 @@ Si osservi che esistono anche linguaggi regolari infiniti:
 \dfn{}{
   \begin{itemize}
     \item Ripetizione positiva: $ r^+ = rr* $
-    \item Possibilita': $ r? = r \mid \epsilon $
+    \item Possibilita': $ r? = r \mid \varepsilon $
     \item Elenco: $ [a_1, ..., a_n] = a_1 \mid ... \mid a_n $
   \end{itemize}
 }
@@ -270,10 +270,10 @@ In alcuni casi è facile dimostrare queste leggi:
     \mathcal{L}[r|r]=\mathcal{L}[r]\cup \mathcal{L}[r]=\mathcal{L}[r]
 \]
 \[
-    \mathcal{L}[r\epsilon] = \mathcal{L}[r]\cdot\{\epsilon\}=\mathcal{L}[r]
+    \mathcal{L}[r\varepsilon] = \mathcal{L}[r]\cdot\{\varepsilon\}=\mathcal{L}[r]
 \]
 \[
-    \mathcal{L}[\varnothing^*] = (\mathcal{L}[\varnothing]) = \varnothing^*=\varnothing^0\cup\varnothing^1\cup\varnothing^2\dots=\{\epsilon\}\cup\varnothing\cup \varnothing=\{\epsilon\}=\mathcal{L}[\epsilon]    
+    \mathcal{L}[\varnothing^*] = (\mathcal{L}[\varnothing]) = \varnothing^*=\varnothing^0\cup\varnothing^1\cup\varnothing^2\dots=\{\varepsilon\}\cup\varnothing\cup \varnothing=\{\varepsilon\}=\mathcal{L}[\varepsilon]    
 \]
 \[
     \mathcal{L}[r\dot \varnothing]=\mathcal{L}[r]\cdot\mathcal{L}[\varnothing]=\mathcal{L}[r]\cdot\varnothing=\varnothing=\mathcal{L}[\varnothing]    
@@ -392,7 +392,7 @@ Riconoscere una stringa $w$ significa trovare un cammino etichettato $w$ sul gra
 
                 \path[->]
                     (q0) edge[loop below] node {$a$} (q0)
-                    (q0) edge[above] node {$\epsilon$} (q1)
+                    (q0) edge[above] node {$\varepsilon$} (q1)
                     (q1) edge[loop above] node {$b$} (q1);
             \end{tikzpicture}
         \end{center}
@@ -414,7 +414,7 @@ Riconoscere una stringa $w$ significa trovare un cammino etichettato $w$ sul gra
                     (q2) edge[loop above] node {$b/a$} (q2);
             \end{tikzpicture}
         \end{center}   
-        Dove $q_2$ è uno stato pozzo d'errore. Inoltre da ogni stato per ognuno dei due simboli ($a$ e $b$), esce una e una sola transizione e non vi sono transizioni $\epsilon$
+        Dove $q_2$ è uno stato pozzo d'errore. Inoltre da ogni stato per ognuno dei due simboli ($a$ e $b$), esce una e una sola transizione e non vi sono transizioni $\varepsilon$
 
         
     \end{itemize}
@@ -431,7 +431,7 @@ Adesso formalizziamo la definizione
         \item $\delta$ è la funzione di transizione con tipo
         
         \[
-            \delta : Q\times (\Sigma\cup\{\epsilon\})\to \mathcal{P}(q)    
+            \delta : Q\times (\Sigma\cup\{\varepsilon\})\to \mathcal{P}(q)    
         \]
     \end{itemize}
     
@@ -482,7 +482,7 @@ Fornisco prima, formalmente, prima alcune definzioni:
     Si definisce \textbf{mossa} da uno stato $q$ ad uno stato $q'$ leggendo un simbolo $\sigma$ dall'input e la si denota con $\vdash_n$ tale derivazione (attraverso regole di inferenza logica):
     \[
         \frac{q'\in\delta(q, \sigma)}{(q,\sigma w)\vdash_n (q',w)} \text{ con }\begin{array}{l}
-            \sigma\in \Sigma\cup\{\epsilon\}\\
+            \sigma\in \Sigma\cup\{\varepsilon\}\\
             w\in\Sigma^*
         \end{array}   
     \]
@@ -505,7 +505,7 @@ da cui discenda la definizione di riconoscimento
 \dfn{riconoscimento}{
     Una stringa $w$ si definisce \textbf{riconosciuta} se è vera tale proposizione:
     \[
-        w\in L[N]\iff \exists q\in F.(q_0,w)\vdash_n^* (q,\epsilon)    
+        w\in L[N]\iff \exists q\in F.(q_0,w)\vdash_n^* (q,\varepsilon)    
     \]
 }
 
@@ -513,7 +513,7 @@ e da cui discende la definizione di linguaggio accettato
 \dfn{linguaggio accettato}{
     Un lingaggio $L$ si definisce \textbf{accettto da un automa $N$}, indicato con $L[N]$, è
     \[
-        L[N] =\{w\in\Sigma^*\mid \exists q\in F. (q_0, w)\vdash_n^* (q,\epsilon)\}       
+        L[N] =\{w\in\Sigma^*\mid \exists q\in F. (q_0, w)\vdash_n^* (q,\varepsilon)\}       
     \]
 }
 
@@ -529,7 +529,7 @@ In alternativa si possono costruire dei DFA ovvero automi deterministici a stati
 Un DFA a differenza degli NFA ha le seguenti caratteristiche:
 \begin{itemize}
     \item $\delta (q,\sigma)$ è sempre un singoletto (solo una mossa possibile)
-    \item non ci sono mosse $\epsilon$
+    \item non ci sono mosse $\varepsilon$
 \end{itemize}
 E questo implica
 \begin{itemize}
@@ -561,9 +561,9 @@ Si osservi che
 \clm{}{}{
     Un DFA è un particolare tipo di NFA tale che:
     \begin{itemize}
-        \item $\forall q\in Q.\;\delta(q,\epsilon)=\varnothing$
+        \item $\forall q\in Q.\;\delta(q,\varepsilon)=\varnothing$
         
-        Ovvero \red{non ci sono transizioni $\epsilon$}
+        Ovvero \red{non ci sono transizioni $\varepsilon$}
         \item $\forall \sigma\in \Sigma.\;\forall q\in Q.\;\exists q'\in Q.\;\delta(q,\sigma)=\{q'\}$
         
         Ovvero l'insieme delle mosse possibile è sempre un singoletto
@@ -590,25 +590,25 @@ Si vuole ora dimostrare che i \red{DFA sono tanto espressivi quanto gli NFA}, se
 }
 Per dimostrare questa cosa occorre prima introdurre diversi concetti
 
-\subsubsection{$\epsilon$-closure}
+\subsubsection{$\varepsilon$-closure}
 
-\dfn{$\epsilon$-closure}{
-    L'\(\epsilon\)-closure di uno stato \(q \in Q\), denotata come \(\epsilon\text{-closure}(q)\), è definita come l'insieme degli stati \(q'\) tali che esiste un cammino da \(q\) a \(q'\) usando solo transizioni \(\epsilon\), inclusivamente \(q\) stesso.
+\dfn{$\varepsilon$-closure}{
+    L'\(\varepsilon\)-closure di uno stato \(q \in Q\), denotata come \(\varepsilon\text{-closure}(q)\), è definita come l'insieme degli stati \(q'\) tali che esiste un cammino da \(q\) a \(q'\) usando solo transizioni \(\varepsilon\), inclusivamente \(q\) stesso.
 
     In simboli:
     \[
-        \epsilon\text{-closure}(q) = \{ q' \in Q \mid q \xrightarrow{\epsilon^*} q' \},
+        \varepsilon\text{-closure}(q) = \{ q' \in Q \mid q \xrightarrow{\varepsilon^*} q' \},
     \]
 
     In altre parole si puo defnire come il minimo insieme che rispetta le seguenti regole:
     \[
-        \frac{}{\{q\}\subseteq \epsilon\text{-closure}(q)}\quad\frac{p\in \epsilon\text{-closure}(q)}{\delta(p,\epsilon)\subseteq \epsilon\text{-closure}(q)}    
+        \frac{}{\{q\}\subseteq \varepsilon\text{-closure}(q)}\quad\frac{p\in \varepsilon\text{-closure}(q)}{\delta(p,\varepsilon)\subseteq \varepsilon\text{-closure}(q)}    
     \]
 
 }
-nel caso abbiamo un insieme $P$ di nodi allarghiamo la definizione di $\epsilon\text{-closure}$ a quella di:
+nel caso abbiamo un insieme $P$ di nodi allarghiamo la definizione di $\varepsilon\text{-closure}$ a quella di:
 \[
-    \epsilon\text{-closure}(P) = \bigcup_{p\in P}\epsilon\text{-closure}(p)
+    \varepsilon\text{-closure}(P) = \bigcup_{p\in P}\varepsilon\text{-closure}(p)
 \]
 
 \esempio{
@@ -617,54 +617,54 @@ nel caso abbiamo un insieme $P$ di nodi allarghiamo la definizione di $\epsilon\
         \item Stati: \(Q = \{q_0, q_1, q_2\}\)
         \item Transizioni:
         \begin{itemize}
-            \item \(\delta(q_0, \epsilon) = \{q_1\}\)
-            \item \(\delta(q_1, \epsilon) = \{q_2\}\)
+            \item \(\delta(q_0, \varepsilon) = \{q_1\}\)
+            \item \(\delta(q_1, \varepsilon) = \{q_2\}\)
             \item \(\delta(q_2, a) = \{q_2\}\)
         \end{itemize}
     \end{itemize}
-    Il calcolo dell'\(\epsilon\)-closure è presto fatto:
+    Il calcolo dell'\(\varepsilon\)-closure è presto fatto:
     \begin{itemize}
-        \item \(\epsilon\text{-closure}(q_0)\):
+        \item \(\varepsilon\text{-closure}(q_0)\):
         \begin{itemize}
-            \item Da \(q_0\), puoi raggiungere \(q_1\) attraverso una transizione \(\epsilon\)
-            \item Da \(q_1\), puoi raggiungere \(q_2\) attraverso un'altra \(\epsilon\)
+            \item Da \(q_0\), puoi raggiungere \(q_1\) attraverso una transizione \(\varepsilon\)
+            \item Da \(q_1\), puoi raggiungere \(q_2\) attraverso un'altra \(\varepsilon\)
         \end{itemize}
-        Quindi: \(\epsilon\text{-closure}(q_0) = \{q_0, q_1, q_2\}\)
-        \item  \(\epsilon\text{-closure}(q_1)\):
+        Quindi: \(\varepsilon\text{-closure}(q_0) = \{q_0, q_1, q_2\}\)
+        \item  \(\varepsilon\text{-closure}(q_1)\):
         \begin{itemize}
-            \item  Da \(q_1\), puoi raggiungere \(q_2\) attraverso una transizione \(\epsilon\)
+            \item  Da \(q_1\), puoi raggiungere \(q_2\) attraverso una transizione \(\varepsilon\)
         \end{itemize}
-        Quindi: \(\epsilon\text{-closure}(q_1) = \{q_1, q_2\}\)
-        \item \(\epsilon\text{-closure}(q_2)\):
+        Quindi: \(\varepsilon\text{-closure}(q_1) = \{q_1, q_2\}\)
+        \item \(\varepsilon\text{-closure}(q_2)\):
         \begin{itemize}
-            \item \(q_2\) non ha transizioni \(\epsilon\) in uscita
+            \item \(q_2\) non ha transizioni \(\varepsilon\) in uscita
         \end{itemize}
-        Quindi: \(\epsilon\text{-closure}(q_2) = \{q_2\}\)
+        Quindi: \(\varepsilon\text{-closure}(q_2) = \{q_2\}\)
     \end{itemize}
 
 }
 
-Qui è presentato l'algoritmo per calcolare la $\epsilon$-closure:
+Qui è presentato l'algoritmo per calcolare la $\varepsilon$-closure:
 \begin{algorithm}
-    \caption{$\epsilon$-closure}
+    \caption{$\varepsilon$-closure}
     \KwIn{Stato $p$}
-    \KwOut{insieme di stati raggiungibili da $p$ con mosse $\epsilon$}
+    \KwOut{insieme di stati raggiungibili da $p$ con mosse $\varepsilon$}
 
     $T\gets P$\tcp*{inizalizzazione}
-    $\epsilon$-closure($p$) = P\tcp*{inizalizzazione}
+    $\varepsilon$-closure($p$) = P\tcp*{inizalizzazione}
 
     \While{$T\neq \varnothing$}{
         scegli un $r\in T$ e rimuovilo da $T$\;
-        \ForEach{$s\in\delta(r,\epsilon)$}{
-            \If{$s\neq\epsilon$-closure($p$)}{
-                add $s$ to $\epsilon$-closure($p$)\;
+        \ForEach{$s\in\delta(r,\varepsilon)$}{
+            \If{$s\neq\varepsilon$-closure($p$)}{
+                add $s$ to $\varepsilon$-closure($p$)\;
                 add $s$ to T\;
             }
         }
     }
 \end{algorithm} 
 \clm{}{}{
-    usando le $\epsilon$-closure. si può definire il linguaggio riconosciuto da un NFA in modo elegante. 
+    usando le $\varepsilon$-closure. si può definire il linguaggio riconosciuto da un NFA in modo elegante. 
     
     Definiamo la seguente funzione
     \[
@@ -672,10 +672,10 @@ Qui è presentato l'algoritmo per calcolare la $\epsilon$-closure:
     \]
     per in induzione
     \[
-        \hat{\delta}(q,\epsilon) = \epsilon\text{-closure}(q)
+        \hat{\delta}(q,\varepsilon) = \epsilon\text{-closure}(q)
     \]
     \[
-        \hat{\delta}(q,xa) = \epsilon\text{-closure}(q) \text{ dove }P=\{p\in Q\mid \exists r\in \hat{\delta}(q,x)\land p\in (r,a)\}
+        \hat{\delta}(q,xa) = \varepsilon\text{-closure}(q) \text{ dove }P=\{p\in Q\mid \exists r\in \hat{\delta}(q,x)\land p\in (r,a)\}
     \]
     
 
@@ -702,7 +702,7 @@ Qui è presentato l'algoritmo per calcolare la $\epsilon$-closure:
 \dfn{funzione transizione}{
     Si definisce \textbf{transizione} e la si denota con $\Delta$ tale funzione:
     \[ 
-        \Delta(A,b)=\epsilon\text{-closure}(mossa(A,b)) 
+        \Delta(A,b)=\varepsilon\text{-closure}(mossa(A,b)) 
     \]
     Con $A$ un insieme di stati e $b$ una transizione
 }
@@ -713,13 +713,13 @@ Qua di seguito l’algoritmo per la costruzione di sottoinsiemi, che serve per p
 \begin{algorithm}
     \caption{costruzionePerSottoinsiemi()}
     \KwIn{NFA $N=(\Sigma, Q,\delta,q_0,F)$}
-    \KwOut{DFA $M_N=(\Sigma,T,\Delta, \epsilon\text{-closure}(q_0), \mathcal{F})$}
-    $S\gets\epsilon\text{-closure}(q_0)$\tcp*{stato iniziale del DFA}
+    \KwOut{DFA $M_N=(\Sigma,T,\Delta, \varepsilon\text{-closure}(q_0), \mathcal{F})$}
+    $S\gets\varepsilon\text{-closure}(q_0)$\tcp*{stato iniziale del DFA}
     $T=\{S\}$\tcp*{$T$ è il l'insieme degli stati del DFA}
     \While{c'è un $P\in T$ non marcato}{
         marca $P$\;
         \ForEach{$a\in\Sigma$}{
-            $R\gets \epsilon\text{-closure}(mossa(P,a))$\;
+            $R\gets \varepsilon\text{-closure}(mossa(P,a))$\;
             \If{$R\notin T$}{
                 add $R$ to $T$\tcp*{$R$ non ha marca}
                 definisci $\Delta(P,a) = R$\;
@@ -732,7 +732,7 @@ Definiamo quindi il DFA equivalente:
 \dfn{DFA quivalente}{
     Si definisce il DFA equivalente tale automa:
     \[
-        M_n = (\Sigma, T,\Delta, \epsilon\text{-closure}(q_0), \mathcal{F})    
+        M_n = (\Sigma, T,\Delta, \varepsilon\text{-closure}(q_0), \mathcal{F})    
     \]
     dove $R\in \mathcal{F}\iff \exists q\in R$ con $q\in F$
 }
@@ -759,15 +759,15 @@ una sola mossa in qualunque stato
 
     Vogliamo ora trovare un DFA equivalente ad esso, applichiamo l’algoritmo di costruzioni per sottoinsiemi:
     \begin{itemize}
-        \item calcoliamo lo stato iniziale $S=\epsilon\text{-closure}(q_0)$, che è $S=q_0$. 
+        \item calcoliamo lo stato iniziale $S=\varepsilon\text{-closure}(q_0)$, che è $S=q_0$. 
         \item Creiamo $T$ e gli inseriamo $S$ marcandolo
-        \item Per ogni simbolo dobbiamo calcolare $\epsilon\text{-closure}(mossa(P,a))$, ma visto che l'alfabeto è $\{a,b\}$ lo facciamo 2 volte:
+        \item Per ogni simbolo dobbiamo calcolare $\varepsilon\text{-closure}(mossa(P,a))$, ma visto che l'alfabeto è $\{a,b\}$ lo facciamo 2 volte:
         \begin{itemize}
             \item per il carattere $a$ calcoliamo con $P=S=\{q_0\}$:
               \[
                 \begin{array}{l}
-                    R = \epsilon\text{-closure}(mossa(P,a)) = \epsilon\text{-closure}\left(\bigcup_{p\in\{q_0\}}\delta (p,a)\right)\\
-                    =\epsilon\text{-closure}(\delta(q_0,a)) =\epsilon\text{-closure}(\{q_0\}) =\{q_0\}
+                    R = \varepsilon\text{-closure}(mossa(P,a)) = \epsilon\text{-closure}\left(\bigcup_{p\in\{q_0\}}\delta (p,a)\right)\\
+                    =\varepsilon\text{-closure}(\delta(q_0,a)) =\epsilon\text{-closure}(\{q_0\}) =\{q_0\}
                 \end{array}
               \]
                  
@@ -775,8 +775,8 @@ una sola mossa in qualunque stato
             \item per il carattere $a$ calcoliamo con $P=S=\{q_0\}$:
               \[
                 \begin{array}{l}
-                    R = \epsilon\text{-closure}(mossa(P,b)) = \epsilon\text{-closure}\left(\bigcup_{p\in\{q_0\}}\delta (p,b)\right) \\                
-                    =\epsilon\text{-closure}(\delta(q_0,b)) =\epsilon\text{-closure}(\{q_0, q_1\}) =\{q_0,q_1\}
+                    R = \varepsilon\text{-closure}(mossa(P,b)) = \epsilon\text{-closure}\left(\bigcup_{p\in\{q_0\}}\delta (p,b)\right) \\                
+                    =\varepsilon\text{-closure}(\delta(q_0,b)) =\epsilon\text{-closure}(\{q_0, q_1\}) =\{q_0,q_1\}
                 \end{array}
               \]
             visto che $\{q_0,q_1\}\notin T$ lo andiamo ad aggiungere
@@ -786,8 +786,8 @@ una sola mossa in qualunque stato
             \item per $a$ si ha:
               \[
                 \begin{array}{l}
-                    R=    \epsilon\text{-closure} (mossa(P,a)) = \epsilon\text{-closure}\left(\bigcup_{p\in\{q_0, q_1\}}\delta(p,a)\right)\\                 
-                    = \epsilon\text{-closure} (\{q_0\}\cup\{ q_2\}) = \{q_0,q_2\}
+                    R=    \varepsilon\text{-closure} (mossa(P,a)) = \epsilon\text{-closure}\left(\bigcup_{p\in\{q_0, q_1\}}\delta(p,a)\right)\\                 
+                    = \varepsilon\text{-closure} (\{q_0\}\cup\{ q_2\}) = \{q_0,q_2\}
                 \end{array}
               \]
             quindi $\Delta(\{q_0,q_1\}, a)=\{q_0,q_2\}$. Visto $\{q_0,q_2\}\notin T$ lo aggiungiamo 
@@ -831,15 +831,15 @@ esempio bello corposo:
         
             % Transizioni
             \path[->]
-                (q0) edge[bend left] node {$\epsilon$} (q1)
+                (q0) edge[bend left] node {$\varepsilon$} (q1)
                      edge node[below] {$b$} (q2)
                 (q1) edge node {$a$} (q0)
-                     edge node {$\epsilon$} (q2)
-                     edge node {$\epsilon$} (q3)
+                     edge node {$\varepsilon$} (q2)
+                     edge node {$\varepsilon$} (q3)
                      edge node {$a$} (q4)
                 (q2) edge node[below] {$b$} (q4)
                 (q3) edge[bend left] node {$a$} (q4)
-                (q4) edge[bend left] node {$\epsilon$} (q3);
+                (q4) edge[bend left] node {$\varepsilon$} (q3);
         \end{tikzpicture}
         \end{center}
         
@@ -847,17 +847,17 @@ esempio bello corposo:
 
         \vspace{0.5cm}
         \begin{math}
-            A = \epsilon\text{-closure}(q_0) = \{q_0, q_1, q_2, q_3\} \\
-            \Delta(A, a) = \epsilon\text{-closure}(\text{move}(A, a)) = \epsilon\text{-closure}(\{q_0, q_4\}) = \{q_0, q_1, q_2, q_3, q_4\} = B \\
-            \Delta(A, b) = \epsilon\text{-closure}(\text{move}(A, b)) = \epsilon\text{-closure}(\{q_2, q_3, q_4\}) = \{q_2, q_3, q_4\} = C \\
-            \Delta(B, a) = \epsilon\text{-closure}(\text{move}(B, a)) = \epsilon\text{-closure}(\{q_0, q_4\}) = B \\
-            \Delta(B, b) = \epsilon\text{-closure}(\text{move}(B, b)) = \epsilon\text{-closure}(\{q_2, q_4\}) = C \\
-            \Delta(C, a) = \epsilon\text{-closure}(\text{move}(C, a)) = \epsilon\text{-closure}(\{q_4\}) = \{q_3, q_4\} = D \\
-            \Delta(C, b) = \epsilon\text{-closure}(\text{move}(C, b)) = \epsilon\text{-closure}(\{q_4\}) = D \\
-            \Delta(D, a) = \epsilon\text{-closure}(\text{move}(D, a)) = \epsilon\text{-closure}(\{q_4\}) = \varnothing = D \\
-            \Delta(D, b) = \epsilon\text{-closure}(\text{move}(D, b)) = \epsilon\text{-closure}(\varnothing) = \varnothing = E \\
-            \Delta(E, a) = \epsilon\text{-closure}(\text{move}(E, a)) = \epsilon\text{-closure}(\varnothing) = \varnothing = E \\
-            \Delta(E, b) = \epsilon\text{-closure}(\text{move}(E, b)) = \epsilon\text{-closure}(\varnothing) = \varnothing = E
+            A = \varepsilon\text{-closure}(q_0) = \{q_0, q_1, q_2, q_3\} \\
+            \Delta(A, a) = \varepsilon\text{-closure}(\text{move}(A, a)) = \epsilon\text{-closure}(\{q_0, q_4\}) = \{q_0, q_1, q_2, q_3, q_4\} = B \\
+            \Delta(A, b) = \varepsilon\text{-closure}(\text{move}(A, b)) = \epsilon\text{-closure}(\{q_2, q_3, q_4\}) = \{q_2, q_3, q_4\} = C \\
+            \Delta(B, a) = \varepsilon\text{-closure}(\text{move}(B, a)) = \epsilon\text{-closure}(\{q_0, q_4\}) = B \\
+            \Delta(B, b) = \varepsilon\text{-closure}(\text{move}(B, b)) = \epsilon\text{-closure}(\{q_2, q_4\}) = C \\
+            \Delta(C, a) = \varepsilon\text{-closure}(\text{move}(C, a)) = \epsilon\text{-closure}(\{q_4\}) = \{q_3, q_4\} = D \\
+            \Delta(C, b) = \varepsilon\text{-closure}(\text{move}(C, b)) = \epsilon\text{-closure}(\{q_4\}) = D \\
+            \Delta(D, a) = \varepsilon\text{-closure}(\text{move}(D, a)) = \epsilon\text{-closure}(\{q_4\}) = \varnothing = D \\
+            \Delta(D, b) = \varepsilon\text{-closure}(\text{move}(D, b)) = \epsilon\text{-closure}(\varnothing) = \varnothing = E \\
+            \Delta(E, a) = \varepsilon\text{-closure}(\text{move}(E, a)) = \epsilon\text{-closure}(\varnothing) = \varnothing = E \\
+            \Delta(E, b) = \varepsilon\text{-closure}(\text{move}(E, b)) = \epsilon\text{-closure}(\varnothing) = \varnothing = E
         \end{math}
         \vspace{0.5cm}
 
@@ -970,8 +970,8 @@ Adesso si può dimostrare il teorema dell'equivalenza
 
     \item  Quindi mi riduco a dimostrare che $L[N]=L[M_n]$
     \begin{itemize}
-        \item si osservi che per un DFA, $\epsilon$-closure$(R)=R$
-        \item chiamiamo $i_m=\epsilon$-closure$(q_0)$ lo stato iniziale di $M_n$
+        \item si osservi che per un DFA, $\varepsilon$-closure$(R)=R$
+        \item chiamiamo $i_m=\varepsilon$-closure$(q_0)$ lo stato iniziale di $M_n$
     \end{itemize}
 \end{itemize}
 
@@ -984,12 +984,12 @@ Vogliamo dimostrare che $\forall w\in \Sigma^*$
 \]
 per induzione sulla lunghezza di $w$
 \begin{itemize}
-    \item \textbf{Caso base}: \( |w| = 0 \text{ cioè } w=\epsilon \):
+    \item \textbf{Caso base}: \( |w| = 0 \text{ cioè } w=\varepsilon \):
     \[
-        \hat{\delta}(A, \epsilon) = \epsilon\text{-closure}(q_0)
+        \hat{\delta}(A, \varepsilon) = \epsilon\text{-closure}(q_0)
     \]
     \[
-        \hat{\Delta} (i_m,\epsilon) =     \epsilon\text{-closure}(i_m)= i_M=<\epsilon\text{-closure}(q_0)
+        \hat{\Delta} (i_m,\varepsilon) =     \epsilon\text{-closure}(i_m)= i_M=<\epsilon\text{-closure}(q_0)
     \]
     \item \textbf{Caso induttivo}:\( w = xa \) con \( x \in \Sigma^*, a \in \Sigma \)
     Per ipotesi induttiva, sappiamo che:
@@ -1068,9 +1068,9 @@ per induzione sulla lunghezza di $w$
             \end{tikzpicture}
         \end{center}
         Si osservi che $\mathcal{L}[\varnothing]=\varnothing=L[N[s]]$
-        \item Sia $s=\epsilon$
+        \item Sia $s=\varepsilon$
         
-        In questo caso sarà possibile costruire un NFA con due stati (iniziale e finale) connessi da un $\epsilon$, quindi $N[s]$:
+        In questo caso sarà possibile costruire un NFA con due stati (iniziale e finale) connessi da un $\varepsilon$, quindi $N[s]$:
 
         \begin{center}
             \begin{tikzpicture}
@@ -1078,12 +1078,12 @@ per induzione sulla lunghezza di $w$
                 \node[state, accepting] (B) [right of=A] {};
 
                 \path[->]
-                    (A) edge[above] node{$\epsilon$} (B);
+                    (A) edge[above] node{$\varepsilon$} (B);
             \end{tikzpicture}
 
 
         \end{center}
-        Si osservi che, in questo caso, $\mathcal{L}[\epsilon] = \{\epsilon\}=L[N[s]]$
+        Si osservi che, in questo caso, $\mathcal{L}[\varepsilon] = \{\epsilon\}=L[N[s]]$
         \item Sia $S = a$
         
         In questo caso sarà possibile costruire un NFA con due stati (iniziale e finale) connessi da una transizione $a$, quindi $N[s]$:
@@ -1101,7 +1101,7 @@ per induzione sulla lunghezza di $w$
         Si osservi che, in questo caso, $\mathcal{L}[a] = \{a\}=L[N[s]]$
         \item caso $s= r|t$
         
-        Ipotizziamo di avere già costruito gli automi $N[t]$ ed $N[r]$, per costruire "l'or" è possibile partire da uno stato iniziale $i$ e collegarlo con transizioni $\epsilon$ ai due automi, da entrambi si confluisce in uno stato finale $f$ con transazioni $\epsilon$
+        Ipotizziamo di avere già costruito gli automi $N[t]$ ed $N[r]$, per costruire "l'or" è possibile partire da uno stato iniziale $i$ e collegarlo con transizioni $\varepsilon$ ai due automi, da entrambi si confluisce in uno stato finale $f$ con transazioni $\epsilon$
         
         \begin{center}
             \begin{tikzpicture}[shorten >=1pt, node distance=2cm, on grid, auto]
@@ -1157,7 +1157,7 @@ per induzione sulla lunghezza di $w$
 
         \item Sia $s=r^*$
         
-        Ipotizzando di aver già costruito $N[r]$ è possibile costruire l'automa creando un ciclo $\epsilon$ dalla fine di $N[r]$ al suo inizio
+        Ipotizzando di aver già costruito $N[r]$ è possibile costruire l'automa creando un ciclo $\varepsilon$ dalla fine di $N[r]$ al suo inizio
 
         \begin{center}
             \begin{tikzpicture}
@@ -1171,12 +1171,12 @@ per induzione sulla lunghezza di $w$
                 
                 % Transizioni
                 \path[->]
-                    (i) edge node {$\epsilon$} (it)
-                        edge[bend left] node {$\epsilon$} (f)
+                    (i) edge node {$\varepsilon$} (it)
+                        edge[bend left] node {$\varepsilon$} (f)
                     (it) edge (ft)
                     (ft) 
-                        edge node {$\epsilon$} (f)
-                        edge[bend left] node {$\epsilon$} (it);
+                        edge node {$\varepsilon$} (f)
+                        edge[bend left] node {$\varepsilon$} (it);
                     
             \end{tikzpicture}            
         \end{center}
@@ -1286,7 +1286,7 @@ per induzione sulla lunghezza di $w$
             
                 % Transizioni
                 \path[->]
-                (i) edge[above] node {$\epsilon$} (qi)
+                (i) edge[above] node {$\varepsilon$} (qi)
                 (qi) edge[above] node {$\varepsilon$} (ir)
                      edge[below] node {$\varepsilon$} (it)
                 (ir) edge[above] node {$a$} (fr)
@@ -1295,7 +1295,7 @@ per induzione sulla lunghezza di $w$
                 (ft) 
                     edge[below] node {$\varepsilon$} (qf)
                     
-                (qf) edge[below] node {$\epsilon$} (f)
+                (qf) edge[below] node {$\varepsilon$} (f)
                     edge[below] node {$\varepsilon$} (qi);
 
             \end{tikzpicture}
@@ -1331,7 +1331,7 @@ per induzione sulla lunghezza di $w$
             
                 % Transizioni
                 \path[->]
-                (i) edge[above] node {$\epsilon$} (qi)
+                (i) edge[above] node {$\varepsilon$} (qi)
                 (qi) edge[above] node {$\varepsilon$} (ir)
                      edge[below] node {$\varepsilon$} (it)
                 (ir) edge[above] node {$a$} (fr)
@@ -1341,7 +1341,7 @@ per induzione sulla lunghezza di $w$
                     edge[below] node {$\varepsilon$} (qf)
                     
                 (qf) 
-                    edge[below] node {$\epsilon$} (f)
+                    edge[below] node {$\varepsilon$} (f)
                     edge[below] node {$\varepsilon$} (qi)
                 (f) edge[above] node{$b$} (B)
                 (B) edge[above] node{$a$} (C);
@@ -1417,8 +1417,9 @@ Dato che abbiamo dimostrato col teorema Bonzo-GiolaPalma che un NFA e' sempre co
 \subsubsection{Automi finiti nondeterministici generali}
 I GNFA sono praticamente dei NFA con funzione di transizione che funziona utilizzando le ER. Possono leggere blocchi alla volta dall'input, non solo caratteri, e se tale blocco soddisfa l' ER di una transizione che parte dallo stato corrente, allora si puo' seguire l'arco e cambiare stato. Ovviamente e' fortemente nondeterministico e possono esserci molti modi per elaborare la stessa sequenza di caratteri. 
 
-TODO: esempio di GNFA
-
+\begin{center}
+  \includegraphics[scale=0.3]{img/2024-12-16-18-28-52.png}
+\end{center}
 Formalmente:
 \dfn{GNFA}{
   Un \textbf{automa finito nondeterministico generale} e' una quintupla $ (Q, \Sigma, \delta, q_{\text{start}}, q_{\text{accept}}) $ tale che:
@@ -1447,7 +1448,7 @@ Per i fini della dimostrazione, ci interessiamo solo di GNFA specifici che rispe
 \end{itemize}
 
 \subsubsection{Da DFA a GNFA}
-Convertire un DFA in un GNFA in forma speciale e' semplice: basta aggiungere uno stato iniziale con arco $ \epsilon $ verso lo stato iniziale vecchio, aggiungere uno stato finale con archi $ \epsilon $ entranti da tutti i vecchi stati finali e se ce piu' di un arco nella stessa direzione fra due nodi, fonderli insieme creando un unico arco la cui ER corrispondente e' l'unione delle ER dei vecchi archi. Infine, se mancano degli archi, aggiungere transizioni segnati dall'ER $ \emptyset $, che non puo' essere mai usata. 
+Convertire un DFA in un GNFA in forma speciale e' semplice: basta aggiungere uno stato iniziale con arco $ \varepsilon $ verso lo stato iniziale vecchio, aggiungere uno stato finale con archi $ \epsilon $ entranti da tutti i vecchi stati finali e se ce piu' di un arco nella stessa direzione fra due nodi, fonderli insieme creando un unico arco la cui ER corrispondente e' l'unione delle ER dei vecchi archi. Infine, se mancano degli archi, aggiungere transizioni segnati dall'ER $ \emptyset $, che non puo' essere mai usata. 
 
 \subsubsection{Da GNFA a ER}
 Per ottenere l'ER a partire dal GNFA, l'idea principale e' la seguente:\\
@@ -1455,7 +1456,9 @@ Diciamo che il GNFA ha $ k $ stati. Sappiamo che $ k \geq 2 $ perche ci devono e
 
 Dobbiamo fare in modo che quando uno stato $ q_{\text{rip}} $ viene rimosso, le ER sugli archi vengano modificate in modo da simulare tutti i percorsi che sono stati rimossi. Quindi le nuove ER devono considerare sia le stringhe che portano direttamente dallo stato $ q_i $ allo stato $ q_j $, che le stringhe che portavano da $ q_i $ a $ q_j $ passando da $ q_{\text{rip}} $.
 
-TODO: copia figure 1.63 del libro
+\begin{center}
+  \includegraphics[scale=0.3]{img/2024-12-16-18-31-08.png}
+\end{center}
 
 Quindi, se nel vecchio GNFA:
 \begin{enumerate}
@@ -1512,7 +1515,12 @@ Per aiutarci ad architettare automi finiti o per distinguere linguaggi regolari 
 
   In altre parole, se $ A_1 $ e $ A_2 $ sono linguaggi regolari, lo e' anche $ A_1 \cup A_2 $.
 }
-Dato che abbiamo gia' dimostrato l'equivalenza fra DFA e NFA, possiamo usare il nondeterminismo per dimostrare il teorema sopra (e' possibile anche usare solo DFA, ma e' piu' lunga). L'idea della dimostrazione e' quella di creare due NFA, $ N_1, N_2 $ che riconoscono rispettivamente i linguaggi $ A_1, A_2 $, e poi di unirli per creare un nuovo NFA $ N $ che riconosca $ A_1 \cup A_2 $. Quindi, $ N $ deve riconoscere sia le stringhe di $ A_1 $ che di $ A_2 $. Creando un nuovo stato iniziale e collegandolo ai due stati iniziali di $ N_1 $ e $ N_2 $ con mosse $ \epsilon $, quindi usando il nondeterminismo per accettare sia i casi in cui l'input appartiene ad $ A_1 $, sia quando appartiene ad $ A_2 $. 
+Dato che abbiamo gia' dimostrato l'equivalenza fra DFA e NFA, possiamo usare il nondeterminismo per dimostrare il teorema sopra (e' possibile anche usare solo DFA, ma e' piu' lunga). L'idea della dimostrazione e' quella di creare due NFA, $ N_1, N_2 $ che riconoscono rispettivamente i linguaggi $ A_1, A_2 $, e poi di unirli per creare un nuovo NFA $ N $ che riconosca $ A_1 \cup A_2 $. Quindi, $ N $ deve riconoscere sia le stringhe di $ A_1 $ che di $ A_2 $. Creando un nuovo stato iniziale e collegandolo ai due stati iniziali di $ N_1 $ e $ N_2 $ con mosse $ \varepsilon $, quindi usando il nondeterminismo per accettare sia i casi in cui l'input appartiene ad $ A_1 $, sia quando appartiene ad $ A_2 $. 
+
+\begin{center}
+  \includegraphics[scale=0.3]{img/2024-12-16-18-34-40.png}
+\end{center}
+
 \pf{Dimostrazione formale}{
   Siano $ N_1 = \{Q_1, \Sigma, \delta_1, q_1, F_1\} $ e $ N_2 = \{Q_2, \Sigma, \delta_2, q_2, F_2\} $ NFA che riconoscono rispettivamente $ A_1 $ e $ A_2 $.
 
@@ -1523,8 +1531,8 @@ Dato che abbiamo gia' dimostrato l'equivalenza fra DFA e NFA, possiamo usare il 
     \item $ \forall q \in Q. \forall a \in \Sigma. \delta(q, a) = \begin{cases}
     \delta_1(q, a) & q \in Q_1\\
     \delta_2(q, a) & q \in Q_2\\
-      \{q_1, q_2\} & q = q_0 \land a = \epsilon\\
-      \emptyset & q = q_0 \land a \neq \epsilon
+      \{q_1, q_2\} & q = q_0 \land a = \varepsilon\\
+      \emptyset & q = q_0 \land a \neq \varepsilon
     \end{cases} $
   \end{enumerate}
 
@@ -1536,7 +1544,12 @@ Ora passiamo alla concatenazione:
 
   In altre parole, se $ A_1 $ e $ A_2 $ sono linguaggi regolari, anche $ A_1 \cdot A_2 $ e' regolare.
 }
-Il punto chiave di questa dimostrazione e' come sapere quando finisce la parola di $ A_1 $ e inizia una stringa di $ A_2 $. Infatti, con i DFA risulta molto piu' complicato, ma dato che possiamo usare i NFA risulta abbastanza banale. Come prima, vogliamo costruire un NFA $ N $ utilizzando altri due NFA $ N_1 $ e $ N_2 $ che riconoscono $ A_1 $ e $ A_2 $. Possiamo fare cio' collegando tutti gli stati finali di $ N_1 $ allo stato iniziale di $ N_2 $, usando transizioni $ \epsilon $ per accettare tutti i possibili casi. E' possibile, infatti, che una sotto-strina di una parola in $ A_1 $ appartenga anch'essa ad $ A_1 $, quindi senza il nondeterminismo sarebbe impossibile sapere quando passare a $ N_2 $. Se alla fine dell'input $ N_2 $ e' su uno stato finale, allora la parola appartiene a $ A_1 \cdot A_2 $.
+Il punto chiave di questa dimostrazione e' come sapere quando finisce la parola di $ A_1 $ e inizia una stringa di $ A_2 $. Infatti, con i DFA risulta molto piu' complicato, ma dato che possiamo usare i NFA risulta abbastanza banale. Come prima, vogliamo costruire un NFA $ N $ utilizzando altri due NFA $ N_1 $ e $ N_2 $ che riconoscono $ A_1 $ e $ A_2 $. Possiamo fare cio' collegando tutti gli stati finali di $ N_1 $ allo stato iniziale di $ N_2 $, usando transizioni $ \varepsilon $ per accettare tutti i possibili casi. E' possibile, infatti, che una sotto-strina di una parola in $ A_1 $ appartenga anch'essa ad $ A_1 $, quindi senza il nondeterminismo sarebbe impossibile sapere quando passare a $ N_2 $. Se alla fine dell'input $ N_2 $ e' su uno stato finale, allora la parola appartiene a $ A_1 \cdot A_2 $.
+
+\begin{center}
+  \includegraphics[scale=0.3]{img/2024-12-16-18-35-25.png}
+\end{center}
+
 \pf{Dimostrazione formale}{
   Siano $ N_1 = \{Q_1, \Sigma, \delta_1, q_1, F_1\}, N_2 = \{Q_2, \Sigma, \delta_2, q_2, F_2\} $ NFA che riconoscono rispettivamente $ A_1, A_2 $.
 
@@ -1545,8 +1558,8 @@ Il punto chiave di questa dimostrazione e' come sapere quando finisce la parola 
     \item $ Q = Q_1 \cup Q_2 $
     \item $ \forall q \in Q. \forall a \in \Sigma: \delta(q, a) = \begin{cases}
         \delta_1(q, a) & q \in Q_1\setminus F_1\\
-      \delta_1(q, a) \cup \{q_2\} & q \in F_1 \land a = \epsilon\\
-      \delta_1(q, a) & q \in F_1 \land a \neq \epsilon\\
+      \delta_1(q, a) \cup \{q_2\} & q \in F_1 \land a = \varepsilon\\
+      \delta_1(q, a) & q \in F_1 \land a \neq \varepsilon\\
       \delta_2(q, a) & q \in Q_2
     \end{cases} $
   \end{enumerate}
@@ -1559,7 +1572,12 @@ Finiamo con la stella di Kleene:
 
   In altre parole, se $ A_1 $ e' un linguaggio regolare, allora lo e' anche $ A_1^* $.
 }
-Come nei primi due casi, vogliamo dimostrare per costruzione che esiste un NFA $ N $ che riconosce $ A_1^* $. Considero l' automa $ N_1 $ che riconosce $ A_1 $. Noi vogliamo che $ N $ riconosca una concatenazione di qualunque lunghezza di parole in $ A_1 $, quindi possiamo usare l'idea della dimostrazione precedente e collegare tutti gli stati finali di $ N_1 $ questa volta al proprio stato iniziale, sempre con transizioni $ \epsilon $. Non possiamo dimenticarci pero' che anche $ \epsilon \in A_1^* $, quindi basta aggiungere un nuovo stato iniziale che sia pure finale e collegarlo al vecchio stato iniziale con un'altra transizione $ \epsilon $.
+Come nei primi due casi, vogliamo dimostrare per costruzione che esiste un NFA $ N $ che riconosce $ A_1^* $. Considero l' automa $ N_1 $ che riconosce $ A_1 $. Noi vogliamo che $ N $ riconosca una concatenazione di qualunque lunghezza di parole in $ A_1 $, quindi possiamo usare l'idea della dimostrazione precedente e collegare tutti gli stati finali di $ N_1 $ questa volta al proprio stato iniziale, sempre con transizioni $ \varepsilon $. Non possiamo dimenticarci pero' che anche $ \epsilon \in A_1^* $, quindi basta aggiungere un nuovo stato iniziale che sia pure finale e collegarlo al vecchio stato iniziale con un'altra transizione $ \epsilon $.
+
+\begin{center}
+  \includegraphics[scale=0.3]{img/2024-12-16-18-36-09.png}
+\end{center}
+
 \pf{Dimostrazione formale}{
   Sia $ N_1 = \{Q_1, \Sigma, \delta_1, q_1, F_1\} $ un NFA che riconosce il linguaggio regolare $ A_1 $.
 
@@ -1569,10 +1587,10 @@ Come nei primi due casi, vogliamo dimostrare per costruzione che esiste un NFA $
     \item $ F = \{q_0\} \cup F_1 $
     \item $ \forall q \in Q, \forall a \in \Sigma: \delta(q, a) = \begin{cases}
     \delta(q, a) & q \in Q_1 \setminus F_1\\
-    \delta(q, a) & q \in F_1 \land a \neq \epsilon\\
-      \delta(q, a) \cup \{q_1\} & q \in F_1 \land a = \epsilon\\
-      \{q_1\} & q = q_0 \land a = \epsilon\\
-      \emptyset & q = q_0 \land a \neq \epsilon
+    \delta(q, a) & q \in F_1 \land a \neq \varepsilon\\
+      \delta(q, a) \cup \{q_1\} & q \in F_1 \land a = \varepsilon\\
+      \{q_1\} & q = q_0 \land a = \varepsilon\\
+      \emptyset & q = q_0 \land a \neq \varepsilon
     \end{cases} $
   \end{enumerate}
 
@@ -1584,11 +1602,11 @@ TODO: intersezione
 \section{Grammatiche regolari}
 
 \dfn{grammatiche regoalre}{
-    Una grammatica libero si definisce \textbf{regoalre} sse ogni produzione è della forma $V\to aW$ oppure $V\to a$  dove $V,W\in NT\land a\in T$. Per il simbolo iniziale $S$ è ammessa anche la produzione $S\to \epsilon$
+    Una grammatica libero si definisce \textbf{regoalre} sse ogni produzione è della forma $V\to aW$ oppure $V\to a$  dove $V,W\in NT\land a\in T$. Per il simbolo iniziale $S$ è ammessa anche la produzione $S\to \varepsilon$
 }
 
 \nt{
-    A volte si userà la definizione più lasca che permette produzione $V\to \epsilon$ anche per nonterminali diversi da $S$ 
+    A volte si userà la definizione più lasca che permette produzione $V\to \varepsilon$ anche per nonterminali diversi da $S$ 
 }
 
 Di seguito riportati degli esempi
@@ -1608,7 +1626,7 @@ Di seguito riportati degli esempi
         \begin{tikzpicture}
             \node[state, initial] (A) {$A$};
             \node[state] (B) [right=of A] {$B$};
-            \node[state, accepting] (C) [right=of B] {$\epsilon$};
+            \node[state, accepting] (C) [right=of B] {$\varepsilon$};
 
             \path[->]
                 (A) edge[loop below] node {$a$} ()
@@ -1621,7 +1639,7 @@ Di seguito riportati degli esempi
     si ha che:
     \begin{itemize}
         \item abbiamo associato a ogni nonterminale uno stato dell'NFA
-        \item abbiamo aggiunto stato finale $\epsilon$
+        \item abbiamo aggiunto stato finale $\varepsilon$
     \end{itemize}
 }
 
@@ -1642,7 +1660,7 @@ Esempio 2:
         \node[state, initial] (A) {$A$};
         \node[state] (B) [right=of A] {$B$};
         \node[state] (C) [below=of A] {$C$};
-        \node[state, accepting] (D) [below=of B] {$\epsilon$};
+        \node[state, accepting] (D) [below=of B] {$\varepsilon$};
 
         \path[->]
                 (A) edge[loop above] node {$a$} ()
@@ -1665,14 +1683,14 @@ Esempio 2:
     Data una grammatica regoalre $G$ si può costruire un NFA $N_G$ equivalente
 }
 \dimostrazione{
-    Sia $G=(NT, T, R, S)$, definiamo inoltre $N_G=(T,Q,\delta, S,\{\epsilon\})$ come segue:
+    Sia $G=(NT, T, R, S)$, definiamo inoltre $N_G=(T,Q,\delta, S,\{\varepsilon\})$ come segue:
     \begin{itemize}
-        \item $Q=NT\cup \{\epsilon\}$
+        \item $Q=NT\cup \{\varepsilon\}$
         \item $\delta$ definita come segue:
             \begin{itemize}
                 \item $(V\to aZ\in R)\implies (Z\in\delta (V,a))$
-                \item $(V\to a\in R)\implies (\epsilon\in\delta (V,a))$
-                \item $(V\to \epsilon\in R)\implies (\epsilon\in\delta (V,\epsilon))$
+                \item $(V\to a\in R)\implies (\varepsilon\in\delta (V,a))$
+                \item $(V\to \varepsilon\in R)\implies (\epsilon\in\delta (V,\epsilon))$
             \end{itemize}
     \end{itemize}
     Si può dimostrare che
@@ -1742,7 +1760,7 @@ Esempio 2:
     \[
         \begin{array}{l}
             A \to aB\\
-            B\to aB\mid \epsilon
+            B\to aB\mid \varepsilon
         \end{array}
     \]
 }
@@ -1787,7 +1805,7 @@ alternativamente:
     A\to aB\mid bC\\
     B\to aBmid bC\\
     C\to bC\mid aD\\
-    D\to aB\mid bC\mid \epsilon
+    D\to aB\mid bC\mid \varepsilon
 \]
 \subsection{Grammatiche regolari ed espressioni regolari}
 \thm{}{
@@ -1801,9 +1819,9 @@ alternativamente:
     \begin{itemize}
         \item \textbf{caso semplice}: un solo non terminale:
         \[
-            A\to aA\mid b\mid \epsilon
+            A\to aA\mid b\mid \varepsilon
         \]
-        è intuitivo vedere che $a^*(b|\epsilon)$ è la espressione regolare associata
+        è intuitivo vedere che $a^*(b|\varepsilon)$ è la espressione regolare associata
         \item \textbf{caso medio}: due non terminali
         \[
             \begin{array}{l}
@@ -1869,22 +1887,22 @@ alternativamente:
     Sia $G$ la seguente grammatica
     \[
         \begin{array}{l}
-            A\to aB\mid \epsilon\\
-            B\to bA\mid \epsilon
+            A\to aB\mid \varepsilon\\
+            B\to bA\mid \varepsilon
         \end{array}   
     \]
-    PEr $B$ la espressione regoalre associata è $(bA\mid \epsilon)$, sostituisco questa al posto di $B$ nella prima equazione
+    PEr $B$ la espressione regoalre associata è $(bA\mid \varepsilon)$, sostituisco questa al posto di $B$ nella prima equazione
 
     \[
-        A\approx a (bA\mid \epsilon)\mid \epsilon
+        A\approx a (bA\mid \varepsilon)\mid \epsilon
     \]
     manipolo la espressione regoalre
     \[
-        A\approx abA\mid a\mid \epsilon
+        A\approx abA\mid a\mid \varepsilon
     \]
     siamo ora nel caso semplice
     \[
-        A\approx (ab)^*(a\mid \epsilon)_{S_G}
+        A\approx (ab)^*(a\mid \varepsilon)_{S_G}
     \]
 }
 
@@ -1933,7 +1951,7 @@ Alle volte per minimizzare degli automi occorre individuare stati equivalenti ne
     \[
         \begin{array}{ll}
             & \hat{\delta}:Q\times\Sigma^*\to Q \text{ è definita come}\\
-            &\hat{\delta}(q,\epsilon) = q\\
+            &\hat{\delta}(q,\varepsilon) = q\\
             & \hat{\delta}(q,xa) = \delta(\hat{\delta}(q,x)a)
         \end{array}
     \]
@@ -1962,7 +1980,7 @@ Simmetricamente si può definire la non equivalenza
 }
 
 \nt{
-    Una strategia per individuare la distinguibilità tra due stati è cercare di distinguere due stati a partire da $x\in \Sigma^*$ partendo dalla più corta $\epsilon$
+    Una strategia per individuare la distinguibilità tra due stati è cercare di distinguere due stati a partire da $x\in \Sigma^*$ partendo dalla più corta $\varepsilon$
 }
 
 Si noti questo esempio
@@ -1991,10 +2009,10 @@ Si noti questo esempio
         \end{tikzpicture}
     \end{center}
 
-    Inanzi tutto cerco di vedere quali coppie di stati NON sono equivalenti, a partire dalla stringa $\epsilon$:
+    Inanzi tutto cerco di vedere quali coppie di stati NON sono equivalenti, a partire dalla stringa $\varepsilon$:
 
     \begin{itemize}
-        \item $\epsilon$ distingue ogni stato in $F$ da ogni stato in $Q\backslash F$, dato ceh $\hat{\delta}(q,\epsilon)=\epsilon$, sicuramente non sono equivalenti:
+        \item $\varepsilon$ distingue ogni stato in $F$ da ogni stato in $Q\backslash F$, dato ceh $\hat{\delta}(q,\epsilon)=\epsilon$, sicuramente non sono equivalenti:
         \[
             \cancel{(A,D)} \quad \cancel{(B,D)} \quad \cancel{(C,D)}
         \]
@@ -2048,7 +2066,7 @@ Si noti questo esempio
     \begin{itemize}
         \item $\sim_0 = F\times F\cup (Q\setminus F)\times (Q\setminus F)$ 
         
-        ovvero stati che non possono essere distinti da $\epsilon$
+        ovvero stati che non possono essere distinti da $\varepsilon$
         \item $q_1 \sim_{i+1} q_2 \iff \forall a\in \Sigma\quad \delta(q_1, a)\sim_i\delta(q_2, a)$
         
         ovvero $q_1$ e $q_2$ sono in relazione $\sim,_{i+1}$ se $\forall x \in \Sigma^*$ cin $|x|\leq i+1$
@@ -2309,7 +2327,7 @@ Adesso estendiamo la notazione di $\hat{\delta}$ per i DFA $M_{min}$
 \[
     \begin{array}{l}
         \hat{\delta}_{min} : Q_{min}\times\Sigma^* \to Q_{min}\\
-        \hat{\delta}_{min}([q],\epsilon) = [q]\\
+        \hat{\delta}_{min}([q],\varepsilon) = [q]\\
         \hat{\delta}_{min}([q], xa) =\hat{\delta}_{min}(\hat{\delta}_{min}([q],x),a)\\
         w\in L [M_{min}]\iff\hat{\delta}_{min}([q_0],w)\in F_{min}
     \end{array}
@@ -2341,9 +2359,9 @@ Adesso estendiamo la notazione di $\hat{\delta}$ per i DFA $M_{min}$
         \]
         si fa la dimostrazione per induzione su $|w|$
         \begin{itemize}
-            \item Caso base: $|w| = 0$ cioè $e=\epsilon$
+            \item Caso base: $|w| = 0$ cioè $e=\varepsilon$
             \[
-                \hat{\delta}(q_0,\epsilon) = q_0 \quad \hat{\delta}([q_0], \epsilon) =[q_0]  =[\hat{\delta}(q_0, \epsilon)]
+                \hat{\delta}(q_0,\varepsilon) = q_0 \quad \hat{\delta}([q_0], \epsilon) =[q_0]  =[\hat{\delta}(q_0, \epsilon)]
             \]
             Dimostrato
             \item Passo induttivo: $w = xa$

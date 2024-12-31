@@ -1,0 +1,58 @@
+Abstract Machine:
+- Calcolare risultato Interpreti e Calcolatori 0.67
+
+Introduzione alle grammatiche:
+- Derivazione 2.5, 2.23
+- Calcolare linguaggio derivato 2.25
+- Calcolare grammatica generatrice 2.27
+- Rimuovere ambiguita' 3.40
+
+Struttura di un compilatore:
+- Esempio compilatore 4.58
+- Transizioni di semantica 5.8 5.12 5.16-17
+- Dimostrare nondeterminismo 5.24
+
+Analisi Lessicale:
+- Da linguaggio a regex 6.7
+- Da linguaggio a NFA 6.17
+- Da NFA a DFA 6.26
+- Da regex a NFA 7.33
+- Da grammatica a NFA 7.36
+- Da DFA a grammatica 7.38
+- Da grammatica a regex 7.41
+- Costruzione del DFA minimo partendo dal regex 8.54
+
+Lex e Yacc:
+// Dobbiamo saperlo?
+- Pumping lemma 9.74
+
+Analisi sintattica:
+- Da linguaggio a PDA 10.9 10.14
+- Pumping theorem 11.27
+
+Linguaggi liberi deterministici:
+- Top-down parsing 12.11
+- Bottom-up parsing 12.15
+- Semplificazione grammatiche 13.30
+- Rimuovere ricorsione sx 13.36 13.38bis
+- Fattorizzazione a sx 13.41
+
+Top down parser:
+- Calcolo first 14.8
+- Calcolo follow 14.9
+- Tabella di parsing LL(1) 14.13
+- Parser LL(1) non ricorsivo 14.16 14.24
+- Parser LL(2) 14.21bis 
+
+Bottom up parser: 
+- Tabella di Parsing 15.8 15.20 15.21
+- NFA dei prefissi viabili 15.15
+- Automa canonico LR(0) 15.17 17.60
+- SLR(1) e LR(0) 16.23 16.25-26
+- LR(1) 16.28 16.33 16.35
+- LALR(1) 16.39 16.41
+- Da LR(1) a LALR(1) 16.43
+- Classificazione linguaggi 17.50-52
+
+Tot: 37 tipologie
+Piano: 25 + leggi, 12 + leggi, esami

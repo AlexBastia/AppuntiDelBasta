@@ -251,7 +251,7 @@ Esistono diversi modi per creare un compilatore/interprete dato un linguaggio $ 
     \end{itemize}
   \item \textbf{Bootstrapping}
 
-    Immaginiamo di aver creato i seguenti compilatori e interprete:
+    Immaginiamo di aver creato i seguenti compilatori e interprete, dove $ M_i $ e' una macchina astratta intermedia:
     \begin{itemize}
       \item $ C^{L_i}_{L, L_i} $
       \item $ I^{L_O}_{L_i} $
@@ -262,8 +262,8 @@ Esistono diversi modi per creare un compilatore/interprete dato un linguaggio $ 
       I^{L_O}_{L_i}(C^{L_i}_{L, L_i}, C^L_{L, L_O}) = C^{L_i}_{L, L_O}
     \]
     \[
-      I^{L_O}_{L_i}(C^{L_i}_{L, L_O}, C^L_{L, L_O}) = C^L_{L, L_O}
+      I^{L_O}_{L_i}(C^{L_i}_{L, L_O}, C^L_{L, L_O}) = C^{L_O}_{L, L_O}
     \]
-    Piu' efficente rispetto al kernel, dato che abbiamo un compilatore che compila direttamente al linguaggio di $ M_O $.
+    Piu' efficente rispetto al kernel, dato che abbiamo un compilatore che compila direttamente al linguaggio di $ M_O $ senza usare un linguaggio intermedio.
 
 \end{itemize}
