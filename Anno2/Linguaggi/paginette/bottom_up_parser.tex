@@ -333,7 +333,7 @@ Il parser può consultare il DFA dei prefissi viabili (ovvero la tabella di pars
     \item se la pila non contiene un prefisso viabile, allora viene dato un errore
 \end{itemize}  
 \end{corollary}
-In base a come è fatto questo DFA (che eventualmente può usare informazioni di look-ahead e dei follow) il parser può risultare deterministico o meno
+In base a come è fatto questo DFA (che eventualmente può usare informazioni di look-ahead e dei follow) il parser può risultare deterministico o meno
 
 Si noti, inoltre la seguente osservazione
 \nt{
@@ -408,33 +408,28 @@ Data $G=(NT, T, S, R)$ libera, l'NFA dei prefissi variabili di $G$ si costruisce
     Ed il corrispettivo automa è:
     \begin{center}
         \begin{tikzpicture}[>=stealth, node distance=2.5cm, on grid, auto]
-
             % Stati
             \node[state, initial] (q0) {$S' \rightarrow \cdot S$};
             \node[state, above=of q0] (q1) {$S' \rightarrow S \cdot$};
             \node[state, below=of q0] (q2) {$S \rightarrow \cdot ()$};
             \node[state, below=of q2] (q6) {$S \rightarrow (\cdot  )$};
             \node[state, right=of q0] (q3) {$S \rightarrow \cdot(S)$};
-
             \node[state, right=of q3] (q4) {$S \rightarrow ( \cdot S  )$};
             \node[state, right=of q4] (q5) {$S \rightarrow ( S \cdot) $};
             \node[state, right=of q6] (q8) {$S \rightarrow ( ) \cdot$};
             \node[state, right=of q5] (q9) {$S \rightarrow (S) \cdot$};
-            
             % Transizioni
             \path[->]
                 (q0) edge node {$S$} (q1)
                      edge[bend left] node {$\varepsilon$} (q2)
                      edge node {$\epsilon$} (q3)
-                (q2) 
-                     edge node[left] {$($} (q6)
+                (q2) edge node[left] {$($} (q6)
                 (q3) edge[bend left] node {$($} (q4)
                 (q4) edge[bend left] node {$\epsilon$} (q3)
                      edge[bend left] node {$S$} (q5)
                      edge[bend left] node {$\epsilon$} (q2)
                 (q6) edge node {$)$} (q8)
                 (q5) edge node {$)$} (q9)
-            
         \end{tikzpicture}
     \end{center}
 }
@@ -442,7 +437,7 @@ Data $G=(NT, T, S, R)$ libera, l'NFA dei prefissi variabili di $G$ si costruisce
 \section{Automa canonico $LR(0)$}
 l'automa canonico $LR(0)$ è il DFA DFA dei prefissi viabili. Per ottenerlo ci sono due metodi:
 \begin{itemize}
-    \item Costruire prima l’NFA e poi con la costruzione di sooinsiemi oenere il DFA
+    \item Costruire prima l’NFA e poi con la costruzione di sottoinsiemi oenere il DFA
     \item In un modo diretto usando due funzioni ausiliarle chiamate $clos(I)$ e $goto(I,X)$ dove $I$ è un insieme di item e $X\in T\cup NT$
 \end{itemize}
 \subsection{Costruzione diretta dell’automa canonico LR(0)}
@@ -465,7 +460,7 @@ Andiamo prima a definire le due funzioni $clos(I)$ e $goto(I,X)$:
     \Return I\;
 \end{algorithm}
 
-Si può notare come aggiungo ad $I$  tui gli item che sarebbero stati raggiungibili nel NFA con mosse $\epsilon$
+Si può notare come aggiungo ad $I$  tutti gli item che sarebbero stati raggiungibili nel NFA con mosse $\epsilon$
 \subsubsection{Goto()}
 
 \begin{algorithm}
@@ -484,7 +479,7 @@ ciao
 
 
 \subsubsection{algoritmo per il lacolo del DFA LR(0)}
-Date queste due funzioni adesso possiamo costruire l’automa DFA direamente:
+Date queste due funzioni adesso possiamo costruire l’automa DFA direttamente:
 
 \begin{algorithm}
     \caption{DFA LR(0)}
@@ -522,7 +517,7 @@ La tabella di parsing si riempe in base all’automa canonico LR(0). Per ogni st
 \begin{itemize}
     \item se $x\in T$ e $S\to t$ nell'automa $LR(0)$, inserisci shift in $M[s,x]$
     \item se $A\to \alpha.\in s$ e $A\neq S'$, inserisci reduce $A\to alpha$ in $M[s,x]$ per tutti gli $x\in T \cup\{\$\}$
-    \item se $A\in NT$ e $S\tof$ nell'automa LR('), inserisci goto f
+    \item se $A\in NT$ e $S\to f$ nell'automa LR('), inserisci goto f
 \end{itemize}
 
 \dfn{Grammatica di classe LR(0)}{
@@ -530,7 +525,7 @@ La tabella di parsing si riempe in base all’automa canonico LR(0). Per ogni st
 }
 
 \section{Algoritmo del parser}
-Il parser data la tabella di parsing LR esegue questo algoritmo per calcolare l’albero di derivazione. questo
+Il parser data la tabella di parsing LR esegue questo algoritmo per calcolare l’albero di derivazione. questo
 algoritmo e per un generico parser LR (quindi funziona anche per $LR(k)$)
 \begin{algorithm}
         \caption{Parser LR}
@@ -560,7 +555,7 @@ algoritmo e per un generico parser LR (quindi funziona anche per $LR(k)$)
 
 \section{SLR(1), LR(1), LALR(1)}
 
-Puo accadere che data una grammatica non si riesce a creare un parser di tipo $LR(0)$ senza che ci siano conflitti, cioè ci possiamo trovare in una cella più di una azione. Questi conflitti sono spesso conii shift/reduce, cioè abbiamo una azione di shift e una di reduce, e accadono perche siamo stati poco restrittivi sulle azioni reduce è le abbiamo messo anche dove sappiamo che non potranno mai essere usate
+Puo accadere che data una grammatica non si riesce a creare un parser di tipo $LR(0)$ senza che ci siano conflitti, cioè ci possiamo trovare in una cella più di una azione. Questi conflitti sono spesso conflitti shift/reduce, cioè abbiamo una azione di shift e una di reduce, e accadono perche siamo stati poco restrittivi sulle azioni reduce è le abbiamo messo anche dove sappiamo che non potranno mai essere usate
 
 \subsection{Tabella di parsing SLR(1)}
 Per costruire una tabella di parsing un po' più "furba" di quella di $LR(0)$ occorre andare a limitare l'inserimento del reduce nelle caselle. Se infatti prima in $LR(0)$ si ha una reduce $\forall x\in T\cup\{\$\}$, in $SLR(1)$ si segue la seguente condizione:
@@ -645,7 +640,7 @@ Pertanto l'unica cosa che cambia è che la reduce viene messa solo in corrispond
     La grammatica \( G \) non è LR(0), ma è SLR(1) usando il lookahead per risolvere il conflitto
 }
 
-Il termine $SLR(1)$ sta per "Single, left-to-right, rightmost derivation” con un simbolo di lookahead
+Il termine $SLR(1)$ sta per "Single, left-to-right, rightmost derivation” con un simbolo di lookahead
 
 \nt{
     Se \( G \) ha produzioni \( \varepsilon \), allora \( G \) difficilmente è LR(0)  
@@ -704,7 +699,6 @@ introdurre questo simbolo di look-ahead è fondamentale, così che si può decid
             [S \to V \cdot, \, \$]
         \end{array}
     \]
-
     In questo caso se leggo il simbolo "=" si avrà uno shift per poi andare in un altro stato grazie al primo item, mentre se si legge $\$$ input avremo un reduce $E\to V$ proprio grazie al simbolo $\$$ di look-ahead
 }
 
@@ -762,7 +756,6 @@ Introduciamo le due funzioni ausiliarie: \textbf{Clos(I) e Goto(I,X)}
     \Return $clos(J)$\;
 \end{algorithm}
 %! altro errore grafico. EH?
-\\
 
 Viene presentato, qui, un esempio del grosso automa $LR(1)$
 \esempio{
@@ -1010,7 +1003,7 @@ Si noti il seguente schema:
     Si può notare che
     \begin{center}
         \begin{tikzpicture}
-            \node[state, inital] (q) {$q_0$}
+            \node[state, initial] (q) {$q_0$}
             \node[state, right of=q] (q1) {$q_1$}
             
             \path[->] 
