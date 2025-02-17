@@ -1,0 +1,60 @@
+\documentclass{report}
+
+\input{../LatexTemp/preamble.tex}
+\input{../LatexTemp/macros}
+\input{../LatexTemp/letterfonts}
+
+\usepackage[utf8]{inputenc}
+
+\setlength{\parindent}{0pt}
+
+\title{\Huge{Ottimizzazione Combinatoria}\\Appunti}
+\author{\huge{Alex Bastianini}}
+\date{}
+\pagenumbering{gobble}
+
+\begin{document}
+
+\maketitle
+\newpage% or \cleardoublepage
+% \pdfbookmark[<level>]{<title>}{<dest>}
+\pdfbookmark[section]{\contentsname}{toc}
+\tableofcontents
+
+\pagebreak
+
+\chapter{Introduzione}
+Prova scritta e orale. Si studiano metodi algoritmici per ottimizzare problemi di flusso su reti e di programmazione lineare. In poche parole, impariamo come prendere decisioni.
+
+\chapter{Problemi e Modelli}
+\section{Problemi di ottimizzazione}
+
+Processo decisionale:
+\begin{itemize}
+\item Individuazione problema
+  \item Raccolta dati
+    \item Costruzione modello
+      \item Determinazione di piu' soluzioni
+        \item Analisi dei risultati
+\end{itemize}
+
+La costruzione del modello e' la fase piu' iportante, che ci permette di utilizzare tecniche note per risolvere problemi che possono apparire piu' complessi. Non ci interessa la raccolta dei dati. 
+
+I modelli ci permettono di inquadrare i problemi in una determinata "cornice" che ci permette di determinare quale tipo di algoritmo risolutivo usare Esistono tre tipi di modelli:
+\begin{itemize}
+\item Giochi: ricerca di un equilibrio fra le componenti coinvolte, spesso con obbiettivi contrastanti. (non ce ne occupiamo)
+\item Simulazione: il problema viene studiato simulando la situazione senza studiarne la natura in modo analitico tramite generazione di istanze casuali. (anche questi modelli non ci interessano)
+\item Analitici: costruiamo un modello matematico (senza perdere informazione sul problema reale) da risolvere in modo analitico, ovvero senza nessun tipo di simulaizone. E' la natura stessa dello spaizo matematico a dare la soluzione ottima. E' vantaggiosa in quanto la soluzione e' sicuramente quella ottima. E' essenziale l'uso della creativita'
+\end{itemize}
+
+Cos'e' un problema? E' una domanda la cui rispostadipende da parametri e variabili, sopratutto nei problemi analitici. Un problema $ \mathcal{P} $ e' descritto tramite:
+\begin{itemize}
+\item I suoi parametri e variabili
+  \item Le caratteristiche che una soluzione deve avere
+\end{itemize}
+
+Quado fissiamo un'istanza di un problema, vengono fissati i parametri ma non le variabili, che sono le incognite che devono essere definite. Distinguiamo un problema dalla sua istanza per generalizzarlo. Attenzione che molti si confondono. 
+
+Un modo comune per descrivere un problema e' dare l'insieme di soluzioni ammissibili $ F_{\mathcal{P}} \subseteq G $ definito dando dei vincoli che un generico $ g \in G $ deve soddisfare. Dove G e' un sovrainsieme.
+
+\end{document}
