@@ -1,0 +1,26 @@
+Proprieta' dei linguaggi:
+- Safety
+- Liveness
+
+Azioni atomiche
+
+Sezioni critiche
+- Dekker
+- Peterson
+- Test&Set (e Atomic Swap ecc.)
+- Semafori (Binari) -> Procedimento di Andrews
+- Monitor
+- Message passing
+
+Problemi classici (da risolvere con Semafori o Monitor)
+- produttore/consumatore
+- buffer limitato
+- filosofi a cena
+- lettori e scrittori
+
+Message passing
+- Sincrono 
+- Asincrono
+- Completo asincrono
+
+

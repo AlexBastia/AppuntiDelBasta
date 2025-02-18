@@ -188,7 +188,7 @@ Chiamiamo l'errore assoluto $ |E_k| $ la differenza assoluta fra $ x_k $ e il va
 \mprop{}{
   $ |E_{k+1}| \leq C|E_k| $, quindi 
   \[
-  |E_k| = C^k|E_0|
+  |E_k| \leq C^k|E_0|
   \]
   Dove $ E_0 = x_0 - p $.
 }
@@ -196,17 +196,17 @@ Quindi per ogni iterazione, l'errore iniziale diminuisce almeno di un fattore $ 
 \pf{Dimostrazione}{
   Per definizione di errore $ E_{k+1} = x_{k+1} - p $, che possiamo riscrivere come $ g(x_k) - g(p) $, quindi per definizione di mappa contrattiva $ |E_{k+1}| = |g(x_k) - g(p)| \leq C|x_k - p| = C|E_k| $. Se sostituiamo $ k = 0 $ abbiamo il caso base:
   \[
-  |E_1| = C|x_0 - p|
+  |E_1| \leq C|x_0 - p|
   \]
   Da cui ricorsivamente: 
   \[
-    |E_k| = C\cdot C \cdot ... \cdot C|x_0 - p| = C^k|x_0 - p|
+    |E_k| \leq C|E_{k-1}| \leq C \cdot C|E_{k-2}| \leq ... \leq C \cdot ... \cdot C|E_0| = C^k|x_0 - p|
   \]
 }
 
 Ora siamo in grado di finire la dimostrazione di prima:
 \pf{Diostrazione (convergenza)}{ \label{dimConvergPtFisso}
-  Usando la proposizione precedente, $ \lim_{k \to +\infty} |E_k| = \lim_{k \to +\infty} C^k|x_0 - p| = 0 $. Quindi:
+  Dato che $ C<1 $, se $ k \to +\infty $ allora $ C^k \to 0 $, quindi $ \lim_{k \to +\infty} |E_k| = \lim_{k \to +\infty} C^k|x_0 - p| = 0 $. Allora:
   \[
     x_k \xlongrightarrow{k \to +\infty} p
   \]
