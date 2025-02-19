@@ -1,0 +1,66 @@
+\begin{document}
+\chapter{Nomi e Ambiente}
+
+\section{Nomi e Oggetti denotabili}
+
+x e' solo il nome della variabile, non la variabile stessa. 
+
+\dfn{Oggetti denotabili}{
+  Sono gli elementi a cui e' possibile assegnare un nome
+}
+\nt{Non centra con la programmazione ad oggetti}
+
+Possono essere:
+\begin{itemize}
+\item Predefiniti: int,...
+  \item Definibili: variabili, ...
+\end{itemize}
+
+chiamiamo il legame fra nome e oggetto \textbf{binding}, il momento in cui viene creato questo legame puo' essere:
+\begin{itemize}
+\item Statico: prima dell'esecuzione del programma
+\item Dinamico: durante l'esecuzoine del programma
+\end{itemize}
+
+\section{Ambienti e Blocchi}
+
+\dfn{Ambiente}{
+  Insieme di associazioni nome/oggetto denotabile che esistono durante l'esecuzione del programma
+}
+
+\dfn{Blocco}{
+  Pezzo contiguo del programma delimitato da un inizio e una fine che puo' contenere dichiarazioni \textbf{locali} a quella regione.
+}
+
+Puo' essere:
+\begin{itemize}
+\item Anonimo: come parentesi graffe in C 
+\item Con nome: ad esempio nelle funzioni, dove il nome della funzione corrisponde al nome del blocco
+\end{itemize}
+
+Permettono di strutturare e riutilizzare il codice, oltre a ottimizzare l'occupazione di memoria e rendere possibile la ricorsione. 
+
+L'ambiente di un blocco e' diviso in:
+\begin{itemize}
+\item locale: associazioni create all'ingresso nel blocco:
+  \begin{itemize}
+  \item variabili locali
+  \item parametri formali
+  \end{itemize}
+\item non locale: associazioni ereditate da altri blocchi (senza considerare il blocco globale), che quindi non sono state dichiarate nel blocco corrente
+\item globale: associazioni definite nel blocco globale (visibile a tutti gli altri blocchi)
+\end{itemize}
+
+\subsection{Operazioni sull' ambiente}
+\begin{itemize}
+\item Creazione: dichiarazione locale
+\item Riferimento: uso di un nome di un oggetto denotato
+\item Disattivazione/Riattivazione: quando viene ridefinito un certo nome, all'interno del blocco viene disattivato. Quando esco dal blocco riattivo la deinizione originale
+\item Distruzione: le associazioni locali del blocco da qui si esce vengono distrutte
+\end{itemize}
+
+\nt{
+  Creazione e distruzione di un \textbf{oggetto denotato} non coincide necessariamente con la creazione o distruzione dei legami per esso.
+}
+
+\end{document}

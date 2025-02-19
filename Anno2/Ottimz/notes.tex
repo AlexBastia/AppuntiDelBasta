@@ -117,4 +117,86 @@ Un modo comune per descrivere un problema è dare l'insieme di soluzioni ammissi
   \]
 }
 
+Identifichiamo dentro a $ G $ le soluzioni definite accettabili da un problema. Pero', per i problemi di ottimizzazione, la situazione e' piu' complessa, perche' dobbiamo trovare fra queste funzioni quel'e' la migliore. Per questo usiamo una funzione obbiettivo:
+\[
+  c_{\mathcal{P}}: F_\mathcal{P} \to \mathbb{R}
+\]
+che misura il costo (minimizzare) o il benificio (massimizzare) di ogni soluzione ammissibile
+\[
+  Z_p = max/min{c_p(g) | g \in \mathbb{F}_p}
+\]
+
+Possiamo passare da un problma di massimo a uno di minimo molto semplicemente ponendo $ c_p'(g) = -c_p(g) $ e calcolando:
+\[
+  Z_p = - min \{c_p'(g) | g \in F_p = F_p'\}
+\]
+
+$ Z_p $ e' il \textbf{valore ottimo} per $ P $ che assume il valore della funzione nel punto della \textbf{soluzione ottima} $ g^* $ e non e' sempre un unico valore reale. Quindi il solo valore ottimo non mi dice effettivamente come arivare al risultato. 
+
+\ex{}{
+  $ G = \mathbb{R} $, $ F_p = \{x \in \mathbb{R} | 5x^2-6x+1=0\} $, $ c_p: \mathbb{R} \to \mathbb{R} $
+}
+
+Cosa possiamo ottenere come outcome di un'ottimizzazione? Ci sono 4 casi:
+\begin{itemize}
+\item Problema vuoto: $ F_p = \emptyset $ e per convenzione si assume che $ Z_p = \infty $. Non e' detto che sia semplice capire se siamo in questo caso.
+\item Problema illimitato: ci sono troppe soluzioni ammissibili. Nel caso di un problema di massimo $ \forall x \in \mathbb{R} \exists g \in F_p. c_p(g) \geq x $, in tal caso $ Z_p = +\infty $. Dualmente nel caso minimo.
+\item Valore ottimo finito ma non soluzione ottima finita: (cerchiamo di evitare usando delle tecniche) $ Z_p \exists \text{finito} $, ma $ c_p(g) \neq Z_p $. Es $ inf \{x | x > 0\} $ (estremo inferiore $ =0 $), ma non esiste una soluzione ottima che soddisfi il valore ottimo (insiemi aperti).
+\item Valore Ottimo Finito e Soluzione Ottima Finita: $ \exists g \in F_p. c_p(g) $ e' ottimo. Notare che possono esistere diverse soluzione ottime ma solo un valore ottimo. (Caso preferito)
+\end{itemize}
+
+\subsection{Problemi di ottimizzazione e di decisione}
+Il problema di decisione consiste nel determinare una qualunque soluzione ammissibile $ g \in F_p $. 
+
+Il problema di certificato consiste nel dire se per una $ g \in G $ si ha che $ g \in F_p $.
+
+Trasformare un problema di ottimizzazione in un problema di decisione basta rendere $ c_p $ costante (quindi tutte le soluzioni ammissibili diventano ottime e le consideriamo tutte)
+
+Al contrario, possiamo considerare un problema decisionale $ R $ tale che 
+\[
+  F_R = \{g \in F_p | c_p(g)\ = Z_p\}
+\]
+oppure dato $ k \in \mathbb{R} $ si puo anche considerare $ R_k $ decisionale con 
+\[
+  F_{R_k} = \{ g \in F_p | c_p(g) \leq k\}
+\]
+(nel caso in cui $ P $ e' di minimo)
+
+\subsection{Aspetto algoritmico}
+\begin{itemize}
+  \item Algoritmi esatti: e' un algoritmo ch epreso un'istanza di $ P $ ($ P $ e' un modello di un problema), fornisce in output una soluzione ottima $ g^* $ di $ P $ (se esiste). Spesso pero' i problemi sono troppo complessi ed e' impossibile costruire algoritmi efficenti.
+  \item Algoritmi euristici: non ci danno garanzia sulla soluzione trovata (e' sicuramente ammissibile), ma un'approssimazione.
+\end{itemize}
+
+Come possiamo valutare la correttezza di una soluzione euristica? Possiamo misurare l'errore (assoluto o relativo) fra il valore ottimo euristico e quello esatto.
+
+Gli algoritmi euristici vengono detti anche greedy.
+
+\section{Modelli}
+Al posto di dare un'algoritmo per ogni specifico problema, possiamo definire classi di problemi che possono essere risolti con lo stesso algoritmo.
+
+\subsection{Programmazione Lineare}
+
+$ f $ e' lineare. 
+$ c_p $ e' l'insieme di vettori di numeri reali. $ \mathbb{G} = \mathbb{R}^n $. (definizione di $ G $)
+
+\begin{itemize}
+\item La funzione obiettivo $ f: \mathbb{R}^n \to \mathbb{R} $
+  \[
+    f(x) = cx
+  \]
+    dove $ c $ e' un vettore riga e $ x $ vettore colonna. Attenzione, $ c $ non e' una variabile ma un \textbf{parametro}. (definizione della funzione obiettivo)
+  \item Ci sono un insieme di vincoli lineari nella forma: $ ax = b $, $ ax \leq b $, $ ax \geq b $. Dove $ a \in \mathbb{R}^n $ e $ b \in \mathbb{R} $ ()
+\end{itemize}
+
+E' talvolta utile assumere che $ x \in \mathbb{Z}^n $, ovvero che le soluzioni ammissibili siamo vettori di numeri interi. In questo caso si parla di programmazione lineare intera. Facendo cosi' stiamo restringendo il campo di ricerca, ma si perdono alcune proprieta' (geometriche) che in realta' possono rendere piu' difficile la ricerca della soluzione.
+
+In PLM possiamo avere variabili di natura mista (alcune variabili in $ \mathbb{R} $ alcune in $ \mathbb{Z} $)
+
+Un problema PL spuo' sempre essere espresso in forma matriciale:
+\[
+max \{cx | Ax \leq b\}
+\]
+dove $ A \in \mathbb{R}^{m \times n} $ e $ b \in \mathbb{R}^m $, quindi scriviamo tutti i vincoli in un unica disequazione. Sistema di disequazioni lineari. Usiamo $ max $ dato che sappiamo passare da max a min. Se abbiamo un vincolo $ ax = b $, questo diventa $ ax \leq b $ e $ ax \geq b $, e $ ax \geq b $ diventa $ (-a)x \leq (-b) $
+
 \end{document}
