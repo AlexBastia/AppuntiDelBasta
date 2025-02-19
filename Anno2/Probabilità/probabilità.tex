@@ -1,0 +1,28 @@
+\documentclass{report}
+
+\input{../LatexTemp/preamble}
+\input{../LatexTemp/macros}
+\input{../LatexTemp/letterfonts}
+
+
+\title{\Huge{Probabilità}\\Appunti}
+\author{\huge{Giovanni Palma e Alex Basta}}
+\date{}
+\pagenumbering{gobble}
+
+\graphicspath{{paginette/img/}}
+
+\begin{document}
+
+\maketitle
+\newpage% or \cleardoublepage
+% \pdfbookmark[<level>]{<title>}{<dest>}
+\pdfbookmark[section]{\contentsname}{toc}
+
+\tableofcontents
+
+\pagebreak
+\include{paginette/introduzione}
+\include{paginette/spazi_di_probabilità_discreti}
+
+\end{document}
