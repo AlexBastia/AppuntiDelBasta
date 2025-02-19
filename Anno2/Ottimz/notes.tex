@@ -5,6 +5,17 @@
 \input{../LatexTemp/letterfonts}
 
 \usepackage[utf8]{inputenc}
+\usepackage{fontawesome5}
+
+\newcommand{\cp}[1]{
+  c_\mathcal{P}(#1)
+}
+\newcommand{\fp}{
+  \mathbb{F}_\mathcal{P}
+}
+\newcommand{\zp}{
+  Z_\mathcal{P}
+}
 
 \setlength{\parindent}{0pt}
 
@@ -24,97 +35,10 @@
 \pagebreak
 
 \chapter{Introduzione}
-Prova scritta e orale. Si studiano metodi algoritmici per ottimizzare problemi di flusso su reti e di programmazione lineare. In poche parole, impariamo come prendere decisioni.
+Prova scritta e orale. Si studiano metodi algoritmici per ottimizzare problemi di flusso su reti e di programmazione lineare. In poche parole, impariamo come prendere decisioni. 
 
-\chapter{Problemi e Modelli}
+Le annotazioni qui riportate sono prodotte in base alle lezioni di Ugo Dal Lago, si consiglia, quindi, la lettura con accento veneto
 
-\section{Problemi di ottimizzazione}
 
-\dfn{Ricerca operativa}{
-  La \textbf{ricerca operativa} è un ramo della matematica applicata che si occupa dello studio, della modellizzazione e della risoluzione dei cosiddetti \textit{problemi decisionali} complessi mediante strumenti matematici, algoritmici e computazionali, con l'obiettivo di ottimizzare processi e risorse
-}
-
-Per evitare qualsivoglia fraintendimento fornirò anche la definizione di \textbf{ottimizzazione Combinatoria}
-\dfn{Ottimizzazione Combinatoria}{
-  Si definisce \textbf{Ottimizzazione Combinatoria} una branca della Ricerca Operativa che nel modellare matematicamente e risolvere problemi complessi di natura discreta unisce tecniche di calcolo combinatorio alla teoria degli algoritmi e ai risultati teorici e metodologici della programmazione lineare
-}
-
-Pertanto ricerca operativa e ottimizzazione combinatoria sono due cose diverse, MA cito testualmente
-\begin{quote}
-  "Per tutti i nostri scopi ricerca operativa e ottimizzazione, sono sinonimi
-
-  tuttavia non vedremo solo alcune tecniche di ottimizzazione combinatoria, ma anche altre tecniche che stanno nella ricerca operativa ma che trattano di valori non discreti"
-
-  \hfill -- Ugo
-\end{quote}
-
-Adesso, sotterrato questo problema di carattere unicamente terminologico con cui io non posso fare a meno di strizzarmi il cervello perché c'ho l'autismo, possiamo tornare a parlare di ricerca operativa/ottimizzazione combinatoria (tanto so' sinonimi per noi)
-
-I problemi di cui si occupa la ricerca operativa, quindi, riguardano situazioni in cui occorra massimizzare i ricavi o minimizzare i costi, in presenza di risorse limitate. Detto in termini più matematici, data una funzione \textbf{vincolata} l'obiettivo è trovare una soluzione ottimale che massimizzi o minimizzi tale funzione.
-
-È pertanto vero, quindi, che questa disciplina ha forte contenuto economico
-
-La ricerca operativa si inserisce all'interno del processo decisionale, il quale può essere suddiviso in diverse fasi
-\begin{itemize}
-\item \textbf{Individuazione problema}
-  \item \textbf{Raccolta dati}
-    \item \textbf{Costruzione modello}, ovvero la Traduzione del problema in un modello matematico che descriva il sistema e i vincoli in modo formale
-      \item \textbf{Determinazione di piu' soluzioni}: applicazione di algoritmi e tecniche di ottimizzazione per individuare la soluzione migliore 
-  \item \textbf{Analisi dei risultati}
-\end{itemize}
-
-La ricerca operativa, quindi, si occupa delle fasi 3 e 4 del processo, dato che sono le fasi che richiedono l’impiego di modelli matematici, algoritmi di ottimizzazione e strumenti computazionali. Adesso andiamo a definire per benino che cosa intendiamo per "modello" 
-
-\dfn{modello}{
-  un \textbf{modello} è una descrizione astratta e scritta in linguaggio matematico, della parte di realtà utile al processo decisionale
-}
-I modelli ci permettono di inquadrare i problemi in una determinata "cornice" che ci permette di determinare quale tipo di algoritmo risolutivo usare.
-
-Esistono tre tipi di modelli:
-\begin{itemize}
-\item \textbf{Teoria dei giochi}: ricerca di un equilibrio fra le componenti coinvolte in un'interazione reciproca, spesso con obbiettivi contrastanti. (non ce ne occupiamo)
-\item \textbf{Simulazione}: il problema viene studiato simulando la situazione senza studiarne la natura in modo analitico tramite generazione di istanze casuali. (anche questi modelli non ci interessano)
-\item \textbf{Analitici}: dal problema si costruisce un modello matematico rigoroso (senza perdere informazione sul problema reale) e risolto mediante tecniche analitiche, senza ricorrere a simulazioni. La natura stessa dello spazio matematico in cui è inserito il problema è in grado di garantire la soluzione ottima. Questo tipo approccio è particolarmente vantaggioso in quanto assicura l’esattezza della soluzione supponendo che il modello sia formulato correttamente. 
-
-È tuttavia richiesto un discreto livello di creatività
-\end{itemize}
-
-Definiamo, adesso, i problemi che andiamo a trattare
-
-\dfn{Problema}{
-  Definiamo \textbf{problema} una domanda, espressa in termini generali, la cui risposta dipende da \textit{parametri} e \textit{variabili}, sopratutto nei problemi analitici
-}
-Un problema $ \mathcal{P} $ è descritto tramite:
-\begin{itemize}
-  \item I suoi parametri e variabili
-  \item Le caratteristiche che una soluzione deve avere
-\end{itemize}
-
-Quando fissiamo un'istanza di un problema, vengono fissati i parametri ma non le variabili, che sono le incognite che devono essere definite. Distinguiamo un problema dalla sua istanza per generalizzarlo. Si presti attenzione alla differenza tra parametri e variabili che molti si confondono
-
-\ex{Problema con paramteri e variabili}{
-  Sia $ \mathcal{P} $ il seguente problema
-  \[
-    ax^2+bx+c =0
-  \]
-  Dove $a,b$ e $c$ sono i suoi parametri e $x$ rappresenta le variabili, una possibile istanza di tale problema è:
-  \[
-    5x^2-6x+1=0
-  \] 
-}
-Un modo comune per descrivere un problema è dare l'insieme di soluzioni ammissibili $ \mathbb{F}_{\mathcal{P}} \subseteq G $, dove $G$ è un sovrainsieme generico noto, di solito contenente la collezione di tutte le possibili configurazioni o decisioni che si possono prendere, dando dei vincoli che un generico $ g \in G $ deve soddisfare per far parte di $\mathbb{F}_{\mathcal{P}}$, avremo così che $G - \mathbb{F}_{\mathcal{P}}$ è l'insieme delle soluzioni non ammissibili 
-\ex{}{
-  Sia l'instanza di $\mathcal{P}$ definita precedentemente
-  \[
-    5x^s - 6x+1= 0
-  \]
-  si ha che 
-  \[
-    \begin{array}{l}
-      \mathbb{G}= \mathbb{R}\\
-      \mathbb{F}_{\mathcal{P}} = \{x\in \mathbb{R} | 5x^2-6x+1=0\}
-    \end{array}
-  \]
-}
-
+\include{paginette/problemi_e_modelli}
 \end{document}
