@@ -1,0 +1,110 @@
+\chapter{Introduzione preliminare}
+\section{richiami teoria degli insiemi}
+Dato un insieme $\Omega$ e due sottoinsiemi $A,B\subseteq  \Omega$, si useranno tali notazioni per le diverse operazioni tra insiemi
+
+\[
+    \begin{aligned}
+        A \cup B &:= \{\omega \in \Omega : \omega \in A \lor \omega \in B\}, \\
+        A \cap B &:= \{\omega \in \Omega : \omega \in A \land \omega \in B\}, \\
+        A^c &:= \{\omega \in \Omega : \omega \notin A\}, \\
+        A \setminus B &:= A \cap B^c, \\
+        A \Delta B &:= (A \setminus B) \cup (B \setminus A) = (A \cup B) \setminus (A \cap B),
+    \end{aligned}
+\]
+
+Andiamo inoltre a definire $\mathcal{P}(\Omega) = \{A\subset\Omega\}$ come l'insieme delle parte di $\Omega$ e sia $|A|$ la cardinalità di $A$, ovvero il suo numero di elementi
+\ex{}{
+    Sia $\Omega = \{a,b,c\}$ allora $\mathcal{P}(\Omega) = \{\Omega, \emptyset, \{a\}, \{b\}, \{c\}, \{a,b\}, \{a,c\}, \{b,c\}\}$
+}
+
+Si noti poi questa interessante proposizione
+\mprop{}{
+    Sia $\Omega$ un insieme finito allora si ha:
+    \[
+        |P(\Omega)|=2^{|\Omega|}
+    \]
+}
+\dimostrazione{
+    Fare
+}
+
+Le nozioni di unione e intersezione si estendono in modo naturale a una famiglia arbitraria $(A_i)_{i \in I}$ di sottoinsiemi di $\Omega$:
+
+    \[
+        \bigcup_{i \in I} A_i := \left\{\omega \in \Omega : \exists i \in I \text{ tale che } \omega \in A_i\right\}
+    \]
+
+    \[
+        \bigcap_{i \in I} A_i := \left\{\omega \in \Omega : \forall i \in I \text{ si ha che } \omega \in A_i\right\}
+    \]
+\ex{Intersezione e unione in un insieme di riferimento numerabile $I = \mathbb{N}$}{
+    Sia $(A_i)_{i\in\mathbb{N}}$ una successione di insiemi
+    \begin{enumerate}
+        \item $\Omega = \mathbb{R}, A_n=\{n\}, n\in\mathbb{N}$
+        
+        Si ha
+        \[
+            \bigcup_{n=1}A_n = \mathbb{N}
+        \]
+        \[
+            \bigcap_{n=1}A_n = \emptyset
+        \]
+
+        Giustamente $\{1\}\neq\{2\}\neq\{3\}\neq \dots$ pertanto l'unione è vuota
+        \item $\Omega = \mathbb{R}, A_n=\left[0,\frac{1}{n}\right], n\in\mathbb{N}$
+        \[
+            \bigcup_{n=1}A_n = [0,1]
+        \]
+        L'intervallo $[0,1]$ è quello che "contiene" tutti gli altri, pertanto, per come è definita l'unione, è ovvio che sia lui il risultato di tale operazione
+        \[
+            \bigcap_{n=1}A_n = \{0\}
+        \]
+        L'intersezione è un insieme con solo 0, l'unico numero contenuto in tutti gli insiemi di intervalli 
+    \end{enumerate} 
+}
+
+\subsection{Leggi di de morgan}
+\thm{
+    Leggi di De Morgan
+}{
+    Queste proposizioni sono vere:
+    \[
+        (A \cup B)^c = A^c \cap B^c, \quad (A \cap B)^c = A^c \cup B^c,
+    \]
+    che valgono, più in generale, per famiglie arbitrarie di insiemi:
+    \[
+        \left( \bigcup_{i \in I} A_i \right)^c = \bigcap_{i \in I} A_i^c, \quad \left( \bigcap_{i \in I} A_i \right)^c = \bigcup_{i \in I} A_i^c
+    \]
+}
+\dimostrazione{
+    Devo dimostrare che $(A \cap B)^c \subseteq A^c \cup B^c \land A^c \cup B^c \subseteq (A \cap B)^c$ ovvero che $w\in (A \cap B)^c \iff w\in (A^c\cup B^c)$
+
+    ebbene:
+    \[
+        \begin{aligned}
+            \omega \in (A \cap B)^c &\iff \omega \notin A \cap B \\
+            &\iff \omega \notin A \text{ or } \omega \notin B \\
+            &\iff \omega \in A^c \text{ or } \omega \in B^c \\
+            &\iff \omega \in (A^c \cup B^c)
+        \end{aligned}
+    \]
+    È dato come esercizio per Bastiality la dimostrazione per le altre cose
+}
+\subsection{proprietà distributive di intersezione e unione}
+\thm{}{
+    è possibile dimostrare che valgono le seguenti leggi
+    \[
+        \begin{aligned}
+            A \cup (B \cap C) &= (A \cup B) \cap (A \cup C) \\
+            A \cup \left( \bigcap_{i=1}^{n} B_i \right) &= \bigcap_{i=1}^{n} (A \cup B_i) \\
+            A \cap (B \cup C) &= (A \cap B) \cup (A \cap C) \\
+            A \cap \left( \bigcup_{i=1}^{n} B_i \right) &= \bigcup_{i=1}^{n} (A \cap B_i)
+        \end{aligned}
+    \]
+}
+\pf{}{
+    Bonzo, la dimostri per esercizio  
+}
+
+
+
