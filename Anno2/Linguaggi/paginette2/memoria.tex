@@ -1,0 +1,21 @@
+% \begin{document}
+
+\chapter{Gestione Memoria}
+\begin{itemize}
+\item sttica
+\item dinamica
+  \begin{itemize}
+  \item pila
+  \item heap
+  \end{itemize}
+\end{itemize}
+
+A cosa serve la memoria? variabili locali, parametri formali, 
+
+Se ho la ricorsione serve della memoria dinamica (stack di chiamate):
+
+se non ammetto la ricorsione, non avro' mai piu' di un frame attivo per ogni funzione, quindi basta allocare staticamente quella memoria (se ci sono 10 funzioni, alloco lo spazio per 10 funzioni)
+
+se ammettiamo ricorsione, questa prima condizione non e' vera, ed il numero di chiamate attive contemporanee e' illimitata. Possiamo quindi usare una allocazione dinamica a pila dato che la funzione chiamante non potra' terminare prima che termini la funzione chiamata.
+
+% \end{document}

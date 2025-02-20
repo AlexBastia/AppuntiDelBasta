@@ -90,4 +90,24 @@ L'ambiente di un blocco e' diviso in:
   Creazione e distruzione di un \textit{oggetto denotato} non coincide necessariamente con la creazione o distruzione dei legami per esso.
 }
 
+\section{Regole di scope}
+
+TODO: esempio scope statico e dinamico
+
+statico:
+Il nome non locale e' risolto (dal punto di vista del riferimento) e' la prima dichiarazione di x che trovo andando verso l'esterno.
+
+dinamico: 
+vado indietro \textit{nell'escecuzione} per cercare l'occerrenza ch ci interressa (e' l'ultima che e' stata introdotta) blocco attivato per ultimo (che deve essere ancora attivo)
+
+notare che se cambio il nome di una variabile locale, con scope statico la semantica non cambia, ma con scope dinamico puo' cambiare (esempio p.24) -> collegamento con lo shadowing logica
+
+L'ambiente e' quindi determinato da:
+\begin{itemize}
+\item Regole di scope
+\item Regole di visibilita'
+\item Regole di binding (solo quando posso passare funzioni come parametri)
+\item Regole per il passaggio di parametri
+\end{itemize}
+
 % \end{document}
