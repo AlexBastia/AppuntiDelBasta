@@ -191,23 +191,31 @@ Vi sono due filosofie principali
 
 Vabbuò, è normale non capirci un catso solo a parole, si consideri il seguente testo:
 \begin{lstlisting}[language=C]
-  #include <stdio.h>
-  #include <stdlib.h>
-  
-  int main() {
-      int *X, *Y;
-      X = (int *) malloc(sizeof(int));
-      Y = X;
-      free(X);
-      X = NULL;
-      return 0;
-  
+  A:{int x = 0;
+    void pippo(int n){
+      x = n+1;
+    }
+    pippo(3);
+    write(x);
+    {
+      int x = 0;
+      pippo(3);
+      write(x);
+    }
+    write(x);
   }
 \end{lstlisting}
+Che cosa caspita scriveremo a riga 10? Ebbene dipenderà dal tipo di regola di scope, o statica o dinamica
 
+Di seguito sono riportati nel dettaglio
 
-statico:
-
+\subsection{Scope statico}
+\dfn{Scope statico}{
+  La regola dello scope statico, o regola dello scope annidato più vicino, è definita dalle seguenti tre regole:
+  \begin{enumerate}
+    \item La dichiarazione locale ad un blocco definisce l'ambiente locale di tale blocco. La dichiarazioni locali di un blocco includono solo quelle presenti nel blocco e non quelle possibilmente presenti in blocchi annidati nel blocco in questione
+  \end{enumerate}
+}
 
 dinamico: 
 vado indietro \textit{nell'escecuzione} per cercare l'occerrenza ch ci interressa (e' l'ultima che e' stata introdotta) blocco attivato per ultimo (che deve essere ancora attivo)
