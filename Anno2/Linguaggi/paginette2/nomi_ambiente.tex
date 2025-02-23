@@ -173,10 +173,41 @@ Esistono 2 modi per categorizzare il tempo di vita di un legame/associazione:
 
 \section{Regole di scope}
 
-TODO: esempio scope statico e dinamico
+Innanzi tutto fornirò la definizione di scope
+
+\dfn{Scope}{
+  Lo \textbf{scope} (o \textbf{ambito}) è un concetto semantico che determina in quali porzioni di un programma una variabile o un nome è visibile e utilizzabile. Le regole di scope stabiliscono come i riferimenti ai nomi vengono risolti all'interno di un determinato contesto di esecuzione, garantendo che l'uso delle variabili sia coerente e prevedibile.
+}
+
+Come detto in precedenza una dichiarazione locale ad un blocco è visibile in quel blocco e in tutti i blocchi in esso annidati, a meno ché intervenga in tali blocchi una nuova dichiarazione dello stesso nome che nasconderà quello precedente (shadowing)
+
+Occorre tuttavia determinare come interpretare le regole di visibilità di una variabile in presenza di porzioni di blocchi eseguiti in posizioni diverse dalle loro definizioni  e in presenza di ambienti non locali... nasty vero?
+
+Vi sono due filosofie principali
+\begin{itemize}
+  \item \textbf{Statico}: Basato sul testo del programma 
+  \item \textbf{Dinamico}: Basato sul flow di esecuzione 
+\end{itemize}
+
+Vabbuò, è normale non capirci un catso solo a parole, si consideri il seguente testo:
+\begin{lstlisting}[language=C]
+  #include <stdio.h>
+  #include <stdlib.h>
+  
+  int main() {
+      int *X, *Y;
+      X = (int *) malloc(sizeof(int));
+      Y = X;
+      free(X);
+      X = NULL;
+      return 0;
+  
+  }
+\end{lstlisting}
+
 
 statico:
-Il nome non locale e' risolto (dal punto di vista del riferimento) e' la prima dichiarazione di x che trovo andando verso l'esterno.
+
 
 dinamico: 
 vado indietro \textit{nell'escecuzione} per cercare l'occerrenza ch ci interressa (e' l'ultima che e' stata introdotta) blocco attivato per ultimo (che deve essere ancora attivo)
