@@ -1,0 +1,178 @@
+% \begin{document}
+\chapter{Problemi e Modelli}
+
+\section{Problemi di ottimizzazione}
+
+\dfn{Ricerca operativa}{
+  La \textbf{ricerca operativa} è un ramo della matematica applicata che si occupa dello studio, della modellizzazione e della risoluzione dei cosiddetti \textit{problemi decisionali} complessi mediante strumenti matematici, algoritmici e computazionali, con l'obiettivo di ottimizzare processi e risorse
+}
+
+Per evitare qualsivoglia fraintendimento fornirò anche la definizione di \textbf{ottimizzazione Combinatoria}
+\dfn{Ottimizzazione Combinatoria}{
+  Si definisce \textbf{Ottimizzazione Combinatoria} una branca della Ricerca Operativa che nel modellare matematicamente e risolvere problemi complessi di natura discreta unisce tecniche di calcolo combinatorio alla teoria degli algoritmi e ai risultati teorici e metodologici della programmazione lineare
+}
+
+Pertanto ricerca operativa e ottimizzazione combinatoria sono due cose diverse, MA cito testualmente
+\begin{quote}
+  "Per tutti i nostri scopi ricerca operativa e ottimizzazione, sono sinonimi
+
+  tuttavia non vedremo solo alcune tecniche di ottimizzazione combinatoria, ma anche altre tecniche che stanno nella ricerca operativa ma che trattano di valori non discreti"
+
+  \hfill -- Ugo
+\end{quote}
+
+Adesso, sotterrato questo problema di carattere unicamente terminologico con cui io non posso fare a meno di strizzarmi il cervello perché c'ho l'autismo, possiamo tornare a parlare di ricerca operativa/ottimizzazione combinatoria (tanto so' sinonimi per noi)
+
+I problemi di cui si occupa la ricerca operativa, quindi, riguardano situazioni in cui occorra massimizzare i ricavi o minimizzare i costi, in presenza di risorse limitate. Detto in termini più matematici, data una funzione \textbf{vincolata} l'obiettivo è trovare una soluzione ottimale che massimizzi o minimizzi tale funzione.
+
+È pertanto vero, quindi, che questa disciplina ha forte contenuto economico
+
+La ricerca operativa si inserisce all'interno del processo decisionale, il quale può essere suddiviso in diverse fasi
+\begin{itemize}
+\item \textbf{Individuazione problema}
+  \item \textbf{Raccolta dati}
+    \item \textbf{Costruzione modello}, ovvero la Traduzione del problema in un modello matematico che descriva il sistema e i vincoli in modo formale
+      \item \textbf{Determinazione di piu' soluzioni}: applicazione di algoritmi e tecniche di ottimizzazione per individuare la soluzione migliore 
+  \item \textbf{Analisi dei risultati}
+\end{itemize}
+
+La ricerca operativa, quindi, si occupa delle fasi 3 e 4 del processo, dato che sono le fasi che richiedono l’impiego di modelli matematici, algoritmi di ottimizzazione e strumenti computazionali. Adesso andiamo a definire per benino che cosa intendiamo per "modello" 
+
+\dfn{modello}{
+  un \textbf{modello} è una descrizione astratta e scritta in linguaggio matematico, della parte di realtà utile al processo decisionale
+}
+I modelli ci permettono di inquadrare i problemi in una determinata "cornice" che ci permette di determinare quale tipo di algoritmo risolutivo usare.
+
+Esistono tre tipi di modelli:
+\begin{itemize}
+\item \textbf{Teoria dei giochi}: ricerca di un equilibrio fra le componenti coinvolte in un'interazione reciproca, spesso con obbiettivi contrastanti. (non ce ne occupiamo)
+\item \textbf{Simulazione}: il problema viene studiato simulando la situazione senza studiarne la natura in modo analitico tramite generazione di istanze casuali. (anche questi modelli non ci interessano)
+\item \textbf{Analitici}: dal problema si costruisce un modello matematico rigoroso (senza perdere informazione sul problema reale) e risolto mediante tecniche analitiche, senza ricorrere a simulazioni. La natura stessa dello spazio matematico in cui è inserito il problema è in grado di garantire la soluzione ottima. Questo tipo approccio è particolarmente vantaggioso in quanto assicura l’esattezza della soluzione supponendo che il modello sia formulato correttamente. 
+
+È tuttavia richiesto un discreto livello di creatività
+\end{itemize}
+
+Definiamo, adesso, i problemi che andiamo a trattare
+
+\dfn{Problema}{
+  Definiamo \textbf{problema} una domanda, espressa in termini generali, la cui risposta dipende da \textit{parametri} e \textit{variabili}, sopratutto nei problemi analitici
+}
+Un problema $ \mathcal{P} $ è descritto tramite:
+\begin{itemize}
+  \item I suoi parametri e variabili
+  \item Le caratteristiche che una soluzione deve avere
+\end{itemize}
+
+Quando fissiamo un'istanza di un problema, vengono fissati i parametri ma non le variabili, che sono le incognite che devono essere definite. Distinguiamo un problema dalla sua istanza per generalizzarlo. Si presti attenzione alla differenza tra parametri e variabili che molti si confondono
+
+\ex{Problema con paramteri e variabili}{
+  Sia $ \mathcal{P} $ il seguente problema
+  \[
+    ax^2+bx+c =0
+  \]
+  Dove $a,b$ e $c$ sono i suoi parametri e $x$ rappresenta le variabili, una possibile istanza di tale problema è:
+  \[
+    5x^2-6x+1=0
+  \] 
+}
+Un modo comune per descrivere un problema è dare l'insieme di soluzioni ammissibili $ \mathbb{F}_{\mathcal{P}} \subseteq G $, dove $G$ è un sovrainsieme generico noto, di solito contenente la collezione di tutte le possibili configurazioni o decisioni che si possono prendere, dando dei vincoli che un generico $ g \in G $ deve soddisfare per far parte di $\mathbb{F}_{\mathcal{P}}$, avremo così che $G - \mathbb{F}_{\mathcal{P}}$ è l'insieme delle soluzioni non ammissibili 
+\ex{}{
+  Sia l'instanza di $\mathcal{P}$ definita precedentemente
+  \[
+    5x^s - 6x+1= 0
+  \]
+  si ha che 
+  \[
+    \begin{array}{l}
+      \mathbb{G}= \mathbb{R}\\
+      \mathbb{F}_{\mathcal{P}} = \{x\in \mathbb{R} | 5x^2-6x+1=0\}
+    \end{array}
+  \]
+}
+
+Identifichiamo dentro a $ G $ le soluzioni definite accettabili da un problema. Pero', per i problemi di ottimizzazione, la situazione e' piu' complessa, perche' dobbiamo trovare fra queste funzioni quel'e' la migliore. Per questo usiamo una funzione obbiettivo:
+\[
+  c_{\mathcal{P}}: F_\mathcal{P} \to \mathbb{R}
+\]
+che misura il costo (minimizzare) o il benificio (massimizzare) di ogni soluzione ammissibile
+\[
+  Z_p = max/min\{c_p(g) | g \in \mathbb{F}_p\}
+\]
+
+Possiamo passare da un problma di massimo a uno di minimo molto semplicemente ponendo $ c_p'(g) = -c_p(g) $ e calcolando:
+\[
+  Z_p = - min \{c_p'(g) | g \in F_p = F_p'\}
+\]
+
+$ Z_p $ e' il \textbf{valore ottimo} per $ P $ che assume il valore della funzione nel punto della \textbf{soluzione ottima} $ g^* $ e non e' sempre un unico valore reale. Quindi il solo valore ottimo non mi dice effettivamente come arivare al risultato. 
+
+\ex{}{
+  $ G = \mathbb{R} $, $ F_p = \{x \in \mathbb{R} | 5x^2-6x+1=0\} $, $ c_p: \mathbb{R} \to \mathbb{R}, c_p(g) = g^2 $:
+  \[
+  Z_p = max \{x^2 | 5x^2 - 6x + 1 = 0\}
+  \]
+  Quindi la $ x^2 $ e' il valore ottimo, mentre $ x $ e' la soluzione ottima.
+}
+
+Cosa possiamo ottenere come outcome di un'ottimizzazione? Ci sono 4 casi:
+\begin{itemize}
+\item Problema vuoto: $ F_p = \emptyset $ e per convenzione si assume che $ Z_p = \infty $. Non e' detto che sia semplice capire se siamo in questo caso.
+\item Problema illimitato: ci sono troppe soluzioni ammissibili. Nel caso di un problema di massimo $ \forall x \in \mathbb{R} \exists g \in F_p. c_p(g) \geq x $, in tal caso $ Z_p = +\infty $. Dualmente nel caso minimo.
+\item Valore ottimo finito ma non soluzione ottima finita: (cerchiamo di evitare usando delle tecniche) $ Z_p \exists \text{finito} $, ma $ c_p(g) \neq Z_p $. Es $ inf \{x | x > 0\} $ (estremo inferiore $ =0 $), ma non esiste una soluzione ottima che soddisfi il valore ottimo (insiemi aperti).
+\item Valore Ottimo Finito e Soluzione Ottima Finita: $ \exists g \in F_p. c_p(g) $ e' ottimo. Notare che possono esistere diverse soluzione ottime ma solo un valore ottimo. (Caso preferito)
+\end{itemize}
+
+\subsection{Problemi di ottimizzazione e di decisione}
+Il problema di decisione consiste nel determinare una qualunque soluzione ammissibile $ g \in F_p $. 
+
+Il problema di certificato consiste nel dire se per una $ g \in G $ si ha che $ g \in F_p $.
+
+Trasformare un problema di ottimizzazione in un problema di decisione basta rendere $ c_p $ costante (quindi tutte le soluzioni ammissibili diventano ottime e le consideriamo tutte)
+
+Al contrario, possiamo considerare un problema decisionale $ R $ tale che 
+\[
+  F_R = \{g \in F_p | c_p(g)\ = Z_p\}
+\]
+oppure dato $ k \in \mathbb{R} $ si puo anche considerare $ R_k $ decisionale con 
+\[
+  F_{R_k} = \{ g \in F_p | c_p(g) \leq k\}
+\]
+(nel caso in cui $ P $ e' di minimo)
+
+\subsection{Aspetto algoritmico}
+\begin{itemize}
+  \item Algoritmi esatti: e' un algoritmo ch epreso un'istanza di $ P $ ($ P $ e' un modello di un problema), fornisce in output una soluzione ottima $ g^* $ di $ P $ (se esiste). Spesso pero' i problemi sono troppo complessi ed e' impossibile costruire algoritmi efficenti.
+  \item Algoritmi euristici: non ci danno garanzia sulla soluzione trovata (e' sicuramente ammissibile), ma un'approssimazione.
+\end{itemize}
+
+Come possiamo valutare la correttezza di una soluzione euristica? Possiamo misurare l'errore (assoluto o relativo) fra il valore ottimo euristico e quello esatto.
+
+Gli algoritmi euristici vengono detti anche greedy.
+
+\section{Modelli}
+Al posto di dare un'algoritmo per ogni specifico problema, possiamo definire classi di problemi che possono essere risolti con lo stesso algoritmo.
+
+\subsection{Programmazione Lineare}
+
+$ f $ e' lineare. 
+$ c_p $ e' l'insieme di vettori di numeri reali. $ \mathbb{G} = \mathbb{R}^n $. (definizione di $ G $)
+
+\begin{itemize}
+\item La funzione obiettivo $ f: \mathbb{R}^n \to \mathbb{R} $
+  \[
+    f(x) = cx
+  \]
+    dove $ c $ e' un vettore riga e $ x $ vettore colonna. Attenzione, $ c $ non e' una variabile ma un \textbf{parametro}. (definizione della funzione obiettivo)
+  \item Ci sono un insieme di vincoli lineari nella forma: $ ax = b $, $ ax \leq b $, $ ax \geq b $. Dove $ a \in \mathbb{R}^n $ e $ b \in \mathbb{R} $ ()
+\end{itemize}
+
+E' talvolta utile assumere che $ x \in \mathbb{Z}^n $, ovvero che le soluzioni ammissibili siamo vettori di numeri interi. In questo caso si parla di programmazione lineare intera. Facendo cosi' stiamo restringendo il campo di ricerca, ma si perdono alcune proprieta' (geometriche) che in realta' possono rendere piu' difficile la ricerca della soluzione.
+
+In PLM possiamo avere variabili di natura mista (alcune variabili in $ \mathbb{R} $ alcune in $ \mathbb{Z} $)
+
+Un problema PL spuo' sempre essere espresso in forma matriciale:
+\[
+max \{cx | Ax \leq b\}
+\]
+dove $ A \in \mathbb{R}^{m \times n} $ e $ b \in \mathbb{R}^m $, quindi scriviamo tutti i vincoli in un unica disequazione. Sistema di disequazioni lineari. Usiamo $ max $ dato che sappiamo passare da max a min. Se abbiamo un vincolo $ ax = b $, questo diventa $ ax \leq b $ e $ ax \geq b $, e $ ax \geq b $ diventa $ (-a)x \leq (-b) $
+% \end{document}
