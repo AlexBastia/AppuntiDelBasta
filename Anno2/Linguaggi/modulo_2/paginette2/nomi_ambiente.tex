@@ -189,6 +189,11 @@ Vi sono due filosofie principali
   \item \textbf{Dinamico}: Basato sul flow di esecuzione 
 \end{itemize}
 
+Prima di andare avanti, si noti la seguente annotazione 
+\nt{
+    Entrambe gli appricci differiscono solo in presenza congiunta di ambiente non locale e non globale e procedura
+}
+
 Vabbuò, è normale non capirci un catso solo a parole, si consideri il seguente testo:
 \begin{lstlisting}[language=C]
   A:{int x = 0;
@@ -211,23 +216,61 @@ Di seguito sono riportati nel dettaglio
 
 \subsection{Scope statico}
 \dfn{Scope statico}{
-  La regola dello scope statico, o regola dello scope annidato più vicino, è definita dalle seguenti tre regole:
-  \begin{enumerate}
-    \item La dichiarazione locale ad un blocco definisce l'ambiente locale di tale blocco. La dichiarazioni locali di un blocco includono solo quelle presenti nel blocco e non quelle possibilmente presenti in blocchi annidati nel blocco in questione
-  \end{enumerate}
+    La regola dello \textbf{scope statico} (o \textbf{regola dello scope annidato più vicino}) si basa sui seguenti principi:
+
+    \begin{enumerate}
+        \item \textbf{Ambiente locale di un blocco}: Le dichiarazioni all'interno di un blocco definiscono il suo ambiente locale. Questo include solo le dichiarazioni presenti direttamente nel blocco stesso e non quelle eventualmente presenti nei blocchi annidati al suo interno.
+        
+        \item \textbf{Ricerca delle associazioni di un nome}: Se un nome viene utilizzato all'interno di un blocco, si segue questa gerarchia per determinare quale dichiarazione è valida:
+        \begin{itemize}
+            \item Se esiste una dichiarazione del nome nel \textbf{blocco locale}, questa è quella valida.
+            \item Se il nome non è dichiarato nel blocco locale, si cerca nel \textbf{blocco immediatamente contenitore}.
+            \item Se il nome non è ancora trovato, si continua a risalire nei blocchi contenitori fino al più esterno.
+            \item Se il nome non è dichiarato nemmeno nel blocco più esterno, si cerca nell'\textbf{ambiente predefinito del linguaggio}.
+            \item Se il nome non è presente neanche nell’ambiente predefinito, si genera un errore.
+        \end{itemize}
+        
+        \item \textbf{Blocchi con nome}: Un blocco può essere \textbf{assegnato a un nome}, e in questo caso tale nome diventa parte dell'ambiente locale del \textbf{blocco immediatamente contenitore}. Questo vale anche per i blocchi associati a procedure o funzioni.
+    \end{enumerate}
+    
+}
+Molto più semplicemente si può dire che
+\nt{
+    Un nome non locale è risolto nel blocco che \textit{testualmente} lo racchiude
 }
 
-dinamico: 
-vado indietro \textit{nell'escecuzione} per cercare l'occerrenza ch ci interressa (e' l'ultima che e' stata introdotta) blocco attivato per ultimo (che deve essere ancora attivo)
+Pertanto nel codice d'esempio nel primo \texttt{write(x)} verrà stampato 4, nel secondo 0 e nel terzo 4, in quanto la \texttt{x} che la funzione \texttt{pippo(3)} modifica è quella dichiarata all'interno del blocco che lo racchiude, in questo caso A. Nel blocco B non verrà modificata la \texttt{x} racchiusa nello stesso quindi si stamperà, quindi 0.
 
-notare che se cambio il nome di una variabile locale, con scope statico la semantica non cambia, ma con scope dinamico puo' cambiare (esempio p.24) -> collegamento con lo shadowing logica
+Si ha quindi una forte indipendenza dalla posizione della posizione da parte dei nomi. Ad esempio se si dichiara una funzione all'interno di un blocco, il corpo della procedura si riferirà sempre alle regole di scope medesime del blocco in cui è stata dichiarata, pertanto dovunque la funzione verrà chiamata lo scope a cui riferisce sarà sempre lo stesso
 
-L'ambiente e' quindi determinato da:
+Tra i vantaggi dello scope statico troviamo una maggiore comprensione per il programmatore, ogni nome può essere collegato alla sua dichiarazione semplicemente analizzando la struttura del codice, senza dover simulare l’esecuzione e la facilità di analisi del programma da parte del compilatore che può determinare tutte le occorrenze di un nome e fare controlli di correttezza sui tipi di dati ed eseguire ottimizzazioni del codice prima dell’esecuzione
+
+
+
+\subsection{Scope dinamico}
+
+\dfn{Regole di scope dinamico}{
+    Secondo le regole di scope dinamico, l'ssociazione valida per un nome \texttt{x} ad un punto \texttt{P} del programma è la più recente (in senso temporale) associazione creata per \texttt{x} ancora attiva appena il controllo di flusso arriva a \texttt{P}
+}
+In pratica occorre andare indietro \textit{nell'escecuzione} per cercare l'occerrenza d'interresse (è l'ultima che è stata introdotta) blocco attivato per ultimo (che deve essere ancora attivo), come riassunto in questa nota quindi:
+
+\nt{
+    Un nome non locale è risolto nel blocco attivato più di recente e non ancora disattivato 
+}
+
+Quando un nome non è dichiarato localmente in un blocco, viene cercato nel blocco attivato più recentemente che lo contiene.
+Questo significa che la risoluzione dei nomi segue una logica \textit{LIFO (Last In First Out)}, cioè una gestione a stack basata sull’ordine di chiamata delle funzioni. Questo approccio è più semplice da gestire a runtime perché si basa solo sulla pila di attivazione, senza necessità di altre strutture dati
+
+
+\section{determinare l'ambiente}
+
+L'ambiente è quindi determinato da:
+
 \begin{itemize}
-\item Regole di scope
-\item Regole di visibilita'
-\item Regole di binding (solo quando posso passare funzioni come parametri)
-\item Regole per il passaggio di parametri
+    \item Regole di scope (statico o dinamico)
+    \item Regole di visibilità
+    \item Regole di binding (intervengono quando una procedura P è passata come parametro ad un’altra procedura mediante il formale X )
+    \item Regole per il passaggio di parametri
 \end{itemize}
 
 % \end{document}
