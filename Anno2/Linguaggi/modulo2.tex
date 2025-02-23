@@ -3,10 +3,61 @@
 \input{../LatexTemp/preamble}
 \input{../LatexTemp/macros}
 \input{../LatexTemp/letterfonts}
+\usepackage[T1]{fontenc}    % Per la corretta codifica dei caratteri
 \usepackage{xcolor}
+\usepackage[utf8]{inputenc} % Se salvi il file in UTF-8
 \usepackage{tikz-qtree}
 \usepackage{graphicx}
 \usepackage{cancel}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{etoolbox}
+\usepackage{listings}
+
+\lstdefinestyle{cstyle}{
+  language=C,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{red}\bfseries,
+  commentstyle=\color{gray},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  stepnumber=1,
+  tabsize=2,
+  breaklines=true,
+  showstringspaces=false
+}
+
+
+\lstset{
+  language=Pascal,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{gray},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  stepnumber=1,
+  tabsize=2,
+  breaklines=true,
+  showstringspaces=false
+}
+
+\newcounter{linecolor}
+\newcommand{\setlinecolor}{%
+  \stepcounter{linecolor}%
+  \ifodd\value{linecolor}%
+    \color{red}%
+  \else%
+    \color{black}%
+  \fi}
+  
+\newlist{redblacklist}{itemize}{1}
+\setlist[redblacklist]{
+  label={\setlinecolor\rule{2pt}{1.2em}}, % Altezza della linea regolabile
+  leftmargin=*,
+  itemindent=-0.7cm,
+  before={\setcounter{linecolor}{0}},
+}
+
 
 % Tikz libraries %
 \usetikzlibrary{automata, positioning, arrows, shapes.geometric, decorations.pathmorphing}
@@ -59,6 +110,7 @@
 
 \pagebreak
 
+\include{paginette2/introduzione}
 \include{paginette2/nomi_ambiente}
 \include{paginette2/memoria}
 
