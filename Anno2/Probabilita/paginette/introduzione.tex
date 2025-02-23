@@ -1,5 +1,27 @@
+% \begin{document}
 \chapter{Introduzione preliminare}
-\section{richiami teoria degli insiemi}
+
+\section{Cos'e' la probabilita'?}
+
+E' vietato dare una definizione di "probabilita"! E' un concetto primitivo, che tutti noi conosciamo, e' una domanda che riguarda la filosofia. E' come il punto, la retta e il pinao nella geometria euclidea.
+
+\[
+A = \text{"Domani a Bologna piove"}
+\]
+
+Di questa affermazione, sappiamo dire solo quanto sia probabile che succeda, non siamo sicuri se si avveri o meno. Bisogna passare da una condizione di certezza (0 o 1) a un intervallo continuo $ [0,1] $. Stiamo generalizzando la logica del certo. 
+
+Indichiamo la probabilita' che $ A $ succeda con $ \mathcal{P}(A) $. Quindi $ P(A) \in [0,1] $, dove $ P(A) = 0 $ significa che non accadra' mai e $ P(A) = 1 $ significa che accade con certezza.
+
+Come si assegna la probabilita'? Non e' una domanda che riguarda la matematica, ma la statistica. L'approccio classico e' quello frequentista, dove svolgiamo vari esperimenti aleatori e calcoliamo la probabilita come 
+\[
+  \mathcal{P}(A) \approx \frac{\text{casi favorevoli}}{\text{casi possibili}}
+\]
+Notare che questa non e' una definizione, ma un'approssimazione. Questo e' l'approccio frequentista che funziona bene in casi semplici.
+
+L'approccio bayesiano e' un aggiornamento all'approccio precedente aggiungendo informazioni a priori che ci permette di creare una distribuzione probabilistica. Tutto questo riguarda la statistica, a noi interessa la matematica della probabilita'.
+
+\section{Richiami teoria degli insiemi}
 Dato un insieme $\Omega$ e due sottoinsiemi $A,B\subseteq  \Omega$, si useranno tali notazioni per le diverse operazioni tra insiemi
 
 \[
@@ -21,11 +43,24 @@ Si noti poi questa interessante proposizione
 \mprop{}{
     Sia $\Omega$ un insieme finito allora si ha:
     \[
-        |P(\Omega)|=2^{|\Omega|}
+        |\mathcal{P}(\Omega)|=2^{|\Omega|}
     \]
 }
 \dimostrazione{
-    Fare
+    Si puo' dimostrare per induzione su $ \Omega $:
+    \begin{itemize}
+    \item Caso $ \Omega=\emptyset $:
+      \[
+      \begin{aligned}
+        |\mathcal{P}(\emptyset)| &= 2^{|\emptyset|}\\
+        |\{ \{\} \}| &= 2^0\\
+        1 &= 1
+      \end{aligned}
+      \]
+    \item Caso $ \Omega $:
+
+      Per ipotesi induttiva $ |\mathcal{P}(X)| = 2^{|X|} $, dove $ \Omega = X \cup {p} $ (con $ p \notin X $). Quindi $ |X| = |\Omega| - 1 $. Dato che stiamo aggiungendo un nuovo elemento $ p $ a $ X $, per ogni elemento di $ \mathcal{P}(X) $ possiamo decidere se unirlo o meno a $ p $, quindi il numero di elementi si duplica: $ |\mathcal{P}(\Omega)| = 2\cdot|\mathcal{P}(X)| = 2\cdot 2^{|X|} = 2 \cdot 2^{|\Omega|-1} = 2^{|\Omega|} $.
+    \end{itemize} 
 }
 
 Le nozioni di unione e intersezione si estendono in modo naturale a una famiglia arbitraria $(A_i)_{i \in I}$ di sottoinsiemi di $\Omega$:
@@ -90,7 +125,7 @@ Le nozioni di unione e intersezione si estendono in modo naturale a una famiglia
     \]
     È dato come esercizio per Bastiality la dimostrazione per le altre cose
 }
-\subsection{proprietà distributive di intersezione e unione}
+\subsection{Proprietà distributive di intersezione e unione}
 \thm{}{
     è possibile dimostrare che valgono le seguenti leggi
     \[
@@ -105,6 +140,4 @@ Le nozioni di unione e intersezione si estendono in modo naturale a una famiglia
 \pf{}{
     Bonzo, la dimostri per esercizio  
 }
-
-
-
+% \end{document}

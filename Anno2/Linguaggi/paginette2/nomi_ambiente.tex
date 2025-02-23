@@ -1,0 +1,113 @@
+% \begin{document}
+\chapter{Nomi e Ambiente}
+
+Nell'evoluzione dei linguaggi di programmazione, i \textit{nomi} hanno avuto un ruolo fondamentale nella sempre maggiore astrazione rispetto al linguaggio macchina. 
+
+\dfn{Nome}{
+  I nomi sono solo una sequenza (significativa o meno) di caratteri che sono usati per rappresentare un oggetto, che puo' essere uno spazio di memoria se vogliamo etichettare dei dati, o un insieme di comandi nel caso di una funzione. 
+}
+
+\section{Nomi e Oggetti denotabili}
+
+Spesso, i nomi sono \textit{identificatori}, ovvero token alfanumerici, ma possono essere usati anche simboli (+,-,...). E' importante ricordare che il nome e l'oggetto denotato non sono la stessa cosa, infatti un oggetto puo' avere diversi nomi (\textit{aliasing}) e lo stesso nome puo' essere attribuito a diversi oggetti in momenti diversi (\textit{attivazione} e \textit{deattivazione}).  
+
+\dfn{Oggetti denotabili}{
+  Sono gli oggetti a cui e' possibile attribuire un nome.
+}
+\nt{Non centra con la programmazione ad oggetti}
+
+Possono essere:
+\begin{itemize}
+\item Predefiniti: tipi e operazioni primitivi, ...
+  \item Definibili dall'utente: variabili, procedure, ...
+\end{itemize}
+
+Quindi il legame fra nome e oggetto (chiamato \textbf{binding}) puo' avvenire in momenti diversi:
+\begin{itemize}
+\item Statico: prima dell'esecuzione del programma
+\item Dinamico: durante l'esecuzoine del programma
+\end{itemize}
+
+\section{Ambienti e Blocchi}
+
+Non tutti i legami fra nomi e oggetti vengono creati all'inizio del programma restando immutati fino alla fine. Per capire come i binding si comportano, occorre introdurre il concetto di \textit{ambiente}:
+
+\dfn{Ambiente}{
+  Insieme di associazioni nome/oggetto denotabile che esistono a runtime in un punto specifico del programma ad un momento specifico durante l'esecuzione.
+}
+
+Solitamente nell'ambiente non vengono considerati i legami predefiniti dal linguaggio, ma solo quelli creati dal programmatore utilizzando le \textit{dichiarazioni}, costrutti che permettono di aggiungere un nuovo binding nell'ambiente corrente.
+
+Notare che e' possibile che nomi diversi possano denotare lo stesso oggetto. Questo fenomeno e' detto \textit{aliasing} e succede spesso quando si lavora con puntatori.
+
+\subsection{Blocchi}
+
+Tutti i linguaggi di programmazione importanti al giorno d'oggi utilizzano i \textit{blocchi}, strutture introdotte da ALGOL 60 che servono per strutturare e organizzare l'ambiente:
+
+\dfn{Blocco}{
+  Pezzo contiguo del programma delimitato da un inizio e una fine che puo' contenere dichiarazioni \textbf{locali} a quella regione.
+}
+
+Puo' essere:
+\begin{itemize}
+  \item In-line (o anonimo): puo' apparire in generale in qualunque punto nel programma e non corrisponde a una procedura. 
+\item Associato a una procedura 
+\end{itemize}
+
+Permettono di strutturare e riutilizzare il codice, oltre a ottimizzare l'occupazione di memoria e rendere possibile la ricorsione. 
+
+\subsection{Tipi di Ambiente}
+
+Un'altro meccanismo importante che forniscono i blocchi e' il loro \textit{annidameno}, ovvero l'inclusione di un blocco all'interno di un altro (non la sovrapposizione parziale). In questo caso, se i nomi locali del blocco esterno sono presenti nell'ambiente del blocco interno, si dice che i nomi sono \textit{visibili}. Le regole che determinano se un nome e' visibile o meno a un blocco si chiamano \textit{regole di visibilita'} e sono in generale:
+
+\begin{itemize}
+\item Un nome locale di un blocco e' visibile a esso e a tutti i blocchi annidati.
+  \item Se in un blocco annidato viene creata una nuova dichiarazione con lo stesso nome, questa ridefinizione \textit{nasconde} quella precedente.
+\end{itemize}
+
+\dfn{Ambiente associato a un blocco}{
+L'ambiente di un blocco e' diviso in:
+\begin{itemize}
+\item locale: associazioni create all'ingresso nel blocco:
+  \begin{itemize}
+  \item variabili locali
+  \item parametri formali (nel caso di un blocco associato a una procedura)
+  \end{itemize}
+\item non locale: associazioni ereditate da altri blocchi (senza considerare il blocco globale), che quindi non sono state dichiarate nel blocco corrente
+\item globale: associazioni definite nel blocco globale (visibile a tutti gli altri blocchi)
+\end{itemize}
+}
+
+\subsection{Operazioni sull' ambiente}
+\begin{itemize}
+\item Creazione: dichiarazione locale
+\item Riferimento: uso di un nome di un oggetto denotato
+\item Disattivazione/Riattivazione: quando viene ridefinito un certo nome, all'interno del blocco viene disattivato. Quando esco dal blocco riattivo la deinizione originale
+\item Distruzione: le associazioni locali del blocco da qui si esce vengono distrutte
+\end{itemize}
+
+\nt{
+  Creazione e distruzione di un \textit{oggetto denotato} non coincide necessariamente con la creazione o distruzione dei legami per esso.
+}
+
+\section{Regole di scope}
+
+TODO: esempio scope statico e dinamico
+
+statico:
+Il nome non locale e' risolto (dal punto di vista del riferimento) e' la prima dichiarazione di x che trovo andando verso l'esterno.
+
+dinamico: 
+vado indietro \textit{nell'escecuzione} per cercare l'occerrenza ch ci interressa (e' l'ultima che e' stata introdotta) blocco attivato per ultimo (che deve essere ancora attivo)
+
+notare che se cambio il nome di una variabile locale, con scope statico la semantica non cambia, ma con scope dinamico puo' cambiare (esempio p.24) -> collegamento con lo shadowing logica
+
+L'ambiente e' quindi determinato da:
+\begin{itemize}
+\item Regole di scope
+\item Regole di visibilita'
+\item Regole di binding (solo quando posso passare funzioni come parametri)
+\item Regole per il passaggio di parametri
+\end{itemize}
+
+% \end{document}
