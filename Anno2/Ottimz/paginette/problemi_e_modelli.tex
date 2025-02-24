@@ -258,80 +258,168 @@ dove $ A \in \mathbb{R}^{m \times n} $ e $ b \in \mathbb{R}^m $. Grazie ad alcun
 \end{itemize}
 
 \subsection{Programmazione lineare intera}
-Se nella $PL$ le variabili rappresentano quantità 
+Se nella $PL$ le variabili rappresentano quantità nella PLI le variabili possono essere
 \begin{itemize}
-\item Quantita'
-\item Logiche: catturare valori booleani, quindi non scelte rispetto al "quanto" ma al "se", ovvero l'opportunita' di fare o meno una certa cosa
+  \item \textbf{Quantitative}: ovvero rappresentare quantità.
+  \item \textbf{Logiche}: rappresentare valori booleani, ovvero scelte basate sulla possibilità di scegliere o meno una determinata opzione
 \end{itemize}
 
-Una variabile $ x $ e' logica se:
-\[
-  x \in \mathbb{N} (o \mathbb{Z}) \quad 0\leq x \quad x \leq 1
-\]
+Qui la definizione di variabile logica
 
-Tipico esempio sono le variabili che associano una certa risorsa a un task, o che venga usato un certo processo. Questo e' il bello dei problemi lineari. 
+\dfn{variabile logica}{
+  Una \textbf{variabile} $x$ si definisce \textbf{logica} se:
+  \[
+    x \in \mathbb{N} (o \mathbb{Z}) \quad 0\leq x \quad x \leq 1
+  \]
+}
 
-Esempi di problemi di ottimizzazione lineari:
+Un esempio tipico è rappresentato dalle variabili che associano una determinata risorsa a un compito specifico, oppure che determinano l'utilizzo di un particolare processo.
+
+\begin{quote}
+  Questo e' il bello dei problemi lineari
+
+  \hfill -- Il Basta
+\end{quote}
+
+Un giga esempietto bellino è il problema dello zaino:
+\ex{Problema dello zaino}{
+  Il problema dello zaino è un esempio classico di problema di ottimizzazione combinatoria piuttosto complesso.
+
+  % TODO: inserire il testo del problema
+  TODO: inserire il testo del problema
+
+  \vspace{1em}
+  \textbf{Parametri:}
+  \begin{align*}
+    E &= \{1, \ldots, n\} \\
+    a_i &= \text{peso dell'oggetto } i \\
+    c_i &= \text{costo dell'oggetto } i \\
+    b &= \text{peso massimo dello zaino}
+  \end{align*}
+
+  \vspace{1em}
+  \textbf{Variabili:}
+  \begin{align*}
+  x_i &=
+  \begin{cases}
+  1 & \text{se l'oggetto } i \text{ è nello zaino} \\
+  0 & \text{altrimenti}
+  \end{cases} \\
+  x_i &\in \{0, 1\} \quad \forall i \in \{1, \ldots, n\}
+  \end{align*}
+
+  \vspace{1em}
+  \textbf{Vincoli:}
+  \[
+    \sum_{i=1}^{n} x_i a_i \leq b
+  \]
+
+  \vspace{1em}
+  \textbf{Funzione obiettivo:}
+  \[
+    \max \sum_{i=1}^{n} x_i c_i
+  \]
+
+}
+
+% Esempi di problemi di ottimizzazione lineari:
+% \begin{itemize}
+% \item Lo Zaino
+% \item Albero di copertura minimo
+% \item Commesso viaggiatore
+% \end{itemize}
+
+% \subsection{Problema dello Zaino}
+% appunti scritti
+
+\subsubsection{Relazioni logiche}
+
+Avendo introdotto le variabili logiche, è opportuno chiedersi se sia possibile esprimere, mediante programmazione lineare (PL), le regole di inferenza logica per le relazioni che intercorrono tra di esse. Grazie all'uso di opportuni vincoli lineari, la risposta è affermativa:
+
 \begin{itemize}
-\item Lo Zaino
-\item Albero di copertura minimo
-\item Commesso viaggiatore
-\end{itemize}
+  \item \textbf{Negazione} \( (y = \neg x) \):
+    \[
+    x = 1 - y
+    \]
 
-\subsection{Problema dello Zaino}
-appunti scritti
-
-Che tipo di relazioni logiche possiamo catturare con la programmazione lineare? TUTTEEEE con semplici vincoli lineari:
-\begin{itemize}
-  \item Negazione $ (y = \neg x) $: $ x = 1-y $
-  \item Congiunzione $ (z = (x \land y)) $: 
+  \item \textbf{Congiunzione} \( (z = x \land y) \):
     \[
     \begin{aligned}
-      &z \leq x\\
-      &z \leq y\\
-      &z \geq x + y -1
+      &z \leq x \\
+      &z \leq y \\
+      &z \geq x + y - 1
     \end{aligned}
     \]
-  \item Disgiunzione $ (z = (x \lor y)) $: 
+
+  \item \textbf{Disgiunzione} \( (z = x \lor y) \):
     \[
     \begin{aligned}
-      &z \geq x\\
-      &z \geq y\\
+      &z \geq x \\
+      &z \geq y \\
       &z \leq x + y
     \end{aligned}
     \]
-  \item Implicazione $ (z = (x \implies y)) $:
+
+  \item \textbf{Implicazione} \( (z = x \implies y) \):
     \[
     \begin{aligned}
-      &x+z \geq 1\\
-      &z \geq y\\
-      &x+z \leq 1 + y
+      &x + z \geq 1 \\
+      &z \geq y \\
+      &x + z \leq 1 + y
     \end{aligned}
     \]
 \end{itemize}
 
-Questa cosa e' un'evidenza del fatto che il problema lineare di ottimizzazione e' in generale NP-hard :(. In poche parole e' perche' il problema di soddisfacibilita' di una formula logica e' nella classe NP-hard.
-
+È possibile, tuttavia, dimostrare che il problema di ottimizzazione lineare è, in generale, \textit{NP-hard}, dato che il problema di soddisfacibilità di una formula logica rientra nella classe NP-hard
 \section{Template per risolvere problemi}
 
 \subsection{Vincoli di assegnamento}
+Un tipo di vincolo che la programmazione lineare intera (PLI) gestisce in modo molto efficace è rappresentato dai cosiddetti \textit{vincoli di assegnamento}. Questi vincoli sono utilizzati per modellare problemi che riguardano l'assegnazione di "oggetti a luoghi".
 
-Problemi che riguardano situazioni in qui dobbiamo assegnare "oggetti a luoghi". L'insieme $ N $ di oggetti possono essere automezzi, persone, ... mentre i luoghi $ V $ devono ricevere uno e solo un oggetto. Dobbiamo catturare il significato che l'i-esimo oggetto e' stato assegnato al j-esimo luogo.
+Si considerano:
+\begin{itemize}
+  \item Un insieme \( N = \{1, \ldots, n\} \) di \textbf{oggetti} (che possono rappresentare automezzi, persone, ecc.)
+  \item Un insieme \( V = \{1, \ldots, m\} \) di \textbf{luoghi}
+\end{itemize}
 
-Prendiamo le variabili logiche $ x_{ij} =  $
+Per rappresentare le diverse condizioni di assegnazione degli oggetti ai luoghi, si introduce la variabile \( x_{ij} \in \{0, 1\} \) (dove \( 1 \leq i \leq n \) e \( 1 \leq j \leq m \)). Questa variabile indica se l'i-esimo oggetto è stato assegnato al j-esimo luogo (\( x_{ij} = 1 \)) o meno (\( x_{ij} = 0 \)), si può così procedere alla formale
 
-Vincoli di Semi-Assegnamento: ogni oggetto e' assegnato a un luogo, ma non ogni luogo riceve un oggetto
-\[
-  \sum_{j=1}^{m} x_{ij} = 1 \quad (1 \leq i \leq n)
-\]
+\dfn{Vincoli di assegnamento}{
+  Sia \( N = \{1, \ldots, n\} \) un insieme di oggetti e \( V = \{1, \ldots, m\} \) di luoghi, si definiscono \textbf{vincoli di assegnamento} quei vincoli che impongono che \textit{ogni oggetto sia assegnato a un solo luogo e ad ogni luogo è assegnato esattamente un oggetto}. Questi sono espressi mediante queste sommatorie:
+  \[
+    \sum_{j=1}^{m} x_{ij} = 1 \quad \forall i \in \{1, \ldots, n\} \quad \sum_{i=1}^{n} x_{ij} = 1 \quad \forall j \in \{1, \ldots, m\}
+  \]
+
+  Dove:
+  \begin{itemize}
+    \item \( x_{ij} \) è una variabile binaria che vale 1 se l'oggetto \( i \) è assegnato al luogo \( j \), e 0 altrimenti.
+    \item La prima equazione assicura che ogni oggetto \( i \) sia assegnato esattamente a un luogo.
+    \item La seconda equazione assicura che ogni luogo \( j \) riceva esattamente un oggetto.
+  \end{itemize}
+}
+
+il luogo può anche essere visto come uno slot temporale, quindi imponiamo un certo pipeline
+
+
+\subsubsection{Vincoli di semi-assegnamento}
+I vincoli di semi-assegnamento sono una variante dei vincoli di assegnamento in cui non è necessario che ogni luogo riceva esattamente un oggetto, in particole si noti la seguente definizione
+
+\dfn{Vincoli di semi-assegnamento}{
+  Sia \( N = \{1, \ldots, n\} \) un insieme di oggetti e \( V = \{1, \ldots, m\} \) un insieme di luoghi. Si definiscono \textbf{vincoli di semi-assegnamento} quei vincoli che impongono che \textit{ogni oggetto sia assegnato ad al massimo un luogo}. Questi vincoli sono espressi mediante la seguente sommatoria:
+
+  \[
+  \sum_{j=1}^{m} x_{ij} \leq 1 \quad \forall i \in \{1, \ldots, n\}
+  \]
+  
+  Dove \( x_{ij} \) è una variabile binaria che vale 1 se l'oggetto \( i \) è assegnato al luogo \( j \), e 0 altrimenti.
+  
+
+}
+
 
 Insiemi ammissibili:
 
 Vincoli di Assegnamento: ogni oggetto e' assegnato ad un luogo e ogni luogo ha un oggetto
-\[
-  \sum_{j=1}^{m} x_{ij} = 1 \quad (1 \leq i \leq n) \qquad \sum_{i=1}^{n} x_{ij} = 1 \quad (1 \leq j \leq m)
-\]
 
-Ordinamento
-il luogo puo' anche essere visto come uno slot temporale, quindi imponiamo un certo pipeline
+
 
