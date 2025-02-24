@@ -1,3 +1,4 @@
+% \begin{document}
 \chapter{Problemi e Modelli}
 
 \section{Problemi di ottimizzazione}
@@ -212,3 +213,84 @@ Un problema PL spuo' sempre essere espresso in forma matriciale:
 max \{cx | Ax \leq b\}
 \]
 dove $ A \in \mathbb{R}^{m \times n} $ e $ b \in \mathbb{R}^m $, quindi scriviamo tutti i vincoli in un unica disequazione. Sistema di disequazioni lineari. Usiamo $ max $ dato che sappiamo passare da max a min. Se abbiamo un vincolo $ ax = b $, questo diventa $ ax \leq b $ e $ ax \geq b $, e $ ax \geq b $ diventa $ (-a)x \leq (-b) $
+
+\subsection{Programmazione lineare intera}
+
+Le variabili intere possono rappresentare:
+\begin{itemize}
+\item Quantita'
+\item Logiche: catturare valori booleani, quindi non scelte rispetto al "quanto" ma al "se", ovvero l'opportunita' di fare o meno una certa cosa
+\end{itemize}
+
+Una variabile $ x $ e' logica se:
+\[
+  x \in \mathbb{N} (o \mathbb{Z}) \quad 0\leq x \quad x \leq 1
+\]
+
+Tipico esempio sono le variabili che associano una certa risorsa a un task, o che venga usato un certo processo. Questo e' il bello dei problemi lineari. 
+
+Esempi di problemi di ottimizzazione lineari:
+\begin{itemize}
+\item Lo Zaino
+\item Albero di copertura minimo
+\item Commesso viaggatore
+\end{itemize}
+
+\subsection{Problema dello Zaino}
+appunti scritti
+
+Che tipo di relazioni logiche possiamo catturare con la programmazione lineare? TUTTEEEE con semplici vincoli lineari:
+\begin{itemize}
+  \item Negazione $ (y = \neg x) $: $ x = 1-y $
+  \item Congiunzione $ (z = (x \land y)) $: 
+    \[
+    \begin{aligned}
+      &z \leq x\\
+      &z \leq y\\
+      &z \geq x + y -1
+    \end{aligned}
+    \]
+  \item Disgiunzione $ (z = (x \lor y)) $: 
+    \[
+    \begin{aligned}
+      &z \geq x\\
+      &z \geq y\\
+      &z \leq x + y
+    \end{aligned}
+    \]
+  \item Implicazione $ (z = (x \implies y)) $:
+    \[
+    \begin{aligned}
+      &x+z \geq 1\\
+      &z \geq y\\
+      &x+z \leq 1 + y
+    \end{aligned}
+    \]
+\end{itemize}
+
+Questa cosa e' un'evidenza del fatto che il problema lineare di ottimizzazione e' in generale NP-hard :(. In poche parole e' perche' il problema di soddisfacibilita' di una formula logica e' nella classe NP-hard.
+
+\section{Template per risolvere problemi}
+
+\subsection{Vincoli di assegnamento}
+
+Problemi che riguardano situazioni in qui dobbiamo assegnare "oggetti a luoghi". L'insieme $ N $ di oggetti possono essere automezzi, persone, ... mentre i luoghi $ V $ devono ricevere uno e solo un oggetto. Dobbiamo catturare il significato che l'i-esimo oggetto e' stato assegnato al j-esimo luogo.
+
+Prendiamo le variabili logiche $ x_{ij} =  $
+
+Vincoli di Semi-Assegnamento: ogni oggetto e' assegnato a un luogo, ma non ogni luogo riceve un oggetto
+\[
+  \sum_{j=1}^{m} x_{ij} = 1 \quad (1 \leq i \leq n)
+\]
+
+Insiemi ammissibili:
+
+Vincoli di Assegnamento: ogni oggetto e' assegnato ad un luogo e ogni luogo ha un oggetto
+\[
+  \sum_{j=1}^{m} x_{ij} = 1 \quad (1 \leq i \leq n) \qquad \sum_{i=1}^{n} x_{ij} = 1 \quad (1 \leq j \leq m)
+\]
+
+Ordinamento
+il luogo puo' anche essere visto come uno slot temporale, quindi imponiamo un certo pipeline
+
+% \end{document}
