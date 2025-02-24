@@ -192,31 +192,73 @@ Al posto di dare un'algoritmo per ogni specifico problema, possiamo definire cla
 
 \subsection{Programmazione Lineare}
 
+Fornisco Innanzitutto la def. di problema di problema di Programmazione Lineare
+
+\dfn{Problema di Programmazione Lineare}{
+  Si definiscono \textbf{Problemi di programmazione lineare (PL)} tutti quei problemi di ottimizzazione in cui la funzione obbiettivo $c_{\mathcal{P}}$ è \textit{lineare} e i vincoli sono \textit{tutti espressi da disequazioni lineari} ed anche, eventualmente, equazioni lineari (quest'ultime possono mancare le prime no). 
+  
+  In particolare in un problema $\mathcal{P}$ di programmazione si ha:
+  \begin{itemize}
+    \item $\mathbb{G} = \mathbb{R}$, definendo poi un numero finito $n \in \mathbb{N}$ di variabili reali, che nella realtà rappresentano delle \textit{quantità}
+    \[
+      x = (x_1, \dots, x_n) \in \mathbb{R^N}
+    \]
+    \item Una \textit{funzione obiettivo} $c_{\mathcal{P}}$ definita $f : \mathbb{R}^n \to \mathbb{R}$ nella forma:
+    \[
+      f(x) = cx
+    \]
+    
+    Dove $c$ è un vettore riga e $x$ è un vettore colonna. Si noti che $c$ non è una variabile, bensì un \textit{parametro} (definizione della funzione obiettivo)
+    \item Un insieme di $m$ vincoli lineari, tutti in una delle forme seguenti:
+    \[
+      ax=b \quad ax\leq b \quad ax \geq b
+    \]
+
+    Dove $a\in \mathbb{R}^n$ e $b\in \mathbb{R}$
+  \end{itemize}
+}
+
 $ f $ e' lineare. 
 $ c_p $ e' l'insieme di vettori di numeri reali. $ \mathbb{G} = \mathbb{R}^n $. (definizione di $ G $)
 
+È talvolta utile assumere che $x \in \mathbb{Z}^n$, ovvero che le soluzioni ammissibili siano vettori di numeri interi. In questo caso si parla di \textit{programmazione lineare intera}. Facendo così, stiamo restringendo il campo di ricerca (ed il dominio delle soluzioni possibili), ma si perdono alcune proprietà (geometriche) che in realtà possono rendere più difficile la ricerca della soluzione. 
+
+Esiste inoltre la \textit{programmazione lineare mista} (PLM), dove si hanno variabili di natura mista (alcune variabili in $ \mathbb{R} $ ed alcune in $ \mathbb{Z} $)
+
+Si noti questo diagramma riassuntivo:
+
+\begin{center}
+  \begin{tikzpicture}
+    
+    \draw[thick, rounded corners] (-4, -1.5) rectangle (4, 1.5);
+    
+    \draw[thick, rounded corners] (-3, -1) rectangle (-1, 1);
+    \node at (-2, 0) {\textbf{PL}};
+    
+    \draw[thick, rounded corners] (1, -1) rectangle (3, 1);
+    \node at (2, 0) {\textbf{PLI}};
+    
+    \node at (0, 1) {\textbf{PLM}};
+    
+  \end{tikzpicture}
+\end{center}
+  
+  
+
+
+Un problema PL può sempre essere espresso nella seguente forma matriciale:
+\[
+  \max \{cx \mid Ax \leq b\}
+\]
+dove $ A \in \mathbb{R}^{m \times n} $ e $ b \in \mathbb{R}^m $. Grazie ad alcuni accorgimenti è possibile, inoltre, scrivere tutti i vincoli possibili di un problema di PL $\mathcal{P}$ in un'unico sistema di disequazioni lineari. Infatti:
 \begin{itemize}
-\item La funzione obiettivo $ f: \mathbb{R}^n \to \mathbb{R} $
-  \[
-    f(x) = cx
-  \]
-    dove $ c $ e' un vettore riga e $ x $ vettore colonna. Attenzione, $ c $ non e' una variabile ma un \textbf{parametro}. (definizione della funzione obiettivo)
-  \item Ci sono un insieme di vincoli lineari nella forma: $ ax = b $, $ ax \leq b $, $ ax \geq b $. Dove $ a \in \mathbb{R}^n $ e $ b \in \mathbb{R} $ ()
+  \item Se \p è un problema di minimo, occorre considerare semplicemente la funzione $f (x) = (-c)x$
+  \item Ogni vincolo $ax = b $diventa la coppia di vincoli $ax \leq b$ e $ax \geq b$
+  \item Ogni vincolo $ax \geq b$ è equivalente a $(-a)x \leq (-b)$.
 \end{itemize}
 
-E' talvolta utile assumere che $ x \in \mathbb{Z}^n $, ovvero che le soluzioni ammissibili siamo vettori di numeri interi. In questo caso si parla di programmazione lineare intera. Facendo cosi' stiamo restringendo il campo di ricerca, ma si perdono alcune proprieta' (geometriche) che in realta' possono rendere piu' difficile la ricerca della soluzione.
-
-In PLM possiamo avere variabili di natura mista (alcune variabili in $ \mathbb{R} $ alcune in $ \mathbb{Z} $)
-
-Un problema PL spuo' sempre essere espresso in forma matriciale:
-\[
-max \{cx | Ax \leq b\}
-\]
-dove $ A \in \mathbb{R}^{m \times n} $ e $ b \in \mathbb{R}^m $, quindi scriviamo tutti i vincoli in un unica disequazione. Sistema di disequazioni lineari. Usiamo $ max $ dato che sappiamo passare da max a min. Se abbiamo un vincolo $ ax = b $, questo diventa $ ax \leq b $ e $ ax \geq b $, e $ ax \geq b $ diventa $ (-a)x \leq (-b) $
-
 \subsection{Programmazione lineare intera}
-
-Le variabili intere possono rappresentare:
+Se nella $PL$ le variabili rappresentano quantità 
 \begin{itemize}
 \item Quantita'
 \item Logiche: catturare valori booleani, quindi non scelte rispetto al "quanto" ma al "se", ovvero l'opportunita' di fare o meno una certa cosa
@@ -233,7 +275,7 @@ Esempi di problemi di ottimizzazione lineari:
 \begin{itemize}
 \item Lo Zaino
 \item Albero di copertura minimo
-\item Commesso viaggatore
+\item Commesso viaggiatore
 \end{itemize}
 
 \subsection{Problema dello Zaino}
