@@ -1,4 +1,3 @@
-% \begin{document}
 \chapter{Problemi e Modelli}
 
 \section{Problemi di ottimizzazione}
@@ -89,55 +88,93 @@ Un modo comune per descrivere un problema è dare l'insieme di soluzioni ammissi
     \end{array}
   \]
 }
+\subsection{2.1.1 Problemi di ottimizzazione}
 
-Identifichiamo dentro a $ G $ le soluzioni definite accettabili da un problema. Pero', per i problemi di ottimizzazione, la situazione e' piu' complessa, perche' dobbiamo trovare fra queste funzioni quel'e' la migliore. Per questo usiamo una funzione obbiettivo:
-\[
-  c_{\mathcal{P}}: F_\mathcal{P} \to \mathbb{R}
-\]
-che misura il costo (minimizzare) o il benificio (massimizzare) di ogni soluzione ammissibile
-\[
-  Z_p = max/min\{c_p(g) | g \in \mathbb{F}_p\}
-\]
+Iniziamo con una definizione preliminare.
 
-Possiamo passare da un problma di massimo a uno di minimo molto semplicemente ponendo $ c_p'(g) = -c_p(g) $ e calcolando:
-\[
-  Z_p = - min \{c_p'(g) | g \in F_p = F_p'\}
-\]
+\dfn{Problema di ottimizzazione}{In matematica e in informatica, un problema di ottimizzazione è il problema di trovare la migliore soluzione fra tutte le soluzioni fattibili.}
 
-$ Z_p $ e' il \textbf{valore ottimo} per $ P $ che assume il valore della funzione nel punto della \textbf{soluzione ottima} $ g^* $ e non e' sempre un unico valore reale. Quindi il solo valore ottimo non mi dice effettivamente come arivare al risultato. 
-
-\ex{}{
-  $ G = \mathbb{R} $, $ F_p = \{x \in \mathbb{R} | 5x^2-6x+1=0\} $, $ c_p: \mathbb{R} \to \mathbb{R}, c_p(g) = g^2 $:
-  \[
-  Z_p = max \{x^2 | 5x^2 - 6x + 1 = 0\}
-  \]
-  Quindi la $ x^2 $ e' il valore ottimo, mentre $ x $ e' la soluzione ottima.
-}
-
-Cosa possiamo ottenere come outcome di un'ottimizzazione? Ci sono 4 casi:
+Un problema di ottimizzazione $\mathcal{P}$ viene descritto:
 \begin{itemize}
-\item Problema vuoto: $ F_p = \emptyset $ e per convenzione si assume che $ Z_p = \infty $. Non e' detto che sia semplice capire se siamo in questo caso.
-\item Problema illimitato: ci sono troppe soluzioni ammissibili. Nel caso di un problema di massimo $ \forall x \in \mathbb{R} \exists g \in F_p. c_p(g) \geq x $, in tal caso $ Z_p = +\infty $. Dualmente nel caso minimo.
-\item Valore ottimo finito ma non soluzione ottima finita: (cerchiamo di evitare usando delle tecniche) $ Z_p \exists \text{finito} $, ma $ c_p(g) \neq Z_p $. Es $ inf \{x | x > 0\} $ (estremo inferiore $ =0 $), ma non esiste una soluzione ottima che soddisfi il valore ottimo (insiemi aperti).
-\item Valore Ottimo Finito e Soluzione Ottima Finita: $ \exists g \in F_p. c_p(g) $ e' ottimo. Notare che possono esistere diverse soluzione ottime ma solo un valore ottimo. (Caso preferito)
+  \item Dando l’insieme $\mathbb{F}_\mathcal{P}$ delle soluzioni ammissibili
+  \item Specificando una funzione obiettivo $c_\mathcal{P} : \mathbb{F}_\mathcal{P} \to \mathbb{R}$ che assegna ad ogni $g \in \mathbb{F}_\mathcal{P}$ un valore reale $c_\mathcal{P}(g)$, che rappresenta il costo o il beneficio.
+\end{itemize}
+Un problema (di ottimizzazione) di massimo $\mathcal{P}$ consiste nel determinare il valore
+\[
+Z_\mathcal{P} = \max \{ c_\mathcal{P}(g) \mid g \in \mathbb{F}_\mathcal{P} \},
+\]
+mentre un problema (di ottimizzazione) di minimo $\mathcal{P}$ consiste nel determinare il valore
+\[
+Z_\mathcal{P} = \min \{ c_\mathcal{P}(g) \mid g \in \mathbb{F}_\mathcal{P} \}.
+\]
+Ci si può trastullare con la definizione, infatti ad ogni problema di massimo $\mathcal{P}$ corrisponde un problema di minimo $\mathcal{P}'$ tale che $c_{\mathcal{P}'}(g) = -c_\mathcal{P}(g)$, ovvero:
+\[
+Z_\mathcal{P} = -\min \{ c_{\mathcal{P}'}(g) \mid g \in \mathbb{F}_\mathcal{P} = \mathbb{F}_{\mathcal{P}'} \}.
+\]
+
+\dfn{Valore ottimo e soluzione ottima}{Dato un problema di ottimizzazione $\mathcal{P}$, il valore $Z_\mathcal{P}$ definito in precedenza è detto valore ottimo, mentre il $g^* \in \mathbb{F}_\mathcal{P}$ tale che $Z_\mathcal{P} = c_\mathcal{P}(g^*)$ è detto soluzione ottima.}
+
+Si può quindi constatare che la differenza reale tra i due è che il valore ottimo è inserito nel codominio della funzione obiettivo (cioè il mero valore reale “ottimizato”), mentre la soluzione ottima appartiene al dominio (ovvero è l’elemento in $\mathbb{F}_\mathcal{P}$ che ottimizza la funzione).
+
+\ex{Esempio di problema di ottimizzazione}{Dati
+\[
+G = \mathbb{R}, \quad \mathbb{F}_\mathcal{P} = \{ x \in \mathbb{R} \mid 5x^2 - 6x + 1 = 0 \}, \quad c_\mathcal{P} : \mathbb{R} \to \mathbb{R} \text{ con } c_\mathcal{P}(g) = g^2,
+\]
+e si ponga
+\[
+Z_\mathcal{P} = \max \{ x^2 \mid x \in \mathbb{F}_\mathcal{P} \}.
+\]
+Innanzitutto, calcolo l’insieme delle soluzioni ammissibili (hold my soluzione parabolica):
+\[
+x = \frac{6 \pm \sqrt{(-6)^2 - 4\cdot5\cdot1}}{2\cdot5} = \frac{6 \pm \sqrt{36 - 20}}{10} = \frac{6 \pm \sqrt{16}}{10} = \frac{6 \pm 4}{10}.
+\]
+Quindi, le soluzioni sono:
+\[
+x_1 = \frac{6 + 4}{10} = 1 \quad \text{e} \quad x_2 = \frac{6 - 4}{10} = \frac{1}{5}.
+\]
+Pertanto, l’insieme delle soluzioni ammissibili è:
+\[
+\mathbb{F}_\mathcal{P} = \{ 1, \tfrac{1}{5} \}.
+\]
+
+Si procede poi nel calcolare la funzione obiettivo per ogni elemento:
+\[
+c_\mathcal{P}(1) = 1^2 = 1, \quad c_\mathcal{P}\left(\tfrac{1}{5}\right) = \left(\tfrac{1}{5}\right)^2 = \tfrac{1}{25}.
+\]
+Il massimo tra questi valori è:
+\[
+Z_\mathcal{P} = \max\{ 1, \tfrac{1}{25} \} = 1.
+\]}
+
+fin casi dei problemi di decisione
+
+Si hanno quattro casi principali in cui sono inseriti i problemi di decisione:
+\begin{itemize}
+  \item \textbf{Problema vuoto:} non esistono soluzioni ammissibili, ovvero $\mathbb{F}_\mathcal{P} = \emptyset$, per cui l’ottimizzazione è impossibile e si assume che $Z_\mathcal{P} = \infty$.
+  \item \textbf{Problema illimitato:} si ha quando non esiste un limite inferiore/superiore per i valori della funzione obiettivo tra le soluzioni ammissibili, ovvero quando $Z_\mathcal{P} = \pm\infty$. Ad esempio, nel caso del massimo, per ogni $x \in \mathbb{R}$ esiste un $g \in \mathbb{F}_\mathcal{P}$ con $c_\mathcal{P}(g) \ge x$, e quindi $Z_\mathcal{P} = +\infty$.
+  \item \textbf{Valore ottimo finito ma non soluzione ottima finita:} un problema di ottimizzazione può presentare un valore ottimo finito, pur non ammettendo alcuna soluzione $g \in \mathbb{F}_\mathcal{P}$ tale che $c_\mathcal{P}(g)$ sia esattamente uguale a $Z_\mathcal{P}$. (Es.: nell’insieme $\{ x \mid x > 0 \}$, dove l’estremo inferiore è 0, ma non esiste una soluzione che raggiunga tale valore.)
+  \item \textbf{Valore ottimo finito e soluzione ottima finita:} esiste almeno un $g \in \mathbb{F}_\mathcal{P}$ tale che $c_\mathcal{P}(g) = Z_\mathcal{P}$, ed esso è ottimo. Notare che possono esistere più soluzioni ottime, ma un solo valore ottimo.
 \end{itemize}
 
-\subsection{Problemi di ottimizzazione e di decisione}
-Il problema di decisione consiste nel determinare una qualunque soluzione ammissibile $ g \in F_p $. 
+\subsection{ Problemi di ottimizzazione e di decisione}
 
-Il problema di certificato consiste nel dire se per una $ g \in G $ si ha che $ g \in F_p $.
+Verranno fornite due definizioni importanti:
 
-Trasformare un problema di ottimizzazione in un problema di decisione basta rendere $ c_p $ costante (quindi tutte le soluzioni ammissibili diventano ottime e le consideriamo tutte)
+\dfn{Problema di decisione}{Un problema di decisione consiste nel determinare una qualunque soluzione ammissibile $g \in \mathbb{F}_\mathcal{P}$.}
 
-Al contrario, possiamo considerare un problema decisionale $ R $ tale che 
+\dfn{Problema di certificato}{Il problema di certificato consiste nel verificare se, per un dato $g \in G$, risulti che $g \in \mathbb{F}_\mathcal{P}$.}
+
+I problemi di decisione sono generalmente più semplici dei problemi di ottimizzazione, in quanto non richiedono la definizione di una funzione obiettivo $c_\mathcal{P}()$. Tuttavia, è possibile trasformarli in problemi di ottimizzazione fissando una funzione obiettivo triviale (ad esempio, costante), per cui tutte le soluzioni ammissibili risultano ottime.
+
+In alternativa, possiamo considerare un problema decisionale $R$ definito da
 \[
-  F_R = \{g \in F_p | c_p(g)\ = Z_p\}
+F_R = \{ g \in \mathbb{F}_\mathcal{P} \mid c_\mathcal{P}(g) = Z_\mathcal{P} \},
 \]
-oppure dato $ k \in \mathbb{R} $ si puo anche considerare $ R_k $ decisionale con 
+oppure, per un dato $k \in \mathbb{R}$, il problema decisionale $R_k$ con
 \[
-  F_{R_k} = \{ g \in F_p | c_p(g) \leq k\}
+F_{R_k} = \{ g \in \mathbb{F}_\mathcal{P} \mid c_\mathcal{P}(g) \le k \},
 \]
-(nel caso in cui $ P $ e' di minimo)
+nel caso in cui $\mathcal{P}$ sia un problema di minimo.
 
 \subsection{Aspetto algoritmico}
 \begin{itemize}
@@ -175,4 +212,3 @@ Un problema PL spuo' sempre essere espresso in forma matriciale:
 max \{cx | Ax \leq b\}
 \]
 dove $ A \in \mathbb{R}^{m \times n} $ e $ b \in \mathbb{R}^m $, quindi scriviamo tutti i vincoli in un unica disequazione. Sistema di disequazioni lineari. Usiamo $ max $ dato che sappiamo passare da max a min. Se abbiamo un vincolo $ ax = b $, questo diventa $ ax \leq b $ e $ ax \geq b $, e $ ax \geq b $ diventa $ (-a)x \leq (-b) $
-% \end{document}
