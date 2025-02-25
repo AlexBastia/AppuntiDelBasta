@@ -1,3 +1,99 @@
 % \begin{document}
-  
+\chapter{Probabilita' Condizionata}
+
+Cosa significa a livello di calcolo conoscere un nuovo evento?
+
+Notazione:
+\begin{itemize}
+  \item $ \mathbb{P}(A|B) $: probabilita' dell'evento $ A $ condizionata a $ B $
+\end{itemize}
+
+Domanda: se so che si e' verificato $ B $, come cambia $ \mathbb{P}(A) $?
+
+\nt{
+  $ \mathbb{P}(A|B) = \mathbb{P}(\cdot | B), B \subseteq \Omega $, quindi essendo sempre una probabilita' ha sempre tutte le proprieta' di una qualunque probabilita'. La probabilita' e' sempre relativa ad $ A $, la $ B $ cambia solo come agisce $ \mathbb{P} $
+}
+
+\ex{Probabilita' uniforme}{
+  Lancio del dado: $ \Omega = \{1,2,3,4,5,6\} $, $ \mathbb{P} $ prop. uniforme
+
+  $ \mathbb{P}(\{\omega\}) = \frac{1}{|\Omega|}, \forall \omega \in \Omega $, ovvero:
+  \[
+    \mathbb{P}(A) = \frac{\text{casi favorevoli in }A}{\text{casi possibili}}
+  \]
+  $ A = \text{"esce un numero maggiore di 3"} = \{3,4,5,6\} $ e $ B = \{\text{"esce un numero pari"}\} = \{2,4,6\} $, domanda $ \mathbb{P}(A|B) $?
+
+  $ P(A) = \frac{4}{6} $ come abbiamo gia visto.
+
+  Ora facciamo che sappiamo che $ B $ si sia avverato. ATTENZIONE! cio' non vuol dire che cambia lo spazio campionario perche' l'esperimento e' lo stesso, ma cambiano i \textit{veri} casi favorevoli e i \textit{veri} casi possibili:
+  \[
+    P(A|B) = \frac{\text{"veri casi favorevoli di A"}}{\text{veri casi possibili}} = \frac{|A \cap B|}{|B|} = \frac{2}{3}
+  \]
+
+  Dado a 4 facce truccato: 
+
+  \[
+    \mathbb{P}(A|B) = \frac{\text{"probabilita' dei veri casi favorevoli di A"}}{\text{probabilita' dei veri casi possibili}} = \frac{}{}
+  \]
+}
+
+\dfn{Probabilita' Condizionata}{
+  Prendo due eventi $ A, B $, uno spazio di probabilita' $ \left( \Omega, \mathbb{P} \right) $ con 
+  \[
+    \mathbb{P}(B) > 0
+  \]
+  Definisco \textit{probabilita' condizionata a B di A} la funzione:
+  \[
+    \mathbb{P}(A|B) = \frac{\mathbb{P}(A \cap B)}{\mathbb{P}(B)}
+  \]
+}
+
+\nt{
+  Se $ \mathbb{P} $ e' la probabilita' uniforme allora:
+  \[
+    \mathbb{P}(A|B) = \frac{\mathbb{P}(A \cap B)}{\mathbb{P}(B)} = \frac{\frac{|A \cap B|}{|\Omega|}}{\frac{|B|}{|\Omega|}} = \frac{|A \cap B|}{|B|}
+  \]
+}
+
+\nt{
+  B e' fissato nella definizione di propbabilita' condizionata, ovvero:
+  \[
+    \mathbb{P}(A|B) \neq \mathbb{P}(B|A)
+  \]
+  Quindi il ruolo di $ A $ e $ B $ e' completamente diverso
+}
+
+\nt{
+  Se $ B = \Omega $, allora $ \mathbb{P}(A|B) = \mathbb{P}(A) $ dato che la conoscenza del fatto che si e' avverato $ \Omega $ e' ovvio e non ci cambia.
+
+  Se $ A = \Omega $, allora $ \mathbb{P}(\Omega | B) = 1 $ (per proprieta', dato che e' sempre una probabilita')
+}
+
+Verifichiamo gli assiomi (fissiamo $ B \subseteq \Omega $ con $ \mathbb{P}(B) > 0 $):
+
+\begin{enumerate}
+  \item $ \mathbb{P}(A|B) \in [0,1], \forall A \subseteq \Omega $
+  \item $ \mathbb{P}(\Omega|B) = 1 $
+  \item $ \sigma-\text{addittivita'} $: $ (A_i)_{i \in \mathbb{N}} $ disgiunti:
+    \[
+      \mathbb{P}(\bigcup_{i=1}^{\infty} A_i|B) = \sum_{i=1}^{\infty} \mathbb{P}(A_i|B)
+    \]
+\end{enumerate}
+
+\nt{
+  La probabilita' condizionata in genere e' nota e si usa per calcolare la probabilita' dell'intersezione:
+  \[
+    \mathbb{P}(A \cap B) = \mathbb{P}(A|B) \cdot \mathbb{P}(B)
+  \]
+  Questa formula e' detta regola della catena. Vale in generalecon $ n $ eventi
+}
+
+\mprop{}{
+  $ (A_i)_{i = 1,...,n}, \mathbb{P}(A_1 \cap ... \cap A_{n-1}) > 0 $, allora:
+  \[
+    \mathbb{P}(A_1 \cap ... \cap A_n) = \mathbb{P}(A_1)\mathbb{P}(A_2|A_1)\mathbb{P}(A_3|A_1 \cap A_2) ... \mathbb{P}(A_n| A_1 \cap ... A_{n-1})
+  \]
+  La condizione funziona grazie alla monotonia, dato che $ 0 < \mathbb{P}(A_1 \cap ... \cap A_{n-1}) \leq \mathbb{P}(A_1 \cap ... \cap A_j), 1 \leq j \leq n-1 $
+}
+
 % \end{document}
