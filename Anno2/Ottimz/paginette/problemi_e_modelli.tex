@@ -421,5 +421,80 @@ Insiemi ammissibili:
 
 Vincoli di Assegnamento: ogni oggetto e' assegnato ad un luogo e ogni luogo ha un oggetto
 
+\subsection{Selezione di Sottoinsiemi}
+
+Sia $ N = \{1,...,n\} $ un insieme finito di elementi e sia $ F = \{F_1,...,F_n\} $ una famiglia di sottoinsiemi (non necessariamente disgiunti) dove $ F_i \subseteq N $. Vogliamo decidere qual'e' la scelta migliore di $ D\subseteq F $ di costo minimo. Per aiutare nella formulatzione del problema, possiamo rappresentare l'appartenenza degli ielementi di $ N $ in un sottoinsieme $ F_j $ come una grande matrice che ha come righe gli elementi e come colonne i sottoinsiemi. La scelta e' catturatanon piu' da $ x_{ij} $ ma solo da $ x_j $ dato che basta dire se il sottoinsieme $ j $ lo volgiamo o no. 
+\[
+x_j = \begin{cases}
+1 & F_j \in D\\
+0 & \text{altrimenti}
+\end{cases}
+\]
+
+La funzione obbiettivo e' sempre:
+\[
+\sum_{j=1}^{n} x_j c_j
+\]
+
+I vincoli dipendono dal problema:
+\begin{itemize}
+\item Problema di copertura: ognuno degli eventi di $ N $ atanno in almeno uno degli elementi di $ D $:
+  \[
+  \sum_{j=1}^{m} a_{ij}x_j \geq 
+  \]
+    Numero di sottoinsiemi di $ D $ che appartengono a $ i $ (?). I sottoinsiemi $ F $ di $ N $ possono essere dei curriculum dove c'e' scritto quale dei linguaggi di programmazione $ n \in N $ conosce un candidato. Ogni candidato ha anche uno stipendio. Dobbiamo scegliere quali canditati assumere per coprire tutti i linguaggi in $ N $ minimizzando il costo.  
+  \item Partizione: $ D $ deve essere una partizione di $ N $. $ N $ possono essere dei task da svolgere e gli iniemi di $ F $ sono offerte da fornitori rispetto alla risoluzione di alcuni dei task. Quindi gli inisiemi di $ D $ devono essere disgiunti perche' non vogliamo che due societa' risolvano lo stesso task. Tutto deve essere coperto una sola volta.
+  \item Riempimento: si usa solo quando si vuole massimizzare. $ N $ non sono piu' incombenze o task, ma risorse da usare una volta per costruire un prodotto (elemento di $ F $). Al piu' perche' possiamo scartare qualche componente. Possiamo usare ogni elemento di $ N $ al massimo una volta. 
+\end{itemize}
+
+\ex{Problema delle Commesse}{
+  Un'agenzia deve decidere come impiegare i soi $ n $ dipendenti.
+
+  L'azienda, nell'intervallo di tempo considerato, deve evadere $ m $ commese.
+
+  Ciascuna commessa $ j $ deve essere svolta dal sottoinsieme $ F_j \subseteq \{1,...,n\} $ dei dipendenti dell'azienda.
+
+  Ogni commesssa, se evase, darebbe luogo ad un ricavo pari a $ r_j $.
+
+  Ogni dipendente puo' lavorare ad una singola commessa nell'unita' di tempo.
+
+  SVOLGIMENTO:
+
+  e' un problema di selezione di sottoinsiemi:
+  \[
+  N - \{1,...,n\} \text{elementi/dipendenti}
+  \]
+  \[
+  F = \{F_1,...,F_m\} commesse
+  \]  
+  \section{}
+  \]
+
+  VARIABILI:
+  \[
+  x_{j} = \begin{cases}
+  1 & F_j \in D_j\\
+  0 & \text{altrimenti}
+  \end{cases}
+  \]
+  VINCOLI:
+  $ 0\leq x_j \leq 1 \forall j $
+  \[
+  \sum_{j=1}^{m} x_j a_{ij} \leq 1 \forall i
+  \]
+  FO:
+  \[
+   \sum_{j=1}^{m} x_j r_j
+ \]
+ Ha fatto poi un esempio di quando c'e' una penalita' quando non fai una commessa (mi sa)
+}
+
+\subsection{Ricondurci a problemi linari}
+Variabili a valori discreti possono prendere un insieme finito di valori diversi che non sono valori in un intervallo. Se questo insieme ha $ n $ valori ci servono $ n $ variabili diverse. 
+
+\ex{Progetto di reti}{
+
+}
+
 
 
