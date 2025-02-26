@@ -1,4 +1,5 @@
 \chapter{Esercitazioni}
+
 \section{Problemi e modelli}
 \subsection{Problema dei data center}
 
@@ -11,21 +12,21 @@ Abbiamo $n$ server $1,\dots,n$, ogni server può lavorare in $m_{i\in\mathbb{N}}
 
 \textit{Variabili}:
 \[
-    \begin{align*}
+    \begin{aligned}
         x_{ij} &= \begin{cases}
             1 & \text{se il server $i$ è utilizzato in modalità $j\in\{1,\dots,m_i\}$} \\
             0 & \text{altrimenti}
         \end{cases}\\
         x_{ij}&\in \mathbb{N}, \quad \forall i\,\forall j
-    \end{align*}
+    \end{aligned}
 \]
 \textit{Vincoli}:
 $\forall i\in \{1,\dots, n\},\quad\forall j\in\{1,\dots,m_{i}\}$ con $0\leq x_{ij}\leq 1$ si ha:
 \[
-    \begin{align*}
+    \begin{aligned}
         \forall i\in\{1,\dots,n\}\quad \sum_{j=1}^{m_i}x_{ij} &= 1\\
         \sum^n_{i=1}\sum^{m_i}_{j=1}x_{ij}s_{ij} &\geq k
-    \end{align*}
+    \end{aligned}
 \]
 
 \textit{funzione obbiettivo}
@@ -42,20 +43,20 @@ Vogliamo assegnare i progetti ai pc in modo da minimizzare il tempo complessivo 
 \subsubsection{Svolgimento}
 \textit{Variabili}:
 \[
-    \begin{align*}
+    \begin{aligned}
         x_{ij} &= \begin{cases}
             1 & \text{se il progetto $i$ è compilato al pc $j$} \\
             0 & \text{altrimenti}
         \end{cases}\\
         x_{ij}&\in \mathbb{N}, \quad \forall i\in \{1,\dots, n\}\,\forall j\in \{1,\dots, m\} \
-    \end{align*}
+    \end{aligned}
 \]
 \textit{Vincoli}:
 \[
-    \begin{align*}
+    \begin{aligned}
         \forall i\in\{1,\dots,n\}\quad \sum_{j=1}^{m}x_{ij} &= 1 \text{ (normale vincolo di semi-assegnamento!!)}\\
         \forall j\in\{1,\dots,m\}\quad y&\geq \sum^n_{i=1}x_{ij}t_i 
-    \end{align*}
+    \end{aligned}
 \]
 \textit{Funzione obbiettivo}:
 \[
@@ -65,4 +66,52 @@ Vogliamo assegnare i progetti ai pc in modo da minimizzare il tempo complessivo 
 Funzione obbiettivo sbagliata! Pertanto prenderemo $y$ per "simulare" il massimo, di modo da rendere la funzione obbiettivo lineare:
 \[
     \min y
+\]
+
+\subsection{Problema delle commesse}
+\subsubsection{Testo}
+Un'azienda deve decidere come impiegare i suoi $n$ dipendenti $1,\dots, n$.
+
+L'azienda, nell'intervallo di tempo desiderato deve evadere $m$ commesse $1,\dots, m$
+
+Ciascuna commessa $j$ deve essere svolta dal sottoinsieme $D_j\subseteq\{1,\dots, n\}$ dei dipendenti dall'azienda. 
+
+Ogni commessa, se evasa darebbe luogo ad un ricavo pari a $r_j$ euro.
+
+Ogni dipendente può lavorare ad una singola commessa nell'unità di tempo 
+
+\subsubsection{Svolgimento}
+Si consideri che questo è un Problema di selezione di sottoinsiemi, infatti:
+$\quad N=\{1,\dots,n\}$ elementi/dipendenti
+
+$F = \{F_1, \dots, F_m\} \quad \text{dove } F_j$ è la $j$-esima commessa
+
+\[
+    a_{ij}= \begin{cases}
+        1 & \text{se} i\in F_j\\
+        0 & \text{altrimenti}
+    \end{cases}
+\]
+
+\textit{Variabili}:
+\[
+    \begin{aligned}
+        x_j= \begin{cases}
+            1 & \text{se la commessa $j$ è evasa}\\
+            0 & \text{altrimenti}
+        \end{cases}\\
+        x_j\in\mathbb{N} \quad \red{y_j\in\mathbb{N}}
+    \end{aligned}
+\]
+
+\textit{Vincoli}:
+\[
+    \begin{aligned}
+        0\leq x_j\leq 1 \quad \forall j\in\{1,\dots,m\} \quad \red{0\leq y_j\leq 1}\\
+        \forall i\in\{1,\dots,n\}\quad \sum^m_{j=1}a_{ij}x_j &\leq 1 \quad \red{y_j=1-x_j}
+    \end{aligned}
+\]
+\textit{Funzione obbiettivo}:
+\[
+    \max \sum^m_{j=1}r_jx_j \red{-\sum^m_{j=1}y_ip_j}
 \]
