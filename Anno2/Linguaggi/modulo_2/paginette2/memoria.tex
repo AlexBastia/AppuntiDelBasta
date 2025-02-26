@@ -1,14 +1,24 @@
 % \begin{document}
 
 \chapter{Gestione Memoria}
+La vita di un oggetto corrisponde con tre meccanismi di allocazione di memoria:
 \begin{itemize}
-\item sttica
-\item dinamica
-  \begin{itemize}
-  \item pila
-  \item heap
+\item \textbf{Allocazione statica}: l'oggetto viene allocato una volta sola, prima dell'inizio dell'esecuzione del programma, e deallocato alla fine dell'esecuzione, 
+
+\textit{pertanto è una memoria allocata a tempo di compilazione}
+\item \textbf{Allocazione automatica}: l'oggetto viene allocato all'entrata di un blocco (tipicamente una funzione) e deallocato all'uscita del blocco.
+
+
+\item \textbf{Allocazione dinamica}: l'oggetto viene allocato e deallocato esplicitamente dal programmatore tramite chiamate a funzioni di allocazione e deallocazione (ad esempio, \texttt{malloc} e \texttt{free} in C).
+\textit{pertanto è una memoria allocata a tempo di esecuzione}
+
+Questo tipo di allocazione di serve di due aree di memoria:
+\begin{itemize}
+  \item pila (stack): gli oggetti sono allocati con una politica LIFO, utilizzato per le variabili locali e i parametri formali delle funzioni
+  \item heap: gli oggetti sono allocati e deallocati in qualsiasi ordine, utilizzato per gli oggetti dinamici (puntatori)
   \end{itemize}
 \end{itemize}
+
 
 A cosa serve la memoria? variabili locali, parametri formali, 
 
