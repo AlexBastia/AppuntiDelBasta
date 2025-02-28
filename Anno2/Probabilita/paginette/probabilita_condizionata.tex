@@ -216,6 +216,51 @@ Adesso fornirò un altro teorema piuttosto importante:
     Dato che \( P(A) = P(A|B) \), per il teorema \ref{thm:simmetria_indipendenza} si ha che \( A \dperp B \)
 }
 
+Ecco un altro eserzio:
+\ex{}{
+  \textbf{TESTO}
+
+Lanciamo una moneta e un dado a 4 facce.
+
+Determinare uno spazio di prob. che descriva l'esperimento aleatorio
+
+\textbf{SOLUZIONE}
+
+\Omega = \left\{ (T,1), (T,2), (T,3), (T,4), (C,1), (C,2), (C,3), (C,4) \right\}
+
+P(T,1) = \frac{1}{8} = P(C,4) = \frac{1}{8}
+
+\begin{tikzpicture}[scale=0.7]
+    \node (root) at (0,0) {O};
+    \draw (root) -- (-2,-2) node[left] {$C$} node[midway,left] {$\frac{1}{2}$};
+    \draw (root) -- (2,-2) node[right] {$T$} node[midway,right] {$\frac{1}{2}$};
+    
+    \draw (-2,-2) -- (-3,-4) node[left] {$1$} node[midway,left] {$\frac{1}{4}$};
+    \draw (-2,-2) -- (-1,-4) node[right] {$2$} node[midway,right] {$\frac{1}{4}$};
+    \draw (-2,-2) -- (-1,-6) node[right] {$3$} node[midway,right] {$\frac{1}{4}$};
+    \draw (-2,-2) -- (-3,-6) node[left] {$4$} node[midway,left] {$\frac{1}{4}$};
+    
+    \draw (2,-2) -- (1,-4) node[left] {$1$} node[midway,left] {$\frac{1}{4}$};
+    \draw (2,-2) -- (3,-4) node[right] {$2$} node[midway,right] {$\frac{1}{4}$};
+    \draw (2,-2) -- (3,-6) node[right] {$3$} node[midway,right] {$\frac{1}{4}$};
+    \draw (2,-2) -- (1,-6) node[left] {$4$} node[midway,left] {$\frac{1}{4}$};
+\end{tikzpicture}
+
+  \[
+  \begin{aligned}
+  & T = \text{"esito del lancio moneta e testa"} \\
+  & C = \text{"esito del lancio moneta è croce"} \\
+  & D_i = \text{"è uscito il numero } i \text{"} \\
+  & P(C) = \frac{1}{2}, \quad P(T) = \frac{1}{2} \\
+  & P(D_i | C) = \frac{1}{4} \\
+  & P(D_i | T) = \frac{1}{4} \\
+  & A = \text{"è uscito testa e il numero } i \text{"} \\
+  & P(A) = P(T) \cdot P(D_i | T) = \frac{1}{2} \cdot \frac{1}{4} = \frac{1}{8} \\
+  & \text{Analogamente per } C \cap D_i
+  \end{aligned}
+  \]
+}
+
 
 
 % \end{document}
