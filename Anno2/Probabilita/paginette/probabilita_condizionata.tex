@@ -123,7 +123,7 @@ L'indipendenza tra due eventi e' una relazione simmetrica, ovvero:
 \]
 
 In particolare si noti il seguente teorema:
-\thm{Teorema della simmetria tra eventi indipendenti}{
+\thm{Teorema della simmetria tra eventi indipendenti}{ \label{thm:simmetria_indipendenza}
   Sia $\mathbb{P}(B)>0$ allora:
   \[
     A \dperp B \iff \mathbb{P}(A|B) = \mathbb{P}(A)
@@ -191,6 +191,31 @@ Adesso fornirò un altro teorema piuttosto importante:
     \mathbb{P}(A^c \cap B) = \mathbb{P}(B) - \mathbb{P}(A \cap B) = \mathbb{P}(B) - \mathbb{P}(A) \cdot \mathbb{P}(B) = \mathbb{P}(B) \cdot (1 - \mathbb{P}(A)) = \mathbb{P}(A^c) \cdot \mathbb{P}(B)
   \]
 }
+
+\ex{Calcolo di eventi indipendenti con probabilita condizionata}{
+
+\textbf{TESTO:}
+
+    Si lancia un dado a 6 facce
+
+    \( A = \) "Esce un numero \( > 4 \)" \\
+    \( B = \) "Esce un numero pari"
+
+    Determinare \( P(A) \) e \( P(A|B) \)
+
+\textbf{DETTAGLIO SVOLGIMENTO:}
+
+    \begin{align*}
+        \Omega &= \{1, 2, 3, 4, 5, 6\} \\
+        A &= \{ 5, 6\} \\
+        B &= \{2, 4, 6\} \\
+        P(A) &= \frac{3}{6} = \frac{1}{3} \\
+        P(A|B) &= \frac{P(A \cap B)}{P(B)} = \frac{\frac{1}{6}}{\frac{3}{6}} = \frac{1}{3}
+    \end{align*}
+
+    Dato che \( P(A) = P(A|B) \), per il teorema \ref{thm:simmetria_indipendenza} si ha che \( A \dperp B \)
+}
+
 
 
 % \end{document}
