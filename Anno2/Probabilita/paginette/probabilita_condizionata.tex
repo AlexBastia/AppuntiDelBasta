@@ -96,4 +96,101 @@ Verifichiamo gli assiomi (fissiamo $ B \subseteq \Omega $ con $ \mathbb{P}(B) > 
   La condizione funziona grazie alla monotonia, dato che $ 0 < \mathbb{P}(A_1 \cap ... \cap A_{n-1}) \leq \mathbb{P}(A_1 \cap ... \cap A_j), 1 \leq j \leq n-1 $
 }
 
+\section{Eventi indipendenti}
+Si osservi la seguente definizione
+\dfn{Eventi indipendenti}{
+  Due eventi $ A, B $ si dicono indipendenti se:
+  \begin{equation}
+    \mathbb{P}(A \cap B) = \mathbb{P}(A) \cdot \mathbb{P}(B)
+  \end{equation}
+  
+
+  E viene denatato $A \dperp B$
+}
+
+Generalizzando: 
+\dfn{Eventi indipendenti generale}{
+  Sia dati $n$ eventi $A_1, A_2, ..., A_n$, essi si dicono indipendenti se:
+  \[
+    \mathbb{P}(A_1 \cap ... \cap A_n) = \mathbb{P}(A_1) \cdot ... \cdot \mathbb{P}(A_n)
+  \]
+  
+}
+
+L'indipendenza tra due eventi e' una relazione simmetrica, ovvero:
+\[
+  A \dperp B \iff B \dperp A
+\]
+
+In particolare si noti il seguente teorema:
+\thm{Teorema della simmetria tra eventi indipendenti}{
+  Sia $\mathbb{P}(B)>0$ allora:
+  \[
+    A \dperp B \iff \mathbb{P}(A|B) = \mathbb{P}(A)
+  \]
+  Dall'altro lato, sia $\mathbb{P}(A)>0$ allora:
+  \[
+    A \dperp B \iff \mathbb{P}(B|A) = \mathbb{P}(B)
+  \]
+}
+
+\pf{Dimostrazione}{
+  Verrà fornita solo la dimostrazione del primo punto, la seconda parte è analoga.
+
+  Assumo $\mathbb{P}(B)>0$, si ha:
+  \begin{itemize}
+    \item $ A \dperp B \implies \mathbb{P}(A|B) = \mathbb{P}(A) $:
+      \[
+        \mathbb{P}(A|B) = \frac{\mathbb{P}(A \cap B)}{\mathbb{P}(B)} = \frac{\mathbb{P}(A) \cdot \mathbb{P}(B)}{\mathbb{P}(B)} = \mathbb{P}(A)
+      \]
+    \item $ \mathbb{P}(A|B) = \mathbb{P}(A) \implies A \dperp B $:
+      \[
+        \mathbb{P}(A \cap B) = \mathbb{P}(A|B) \cdot \mathbb{P}(B) = \mathbb{P}(A) \cdot \mathbb{P}(B)
+      \]
+  \end{itemize}
+}
+
+\nt{
+  Si noti che se $\mathbb{P}(A)>0$ e $\mathbb{P}(B)>0$ allora, le tre uguaglianze seguenti sono equivalenti:
+  \[
+    \mathbb{P}(A\cap B) = \mathbb{P}(A) \cdot \mathbb{P}(B) \iff \mathbb{P}(A|B) = \mathbb{P}(A) \iff \mathbb{P}(B|A) = \mathbb{P}(B)
+  \]
+}
+
+Adesso fornirò un altro teorema piuttosto importante:
+\mprop{Sull'indipendenza di eventi complomentari}{
+  Siano $A, B$ due eventi indipendenti, allora:
+  \[
+    A \dperp B \iff A^c  \dperp B,\, A \dperp B^c,\, A^c \dperp B^c
+  \]
+}
+\pf{Dimostrazione}{
+  Dimostro solo la prima parte, le altre sono analoghe.
+
+  Assumo $A, B$ due eventi indipendenti, debbo dimostrare la seguente uguaglianza:
+  \[
+    \mathbb{P}(A^c \cap B) = \mathbb{P}(A^c) \cdot \mathbb{P}(B)
+  \]
+
+  Dato che 
+  \[
+    B = \Omega \cap B = (A \cup A^c) \cap B = (A \cap B) \cup (A^c \cap B)
+  \]
+
+  E dato che $ (A \cap B) $e$ (A^c \cap B)$ sono disgiunti, per \ref{item:finite_additivity} (\textit{additività finita}) si ha:
+  \[
+    \mathbb{P}(B) = \mathbb{P}(A \cap B) + \mathbb{P}(A^c \cap B)
+  \]
+
+  E dato che $ A \dperp B $ si ha:
+  \[
+    \mathbb{P}(B) = \mathbb{P}(A \cap B) + \mathbb{P}(A^c \cap B) = \mathbb{P}(A \cap B) = \mathbb{P}(A) \cdot \mathbb{P}(B) + \mathbb{P}(A^c \cap B)
+  \]
+  Quindi:
+  \[
+    \mathbb{P}(A^c \cap B) = \mathbb{P}(B) - \mathbb{P}(A \cap B) = \mathbb{P}(B) - \mathbb{P}(A) \cdot \mathbb{P}(B) = \mathbb{P}(B) \cdot (1 - \mathbb{P}(A)) = \mathbb{P}(A^c) \cdot \mathbb{P}(B)
+  \]
+}
+
+
 % \end{document}
