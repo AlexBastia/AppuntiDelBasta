@@ -141,66 +141,6 @@ Poniamo tre assiomi fondamentali da cui possiamo partire per derivare tutte le o
   Quindi, per il primo assioma, esiste una funzione probabilita' $ \mathbb{P}(A): \powerset (\Omega) \to [0,1] $.
 }
 
-\dfn{Probabilità discreta}{
-  Chiamo probabilità discreta una funzione probabilità \( \mathbb{P} \) a valori discreti, ovvero che può assumere un numero finito o al più numerabile di valori fra 0 e 1.
-}
-
-Vediamo una tale probabilità:
-
-\dfn{Delta di Dirac}{
-  Sia \( \Omega = \mathbb{R} \), \( x_0 \in \mathbb{R} \), allora si chiama delta di Dirac centrato in \( x_0 \) la funzione:
-\[
-  \begin{aligned} 
-    \delta_{x_0}: \powerset(\mathbb{R}) &\to [0,1]\\
-    A &\mapsto \delta_{x_0}(A) = \begin{cases}
-    1 & x_0 \in A\\
-    0 & x_0 \notin A
-    \end{cases}
-  \end{aligned}
-\]
-}
-
-Notare che per definizione, la funzione di Dirac è una probabilità discreta, dato che soddisfa tutti gli assiomi (ma non molto utile dato che assume solo due valori). Però, tramite le delta di Dirac siamo in grado di costruire qualunque altra probabilità discreta:
-
-Sia \( \Omega = \mathbb{R} \). Prendiamo un numero contabile \( n \) di eventi singoletto \( x_1,x_2,\ldots,x_n \in \mathbb{R} \) a cui corrispondono \( p_1,p_2,\ldots,p_n \in \mathbb{R} \) tale che:
-\[
- \forall i = 1,\ldots,n.\ p_i \in [0,1], \qquad  \sum_{i=1}^{n} p_i = 1 
-\]
-Definiamo la funzione:
-\[
-\begin{aligned}
-  \mathbb{P}: \powerset(\Omega) &\to [0,1]\\
-  A &\mapsto \sum_{i=1}^{n} p_i \delta_{x_i}(A)
-\end{aligned}
-\]
-\( \mathbb{P} \) è una combinazione lineare di delta di Dirac. Essendo una combinazione convessa, \( \mathbb{P} \in [0,1] \) e si può dimostrare che soddisfa gli altri due assiomi (\ref{assioma2} e \ref{assioma3}), quindi è una probabilità discreta! Variando le \( x \) e le \( p \) è possibile generare qualsiasi funzione \( \mathbb{P} \) discreta.
-
-\ex{}{
-  \( \Omega = \{1,2,3,4,5,6\},\ \forall i = 1,\ldots,6.\ x_i = i,\ p_i = \frac{1}{6} \), la funzione \( \mathbb{P} \) associata è:
-  \[
-   P(A) = \sum_{ i=1}^{6} \frac{1}{6} d_{x_i}(A)
-  \]
-  \[
-    A = \{1,2,3,4,5,6\} \implies P(A) = 1 
-  \]
-  \[
-    B = (6,+\infty) \implies P(B) = 0
-  \]
-  \[
-    C = \{1,2,3,4,5,6,7,8,9\} \implies P(C) = 1
-  \]
-}
-
-\dfn{}{
-  Si chiama evento quasi certo un evento \( A \) tale che \( \mathbb{P}(A) = 1 \).
-}
-
-\dfn{}{
-  Si chiama evento quasi impossibile un evento \( A \) tale che \( \mathbb{P}(A) = 0 \).
-}
-
-Posso allargare \( \Omega \) quanto voglio perché tanto fuori dall'insieme minimo che comprende tutti gli eventi possibili le probabilità che aggiungo sono quasi impossibili e quindi hanno probabilità 0 e non cambiano il valore totale della somma.
-
 \subsection{Conseguenze degli assiomi}
 
 \thm{}{
@@ -271,4 +211,73 @@ Posso allargare \( \Omega \) quanto voglio perché tanto fuori dall'insieme mini
     \mathbb{P}(A \cup B \cup C) = \mathbb{P}(A) + \mathbb{P}(B) + \mathbb{P}(C) - \mathbb{P}(A \cap B) - \mathbb{P}(B \cap C) - \mathbb{P}(A \cap C) + \mathbb{P}(A \cap B \cap C).
   \]
 }
+\section{Probabilita' discreta}
+Finora sappiamo solo le "regole" che deve seguire una funzione per essere una probabilita'. Passiamo ora a vedere come calcolare il valore di un certo tipo di probabilita', la \textit{probabilita' discreta}:
+\dfn{Probabilità discreta}{
+  Chiamo probabilità discreta una funzione probabilità \( \mathbb{P} \) su $ \Omega $, tale che:
+  \[
+    \exists \overline{\Omega} \subseteq \Omega,\ \overline{\Omega} \text{ e' finito o numerabile}.\ \mathbb{P}(\overline{\Omega}) = 1
+  \]
+}
+
+Ovvero, una probabilita' e' discreta se il suo spazio campionario minimo e' finito o numerabile. Questa condizione e' necessaria per poter poi definire un modo per effettivamente calcolare il valore della probabilita' (discreta) di un qualunque evento.
+
+Diamo prima una definizione di una tale probabilità:
+\dfn{Delta di Dirac}{
+  Sia \( \Omega = \mathbb{R} \), \( x_0 \in \mathbb{R} \), allora si chiama delta di Dirac centrato in \( x_0 \) la funzione:
+\[
+  \begin{aligned} 
+    \delta_{x_0}: \powerset(\mathbb{R}) &\to [0,1]\\
+    A &\mapsto \delta_{x_0}(A) = \begin{cases}
+    1 & x_0 \in A\\
+    0 & x_0 \notin A
+    \end{cases}
+  \end{aligned}
+\]
+}
+
+Notare che per definizione, la funzione di Dirac è una probabilità discreta, dato che soddisfa tutti gli assiomi per essere una probabilita' e il suo spazio campionario minimo e' formato da un solo elemento di $ \Omega $, quindi e' discreta (ma non molto utile dato che puo' assumere solo due valori). Però, tramite le delta di Dirac, siamo in grado di costruire qualunque altra probabilità discreta:
+
+Sia \( \Omega = \mathbb{R} \). Prendiamo un numero contabile \( n \) di eventi singoletto \( x_1,x_2,\ldots,x_n \in \mathbb{R} \) a cui corrispondono \( p_1,p_2,\ldots,p_n \in \mathbb{R} \) tale che:
+\[
+ \forall i = 1,\ldots,n.\ p_i \in [0,1], \qquad  \sum_{i=1}^{n} p_i = 1 
+\]
+Definiamo la funzione:
+\[
+\begin{aligned}
+  \mathbb{P}: \powerset(\Omega) &\to [0,1]\\
+  A &\mapsto \sum_{i=1}^{n} p_i \delta_{x_i}(A)
+\end{aligned}
+\]
+\( \mathbb{P} \) è una combinazione lineare di delta di Dirac. Essendo una combinazione convessa, \( \mathbb{P} \in [0,1] \) e si può dimostrare che soddisfa gli altri due assiomi (\ref{assioma2} e \ref{assioma3}), quindi è una probabilità discreta! Variando le \( x \) e le \( p \) è possibile generare qualsiasi funzione \( \mathbb{P} \) discreta.
+
+\ex{}{
+  \( \Omega = \{1,2,3,4,5,6\},\ \forall i = 1,\ldots,6.\ x_i = i,\ p_i = \frac{1}{6} \), la funzione \( \mathbb{P} \) associata è:
+  \[
+   P(A) = \sum_{ i=1}^{6} \frac{1}{6} d_{x_i}(A)
+  \]
+  \[
+    A = \{1,2,3,4,5,6\} \implies P(A) = 1 
+  \]
+  \[
+    B = (6,+\infty) \implies P(B) = 0
+  \]
+  \[
+    C = \{1,2,3,4,5,6,7,8,9\} \implies P(C) = 1
+  \]
+}
+
+\dfn{}{
+  Si chiama evento quasi certo un evento \( A \) tale che \( \mathbb{P}(A) = 1 \).
+}
+
+\dfn{}{
+  Si chiama evento quasi impossibile un evento \( A \) tale che \( \mathbb{P}(A) = 0 \).
+}
+
+Posso allargare \( \Omega \) quanto voglio perché tanto fuori dall'insieme minimo che comprende tutti gli eventi possibili le probabilità che aggiungo sono quasi impossibili e quindi hanno probabilità 0 e non cambiano il valore totale della somma.
+
+\subsection{Probabilita' uniforme}
+TODO: dare un esempio di prob. uniforme e definirla per benino
+
 % \end{document}
