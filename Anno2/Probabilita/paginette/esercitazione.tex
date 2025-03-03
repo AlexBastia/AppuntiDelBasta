@@ -1,0 +1,297 @@
+\section{Esercitazionei}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Esercizio 4 (Foglio 2)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Esercitazione}
+\subsection{Esercizio 4 (Foglio 2)}
+\subsubsection{Testo}
+Un’urna contiene \(r\) palline rosse e \(b\) palline bianche. Si eseguono due estrazioni senza reimmissione.
+\begin{enumerate}[label=(\alph*)]
+    \item Determinare uno spazio di probabilità che descriva l’esperimento aleatorio.
+    \item Calcolare la probabilità che la prima pallina estratta sia rossa.
+    \item Calcolare la probabilità che la prima pallina sia rossa e la seconda bianca.
+    \item Calcolare la probabilità che le due palline abbiano colori diversi.
+    \item Calcolare la probabilità che la seconda pallina estratta sia rossa.
+\end{enumerate}
+
+\subsubsection{Soluzione}
+Siano:
+
+$R_i$ = "ho estratto una pallina rossa all'i-esima iterazione"
+$B_i$ = "ho estratto una pallina rossa all'i-esima iterazione"
+
+Definiamo lo spazio degli esiti. Poiché le estrazioni avvengono senza reimmissione, ogni esito è una coppia ordinata di palline diverse. Denotiamo:
+\[
+    \Omega = \{ (p_1, p_2) : p_1, p_2 \text{ sono palline dell'urna e } p_1 \neq p_2 \}
+\]
+La cardinalità totale è:
+\[
+    |\Omega| = (r+b)(r+b-1)
+\]
+Infatti appena estraiamo una pallina l'urna conterrà $(r+b-1)$ palline, la totalità di palline -1
+
+Sfruttiamo il principio di probabilità uniforme, secondo cui ogni esito ha probabilità \(1/|\Omega|\)
+
+\begin{enumerate}[label=(\alph*)]
+    \item \textbf{Spazio di probabilità:}\\
+    Lo spazio di probabilità è \((\Omega, P)\) con
+    \[
+        P(\{ \omega \}) = \frac{1}{(r+b)(r+b-1)} \quad \forall \omega \in \Omega.
+    \]
+    
+    \item \textbf{Probabilità che la prima pallina sia rossa:}\\[1mm]
+    Poiché ci sono \(r\) palline rosse su un totale di \(r+b\), si ha:
+    \[
+        P(R_1) = \frac{r}{r+b}.
+    \]
+    
+    \item \textbf{Probabilità che la prima pallina sia rossa e la seconda bianca:}\\[1mm]
+    Dato che la prima è rossa, nell’urna rimangono \(r+b-1\) palline, di cui \(b\) sono bianche:
+    \[
+        P(R_1 \cap B_2) = P(B_2 | R_1) P(R_1) =\frac{r}{r+b} \cdot \frac{b}{r+b-1}.
+    \]
+    
+    \item \textbf{Probabilità che le due palline abbiano colori diversi:}\\[1mm]
+    Questa condizione si verifica in due modi: rossa poi bianca oppure bianca poi rossa. Quindi:
+    \[
+        \begin{split}
+            P($(R_1 \cap B_2)\cup (B_1 \cap R_2)$) & =P(B_2 | R_1) P(R_1) + P(R_2 | B_1) P(B_1)\\
+                    &= \frac{r}{r+b} \cdot \frac{b}{r+b-1} + \frac{b}{r+b} \cdot \frac{r}{r+b-1} \\
+                    &= \frac{2rb}{(r+b)(r+b-1)}.
+        \end{split}
+    \]
+    
+    \item \textbf{Probabilità che la seconda pallina sia rossa:}\\[1mm]
+    Usiamo la formula della probabilità totale, considerando le possibili estrazioni del primo turno:
+    \[
+    \begin{split}
+    P(R_2) &= P(B_2 \mid R_1) \cdot P(R_1)  + P(B_2 \mid B_1) \cdot P(B_1)\\[1mm]
+    &= \frac{r-1}{r+b-1} \cdot \frac{r}{r+b} + \frac{r}{r+b-1} \cdot \frac{b}{r+b}
+    \end{split}
+    \]
+    Semplificando:
+    \[
+    P(R_2) = \frac{r(r-1) + rb}{(r+b)(r+b-1)} = \frac{r^2 - r + rb}{(r+b)(r+b-1)} = \frac{r(r+b-1)}{(r+b)(r+b-1)} = \frac{r}{r+b}
+    \]
+\end{enumerate}
+
+\subsubsection{Esercizio 6}
+\subsubsection{Testo}
+Supponiamo che un’urna contenga 1 pallina rossa e 1 pallina bianca. Una pallina viene estratta e se ne osserva il colore. La pallina estratta viene poi rimessa nell’urna insieme a un’altra pallina dello stesso colore (estrazione con rinforzo). Siano
+\[
+\begin{aligned}
+    R_i &= \text{evento che all'}i\text{-esima estrazione venga estratta una pallina rossa,}\\
+    B_i &= \text{evento che all'}i\text{-esima estrazione venga estratta una pallina bianca.}
+\end{aligned}
+\]
+Si calcolino:
+\begin{enumerate}[label=(\arabic*)]
+    \item \(P(R_2)\)
+    \item Sapendo che la seconda pallina estratta è rossa, quale è l’evento più probabile per la prima estrazione: che la pallina estratta sia stata rossa oppure bianca?
+\end{enumerate}
+
+\subsubsection{Soluzione}
+\begin{enumerate}[label=(\arabic*)]
+    \item \textbf{Calcolo di \(P(R_2)\):}\\[1mm]
+    \textbf{Caso 1:} Se alla prima estrazione esce una pallina rossa (evento \(R_1\)):
+    \begin{itemize}
+        \item La probabilità di estrarre una rossa al primo turno è \(P(R_1)=\frac{1}{2}\).
+        \item Dopo l’estrazione, la pallina rossa viene rimessa insieme a un’altra rossa, dunque l’urna contiene 2 rosse e 1 bianca. Quindi:
+        \[
+        P(R_2 \mid R_1)=\frac{2}{3}.
+        \]
+    \end{itemize}
+    \textbf{Caso 2:} Se alla prima estrazione esce una pallina bianca (evento \(B_1\)):
+    \begin{itemize}
+        \item \(P(B_1)=\frac{1}{2}\).
+        \item Dopo il rinforzo, l’urna contiene 1 rossa e 2 bianche, dunque:
+        \[
+        P(R_2 \mid B_1)=\frac{1}{3}.
+        \]
+    \end{itemize}
+    Applicando la formula della probabilità totale:
+    \[
+    \begin{split}
+    P(R_2) &= P(R_2 \mid R_1) \cdot P(R_1) + P(R_2 \mid B_1) \cdot P(B_1) \\
+    &= \frac{2}{3}\cdot\frac{1}{2} + \frac{1}{3}\cdot\frac{1}{2} \\
+    &= \frac{1}{3} + \frac{1}{6} = \frac{1}{2}.
+    \end{split}
+    \]
+    
+    \item \textbf{Confronto tra \(P(R_1 \mid R_2)\) e \(P(B_1 \mid R_2)\):}\\[1mm]
+    
+    Innanzi tutto si tenga conto il teorema di Bayes:\\ 
+    Siano $A,B$ due eventi, t.c. $P(A), P(B)>0$, allora $P(A\mid B) = \frac{P(B\mid A) P(A)}{P(B)}$
+
+    Dimostrazione: 
+    Abbiamo $P(A\cap B) = P(B\cap A)$, quindi $P(A\mid B) = \frac{P(A\cap B)}{P(B)} = \frac{P(B\mid A)P(A)}{P(B)}$
+
+
+    Usiamo il teorema di Bayes per calcolare \(P(R_1 \mid R_2)\):
+    \[
+    P(R_1 \mid R_2) = \frac{P(R_2 \mid R_1) \, P(R_1)}{P(R_2)} 
+    = \frac{\frac{2}{3} \cdot \frac{1}{2}}{\frac{1}{2}}
+    = \frac{2}{3}.
+    \]
+    Poiché \(P(B_1 \mid R_2) =1- P(B_1^c \mid R_2) =1 - P(R_1 \mid R_2) = 1 - \frac{2}{3} = \frac{1}{3}\), risulta che,
+    \[
+    P(R_1 \mid R_2) > P(B_1 \mid R_2).
+    \]
+    Quindi, sapendo che la seconda pallina è rossa, è più probabile che la prima pallina estratta fosse rossa.
+\end{enumerate}
+
+
+\subsection{Esercizio 7}
+\subsubsection{Testo}
+Si consideri una popolazione in cui una persona su 100 abbia una certa malattia. Un test è disponibile per diagnosticare tale malattia. Si supponga che il test non sia perfetto, in quanto esso risulta positivo (ovvero indica la presenza della malattia) nel 5\% dei casi quando è effettuato su persone sane, mentre risulta negativo (indicando l’assenza della malattia) nel 2\% dei casi quando è effettuato su persone malate. Si calcolino le probabilità che:
+\begin{enumerate}[label=(\alph*)]
+    \item il test risulti positivo quando effettuato su una persona malata,
+    \item il test risulti positivo,
+    \item una persona sia malata se il test risulta positivo.
+\end{enumerate}
+
+\subsubsection{Soluzione}
+I dati del problema sono: 
+\begin{itemize}
+    \item \(P(M)=0.01\): probabilità che una persona sia malata.
+    \item \(P(S)=0.99\): probabilità che una persona sia sana.
+    \item \(P(T^+ \mid M)=0.98\): probabilità che il test risulti positivo se la persona è malata.
+    \item \(P(T^- \mid M)=0.02\): probabilità che il test risulti negativo se la persona è malata.
+    \item \(P(T^+ \mid S)=0.05\): probabilità che il test risulti positivo se la persona è sana.
+    \item \(P(T^- \mid S)=0.95\): probabilità che il test risulti negativo se la persona è sana.
+\end{itemize}
+
+
+Costruiamo un diagramma di verità:
+\begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        & Malato & Sano \\
+        \hline
+        Positivo & 0.98 & 0.05 \\
+        \hline
+        Negativo & 0.02 & 0.95 \\
+        \hline
+    \end{tabular}
+\end{center}
+
+
+\begin{enumerate}
+    \item \textbf{Probabilità che il test risulti positivo su una persona malata}: Questa probabilità è data direttamente dai dati:
+    \[
+        P(T^+ \mid M)=0.98.
+    \]
+    
+    \item \textbf{Probabilità che il test risulti positivo}:Utilizziamo la formula della probabilità totale:
+    \[
+    \begin{split}
+    P(T^+) &= P(T^+ \mid M) \, P(M) + P(T^+ \mid S) \, P(S) \\
+    &= 0.98 \cdot 0.01 + 0.05 \cdot 0.99 \\
+    &= 0.0098 + 0.0495 \\
+    &\approx 0.0593.
+    \end{split}
+    \]
+    
+    \item \textbf{Probabilità che una persona sia malata, dato un test positivo:}\\[1mm]
+    Applichiamo il teorema di Bayes:
+    \[
+    \begin{split}
+    P(M \mid T^+) &= \frac{P(T^+ \mid M) \, P(M)}{P(T^+)} \\
+    &= \frac{0.98 \cdot 0.01}{0.0593} \\
+    &\approx \frac{0.0098}{0.0593} \\
+    &\approx 0.165.
+    \end{split}
+    \]
+    Quindi, circa il 16,5\% delle persone con test positivo sono effettivamente malate.    
+\end{enumerate}
+
+\subsection{Esercizio 5}
+\subsubsection{Testo}
+Si consideri il seguente esperimento:
+
+    ci sono quattro dadi: due non truccati e due truccati. I dadi truccati hanno tre facce con il numero \(6\) e tre facce con il numero \(5\). Si lancia una moneta (non truccata). Se viene \emph{testa} si lanciano i due dadi non truccati, mentre se viene \emph{croce} si lanciano i due dadi truccati.
+
+Si richiede di calcolare:
+\begin{enumerate}[label=(\alph*)]
+    \item La probabilità che la somma dei due dadi sia \(11\).
+    \item Sapendo di aver ottenuto \(11\) dalla somma dei due dadi, calcolare la probabilità che il lancio della moneta sia stato \emph{croce}.
+\end{enumerate}
+
+\subsubsection{Soluzione}
+Sia:
+\[
+T = \{\text{moneta: testa}\}, \quad C = \{\text{moneta: croce}\},
+\]
+con \(P(T)=P(C)=\frac{1}{2}\).
+
+\textbf{Caso 1: Dadi non truccati (se esce testa)}\\[1mm]
+I dadi non truccati hanno facce \(1,2,3,4,5,6\) con probabilità uniforme. La somma \(11\) si ottiene con le coppie \((5,6)\) e \((6,5)\). Quindi:
+\[
+P(11 \mid T) = \frac{2}{36} = \frac{1}{18}.
+\]
+
+\textbf{Caso 2: Dadi truccati (se esce croce)}\\[1mm]
+I dadi truccati assumono solo i valori \(5\) e \(6\) con probabilità \( \frac{3}{6} = \frac{1}{2}\) ciascuno. La somma \(11\) si ottiene con le coppie \((5,6)\) e \((6,5)\), dunque:
+\[
+P(11 \mid C) = 2 \cdot \left(\frac{1}{2} \cdot \frac{1}{2}\right) = \frac{1}{2}.
+\]
+
+\textbf{Calcolo della probabilità totale di ottenere \(11\):}
+\[
+\begin{split}
+P(11) &= P(11 \mid T) \, P(T) + P(11 \mid C) \, P(C) \\
+&= \frac{1}{18} \cdot \frac{1}{2} + \frac{1}{2} \cdot \frac{1}{2} \\
+&= \frac{1}{36} + \frac{1}{4} = \frac{1}{36} + \frac{9}{36} = \frac{10}{36} = \frac{5}{18}.
+\end{split}
+\]
+
+\textbf{Calcolo della probabilità condizionata \(P(C \mid 11)\):}
+Utilizzando il teorema di Bayes:
+\[
+P(C \mid 11) = \frac{P(11 \mid C) \, P(C)}{P(11)} 
+= \frac{\frac{1}{2} \cdot \frac{1}{2}}{\frac{5}{18}} 
+= \frac{\frac{1}{4}}{\frac{5}{18}} 
+= \frac{1}{4} \cdot \frac{18}{5} 
+= \frac{9}{10}.
+\]
+Quindi, se la somma è \(11\), la probabilità che la moneta abbia dato \emph{croce} è \(\frac{9}{10}\).
+
+
+
+\subsection{Esercizio Porco Rosso}
+\subsubsection{Testo}
+
+
+
+L’aereo dei pirati del cielo, appena riparato, è stato dato alle fiamme. Porco Rosso vuole scoprire chi è stato. Durante le indagini si è scoperto che la settimana prima del delitto i pirati del cielo hanno detto al meccanico della ditta Piccolo che non gli avrebbero pagato la riparazione dell’idrovolante. Interrogato da Porco Rosso, Piccolo cerca di scagionarsi dicendo che a seguito di insolvenza solo 1 meccanico su 1000 si vendica. Porco Rosso però si accorge che questa stima non è più significativa: bisogna valutare la probabilità di vendetta sapendo che l’aereo è stato effettivamente dato alle fiamme. Porco Rosso allora considera questi eventi:
+
+\begin{itemize}
+    \item \(A\): dei clienti risultano insolventi contro il proprio meccanico,
+    \item \(B\): l’aereo di un cliente viene distrutto dal meccanico,
+    \item \(C\): l’aereo di un cliente viene distrutto ma non dal proprio meccanico.
+\end{itemize}
+
+A questo punto è necessario il vostro aiuto!
+
+\begin{enumerate}[label=(\alph*)]
+    \item Esprimere in funzione di \(A\), \(B\) e \(C\) la probabilità fornita da Piccolo e calcolarla.
+    \item Quali eventi tra \(A\), \(B\) e \(C\) possono essere ritenuti disgiunti?
+    \item Quali eventi tra \(A\), \(B\) e \(C\) possono essere ritenuti indipendenti?
+    \item Esprimere in funzione di \(A\), \(B\) e \(C\) l’evento \(D\): l’aereo di un cliente viene distrutto.
+    \item Esprimere la probabilità condizionata \(P(B|A \cap D)\) in funzione solo di \(P(B|A)\) e \(P(C)\).
+    Porco Rosso non riesce a trovare \(P(C)\), tuttavia trova che 1 aereo ogni 10000 viene distrutto.
+    \item Limitare (dal basso o dall’alto) il valore di \(P(B|A \cap D)\).
+    \item È il caso che Porco Rosso continui ad indagare su Piccolo?
+\end{enumerate}
+
+\subsubsection{Soluzione}
+\begin{itemize}
+    \item $P(B|A) = \frac{1}{1000} = \frac{P(A\cap B)}{P(A)}$, 
+    \item $B\cap C = \emptyset$
+    \item Quali tra A,B,C   sono indipendenti? $P(A\cap B) = P(A)\cdot P(B)$, $P(A\cap C) = P(A)\cdot P(C)$
+    \item D = "Areo distrutto" = $B\cup C$
+    \item $P(B | A\cap D)$ sono in funzione di $P(B|A)$ e $P(C)$, quindi $= \frac{B\cap A \cap D}{P(A\cap D)} = \frac{B\cap A\cap (B \sqcup C)}{ P(A\cap (B\sqcup C))} = \frac{((B\cap A)\)}$
+    
+    
+\end{itemize}
