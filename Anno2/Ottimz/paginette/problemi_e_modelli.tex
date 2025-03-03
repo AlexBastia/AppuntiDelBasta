@@ -598,25 +598,103 @@ Vediamo ora come trattare una funzione obiettivo espressa mediante un valore ass
 \]
 E scegliere come soluzione quella che fornisce il valore più alto della funzione obbiettivo
 
-Abbiamo ridotto il problema che ha un valore assoluto a uno che non ce l'ha. Se ci fosse stata un operazione fra valori assoluti, la situa si complica
+\textit{Anal}olgalmente, per i problemi di minimizzazione
 
-Funzioni lineari a tratti
+\subsection{Funzioni definite a tratti}
+Una funzione che è possibile riscontrare nella vita reale è il caso delle funzioni lineare a tratti
 
-in due dimensioni hanno la forma:
-\[
+Si consideri la seguente funzione 
+\begin{equation}
   f(x) = \begin{cases}
     b_1 + c_1x & x \in [a_1, a_2]\\
     b_2+c_2x & x \in (a_2, a_3]
   \end{cases}
+\end{equation}
+
+Dove assumiamo 
+\[
+  b_2 + c_2a_2 \geq b_1 + c_1a_2
 \]
-nel punto $ a_2 $ ci puo' essere un punto di discontinuita'.
 
-Come per il carico fisso vengono introdotte due variabili logiche asusiliarie $ y_1, y_2 $ co nil seguente significato:
-Inoltre ci servono variabili ausiliarie che ci dicono lo spostamento rispetto a un estremo dell'intervallo a cui appartiene x:
-Usiamo gli intervalli dinamici.
-Non c'e' niente che ci da la funzione da ottimizzare, abbiamo solo delle definizioni che sono dei semplici commenti, i vincoli lineari sono solo gli ultimi, ma non bastano. 
+Si noti il seguente grafico:
 
-Rappresentiamo la funzione $ f $ con una funzione $ g $ che prende le variabili logiche e quantitative. 
-Il valore di $ f $ e' rappresentato univocamente dalla quadrupla, eccetto nel punto di non continuita'. Solo il primo valore e' accettabile perche' l'intervallo li e' chiuso. 
+TODO: INSERIRE GRAFICO
 
-GNU MathProf
+Come per il carico fisso vengono introdotte due variabili logiche ausiliarie $ y_1, y_2 $ con seguente significato:
+\begin{equation}
+  y_1 = \begin{cases}
+    1 & \text{se } x \in [a_1, a_2]\\
+    0 & \text{altrimenti}
+  \end{cases} \quad y_2 = \begin{cases}
+    1 & \text{se } x \in (a_2, a_3]\\
+    0 & \text{altrimenti}
+  \end{cases}
+\end{equation}
+Dovendo $x$ appartenere ad uno ed uno solo degli intervalli, si ha il seguente vincolo
+\[
+  y_1 + y_2 = 1
+\]
+
+
+Inoltre introduciamo variabili quantitative ausiliarie che ci dicono lo spostamento rispetto a un estremo dell'intervallo a cui appartiene $x$:
+\begin{equation}
+  z_1 = \begin{cases}
+    x - a_1 & \text{se } x \in [a_1, a_2]\\
+    0 & \text{altrimenti}
+  \end{cases} \quad z_2 = \begin{cases}
+    x - a_2 & \text{se } x \in (a_2, a_3]\\
+    0 & \text{altrimenti}
+  \end{cases}
+\end{equation}
+Infatti se $x\in[a_1, a_2]$, il valore $z_1$ ($=x-a_1$) non è che la prozione di valore di $x$ che "supera" $a_1$, pertanto il suo valore è limitato dalle disuguaglianze $0\leq z_1 \leq a_2 - a_1$, si ha quindi che un'altro vincolo:
+\[
+  0\leq  (z_1 \leq a_2 - a_1 y_1)y_1
+\]
+
+Con $y_1$ variabile definita prima utile a controllare se effettivamente $x\in [a_1,a_2]$. Analogo è il caso di $z_2$, che ci conduce al seguente vincolo:
+\[
+  0\leq z_2 \leq (a_3 - a_2 )y_2
+\]
+
+Riassumendo tutti i vincoli ottenuti, si ha:
+\begin{equation}
+  \label{eq:vincoli_tratti}
+  \begin{aligned}
+    y_1,y_2 &\in \{0,1\}\\
+    y_1 + y_2 &= 1\\
+    0\leq z_1 &\leq (a_2 - a_1)y_1\\
+    0\leq z_2 &\leq (a_3 - a_2)y_2
+  \end{aligned}
+\end{equation} 
+
+\nt{
+  Si noti che i vincoli \ref{eq:vincoli_tratti} impongono che solo una delle due variabili $z_1$ e $z_2$ possa avere valore non nullo
+}
+
+\subsubsection{Rappresentazione di $f$ con funzione mutlivariabile}
+Poi il basta mi spiegherà la sequente quote 
+\begin{quote}
+  Non c'e' niente che ci da la funzione da ottimizzare, abbiamo solo delle definizioni che sono dei semplici commenti, i vincoli lineari sono solo gli ultimi, ma non bastano
+  \hfill -- \faWhatsapp  
+\end{quote}
+
+Vabbuò, adesso è possibile sostuire alla funzione $f(x)$ la seguente funzione $g:\mathbb{R}^4\to \mathbb{R}$:
+\[
+  \begin{aligned}
+    g(z_1, z_2, y_1,y_2 ) &= b_1y_1 + c_1(a_1y_1+z_1) + b_2y_2 + c_2(a_2y_2 + z_2) \\
+    &= y_1(b_1+c_1a_1)+c_1z_1 + y_2(b_2+c_2a_2) + c_2z_2
+  \end{aligned}
+\]
+Con le variabili soggette ai vincoli \ref{eq:vincoli_tratti}. In questo modo è stato possibile rappresentare la funzione $f(x)$ (non lineare) come una funzione lineare a variabili continue definita du un opportuno insieme.
+
+Si ha che il valore di $ f $ e' rappresentato \texit{univocamente} dalla quadrupla $(z_1, z_2,y_1,y_2)$, eccetto nel punto di non continuita' $a_2$ che può essere espresso con le due seguenti quadruple:
+\[
+  (a_2 - a_1, 0, 1, 0) \quad (0, 0, 0, 1)
+\] 
+
+Dei quali solo \textbf{primo} è accettabile per i vincoli dati. Se, però, supponiamo il problema sia un problema di \textit{minimo}, possiamo considerare il prblema come benigno, dato che:
+\[
+  g(0,0,0,1) = b_2+c_2a_2 \geq b_1+c_1a_2 = g(a_2-a_1,0,1,0)
+\]
+
+
