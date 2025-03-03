@@ -423,29 +423,61 @@ Vincoli di Assegnamento: ogni oggetto e' assegnato ad un luogo e ogni luogo ha u
 
 \subsection{Selezione di Sottoinsiemi}
 
-Sia $ N = \{1,...,n\} $ un insieme finito di elementi e sia $ F = \{F_1,...,F_n\} $ una famiglia di sottoinsiemi (non necessariamente disgiunti) dove $ F_i \subseteq N $. Vogliamo decidere qual'e' la scelta migliore di $ D\subseteq F $ di costo minimo. Per aiutare nella formulatzione del problema, possiamo rappresentare l'appartenenza degli ielementi di $ N $ in un sottoinsieme $ F_j $ come una grande matrice che ha come righe gli elementi e come colonne i sottoinsiemi. La scelta e' catturatanon piu' da $ x_{ij} $ ma solo da $ x_j $ dato che basta dire se il sottoinsieme $ j $ lo volgiamo o no. 
+Sia $ N = \{1,...,n\} $ un insieme finito di elementi e sia $ F = \{F_1,...,F_n\} $ una famiglia di sottoinsiemi (non necessariamente disgiunti) dove $F_i \subseteq N$ e sia $c_j$ un costo che associamo ad ogni $F_j$. Si vuole determinare qual'e' la scelta migliore di $ D\subseteq F $ di costo minimo fra tutti gli $F_j\in F$. Per formulare formalmente il problema, si può rappresentare l'appartenenza degli elementi di $ N $ in un sottoinsieme $ F_j $ come una matrice che ha un numero di $n$ righe (numero di elementi) e un numero $m$ di colonne (il numero di sottoinsieme). In dettaglio, sia $A=(a_{ij}\in\{0,1\}^{n\times m})$, dove
 \[
-x_j = \begin{cases}
-1 & F_j \in D\\
-0 & \text{altrimenti}
-\end{cases}
+  a_{ij} = \begin{cases}
+    1 & \text{se } i \in F_j\\
+    0 & \text{altrimenti}
+  \end{cases}
 \]
+
+Il vettore delle variabili $ x $ assumerà la forma $ x = (x_1,...,x_m) $ dove
+\[
+  x_j = \begin{cases}
+  1 & F_j \in D\\
+  0 & \text{altrimenti}
+  \end{cases}
+\]
+Definendo $D$ come $D = \{F_j \mid x_j = 1\}$
 
 La funzione obbiettivo e' sempre:
 \[
 \sum_{j=1}^{n} x_j c_j
 \]
 
-I vincoli dipendono dal problema:
+I vincoli, invece, dipendono dal problema:
 \begin{itemize}
-\item Problema di copertura: ognuno degli eventi di $ N $ atanno in almeno uno degli elementi di $ D $:
+\item \textbf{Problema di copertura}: ognuno degli elementi di $N$ sta in almeno uno degli elementi di $ D $:
+    \[
+      \sum_{j=1}^{m} a_{ij}x_j \geq 1 \quad \forall i \in [1,n]
+    \]
+   Ad esempio, i sottoinsiemi $ F $ di $ N $ possono essere dei curriculum dove c'è scritto quale dei linguaggi di programmazione $ l \in N $ conosce un candidato. Ogni candidato ha anche uno stipendio. Dobbiamo scegliere quali candidati assumere per coprire tutti i linguaggi in $ N $ minimizzando il costo
+  \item \textbf{Partizione}: Ognuno degli elementi si $N$ sta in \textit{esattamente} uno degli elementi di $D$, ovvero $D$ deve essere una partizione di $ N $. Quindi:
+    \[
+    \sum_{j=1}^{m} a_{ij}x_j = 1 \quad \forall i \in [1,n]
+    \]
+    Ad esempio, $ N $ possono essere dei task da svolgere e gli iniemi di $ F $ sono offerte da fornitori rispetto alla risoluzione di alcuni dei task. Quindi gli inisiemi di $ D $ devono essere disgiunti perche' non vogliamo che due societa' risolvano lo stesso task. Tutto deve essere coperto una sola volta.
+
+  \item \textbf{Riempimento}: si usa solo quando si vuole massimizzare il costo $c_j$. $ N $ non sono piu' incombenze o task, ma risorse da usare una volta per costruire un prodotto (elemento di $ F $). Al piu' perche' possiamo scartare qualche componente. Possiamo usare ogni elemento di $ N $ al massimo una volta. Quinidi:
   \[
-  \sum_{j=1}^{m} a_{ij}x_j \geq 
+    \sum^m_{j=1} a_{ij}x_j \leq 1 \quad \forall i\in [1,n]
   \]
-    Numero di sottoinsiemi di $ D $ che appartengono a $ i $ (?). I sottoinsiemi $ F $ di $ N $ possono essere dei curriculum dove c'e' scritto quale dei linguaggi di programmazione $ n \in N $ conosce un candidato. Ogni candidato ha anche uno stipendio. Dobbiamo scegliere quali canditati assumere per coprire tutti i linguaggi in $ N $ minimizzando il costo.  
-  \item Partizione: $ D $ deve essere una partizione di $ N $. $ N $ possono essere dei task da svolgere e gli iniemi di $ F $ sono offerte da fornitori rispetto alla risoluzione di alcuni dei task. Quindi gli inisiemi di $ D $ devono essere disgiunti perche' non vogliamo che due societa' risolvano lo stesso task. Tutto deve essere coperto una sola volta.
-  \item Riempimento: si usa solo quando si vuole massimizzare. $ N $ non sono piu' incombenze o task, ma risorse da usare una volta per costruire un prodotto (elemento di $ F $). Al piu' perche' possiamo scartare qualche componente. Possiamo usare ogni elemento di $ N $ al massimo una volta. 
 \end{itemize}
+\subsection{Variabili a valori discreti}
+Spesso, tuttavia, le variabili in gioco sono vincolate ad assumere un valore da un insieme che non è $\{0,1\}$ o un intervallo continuo (come $\mathbb{N}$). Ad esempio si può essere interessati a vincolare $x$ in un inseime finito di valori $Z = \{z_1,...,z_k\}$ dove i vari $z_i$ sono valori reali distinti 
+
+In questi casi, si possono utilizzare $n$ variabili ausiliarie $y_1,...,y_k$ che rappresentano l'appartenenza di $z$ a $Z$. In particolare, si definiscono le variabili $y_i$ come segue:
+\[
+  y_i = \begin{cases}
+    1 & \text{se } z = z_i\\
+    0 & \text{altrimenti}
+  \end{cases}
+\]
+E sono vincolate come segue:
+\[
+  \sum_{i=1}^{k} y_i = 1 \quad x=\sum^n_{i=1}z_i y_i
+\]
+
 
 \ex{Problema delle Commesse}{
   Un'agenzia deve decidere come impiegare i soi $ n $ dipendenti.
@@ -487,19 +519,85 @@ I vincoli dipendono dal problema:
  Ha fatto poi un esempio di quando c'e' una penalita' quando non fai una commessa (mi sa)
 }
 
-\subsection{Ricondurci a problemi linari}
-Variabili a valori discreti possono prendere un insieme finito di valori diversi che non sono valori in un intervallo. Se questo insieme ha $ n $ valori ci servono $ n $ variabili diverse. 
+\subsection{Minima quantità positiva}
 
-\ex{Progetto di reti}{
+Quando una variabile $x$ rappresenta un certo livello di produzione, possibile che il valore della variabile sia 
+\[
+  x  \in \{0\} \cup [l,u]
+\] 
+Dove:
+\begin{itemize}
+  \item $ l $ e' il livello minimo di produzione
+  \item $ u $ e' il livello massimo di produzione
+  \item 0 è l'assenza di produzione
+\end{itemize}
+Per modellare correttamente tale situazione di introduce una variabile ausiliaria logica $y\in \{0,1\}$ che indica la presenza o l'assenza di produzione, cosicché i vincoli siano:
+\[
+  x \geq ly \quad x \leq uy
+\]
+Infatti se $y=0$ allora $x=0$ e se $y=1$ allora $x\in [l,u]$
 
+\subsection{Funzione a carico fisso}
+\dfn{Funzione a carico fisso}{
+  Una funzione $f(x)$ è detta a carico fisso se:
+  \begin{equation}
+    f(x) = \begin{cases}
+      b+cx & \text{se } 0<x \leq u\\
+      0 & \text{se }x=0
+    \end{cases}
+  \end{equation}
+  Dove $b>0$ e $u$ è un opportuno reale positivo
+}
+Si noti il seguente grafico rappresentativo:
+TODO: inserire il grafico
+
+Questo tipo di funzione è molto utile per modellare situazioni in cui si ha un costo di investimento fisso $b$ per l'attivazione di un servizio, e un costo variabile $c$ (coefficiente angolare) per l'unità di prodotto, mentre il costo è nullo se il servizio non è attivato ($x= 0 \implies f(x) = 0$)
+
+Per rappresentare, analiticamente, questa funzione si introduce, al solito, una variabile ausiliaria logica $y\in \{0,1\}$ che indica l'attivazione del servizio, cosicché i vincoli siano:
+\[
+  0\leq x \quad x \leq uy 
+\]
+
+Adesso è possibile sostituire la funzione a carico fisso tramite una nuova funzione $g:\mathbb{R}^2\to\mathbb{R}$ definita come segue:
+\[
+  g(x,y) = b(y) + cx
+\]
+
+Si ha infatti che
+\[
+  g(0,0) = 0 \quad g(x,1) = b + cx
+\]
+\nt{
+  Si noti che se $y=0$ allora, per i vincoli introdotti poc'hanzi, si ha che $x=0$ (anche se non vale viceversa). In altre parole i vincoli introdotti non eslcudono la possibilità che sia contemporaneamente $y=1$ e $x=0$, in questo caso avremo $g(0,1)\neq f(0)$ (nasty). Di conseguenza la funzione $g$ non rappresenta perfettamente ed in modo univoco la funzione $f(x)$, ma dato che l'obbiettivo è \textit{minimizzare} la funzione $f(x)$, la soluzione $(x,y) = (0,1)$ viene esclusa essendo $g(0,1) = b > g(0,0) = 0 = f(0)$
+  
 }
 
-alcune slide non le ho fatte
+\ex{Ordinamento di valori su macchine}{
+    TODO: aggiungere questo bellissimo esempip
+}
 
-valore assoluto:
+\subsection{Rappresentazioni del valore assoluto}
+
+\subsubsection{Vincoli di valore assoluto}
+Si può avere a che fare con un \textbf{vincolo} a "valore assoluto" del tipo:
 \[
-  max \{f(x)| x \in X\} \quad max \{-f(x)|x \in X\}
+  |g(x)| \leq b
 \]
+
+Dove $g(x)$ è una funzione dell'insieme di variabili $x$ e $b$ è un valore reale positivo, in questo caso tale vincolo è espresso come la congiunzione di due vincoli:
+\[
+  g(x)\leq b \quad -g(x)\leq b
+\]
+Dato che se $g(x)\leq b$ il vincolo $-g(x)\geq -b$ e viceversa. Inoltre, se $g(x)$ è una funzione lineare, allora tale vincolo può essere espresso come un vincolo lineare.
+
+\subsubsection{Funzioni obbiettivo a valore assoluto}
+Vediamo ora come trattare una funzione obiettivo espressa mediante un valore assoluto. Si consideri una funzione obiettivo $|f(x)|$ da dover \textit{massimizzare} con $x\in X$. È sufficiente risolvere i due diversi problemi:
+
+\[
+  \max \{f(x)\mid x \in X\} \quad \max \{-f(x)\mid x \in X\}
+\]
+E scegliere come soluzione quella che fornisce il valore più alto della funzione obbiettivo
+
 Abbiamo ridotto il problema che ha un valore assoluto a uno che non ce l'ha. Se ci fosse stata un operazione fra valori assoluti, la situa si complica
 
 Funzioni lineari a tratti
