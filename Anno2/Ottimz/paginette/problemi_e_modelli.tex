@@ -257,6 +257,98 @@ dove $ A \in \mathbb{R}^{m \times n} $ e $ b \in \mathbb{R}^m $. Grazie ad alcun
   \item Ogni vincolo $ax \geq b$ è equivalente a $(-a)x \leq (-b)$.
 \end{itemize}
 
+\ex{Pianificazione della Produzione}{
+  \textbf{TESTO}
+
+  La societ`a Pintel deve pianificare la produzione della sua fabbrica di micro-
+processori. La Pintel possiede due diverse linee di prodotti: i processori Pin-
+tium, pi`u potenti e destinati al mercato “server”, ed i Coloron, meno potenti
+e destinati al mercato “consumer”. L’impianto `e in grado di realizzare 3.000
+“wafer” alla settimana: su ogni wafer trovano posto o 500 Coloron oppure
+300 Pintium. La resa di un wafer dipende anch’essa dal tipo di processore:
+i Coloron, di minori dimensioni, hanno una resa media del 60\%, mentre i
+Pintium, pi`u grandi e quindi maggiormente sottoposti a difetti, solamente
+del 50\%. I processori Pintium si vendono a 500\$ al pezzo, mentre i Coloron
+si vendono a 200\$ al pezzo. La divisione commerciale della Pintel ha anche
+stabilito che la massima quantit`a di processori che possono essere messi sul
+mercato ogni settimana senza causare un calo dei prezzi `e di 400.000 unit`a
+per i Pintium e di 700.000 unit`a per i Coloron. Si vuole determinare le
+quantit`a di ciascun tipo di processore da produrre settimanalmente in modo
+da massimizzare il ricavo totale.
+
+\textbf{SVOLGIMENTO}
+
+  \begin{itemize}
+    \item \underline{VARIABILI}
+
+      Prendiamo le prime due variabili ovvie:
+      \begin{align*}
+        x_p = \text{"numero di pintium prodotti"}\\
+        x_c = \text{"numero di coloron prodotti"}
+      \end{align*}
+      Notare che a differenza delle dispenze, $ x_p $ e $ x_c $ sono il numero di processori che \textit{proviamo} a produrre, senza tenere conto della resa del wafer.
+
+      Usiamo anche due variabili che poi possiamo anche rimuovere:
+      \begin{align*}
+      w_p = \text{"numero wafer utilizzati per pintium"}\\
+        w_c = \text{"numero wafer coloron"}
+      \end{align*}
+    \item \underline{VINCOLI}
+
+      Mettiamo i vincoli di produzione settimanali:
+      \begin{align*}
+      0 \leq x_p 0.5 \leq 400000\\
+        0 \leq x_c 0.6 \leq 700000
+      \end{align*}
+
+      Dobbiamo considerare anche il massimo numero di wafer, ipotizzo che un wafer puo' essere usato tutto solo per pintium o solo per coloron:
+      \begin{align*}
+        w_p + w_c \leq 3000
+      \end{align*}
+
+      Queste nuove variabili devono essere legate in qualche modo a quelle principali che usiamo nella FO:
+      \begin{align*}
+        300 w_p = x_p\\
+        500 w_c = x_c
+      \end{align*}
+
+      Possiamo quindi tornare sul vincolo sul numero di wafer e sostituire $ w_p, w_c $ con $ x_p, x_c $ per riscrivere il vincolo relativo alle ultime due variabili, riducendo quindi le variabili utilizzate e semplificando il problema:
+
+      \begin{align*}
+      5 x_p + 3 x_c \leq 4500000
+      \end{align*}
+
+      L'insieme delle soluzioni ammissibili e' quindi:
+      \[
+        F = \{(x_p, x_c) | 0 \leq x_p 0.5 \leq 400000, 0 \leq x_c 0.6 \leq 700000, 5 x_p + 3 x_c \leq 4500000\}
+      \]
+    \item \underline{Funzione Obbiettivo}
+
+      Vogliamo trovare $ max \{c(x_p, x_c) | (x_p, x_c) \in F \} $
+      \[
+        c(x_p, x_c) = 0.5 x_p \cdot 500 + 0.6 x_c \cdot 200
+      \]
+
+      Vediamo su un grafico l'area delle soluzioni ammissibili data da $ F $:
+      \begin{center}
+        \includegraphics[width=0.5\textwidth]{img/2025-03-03-12-33-31.png}
+      \end{center}
+
+      Un'importante proprieta' dei problemi lineari (reali) e' che la soluzione ottimale si trova sempre su uno dei "vertici" della figura descritta dalle soluzioni ammissibili (in questo caso quella ottimale e' (400000,100000) per $ (x_p/0.5, x_c/0.6) $).
+
+      Grafico della funzione costo (rossa) con l'area delle soluzioni ammissibili (blu):
+      \begin{center}
+        \includegraphics[width=0.5\textwidth]{img/2025-03-03-12-50-44.png}
+      \end{center}
+
+      \textbf{OSSERVAZIONI}
+
+      In realta', con la soluzione trovata il numero di wafer per tipo di chip non e' intero! In questo caso possiamo supporre che non sia troppo un problema, ma in altri casi puo' esserlo, quindi tocca studiare la \textit{programmazione lineare intera}.
+
+ \end{itemize}
+
+}
+
 \subsection{Programmazione lineare intera}
 Se nella $PL$ le variabili rappresentano quantità nella PLI le variabili possono essere
 \begin{itemize}
@@ -285,9 +377,11 @@ Un giga esempietto bellino è il problema dello zaino:
 \ex{Problema dello zaino}{
   Il problema dello zaino è un esempio classico di problema di ottimizzazione combinatoria piuttosto complesso.
 
-  % TODO: inserire il testo del problema
-  TODO: inserire il testo del problema
-
+Sia dato un insieme E = {1, 2, . . . , n} di elementi, a ciascuno dei quali
+sia assegnato un peso ai ed un costo ci, i = 1, . . . , n, interi e positivi: il
+problema dello zaino (KP, da Knapsack Problem) consiste nel determinare
+un sottoinsieme di elementi che abbia costo totale massimo ed il cui peso
+totale non superi un prefissato intero b. 
   \vspace{1em}
   \textbf{Parametri:}
   \begin{align*}
@@ -299,6 +393,8 @@ Un giga esempietto bellino è il problema dello zaino:
 
   \vspace{1em}
   \textbf{Variabili:}
+
+  Dobbiamo indicare usando le variabili quali elementi vogliamo includere nella soluzione e quali vogliamo scartare. Possiamo fare cio usando $ n $ variabili logiche:
   \begin{align*}
   x_i &=
   \begin{cases}
@@ -322,15 +418,6 @@ Un giga esempietto bellino è il problema dello zaino:
 
 }
 
-% Esempi di problemi di ottimizzazione lineari:
-% \begin{itemize}
-% \item Lo Zaino
-% \item Albero di copertura minimo
-% \item Commesso viaggiatore
-% \end{itemize}
-
-% \subsection{Problema dello Zaino}
-% appunti scritti
 
 \subsubsection{Relazioni logiche}
 
@@ -416,10 +503,43 @@ I vincoli di semi-assegnamento sono una variante dei vincoli di assegnamento in 
 
 }
 
+\ex{Problema del docente di informatica}{
+  
+\textbf{Testo}
 
-Insiemi ammissibili:
+Si hanno dei progetti ($t_1, t_2, \dots, t_n$), si hanno $m$ PC, dove ogni pc può compilare qualunque progetto in modalità sequenziale. Le prestazioni del PC sono identiche 
 
-Vincoli di Assegnamento: ogni oggetto e' assegnato ad un luogo e ogni luogo ha un oggetto
+Vogliamo assegnare i progetti ai pc in modo da minimizzare il tempo complessivo parallelo di compilazione
+
+\textbf{Svolgimento}
+
+\textit{Variabili}:
+\[
+    \begin{aligned}
+        x_{ij} &= \begin{cases}
+            1 & \text{se il progetto $i$ è compilato al pc $j$} \\
+            0 & \text{altrimenti}
+        \end{cases}\\
+        x_{ij}&\in \mathbb{N}, \quad \forall i\in \{1,\dots, n\}\,\forall j\in \{1,\dots, m\} \
+    \end{aligned}
+\]
+\textit{Vincoli}:
+\[
+    \begin{aligned}
+        \forall i\in\{1,\dots,n\}\quad \sum_{j=1}^{m}x_{ij} &= 1 \text{ (normale vincolo di semi-assegnamento!!)}\\
+        \forall j\in\{1,\dots,m\}\quad y&\geq \sum^n_{i=1}x_{ij}t_i 
+    \end{aligned}
+\]
+\textit{Funzione obbiettivo}:
+\[
+    \min (\underbrace{{\max_j \sum^n_{i=1}\underbrace{x_{ij}t_i}_{\text{tempo di compilazione del progetto $i$ al pc $j$}}}}_{\text{nonostante questa espressione matematica ha perfettamente senso, non è lineare!}})
+\]
+
+Funzione obbiettivo sbagliata! Pertanto prenderemo $y$ per "simulare" il massimo, di modo da rendere la funzione obbiettivo lineare:
+\[
+    \min y
+\]
+}
 
 \subsection{Selezione di Sottoinsiemi}
 
@@ -480,43 +600,56 @@ E sono vincolate come segue:
 
 
 \ex{Problema delle Commesse}{
-  Un'agenzia deve decidere come impiegare i soi $ n $ dipendenti.
+\textbf{Testo}
 
-  L'azienda, nell'intervallo di tempo considerato, deve evadere $ m $ commese.
+Un'azienda deve decidere come impiegare i suoi $n$ dipendenti $1,\dots, n$.
 
-  Ciascuna commessa $ j $ deve essere svolta dal sottoinsieme $ F_j \subseteq \{1,...,n\} $ dei dipendenti dell'azienda.
+L'azienda, nell'intervallo di tempo desiderato deve evadere $m$ commesse $1,\dots, m$
 
-  Ogni commesssa, se evase, darebbe luogo ad un ricavo pari a $ r_j $.
+Ciascuna commessa $j$ deve essere svolta dal sottoinsieme $D_j\subseteq\{1,\dots, n\}$ dei dipendenti dall'azienda. 
 
-  Ogni dipendente puo' lavorare ad una singola commessa nell'unita' di tempo.
+Ogni commessa, se evasa darebbe luogo ad un ricavo pari a $r_j$ euro.
 
-  SVOLGIMENTO:
+Ogni dipendente può lavorare ad una singola commessa nell'unità di tempo 
 
-  e' un problema di selezione di sottoinsiemi:
-  \[
-  N - \{1,...,n\} \text{elementi/dipendenti}
-  \]
-  \[
-  F = \{F_1,...,F_m\} commesse
-  \]  
+\textbf{Svolgimento}
 
-  VARIABILI:
-  \[
-  x_{j} = \begin{cases}
-  1 & F_j \in D_j\\
-  0 & \text{altrimenti}
-  \end{cases}
-  \]
-  VINCOLI:
-  $ 0\leq x_j \leq 1 \forall j $
-  \[
-  \sum_{j=1}^{m} x_j a_{ij} \leq 1 \forall i
-  \]
-  FO:
-  \[
-   \sum_{j=1}^{m} x_j r_j
- \]
- Ha fatto poi un esempio di quando c'e' una penalita' quando non fai una commessa (mi sa)
+Si consideri che questo è un Problema di selezione di sottoinsiemi, infatti:
+$\quad N=\{1,\dots,n\}$ elementi/dipendenti
+
+$F = \{F_1, \dots, F_m\} \quad \text{dove } F_j$ è la $j$-esima commessa che rappresentiamo con il sottoinsieme di dipendenti che la devono svolgere (quindi $ F_j = D_j $).
+
+\[
+    a_{ij}= \begin{cases}
+        1 & \text{se } i\in F_j\\
+        0 & \text{altrimenti}
+    \end{cases}
+\]
+
+\textit{Variabili}:
+\[
+    \begin{aligned}
+        x_j= \begin{cases}
+            1 & \text{se la commessa $j$ è evasa}\\
+            0 & \text{altrimenti}
+        \end{cases}\\
+        x_j\in\mathbb{N} \quad \red{y_j\in\mathbb{N}}
+    \end{aligned}
+\]
+
+\textit{Vincoli}:
+\[
+    \begin{aligned}
+        0\leq x_j\leq 1 \quad \forall j\in\{1,\dots,m\} \quad \red{0\leq y_j\leq 1}\\
+        \forall i\in\{1,\dots,n\}\quad \sum^m_{j=1}a_{ij}x_j &\leq 1 \quad \red{y_j=1-x_j}
+    \end{aligned}
+\]
+\textit{Funzione obbiettivo}:
+\[
+    \max \sum^m_{j=1}r_jx_j \red{-\sum^m_{j=1}y_ip_j}
+\]
+
+Nota: le scritte in rosso sono una possibile modifica all'esercizio dove per ogni commessa non fatta c'e' una penalita $ p_j $.
 }
 
 \subsection{Minima quantità positiva}
@@ -569,6 +702,34 @@ Si ha infatti che
 \]
 \nt{
   Si noti che se $y=0$ allora, per i vincoli introdotti poc'hanzi, si ha che $x=0$ (anche se non vale viceversa). In altre parole i vincoli introdotti non eslcudono la possibilità che sia contemporaneamente $y=1$ e $x=0$, in questo caso avremo $g(0,1)\neq f(0)$ (nasty). Di conseguenza la funzione $g$ non rappresenta perfettamente ed in modo univoco la funzione $f(x)$, ma dato che l'obbiettivo è \textit{minimizzare} la funzione $f(x)$, la soluzione $(x,y) = (0,1)$ viene esclusa essendo $g(0,1) = b > g(0,0) = 0 = f(0)$
+}
+\ex{Progetto di reti}{
+  \textbf{TESTO}
+
+Si vogliono collegare le reti fognarie di alcuni centri residenziali e industriali
+ad un impianto di depurazione e smaltimento. Ogni centro produce una
+quantit`a nota di rifiuti (liquidi), ed `e necessario dimensionare opportuna-
+mente l’impianto di collegamento al depuratore in modo da consentirne il
+trasporto. Si possono scegliere condotte di diversa portata e il costo di messa
+in opera di una condotta sar`a una funzione della sua portata.
+Si consideri ad esempio il grafo G = (N, A) di figura 1.3(a) dove i nodi da
+1 a 4 rappresentano i centri ed il nodo 5 rappresenta il depuratore. Accanto
+ad ogni nodo `e indicata la quantit`a di liquido da depurare per unit`a di tempo
+prodotta dal centro ad esso corrispondente.
+Ogni arco (i, j) ∈ A rappresenta un possibile collegamento; fra di essi
+andranno scelti quelli che verranno effettivamente costruiti, e per ciascuno
+dei collegamenti costruiti si dovr`a determinare la portata. Osserviamo che
+i collegamenti hanno una direzione prefissata di percorrenza.
+Una soluzione ammissibile `e data da un insieme di collegamenti che ga-
+rantiscano il fluire dei liquidi da tutti i centri fino al depuratore. In figura
+1.3(b) `e rappresentata una possibile soluzione.
+
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2025-03-03-13-45-07.png}
+\end{center}
+
+\textbf{SVOLGIMENTO}
+
   
 }
 
