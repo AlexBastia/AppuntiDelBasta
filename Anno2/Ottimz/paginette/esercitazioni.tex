@@ -153,7 +153,7 @@ Si provi ora a massimizzare il costo minimo dei subappalti assegnati
         0 & \text{altrimenti}
     \end{cases}
 \]
-\itexit{Vincoli}:
+\textit{Vincoli}:
 \[
     \forall j \sum^n_{i=1}x_{ij}=1 \quad \forall i \sum_{j=1}^n x_{ij}=1
 \]
@@ -178,3 +178,165 @@ Formulare il problema $\min\{|3 - 4x| : |x| \leq 2\}$
 \[
     \min\{3-4x\} \quad \min\{3-4x\}
 \]
+
+\section{1.26}
+
+\textit{Variabili}
+
+$ x_1,x_2 = \text{quantita di V1,V2} $
+
+$ y_1,y_2,y_3 = \text{quantita di N1, N2, N3} $
+
+$ z = \text{totale degli oli aquistati} $
+
+\textit{Vincoli}
+
+$ 0 \leq x_1 + x_2 \leq 200 $
+
+$ 0 \leq y_1 + y_2 + y_3 \leq 250 $
+
+$ z 3 \leq d_1x_1 + d_2x_2 + d_3y_1 + d_4y_2 + d_5y_3 \leq z 6  $
+
+$ z = x_1 + x_2 + y_1 + y_2 + y_3 $ Dobbiamo fare in modo che $ z $ sia effetivamente il valore che gli vogliamo dare
+
+\textit{Funzione Obbiettivo}
+
+\[
+ max\ 150 z - (110 x_1 + 120 x_2 + 130 y_1 + 110 y_2 + 115 y_3)
+\]
+
+\section{1.27}
+
+\textit{Variabili}
+
+$ x_1, x_2, x_3 = \text{numero di dolci A,B o C} $
+
+$ x_1,x_2, x_3 \in \mathbb{N} $
+
+\textit{Vincoli}
+
+$ x_1 + x_2 + x_3 \leq 10000 $
+
+$ x_1 \leq 0.5 x_1 + 0.5 x_2 + 0.5 x_3 $
+
+$ x_3 \leq 0.25 x_2 $
+
+\textit{Funzione Obbiettivo}
+
+\[
+0.2 x_1 + 0.1 x_2 + 0.4 x_3
+\]
+
+\section{1.28}
+
+\textit{Variabili}
+
+$ x_1,x_2,x_3 = \text{numero di beni prodotti con $ P_1, P_2, P_3 $} \in \mathbb{N} $
+
+\textit{Vincoli}
+
+$ 2x_1 + x_2 + 3x_3 \leq 50 $
+
+$ 4x_1 + 2x_2 + 3x_3 \leq 50$
+
+$ 3x_1 + 4 x_2 + 2x_3 \leq 50 $
+
+$ 15 x_1 + 18 x_2 + 10 x_3 \geq 200 $
+
+\textit{Funzione Obbiettivo}
+\[
+min \quad 4x_1 + 2 x_2 + 3 x_3
+\]
+
+\section{1.29}
+
+\textit{Variabili}
+
+$ x_1, x_2, x_3, x_4,x_5, x_6 = \text{numero ostetriche nuove a turno} \in \mathbb{N} $
+
+\textit{Vincoli}
+
+$ x_1 \geq 70 $
+
+$ x_1 + x_2 \geq 80 $
+
+$ x_2 + x_3 \geq 50 $
+
+$ x_3 + x_4 \geq 60 $
+
+$ x_4 + x_5 \geq 40 $
+
+$ x_5 + x_6 \geq 30 $
+
+\textit{Funzione Obbiettivo}
+\[
+min \quad x_1 + x_2 + x_3 +x_4 +x_5 +x_6
+\]
+
+\section{1.31}
+
+\textit{Variabili}
+
+$ \forall i = 1,...,7 \quad x_i = \text{variabili ogiche che indicano il fatto che un certo abitante $ a_i $ sia o meno membro del consiglio} $
+
+\textit{Vincoli}
+
+$ \sum_{i=1}^{7} x_i = 4 $
+
+$ \forall i = 1,...,4 \sum_{x \in C_i} x = 1  $
+
+$  $
+
+\section{1.32}
+
+\textit{Variabili}
+
+$ x_i = \text{variabili logiche che mi dicono se scelgo i} $
+
+\textit{Funzione Obbiettivo}
+
+\[
+max \quad \sum_{i=1}^{n} x_ib_i
+\]
+
+\textit{Vincoli}
+
+$ \sum_{i=1}^{n} x_i = 11 $
+
+$ 1 \leq \sum_{i \in C} x_i \leq 5 $
+
+$ 1 \leq \sum_{i \in P} x_i \leq 1 $
+
+$ 1 \leq \sum_{i \in D} x_i \leq 6 $
+
+$ 1 \leq \sum_{i \in A} x_i \leq 4 $
+
+$ \forall i = 1,...,m. \quad 0 \leq \sum_{i \in L_i} x_i  \leq 1 $
+
+\section{1.35}
+
+\textit{Variabili}
+
+$ x_{ik} = \text{variabile logica che dice se teniamo l'impianto i per il mercato k} $
+
+$ y_i = \text{variabile logica che dice se l'impianto i rimane aperto} $
+
+
+\textit{Funzione obbiettivo}
+
+$ min \qued \sum_{k \in K} \sum_{i \in I \cup J} x_{ik} c_{ik} b_k $
+
+\textit{Vincoli}
+
+$ \forall k \in K. \qued \sum_{i \in I \cup J} x_{ik} = 1 $
+
+$ \sum_{i \in I} x_{ik} \geq \frac{|I|}{2} $ non va bene! possiamo contare piu' volte lo stesso impianto che pero' funziona su diversi mercati -> variabili ausiliarie 
+
+$ \forall i \in I \cup J.\quad y_i \leq \sum_{k \in K} x_{ik} $ se tutti 0, allora y 0
+$ y_i \geq x_{ik} $ disgiunzione logica generalizzata a k elemetni
+
+$2 \sum_{i \in I} y_i \geq |I| $
+
+$2 \sum_{i \in J} y_i \geq |J| $
+
+
