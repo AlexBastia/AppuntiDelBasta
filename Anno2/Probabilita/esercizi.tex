@@ -109,4 +109,36 @@ $ C \subseteq D = B \cup C $, quindi per monotonia $ P(C) \leq P(D) $ quindi
   P(B|A) + P(C) \leq P(B|A) + P(D) \implies \frac{P(B|A)}{P(B|A)+P(C)} \geq \frac{P(B|A)}{P(B|A) + P(D)}
 \]
 
+
+\section{Es 2.3}
+
+Nel gioco del lotto si estraggono senza reimmissione cinque numeri da
+un’urna che contiene 90 palline numerate da 1 a 90.
+1) Determinare uno spazio di probabilit`a che descriva l’esperimento aleatorio.
+2) Come cambia la risposta al punto precedente se le estrazioni avvengono con
+reimmissione?
+
+$ \Omega = \{1,...,90\} \times \{1,...,90\} \times \{1,...,90\}, \times \{1,...,90\} \times \{1,...,90\} $ con $ x_1,x_2,x_3,x_4,x_5 $ tutti distinti, quindi $ |\Omega| = 90 \cdot 89 \cdot 87 \cdot 86 \cdot 85 $
+
+ATTENTION! Trovare gli eventi vuol dire risolvere l'esercizio! Ricorda di separare gli eventi dei sottoesperimenti:
+
+$ \forall i = 1,...,5, j = 1,...,90 \quad E_{ij} = \text{"estrazione di j dall'urna all'i-esimo turno"} $
+
+NON sono indipendenti, quindi per calcolare $ \mathbb{P}((x_1, x_2, x_3, x_4, x_5)) $ dobbiamo calcolare $ \mathbb{P}(E_{1x_1} \cap E_{2x_2} \cap E_{3x_3} \cap E_{4x_4} \cap E_{5x_5}) $, usiamo la regola della catena:
+\[
+  = \mathbb{P}(E_{1x_1})\mathbb{P}(E_{2x_2} | E_{1x_1})\mathbb{P}(E_{3x_3}|E_{1x_1} \cap E_{2x_2}) ... \mathbb{P}(E_{5x_5} | E_{1x_1} \cap ... \cap E_{4x_4})
+\]
+Adesso possiamo usare la probabilita' uniforme sui singoli sottoesperimenti:
+
+$ \mathbb{P}(E_{1x_1}) =  $
+
+TODO: guarda se gli eventi sono effettivamente 
+
+\section{Es 3.1}
+
+Un’urna contiene 10 palline di cui 6 bianche e 4 rosse. Si estraggono due
+palline senza reimmissione. Calcolare la probabilit`a dell’evento
+B2 = “la seconda estratta `e bianca”
+
+$ \Omega = \{r,b\} \times \{r,b\} $, $ \mathbb{P}(B_2) = \mathbb{P}(B_2 | B_1)\mathbb{P}(B_1) + \mathbb{P}(B_2 | B_1^{c})\mathbb{P}(B_1^{c}) = \frac{5}{9} \cdot \frac{6}{10} + \frac{6}{9} \cdot \frac{4}{10} $ usando le probabilita' totali e la probabilita' uniforme dei sottoesperimenti.
 \end{document}

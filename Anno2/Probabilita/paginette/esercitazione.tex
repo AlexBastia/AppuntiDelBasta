@@ -56,12 +56,11 @@ Sfruttiamo il principio di probabilità uniforme, secondo cui ogni esito ha prob
     Questa condizione si verifica in due modi: rossa poi bianca oppure bianca poi rossa. Quindi:
     \[
         \begin{split}
-            P($(R_1 \cap B_2)\cup (B_1 \cap R_2)$) & =P(B_2 | R_1) P(R_1) + P(R_2 | B_1) P(B_1)\\
+            P((R_1 \cap B_2)\cup (B_1 \cap R_2)) & =P(B_2 | R_1) P(R_1) + P(R_2 | B_1) P(B_1)\\
                     &= \frac{r}{r+b} \cdot \frac{b}{r+b-1} + \frac{b}{r+b} \cdot \frac{r}{r+b-1} \\
                     &= \frac{2rb}{(r+b)(r+b-1)}.
         \end{split}
     \]
-    
     \item \textbf{Probabilità che la seconda pallina sia rossa:}\\[1mm]
     Usiamo la formula della probabilità totale, considerando le possibili estrazioni del primo turno:
     \[
@@ -291,7 +290,5 @@ A questo punto è necessario il vostro aiuto!
     \item $B\cap C = \emptyset$
     \item Quali tra A,B,C   sono indipendenti? $P(A\cap B) = P(A)\cdot P(B)$, $P(A\cap C) = P(A)\cdot P(C)$
     \item D = "Areo distrutto" = $B\cup C$
-    \item $P(B | A\cap D)$ sono in funzione di $P(B|A)$ e $P(C)$, quindi $= \frac{B\cap A \cap D}{P(A\cap D)} = \frac{B\cap A\cap (B \sqcup C)}{ P(A\cap (B\sqcup C))} = \frac{((B\cap A)\)}$
-    
-    
+    \item $P(B | A\cap D)$ sono in funzione di $P(B|A)$ e $P(C)$, quindi $= \frac{B\cap A \cap D}{P(A\cap D)} = \frac{B\cap A\cap (B \sqcup C)}{ P(A\cap (B\sqcup C))} = \frac{((B\cap A)\)}{P(A \cap (B \cup C))} $
 \end{itemize}
