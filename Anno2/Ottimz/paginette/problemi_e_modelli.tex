@@ -582,23 +582,6 @@ I vincoli, invece, dipendono dal problema:
   \[
     \sum^m_{j=1} a_{ij}x_j \leq 1 \quad \forall i\in [1,n]
   \]
-\end{itemize}
-\subsection{Variabili a valori discreti}
-Spesso, tuttavia, le variabili in gioco sono vincolate ad assumere un valore da un insieme che non è $\{0,1\}$ o un intervallo continuo (come $\mathbb{N}$). Ad esempio si può essere interessati a vincolare $x$ in un inseime finito di valori $Z = \{z_1,...,z_k\}$ dove i vari $z_i$ sono valori reali distinti 
-
-In questi casi, si possono utilizzare $n$ variabili ausiliarie $y_1,...,y_k$ che rappresentano l'appartenenza di $z$ a $Z$. In particolare, si definiscono le variabili $y_i$ come segue:
-\[
-  y_i = \begin{cases}
-    1 & \text{se } z = z_i\\
-    0 & \text{altrimenti}
-  \end{cases}
-\]
-E sono vincolate come segue:
-\[
-  \sum_{i=1}^{k} y_i = 1 \quad x=\sum^n_{i=1}z_i y_i
-\]
-
-
 \ex{Problema delle Commesse}{
 \textbf{Testo}
 
@@ -652,6 +635,51 @@ $F = \{F_1, \dots, F_m\} \quad \text{dove } F_j$ è la $j$-esima commessa che ra
 Nota: le scritte in rosso sono una possibile modifica all'esercizio dove per ogni commessa non fatta c'e' una penalita $ p_j $.
 }
 
+\end{itemize}
+\subsection{Variabili a valori discreti}
+Spesso, tuttavia, le variabili in gioco sono vincolate ad assumere un valore da un insieme che non è $\{0,1\}$ o un intervallo continuo (come $\mathbb{N}$). Ad esempio si può essere interessati a vincolare $x$ in un inseime finito di valori $Z = \{z_1,...,z_k\}$ dove i vari $z_i$ sono valori reali distinti 
+
+In questi casi, si possono utilizzare $n$ variabili ausiliarie $y_1,...,y_k$ che rappresentano l'appartenenza di $z$ a $Z$. In particolare, si definiscono le variabili $y_i$ come segue:
+\[
+  y_i = \begin{cases}
+    1 & \text{se } z = z_i\\
+    0 & \text{altrimenti}
+  \end{cases}
+\]
+E sono vincolate come segue:
+\[
+  \sum_{i=1}^{k} y_i = 1 \quad x=\sum^n_{i=1}z_i y_i
+\]
+
+\ex{Progetto di reti}{
+  \textbf{TESTO}
+
+Si vogliono collegare le reti fognarie di alcuni centri residenziali e industriali
+ad un impianto di depurazione e smaltimento. Ogni centro produce una
+quantit`a nota di rifiuti (liquidi), ed `e necessario dimensionare opportuna-
+mente l’impianto di collegamento al depuratore in modo da consentirne il
+trasporto. Si possono scegliere condotte di diversa portata e il costo di messa
+in opera di una condotta sar`a una funzione della sua portata.
+Si consideri ad esempio il grafo G = (N, A) di figura 1.3(a) dove i nodi da
+1 a 4 rappresentano i centri ed il nodo 5 rappresenta il depuratore. Accanto
+ad ogni nodo `e indicata la quantit`a di liquido da depurare per unit`a di tempo
+prodotta dal centro ad esso corrispondente.
+Ogni arco $ (i,j) \in A $ rappresenta un possibile collegamento; fra di essi
+andranno scelti quelli che verranno effettivamente costruiti, e per ciascuno
+dei collegamenti costruiti si dovr`a determinare la portata. Osserviamo che
+i collegamenti hanno una direzione prefissata di percorrenza.
+Una soluzione ammissibile `e data da un insieme di collegamenti che ga-
+rantiscano il fluire dei liquidi da tutti i centri fino al depuratore. In figura
+1.3(b) `e rappresentata una possibile soluzione.
+
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2025-03-03-13-45-07.png}
+\end{center}
+
+\textbf{SVOLGIMENTO}
+TODO: svolgi
+}
+
 \subsection{Minima quantità positiva}
 
 Quando una variabile $x$ rappresenta un certo livello di produzione, possibile che il valore della variabile sia 
@@ -702,35 +730,6 @@ Si ha infatti che
 \]
 \nt{
   Si noti che se $y=0$ allora, per i vincoli introdotti poc'hanzi, si ha che $x=0$ (anche se non vale viceversa). In altre parole i vincoli introdotti non eslcudono la possibilità che sia contemporaneamente $y=1$ e $x=0$, in questo caso avremo $g(0,1)\neq f(0)$ (nasty). Di conseguenza la funzione $g$ non rappresenta perfettamente ed in modo univoco la funzione $f(x)$, ma dato che l'obbiettivo è \textit{minimizzare} la funzione $f(x)$, la soluzione $(x,y) = (0,1)$ viene esclusa essendo $g(0,1) = b > g(0,0) = 0 = f(0)$
-}
-\ex{Progetto di reti}{
-  \textbf{TESTO}
-
-Si vogliono collegare le reti fognarie di alcuni centri residenziali e industriali
-ad un impianto di depurazione e smaltimento. Ogni centro produce una
-quantit`a nota di rifiuti (liquidi), ed `e necessario dimensionare opportuna-
-mente l’impianto di collegamento al depuratore in modo da consentirne il
-trasporto. Si possono scegliere condotte di diversa portata e il costo di messa
-in opera di una condotta sar`a una funzione della sua portata.
-Si consideri ad esempio il grafo G = (N, A) di figura 1.3(a) dove i nodi da
-1 a 4 rappresentano i centri ed il nodo 5 rappresenta il depuratore. Accanto
-ad ogni nodo `e indicata la quantit`a di liquido da depurare per unit`a di tempo
-prodotta dal centro ad esso corrispondente.
-Ogni arco (i, j) ∈ A rappresenta un possibile collegamento; fra di essi
-andranno scelti quelli che verranno effettivamente costruiti, e per ciascuno
-dei collegamenti costruiti si dovr`a determinare la portata. Osserviamo che
-i collegamenti hanno una direzione prefissata di percorrenza.
-Una soluzione ammissibile `e data da un insieme di collegamenti che ga-
-rantiscano il fluire dei liquidi da tutti i centri fino al depuratore. In figura
-1.3(b) `e rappresentata una possibile soluzione.
-
-\begin{center}
-  \includegraphics[width=0.5\textwidth]{img/2025-03-03-13-45-07.png}
-\end{center}
-
-\textbf{SVOLGIMENTO}
-
-  
 }
 
 \ex{Ordinamento di valori su macchine}{
@@ -848,7 +847,7 @@ Vabbuò, adesso è possibile sostuire alla funzione $f(x)$ la seguente funzione 
 \]
 Con le variabili soggette ai vincoli \ref{eq:vincoli_tratti}. In questo modo è stato possibile rappresentare la funzione $f(x)$ (non lineare) come una funzione lineare a variabili continue definita du un opportuno insieme.
 
-Si ha che il valore di $ f $ e' rappresentato \texit{univocamente} dalla quadrupla $(z_1, z_2,y_1,y_2)$, eccetto nel punto di non continuita' $a_2$ che può essere espresso con le due seguenti quadruple:
+Si ha che il valore di $ f $ e' rappresentato \textit{univocamente} dalla quadrupla $(z_1, z_2,y_1,y_2)$, eccetto nel punto di non continuita' $a_2$ che può essere espresso con le due seguenti quadruple:
 \[
   (a_2 - a_1, 0, 1, 0) \quad (0, 0, 0, 1)
 \] 

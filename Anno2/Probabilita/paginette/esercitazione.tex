@@ -1,4 +1,4 @@
-\section{Esercitazionei}
+\chapter{Esercitazionei}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Esercizio 4 (Foglio 2)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -292,3 +292,53 @@ A questo punto è necessario il vostro aiuto!
     \item D = "Areo distrutto" = $B\cup C$
     \item $P(B | A\cap D)$ sono in funzione di $P(B|A)$ e $P(C)$, quindi $= \frac{B\cap A \cap D}{P(A\cap D)} = \frac{B\cap A\cap (B \sqcup C)}{ P(A\cap (B\sqcup C))} = \frac{((B\cap A)\)}{P(A \cap (B \cup C))} $
 \end{itemize}
+
+\subsection{Esercizio 2.3}
+\subsubsection{Testo}
+Nel gioco del lotto si estraggono senza reimmissione cinque numeri da un'unrna che contiene 90 palline da 1 a 9
+\begin{enumerate}
+    \item Determinare una spazio di probabilità che descriva l'esperimento aleatorio
+    \item Come cambia la risposta al punto precedente se le estrazioni avvengono con reimmissione?
+\end{enumerate}
+
+\subsubsection{Svolgimento}
+\begin{enumerate}
+    \item \begin{itemize}
+        \item  $\Omega = \{(x_1, x_2, x_3, x_4,_5)\mid x_i\in \{1,\dots, 90\}, i=1,\dots,5, x_i \text{ distinti}\}$
+        \item .
+        Definisco:
+
+        $\forall i\in\{1,\dots, 5\} \forall j\in \{1,\dots, 90\},\, E_{ij}:$ "straggo il numero $j$ all'i-esima estrazione" 
+
+        $\mathbb{P}(E_{1,x_1}\cap E_{2,x_3}\cap E_{3,x_3}\cap E_{4,x_4}\cap E_{5,x_5})= \mathbb{P} (E_{1,x_1}) \mathbb{P}(E_{2,x_2}|E_{1,x_1}) \dots \mathbb{P}(E_{5,x_5} | E_{1,x_1}\cap E_{2,x_2}\cap E_{3,x_3} \cap E_{4,x_4} \cap E_{5,x_5})$ assumo che vi è probabilità uniforme $= \frac{1}{90}\cdot\frac{1}{89}\cdot \frac{1}{88}\cdot\frac{1}{87}\cdot\frac{1}{86} = \frac{1}{|\Omega|}$
+    \end{itemize}
+    
+   
+
+    \item $\Omega = \{(x_1, x_2, x_3, x_4,_5)\mid x_i\in \{1,\dots, 90\}, i=1,\dots,5\}$
+    
+    sotto-esperimento: estrazione dall'urna, dato che avviene la reimmissione si ha che ogni sotto-esperimento è indipendente, quindi si ha:
+    \[
+        \mathbb{P}(\cdot) \text{ uniforme per }\Omega: \mathbb{P}(\omega)
+    \]
+\end{enumerate}
+
+\subsection{}
+\subsubsection{Testo}
+Un'urna contiene 10 palline di cui 6 bianche e 4 rosse. Si estraggono due palline senza reimmissione. Calcolare la probabilità dell'evento
+
+\[
+    B_2 =\text{ la seconda è bianca }
+\]
+
+\subsubsection{Svolgimento}
+Sia $B_i = $"estraggo una pallina bianfa all'i-esima estrazione"
+
+$\mathbb{P}(B_2)$?
+
+TODO: giaga alberello
+
+Formula delle porb totali:
+\[
+    \mathbb{P}(B_2) = P(B_2 \cap B_1) + P(B_2\cap B_1^c )= P(B_2| B_1)P (B_1)  P(B_2| B_1^c)P (B_1^c) +  = \frac{5}{9}\cdot \frac{6}{10}+\frac{6}{9}\cdot\frac{4}{10}
+\]

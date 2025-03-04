@@ -373,15 +373,15 @@ $P(T,1) = \frac{1}{8} = P(C,4) = \frac{1}{8}$
 
   \[
   \begin{aligned}
-  & T = \text{"esito del lancio moneta e testa"} \\
-  & C = \text{"esito del lancio moneta è croce"} \\
-  & D_i = \text{"è uscito il numero } i \text{"} \\
-  & P(C) = \frac{1}{2}, \quad P(T) = \frac{1}{2} \\
-  & P(D_i | C) = \frac{1}{4} \\
-  & P(D_i | T) = \frac{1}{4} \\
-  & A = \text{"è uscito testa e il numero } i \text{"} \\
-  & P(A) = P(T) \cdot P(D_i | T) = \frac{1}{2} \cdot \frac{1}{4} = \frac{1}{8} \\
-  & \text{Analogamente per } C \cap D_i
+    & T = \text{"esito del lancio moneta e testa"} \\
+    & C = \text{"esito del lancio moneta è croce"} \\
+    & D_i = \text{"è uscito il numero } i \text{"} \\
+    & P(C) = \frac{1}{2}, \quad P(T) = \frac{1}{2} \\
+    & P(D_i | C) = \frac{1}{4} \\
+    & P(D_i | T) = \frac{1}{4} \\
+    & A = \text{"è uscito testa e il numero } i \text{"} \\
+    & P(A) = P(T) \cdot P(D_i | T) = \frac{1}{2} \cdot \frac{1}{4} = \frac{1}{8} \\
+    & \text{Analogamente per } C \cap D_i
   \end{aligned}
   \]
 }
@@ -439,5 +439,42 @@ Ce l'aspettiamo dato che c'e' completa simmetria fra i rami delle H con la distr
 2) $ P(B_3 | B_1 \cap B_2) = P(B_3 \cap B_2 \cap B_1) / P(B_1 \cap B_2) =  $ usare ancora il partizionamento per H per applicare probabilita' totali
 }
 
+\subsection{Formula di Boyes}
+Quando si deve calcolare una probabilità condizionata di eventi "nell'ordine temporale sbagliato", ad esempio se si calcolare $P(A|B)$ ma si conosce solo $P(B|A)$, si può utilizzare uno strumento utilissimo facilmente derivabile dalla matematica della probabilità condizionata, ovvero la formula di Bayes:
+
+\thm{Formula di Bayes}{
+  Siano $A$ e $B$ due eventi tali che $\mathbb{P}(A)>0$ e $\mathbb{P}(B)>0$, allora:
+  \[
+    \mathbb{P}(A|B) = \frac{\mathbb{P}(B|A)\mathbb{P}(A)}{\mathbb{P}(B)}
+  \]
+}
+\pf{Dimostrazione}{
+
+  Per definizione di $\mathbb{P}(A|B)$ si ha:
+  \[
+    \mathbb{P}(A|B) = \frac{\mathbb{P}(A \cap B)}{\mathbb{P}(B)}
+  \]
+  Utilizzando la regola della catena possiamo rimuovere il numeratore come segue:
+  \[
+    \mathbb{P}(A\cap B) = \mathbb{P}(B|A)\mathbb{P}(A)
+  \]
+  Quindi:
+  \[
+    \mathbb{P}(A|B) = \frac{\mathbb{P}(A \cap B)}{\mathbb{P}(B)} = \frac{\mathbb{P}(B|A)\mathbb{P}(A)}{\mathbb{P}(B)}
+  \]
+}
+
+\ex{}{
+  Ci sono due urne: la prima urna contiene una pallina bianca e due palline
+rosse, mentre la seconda contiene due palline bianche e cinque palline rosse. Si lancia una
+moneta: se esce testa si estrae una pallina dalla prima urna, se esce croce si estrae una
+pallina dalla seconda.
+Sapendo che è stata estratta una pallina bianca, calcolare la probabilità che l’esito del
+lancio della moneta sia stato testa.
+
+Svolgimento:
+
+$T = \text{"esce testa"}$
+}
 
 % \end{document}

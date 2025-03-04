@@ -115,3 +115,66 @@ $F = \{F_1, \dots, F_m\} \quad \text{dove } F_j$ è la $j$-esima commessa
 \[
     \max \sum^m_{j=1}r_jx_j \red{-\sum^m_{j=1}y_ip_j}
 \]
+
+\subsection{Problema della minimizzazione del massimo}
+\subsubsection{Testo}
+Una ditta di costruzioni edilizie ha deciso di subappaltare $n$ diverse opere ad $n$ diversi artigiani. Ad ogni artigiano $i = 1,\dots , n$ chiede di fornire il costo preventivo $c_{ij}$ che richiede per effettuare l’opera $j$, per ogni $j = 1, \dots, n$. Si vuole assegnare un’opera a ciascun artigiano in modo che tutte le opere siano effettuate e il costo massimo dei subappalti assegnati sia minimizzato. Formulare il problema
+
+\subsubsection{Svolgimento}
+\textit{Variabili}:
+\[
+    x_{ij} = \begin{cases}
+        1 & \text{se l'opera $j$ è assegnata all'artigiano $i$}\\
+        0 & \text{altrimenti}
+    \end{cases}
+\]
+
+\textit{Vincoli}:
+\[
+    \forall j \sum^n_{i=1}x_{ij}=1 \quad \forall i \sum_{j=1}^n x_{ij}=1 
+\]
+Inoltre: 
+\[
+    \forall i, j\; c_{ij}x_{ij}\leq M
+\]
+\textit{Funzione obbiettivo}:
+\[
+    \min M
+\]
+
+\subsection{Problema della massimizzazione del minimo}
+\subsubsection{Testo}
+Si provi ora a massimizzare il costo minimo dei subappalti assegnati
+\subsubsection{Svolgimento}
+\textit{Variabili}:
+\[
+    x_{ij} = \begin{cases}
+        1 & \text{se l'opera $j$ è assegnata all'artigiano $i$}\\
+        0 & \text{altrimenti}
+    \end{cases}
+\]
+\itexit{Vincoli}:
+\[
+    \forall j \sum^n_{i=1}x_{ij}=1 \quad \forall i \sum_{j=1}^n x_{ij}=1
+\]
+Inoltre:
+\[
+    \forall i, j\; c_{ij}x_{ij}\geq m
+\]
+\textit{Funzione obbiettivo}:
+\[
+    \max m
+\]
+
+\subsection{Esercizio valore assoluto}
+\subsection{testo}
+Formulare il problema $\min\{|3 - 4x| : |x| \leq 2\}$
+\subsection{Svolgimento}
+\textit{Vincoli}
+\[
+    x \leq 2 \quad -x\leq 2
+\]
+\textit{Funzione obbiettivo}
+\[
+    \min\{3-4x\} \quad \min\{3-4x\}
+\]
