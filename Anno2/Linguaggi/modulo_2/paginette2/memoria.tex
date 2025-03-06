@@ -46,19 +46,16 @@ Ogni istanza di sottoprogramma viene memorizzata con un \textit{frame} (o \texti
 Vediamo un esempio:
 
 \begin{lstlisting}[language=C]
-  A:{int x = 0;
-    void pippo(int n){
-      x = n+1;
-    }
-    pippo(3);
-    write(x);
-    {
-      int x = 0;
-      pippo(3);
-      write(x);
-    }
-    write(x);
+A:{
+  int a = 1;
+  int b = 0;
+
+  B:{
+    int c = 3;
+    int b = 3;
   }
+  b = a + 1;
+}
 \end{lstlisting}
 
 \begin{center}
@@ -222,5 +219,67 @@ Esistono due meccanismi diversi per gestire blocchi di dimensione variabile:
 \end{itemize}
 
 TODO: disegni esplicativi
+
+\section{Implementazione delle Regole di Scope}
+
+Ora che abbiamo capito come viene gestita la memoria di un programma dal compilatore, soprattuto per quanto riguarda i RdA, vediamo come possiamo implementare le regole di scope quando un blocco deve accedere a variabili non-locali.
+
+\subsection{Scope Statico}
+
+Se vengono implementate le regole di scope statico, allora l'ordine da seguire quando stiamo cercando il valore di una variabile non-locale non e' necessariamente quello dettato dalla catena dinamica, ovvero l'ordine delle chiamate. Infatti, l'RdA corretto e' determinato dalla struttura statica (testuale) del programma, seguendo quindi l'ordine di annidamento dei blocchi. Vediamo un esempio:
+
+\begin{center}
+  \includegraphics[width=0.1\textwidth]{img/2025-03-06-11-36-18.png}
+\end{center}
+
+Data la stuttura soprastante, immaginiamo di chiamare in ordine $ A,B,C,D,E,C $ e che rimangano tutte attive:
+\begin{itemize}
+\item Aggiungiamo inizialmente l'RdA di $ A $ allo stack di sistema, aggiornando lo SP e l'RdA pointer. Dato che e' il primo sulla pila, non ha nessun link.
+\item Man mano che aggiungo i RdA di $ B,C,... $ aggiorno sempre SP e RdA pointer, ma e' anche necessario determinare il link dinamico e statico.
+\end{itemize}
+
+Quindi con tutte le chiamate aperte la situazione e' questa:
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2025-03-06-11-42-43.png}
+\end{center}
+
+Come al solito, il puntatore di catena dinamica punta all'RdA \textit{temporalmente precedente} (quello appena sotto nella pila), mentre il puntatore di catena \textbf{statica} indica l'RdA del blocco che \textit{contiene strutturalmente} quello in cui siamo.
+
+\nt{
+  Se un sottoprogramma e' annidato a livello k, allora la catena statica sara' lunga k.
+}
+
+Supponiamo di essere in $ E $ e di voler accedere alla variabile $ x $ in modo statico dichiarata in $ A $:
+\begin{itemize}
+\item Seguendo la catena statica, controllo se $ x $ e' dichiarata in $ C $.
+\item Non c'e', quindi continuo a seguire i link statici e arrivo in $ A $, dove trovo il valore cercato.
+\end{itemize}
+
+Il supporto a run-time della catena statica e' compito della sequenza di chiamata, prologo e l'epilogo che abbiamo visto prima per le chiamate. L'approccio piu' comune e' quello dove il chiamante calcola il puntatore a catena statica che passa poi al chiamato, e' abbastanza semplice e puo' essere diviso in due casi:
+
+\begin{itemize}
+  \item \textbf{Il chiamato e' esterno al chiamante}: secondo le regole di visibilita', questa situazione e' possibile solo se il chiamante e' annidato internamente rispetto al blocco del chiamato. Cio' significa che tale blocco e' ancora attivo sulla pila, come tutti i blocchi annidati fino a quello del chiamante. Dato che sappiamo il livello di annidamento di ciascun blocco (puo' essere calcolato staticamente), basta trovare la differenza fra il livello del chiamante meno il chiamato e fare questo numero di salti sulla catena statica del chiamante (che e' in cima alla stack). In questo modo ci troviamo nel RdA del blocco contenente la definizione del chiamato, e ci basta solo passare l'indirizzo di tale RdA al chiamato che lo imposta come link statico.
+    \begin{center}
+      \includegraphics[width=0.3\textwidth]{img/2025-03-06-14-23-08.png}
+    \end{center}
+  \item \textbf{Il chiamato e' interno al chiamante}: tale situazione puo' succedere solo se il chiamato e' definito nello stesso blocco dove viene chiamato. Siamo quindi in un caso speciale del punto precedente dove la distanza di annidamento e' 0, quindi basta passare come link statico al chiamato il puntatore RdA del record contenente la chiamata (che sara' quello in cima).
+    \begin{center}
+      \includegraphics[width=0.3\textwidth]{img/2025-03-06-14-26-54.png}
+    \end{center}
+\end{itemize}
+
+Il numero di "salti" da fare per raggiungere il RdA corretto e' calcolabile staticamente dal compiler usando la \textit{tabella dei simboli}, che memorizza anche il livello di annidamento al quale e' stata dichiarata la variabile cercata. 
+
+Pero' non e' possibile stabilire staticamente la locazione esatta di memoria dove si trovera' tale variabile non-locale, dato che, pur sapendo il numero di "salti", non sappiamo quanti e quali RdA si trovano fra ogni salto a run-time. Per questo motivo ci serve la catena statica.
+
+\begin{center}
+  \includegraphics[width=0.2\textwidth]{img/2025-03-06-13-14-42.png}
+\end{center}
+
+\subsubsection{Il Display}
+
+E' un po' uno schifo dover seguire sta catena statica, dato che se siamo a un livello $ k $ di annidamento, dobbiamo per forza eseguire $ k $ accessi a memoria per arrivare finalmente al frame giusto. Anche se nella pratica generalmente non e' un problema, possiamo ottimizzarlo quindi lo facciamo.
+
+
 
 % \end{document}
