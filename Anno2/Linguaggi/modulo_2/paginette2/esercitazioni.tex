@@ -68,11 +68,11 @@
             int x = 1;
             int y = 100;
             int z = 30;
-            pippo(x++,x); // ricordarsi che il x++ prima passa il valore di x nudo e crudo poi come side-effect modica x staticamente in questo caso, pertanto il secondo parametro sarà 2: pippo(1, 2) -> 3 = 0+ 1 +2
+            pippo(x++,x); // ricordarsi che il x++ prima passa il valore di x nudo e crudo poi come side-effect modica x staticamente in questo caso, pertanto il secondo parametro sara' 2: pippo(1, 2) -> 3 = 0+ 1 +2
             pippo(x++, x); // pippo(3, 4) -> 7 = 0 + 3 + 4
             write(x); // 7
         }
-        write(x); // 0 perché il blocco è finito, terminato e riprende la variabile x dichiarata all'inizio
+        write(x); // 0 perche' il blocco e' finito, terminato e riprende la variabile x dichiarata all'inizio
     }
 \end{lstlisting}
 Si descriva il comportamento del programma assumendo uno scope statico
@@ -139,7 +139,7 @@ Il programma stampa 40
         int x = z * v;
         B();
     }
-    A(??) // si ha che qualsiasi valore di al posto di ?? si scriverà 10
+    A(??) // si ha che qualsiasi valore di al posto di ?? si scrivera' 10
 }
 \end{lstlisting}
 Fornire una chiamata alla funzione A di modo che il prgramma, usando scope statico stami il valore 10
