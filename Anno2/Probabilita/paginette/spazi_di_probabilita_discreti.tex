@@ -282,6 +282,44 @@ Definiamo la funzione:
 Posso allargare \( \Omega \) quanto voglio perché tanto fuori dall'insieme minimo che comprende tutti gli eventi possibili le probabilità che aggiungo sono quasi impossibili e quindi hanno probabilità 0 e non cambiano il valore totale della somma.
 
 \subsection{Probabilita' uniforme}
-TODO: dare un esempio di prob. uniforme e definirla per benino
+\thm{Principio di porbabililità uniforme}{
+  Si cosideri un esperimento aleatorio aleatorio con spazio campionario \( \Omega = \{w_1,\dots, w_N\} \) finito e discreto, con esiti sono equiprobabili $\mathbb{P}(\{w_1\}) = \mathbb{P}(\{w_2\}) =\dots = \mathbb{P}(\{w_N\})$.
 
+  Si dice allora che $\mathbb{P}$ è la \textbf{probabilità uniforme} su $\Omega$ e valgono le seguenti proprietà:
+  \begin{enumerate}
+    \item Dato un qualunque evento elementare $A = \{w_i\}$, si ha:
+    \[
+      \mathbb{P}(A) = \frac{1}{N}
+    \]
+    \item Dato un qualunque evento $A \subseteq \Omega$, vale la \textit{formula di Laplace}:
+    \[
+      \mathbb{P}(A) = \frac{|A|}{N} = \frac{\text{numero di esiti favorevoli}}{\text{numero di esiti possibili}}
+    \]
+  \end{enumerate}
+}
+
+\pf{Dimostrazione}{
+  \begin{enumerate}
+    \item Dimostro il punto 1:
+    
+    Per ipotesi sappiamo che $\mathbb{P}(\{w_1\}) = \mathbb{P}(\{w_2\}) =\dots = \mathbb{P}(\{w_N\})$ e per il \textit{principio di additività} si può costruire il seguente sistema:
+    \[
+      \begin{cases}
+        \mathbb{P}(\{w_1\}) + \mathbb{P}(\{w_2\}) + \dots + \mathbb{P}(\{w_N\}) = 1\\
+        \mathbb{P}(\{w_1\}) = \mathbb{P}(\{w_2\}) \\
+        \mathbb{P}(\{w_2\}) = \mathbb{P}(\{w_3\}) \\
+        \vdots\\
+        \mathbb{P}(\{w_{N_1}\}) = \mathbb{P}(\{w_N\})
+      \end{cases}
+    \]
+    Da cui si ricava che: 
+    \[\forall i\in[1,\dots, N] \quad \mathbb{P}(\{w_i\}) = \frac{1}{N}\]
+
+    \item Dimostro il punto 2:
+    Sia $A = \{w_{i_1},\dots,w_{i_k}\}$, con $k \leq N$. Per definizione di probabilità:
+    \[
+      \mathbb{P}(A) = \mathbb{P}(\{w_{i_1},\dots,w_{i_k}\}) = \mathbb{P}(\{w_{i_1}\}) + \dots + \mathbb{P}(\{w_{i_k}\}) = \frac{k}{N}
+    \]
+  \end{enumerate}
+}
 % \end{document}
