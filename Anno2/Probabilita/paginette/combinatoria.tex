@@ -1,4 +1,4 @@
-\begin{document}
+% \begin{document}
 \chapter{Calcolo Combinatorio}  
 
 Quando abbiamo numero finito di elementi, e' possibile contare gli elementi dell'evento per ridurre il problema di probabilita' a un problema di conteggio -> dobbiamo imparare a contare
@@ -116,9 +116,8 @@ Definiamo il principio generale:
 
 \section{Disposizioni e Combinazioni}
 
-\def{Disposizioni con ripetizione}{
-  Dato un insieme $ E $ con $ n $ elementi, indichiamo con $ DR_{n,k} $ le sequenze ordinate di $ k $ elementi di $ E $. 
-}
+\dfn{Disposizioni con ripetizione}{
+  Dato un insieme $ E $ con $ n $ elementi, indichiamo con $ DR_{n,k} $ le sequenze ordinate di $ k $ elementi di $ E $. }
 Sostanzialmente, $ DR_{n,k} = E \times E ... \times E $ $ k $ volte, ovvero:
 \[
 DR_{n,k} = E^k
@@ -153,7 +152,7 @@ dato che per ogni $ E $ abbiamo una scelta fra $ n $ elementi.
 
 Quindi lo usiamo nei casi di estrazione con reinbussolamento quando ci interessa l'ordine.
 
-\def{Disposizioni}{
+\dfn{Disposizioni}{
   Dato un insieme $ E  $ di $ n $ elementi, l'insieme delle disposizioni (senza ripetizione) di $ k $ elementi dell'insieme $ E $ e' l'insieme delle sequenze ordinate di $ k $ elementi \textit{distinti}, ovvero:
   \[
     D_{n,k} \coloneq \{(x_1,...,x_k)|x_1,...,x_k \in E \land x_i \neq x_j \text{se} i \neq j \}
@@ -186,4 +185,4 @@ Siamo passati da sequenze a sottoinsiemi, ovvero non ci interessa piu' dell'ordi
 \text{sottoinsieme} = \text{sequenza non ordinata}
 \]
 
-\end{document}
+% \end{document}
