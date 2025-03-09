@@ -1,0 +1,51 @@
+\documentclass{report}
+
+\input{../LatexTemp/preamble.tex}
+\input{../LatexTemp/macros}
+\input{../LatexTemp/letterfonts}
+
+\usepackage[utf8]{inputenc}
+\usepackage{fontawesome}
+\usepackage{tikz}
+\usepackage{amssymb}
+
+\newcommand{\dperp}{\mathrel{\bot\!\!\!\bot}}
+
+
+\usetikzlibrary{arrows.meta, positioning}
+
+\newcommand{\cp}[1]{
+  c_\mathcal{P}(#1)
+}
+\newcommand{\p}{$\mathcal{P}$}
+\newcommand{\zp}{
+  Z_\mathcal{P}
+}
+\newcommand{\fp}{\mathbb{F}_\mathcal{P}}
+
+\setlength{\parindent}{0pt}
+
+\title{\Huge{Probabilità}\\Appunti}
+\author{\huge{Giovanni "Qua' Qua' dancer" Palma e Alex Basta}}
+\date{}
+\pagenumbering{gobble}
+
+\begin{document}
+
+\maketitle
+\newpage% or \cleardoublepage
+% \pdfbookmark[<level>]{<title>}{<dest>}
+\pdfbookmark[section]{\contentsname}{toc}
+\tableofcontents
+
+\pagebreak
+
+\chapter{Introduzione}
+
+\include{paginette/introduzione}
+\include{paginette/spazi_di_probabilita_discreti}
+\include{paginette/probabilita_condizionata}
+\include{paginette/combinatoria}
+\include{paginette/esercitazione}
+
+\end{document}
