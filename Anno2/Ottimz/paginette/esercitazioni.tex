@@ -339,4 +339,119 @@ $2 \sum_{i \in I} y_i \geq |I| $
 
 $2 \sum_{i \in J} y_i \geq |J| $
 
+\subsection{Esercizio 1.7}
+\subsubsection{Testo}
+Un’azienda di trasporti ha bisogno di
+acquistare n litri di carburante ogni mese. Affinch´e gli autoveicoli funzionino a dovere, occorre
+che il numero di ottani del carburante utilizzato sia almeno k. L’azienda acquista il suo
+carburante da due fornitori A e B, che vendono carburante da kA e kB ottani, rispettivamente.
+Sia A che B applicano un prezzo al litro piuttosto alto (pA e pB, rispettivamente) per i primi
+s litri di carburante acquistati dall’azienda (ogni mese). Se il numero di litri acquistati ogni
+mese supera s, i due fornitori applicano invece un prezzo al litro pi`u basso (ossia bA e bB,
+rispettivamente), ma solo ai litri eccedenti s. Si formuli in PL il problema di determinare da
+chi acquistare il carburante necessario ogni mese in modo da minimizzare il costo complessivo e
+da rispettare il requisito sugli ottani.
+\textit{Variabili}
 
+\[
+\begin{aligned}
+    x_i &= \text{"litri da acquistare di tipo i"}    \\
+    y_i &=\begin{cases}
+        1 & \text{se }x_i\geq s\\
+        0 & \text{altrimenti}
+    \end{cases}\\
+    z_{i1} &= \begin{cases}
+        x_i &\text{se} 0<x_i<s\\
+        0 &\text{altrimenti}
+    \end{cases}\\
+    z_{i2} &= \begin{cases}
+        x_i - s &\text{se } x_i \geq s\\
+        0 &\text{altrimenti}
+    \end{cases}
+    \end{aligned}
+\]
+
+\textit{Vincoli}
+
+\[
+    \begin{aligned}
+        x_A + x_B &= n\\
+        \frac{k_A \cdot x_A + k_b \cdot x_b}{n} &\geq k\\
+        0 \leq z_i1 &\leq ()\\
+    \end{aligned}
+\]
+
+\textit{Funzione Obbiettivo}
+\[
+    \min \sum_{i\in \{A,B\}} z_{i1}p_i + z_{i2}b_i + s p_1 y_i
+\]
+
+\subsection{Esercizio 1.6}
+\subsubsection{Testo}
+Una radio privata deve fare arrivare il suo segnale in una città che si trova al di là di una catena montuosa rispetto alla città da cui trasmette. Per fare ciò decide di installare \( n \) ripetitori sulla cima di altrettante colline, ciascuna delle quali si trova ad un'altitudine pari a \( a_i \). Il costo di costruzione di ogni ripetitore dipende dalla sua altezza: ogni metro costa \( c_i \). Occorre soddisfare solo un vincolo: il dislivello, in metri, tra la cima di un ripetitore e la cima del successivo non può superare una soglia pari a \( k \). Si formuli, in PL, il problema di decidere le altezze dei ripetitori in modo che il relativo costo sia minimo.
+
+\subsubsection{Svolgimento}
+
+\textit{Variabili}
+\[
+    \begin{aligned}
+        x_i &= \text{"altezza del ripetitore i"}    \\
+    \end{aligned}
+\]
+
+
+
+\textit{Vincoli}
+
+\[
+    \begin{aligned}
+        \forall i\in[1\dots (n-1)] \quad x_{i+1} + a_{i+1} - x_{i} - a_{i} \leq k\\
+        \forall i\in[1\dots (n-1)] \quad - x_{i+1} - a_{i+1} + x_{i} + a_{i} \leq k\\
+    \end{aligned}
+\]
+\textit{Funzione Obbiettivo}
+
+\[
+    \min \sum_{i=1}^{n} c_i x_i
+\]
+
+\subsection{Esercizio 1.4 - Problema di Manutenzione degli Aerei}
+\subsubsection{Testo}
+Una compagnia aerea dispone di \( n \) aerei \( 1, \ldots, n \), e deve decidere in quale aeroporto, tra gli \( m \) in cui opera, svolgere le operazioni di manutenzione di ciascun aereo. Ogni aereo \( i \) è normalmente basato sull'aeroporto \( a_i \in \{1, \ldots, m\} \). Svolgere le operazioni di manutenzione di un aereo presso l'aeroporto \( j \) costa \( c_j \) euro. Se le operazioni di manutenzione si svolgono in un aeroporto diverso da quello in cui ogni aereo è basato, occorre poi sostenere un costo fisso pari a \( s \). Si formuli in PLI il problema di minimizzare i costi complessivi di manutenzione
+
+\subsubsection{Svolgimento}
+
+Bho, non ho capito, magari chiedere al prof
+
+
+\subsection{Esercizio 1.3}
+\subsubsection{Testo}
+Una compagnia deve affittare dei computer per soddisfare il lavoro dei prossimi quattro mesi.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Mese & Gennaio & Febbraio & Marzo & Aprile \\
+\hline
+Requisito & 9 & 5 & 7 & 9 \\
+\hline
+\end{tabular}
+\caption{Requisiti mensili di computer.}
+\end{table}
+
+Il costo dell'affitto dipende dalla lunghezza dell'affitto stesso.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+Lunghezza & 1 mese & 2 mesi & 3 mesi \\
+\hline
+Costo & 200 & 350 & 450 \\
+\hline
+\end{tabular}
+\caption{Costo dell'affitto in base alla lunghezza.}
+\end{table}
+
+Si dia una formulazione in programmazione lineare intera per il problema di trovare un piano di affitto di minimo costo.
