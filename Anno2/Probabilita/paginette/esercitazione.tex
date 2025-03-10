@@ -473,3 +473,108 @@ Formula delle porb totali:
 \[
     \mathbb{P}(B_2) = P(B_2 \cap B_1) + P(B_2\cap B_1^c )= P(B_2| B_1)P (B_1)  P(B_2| B_1^c)P (B_1^c) +  = \frac{5}{9}\cdot \frac{6}{10}+\frac{6}{9}\cdot\frac{4}{10}
 \]
+\section{Esercitazione combinatoria}
+\subsection{Esercizio 3}
+
+\subsubsection{Testo}
+Tre amici si danno appuntamento nel bar della piazza centrale della città senza sapere che ci sono quattro bar. Qual è la probabilità che scelgano lo stesso bar? Tre bar differenti?
+
+\subsubsection{Svolgimento}
+Ognuno di loro è come se estraesse un bar da un'urna. Quindi i casi totali sono, ovviamente, $4^3$. Il primo brodo che sceglie il bar è fortunello, infatti può scegliere qualunque bar, quindi i casi favorevoli saranno 4, mentre gli altri potranno scegliere solo e soltanto il bar che ha scelto il brodez iniziale. Quindi
+
+\[
+  \frac{4\cdot 1\cdot 1}{4^3} = \frac{1}{16}
+\]
+
+Nel caso dei bar differenti? Il primo può prendere un bar a caso, l'altro potrà scegliere solo sugli altri tre bar ed infine l'ultimo solo 2, matematicamente:
+\[
+  \frac{4\cdot 3\cdot 2}{4^3}
+\]
+
+\subsection{Esercizio 6}
+
+\subsubsection{Testo}
+Giocate 6 numeri al Superenalotto. Verranno estratti 6 numeri senza ripetizione dai primi 90 naturali, seguiti dall'estrazione di un 7 numero jolly, diverso quindi dai precedenti. Qual è la probabilità di fare 5+1 (indovinare 5 dei primi 6 numeri estratti e in più il numero jolly)?
+
+\subsubsection{Svolgimento}
+
+Intanto vengono estratti i primi 6 numeri senza emmissione e si ha, ovviamente, come casi possibili:
+\[
+  90\cdot 89 \cdot 88 \cdot 87 \cdot 86 \cdot 85 \cdot 84
+\]
+
+Dato che devo indovianre solo 5 nuemri, debbo sbagliare un numero, pertanto, per indicare che ho 6 modi per sbagliare il numerino (infatti che numero sbaglio tra i miei 6? il primo? secondo? terzo? devo tenere conto di tutte le possibilità) utilizzo il coefficiente binomiale $\binom{6}{1}$ moltiplicato per $84$ (ovvero la probabilità di "sbagliare" tra i novanta numeri), infine moltiplico per 1 (una possibilità su tutti casi possibili) tante volte quanto devo indovinare i numeri. Pertanto si ha:  
+
+\[
+  \frac{\binom{6}{1}\cdot 84 \cdot 1 \cdot 1 \cdot \dots}{90\cdot 89 \cdot 88 \cdot 87 \cdot 86 \cdot 85 \cdot 84} = \frac{6}{90\cdot 89 \cdot 88 \cdot 87 \cdot 86 \cdot 85 }
+\]
+\subsection{Esercizio 8}
+\subsubsection{Testo}
+Un mazzo di carte da scopone scientifico è costituito da 40 carte, identificate dal seme (spade, coppe, bastoni, denari) e dal tipo (asso, 2, 3, 4, 5, 6, 7, fante, cavallo, re). Supponendo di pescare 10 carte dal mazzo, calcolare la probabilità di estrarre:
+\begin{itemize}
+    \item[(a)] l'asso di bastoni,
+    \item[(b)] l'asso di spade e l'asso di coppe.
+\end{itemize}
+
+\subsubsection{Svolgimento}
+
+\begin{itemize}
+  \item[(a)]: Si ha che , dato che l'ordine di pescaggio non è importante, appartiene ad un genere di problemi dove l'estrazione è simultanea. Pertanto si ha che i casi possibili sono $\binom{40}{10}$. Dopodiche per avere un asso di bastoni ho una possibilità su tutti casi possibili, inoltre le altre carte possono essere qualsiasi, quindi ho nove modi per pescare le 39 carte rimanenti, ovvero $\binom{39}{9}$
+  \[
+    \frac{1\cdot\binom{39}{9} }{\binom{40}{10}}
+  \]
+  \item[(b)]: Ugualmente, qui occorre tenere presente il numero di possibilità che si ha per pescare 8 carte in un insieme di 38 carte, per la possbilità di beccare l'asso di spade e l'asso di coppe, ovviamente ne ho 1 su tutti i casi possibili, quindi: 
+  \[
+    \frac{1\cdot \binom{38}{8}}{\binom{40}{10}}
+  \]
+
+\end{itemize}
+
+\section{Probabilità condizionata e indipendenza}
+\subsection{Es. 1}
+\subsubsection{testo}
+Una roulette semplificata è formata da 12 numeri che sono “rosso” (R) e “nero” (N) in base allo schema seguente:
+\[
+\begin{array}{cccccccccccc}
+1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 \\
+R & R & N & N & R & N & N & R & N & N & R & R
+\end{array}
+\]
+(a) Determinare uno spazio di probabilità che descriva l’esperimento aleatorio.
+
+Siano
+\begin{itemize}
+    \item \( A = \) “esce un numero pari”,
+    \item \( B = \) “esce un numero rosso”,
+    \item \( C = \) “esce un numero $\leq$ 3”,
+    \item \( D = \) “esce un numero $\leq$ 6”,
+    \item \( E = \) “esce un numero $\leq$ 8”,
+    \item \( F = \) “esce un numero dispari $\leq$ 3”.
+\end{itemize}
+
+Calcolare le seguenti probabilità condizionate:
+(b) \( P(A|C), P(C|A), P(B|C), P(A|F), P(D|F), P(A|B), P(B|A) \).
+
+Stabilire quindi se:
+(c) gli eventi \( A, B \) e \( D \) sono a 2 a 2 indipendenti;
+(d) \( A, B, D \) costituiscono una famiglia di eventi indipendenti;
+(e) \( A, B, E \) costituiscono una famiglia di eventi indipendenti;
+(f) \( A, C, E \) costituiscono una famiglia di eventi indipendenti;
+(g) \( F \) è indipendente da \( A \); \( F \) è indipendente da \( D \).
+
+\subsubsection{Svolgimento}
+\begin{itemize}
+  \item[(a)]: $\Omega =\{1,2,\dots, 12\}$
+  \item[(b)]: 
+  \begin{itemize}
+    \item $\mathbb{P}(A|C) = \frac{1}{3}=\frac{\mathbb{P}(A\cap C)}{\mathbb{P}(C)}=$ 
+    \item $P(C|A)= \frac{1}{6}$
+    \item $P(B|C) = \frac{2}{3}$
+    \item $P(A|F) = 0$
+    \item $P(D|F) = \frac{2}{2}=1=\frac{P(F\cap D)}{P(F)} = \frac{P(F)}{P(F)}$
+    \item $P(A|B) = \frac{3}{6}$
+    \item $\frac{3}{6}$
+  \end{itemize}
+  
+  \item[(c)]: $A,B,D$ sono indipendenti? Bisogna calcolare se $P(cap4$ 
+\end{itemize}
