@@ -1,0 +1,211 @@
+% \begin{document}
+\chapter{Variabili Aleatorie}
+\section{Introduzione}
+  Finora, abbiamo trattato solo di eventi, per i quali ci chiediamo, fatto l'esperimento aleatorio, se sono avvenuti o meno. Possiamo pensare di domandarci non se un'affermazione si realizza o meno, ma generalizzare l'idea e chiederci quale sara' la quantita' numerica aleatoria, associata quindi ad un esperimento. Vogliamo quindi formalizzare l'idea di una quantita' che dipende dall'esito di un esperimento aleatorio:
+  \dfn{Variabile Aleatoria}{
+    Diamo due affermazioni (come per gli eventi):
+    \begin{itemize}
+    \item \textbf{Affermazione}:
+
+      Una variabile aleatoria e' un'affermazione che riguarda il risultato dell'esperimento aleatorio. Tale affermazione identifica uno e un solo numero, una volta noto l'esito. Stiamo quindi rispondendo alla domanda "Quanto vale ... ?"
+
+      \item \textbf{Funzione}:
+
+        Dato uno spazio di probabilita' $ (\Omega, \mathbb{P}) $ ed un insieme $ E \neq \emptyset $, si dice \textit{variabile aleatoria} ogni funzione $ X $ del tipo:
+        \[
+        X: \Omega \to E
+        \]
+        Se $ E = \mathbb{R} $, allora $ X $ e' una variabile aleatoria \textit{reale}. Puo' anche essere che $ E = \mathbb{R}^{n} $ con $ n > 1 $, e in questo caso si parla di variabili aleatorie \textit{vettoriali}.
+      
+    \end{itemize}
+  }
+
+  \ex{Lancio di due dadi}{
+    Dato lo spazio di probabilita', definiamo una variabile aleatoria $ X $:
+    \[
+    X = \text{La somma dei due lanci}
+    \]
+    Dobbiamo, quindi, prendere l'esito dell'esperimento e sommare il valore dei due dadi. Questa operazione puo' essere vista come una funzione a cui viene passata l'esito dell'esperimento e che restituisce un numero reale:
+    \begin{align*}
+      X: \Omega \to \mathbb{R}
+    \end{align*}
+    Questa e' la definizione di variabile aleatoria come funzione.
+
+    In questo caso, $ \Omega = \{1,...,6\}\times \{1,...,6\} = DR_{6,2} $, qundi:
+    \[
+      X((\omega_1, \omega_2)): \omega_1+\omega_2
+    \]
+  }
+  \nt{
+    Qualunque funzione da $ \Omega $ a $ \mathbb{R} $ e' una variabile aleatoria. Se $ \Omega $ e' piu' che numerabile sorgono dei problemi a causa dell'unione numerabile, quindi viene usata la $ \sigma $-algebra, un insieme delle parti ristretto per evitare tali problemi. 
+  }
+
+  \section{Variabili Aleatorie Costanti}
+  Vediamo dei casi "banali" di variabili aleatorie per capire il loro funzionamento e come vengono definite. Iniziamo con le funzioni costanti:
+  \dfn{Variabile Aleatoria Costante}{
+    Una VA (variabile aleatoria) $ X $ si dice \textit{costante} se:
+    \[
+      \forall \omega \in \Omega.\ X(\omega) = a
+    \]
+    Dove $ a \in E $ e' un elemento fissato. E' definita $ \forall \Omega $, dato che e' deterministica (non dipende dall'esito dell'esperimento).
+  }
+  Come per gli eventi, anche le variabili aleatorie possono essere \textit{quasi} costanti:
+  \dfn{Variabili Aleatorie Quasi Costanti}{
+    Una VA $ X $ si dice \textit{quasi costante} se:
+    \[
+      \forall \omega \in \Omega.\ \mathbb{P}(X = a) = 1
+    \]
+  }
+  \nt{
+    La scrittura $ (X = a) $ e' una notazione che rappresenta l'evento $ A = \text{"Il valore di X sara' "} a $, ovvero il sottoinsieme di $ \Omega $ per cui tutti gli elementi, passati a $ X $, danno lo stesso valore $ a $, quindi:
+    \[
+      \mathbb{P}(X = a) \coloneq \mathbb{P}(\{\omega \in \Omega | X(\omega) = a\})
+    \]
+  }
+  \ex{Lancio di un dado}{
+    $ \Omega = \mathbb{R} $, $ \mathbb{P} $ probabilita' uniforme su $ \{1,...,6\} $ e nulla sul resto degli elementi.
+
+    Con $ E = \mathbb{R} $, fisso $ a \in E $ e voglio costruire $ X: \Omega \to E $ tale che $ X $ e' quasi costante:
+    \[
+      X(\omega) = \begin{cases}
+      a & \omega \in \{1,...,6\}\\
+      \omega & \text{altrimenti}
+      \end{cases}
+    \]
+    Questa e' effettivamente una VA quasi costante, dato che $ \mathbb{P}(X = a) = 1 $. Infatti abbiamo assegnato un valore costante $ a $ a tutti gli $ \omega $ la cui probabilita' non era nulla. Ricordiamoci che la notazione $ \mathbb{P}(X = a) $ puo' essere riscritta meglio come $ \mathbb{P}(\{\omega \in \Omega | X(\omega) = a\}) $, che in questo caso corrisponde con $ \mathbb{P}(\{1,...,6\}) $ che ovviamente e' uguale a 1.
+
+    Notare che per tutti gli $ \omega $ con probabilita' nulla, il valore di $ X $ associato puo' essere qualunque cosa (non costante) e la $ X $ rimane comunque quasi costante. 
+  }
+
+  \section{Variabili Aleatorie Indicatrici (o di Bernulli)}
+
+  \dfn{Varaibile Aleatoria Indicatirce}{
+    Dato un evento $ A \subseteq \Omega $, definisco la variabile aleatoria indicatrice di $ A $ come:
+    \[
+      X(\omega): \mathbb{1}_A(\omega) = \begin{cases}
+      1 & \omega \in A\\
+      0 & \omega \notin A
+      \end{cases}
+    \]
+  }
+  Quindi, dato un evento, la VA indicatrice $ X $ ci \textit{indica} se l'esito $ \omega $ appartenga o meno all'evento. Notiamo che tutta l'informazione dell'evento $ A $ e' contenuta nella VA:
+  \[
+  A \rightsquigarrow \mathbb{1}_A
+  \]
+  Allora le VA sono \textit{generalizzazioni} del concetto di evento.
+  \ex{Prove ripetute e indipendenti}{
+    Consideriamo uno schema di n prove ripetute e indipendenti con probabilità di successo p, ossia uno spazio di probabilità discreto $ (\Omega, \mathbb{P}) $ in cui sono definiti n eventi $ C_1,...,C_n $ indipendenti e con la stessa probabilità $ p = \mathbb{P}(C_i) $. Definiamo gli eventi:
+    \begin{align*}
+    A_k = 
+    \end{align*}
+    TODO: continua
+  }
+  \section{Eventi associati alle variabili aleatorie}
+
+  Ma se io ho $ X $ variabile aleatoria, sono capace di risalire all'evento (o eventi) associati? Le variabili aleatorie sono generalizzazioni del concetto di evento, quindi data una variabile aleatoria ci sono una moltitudine di eventi associati (o generati)
+
+  \dfn{Evento generato da una VA}{
+    Sia $ X: \Omega \to E $ una VA. $\forall A \subseteq \mathbb{R} $ indichiamo con $ \{X \in A\} $ la controimmagine di $ A $ tramite $ X $:
+    \[
+      \{X \in A\} \coloneq X^{-1}(A) = \{\omega \in \Omega | X(\omega) \in A\}
+    \]
+    Quindi $ \{X \in A\} \subseteq \Omega $ e' un evento, ed e' costituito da tutti e soli gli esiti $ \omega $ per cui $ X(\omega) \in A $.
+
+    Gli eventi di questo tipo si dicono \textit{generati da} $ X $.
+  }
+
+  \nt{
+    La scrittura $ \{X = a\} $ che abbiamo usato prima e' equivalente a scrivere $ \{X \in \{a\}\} $. Allo stesso modo, possiamo considerare un intervallo di valori usando le disequazioni: $ \{X > a\} \equiv \{X \in (a,+\infty)\} $.
+  }
+
+  Segue quindi:
+  \dfn{Insieme di eventi generati da una VA}{
+    Data una VA $ X $, l'insieme degli eventi da essa generati si indica con:
+    \[
+      \sigma(X) \coloneq \{\{X \in A\} | A \subseteq \mathbb{R}\} \subseteq \powerset(\Omega)
+    \]
+  }
+
+  \nt{
+    $ \forall X: \Omega \to \mathbb{R} $ v.a. possiamo scrivere:
+    \[
+    \Omega = \{X \in \mathbb{R}\}
+    \]
+    \[
+    \emptyset = \{X \in \emptyset\}
+    \]
+  }
+
+  Calcoliamo l'insieme degli eventi generati dalle VA particolari che abbiamo visto:
+
+  \begin{itemize}
+  \item $ X $ \textbf{costante}:
+
+    Fisso $ a \in \mathbb{R} $, tale che $ \forall \omega \in \Omega.\ X(\omega) = a $.
+
+    $ \sigma(X) = ? $
+
+    Fissato $ B \subseteq \mathbb{R} $, notiamo che ci sono solo due casi:
+    \[
+    \{X \in B\} = \begin{cases}
+    \Omega & a \in B\\
+    \emptyset & a \notin B
+    \end{cases}
+    \]
+      Infatti, se $ a $ appartiene a $ B $ allora $ \forall \omega \in \Omega.\ X(\omega) \in B $ e quindi $ \{X \in B\} = \Omega $. Mentre se $ a $ non appartiene a $ B $, si ha che $ \forall \omega \in \Omega.\ X(\omega) \notin B $ e quindi $ \{X \in B\} = \emptyset $.
+  \item $ X $ \textbf{indicativa}:
+
+    Fisso $ A \subseteq \Omega $ tale che $ \forall \omega \in \Omega.\ X(\omega) = \mathbb{1}_A(\omega) $.
+
+    $ \sigma(X) = ? $
+
+    Fissato $ B \subseteq \mathbb{R} $, vediamo i casi:
+      \[
+      \{X \in B\} = \begin{cases}
+      \Omega & 0 \in B \land 1 \in B\\
+      \emptyset & 0 \notin B \land 1 \notin B\\
+      A & 0 \notin B \land 1 \in B\\
+      A^{c} & 0 \in B \land 1 \notin B
+      \end{cases}
+      \]
+  \end{itemize}   
+
+  \mprop{}{
+    Sia $ X: \Omega \to \mathbb{R} $ VA su $ (\Omega, \mathbb{P}) $, allora $ \forall x \in \mathbb{R} $:
+    \begin{enumerate}
+      \item $ \mathbb{P}(\{X \geq a\}) = \mathbb{P}(\{X = a\}) + \mathbb{P}(\{X > a\}) $
+      \item $ \mathbb{P}(\{X \geq a\}) = 1 - \mathbb{P}(\{X < a\}) $
+    \end{enumerate}
+  }
+  \pf{}{
+    \begin{enumerate}
+      \item $ \{X \geq a\} = \{ \omega \in \Omega | X(\omega) > a \lor X(\omega) = a\} = \{X > a\} \uplus \{X = a\} $ dato che se $ X(\omega) > a $ allora $ X(\omega) \neq a $ e viceversa. Quindi l'equazione e' dimostrata per addittivita' finita.
+      \item Dimostriamo che $ \{X \geq a\} $ e $ \{X < a\} $ sono complementari. Se $ X(\omega) \not\geq a $, allora $ X(\omega) < a $ e viceversa, fatto.
+    \end{enumerate}
+  }
+
+   Possiamo confronare intervalli su $ \mathbb{R} $ per calcolare probailita'
+
+ \section{Distribuzione (o legge) di una Variabile Aleatoria}
+
+
+ \dfn{Distribuzione di una VA}{
+   Dati $ (\Omega, \mathbb{P}) $ e $ X: \Omega\to \mathbb{R} $ VA, chiamiamo legge di $ X $ la funzione (che dimostreremo essere una probabilita'):
+   \begin{align*}
+     \mathbb{P}_X: \powerset(\mathbb{R}) &\to [0,1]\\
+     B &\mapsto \mathbb{P}(X \in B)
+   \end{align*}
+   Si scrive $ X ~ \mathbb{P}_X $ e si legge "$ X $ ha legge $ \mathbb{P}_X $".
+ }
+ La legge di una VA ne calcola quindi, dato un insieme di valori reali, la probabilita' che $ X(\omega) $ appartenga a tale intervallo.
+
+ \nt{
+   Conoscere $ \mathbb{P}_X $ $ \forall B \subseteq \mathbb{R} $ equivale a conoscere $ \mathbb{P}_X $ $ \forall I $ intervallo di $ \mathbb{R} $. (dato che ogni intervallo e' un sottoinsieme). 
+ }
+
+ Dimostreremo che la legge $ \mathbb{P}_X(\cdot) $ e' caratterizzata dalla funzione
+  \begin{align*}
+    F_X: \mathbb{R} &\to [0,1]\\
+    n &\mapsto \mathbb{P}_X((-\infty, n]) = \mathbb{P}(\{X \leq n\})
+  \end{align*}
+% \end{document}
