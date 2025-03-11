@@ -25,8 +25,8 @@ La stringa in input,poi, è trasformata in una sequenza di simboli astratti, det
 \dfn{Token}{
     un token è una coppia (nome, valore), dove:
     \begin{itemize}
-        \item nome: simbolo astratto che rappresenta una categoria semantica
-        \item Valore: una sequenza di simboli del testo in ingresso
+        \item il \textit{nome} è un simbolo astratto che rappresenta una categoria semantica
+        \item il \textit{valore} una sequenza di simboli del testo in ingresso
     \end{itemize}
 }
 Esempietto:
@@ -34,7 +34,7 @@ Esempietto:
     Un esempio di token è $\inside{Ide, x1}$, dove:
     \begin{itemize}
         \item $Ide$: è l'informazione che identifica una classe di token
-        \item $x1$: è l'informazione che identifica lo specifico token 
+        \item $x_1$: è l'informazione che identifica lo specifico token 
         \item 
     \end{itemize}
 }
@@ -43,7 +43,7 @@ Siano inoltre tali definizioni
     è la descrizione generale della forma dei valori di una classe di token
 }
 \esempio{
-    Sia $(x\mid y)(x\mid y\mid 0\mid 1)^*$ un'espressione regolare per rappresentare un Pattern, un esempio di stringa è
+    Sia $(x\mid y)(x\mid y\mid 0\mid 1)^*$ un'espressione regolare per rappresentare un Pattern
 }
 
 \dfn{
@@ -136,33 +136,27 @@ Definiamo formalmente questo tipo di espressioni e i linguaggi che definiscono:
         \mathcal{L}:\text{\texttt{Exp-Reg}}\to\mathcal{P}(A^*)
     \]
     Come segue:
-    \\
-    \begin{math}
-        \begin{array}{l}
-            \mathcal{L}[\varnothing]=\varnothing\text{ linguaggio vuoto}\\
-            \mathcal{L}[\varepsilon]=\{\varepsilon\} \text{ linguaggio che contiene solo la stringa vuota}\\
-            \mathcal{L}[a]=\{a\}\\
-            \mathcal{L}[r_1\cdot r_2] = \mathcal{L}[r_1] \cdot \mathcal{L}[r_2]\\
-            \mathcal{L}[r_1|r_2] = \mathcal{L}[r_1]\cup \mathcal{L}[r_2]\\
-            \mathcal{L}[r^*]=(\mathcal{L}[r])^*
-            
-        \end{array}    
-    \end{math}
+    \begin{align*}
+        \mathcal{L}[\varnothing] &= \varnothing \text{ (linguaggio vuoto)} \\
+        \mathcal{L}[\varepsilon] &= \{\varepsilon\}  \text{ (linguaggio che contiene solo la stringa vuota)} \\
+        \mathcal{L}[a] &= \{a\} \\
+        \mathcal{L}[r_1 \cdot r_2] &= \mathcal{L}[r_1] \cdot \mathcal{L}[r_2] \\
+        \mathcal{L}[r_1 | r_2] &= \mathcal{L}[r_1] \cup \mathcal{L}[r_2] \\
+        \mathcal{L}[r^*] &= (\mathcal{L}[r])^*
+    \end{align*}    
 }
 
 \nt{
     Si ricordi che:
 
-    \begin{math}
-        \begin{array}{l}
-                L_1\cdot L_2 =\{xy\mid x\in L_1,y\in L_2\}\\
-                L_1\cup L_2 =\{x\mid x\in L_1\text{\texttt{ or }}x\in L_2\}\\
-                L^\circ =\{\varepsilon\}\\
-                L^{n+1} = L\cdot L^n\\
-                L^*=\bigcup_{n\geq0}L^n
-
-        \end{array}
-    \end{math}
+    \begin{align*}
+        L_1 \cdot L_2 &= \{xy \mid x \in L_1, y \in L_2\} \\
+        L_1 \cup L_2 &= \{x \mid x \in L_1 \text{ or } x \in L_2\} \\
+        L^\circ &= \{\varepsilon\} \\
+        L^{n+1} &= L \cdot L^n \\
+        L^* &= \bigcup_{n \geq 0} L^n
+    \end{align*}
+    
 }
 \subsubsection{linguaggio regolare}
 \dfn{Linguaggio regolare}{
@@ -237,47 +231,42 @@ Si osservi che esistono anche linguaggi regolari infiniti:
 }
 
 Esistono molte leggi per $\equiv$, alcune sono le seguenti 
-\[
-r | s \simeq s | r \quad \text{(1 è commutativa)}
-\]
-\[
-r | (s | t) \simeq (r | s) | t \quad \text{(1 è associativa)}
-\]
-\[
-z | z \simeq z \quad \text{(1 è idempotente)}
-\]
-\[
-z \cdot (s \cdot t) \simeq (z \cdot s) \cdot t \quad \text{($\cdot$ è associativa)}
-\]
-\[
-\varepsilon \cdot z \simeq z \cdot \varepsilon \simeq z \quad \text{($\varepsilon$ è l'elemento neutro per $\cdot$)}
-\]
-\[
-(r^*)^* \simeq r^* \quad \text{(* è idempotente)}
-\]
-\[
-r (s | t) \simeq r s | r t \quad \text{(distribuisce a sinistra su |)}
-\]
-\[
-(r | s) t \simeq r t | s t \quad \text{(distribuisce a destra su |)}
-\]
+\begin{align*}
+    r | s &\equiv s | r \quad \text{(1 è commutativa)} \\
+    r | (s | t) &\equiv (r | s) | t \quad \text{(1 è associativa)} \\
+    z | z &\equiv z \quad \text{(1 è idempotente)} \\
+    z \cdot (s \cdot t) &\equiv (z \cdot s) \cdot t \quad \text{($\cdot$ è associativa)} \\
+    \varepsilon \cdot z &\equiv z \cdot \varepsilon \equiv z \quad \text{($\varepsilon$ è l'elemento neutro per $\cdot$)} \\
+    (r^*)^* &\equiv r^* \quad \text{(* è idempotente)} \\
+    r (s | t) &\equiv r s | r t \quad \text{(distribuisce a sinistra su |)} \\
+    (r | s) t &\equiv r t | s t \quad \text{(distribuisce a destra su |)}
+\end{align*}
 
 In alcuni casi è facile dimostrare queste leggi:
-\[
-    \mathcal{L}[r|s] =\mathcal{L}[r]\cup\mathcal{L}[s]=\mathcal{L}[s]\cup\mathcal{L}[r] = \mathcal{L}[s|r]    
-\]
-\[
-    \mathcal{L}[r|r]=\mathcal{L}[r]\cup \mathcal{L}[r]=\mathcal{L}[r]
-\]
-\[
-    \mathcal{L}[r\varepsilon] = \mathcal{L}[r]\cdot\{\varepsilon\}=\mathcal{L}[r]
-\]
-\[
-    \mathcal{L}[\varnothing^*] = (\mathcal{L}[\varnothing]) = \varnothing^*=\varnothing^0\cup\varnothing^1\cup\varnothing^2\dots=\{\varepsilon\}\cup\varnothing\cup \varnothing=\{\varepsilon\}=\mathcal{L}[\varepsilon]    
-\]
-\[
-    \mathcal{L}[r\dot \varnothing]=\mathcal{L}[r]\cdot\mathcal{L}[\varnothing]=\mathcal{L}[r]\cdot\varnothing=\varnothing=\mathcal{L}[\varnothing]    
-\]
+\begin{align*}
+    \mathcal{L}[r | s] &= \mathcal{L}[r] \cup \mathcal{L}[s] \\
+    &= \mathcal{L}[s] \cup \mathcal{L}[r] \\
+    &= \mathcal{L}[s | r] \\
+    \\
+    \mathcal{L}[r | r] &= \mathcal{L}[r] \cup \mathcal{L}[r] \\
+    &= \mathcal{L}[r] \\
+    \\
+    \mathcal{L}[r \varepsilon] &= \mathcal{L}[r] \cdot \{\varepsilon\} \\
+    &= \mathcal{L}[r] \\
+    \\
+    \mathcal{L}[\varnothing^*] &= (\mathcal{L}[\varnothing])^* \\
+    &= \varnothing^* \\
+    &= \varnothing^0 \cup \varnothing^1 \cup \varnothing^2 \cup \dotsb \\
+    &= \{\varepsilon\} \cup \varnothing \cup \varnothing \\
+    &= \{\varepsilon\} \\
+    &= \mathcal{L}[\varepsilon] \\
+    \\
+    \mathcal{L}[r \cdot \varnothing] &= \mathcal{L}[r] \cdot \mathcal{L}[\varnothing] \\
+    &= \mathcal{L}[r] \cdot \varnothing \\
+    &= \varnothing \\
+    &= \mathcal{L}[\varnothing]
+\end{align*}
+
 
 Le espressioni regolari servono per specificare il pattern di una categoria sintattica, ovvero la forma dei possibili lessemi, tuttavia occorre riconoscere se una certa sequenza in ingresso è un lessema per una certa categoria sintattica. A questo ci vengono in aiuto gli automi a stati finiti
 
