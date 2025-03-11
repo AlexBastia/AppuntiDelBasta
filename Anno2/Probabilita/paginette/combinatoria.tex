@@ -1,12 +1,9 @@
-<<<<<<< HEAD
 % \begin{document}
-=======
->>>>>>> zioPera
 \chapter{Calcolo Combinatorio}  
 
-Quando abbiamo numero finito di elementi, e' possibile contare gli elementi dell'evento per ridurre il problema di probabilita' a un problema di conteggio -> dobbiamo imparare a contare
+Quando abbiamo numero finito di elementi con probabilita' uniforme, e' possibile utilizzare l'addittivita' delle probabilita' per ridurre il problema di probabilita' a un problema di conteggio (la probabilita' di un evento e' data dal numero di casi favorevoli) $ \implies $ dobbiamo imparare a contare.
 
-Dato un certo insieme, dobbiamo calcolarne la cardinalita' utilizzando i giusti stumenti matematici
+Dato un certo insieme, dobbiamo calcolarne la cardinalita' utilizzando i giusti stumenti matematici:
 
 \thm{Calcolo probabilita' uniforme (Laplace)}{
   Se $ \Omega $ e' finito, $ \Omega = \{w_1,...,w_N\} $ e $ \forall i = 1,...,N.\ \mathbb{P}(\{w_i\}) = \frac{1}{N} $ (probabilita' uniforme), allora $ \forall A \subseteq \Omega $ (evento):
@@ -24,20 +21,20 @@ Dobbiamo introdurre:
   \end{itemize}
   \item \textbf{Coefficenti Binomiali}:
     \[
-      (n,k) = \frac{n!}{k! (n-k)!} \quad \forall n,k\in \mathbb{N}. n \geq k
+      \binom{n}{k} = \frac{n!}{k! (n-k)!} \quad \forall n,k\in \mathbb{N}. n \geq k
     \]
     In generale:
     \[
-      (n,k) = (n,n-k)
+      \binom{n}{k} = \binom{n}{n-k}
     \]
     Dal triangolo di Tartaglia, possiamo visualizzare altre proprieta' (oltre alla simmetria)
 \end{itemize}
 
-Vedremo che $ (n,k) $ sono il numero di modi diversi che abbiamo per selezionare $ k $ sottoinsiemi diversi da un insieme di cardinalita' $ n $.
+Vedremo che $ \binom{n}{k} $ sono il numero di modi diversi che abbiamo per selezionare $ k $ sottoinsiemi diversi da un insieme di cardinalita' $ n $.
 
 \thm{Formula di Newton}{
   \[
-    (a+b)^n = \sum_{k=0}^{n} (n,k) a^k b^{n-k}
+    (a+b)^n = \sum_{k=0}^{n} \binom{n}{k} a^k b^{n-k}
   \]
 }
 

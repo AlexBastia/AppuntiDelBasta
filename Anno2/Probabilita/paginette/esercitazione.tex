@@ -1,10 +1,6 @@
 % \begin{document}
 \chapter{Esercitazione}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Esercizio 4 (Foglio 2)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section{Esercitazione 4/03}
+\section{Probabilita' Condizionata}
 \subsection{Esercizio 4 (Foglio 2)}
 \subsubsection{Testo}
 Un’urna contiene \(r\) palline rosse e \(b\) palline bianche. Si eseguono due estrazioni senza reimmissione.
@@ -491,6 +487,31 @@ Nel caso dei bar differenti? Il primo può prendere un bar a caso, l'altro potr�
   \frac{4\cdot 3\cdot 2}{4^3}
 \]
 
+\subsection{Esercizio 4}
+
+\subsubsection{Testo}
+Si calcoli la probabilit`a di ottenere 2 palline rosse estraendone 4 da un’urna che contiene 3 palline rosse e 7 bianche. Si confrontino i casi di estrazioni con reimmissione, senza reimmissione e simultane.
+
+\subsubsection{Svolgimento}
+\begin{itemize}
+\item Estrazione con reimissione:
+  \[
+    \frac{\binom{2}{4} \cdot 3 \cdot 3 \cdot 7 \cdot 7}{10^3}
+  \]
+    Quando estraggo la prima pallina, ho 10 possibilita', ed e' cosi' per tutte le estrazioni. Dobbiamo considerare anche l'ordine (dato che siamo nel caso con reimissione), quindi devo vedere in quanti modi posso scegliere le "posizioni" rosse in 4 estrazioni (es. rrbb, rbrb, ...). Una volta scelte le posizioni (usando il binomiale $ \binom{4}{2} $), possiamo ora semplicemente moltiplicarlo per il numero di casi favorevoli per un ordine (es. $ rrbb = 3 \cdot 3 \cdot 7 \cdot 7 $)
+\item Estrazione senza reimmissione:
+  \[
+    \frac{\binom{2}{4} \cdot 3 \cdot 2 \cdot 7 \cdot 6}{10 \cdot 9 \cdot 8}
+  \]
+  Stessa roba di prima, ma la probabilita' considerando un solo ordine cambia (es. $ rrbb = 3\cdot 2 \cdot 7 \cdot 6 $) e cambiano anche i casi possibili
+\item Estrazione simultanea:
+
+  Non c'e' piu' l'ordine, quindi usiamo i binomi per rappresentare sta cosa
+    \[
+      \frac{\binom{3}{2} \cdot \binom{7}{2}}{\binom{10}{4}}
+    \]
+\end{itemize}
+
 \subsection{Esercizio 6}
 
 \subsubsection{Testo}
@@ -508,6 +529,57 @@ Dato che devo indovianre solo 5 nuemri, debbo sbagliare un numero, pertanto, per
 \[
   \frac{\binom{6}{1}\cdot 84 \cdot 1 \cdot 1 \cdot \dots}{90\cdot 89 \cdot 88 \cdot 87 \cdot 86 \cdot 85 \cdot 84} = \frac{6}{90\cdot 89 \cdot 88 \cdot 87 \cdot 86 \cdot 85 }
 \]
+
+\subsubsection{Esercizio 7}
+\subsubsection{Testo}
+Supponiamo di giocare a poker con un mazzo da 52 carte, identificate dal seme (cuori, quadri, fiori, picche) e dal tipo (un numero da 2 a 10 oppure J, Q, K, A). Si calcolino: 
+\begin{enumerate}[label=(\alph*)]
+\item la probabilit`a di avere una scala reale massima, ovvero le 5 carte 10, J, Q, K, A dello stesso seme;
+\item la probabilit`a di avere una scala reale, ovvero una qualsiasi scala di 5 carte dello stesso seme (ricordiamo che con l’asso possiamo fare la scala A, 2, 3, 4, 5 ma anche 10, J, Q, K, A);
+\item la probabilit`a di avere una scala, ovvero una qualsiasi scala di 5 carte non necessariamente dello stesso seme;
+\item la probabilit`a di avere colore, ovvero un sottoinsieme di 5 carte dello stesso seme;
+\item la probabilit`a di avere poker, ovvero un sottoinsieme di 5 carte in cui ci sono 4 carte dello stesso tipo;
+\item la probabilit`a di avere un tris, ovvero un sottoinsieme di 5 carte in cui ci sono 3 carte dello stesso tipo e le altre due di tipo diverso tra loro e dalle prime tre;
+\item la probabilit`a di avere una coppia, ovvero un sottoinsieme di 5 carte in cui ci sono 2 carte dello stesso tipo e le altre tre di tipo diverso tra loro e dalle prime due.
+\end{enumerate}
+
+\subsubsection{Svolgimento}
+
+\begin{enumerate}[label=(\alph*)]
+  \item L'ordine non importa $ \implies $ estrazione simultanea. Ci sono $ \binom{52}{5} $ modi per estrarre una mano (casi possibili), i casi favorevoli sono 4 per il seme, poi le carte in mano sono fissate (abbiamo una sola possibilita' una volta scelto il seme)
+    \[
+      \frac{4 \cdot 1}{\binom{52}{5}}
+    \]
+  \item I casi favorevoli sono ora 10 per ogni seme (10 pioli piu' bassi diversi da cui iniziare la scala), quindi i casi favorevoli sono di piu':
+    \[
+      \frac{4 \cdot 10}{\binom{52}{5}}
+    \]
+  \item Ora per ogni carta della scala abbiamo 4 possibilita' per il seme, quindi una volta scelto il piolo piu' basso moltiplico per $ 4^5 $:
+    \[
+      \frac{10 \cdot 4^5}{\binom{52}{5}}
+    \]
+  \item Una volta scelto il seme (4) ci sono $ \binom{13}{5} $ insiemi distinti di tipi di carte che possiamo avere:
+    \[
+      \frac{4 \cdot \binom{13}{5}}{\frac{52}{5}}
+    \]
+  \item In un mazzo e' impossibile avere 5 carte dello stesso tipo, il max e' proprio 4. Scegliamo quindi il tipo con cui vogliamo fare poker (13) e l'insieme dei semi (1 dato che sono tutti i semi per forza). Poi scegliamone una a caso fra tutte le carte rimaste (48):
+    \[
+      \frac{13 \cdot 1 \cdot 48}{\binom{}{}}
+    \]
+    E se volessimo trovare solo tre dello stesso tipo? Scegliamo sempre il tipo (13), poi per ogni tipo possiamo avere $ \binom{4}{3} $ insiemi per scegliere i semi. Poi fra le restanti carte non possiamo scegliere l'ultima carta con lo stesso tipo, quindi $ \binom{48}{2} $ (fra le 48 carte che possiamo prendere ne scelgo 2)
+    \[
+      \frac{13 \cdot \binom{4}{3} \cdot \binom{48}{2}}{\binom{52}{5}}
+    \]
+  \item Il ragionamento e' simile a prima, ma per le ultime 2 carte scegliamo prima il tipo (che deve essere diverso) poi abbiamo 4 semi per ogni tipo che va bene:
+    \[
+      \frac{13 \cdot \binom{4}{3} \cdot \binom{12}{2} \cdot 4^2}{\binom{52}{5}}
+    \]
+  \item Caso di prima ma per una coppia, stesso ragionamento:
+    \[
+      \frac{13 \cdot \binom{4}{2} \cdot \binom{12}{3} \cdot 4^3}{\binom{52}{5}}
+    \]
+\end{enumerate}
+
 \subsection{Esercizio 8}
 \subsubsection{Testo}
 Un mazzo di carte da scopone scientifico è costituito da 40 carte, identificate dal seme (spade, coppe, bastoni, denari) e dal tipo (asso, 2, 3, 4, 5, 6, 7, fante, cavallo, re). Supponendo di pescare 10 carte dal mazzo, calcolare la probabilità di estrarre:
