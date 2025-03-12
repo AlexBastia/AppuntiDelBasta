@@ -11,6 +11,7 @@
 \usepackage{cancel}
 \usepackage{enumitem}
 \usepackage{xcolor}
+\usepackage{array} 
 \usepackage{etoolbox}
 \usepackage{listings}
 
@@ -26,6 +27,21 @@
   breaklines=true,
   showstringspaces=false
 }
+
+\lstdefinestyle{javastyle}{
+  language=Java,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{green!60!black},
+  stringstyle=\color{purple},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  stepnumber=1,
+  tabsize=2,
+  breaklines=true,
+  showstringspaces=false
+}
+
 
 
 \lstset{
@@ -112,6 +128,7 @@
 
 \include{paginette2/nomi_ambiente}
 \include{paginette2/memoria}
+\include{paginette2/sottoprogrammi}
 \include{paginette2/esercitazioni}
 
 zio pera

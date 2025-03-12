@@ -261,10 +261,11 @@ Adesso introduciamo un importante lemma sui tagli:
   \begin{itemize}
     \item $v = \sum_{(i,j)\in A^+(N_s,N_t)}x_{ij}- \sum_{(i,j)\in A^-(N_s,N_t)}x_{ij}$
     
-    Si ha, quindi, che $v$ la somma del flusso uscente da $s$ meno il flusso entrante in $s$ 
+    Si ha, quindi, che $v$ la somma del flusso uscente da $s$ meno il flusso entrante in $s$.     Questa quantità è detta \textbf{flusso del taglio} $(N_s, N_t)$ e la si denota $x(N_s, N_t)$
+
     \item $v\leq \sum_{(i,j)\in A^+(N_s, N_t)} u_{ij}$
     
-    Ovvero Il flusso massimo è sempre minore o uguale alla capacità totale del taglio
+    Ovvero Il flusso massimo è sempre minore o uguale alla capacità totale del taglio. Questa quantità è detta \textbf{capacità del taglio} ed è indicata con $u(N_s, N_t)$
   \end{itemize}
 }
 \pf{Dimostrazione}{
@@ -293,4 +294,35 @@ Adesso introduciamo un importante lemma sui tagli:
   \end{itemize}
 }
 
-% \end{document}
+\nt{
+  si noti che la conclusione di questo Lemma è
+  \[
+    v = x(N_s, N_t)\leq u (N_s, N_t)
+  \]
+
+  Ovvero \textit{il valore di un flusso ammissibile è sempre minore o uguale della capacità di qualunque taglio}
+}
+
+Adesso tratteremo il caso un cui si voglia determinare se esiste un taglio con capacità \textbf{identica} al valore di un flusso ammissibile (ovvero massimo)
+
+\subsection{Algoritmo di Ford-Fulkerson}
+Innanzi tutto dobbiamo presentare alcuni concetti
+
+\subsubsection{grafi residui}
+\dfn{
+  grafi residui
+}{
+  Dati una rete $G =(N_G, A_G)$ ed un flusso ammissibile $x$ si definisce il \textbf{grafo residuo} $G_x$ il multigrafo $(N_{G_x}, A_{G_x})$ tale che:
+  \begin{itemize}
+    \item $N_{G_x} = N_G$
+    \item Gli archi in $A_{G_x}$ sono di due tipi:
+    \begin{itemize}
+      \item $\forall (i,j)\in A_G$ tale che $x_{ij}<u_{ij}$ esiste un arco da $i$ a $j$ in $G_x$ detto \textbf{arco concorde}
+      \item $\forall (i,j)\in A_G$ tale che $x_{ij}> 0$ esiste un arco da $j$ a $i$ in $G_x$ detto \textbf{arco discorde}
+    \end{itemize}
+  \end{itemize}
+}
+
+\nt{
+  Osserviamo come in $N_{G_x}$ ci possano essere due archi da uno stesso nodo $i$ ad uno stesso nodo $j$
+}
