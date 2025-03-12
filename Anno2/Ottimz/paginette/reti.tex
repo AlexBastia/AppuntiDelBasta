@@ -121,7 +121,7 @@ Infatti data una rete $G$, si può costruire una rete $G'$ tale che $G$ e $G'$ h
   Si noti che non cambia la soluzione ottima, ma solo il valore ottimo della funzione obbiettivo
 }
 
-È pertanto vero, quindi, che ad un flusso $x_{ij} \in H $ corrisponde un flusso $(x_{ij}+l_{ij}) \in G$
+È pertanto vero, quindi, che ad un flusso $x_{ij} \in G $ corrisponde un flusso $(x_{ij}+l_{ij}) \in G'$
 \subsection{Problema del Flusso di Costo Minimo}
 
 \dfn{Problema del Flusso di Costo Minimo}{
@@ -161,9 +161,11 @@ Puo' essere utile assumere che esiste un solo pozzo e una sola sorgente, che ven
   Non si può, però, enunciare che i nodi non hanno una capacita', perche' di fatto non succede nulla, perche' puo' essere trasformata in una rete equivalente dove i nodi non ce l'hanno:
 
   \hfill \textit{TODO: spiegare meglio, che cazzo vuoi dire ibbastianini?}
+
+  Mi spiego in modo piu' eloquente: Per poter utilizzare nodi che hanno una propria capacita', non e' necessario perdere generalita' cambiando la definizione del problema esaminato. Questo e' vero, in quanto una tale rete puo' essere banalmente trasformata in una rete equivalente la quale presenta solo nodi con capacita' nulla. Come accade tale trasformazione? Boh (c'e' scritto dopo vedi dopo)
 \end{quote}
 
-Per trasformare un generico problema MCF in un problema con una sola sorgente ed un solo pozzo_
+Per trasformare un generico problema MCF in un problema con una sola sorgente ed un solo pozzo$ \dots $
 \begin{itemize}
   \item Si aggiungono due nodi fittizi $s$ e $t$, uno sorgente e uno pozzo
   \item Si aggiungono archi fittizi  da $s$ ai nodi sorgenti di partenza, con un costo nullo e capacita' pari all'inverso dello sbilanciamento del nodo sorgente, ovvero $-b_s$
@@ -294,6 +296,7 @@ Adesso introduciamo un importante lemma sui tagli:
   \end{itemize}
 }
 
+<<<<<<< HEAD
 \nt{
   si noti che la conclusione di questo Lemma è
   \[
@@ -326,3 +329,31 @@ Innanzi tutto dobbiamo presentare alcuni concetti
 \nt{
   Osserviamo come in $N_{G_x}$ ci possano essere due archi da uno stesso nodo $i$ ad uno stesso nodo $j$
 }
+=======
+\section{Grafi Residui}
+
+\subsection{Algoritmo di Ford-Fulkerson}
+Miglioriamo il flusso corrente usando il grafo residuo con cammino aumentante. Quindi visitiamo il grafo residuo partendo da s, e se c'e' un cammino che arriva a t significa che e' aumentante, quindi si aggiorna x il meglio possibile. fare questo finche non si trova il cammino aumentante, quindi abbiamo ottimizzato :)
+
+TODO: descrivi meglio algoritmo
+
+Dimostriamo sto algoritmo:
+
+\mlenma{}{
+  Se $ x $ e' ammissibile, allora anche $ x(P, \delta(P, x)) $ e' ammissibile
+}
+
+\mlenma{}{
+  Se $ x $ e' un flusso ammissibile massimo, allora $ G_x $ non ha cammini aumentanti.
+}
+
+\pf{}{
+  Uso l'eliminazione del not e ipotizzo che $ G_x $ abbia cammini aumentanti. Ma in questo caso $ x $ non sarebbe massimo dato che sarebbe possibile aumentare la capacita' del flusso. Quindi dimostrato per il falso.
+}
+
+\mlenma{}{
+  Se $ G_x $ non ha cammini aumentanti, allora esiste un taglio di capacita' pari a $ v $.
+}
+
+% \end{document}
+>>>>>>> fe0dcc1

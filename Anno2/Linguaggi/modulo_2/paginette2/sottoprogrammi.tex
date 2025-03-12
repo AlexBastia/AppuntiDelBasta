@@ -1,16 +1,18 @@
 \chapter{Astrazione sul controllo: sottoprogrammi ed eccezioni}
 
-L'astrazione consiste nell'indentificare proprietà importanti di cosa si vuole descrivere, concentrarsi su quelle e ignorare le altre. Che cosa ignorare e cosa no dipende dallo scopo del progetto
+A cosa servono gli array? Il linguaggio assembly non ce li ha, ma riesce comunque a svolgere tutto quello che possono fare. Sono quindi un'\textit{astrazione} che rende la vita dei programmatori piu' facile. Questo e' l'obbiettivo dei linguaggi di programmazione di alto livello, che astrae sul controllo e sui dati. 
+
+L'astrazione, quindi, consiste nell'indentificare proprietà importanti di cosa si vuole descrivere, concentrarsi su quelle e ignorare le altre. Che cosa ignorare e cosa no dipende dallo scopo del progetto
 
 I linguaggi di programmazione (oltre al fatto che essi stessi sono astrazioni più sono ad alto livello) forniscono strumenti per implementare astrazioni e modelli astratti, questi sono chiamati, appunto, \textbf{astrazioni sul controllo e sui dati}. Adesso diamo una definizionzioncina
 
 \dfn{astrazione sul controllo}{
-    Si definisce \textbf{astrazione del controllo} una serie di istruzioni per svolgere un compito a prescidnere dal contesto in cui questo opera, specificandone modalità e fine 
+    Si definisce \textbf{astrazione del controllo} una serie di istruzioni per svolgere un compito a prescindere dal contesto in cui questo opera, specificandone modalità e fine 
 }
 
 Queste astrazioni sono ad esempio funzioni o blocchi. Tra le proprietà più importanti di questi costrutti è che ogni componente fornisce servizi al suo ambiente, nascondendo i dettagli interni necessari a produrlo
 
-Un meccanismo fondamentale con cui si può definire come ogni sottoprogramma comunica con il col programma principale \texttt{main} è attraverso i parametri o un'ambiente globale (da preferire i primi perché quest'ultimo rende nulla l'astrazione)
+Un meccanismo fondamentale con cui si può definire come ogni sottoprogramma (funzione) comunica con il col programma principale \texttt{main} è attraverso i parametri o un'ambiente globale (da preferire i primi perché quest'ultimo rende nulla l'astrazione)
 
 \section{parametri}
 
