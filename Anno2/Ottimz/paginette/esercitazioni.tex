@@ -455,3 +455,59 @@ Costo & 200 & 350 & 450 \\
 \end{table}
 
 Si dia una formulazione in programmazione lineare intera per il problema di trovare un piano di affitto di minimo costo.
+\section{Tutor}
+
+\subsection{Esercizio 1.24}
+
+NON SO DOVE SIA IL RESTO DELL'ESERCIZIO
+
+\textit{Variabili}
+
+$ x_{ij} = \text{viene usato l'oleodotto che collega il giacimento i alla raffineria j} $
+
+$ y_{ij} = \text{l'oleodotto ij viene utilizzato} $ variabile logica
+
+\textit{FO}
+
+\textit{Vincoli}
+
+$ \forall i.\ \sum_{j = 1}^{m} x_{ij} = p_i $
+
+$ \forall j. \sum_{i=1}^{n} x_{ij} \leq r_j $
+
+$ \forall i,j.\ x_{ij} \leq y_{ij} \cdot a_{ij} $
+
+\subsection{Esercizio 1.33}
+
+\textit{Dati}
+
+$ n = \text{num camion} $
+
+$ \forall i = 1,...,n: $
+
+$ m_i = \text{kilometri massimi percorribili per il camion i} $
+
+$ k_i = \text{limite di kilometri per polizza bassa} $
+
+$ c_i = \text{costo polizza quando } m_i \leq k_i $
+
+$ d_i = \text{polizza quando } m_i > k_i $
+
+\textit{Variabili}
+
+$ p_i = \text{kilometri percorsi dal camion i} $
+
+$ b_i = \text{il camion i utilizza la polizza bassa} $ variabile logica
+
+\textit{Vincoli}
+
+$ \sum_{i=1}^{n} p_i \geq 2000000 $ (possiamo mettere $ \geq $ e non $ = $ dato che minimizzando il valore ottimale sara' quello piu' basso)
+
+$ m_i \leq b_i k_i + (1-b_i) m_i $
+
+$ m_i > (1-b_i) k_i $
+
+\textit{FO}
+\[
+  min \{\sum_{i=1}^{n} b_i c_i + (1-b_i) d_i \}
+\]
