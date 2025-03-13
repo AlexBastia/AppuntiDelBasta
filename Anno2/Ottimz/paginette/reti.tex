@@ -157,14 +157,6 @@ In questo modo abbiamo scritto funzione obbiettivo e vincola in forme matriciali
 \subsubsection{Rilassamento di assunzioni}
 Puo' essere utile assumere che esiste un solo pozzo e una sola sorgente, che vengono poi collegati con archi fittizi (a costo nullo e capacita' pari allo sbilanciamento dei pozzi/sorgenti effettivi!) a quelli effettivi. 
 
-\begin{quote}
-  Non si può, però, enunciare che i nodi non hanno una capacita', perche' di fatto non succede nulla, perche' puo' essere trasformata in una rete equivalente dove i nodi non ce l'hanno:
-
-  \hfill \textit{TODO: spiegare meglio, che cazzo vuoi dire ibbastianini?}
-
-  Mi spiego in modo piu' eloquente: Per poter utilizzare nodi che hanno una propria capacita', non e' necessario perdere generalita' cambiando la definizione del problema esaminato. Questo e' vero, in quanto una tale rete puo' essere banalmente trasformata in una rete equivalente la quale presenta solo nodi con capacita' nulla. Come accade tale trasformazione? Boh (c'e' scritto dopo vedi dopo)
-\end{quote}
-
 Per trasformare un generico problema MCF in un problema con una sola sorgente ed un solo pozzo$ \dots $
 \begin{itemize}
   \item Si aggiungono due nodi fittizi $s$ e $t$, uno sorgente e uno pozzo
@@ -193,6 +185,13 @@ Per trasformare un generico problema MCF in un problema con una sola sorgente ed
     \includegraphics[width=0.5\textwidth]{img/rete_rilassata.png}
   \end{center}
 }
+\begin{quote}
+  Non si può, però, enunciare che i nodi non hanno una capacita', perche' di fatto non succede nulla, perche' puo' essere trasformata in una rete equivalente dove i nodi non ce l'hanno:
+
+  \hfill \textit{TODO: spiegare meglio, che cazzo vuoi dire ibbastianini?}
+
+  Mi spiego in modo piu' eloquente: Per poter utilizzare nodi che hanno una propria capacita', non e' necessario perdere generalita' cambiando la definizione del problema esaminato. Questo e' vero, in quanto una tale rete puo' essere banalmente trasformata in una rete equivalente la quale presenta solo nodi con capacita' nulla. Come accade tale trasformazione? Facciamocelo spiegare da GioPalmi:
+\end{quote}
 
 Alle volte, inoltre, è utile che anche i nodi abbiano delle \textbf{capacità}, ossia che solo che solo una quantità di flusso compresa nell’intervallo chiuso $[l_i , u_i]$ possa passare per il nodo $i \in N$. Per fare ciò occorre \textit{sdoppiare} ciascun nodo $i$ in due nodi $i',i''$, in modo che:
 \begin{itemize}
@@ -207,18 +206,19 @@ Alle volte, inoltre, è utile che anche i nodi abbiano delle \textbf{capacità},
 \subsection{Problema di Flusso Massimo}
 
 \dfn{Problema di Flusso Massimo}{
-  Si definisce \textit{problema di flusso massimo} il problema di flusso in cui la funzione obbiettivo è il flusso da massimizzare e le cui capacità inferiori sono nulle
-}
-Ciò che cambia, quindi, dal problema di flusso di costo minimo è la funzione obbiettivo, che diventa, si vuole infatti \textit{massimizzare} il flusso, e non minimizzare il costo. 
+  Dato un grafo $ G = (N,A) $ orentato su cui definiamo:
+  \begin{itemize}
+  \item il vettore di capacita' superiori $ u = [u_{ij}] $ associate agli archi
+  \item $ s $ (\textit{origine} o \textit{sorgente}) e $ t $ (\textit{destinazione} o \textit{pozzo}) due nodi distinti
+  \end{itemize} 
+  si definisce \textit{problema di flusso massimo} il problema di massimizzazione del flusso da $ s  $ a $ t $.
 
-Formalmente, data una rete $G = (N,A)$:
-\begin{itemize}
-  \item Si fissano due nodi $s$ e $t$ rispettivamente sorgente e pozzo
-  \item  Si vuole trovare il massimo valore $v$ tale che se $b_s=-v, \, b_t=v$ e $b_i=0$ allora esiste un flusso ammissibile $x$ tale che $Ex=b$
-\end{itemize}
+  Ovvero, il problema consiste nel trovare il \textbf{massimo} valore $ v $ tale che se $ b_s = -v $, $ b_t = v $ e per tutti gli altri casi $ b_i = 0 $, allora esiste un flusso $ x = [x_{ij}] $ ammissibile. Tale $ v $ si dice \textbf{valore} del flusso $ x $.
+}
+Ciò che cambia, quindi, dal problema di flusso di costo minimo è la funzione obbiettivo, che diventa, si vuole infatti \textit{massimizzare} il flusso, e non minimizzare il costo (che non ci interessa). 
 
 Formalizzato in programmazione lineare, il problema di flusso massimo diventa:
-\begin{equation}
+\begin{equation} \label{PL_FM}
   \begin{aligned}
   \max \quad & v \\
   \sum_{(j,s) \in BS(s)} x_{js} + v &= \sum_{(s,j) \in FS(s)} x_{sj}; \\
@@ -229,11 +229,46 @@ Formalizzato in programmazione lineare, il problema di flusso massimo diventa:
 \end{equation}
 
 \nt{
-  Si noti che il problema di flusso massimo e' un caso particolare di problema di flusso di costo minimo, di fatti partendo da un problema di flusso massimo si puo' costruire un problema di flusso di costo minimo:
+  Si noti che il problema di flusso massimo e' un caso particolare di problema di flusso di costo minimo. Di fatti la formulazione \ref{PL_FM} puo' essere vista come la descrizione di un problema di MCF su un grafo $ G' $ ottenuto da $ G $ con delle modifiche: 
   \begin{itemize}
-    \item Si nullificano i costi
-    \item Si pone $l_{ij} = 0$ e $u_{ij} = \infty$
+    \item Si aggiunge un arco fittizio $ (t,s) $, detto \textit{arco di ritorno}, con capacita' infinita.
+    \item Tutti i nodi sono di trasferimento ($ \forall i \in N.\ b_i = 0 $), si tratta quindi di un problema di \textit{circolazione}.
+    \item Tutti i costi degli archi sono nulli tranne $ (t,s) $ che ha costo $ -1 $.
   \end{itemize}
+
+  Di conseguenza, risolvendo il problema di MCF su $ G' $, stiamo minimizzando il valore $ -1 \cdot x_{ts} $ rispettando i vincoli imposti, che per definizione corrisponde a $ -v $. Ma minimizzare $ -v $ significa massimizzare il valore $ v $ del flusso fra $ t $ ed $ s $, che  e' proprio l'obbiettivo del problema di MF.
+}
+
+\ex{Risolvere un problema MF come MCF}{
+  Dato il seguente problema di MF, con capacita' superiori indicate in figura e dove i nodi diversi da $ s $ e $ t $ hanno sbilanciamento nullo (come per definizione del problema), trasformarlo in un problema MCF:
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2025-03-13-11-01-34.png}
+  \end{center}
+
+  Il problema di MF consiste nel determinare il massimo valore di flusso $ v $, ovvero il massimo valore di sbilanciamento uguale per $ s  $ (ma con segno meno) e $ t $ (devono essere per forza uguali per il vincolo di \textit{uguaglianza di domanda e offerta globale}) per cui esiste un flusso ammissibile $ x = [x_{ij}] $ (che quindi rispetta i vincoli di \textit{ammissibilita'} e di \textit{conservazione}). 
+
+  A prima occhiata, possiamo subito dire che il valore limite per $ v $ e' sicuramente $ 5 + 7 = 12 $, dato che per il vincolo di conservazione $ b_s = x_{s1} + x_{s2} \leq u_{s1} + u_{s2} $ (facendo lo stesso ragionamento con $ t $, otteniamo un limite meno stringente, quindi prevale questo). Siamo sicuri che $ v = 0 $ sara' sempre una soluzione ammissibile, dato che $ x = \underline{0} $ e' sempre un flusso ammissibile, ma non e' quasi mai il valore massimo. Facciamo i passi con $ v = 12 $:
+  \begin{itemize}
+  \item Dobbiamo mettere $ x_{s1} = 5 $ e $ x_s2 = 7 $
+  \item Dobbiamo mettere $ x_{13} = 1 $ e $ x_{12} = 4 $
+  \item Ora abbiamo che $ \sum_{(j,i) \in BS(2)} x_{ji} = 7 + 4 = 11 $ e dobbiamo decidere come dividere il flusso entrante fra quelli uscenti, dato che questa volta non vengono saturati. Possiamo usare l'euristica e guardare i nodi di destinazione: il 3 ha capacita' superiori per i flussi uscenti rispetto al nodo 4, quindi gli mandiamo piu' flusso possibile (questa e' solo un'intuizione e non e' affatto una regola generale). Quindi $ x_{23} = 8 $ e $ x_{24} = 3 $.
+    \item Poniamo $ x_{3t} = 9 $ e $ x_{4t} = 3 $: esiste un flusso $ x $ ammissibile per $ v = 12 $! E dato che 12 e' il limite massimo, siamo sicuri che e' la soluzione al problema.
+  \end{itemize}
+
+  Non sempre sara' cosi' facile trovare la soluzione corretta. Vediamo il problema MCF corrispondente e convinciamoci che e' equivalente:
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2025-03-13-11-38-15.png}
+  \end{center}
+
+Le capacita' massime sono uguali, tutti i nodi hanno sbilanciamento nullo e abbiamo aggiunto l'arco di ritorno. La funzione obbiettivo e:
+\[
+min -x_{ts} \equiv max x_{ts}
+\]
+dato che tutti gli altri costi sono nulli. Dato che $ s  $ e $ t $ hanno sbilanciamento nullo, per i vincoli di conservazione e di ammissibilita':
+\[
+x_{ts} = x_{3t} + x_{4t} \leq u_{3t} + u_{4t} = 15 \quad \land \quad u_{s1} + u_{s2} = 12 \geq x_{s1} + x_{s2} = x_{ts}
+\]
+da qui otteniamo che $ x_{ts} \leq 12 $ e' il limite superiore. Da questo punto, controllare se con $ x_{ts} = 12 $ possiamo costruire un flusso ammissibile segue lo stesso identico procedimento di prima. Quindi il flusso che minimizza il costo e' proprio $ x $ il cui valore di flusso associato $ v = x_{ts} $ e' il valore della soluzione MF.
 }
   
 \section{Problema del flusso massimo: algoritmi}
@@ -296,10 +331,6 @@ Adesso introduciamo un importante lemma sui tagli:
   \end{itemize}
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> main
 \nt{
   si noti che la conclusione di questo Lemma è
   \[
@@ -361,7 +392,6 @@ Da cui discende la definizione di flusso $x(P,\theta)$:
 \dfn{Flusso $x(P,\theta)$}{
   Dato un cammino aumentante $P$ in una rete $G$ rispetto a un flusso $x$ e una capacità $\theta$, il flusso $x(P,\theta)$ è definito come:
   \begin{equation}
-
     (x(P,\theta))_{ij} = 
     \begin{cases}
       x_{ij}+\theta & (i,j)\in P^+\\
