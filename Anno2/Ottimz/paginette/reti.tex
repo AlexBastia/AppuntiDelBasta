@@ -297,6 +297,9 @@ Adesso introduciamo un importante lemma sui tagli:
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> main
 \nt{
   si noti che la conclusione di questo Lemma è
   \[
@@ -311,7 +314,9 @@ Adesso tratteremo il caso un cui si voglia determinare se esiste un taglio con c
 \subsection{Algoritmo di Ford-Fulkerson}
 Innanzi tutto dobbiamo presentare alcuni concetti
 
-\subsubsection{grafi residui}
+
+\subsubsection{Grafi residui}
+
 \dfn{
   grafi residui
 }{
@@ -321,6 +326,8 @@ Innanzi tutto dobbiamo presentare alcuni concetti
     \item Gli archi in $A_{G_x}$ sono di due tipi:
     \begin{itemize}
       \item $\forall (i,j)\in A_G$ tale che $x_{ij}<u_{ij}$ esiste un arco da $i$ a $j$ in $G_x$ detto \textbf{arco concorde}
+      
+      Signifca che il flusso non ha saturato la capicità dell'arco e si può ancora inviare flusso in quella direzione
       \item $\forall (i,j)\in A_G$ tale che $x_{ij}> 0$ esiste un arco da $j$ a $i$ in $G_x$ detto \textbf{arco discorde}
     \end{itemize}
   \end{itemize}
@@ -329,15 +336,66 @@ Innanzi tutto dobbiamo presentare alcuni concetti
 \nt{
   Osserviamo come in $N_{G_x}$ ci possano essere due archi da uno stesso nodo $i$ ad uno stesso nodo $j$
 }
-=======
-\section{Grafi Residui}
+\subsubsection{Cammino aumentante}
 
-\subsection{Algoritmo di Ford-Fulkerson}
+\dfn{Cammino aumentante}{
+  Un \textbf{cammino aumentante} $P$ in una rete $G$ rispetto a $x$ è un cammino semplice e orientato da $x$ a $t$
+}
+
+Inoltre introduciamo anche alcune notazioni
+
+\nt{
+  Denotiamo con $P^+$ l'insieme degli archi \textit{concordi} in $P$, e $P^-$ l'insieme degli archi \textit{discordi}
+}
+
+Sia poi la capacità di un cammino aumentante
+
+\dfn{Capacità di un cammino aumentante}{
+  Dato un cammino aumentante $P$ in una rete $G$ rispetto a un flusso $x$, la \textbf{capacità} di $P$ rispetto a $x$ è definita come:
+  \begin{equation}
+    \theta (P,x) = \min{\{\min{\{u_{ij}-x_{ij}\mid (i,j)\in P^+\}},\min{\{x_{ij}\mid (j,i)\in P^-\}}\}}
+  \end{equation} 
+}
+
+Da cui discende la definizione di flusso $x(P,\theta)$:
+\dfn{Flusso $x(P,\theta)$}{
+  Dato un cammino aumentante $P$ in una rete $G$ rispetto a un flusso $x$ e una capacità $\theta$, il flusso $x(P,\theta)$ è definito come:
+  \begin{equation}
+
+    (x(P,\theta))_{ij} = 
+    \begin{cases}
+      x_{ij}+\theta & (i,j)\in P^+\\
+      x_{ij} - \theta & (i,j)\in P^+\\
+      x_{ij} & \text{altrimenti}
+    \end{cases}
+  \end{equation}
+}
+
+\subsubsection{Algoritmo Ford-Fulkerson}
+TODO: cambiare il titolo della sottosotto sezione
+% TODO: cambiare il titolo della sottosotto sezione 
+
 Miglioriamo il flusso corrente usando il grafo residuo con cammino aumentante. Quindi visitiamo il grafo residuo partendo da s, e se c'e' un cammino che arriva a t significa che e' aumentante, quindi si aggiorna x il meglio possibile. fare questo finche non si trova il cammino aumentante, quindi abbiamo ottimizzato :)
 
-TODO: descrivi meglio algoritmo
+\begin{algorithm}
+  \caption{Algoritmo di Ford-Fulkerson}
+  \KwIn{Grafo $G$ con sorgente $s$ e sink $t$}
+  \KwOut{Flusso massimo $x$}
 
-Dimostriamo sto algoritmo:
+  $x \gets 0$\;
+
+  \While{True}{
+    Make($G_x$)\tcp*{Costruisci il grafo residuo $G_x$}
+    \If{$\exists$ un cammino aumentante $P\in G_x$}{
+      $x \gets x(P, \theta(P, x))$\;
+    }
+    \Else{
+      \Return $x$\;
+    }
+  }
+\end{algorithm}
+
+\subsubsection{Correttezza}
 
 \mlenma{}{
   Se $ x $ e' ammissibile, allora anche $ x(P, \delta(P, x)) $ e' ammissibile
@@ -355,5 +413,3 @@ Dimostriamo sto algoritmo:
   Se $ G_x $ non ha cammini aumentanti, allora esiste un taglio di capacita' pari a $ v $.
 }
 
-% \end{document}
->>>>>>> fe0dcc1
