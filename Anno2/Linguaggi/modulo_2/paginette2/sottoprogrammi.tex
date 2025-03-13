@@ -95,7 +95,7 @@ Si prenda come esempio il seguente codice
 
 \begin{lstlisting}[language=C]
     void foo (reference int x){ x = x+1;}
-    …
+    ...
     y = 1;
     foo(y);
 \end{lstlisting}
@@ -109,11 +109,11 @@ Questo metodo è efficiente in termini di memoria, poiché non viene creata una 
 Il passaggio per costante è una variante del passaggio per valore, tuttavia viene garantito che nella procedura non è permessa la modifica del parametro formale
 
 
-\begin{lstlisting}[style=javastyle]
-void foo (final int x){ 
-        //qui x non può essere modificato
-}
-\end{lstlisting}
+% \begin{lstlisting}[style=javastyle]
+% void foo (final int x){ 
+%   //qui x non può essere modificato
+% }
+% \end{lstlisting}
 
 \subsubsection{Passaggio per Risultato}
 
@@ -152,12 +152,12 @@ Si noti che il passaggio valore-risultato $\neq$ riferimento, ad esempio in ques
 Per valore risultato il valore delle variabili istruzione per istruzione è
 
 \begin{center}
-    \includegraphics{../img/valueresult.png}
+    \includegraphics{img/valueresult.png}
 \end{center}
 
 Mentre per riferimento
 \begin{center}
-    \includegraphics{../img/riferimento.png}
+    \includegraphics{img/riferimento.png}
 \end{center}
 
 
@@ -178,12 +178,12 @@ Invece il passaggio per riferimento ha come pro:
 \end{itemize}
 
 E come contro una semantica complessa a causa dell'aliasing
-
+\end{itemize}
 \subsubsection{Passaggio per nome}
 
 Il passaggio per nome è una modalità di passaggio parametri introdotta da Algol negli anni 60 che vede la chiamata come una \textit{macro espansione} ovvero un meccanismo dove la semantica di una chiamata di funzione è definita in modo \textbf{prescrittivo} e consiste nell'esecuzione del corpo come se fosse testualmente presente nel chiamante, anche la gestione dei parametri segue lo stesso principio, ovvero il corpo della procedura viene eseguito dopo che i parametri attuali sono stati sostituiti testualmente al posto dei parametri formali, quindi quest'ultimi vengono valutati dopo questo passaggio. 
 
-Più in particolare il passaggio per nome segue la cosiddetta \texit{regola della copia}: una chiamata alla procedura P è la stessa cosa che eseguire il corpo di P dopo aver sostituito i parametri attuali al posto dei parametri formali.
+Più in particolare il passaggio per nome segue la cosiddetta \textit{regola della copia}: una chiamata alla procedura P è la stessa cosa che eseguire il corpo di P dopo aver sostituito i parametri attuali al posto dei parametri formali.
 
 Si noti il seguente codice:
 
@@ -203,7 +203,7 @@ In questo caso dopo la chiamata \texttt{foo(y)} viene inserito il corpo della fu
     int y;
     x = x + 1; y = 0;
     }
-    …
+    ...
     y = 1;
     fie(y);
 \end{lstlisting}
@@ -230,7 +230,7 @@ Si prenda come esempio il seguente codice:
         int y;
         x = x + 1; y = 0;
     }
-    …
+    ...
     y = 1;
     fie(y);
 \end{lstlisting}
