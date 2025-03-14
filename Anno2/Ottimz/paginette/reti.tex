@@ -239,7 +239,7 @@ Formalizzato in programmazione lineare, il problema di flusso massimo diventa:
   Di conseguenza, risolvendo il problema di MCF su $ G' $, stiamo minimizzando il valore $ -1 \cdot x_{ts} $ rispettando i vincoli imposti, che per definizione corrisponde a $ -v $. Ma minimizzare $ -v $ significa massimizzare il valore $ v $ del flusso fra $ t $ ed $ s $, che  e' proprio l'obbiettivo del problema di MF.
 }
 
-\ex{Risolvere un problema MF come MCF}{
+\ex{Risolvere un problema MF come MCF}{ \label{ex:FM}
   Dato il seguente problema di MF, con capacita' superiori indicate in figura e dove i nodi diversi da $ s $ e $ t $ hanno sbilanciamento nullo (come per definizione del problema), trasformarlo in un problema MCF:
   \begin{center}
     \includegraphics[width=0.5\textwidth]{img/2025-03-13-11-01-34.png}
@@ -272,6 +272,12 @@ da qui otteniamo che $ x_{ts} \leq 12 $ e' il limite superiore. Da questo punto,
 }
   
 \section{Problema del flusso massimo: algoritmi}
+Abbiamo capito quindi che il problema di Flusso Massimo e' un problema di MCF con due caratteristiche specifiche:
+\begin{itemize}
+\item Il vettore dei bilanci $ b $ e' nullo
+\item Il vettore dei costi $ c $ e' nullo tranne per $ c_{ts} $ che vale $ -1 $
+\end{itemize}
+Vediamo come queste caratteristiche permettono di utilizzare algoritmi specifici al problema, che sono molto piu' veloci di quelli generali.
 
 \subsection{Tagli}
 
@@ -290,7 +296,19 @@ Si prendi in considerazione inoltre i confini il confine fra gli $(s,t)-\text{ta
   \item $ A^-(N_s,N_t)=\{(i,j)\in A\mid i\in N_t\land j\in N_s\} $ sono gli archi che vanno da $t$ a $s$
 \end{itemize}
 
-
+\ex{Taglio (s,t) di un problema di flusso massimo}{
+  Ecco un esempio di taglio (rappresentato dalla riga blu) che partiziona in due sottoinsiemi i nodi di un problema di flusso massimo:
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2025-03-13-18-25-02.png}
+  \end{center}
+  Dal grafo si deduce che:
+  \begin{itemize}
+  \item $ N_s = \{s,2\} $
+  \item $ N_t = \{1,3,4,t\} $
+  \item $ A^{+} = \{(s,1), (2,3), (2,4)\} $
+  \item $ A^{-} = \{(1,2)\} $
+  \end{itemize}
+}
 
 Adesso introduciamo un importante lemma sui tagli:
 \mlenma{}{
@@ -310,13 +328,39 @@ Adesso introduciamo un importante lemma sui tagli:
     \item Dimostro la prima parte:
     Per definizione di $v$, si ha che:
     \[
-      v = \sum_{(i,j)\in A}x_{ij} - \sum_{(i,j)\in A}x_{ji}
+      v = \sum_{(s,j)\in A}x_{sj} - \sum_{(i,s)\in A}x_{is}
     \]
+    
+      
     Questo valore è uguale alla somma netta in uscita $\forall i\in N_s$ verso la partizione $N_t$, quindi:
+      \footnote{
+        Possiamo dimostrare questa cosa dato che, per il vincolo di conservazione e per definizione del problema:
+      \[
+        \forall k \in N_s.\ \sum_{(k,j) \in A} x_{kj} - \sum_{(i,k)} x_{ik} = \begin{cases}
+        v & k = s \\
+        0 & k \neq s 
+        \end{cases}
+      \]
+      }
     \[
       \sum_{(i,j)\in A}x_{ij} - \sum_{(i,j)\in A}x_{ji} = \sum_{k\in N_s}\left( \sum_{(k,j)\in A}x_kj-\sum_{(i,k)\in A}x_{ik} \right)
     \]
-    E questa somma  è ovviamente uguale al flusso uscente dal confine $A^+(N_s, N_t)$ meno il flusso entrante dal confine $A^-(N_s, N_t)$, quindi:
+    Riscrivendo usando la proprieta' distributiva, posso dividere l'esspressione in due parti:
+      \[
+        \underbrace{\sum_{k \in N_s} \sum_{(k,j) \in A} x_{kj}}_\text{somma archi uscenti $ S^{+} $} - 
+        \underbrace{\sum_{k \in N_s} \sum_{(i,k)} x_{ik}}_\text{somma archi entranti $ S^{-} $}
+      \]
+      Dato che $ k \in N_s $, consideriamo tutti gli archi $ (p,q) $ che hanno \textit{almeno} un nodo dentro a $ N_s $, ci sono quindi tre casi:
+      \[
+      \begin{cases}
+        p \in N_s \land q \in N_t & \to S^{+} \mathrel{+}= x_{pq} \\
+        p \in N_t \land q \in N_s &  \to S^{-} \mathrel{+}= x_{pq} \\
+        p,q \in N_s & \to S^{+} \mathrel{+}= x_{pq} \land S^{-} \mathrel{+}= x_{pq}
+      \end{cases}
+      \]
+      Ma aggiungere lo stesso valore in $ S^{+} $ e in $ S^{-} $ non ha effetto sul valore finale dato che si annullano, quindi possiamo anche non considerare gli archi fra nodi che appartengono a $ N_s $. 
+
+      Consideriamo quindi solo gli archi che attraversano il taglio: $ S^{+} $ e' la somma dei flussi da $ N_s $ a $ N_t $ e $ S^{-} $ i flussi da $ N_t $ a $ N_s $. Quindi la loro somma e' uguale al flusso uscente dal confine $A^+(N_s, N_t)$ meno il flusso entrante dal confine $A^-(N_s, N_t)$, allora:
     \[
       \sum_{k\in N_s}\left( \sum_{(k,j)\in A}x_kj-\sum_{(i,k)\in A}x_{ik} \right) = \sum_{(i,j)\in A^+(N_s,N_t)}x_{ij}- \sum_{(i,j)\in A^-(N_s,N_t)}x_{ij}
     \]
@@ -337,17 +381,94 @@ Adesso introduciamo un importante lemma sui tagli:
     v = x(N_s, N_t)\leq u (N_s, N_t)
   \]
 
-  Ovvero \textit{il valore di un flusso ammissibile è sempre minore o uguale della capacità di qualunque taglio}
+  Ovvero \textit{il valore di un flusso ammissibile è sempre minore o uguale della capacità di qualunque taglio}. 
+}
+\nt{
+  Abbiamo utilizzato il secondo punto del lemma all'esempio \ref{ex:FM}, quando abbiamo imposto un limite superiore al valore di $ v $ sommando le capacita' massime degli archi uscenti da $ s  $ e poi con gli archi entranti a $ t $. Quindi e' come se avessimo costruito un taglio con $ N_s = \{s \} $ e uno con $ N_t = \{t\} $, per poi imporre il secondo punto del lemma, scegliendo quello minore come limite. 
+
+  Pero' abbiamo controllato solo due tagli specifici, quello che aggiunge il lemma e' che tale proprieta' vale per tutti i tagli, quindi per trovare un limite migliore tocca calcolare la capacita' di tutti i tagli possibili.
 }
 
 Adesso tratteremo il caso un cui si voglia determinare se esiste un taglio con capacità \textbf{identica} al valore di un flusso ammissibile (ovvero massimo)
 
-\subsection{Algoritmo di Ford-Fulkerson}
+\subsection{Cammini aumentanti e Grafo residuo}
 Innanzi tutto dobbiamo presentare alcuni concetti
 
 
+\subsubsection{Cammino aumentante}
+Dato una rete di un problema di MF e un suo flusso ammissibile, noi vogliamo sapere se questo flusso e' ottimo. Se non fosse ottimo, cio' significa che sarebbe possibile inviare altro flusso da $ s $ a $ t $, che quindi dovra' seguire un certo cammino $ P $. Tale cammino non segue per forza l'orientamento del grafo, quindi e' possibile che un arco $ (i,j) $ venga attraversato al contrario. Provo a dare l'intuizione del perche' con un esempio:
+\ex{}{
+  Consideriamo il seguente grafo (ignorare il taglio):
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2025-03-13-21-24-42.png}
+  \end{center}
+  Attualmente, il valore del flusso vale 8. Vogliamo vedere se e' possibile aumentare il flusso. Proviamo ad aumentare il flusso di 2 ($ v = 10 $):
+  \begin{itemize}
+    \item Dato che l'arco $ (1,2) $ e' saturo, devo aumentare $ x_{13} $ di 2
+    \item L'unico arco uscente da 3 e' saturo, quindi non possiamo far proseguire il flusso. Puo' sembrare di essere in un vicolo cieco, perche' dove lo mettiamo questo flusso in piu'? Ma, come abbiamo detto prima, il cammino che stiamo cercando \textit{non e' per forza orientato}, quindi sarebbe possibile "proseguire" lungo l'arco $ (2,3) $ al contrario. Questo e' perche' in questa situazione possiamo fare una giocata: il nodo 3 e' sovraccaricato, dato che il flusso non puo' uscire da nessuna parte, quindi dobbiamo diminuire quello in entrata. Il flusso $ x_{13} $ appena aumentato lo vogliamo tenere, dato che fa parte del percorso, quindi \textit{diminuiamo} il flusso $ x_{12} $ della stessa quantita' di quanto abbiamo aumentato il flusso dell'arco entrante. In questo modo il totale di flussi entranti al nodo 3 rimane uguale, ma il nodo 2 ha ora ben 2 di flusso in piu' che puo' utilizzare! Quindi, il flusso in piu' che vogliamo far arrivare a 6 si e' spostato da 3 a 2, ed e' proprio per questo che possiamo attraversare gli archi al contrario. Ma attenzione, al posto di aumentare il valore del flusso $ x_{23} $, l'abbiamo diminuito, cosa che definiremo meglio dopo.
+    \item Ora che il nodo 2 ha del flusso extra, lo inviamo al nodo 4 ($ x_{24} += 2 $)
+    \item Il nodo 4 lo manda al nodo 5 che infine lo manda al nodo 6.
+  \end{itemize}
+  Notare che se avessimo scelto di aumentare $ v $ di 3, dal nodo 4 non sarebbe stato possibile rispettare i vincoli di ammissibilita', quindi il valore 2 non era scelto a caso.
+}
+
+Ora che e' chiaro cosa stiamo cercando e perche', iniziamo a formalizzare le intuizioni. Per prima cosa, distinguiamo gli archi attraversati col verso "giusto" da quelli attraversati con verso "opposto":
+\dfn{Archi concordi e discordi}{
+  Dato un cammino $ P $ su una rete $ G $, chiamiamo:
+  \begin{itemize}
+  \item L'insieme degli archi \textit{conocrdi} $ P^{+} $ l'insieme degli archi del percorso $ P $ che hanno lo stesso orientamento degli archi corrispondenti in $ G $
+  \item L'insieme degli archi \textit{discordi} $ P^{-} $ l'insieme degli archi del percorso $ P $ che hanno verso opposto rispetto agli archi corrispondenti in $ G $
+  \end{itemize}
+}
+
+\ex{}{
+  Quindi, nell'esempio di prima:
+  \begin{itemize}
+    \item $ P^{+} = \{(1,3), (2,4), (4,5), (5,6)\} $
+    \item $ P^{-} = \{(3,2)\} $
+  \end{itemize}
+}
+
+Definiamo ora la capacita' di un percorso, che dimostreremo essere la quantita' in piu' di flusso che tale percorso puo' portare da $ s  $ a $ t $:
+\dfn{Capacità di un cammino}{
+  Dato un cammino $P$ in una rete $G$ rispetto a un flusso $x$, la \textbf{capacità} di $P$ rispetto a $x$ è definita come:
+  \begin{equation}
+    \theta (P,x) = \min{\{\min{\{u_{ij}-x_{ij}\mid (i,j)\in P^+\}},\min{\{x_{ij}\mid (j,i)\in P^-\}}\}}
+  \end{equation} 
+}
+
+\nt{
+  Quindi abbiamo definito $ \theta(P,x) $ in questo modo per fare in modo che corrisponda alla quantita' massima di flusso che possiamo mandare in piu' rispetto al flusso OG $ x $ in modo che rimanga sempre ammissibile. Notare che e' possibile che tale valore sia nullo, nel caso in cui uno degli archi concordi e' saturo o uno di quelli discordi e' nullo, in questo caso $ P $ non e' aumentante.
+}
+
+Dalla definizione di capacita' discende la definizione di flusso $x(P,\theta)$:
+\dfn{Flusso $x(P,\theta)$}{
+  Dato un cammino aumentante $P$ in una rete $G$ rispetto a un flusso $x$ e una capacità $\theta$, il flusso $x(P,\theta)$ è definito come:
+  \begin{equation}
+    (x(P,\theta))_{ij} = 
+    \begin{cases}
+      x_{ij}+\theta & (i,j)\in P^+\\
+      x_{ij} - \theta & (i,j)\in P^-\\
+      x_{ij} & \text{altrimenti}
+    \end{cases}
+  \end{equation}
+}
+
+\mlenma{}{
+  Se $ x $ e' ammissibile, allora anche $ x(P, \theta(P, x)) $ e' ammissibile
+}
+\pf{}{
+  TODO: dimostra (facile)
+}
+
+Possiamo ora definire un cammino aumentante come:
+\dfn{Cammino aumentante}{
+  Data una rete $ G $ di un problema MF, un cammino da $ s  $ a $ t $ \textit{non necessariamente orientato} si dice \textbf{aumentante} se $ \theta(P,x) > 0 $.
+}
+
 \subsubsection{Grafi residui}
 
+Per definire un algoritmo che riesca a determinare se esisti o meno un cammino aumentante dato un grafo $ G $ e un flusso ammissibile $ x $, ci e' piu' comodo lavorare su sul cosidetto \textit{grafo residuo} $ G_x $ associato: 
 \dfn{
   grafi residui
 }{
@@ -365,45 +486,49 @@ Innanzi tutto dobbiamo presentare alcuni concetti
 }
 
 \nt{
-  Osserviamo come in $N_{G_x}$ ci possano essere due archi da uno stesso nodo $i$ ad uno stesso nodo $j$
-}
-\subsubsection{Cammino aumentante}
-
-\dfn{Cammino aumentante}{
-  Un \textbf{cammino aumentante} $P$ in una rete $G$ rispetto a $x$ è un cammino semplice e orientato da $x$ a $t$
+  Osserviamo come in $A_{G_x}$ ci possano essere al piu' due archi per ogni arco $ (i,j) \in A_{G} $ (uno concorde e l'altro discorde), quindi se in $ A_{G} $ esistono gli archi $ (i,j) $ e $ (j,i) $, e' possibile che in $ A_{G_x} $ ci siano due archi $ (i,j) $ e due archi $ (j,i) $ con capienze diverse.
 }
 
-Inoltre introduciamo anche alcune notazioni
+Introduciamo ora due lemmi che legano i cammini aumentanti di $ G $ a cammini semplici e orientati in questo nuovo grafo:
+\mlenma{}{
+  Per ogni cammino aumentante da $ s  $ a $ t $ rispetto a $ x $ in $ G $, esiste uno ed un solo cammino \textit{orientato} da $ s $ a $ t $ in $ G_x $.
+}
+\pf{}{
+  Per come abbiamo costruito il grafo residuo $ G_x $, $ \forall (i,j) \in A $ se l'arco non e' saturo, allora esiste l'arco orientato $ (i,j) \in A_x $ che puo' far parte degli archi \textit{conocordi} di un cammino aumentante. Se l'arco $ (i,j) \in A $ e' non nullo, allora esiste l'arco orientato in modo opposto $ (j_x, i_x) \in A_x $, che puo' fare parte degli archi \textit{discordi} di un cammino aumentante.
+
+  Quindi, se esiste un cammino aumentante $ P $ su $ G $ dato $ x $, allora e' possibile seguire un cammino semplice orientato da $ s  $ a $ t $ sul grafo dei residui $ G_x $, proprio perche' sappiamo che se $ P $ e' aumentante allora tutti gli archi che percorre saranno non saturi (se attraversti in modo orientato) e non nulli (se attraversati in modo opposto), quindi esisteranno per forza i corrispondenti archi orientati in $ G_x $.
+}
+\mlenma{}{
+  Se $ G_x $ non ha cammini semplici orientati da $ s  $ a $ t $, allora $ x $ e' un flusso massimo.
+}
+\pf{}{
+  Sappiamo che $ x $ e' un flusso massimo di valore $ v $ se determiniamo un taglio $ (N_s, N_t) $ la cui capacita' e' pari a $ v $ (TODO: introdurre e dimostrare prima questo lemma). Ci riduciamo quindi a dimostrare che esiste un tale taglio sul grafo residuo $ G_x $ se questo non ha visite che raggiungono $ t $.
+
+  Siano $ N_s $ tutti i nodi raggiungibili da $ s  $ in $ G_x $ e $ N_t = N \setminus N_s $ i restanti (contiene almeno $ t $ per ipotesi). Siccome non ci sono archi che collegano nodi da $ N_s $ a $ N_t $, significa che nel grafo $ G $ tutti gli archi di $ A^{+}(N_s, N_t) $ sono saturi e tutti gli archi di $ A^{-}(N_s, N_t) $ sono nulli, altrimenti ci sarebbe stato almeno un arco in $ G_x $ che collega $ N_s $ a $ N_t $.
+
+  Quindi il flusso del taglio (che equivale al valore del flusso $ x $ per il lemma) avra' il valore:
+  \[
+    x(N_s, N_t) = v = \underbrace{\sum_{(i,j) \in A^{+}} x_{ij}}_\text{saturo} 
+    - \underbrace{\sum_{(i,j) \in A^{-}} x_{ij}}_\text{nullo} = \sum_{(i,j) \in A^{+}} u_{ij} = u(N_s, N_t)
+  \]
+  Abbiamo quindi dimostrato il lemma.
+}
 
 \nt{
-  Denotiamo con $P^+$ l'insieme degli archi \textit{concordi} in $P$, e $P^-$ l'insieme degli archi \textit{discordi}
+  In altre parole, l'ultimo lemma ci dice che se non esistono cammini aumentanti su $ G $ per un dato flusso $ x $, allora nel grafo $ G_x $ non esistono cammini semplici orientati da $ s  $ a $ t $.
 }
 
-Sia poi la capacità di un cammino aumentante
+Quindi per torvare un cammino aumentante, basta far partire una visita da $ s  $ nel grafo $ G_x $ e vedere se $ t $ e' raggiungibile!
 
-\dfn{Capacità di un cammino aumentante}{
-  Dato un cammino aumentante $P$ in una rete $G$ rispetto a un flusso $x$, la \textbf{capacità} di $P$ rispetto a $x$ è definita come:
-  \begin{equation}
-    \theta (P,x) = \min{\{\min{\{u_{ij}-x_{ij}\mid (i,j)\in P^+\}},\min{\{x_{ij}\mid (j,i)\in P^-\}}\}}
-  \end{equation} 
+\subsubsection{Note}
+Volendo, era possibile partire dalla definizione:
+\dfn{Cammino aumentante (usando $ G_x $)}{
+  Un \textbf{cammino aumentante} $P$ in un grafo residuo $G_x$ è un cammino semplice e orientato da $s$ a $t$.
 }
+Nelle slide e' cosi', ma penso che sia piu' corretto partire dal concetto di cammino aumentante sul grafo $ G $ (che e' piu' intuitivo) per poi mostrare l'equivalenza con un cammino orientato sul suo grafo residuo.
 
-Da cui discende la definizione di flusso $x(P,\theta)$:
-\dfn{Flusso $x(P,\theta)$}{
-  Dato un cammino aumentante $P$ in una rete $G$ rispetto a un flusso $x$ e una capacità $\theta$, il flusso $x(P,\theta)$ è definito come:
-  \begin{equation}
-    (x(P,\theta))_{ij} = 
-    \begin{cases}
-      x_{ij}+\theta & (i,j)\in P^+\\
-      x_{ij} - \theta & (i,j)\in P^+\\
-      x_{ij} & \text{altrimenti}
-    \end{cases}
-  \end{equation}
-}
 
-\subsubsection{Algoritmo Ford-Fulkerson}
-TODO: cambiare il titolo della sottosotto sezione
-% TODO: cambiare il titolo della sottosotto sezione 
+\subsection{Algoritmo Ford-Fulkerson}
 
 Miglioriamo il flusso corrente usando il grafo residuo con cammino aumentante. Quindi visitiamo il grafo residuo partendo da s, e se c'e' un cammino che arriva a t significa che e' aumentante, quindi si aggiorna x il meglio possibile. fare questo finche non si trova il cammino aumentante, quindi abbiamo ottimizzato :)
 
@@ -425,21 +550,5 @@ Miglioriamo il flusso corrente usando il grafo residuo con cammino aumentante. Q
   }
 \end{algorithm}
 
-\subsubsection{Correttezza}
-
-\mlenma{}{
-  Se $ x $ e' ammissibile, allora anche $ x(P, \delta(P, x)) $ e' ammissibile
-}
-
-\mlenma{}{
-  Se $ x $ e' un flusso ammissibile massimo, allora $ G_x $ non ha cammini aumentanti.
-}
-
-\pf{}{
-  Uso l'eliminazione del not e ipotizzo che $ G_x $ abbia cammini aumentanti. Ma in questo caso $ x $ non sarebbe massimo dato che sarebbe possibile aumentare la capacita' del flusso. Quindi dimostrato per il falso.
-}
-
-\mlenma{}{
-  Se $ G_x $ non ha cammini aumentanti, allora esiste un taglio di capacita' pari a $ v $.
-}
+TODO: usa lemmi dati in precedenza per dimostrare che sta roba funzia
 
