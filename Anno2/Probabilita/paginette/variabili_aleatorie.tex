@@ -93,13 +93,38 @@
   A \rightsquigarrow \mathbb{1}_A
   \]
   Allora le VA sono \textit{generalizzazioni} del concetto di evento.
-  \ex{Prove ripetute e indipendenti}{
-    Consideriamo uno schema di n prove ripetute e indipendenti con probabilità di successo p, ossia uno spazio di probabilità discreto $ (\Omega, \mathbb{P}) $ in cui sono definiti n eventi $ C_1,...,C_n $ indipendenti e con la stessa probabilità $ p = \mathbb{P}(C_i) $. Definiamo gli eventi:
-    \begin{align*}
-    A_k = 
-    \end{align*}
-    TODO: continua
-  }
+
+\ex{Prove ripetute e indipendenti}{
+  Consideriamo uno schema di $n$ prove ripetute e indipendenti con probabilità di successo $p$, ossia uno spazio di probabilità discreto $(\Omega, P)$ in cui sono definiti $n$ eventi $C_1, \ldots, C_n$ indipendenti e con la stessa probabilità $p = P(C_i)$ (si ricordi il Paragrafo 1.3.4). Nel Paragrafo 1.3.4.3 abbiamo studiato gli eventi
+
+  \begin{align*}
+    A_k &:= \text{``esattamente $k$ prove hanno successo''}, \\
+    B_\ell &:= \text{``il primo successo si verifica nella $\ell$-esima prova''},
+  \end{align*}
+    
+  per $0 \leq k \leq n$ e $1 \leq \ell \leq n$. Introduciamo ora due variabili aleatorie
+    
+  \begin{align*}
+    S &:= \text{``numero di successi nelle $n$ prove''}, \\
+    T &:= \text{``prova in cui si ha il primo successo''},
+  \end{align*}
+    
+  definite su $\Omega$ a valori rispettivamente in $\{0, 1, \ldots, n\}$ e in $\mathbb{N} \cup \{+\infty\}$, mediante
+    
+  \begin{equation}
+    S(\omega) := \sum_{i=1}^{n} 1_{C_i}(\omega), \quad T(\omega) := \min\{i \in \{1, \ldots, n\} : \omega \in C_i\},
+  \end{equation}
+    
+  con la convenzione $\min \emptyset := +\infty$. Possiamo allora esprimere gli eventi $A_k$ e $B_\ell$ nel modo seguente:
+    
+  \begin{equation}
+    A_k = \{\omega \in \Omega : S(\omega) = k\}, \quad B_\ell = \{\omega \in \Omega : T(\omega) = \ell\}.
+  \end{equation}
+    
+  Questo mostra che gli eventi $A_k$ e $B_\ell$ possono essere definiti in modo naturale in termini delle variabili aleatorie $S$ e $T$, specificandone un sottoinsieme di valori.
+    
+}
+
   \section{Eventi associati alle variabili aleatorie}
 
   Ma se io ho $ X $ variabile aleatoria, sono capace di risalire all'evento (o eventi) associati? Le variabili aleatorie sono generalizzazioni del concetto di evento, quindi data una variabile aleatoria ci sono una moltitudine di eventi associati (o generati)
