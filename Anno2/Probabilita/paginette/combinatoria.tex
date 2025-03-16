@@ -71,7 +71,7 @@ E' un algoritmo per determinare la cardinalita' di un insieme. Vediamo un esempi
 Definiamo il principio generale:
 
 \thm{Non proprio un teorema}{
-  Ciascun elemetno di un insieme $ A $ puo' essere determinato tramite sola sequenza di $ k $ scelte, dove per ogni scelta ci sono $ n_1,....,n_k $ possibilita', allora:
+  Ciascun elemetno di un insieme $ A $ puo' essere determinato tramite sola sequenza di $ k $ scelte, dove per ogni scelta ci sono $ n_1,\dots,n_k $ possibilità, allora:
   \[
   |A| = n_1 \times \dots \times n_k
   \]
@@ -186,3 +186,103 @@ Siamo passati da sequenze a sottoinsiemi, ovvero non ci interessa piu' dell'ordi
 \text{sottoinsieme} = \text{sequenza non ordinata}
 \]
 
+
+
+\mprop{sulla combinazione come coefficiente biniomiale}{
+  Sia la combinazione $C_{n,k}$, allora vale:
+  \begin{equation}
+    |C_{n,k}| = \binom{n}{k}
+  \end{equation}
+}
+\pf{Dimostrazione}{
+  Mi riduco a dimostrare che:
+  \[
+    \frac{n!}{(n-k)!} = |C_{n,k}|k!
+  \]
+  Ovvero
+  \[
+    |D_{n,k}| = |C_{n,k}|\cdot |P_k|
+  \]
+
+
+
+  Ma $|D_{|n,k|} = |C_{n,k}|\cdot |P_k|$ vale per il principio delle scelte successive, infatti:
+  \begin{itemize}
+    \item scelta per i $k$ elementi selezionati: $|C_{n,k}|$
+    \item scelta dell'ordinamento $|P_k|$
+  \end{itemize}
+}
+
+Si noti questo esempio
+
+\ex{}{
+  Consideriamo un'unrna con $n$ palline distinte delle quali ne vengono estratte $k$. Determinare lo spazio di probabilità
+  
+  \hrule
+  
+  Si ha che: $\Omega = C_{n,k}$
+
+  Mentre per il principio di probabilià uniforme si ha:
+  \[
+    \mathbb{P}(\{w\}) = \frac{1}{\binom{n}{k}} = \frac{k!(n-k)!}{n!}
+  \]
+}
+
+Interpretazione combinatoria della formula di Stifel
+\nt{
+  Si consideri la formula di Stifel:
+  \begin{equation}
+    \binom{n}{k} = \binom{n-1}{k-1} + \binom{n-1}{k}
+  \end{equation}
+  Si può interpretare questa formula in termini di combinazioni come segue:
+
+  \[
+    \underbrace{\binom{n}{k}}_{\parbox{4cm}{n° di combinazioni di $k$ elementi di $E$}} = 
+    \underbrace{\binom{n-1}{k-1}}_{\parbox{4cm}{n° di combinazioni di $k$ elementi di $E$ in cui è presente l'elemento $\bar{e}$}} + 
+    \underbrace{\binom{n-1}{k}}_{\parbox{4cm}{n° di combinazioni di $k$ elementi di $E$ senza l'elemento $\bar{e}$}}
+  \]
+  dove $\bar{e}$ è un elemento fissato
+}
+
+Interpretazione combinatoria del binomio di Newton
+\nt{
+  Si consideri la formula del binomio di Newton:
+  \begin{equation}
+    (a+b)^n=\sum_{k=0}^n\binom{n}{k}a^kb^{n-1}\quad a,b\in \mathbb{R}
+  \end{equation}
+
+  Il prodotto $(a + b)(a + b)\dots(a + b)$ di $n$ fattori si sviluppa in una somma di monomi di grado $n$ del tipo $a^{n-k}b^k$ dive $k$ varia da 0 a $n$. Dobbiamo quindi determinare il coefficente di ogni monomio  $a^{n-k}b^k$, ossia calcolare quante volte compare facendo il prodotto $(a+b)(a+b)\dots (a+b)$ ossia calcolare quante volte compare facendo il prodotto $(a+b)(a+b)\dots (a+b)$. Questo monomio però si ottiene sciegliendo il valore $b$ da $k$ degli $n$ fattori e $a$ dai rimanenti $n-k$, ovvero in $\binom{n}{k}$ modi
+}
+
+\section{Tipologie di esperimenti}
+Riassumendo, si possono verificare 3 casi notevoli durante un esperimento aleatorio inseriti in questa tabella
+  \begin{table}[h]
+    \centering
+    \begin{tabular}{|m{4cm}|m{5cm}|m{5cm}|}
+    \hline
+    \backslashbox{\textbf{ORDINE}}{\textbf{RIPETIZIONE}} & \textbf{Senza ripetizione} & \textbf{Con ripetizione} \\ 
+    \hline
+    Si tiene conto dell'ordine & 
+    \begin{tabular}{@{}l@{}}
+    Estrazione senza reimmissione \\
+    $\Omega = \mathsf{D}_{n,k}$ \\
+    $|\Omega| = \dfrac{n!}{(n-k)!}$
+    \end{tabular} &
+    \begin{tabular}{@{}l@{}}
+    Estrazione con reimmissione \\
+    $\Omega = \mathsf{DR}_{n,k}$ \\
+    $|\Omega| = n^k$
+    \end{tabular} \\ 
+    \hline
+    Non si tiene conto dell'ordine & 
+    \begin{tabular}{@{}l@{}}
+    Estrazione simultanea \\
+    $\Omega = \mathsf{C}_{n,k}$ \\
+    $|\Omega| = \dfrac{|\mathsf{D}_{n,k}|}{k!} = \binom{n}{k}$
+    \end{tabular} & --- \\ 
+    \hline
+    \end{tabular}
+    \caption{Gli spazi campionari e le loro cardinalità.}
+    \label{tab:spazi_campionari}
+    \end{table}
+    
