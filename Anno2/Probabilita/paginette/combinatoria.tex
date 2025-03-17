@@ -256,8 +256,10 @@ Interpretazione combinatoria del binomio di Newton
 
 \section{Tipologie di esperimenti}
 Riassumendo, si possono verificare 3 casi notevoli durante un esperimento aleatorio inseriti in questa tabella
-  \begin{table}[h]
-    \centering
+TODO:  NON FUNZIONA backslashbox, controllare
+  
+\begin{table}[h]
+  \centering
     \begin{tabular}{|m{4cm}|m{5cm}|m{5cm}|}
     \hline
     \backslashbox{\textbf{ORDINE}}{\textbf{RIPETIZIONE}} & \textbf{Senza ripetizione} & \textbf{Con ripetizione} \\ 
@@ -283,6 +285,120 @@ Riassumendo, si possono verificare 3 casi notevoli durante un esperimento aleato
     \hline
     \end{tabular}
     \caption{Gli spazi campionari e le loro cardinalità.}
-    \label{tab:spazi_campionari}
-    \end{table}
+  \label{tab:spazi_campionari}
+\end{table}
+
+
+\nt{
+  La casella vuota nella tabella sopra riportata corrisponde all’insieme delle cosiddette \textit{combinazioni con ripetizione}, un raggruppamento di $k$ elementi estratti da $n$ elementi distinti, nel quale uno stesso elemento può ripetersi fino a $k$ volte, e in cui l'ordine di estrazione non è rilevante
+}
+
+Si noti questo esempio:
+\ex{Esempio sulla casella mancante}{
+  si lancia tre volte una moneta. Qual è la probabilità che esca due volte testa?
+
+  \hrule
+
+  Si hanno due approcci per scegliere lo spazio campionario:
+  \begin{itemize}
+    \item utilizzare le $DR_{2,3}$ con $\mathbb{P}$ uniforme.
     
+    In questo caso:
+  
+  \[
+    \Omega =DR_{2,k} = \{(T, T, T), (T, T, C), (T, C, T), (C, T, T), (T, C, C), (C, T, C), (C, C, T), (C, C, C)\}
+  \]
+
+  Ci sono 8 possibili sequenze perché ogni lancio ha 2 possibili risultati:
+  \[
+    2^3 = 8
+  \]
+  Siccome ogni sequenza ha la stessa probabilità di verificarsi, possiamo assegnare la probabilità uniforme, si ha
+
+  \[
+    \mathbb{P}(x_1,x_2,x_3) = \frac{1}{8} \quad \forall x 
+  \]
+
+  Sarà quindi facile calcolare la probabilità di $A$ (lascio al basta come esercizio)
+  \item Lo spazio campionario con combinazioni con ripetizione $CR_{n,k}$.
+  
+  In questo caso, dato che non ci interessa l'ordine dei lanci, dobbiamo raggruppare le sequenze "uguali":
+
+  \[
+    CR_{2,3} = \{[T,T,T],[T,T,C],[T,C,C],[C,C,C]\}
+  \]
+
+  Tuttavia è facile verificare che in questo caso la probabilità uniforma \textbf{non sussiste}, perché alcuni gruppi contengono più sequenze di altri
+
+  infatti:
+
+  \begin{itemize}
+    \item $\mathbb{P}([T, T, T]) = \P((T, T, T)) =\frac{1}{8}$
+    \item  $\P([T, T, C]) = \P((T, T, C)) + \P((T, C, T)) + \P((C, T, T))=\frac{3}{8}$
+    \item $\P([T, C, C]) = \P((T, C, C)) + \P((C, T, C)) + \P((C, C, T)) =\frac{3}{8}$
+    \item $\mathbb{P}([C,C,C]) = \P((C,C,C)) =\frac{1}{8}$
+  \end{itemize}
+\end{itemize}
+}
+
+\nt{
+  Se scegliamo lo spazio campionario $CR_{n,k}$, dobbiamo lavorare con probabilità non uniformi, il che complica i calcoli.Invece, se lavoriamo con , tutte le sequenze hanno la stessa probabilità e possiamo usare il calcolo combinatorio standard per trovare i risultati.
+
+  Per questo motivo, nella maggior parte dei problemi in cui c’è ripetizione, conviene lavorare con disposizioni con ripetizione , perché permette di usare la probabilità uniforme.
+}
+
+Bho adesso si fa un altro esempio, e va benissimo così
+
+\ex{Probabilità binomiale}{
+  Si consideri un’urna che contiene $b$ palline bianche ed $r$ palline rosse. Si effettuano $k$ estrazioni con reimmissione. Calcolare la probabilità dell’evento
+
+  \[
+    A_\ell = \text{"si estraggono } \ell \text{ palline bianche ed } k - \ell \text{ palline rosse''}
+  \]
+}
+
+\pf{soluzione}{
+  Etichettiamo le $b$ palline bianche con $b_1,b_2, \dots, b_b$; analogamente, le $r$ palline rosse con $r_1,\dots , r_r$. Sia dunque:
+  \[
+    E = \{b_1,\dots, b_b,r_1,\dots , r_r\}
+  \]
+
+  E si noti che $|E| = b+r$.
+
+  Come spazio di probabilità $(\Omega,\P)$ è naturale considerare $\Omega = DR_{b+r, k}$ (insieme delle disposizioni con ripetizione di $k$ elementi di $E$) e $\P$ probabilità uniforme, quindi $\P(\{w\})=\frac{1}{(b+r)^n}$
+
+  Per calcolare $\P(A_\ell)$ dobbiamo calcolare $|A_\ell|$ che si rivela possibile usando il principio delle scelte successive:
+  \begin{itemize}
+    \item scelta della sequenza di $\ell$ palline bianche estratte, ovvero $|DR_{b,\ell}|$ possibilità
+    \item scelta della sequenza di $k-\ell$ palline bianche estratte, ovvero $|DR_{b,k-\ell }|$ possibilità
+    \item scelta delle $\ell$ estrazioni in cui sono uscite le palline bianche: $|C_{k,\ell}|$ possibilità
+  \end{itemize}
+
+  In defintiva:
+  \[
+    \P(A_\ell) = \frac{|DR_{b,\ell}||DR_{b,k-\ell }||C_{k,\ell}|}{| DR_{b+r, k}|} = \binom{k}{\ell}\frac{b^\ell r^{k-\ell}}{(b+r)^k}
+  \]
+  O, equivalentemente, dato $p=\frac{b}{b+r}$ si ha:
+  \[
+    \P(A_\ell) = \binom{k}{\ell}p^\ell (1-p)^{k-\ell}, \quad \ell = 0,\dots, k
+  \]
+}
+
+\nt{
+  Consideriamo lo spazio di probabilità $(\Omega, \mathbb{P})$ con $\Omega = \{0, 1, 2, ..., k\}$ e $\mathbb{P}$ data da
+\[
+\mathbb{P}(\{\ell\}) = \binom{k}{\ell} p^\ell (1-p)^{k-\ell}, \qquad \ell = 0, 1, ..., k.
+\]
+
+Si noti che $\mathbb{P}$ è effettivamente una probabilità. Infatti, per la formula del binomio di Newton vale che
+\[
+\sum_{\ell=0}^k \mathbb{P}(\{\ell\}) = \sum_{\ell=0}^k \binom{k}{\ell} p^\ell (1-p)^{k-\ell} = (p + (1-p))^k = 1.
+\]
+
+$\mathbb{P}$ non è una probabilità uniforme. $\mathbb{P}$ si chiama \textbf{probabilità binomiale}.
+
+
+
+
+
+}
