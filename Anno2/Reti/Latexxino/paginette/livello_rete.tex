@@ -1,3 +1,4 @@
+% \begin{document}
 \chapter{Livello di rete}
 \section{Overview del libeello di rete}
 \dfn{Livello di rete}{
@@ -44,3 +45,67 @@ In quasi tutte le infrastrutture di rete viene utilizzata il Logically Centraliz
 Fare le altre robe
 
 \section{Router}
+
+\section{IP datagram format}
+
+\subsection{Frammentazione IP}
+
+L'offset, le flag e l'identificatore permette la ricostruzione dell'intero pacchetto che era stato frammentato.
+
+\ex{}{
+  Supponiamo di avere:
+  \begin{itemize}
+  \item datagramma di 4000 byte
+  \item MTU di 1500 byte
+  \end{itemize}
+
+  Ci servono 3 frammenti, che hanno lo stesso ID di pacchetto, il flag che indica i frammenti a 1 per i primi due e 0 per l'ultimo (proprio per indicare che e' l'ultimo) e gli offset (in byte/8 per compattezza).
+}
+
+\subsection{ATM}
+
+Solo 5 byte, che sono un'etichetta di flusso, che serve per prenotare le risorse sul cammino determinato dal routing. I router che ricevono lungo il percorso leggono l'etichetta e sanno dove instradarli. E' l'emulazione di una commutazione di circuito fatto a pacchetto.
+
+C'e' quindi un contratto a priori che garantisce una certa quantita' di flusso a disposizione.
+
+La dimensione dei pacchetti ATM deve essere abbastanza piccolo da rendere veloce e gestibile la trasmissione, ma non troppo piccole da avere una porzione importante presa dall'header (overhead)
+
+\section{IP addressing}
+\ex{}{
+  Reti di classe C
+  Alto sx:
+  \begin{itemize}
+  \item rete di classe C
+  \item Default Gateway 223.1.1.4, seguendo le best practices dovrebbe essere 223.1.1.254 (non 255 perche' sarebbe broadcast)
+  \end{itemize}
+  Per identificare la subnet in realta non si cambia la maschera perche boh
+}
+
+\ex{Subnets}{
+  Ci sono 3 subnets, router separati per ogni sottorete connessi in modo completo (anello, ridontante). ma ci sono anche le reti degeneri che collegano i tre router, quindi in realta' ce ne sono 6 di reti.
+}
+
+\ex{DHCP}{
+  Il DHCP server vede che arriva una richiesta in broadcast alla porta DHCP chiede al router se esiste un indirizzo e lo da al client. 
+
+  Facendo spoofing del mac address, e' possibile apparire come una scheda di rete nuova ed e possibile spammare i DHCP in broadcast fino a esaurire gli IP.
+
+  Tale attacco puo' essere fermato solo tramite autenticazione1
+} 
+
+\section{IPv6}
+Non c'e' frammentazione, c'e' priorita' del flusso. Etichetta di flusso ci dice gia' la porta di destinazione, dato che per ogni flusso il router v6 salva la porta in una tabella separata.
+
+\section{Forwarding Generalizzato}
+Nelle SDN, abbiamo la possibilita' di definire su ogni router una politica locale nella quale abbiamo tre entita' di interesse:
+\begin{itemize}
+\item header
+\item counter: controllo prestazioni
+\item azioni: cosa fare se accade qualcosa
+\end{itemize}
+
+Le regole di gestione dei pacchetti sono semplici e generalizzati:
+\begin{itemize}
+\item azioni: 
+\end{itemize}
+% \end{document}

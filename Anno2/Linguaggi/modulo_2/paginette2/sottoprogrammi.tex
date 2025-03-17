@@ -108,12 +108,13 @@ Questo metodo è efficiente in termini di memoria, poiché non viene creata una 
 
 Il passaggio per costante è una variante del passaggio per valore, tuttavia viene garantito che nella procedura non è permessa la modifica del parametro formale
 
+\begin{lstlisting}[style=javastyle]
+void foo (final int x){
+  // qui x non puo' essere modificato
+}
+\end{lstlisting}
 
-% \begin{lstlisting}[style=javastyle]
-% void foo (final int x){ 
-%   //qui x non può essere modificato
-% }
-% \end{lstlisting}
+Se l'oggetto passato e' di grandi dimensioni, il compiler puo' evitare di fare la copia usando il passaggio a riferimento, mantenendo sempre la semantica del passaggio per valore.
 
 \subsubsection{Passaggio per Risultato}
 
@@ -168,7 +169,7 @@ Il passaggio per valore ha come pro:
     \item Semantica semplice: il corpo non ha necessità di conoscere come la procedura verrà chiamatà
     \item trasparenza referenziale: ovvero la proprietà di un'espressione che garantisce che verrà restituito sempre lo stesso risultato ogni qualvalto il gli verrà fornito lo stesso imput indipendentemente dal contesto
     \item implementazione abbastanza semplice
-    
+\end{itemize}
 e come contro un costo potenzialmente alto per la copia del parametro attuale.
 
 Invece il passaggio per riferimento ha come pro:
@@ -178,7 +179,6 @@ Invece il passaggio per riferimento ha come pro:
 \end{itemize}
 
 E come contro una semantica complessa a causa dell'aliasing
-\end{itemize}
 \subsubsection{Passaggio per nome}
 
 Il passaggio per nome è una modalità di passaggio parametri introdotta da Algol negli anni 60 che vede la chiamata come una \textit{macro espansione} ovvero un meccanismo dove la semantica di una chiamata di funzione è definita in modo \textbf{prescrittivo} e consiste nell'esecuzione del corpo come se fosse testualmente presente nel chiamante, anche la gestione dei parametri segue lo stesso principio, ovvero il corpo della procedura viene eseguito dopo che i parametri attuali sono stati sostituiti testualmente al posto dei parametri formali, quindi quest'ultimi vengono valutati dopo questo passaggio. 
@@ -224,7 +224,7 @@ Per ovviare a questo problema viene passato, ai vari paramatri, una coppia \text
 \end{itemize}
 
 Si prenda come esempio il seguente codice:
-\begin{lstlisting}
+\begin{lstlisting}[language=C]
     int y;
     void fie (int x ){
         int y;
