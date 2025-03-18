@@ -1,5 +1,117 @@
 \chapter{Introduzione alla sicurezza di rete}
 
+\dfn{Sicurezza di rete}{
+    La sicurezza di rete è l'insieme delle strategie, tecnologie e protocolli utilizzati per proteggere le reti di calcolatori da accessi non autorizzati, attacchi, perdite di dati e altre minacce informatiche
+}
+
+In pratica consiste nel creare un'architettura di difesa e prevenzione. Questi sono in modo riassuntivo i principali obbiettivi della sicurezza di rete:
+\begin{itemize}
+    \item \textbf{Confidenzialità}: Solo il mittente e il destinatario devono poter leggere il messaggio. Questo si ottiene con la crittografia
+    \begin{itemize}
+        \item Il mittente crittografa (encrypts) il messaggio.
+        \item Il destinatario decrittografa (decrypts) il messaggio
+    \end{itemize}
+    \item \textbf{Autenticazione}: Processo per verificare l’identità di un utente o un dispositivo, fondamentale per garantire accessi sicuri (es. Password, certificati digitali, autenticazione a due fattori (2FA))
+    \item \textbf{Integrità dei messaggi}: Garantisce che i dati non siano stati alterati durante la trasmissione (es. Password, certificati digitali, autenticazione a due fattori (2FA))
+    \item \textbf{Accesso e Disponibilità}: I servizi devono essere accessibili agli utenti autorizzati. Minacce:
+    \begin{itemize}
+        \item Attacchi DoS/DDoS che bloccano il servizio.
+        \item Gestione dei permessi per prevenire accessi non autorizzati
+    \end{itemize}
+\end{itemize}
+
+Si introduce il concetto di attacco con il tipico esempio di Alice e Bob che vogliono comunicare e Trudy, l'attaccante, che può intercettare, elliminare o aggiungere messaggi durante la comunicazione dei due amamnti carucci (Morbidelli - Morigi)
+\begin{center}
+    \includegraphics[width=10cm]{img/trudy_bob_alice.png}
+\end{center}
+
+Vabbuò passiamo alla sezione sucessiva:
+\section{Principi di crittografa}
+Partiamo dalla defnizione
+
+\dfn{crittografa}{
+    si \textbf{crittografa} la disciplina che studia le tecniche per proteggere le informazioni trasformandole in un formato illeggibile per chi non è autorizzato, consentendo solo ai destinatari legittimi di decifrarle.
+}
+
+Nelle reti di comunicazione, i dati trasmessi possono essere intercettati da chiunque abbia accesso al canale di comunicazione, rendendo le informazioni vulnerabili a lettura, modifica o attacchi malevoli. Per proteggere la riservatezza e l’integrità dei dati, si utilizza, quindi, la crittografia, una tecnica che consente di trasformare il testo in chiaro, detto \textit{plaintext}, in un formato incomprensibile chiamato testo cifrato o \textit{ciphertext}, attraverso l’applicazione di un algoritmo di cifratura.
+
+L’obiettivo della crittografia è garantire che, anche se un malintenzionato intercettasse il messaggio durante la trasmissione, non sarebbe in grado di comprenderne il contenuto senza la conoscenza della chiave segreta. Solo il destinatario legittimo, in possesso della chiave corretta, può applicare un algoritmo di decifratura per convertire il testo cifrato nuovamente in testo leggibile.
+
+Va sottolineato che gli algoritmi di cifratura e decifratura sono generalmente pubblici e noti a tutti. Tuttavia, la sicurezza della crittografia si basa sulla segretezza della cosiddetta \textit{chiave crittografica}, ovvero una sequenza di bit utilizzata all'interno di un algoritmo di cifratura per trasformare un messaggio in un formato sicuro e, successivamente, per riconvertirlo nel suo stato originale. Questa chiave viene generata all'inizio della comunicazione tra mittente e destinatario e loro e solo loro ne sono a conoscenza.
+
+Adesso un'introduzione all'algebra della crittografia
+
+Si ha:
+\begin{itemize}
+    \item $m$: plaintext
+    \item $K_A(m)$: ciphertext, encrypted with key $K_A$
+    \item $m = K_B(K_A(m))$: plaintext ripristinato grazie alla chiave $K_B$
+\end{itemize}
+
+Si noti la seguente immagine (con appunti bonziani):
+\begin{center}
+    \includegraphics[width=10cm]{img/crittografia.png}
+\end{center}
+
+\subsection{Attaccare uno schema di crittografia}
+
+Gli attacchi crittografici mirano a violare la sicurezza di un sistema di cifratura. Ne esistono diversi tipi:
+\begin{enumerate}
+    \item \textbf{Cipher-text only attack}, l'attaccante possiede solo il testo cifrato a disposizione e per decifrare il messaggio ha due approcci possibile:
+    \begin{itemize}
+        \item \textbf{Forza bruta}: prova tutte le chiavi possibili
+        \item \textbf{Analisi statistica}: cerca pattern ripetuti nei dati cifrati
+    \end{itemize}
+    \item \textbf{known-plaintext attack}: Trudy possiede sia il testo cifrato che il corrispondente testo in chiaro. Con queste informazioni, cerca di scoprire la chiave di cifratura o il meccanismo utilizzato, così da poter decifrare altri messaggi cifrati dallo stesso sistema.
+    
+    \ex{}{
+    Se Trudy sa che nel testo in chiaro compare la parola "hello" e trova nel messaggio cifrato la sequenza "JGRRG", può iniziare a costruire un dizionario di corrispondenze tra lettere:
+
+    \begin{itemize}
+        \item $h \to J$
+        \item $e \to G$
+        \item $l \to R$
+        \item $o \to G$
+    \end{itemize}
+    }
+    
+\end{enumerate}
+
+\nt{un buon metodo per evitare questi attacchi è rendere lo spazio delle chiavi il più vasto possibile e utilizzare algoritmi sicuri che resistano alle analisi statistiche}
+\subsection{Crittografia a chiave simmetrica}
+Adesso entriamo nel vivo della difesa cazzo
+\dfn{Crittografia a chiave simmetrica}{
+    mittente e destinatario condividono la stessa chiave segreta $K_S$ per cifrare e decifrare i messaggi
+}
+
+I pratica il mittente (Alice) cirfra il plaintext con l'algoritmo di cifratura usando la chiave $K_S$ottenendo il ciphertext, Bob riceve il ciphertext e lo decifra usando lo stesso algoritmo e la chiave $K_S$, recuperando il messaggio originale
+\begin{center}
+    \includegraphics[width=10cm]{img/CHIAVE_SIMMETRICA.png}
+\end{center}
+
+Per implementare la chiave simmetrica esistono diverse tecniche
+
+\subsubsection{Cifrario a sostituzione}
+
+\dfn{Cirfrario a sostituizione}{
+    Un \textbf{cifrario a sostituzione} è una tecnica di cifratura in cui ogni lettera del testo in chiaro viene sostituita con un'altra lettera secondo un mapping predefinito
+}
+
+\paragraph{Cifrario monolitico} Tra i vari tipi di cifrario a sostruzioni vi è il cifrario monolitico dove ogni lettera dell'alfabeto viene sostituita da un'altra lettera fissa
+
+\ex{Cifrario monolitico}{
+    \begin{itemize}
+        \item Alfabeto in chiaro: abcdefghijklmnopqrstuvwxyz
+
+        \item Alfabeto cifrato: mnbvcxzasdfghjklpoiuytrewq
+        \item Messaggio originale: bob. i love you. alice
+        \item Messaggio cifrato: nkn. s gktc wky. mgsbc
+    \end{itemize}
+}
+
+Tuttavia è poco sicuro perché mantiene la frequenza delle lettere originali e lo rende particolarmente vulnerabile alle analisi delle frequenze
+
+
 \section{Firewall e IDS}
 
 Innanzi definiamo che cos'è un \textit{Firewall}
