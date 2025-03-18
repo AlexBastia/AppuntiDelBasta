@@ -213,6 +213,7 @@
 
  \section{Distribuzione (o legge) di una Variabile Aleatoria}
 
+ Ora che sappiamo trovare l'evento generato da una variabile aleatoria e un sottoinsieme del suo codominio, possiamo calcolare la probabilita' di tale evento: 
 
  \dfn{Distribuzione di una VA}{
    Dati $ (\Omega, \mathbb{P}) $ e $ X: \Omega\to \mathbb{R} $ VA, chiamiamo legge di $ X $ la funzione (che dimostreremo essere una probabilita'):
@@ -228,9 +229,137 @@
    Conoscere $ \mathbb{P}_X $ $ \forall B \subseteq \mathbb{R} $ equivale a conoscere $ \mathbb{P}_X $ $ \forall I $ intervallo di $ \mathbb{R} $. (dato che ogni intervallo e' un sottoinsieme). 
  }
 
- Dimostreremo che la legge $ \mathbb{P}_X(\cdot) $ e' caratterizzata dalla funzione
+ Dimostreremo che la legge $ \mathbb{P}_X(\cdot) $ e' caratterizzata dalla funzione di \textit{ripartizione}
   \begin{align*}
     F_X: \mathbb{R} &\to [0,1]\\
     n &\mapsto \mathbb{P}_X((-\infty, n]) = \mathbb{P}(\{X \leq n\})
   \end{align*}
+
+  Quindi per studiare il comportamento daela variabile aleatoria mi devo studiare la probabilita' che $ X \leq x $ per ogni $ x \in \mathbb{R} $ (forse)
+
+  \begin{itemize}
+  \item Variabili Costanti:
+
+    $ a \in \mathbb{R}, X(\omega) = a.\ \forall \omega \in \Omega $
+
+    \[
+    B \subseteq \mathbb{R}.\ \{X \in B\} = \begin{cases}
+    \Omega & a \in B\\
+    \emptyset &  a \notin B
+    \end{cases}
+    \]
+    \[
+    \mathbb{P}_X(B) = \mathbb{P}(X \in B) = \begin{cases}
+    1 & a \in B\\
+    0 & a \notin B
+    \end{cases}
+    \]
+      Questa e' la delta di Dirac di $ a $ valutata su $ B $
+    \item Variabili Indicatrici:
+
+      $ A \subseteq \Omega $, $ X(\omega) = \mathbb{1}_A(\omega) $
+      \[
+      B \subseteq \mathbb{R}, \{X \in B\} = \begin{cases}
+      \Omega & 1, 0 \in B\\
+      \emptyset & 1, 0 \notin B\\
+      A & 1 \in B \land 0 \notin B\\
+       & 
+      \end{cases}
+      \]
+      \[
+        P_X(B) = P(X \in B) = \begin{cases}
+        1 & \\
+        0 & \\
+          P(A) & \\
+          1-P(A) & 
+        \end{cases}
+      \]
+      Questa e' una probabilita' discreta, quidni e' possibile crearla usando una combinazione lineare di delta di Dirac: 
+      \[
+        = P(A)\delta_1(B) + (1-P(A))\delta_0(B)
+      \]
+      Ovvero:
+      \[
+        P_X(\cdot) = P(A)\delta_1(\cdot) + (1-P(A))\delta_0(\cdot)
+      \]
+      Distribuzione (o legge) di Bernulli. Se la variabile aleatoria diventa piu' complicata, aumentano il numero di delta.
+  \end{itemize}
+
+  $ P_X $ contiene tutte le informazioni di $ X $, ma e' una funzione di insiemi, quindi e' complicata da calcolare.
+  \nt{
+    $ B \subseteq \mathbb{R} $, ma e' un sottoinsieme di reali, ...
+  }
+  \dfn{}{
+    $ (\Omega, P) $ SP $ X: \Omega \to \mathbb{R} $, si chiama funzione di \textit{ripartizione} di $ X $:
+    \[
+      F_X: \mathbb{R} \to [0,1]
+    \]
+    \[
+      x \to P_X((-\infty, x])
+    \]
+  }
+  Ricostruisco 
+
+  $ P_X(B) = \delta_a(B) $, $ F_X(x) = P_X((-\infty, x]) = \delta_a(\{-\infty, x]) $
+  \[
+  = \begin{cases}
+  1 & x \geq a\\
+  0 & x < a
+  \end{cases}
+  \]
+Grafico
+
+$ P_X(B) = P(A)\delta_1 + (1-P(A))\delta_0 $
+\[
+  F_X(x) = P_X((-\infty, x]) = P(A)\delta_1((-\infty, x]) +...
+\]
+\[
+= \begin{cases}
+1 & x \geq 1\\
+  1-P(A) & x < 0\\
+ 0 & x \in [0, 1)
+\end{cases}
+\]
+Se io ho una qulunque funzione che rispetta tali proprieta', allora e' di ripartizione
+
+\thm{}{
+  $ (\Omega, P) $ SP, $ X: \Omega \to \mathbb{R} $, $ F_X $ fdr, allora:
+  \begin{itemize}
+  \item $ F_X $ e' monotona crescente
+  \item $ F_X $ e' continua a destra, ovvero $ \lim_{y\to x^{+}} $
+  \item 
+  \end{itemize}
+
+  Vale anche il viceversa: se $ G: \mathbb{R} \to [0,1] $ verifica 1,2,3,4, allora
+  \[
+    \exists(\Omega, P).\ X:\Omega\to \mathbb{R}.\ G \equiv F_X
+  \]
+}
+\mlenma{}{
+  Sia $ (\Omega, P) $ SP
+  $ "A_m" \up A = A_n \subseteq A_{n+1}, \bigcup_{n=1}^{\infty} A_n = A $
+
+  allora $ \lim_{n\to+\infty} P(A_n) = P(A) $
+
+  Stessa roba per monotona al contrario
+}
+\pf{}{
+  Prima parte:
+  \begin{itemize}
+    \item Usiamo la monotonia della probabilita' $ (-\infty, x] \subseteq (-\infty, y] $
+  \item Dobbiamo passare al limite dentro la probabilita' per 2,3,4. Serve la stabilita' della probabilita' per limiti monotoni
+  \end{itemize}
+}
+
+La probabilita' di tutti gli intervalli si scrivono in termini di $ F_X $:
+\[
+  P_X((a,b]) = F_X(b) - F_X(a)
+\]
+\section{Variabili Aleatorie Discrete}
+Possono assumere un numero finito o numerabile di valori
+\dfn{}{
+  $ X: \Omega  $
+}
+
+
 % \end{document}
