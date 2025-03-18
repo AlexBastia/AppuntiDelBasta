@@ -97,7 +97,8 @@ Per implementare la chiave simmetrica esistono diverse tecniche
     Un \textbf{cifrario a sostituzione} è una tecnica di cifratura in cui ogni lettera del testo in chiaro viene sostituita con un'altra lettera secondo un mapping predefinito
 }
 
-\paragraph{Cifrario monolitico} Tra i vari tipi di cifrario a sostruzioni vi è il cifrario monolitico dove ogni lettera dell'alfabeto viene sostituita da un'altra lettera fissa
+\paragraph{Cifrario monolitico}
+Tra i vari tipi di cifrario a sostruzioni vi è il cifrario monolitico dove ogni lettera dell'alfabeto viene sostituita da un'altra lettera fissa
 
 \ex{Cifrario monolitico}{
     \begin{itemize}
@@ -109,8 +110,13 @@ Per implementare la chiave simmetrica esistono diverse tecniche
     \end{itemize}
 }
 
+La chiave di cifratura è una funzione di permutazione ad un insieme di 26 lettere ad un altro insieme di 26 lettere
+
 Tuttavia è poco sicuro perché mantiene la frequenza delle lettere originali e lo rende particolarmente vulnerabile alle analisi delle frequenze
 
+\paragraph{Schema ciclico} Per rendere la cifratura più sicura, si può usare più cifrari di sostituzione e applicarli in un ciclo predefinito
+
+La chiave di cifratura quindi è un insieme di $n$ cifrari sostituzione ($M_1,M_2,\dots,M_n$) ed un modello cicilico su come usarli. Ogni lettera del plaintext quindi viene cifrata con un cifrario diverso seguendo il ciclo 
 
 \section{Firewall e IDS}
 
