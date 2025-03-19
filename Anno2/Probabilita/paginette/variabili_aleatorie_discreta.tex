@@ -1,0 +1,26 @@
+\chapter{VARIABILI ALEATORIE DISCRETE} 
+
+\dfn{}{
+    $(\Omega, \P)$, $X:\Omega \to R$
+    La funzione:
+    \begin{equation}
+        \begin{aligned}
+            P_X : \mathbb{R}&\to [0,1]\\
+            x \to P_X(x) := \P(X=x)
+        \end{aligned}
+    \end{equation}
+    Si chiama funione di distribuzione di probabilità di $x$
+}
+
+\dfn{}{
+    $(\Omega, \P)$, $X:\Omega \to R$
+
+    $X$ è una variabile aleatoria sisceta se esiste un sosttoinsieme $S_x$ di $\mathbb{R}$, finito o inifinto numerabilem take cbe:
+    \[
+        \delta_X = \{x_1, \dots, x_n\} \quad \delta_x = \{x_1, \dots, x_i, \dots\}
+    \]
+    \begin{itemize}
+        \item $\P(X = x_i) = P_X ( x_i)>0 \quad \forall x_i \in \delta_x$
+        \item $\sum_{x \in \delta_x} \P( X= x_i) = \sum_{x_i \in \delta_x} P_X (x_i) = 1$
+    \end{itemize}
+}
