@@ -249,3 +249,33 @@ Per implementare il passaggio per nome, la coppia closure è formata, dal lato p
     \item un puntatore al testo di \texttt{exp}
     \item un puntatore di catena statica (sullo stack) al record di attivazione del blocco di chiamata
 \end{itemize}
+\subsection{Funzioni di ordine superiore}
+Alcuni linguaggi di programmazione consenstono di passare passare \textbf{funzioni come argomenti di altre funzioni} o  \textbf{restituire funzioni come risultato di una funzione}, è quindi lecito chiedersi come viene gestito lo scope in questo caso
+
+\subsubsection{Funzione come argomento}
+Quando una funzione viene passata come argomento occorre realizzare lo scope con la \textit{closure}, ovvero l'accoppiata $\langle$\texttt{f, amb}$\rangle$, dove:
+\begin{itemize}
+    \item \texttt{f} è il puntatore alla funzione che vogliamo passare
+    \item \texttt{amb} è il puntatore in cui è stata definita
+\end{itemize}
+
+Si noti questo codice
+\begin{lstlisting}
+    int x=4; 
+    int z=0;
+
+    int f (int y) {
+        return x*y;  // Quale "x"?
+    }
+
+    void g ( int h(int n) ) {
+        int x;
+        x = 7;
+        z = h(3) + x;
+    }
+    // ...
+    { 
+    int x = 5;
+    g(f);
+    }
+\end{lstlisting}
