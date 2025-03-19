@@ -234,3 +234,76 @@
     n &\mapsto \mathbb{P}_X((-\infty, n]) = \mathbb{P}(\{X \leq n\})
   \end{align*}
 % \end{document}
+
+\dfn{Distribuzioni di Bernulle}{
+  $\P_x (\cdot) = \P(A) \delta_1(\cdot) + (1-\P(A))\delta_0(\cdot)$
+}
+
+\nt{
+  $B\subseteq \mathbb{R}$
+  Conoscere $\P_x(B)\forall B\in \mathbb{R}\iff \P_x(I), \forall I$ interveòòa reaòe 
+}
+
+\dfn{Funzione di ripartizione}{
+  Sia $(\Omega, \P)$ uno spazione di probabilita e $X:\Omega \to \mathbb{R}$ una variabile aleatoria. È definita \textbf{funzione di ripartizione} o \textbf{CDF} di $X$ la funzione
+  \[
+    F_X : \mathbb{R}\to [0,1]
+  \]
+  Deginita da
+  \begin{equation}
+    F_X(x)=\P(X\leq x) = \P_X((-\infty,x]), \quad \forall x\in \mathbb{R}
+  \end{equation}
+  Per dire che $X$ ha una funzione di ripartizione $F_X$ scriviremeo 
+  \[
+    X\sim F_X
+  \]
+}
+
+\nt{
+  $F_X$ determina completamente la distribuzione di $X$_
+  \begin{itemize}
+    \item  se conosco $P_X$ allora conosco $F_X$
+    \item se conosco $F_X$ allora conosco $\P_X(B)$ per ogni sottoinsieme di $B$
+  \end{itemize}
+}
+La Shlein ci da questo teorema
+\thm{Teorema di Teodoro}{
+  Sia $(Ω, P)$ uno spazio di probabilit`a e $X : Ω → R$ una variabile aleatoria. La funzione di ripartizione $F_X$ di $X$ verifica le seguenti propriet`a:
+  \begin{enumerate}
+    \item $F_X$ è monotona crescente (non necessariamente strettamente)
+    \item $F_X$ è continua a destra: 
+    \[
+      \lim_{y\to x+}F_X (y) = F_X(x)\forall x\in \mathbb{R}
+    \]
+    \item $F_X_{x\to - \infty} F_X(x)=0$
+    \item $F_X_{x\to + \infty} F_X(x)=1$
+
+  \end{enumerate}
+
+  Vale viceversa: se $G: \mathbb{R}\to [0,1]$ verifica 1.2.3.4. $\implies \exists (\Omega, \P)\land \exists X, G=F_X$ 
+}
+\pf{Dimostrazione}{
+  Dimostro i veri punti:
+  \begin{enumerate}
+    \item $(-\infty, x]\subset (-\infty, y]\implies \P((-\infty, x])\leq \P_X((-\infty, y])$. Quindi $x\leq y$
+    \item Per 3, 4: serve simostrare la stababilitò della probabilità per limiti monotoni. Si noti il lemma seguente
+  \end{enumerate}
+}
+\mlenma{LEmma}{
+  Sia Sia (Ω, P) uno spazio di Probabilità
+  $A_n \uparrow A$: $A_n \subset A_{n+1}, \quad \bigcup^{+\infty}_{n+1}A_n = A, \quad A_i$ eventi
+
+  Allora 
+  \[
+    \lim_{n+\infty} \P(A_n) = \P(A)
+  \]
+  Inoltre
+  \[
+    A_n \downarrow A
+  \]
+}
+\pf{Dimostrazione}{
+  \begin{center}
+    \includegraphics{image.png}
+  \end{center}
+}
