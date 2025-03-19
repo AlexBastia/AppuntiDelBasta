@@ -641,3 +641,78 @@ che è collegato all'idea di nodo attivo
     e_i = \sum_{(j,i)\in BF(i)} x_{ji}- \sum_{i,j}x_{i,j}
   \end{equation}
 }
+
+L'idea centrale dell'algoritmo è quella di eliminare gli sbilanciamenti presenti nel prefusso corrente. In altre parole cercando di rendere i nodi attivi in nodi bilanciati in modo eliminando l'eccedenza "spostandola" verso i nodi più vicini, in modo \textit{iterativo} e \textit{locale}.
+
+Lo sbilanciamento presente in un nodo i viene eliminato spostando parte del flusso in eccesso, mediante due diverse azioni
+\begin{itemize}
+  \item \textbf{push forward}: viene in avanti, ossia attraverso un arco $(i, j)$, ogniqualvolta $x_{ij} < u_{ij}$ (quindi se $x_{ij}$ ha capacità residua)
+  \item \textbf{backward.}: viene in avanti, ossia attraverso un arco $(j, i)$, ogniqualvolta $x_{ij} > 0$
+\end{itemize}
+
+Tuttavia queste operazioni di push non possono essere sempre eseguite per evitare situazioni di loop o di complessità troppo elevata. Si utilizza un sistema di etichettature: intuitivamente si può trasferire del flusso in avanti o in dietro sse il nodo i ha un'altitudine (una quota) maggiore rispetto agli altri nodi verso i quali si vuole trasferire del flusso (1 o 0)
+
+Adesso fornirò l'algoritmo 
+\begin{algorithm}
+  $x\gets 0$\;
+  $x_{sj} \gets u_{sj} \forall(s, j) \in FS (s)$\tcp*{Faccio uscire tutto quello che posso da s, quindi, quello che esce da s è almeno pari al massimo}
+  $d\gets EtichettaturaValida(G)$\;
+  $d_s \gets n$\tcp*{la quota di esse assume il numero di nodi della rete}
+  \If{$\forall N\in G\backslash \{s,t\}, N$ è bilanciato}{
+    \Return $x$
+  }
+  \Foreach{$N \in G: N$ sbilanciato}{
+    $v\gets N$\;
+    \If{$\exists (v,j)\text{ ammissibile per }v$}{
+      $PushForward(v, j)$\;
+    }
+    \If{$\exists (i,v)$ ammissibile per $v$}{
+      $PushBackward(i, v)$\;
+    }
+    $Relabel(v)$\;
+  }
+\end{algorithm}
+\subsubsection{Correttezza e complessità}
+\thm{}{
+  L’algoritmo di Goldberg e Tarjan è corretto, e la sua complessità in tempo è $O(N^2 A)$ 
+}
+
+\section{Il Problema del Flusso di Costo Minimo: Algoritmi}
+\subsection{nozioni preliminari}
+Partiamo con la definizione di pseudoflusso
+\dfn{pseudoflusso}{
+  Uno \textbf{pseudoflusso} è un vettore $x$ che soddisfa i vincoli di capacità, ossia tale che
+  \begin{equation}
+    0\leq x_{ij}\leq u_{ij}\quad (i,j)\in A
+  \end{equation}
+}
+Da cui discende 
+\dfn{sbilanciamento}{
+  Se $x$ è uno pseudoflusso, definiamo sbilanciamento di un nodo $i$ rispetto a $x$ la quantità
+  \begin{equation}
+    e_x(i) = \sum_{(j,i)\in BS(i)} x_{ji} - \sum_{(i,j)\in FS(i)}x_{ij}- b_i
+  \end{equation}
+
+  In pratica $e_x(i)$ può essere visto come un vettore degli sbilanciamenti
+}
+
+\dfn{}{
+  Si ha inoltre che dato uno pseudoflusso $x$, i nodi sbilanciati rispetto a $x$ fanno parte di uno dei seguenti due insiemi 
+\[
+  \begin{aligned}
+    O_x = \{i\in N\mid e_x (i)> 0\}\\
+    D_x = \{i\in N \mid e_x (i) < 0\}
+  \end{aligned}
+\]
+I nodi in $O_x$ sono detti \textbf{nodi con eccesso di flusso}, mentre quelli in $D_x$ sono detti \textbf{nodi con difetto di flusso}
+
+}
+
+Come diretta conseguenza si ha che Se $O_x = D_x = \emptyset$, allora $x$ è un flusso.
+
+\dfn{sbilanciamento complessivo}{
+  Lo \textbf{sbilanciamento complessivo} di x è definito come:
+  \begin{equation}
+    g(x) = \sum_{i\in O_x} e_x (i) = - \sum_{j\in D_x} e_x(j)
+  \end{equation}
+}
