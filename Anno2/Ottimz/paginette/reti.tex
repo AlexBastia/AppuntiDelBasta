@@ -552,3 +552,92 @@ Miglioriamo il flusso corrente usando il grafo residuo con cammino aumentante. Q
 
 TODO: usa lemmi dati in precedenza per dimostrare che sta roba funzia
 
+\subsection{Algoritmo di Edmonds-Karp}
+L'algoritmo di Ford-Fulkerson è corretto ma può avere complessità esponenziale nel caso pessimo. L'algoritmo di Edmonds-Karp nasce proprio per rendere la complessità di Ford-Fulkerson polinomiale nel caso pessimo, l'idea è mantenere quindi l'algoritmo invariato, ma cambiare il modo in cui si scelgono i commini aumentanti nel grafo residuo $G_x$, imponendo che la ricerca del cammino aumentante venga fatta usando \textbf{BFS (Breadth - First Search)}
+
+\nt{
+  Grazie alla visita in ampiezza i cammini aumentanti saranno sempre cammini di lunghezza minima
+}
+
+\subsubsection{Correttezza}
+
+EK è trivialmente 
+
+\subsubsection{Complessità}
+
+Per valutarne la complisstià occorre procedere in questo modo, prima si procede osservando che, se in FF i cammini aumentanti sono di lunghezza minima, allora la distanza di un generico nodo $i$ dalla sorgente $s$ in $G_x$ non può diminuire, da ciò si deducie che il numero di iterazione di EK non può essere asintoticamnte più grande di $N\cdot A$. In particolare:
+
+Data una rete $G$, un flusso ammissibile $x$ e due nodi $,j$ in $G$, indiachiamo con $\delta_x (i,j)$ la distanza tra $i$ e $j$ nel grafo residuo $G_x$
+\mlenma{}{
+  Se, durante l'esecuzione di EK il flusso $y$ è ottenuto da $x$ tramite un’operazione di aumento del flusso in un cammino aumentante, allora per ogni nodo $i \in N$ , vale che
+  \[
+    \delta_x (s, i) \leq \delta_y (s, i)
+  \]
+}
+
+\pf{}{
+  oH
+}
+
+
+
+\thm{Teorema sulla complessità di Edmonds-Karp}{
+  Il numero di iterazioni di EK è $O(N A)$, quindi la sua complessità è $O(N A^2)$
+}
+
+Prima della dimostrazione si noti questa definizione
+\dfn{arco critico}{
+  Un arco $(i,j)$ è detto \textbf{critico} per un cammino aumentante $P$ se la sua capacità (ossia $u_{ij}-x_{ij}$ se è concorde o $x_{ji}$ se è discorde) è uguale a $\theta(P,x)$
+}
+\nt{
+  In ongi cammino aumentante, esiste almeno un arco critico
+}
+
+\dimostrazione{
+  Si procede nel contare quante volte un arco $(i,j)$ può diventare critico prima di scomparire definitivamente da grafo
+  \begin{itemize}
+    \item Quando $(i,j)$ diventa critico per la prima volta significa che nel grafo residuo:
+    \[
+      \delta_x (s,j) = \delta_x (s,i)+1
+    \]
+    Cioè, $j$ si trova a distanza 1 in più di $i$ dalla sorgente nel BFS.
+    \item Perché $(i,j)$ possa \textbf{riapparire} nel grafo residuo, deve succedere che il flusso da $i$ a $j$ diminuisca+
+    , cioè:
+    \begin{equation}
+        \delta_y(s, i) = \delta_y(s, j) + 1
+    \end{equation}
+    Ma allora:
+    \begin{equation}
+        \delta_y(s, i) = \delta_y(s, j) + 1 \geq \delta_x(s, j) + 1 = \delta_x(s, i) + 2
+    \end{equation}
+    \textbf{Quindi la distanza da $s$ aumenta di almeno 2} ogni volta che un arco diventa critico di nuovo.
+    
+    \item \textbf{Limite massimo sul numero di volte in cui un arco può diventare critico}:
+    \begin{itemize}
+        \item La distanza di un nodo da $s$ nel BFS \textbf{non può superare} $|N|$ (il numero di nodi).
+        \item Poiché la distanza aumenta \textbf{di almeno 2} ogni volta che $(i,j)$ diventa critico, un arco può essere critico \textbf{al più $O(N)$ volte}.
+    \end{itemize}
+
+  \end{itemize}
+}
+
+\subsection{Algoritmo di Goldberg-Tarjan}
+
+Un'altro approccio possibile che permette di scendere sotto la soglia di una complessità $O(V\,A^2)$ consiste nel rendere la costruzione del flusso massimo più locale    (in opposizione con FF ed EK, in cui ad ogni iterazione occorre procedere con un’analisi globale), un concetto fondamentale che sta dietro all'algoritmo è il concetto di \textbf{preflusso}
+
+\dfn{preflusso}{
+  Un \textbf{preflusso} è un vettore $x$ tale che:
+  \begin{equation}
+    \sum_{(j,i)\in BS(i)} x_{ji}-\sum_{(i,j)\in BS(i)}x_{ij}\geq 0, \quad i\in N\backslash \{s,t\}
+  \end{equation}
+
+  In altre parole, i vincoli di capacità sono soddisfatti, al contrario, quelli di bilanciamento possono non esserlo. \textbf{ciò che entra in un nodo è $\geq$ a quello che esce} 
+}
+
+che è collegato all'idea di nodo attivo
+\dfn{nodo attivo/bilanciato}{
+  Un nodo si dice \textbf{attivo} se il suo eccesso
+  \begin{equation}
+    e_i = \sum_{(j,i)\in BF(i)} x_{ji}- \sum_{i,j}x_{i,j}
+  \end{equation}
+}
