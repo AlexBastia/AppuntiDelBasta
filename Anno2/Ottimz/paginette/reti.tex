@@ -1,4 +1,3 @@
-% \begin{document}
 \chapter{Reti di Flusso}
 
 Innanzi tutto inziamo con alcune definzioni:
@@ -552,7 +551,6 @@ Miglioriamo il flusso corrente usando il grafo residuo con cammino aumentante. Q
 
 TODO: usa lemmi dati in precedenza per dimostrare che sta roba funzia
 
-<<<<<<< Updated upstream
 \subsection{Algoritmo di Edmonds-Karp}
 L'algoritmo di Ford-Fulkerson è corretto ma può avere complessità esponenziale nel caso pessimo. L'algoritmo di Edmonds-Karp nasce proprio per rendere la complessità di Ford-Fulkerson polinomiale nel caso pessimo, l'idea è mantenere quindi l'algoritmo invariato, ma cambiare il modo in cui si scelgono i commini aumentanti nel grafo residuo $G_x$, imponendo che la ricerca del cammino aumentante venga fatta usando \textbf{BFS (Breadth - First Search)}
 
@@ -646,25 +644,201 @@ che è collegato all'idea di nodo attivo
   \end{equation}
 }
 
-TODO: fai meglio sta parte qua'
+L'idea centrale dell'algoritmo è quella di eliminare gli sbilanciamenti presenti nel prefusso corrente. In altre parole cercando di rendere i nodi attivi in nodi bilanciati in modo eliminando l'eccedenza "spostandola" verso i nodi più vicini, in modo \textit{iterativo} e \textit{locale}.
 
-Quando $ e_i $ diventa 0 per tutti i nodi, allora il preflusso diventa un flusso ammissibile.
+Lo sbilanciamento presente in un nodo i viene eliminato spostando parte del flusso in eccesso, mediante due diverse azioni
+\begin{itemize}
+  \item \textbf{push forward}: viene in avanti, ossia attraverso un arco $(i, j)$, ogniqualvolta $x_{ij} < u_{ij}$ (quindi se $x_{ij}$ ha capacità residua)
+  \item \textbf{backward.}: viene in avanti, ossia attraverso un arco $(j, i)$, ogniqualvolta $x_{ij} > 0$
+\end{itemize}
 
-L'idea di GT e' di partire con dell'eccesso, e spostare questo o un pochino avanti verso $ s  $ o un pochino verso $ t $. Non in modo incontrollato (se no puoi andare avanti e indietro e rimanere in loop)
+Tuttavia queste operazioni di push non possono essere sempre eseguite per evitare situazioni di loop o di complessità troppo elevata. Si utilizza un sistema di etichettature: intuitivamente si può trasferire del flusso in avanti o in dietro sse il nodo i ha un'altitudine (una quota) maggiore rispetto agli altri nodi verso i quali si vuole trasferire del flusso (1 o 0)
 
-Nella seconda roba e' $ x_{ji} > 0 $. Poi ha detto una roba sulla gravita' che non ho capito
-\section{Algoritmi del Flusso di Costo Minimo}
+Adesso fornirò l'algoritmo 
+\begin{algorithm}
+  $x\gets 0$\;
+  $x_{sj} \gets u_{sj} \forall(s, j) \in FS (s)$\tcp*{Faccio uscire tutto quello che posso da s, quindi, quello che esce da s è almeno pari al massimo}
+  $d\gets EtichettaturaValida(G)$\;
+  $d_s \gets n$\tcp*{la quota di esse assume il numero di nodi della rete}
+  \If{$\forall N\in G\backslash \{s,t\}, N$ è bilanciato}{
+    \Return $x$
+  }
+  \ForEach{$N \in G: N$ sbilanciato}{
+    $v\gets N$\;
+    \If{$\exists (v,j)\text{ ammissibile per }v$}{
+      $PushForward(v, j)$\;
+    }
+    \If{$\exists (i,v)$ ammissibile per $v$}{
+      $PushBackward(i, v)$\;
+    }
+    $Relabel(v)$\;
+  }
+\end{algorithm}
+\subsubsection{Correttezza e complessità}
+\thm{}{
+  L’algoritmo di Goldberg e Tarjan è corretto, e la sua complessità in tempo è $O(N^2 A)$ 
+}
 
-La teoria dei cammini minimi successivi si trasmette bene da problemi di flusso massimo a problemi di costo minimo, grafi residui e capacita' rimangono uguali, ma e' diverso come determinimao il cammino aumentante di costo minimo dato che dobbiamo tenere in consideraizone il costo.
+\section{Il Problema del Flusso di Costo Minimo: Algoritmi}
+\subsection{nozioni preliminari}
+La teoria dei cammini minimi successivi si trasmette bene da problemi di flusso massimo a problemi di costo minimo. Grafi residui e capacita' rimangono uguali, ma e' diverso come determinimao il cammino aumentante di costo minimo dato che dobbiamo tenere in consideraizone il costo.
 
-Definiamo lo pseudoflusso minimale come lo pseudoflusso di costo minmo fra tutti gli stessi flussi con stesso vettore di sbilanciamento $ e_x $. E' un'invariante dell'algoritmo, dato che partiamo con uno pseudoflusso minimale, e questa proprieta' rimane sempre vera, che useremo per dimostrarne la correttezza. NON vale l'ammissibilita', che troviamo solo alla fine, infatti quando diventa ammissibile l'algoritmo termina ($ g_x = 0 $). Ovviamente, uno pseudoflusso minimale ammissibile sara' sicuramente ottimo. 
+Partiamo con la definizione di pseudoflusso
+\dfn{pseudoflusso}{
+  Uno \textbf{pseudoflusso} è un vettore $x$ che soddisfa i vincoli di capacità, ossia tale che
+  \begin{equation}
+    0\leq x_{ij}\leq u_{ij}\quad (i,j)\in A
+  \end{equation}
+}
+Da cui discende 
+\dfn{sbilanciamento}{
+  Se $x$ è uno pseudoflusso, definiamo sbilanciamento di un nodo $i$ rispetto a $x$ la quantità
+  \begin{equation}
+    e_x(i) = \sum_{(j,i)\in BS(i)} x_{ji} - \sum_{(i,j)\in FS(i)}x_{ij}- b_i
+  \end{equation}
 
-La presenza di un ciclo aumentante di costo negativo e' una controprova della minimalita'. Il lemma e' da leggere prima senza parentesi e poi solo con le parentesi. Dato che c'e' un not da entrambe i lati, possiamo dimostrare che not B implica not A per entrambe i versi.
+  In pratica $e_x(i)$ può essere visto come un vettore degli sbilanciamenti
+}
+Il nostro abbiettivo sarà trasformare lo pseudoflusso in un'altro pseudoflusso che risolva le "anomalie" del flusso di partenza, queste anomalie sono dei valori molto alti nel vettore di sbilanciamento
 
-Vediamo un teorema che ci permette di collegare due pseudoflussi usando la nozione di aumento del flusso lungo il cammino aumentante. 
+\dfn{}{
+  Si ha inoltre che dato uno pseudoflusso $x$, i nodi sbilanciati rispetto a $x$ fanno parte di uno dei seguenti due insiemi 
+\[
+  \begin{aligned}
+    O_x &= \{i\in N\mid e_x (i)> 0\} \text{ quindi lo sbilanciamento è strettamente positivo}\\
+    D_x &= \{i\in N \mid e_x (i) < 0\} \text{ quindi lo sbilanciamento è strettamente positivo}
+  \end{aligned}
+\]
+I nodi in $O_x$ sono detti \textbf{nodi con eccesso di flusso}, mentre quelli in $D_x$ sono detti \textbf{nodi con difetto di flusso}
 
-Dimostriamo che la minimalita' rimane vera durante tutta la durata dell'algoritmo.
+}
 
-Il theta che collega i due flussi x e y e' dato dalla somma di tutti i theta_i. Siccome i mu i sono tutti maggiori di 0, possiamo toglierli.
+  Con $O_x$ si va a segnalare che ciò che entra è inferiore a ciò che esce, al contrario $D_x$
+\nt{
+  Si noti che che se $O_x = N_x = \emptyset$ si ha che $x$ è un flusso, si può quindi intuire che occorrerà procedere sbarazzandoci di $O_x$ e $D_x$
+}
 
-Ora parliamo della cancellazzione di cicli, ovvero lavoriamo con flussi ammissibili.
+Un indice ancora più precise che indica quanto è lontano uno pseudoflusso con un flusso ammissibile è:
+
+\dfn{sbilanciamento complessivo}{
+  Lo \textbf{sbilanciamento complessivo} di x è definito come:
+  \begin{equation}
+    g(x) = \sum_{i\in O_x} e_x (i) = - \sum_{j\in D_x} e_x(j)
+  \end{equation}
+}
+
+\subsection{Cammini aumentanti}
+Per introdurre concetti futuri occorre "generalizzare" il concetto di grafi residui e cammini aumentanti, si ha che:
+\dfn{grafo residuo per pseudo flusso}{
+  Si definisce \textbf{grafo residuo per uno pseudoflusso} $x$ il grafo residuo $G_x$ definito in precedenza dove ogni arco ha un costo:
+  \begin{itemize}
+    \item $\forall (i,j)\in G_x$ il costo è $c_{ij}$
+    \item $\forall (i,j)\in G_x$ il costo è $-c_{ij}$
+  \end{itemize}
+}
+Poi si definisce il cammino aumentate 
+\dfn{cammino aumentante}{
+  Un \textbf{cammino aumentante} $P$ tra $i$ e $j$ in $G_x$ è un cammino semplice nell'arco residuo (tra $i$ e $j$)
+}
+
+ovviamente i suoi archi possono essere partizionati in $P^+$ e $P^-$ e la sua capiacità $\delta(P,x)$ è definita come al solito
+
+\dfn{ciclo aumentante}{
+  un cammino aumentante tra $i$ e $j$ viene anche detto \textbf{ciclo aumentante}
+}
+
+  Vorremmo quindi utilizzare questi cammini aumentati per diminuire lo sbilanciamento 
+
+  Dato uno pseudoflusso x e un cammino aumentante P , è
+  possibile inviare $0 \leq \theta \leq \theta(P, x)$ (capacità residua lungo un cammino $P$) unità di flusso lungo attraverso l’operazione $x(P, \theta)$, denoteremo in questo contesto $ x(P, \theta) $ (il flusso che ottengo da x pompando $\theta$ unità di flusso lungo $P$) verrà spesso indicato anche con $x \oplus P \theta$. Se P è un cammino aumentante da i a j in Gx , allora lo pseudoflusso $x(P, \theta)$ avrà gli stessi sbilanciamenti di x, tranne in i e $j$, infatti se io amunto il flusso che va da $i$  a $j$, tutti gli sbilanciamenti tutti i nodi non cuivolti rimarrano tali e quali, nei nodi che sono attraversati dal cammino tra i e j, ciò entrerà nei nodi sara la setessa quantità di ciò che uscire per definizione dell'operazione di update, ciò che entra viene aumentato e ciò che esce viene aumentato. pertanto lo sbilanciamento avrà solo effetti tra $i$ e $j$ (se sono uguali il vettore degli sbilanciamenti sarà inalterato). Si passi adesso alla def di costo
+  \dfn{
+    costo
+  }{
+    il costo di un cammino aumentate $P$ è definito come \begin{equation}
+      c(P) = \sum_{(i,j)\in P^+}c_{ij} - \sum_{(i,j)\in P^-}c_{ij}
+    \end{equation}
+  }
+  Si verifica facilmente che 
+  \[
+    c · (x(P, \theta)) = c · (x \oplus P \theta) = c · x + \theta c(P )
+  \]
+
+
+\thm{struttura degli Psudoflussi}{
+    Siano x e y due pseudoflussi qualunque. Allora esistono $k \leq  n + m$ cammini aumentanti P1 , . . . , Pk , tutti per x, di cui al più m sono cicli, tali che:
+    \begin{equation}
+      \begin{aligned}
+        z1 = x\\
+    z_{i+1} = zi \oplus \theta i Pi\\
+    z_{k+1} = y \quad 1\leq i\leq k\\
+    0 \leq  \theta_i \leq  \theta(P_i , z_i )\\
+      \end{aligned}
+    \end{equation}
+Inoltre, tutti i Pi hanno come estremi dei nodi in cui lo
+sbilanciamento di x è diverso da quello di y.
+  }
+
+\subsection{minimalità}
+\dfn{pseudoflusso minimale}{
+  si definisce pseduofluddo minimale è uno pseudoflusso x che
+  abbia costo minimo tra tutti gli pseudoflussi aventi lo stesso
+  vettore di sbilanciamento ex
+}
+
+Occorre tra gli algoritmi che vedremo preservare la minimalità evitando di aumentare il costo flusso indiscriminatamente, Un problema centrale è quindi quello di determinare quali
+siano le operazioni di aumento lecite e quali siano le
+proprietà sui flussi che esse garantiscano.
+
+\mlenma{}{Uno pseudoflusso (rispettivamente, un flusso ammissibile) è
+minimale (rispettivamente, ottimo) sse non esistono cicli
+aumentanti di costo negativo}
+\pf{Dimostrazione}{
+  \begin{itemize}
+    \item $\Rightarrow$ Per contrapposizione: se esiste un ciclo aumentante di costo negativo in
+    $G_x$, applicarlo fa diminuire il costo senza alterare lo sbilanciamento, in
+    contraddizione con la minimalità di $x$.
+
+    \item $\Leftarrow$ Ancora per contrapposizione: supponiamo che $x$ non sia minimale,
+    ossia che esista $y$ con $c_y < c_x$ e $e_y = e_x$. Allora per il teorema sugli
+    pseudoflussi possiamo scrivere $y = x \oplus \theta_1 P_1 \oplus \ldots \oplus \theta_n P_n$, dove $\theta_i > 0$
+    e ciascun $P_i$ è un ciclo. Da $c_y < c_x$ discende però che:
+    \[
+      c_x > c_x + \theta_1 c(P_1) + \ldots + \theta_n c(P_n)
+    \]
+    e quindi, è ovvio, che $c(P_i) < 0$ per qualche $i$.
+\end{itemize}
+}
+
+Si può inoltre dimostrare un altro teorema
+\thm{}{
+  Sia $x$ uno pseudoflusso minimale e sia $P$ un cammino
+aumentante rispetto ad $x$ avente costo minimo tra tutti i
+cammini che uniscono un nodo di $O_x$ ad un nodo di $D_x$. Allora,
+qualunque sia $\theta \leq \theta(x, P)$, abbiamo che $x(\theta, P) = x \oplus \theta P$ è
+ancora pseudoflusso minimale.
+
+
+
+}
+\pf{Dimostrazione}{
+  \begin{itemize}
+    \item Siano $s$ e $t$ i vertici che $P$ collega. Supponiamo che $\theta \leq \theta(x, P)$ e che $y$
+    sia un qualunque pseudoflusso con vettore di sbilanciamento $e_{x(\theta, P)}$.
+    \item Per il Teorema sulla struttura degli pseudoflussi esistono:
+    \begin{itemize}
+        \item $k$ cammini aumentanti $P_1, \ldots, P_k$ rispetto a $x$, tutti da $s$ a $t$;
+        \item $h$ cicli aumentanti $C_1, \ldots, C_h$ rispetto a $x$.
+    \end{itemize}
+    tali che $y = x \oplus \theta_1 P_1 \oplus \ldots \oplus \theta_k P_k \oplus \mu_1 C_1 \oplus \ldots \oplus \mu_h C_h$, (dove tutti gli
+    $\theta_i, \mu_j$ sono positivi).
+    \item Deve essere, per ragioni che hanno a che fare con lo sbilanciamento,
+    che $\sum_{1\leq i \leq k} \theta_i = \theta$.
+    \item Poiché $x$ è minimale, $c(C_i) \geq 0$.
+    \item Siccome $P$ ha costo minimo, $c(P_i) \geq c(P)$.
+    \item Di conseguenza:
+    \[
+    cy = cx + \theta_1 c(P_1) + \ldots + \theta_k c(P_k) + \mu_1 c(C_1) + \ldots + \mu_h c(C_h) \geq cx + \theta c(P) = cx(\theta, P).
+    \]
+\end{itemize}
+
+}
