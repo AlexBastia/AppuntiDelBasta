@@ -1,3 +1,4 @@
+% \begin{document}
 \chapter{Astrazione sul controllo: sottoprogrammi ed eccezioni}
 
 A cosa servono gli array? Il linguaggio assembly non ce li ha, ma riesce comunque a svolgere tutto quello che possono fare. Sono quindi un'\textit{astrazione} che rende la vita dei programmatori piu' facile. Questo e' l'obbiettivo dei linguaggi di programmazione di alto livello, che astrae sul controllo e sui dati. 
@@ -249,39 +250,116 @@ Per implementare il passaggio per nome, la coppia closure è formata, dal lato p
     \item un puntatore al testo di \texttt{exp}
     \item un puntatore di catena statica (sullo stack) al record di attivazione del blocco di chiamata
 \end{itemize}
-\subsection{Funzioni di ordine superiore}
-Alcuni linguaggi di programmazione consenstono di passare passare \textbf{funzioni come argomenti di altre funzioni} o  \textbf{restituire funzioni come risultato di una funzione}, è quindi lecito chiedersi come viene gestito lo scope in questo caso
+\section{Funzioni di ordine superiore}
+Alcuni linguaggi di programmazione consenstono di passare passare \textbf{funzioni come argomenti di altre funzioni} o  \textbf{restituire funzioni come risultato di una funzione}:
 
-\subsubsection{Funzione come argomento}
-Quando una funzione viene passata come argomento occorre realizzare lo scope con la \textit{closure}, ovvero l'accoppiata $\langle$\texttt{f, amb}$\rangle$, dove:
+\dfn{Funzione di ordine superiore}{
+  Funzione che accetta una funzione come parametro o che restituisce una funzione come risultato.
+}
+è quindi lecito chiedersi come viene gestito lo scope in questi casi
+
+\subsection{Funzione come argomento}
+Vediamo un esempio:
+\begin{lstlisting}[language = C]
+  A:{
+    int x = 1;
+    int f (int y){
+      return x+y; // Quale "x"?
+    }
+    void g(int h(int b)){
+      int x = 2;
+      return h(3) + x;
+    }
+    ...
+    B:{
+      int x = 4;
+      int z = g(f)
+    }
+  }
+\end{lstlisting}
+Notare che f utilizza una variabile non-locale x, che e' stata dichiarata piu' volte: nel blocco A, B e nella funzione g. Dobbiamo quindi capire in quale ambiente risolverla, proviamo ad applicare le regole di scope che abbiamo visto fin'ora:
+\begin{itemize}
+    \item se lo scope è statico: si usa \texttt{x} definita nel punto in cui \texttt{f} è stata dichiarata \texttt{(x=1)}
+    \item Se lo scope è dinamico: si potrebbe usare sia la \texttt{x} della chiamata \texttt{x=4}, sia la \texttt{x} di \texttt{g} (\texttt{x=2})
+\end{itemize}
+
+L'incertezza su quale ambiente non-locale scegliere e' dovuta dal fatto che e' possibile immaginare due implementazioni diverse della chiamata di una funzione passata come parametro (f) tramite il parametro formale (h):
+
+\begin{itemize}
+  \item La chiamata della funzione passata avviene nel blocco della funzione di ordine superiore (la chiamata h(3) chiama la funzione f all'interno di g)
+  \item La chiamata della funzione passata avviane nel blocco dove viene creato il legame fra parametro formale e attuale (la chiamata h(3) chiama la funzione f all'interno del blocco B)
+\end{itemize}
+
+Quindi notiamo che le regole di scope non sono abbastanza specifiche per determinare l'ambiente da utilizzare, dato che non e' chiaro da quale blocco si vuole che avvenga la chiamata di f (in questo caso lo scope statico ha solo un'opzione, ma vedremo che non e' sempre cosi'). Ci servono quindi delle ulteriori regole specifiche alle funzioni parametro, dette regole di \textit{binding}:
+
+\dfn{Binding}{
+  Data una funzione di ordine superiore g che ammette una funzione parametro f, in base al blocco dal quale vogliamo che f venga chiamato quando chiamiamo il parametro formale associato h, abbiamo due casi:
+  \begin{itemize}
+  \item \textit{Deep binding}, se la chiamata avviene nel blocco attivo nel momento in cui e' stato instaurato il legame fra parametro formale e attuale.
+  \item \textit{Shallow binding}, se la chiamata avviene nel blocco attivo nel momento in qui viene chiamato il parametro formale.
+  \end{itemize}
+}
+
+Quindi, applicando cio' all'esempio di prima:
+\begin{itemize}
+  \item Usando deep binding, si simula la chiamata di f dal blocco B, quindi con scope statico x = 1 e con scope dinamico x = 4.
+  \item Usando shallow binding, f viene chiamata dalla funzione g, quindi se si usa scope statico abbiamo comunque x = 1, ma con scope dinamico x = 2.
+\end{itemize}
+
+Vediamo in specifico l'implementazione delle due regole di binding applicate in linguaggi con scope dinamico e statico:
+\subsubsection{Binding con scope dinamico}
+Consideriamo prima il caso di un linguaggio con scope dinamico e shallow binding. Per definizione di shallow binding, vogliamo chiamare la funzione parametro f all'interno del corpo della funzione g. Per le regole dello scope dinamico, dobbiamo risolvere le variabili non-locali nell'ambiente immediatamente precedente alla chiamata, che quindi corrisponde all'ultimo record di attivazione sulla pila (quello di g). In questo caso quindi basta la normale implementazione di scope dinamico.
+
+\begin{center}
+  \includegraphics[width=0.3\textwidth]{img/2025-03-21-20-26-21.png}
+\end{center}
+\nt{
+  Ovviamemte puo' anche essere implementato lo scope dinamico con A-list o CRT.
+}
+
+Nel caso di deep binding con scope dinamico, ci serve l''ambiente del blocco attivo al momento del legame fra la funzione e il parametro formale. Ma in questo caso, l'RdA di questo blocco (che nell' esempio e' B) non sara' direttamente sotto a quello della funzione f quando viene chiamata, dato che ci sara' sicuramente almeno il frame della funzione di ordine superiore. Dobbiamo quindi passare un puntatore a questo ambiente insieme alla funzione. Tale struttura viene chiamata \textit{closure}, ovvero l'accoppiata $\langle$\texttt{f, amb}$\rangle$, dove:
+
 \begin{itemize}
     \item \texttt{f} è il puntatore alla funzione che vogliamo passare
-    \item \texttt{amb} è il puntatore in cui è stata definita
+    \item \texttt{amb} è il puntatore all'ambiente non-locale in cui è da valutare il corpo della funzione f
 \end{itemize}
 
-Si noti questo codice
-\begin{lstlisting}
-    int x=4; 
-    int z=0;
+\begin{center}
+  \includegraphics[width=0.3\textwidth]{img/2025-03-21-20-30-20.png}
+\end{center}
 
-    int f (int y) {
-        return x*y;  // Quale "x"?
-    }
+\subsubsection{Binding con scope statico}
 
-    void g ( int h(int n) ) {
-        int x;
-        x = 7;
-        z = h(3) + x;
+Anche nel caso generale dello scope statico e' necessario usare una closure per poter passare alla funzione di ordine superiore anche il puntatore di catena statica, che puo' essere calcolata al momento del legame fra funzione e parametro formale, come abbiamo visto studiando l'implementazione dello scope statico (\ref{calcoloCatenaStatica}).
+
+\begin{center}
+  \includegraphics[width=0.3\textwidth]{img/2025-03-21-20-10-23.png}
+\end{center}
+
+Puo' sembrare che le regole di scope statico siano rigide e che non servano le regole di binding per distinguere vari casi. In effetti per la maggior parte delle situazioni e' cosi, ma ci possono essere discussioni per quanto riguarda un caso specifico con funzioni ricorsive. Vediamo un esempio:
+
+\begin{lstlisting}[language=C]
+  A:{
+    void foo(int f(), int x){
+      int fie(){
+        return x;
+      }
+      int z;
+      if (x==0) z = f();
+      else foo(fie, 0);
     }
-    // ...
-    { 
-        int x = 5;
-        g(f);
+    int g(){
+      return 1;
     }
+    foo(g,1);
+  }
 \end{lstlisting}
-In questo caso vi sono 3 dichiarazioni di \texttt{x}:
-\begin{itemize}
-    \item se lo scope è statico: si usa \texttt{x} definita nel punto in cui \texttt{f} è stata dichiarata \texttt{(x=4)}
-    \item Se lo scope è dinamico: si potrebbe usare sia la \texttt{x} della chiamata \texttt{x=5}, sia la \texttt{x} di \texttt{g}
-\end{itemize}
 
+Il problema in questo caso e' che la funzione fie e' definita in due istanze diverse della funzione foo, alle quali sono associati due ambienti diversi: nel primo x = 1, nel secondo x = 0. Dato che possono essere considerate valide entrambi per le regole di scope, bisogna utilizzare le regole di binding. Usando shallow binding, consideriamo la definizione piu' vicina temporalmente; usando deep binding, scegliamo l'ambiente attivo al momento della prima definizione di fie.
+
+\begin{center}
+  \includegraphics[width=0.4\textwidth]{img/2025-03-21-20-41-11.png}
+  \includegraphics[width=0.4\textwidth]{img/2025-03-21-20-42-39.png}
+\end{center}
+
+% \end{document}

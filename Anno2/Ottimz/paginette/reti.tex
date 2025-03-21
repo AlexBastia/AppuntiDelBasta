@@ -552,6 +552,7 @@ Miglioriamo il flusso corrente usando il grafo residuo con cammino aumentante. Q
 
 TODO: usa lemmi dati in precedenza per dimostrare che sta roba funzia
 
+<<<<<<< Updated upstream
 \subsection{Algoritmo di Edmonds-Karp}
 L'algoritmo di Ford-Fulkerson è corretto ma può avere complessità esponenziale nel caso pessimo. L'algoritmo di Edmonds-Karp nasce proprio per rendere la complessità di Ford-Fulkerson polinomiale nel caso pessimo, l'idea è mantenere quindi l'algoritmo invariato, ma cambiare il modo in cui si scelgono i commini aumentanti nel grafo residuo $G_x$, imponendo che la ricerca del cammino aumentante venga fatta usando \textbf{BFS (Breadth - First Search)}
 
@@ -567,8 +568,10 @@ EK è trivialmente
 
 Per valutarne la complisstià occorre procedere in questo modo, prima si procede osservando che, se in FF i cammini aumentanti sono di lunghezza minima, allora la distanza di un generico nodo $i$ dalla sorgente $s$ in $G_x$ non può diminuire, da ciò si deducie che il numero di iterazione di EK non può essere asintoticamnte più grande di $N\cdot A$. In particolare:
 
-Data una rete $G$, un flusso ammissibile $x$ e due nodi $,j$ in $G$, indiachiamo con $\delta_x (i,j)$ la distanza tra $i$ e $j$ nel grafo residuo $G_x$
-\mlenma{}{
+\dfn{Distanza fra nodi di un grafo residuo}{
+Data una rete $G$, un flusso ammissibile $x$ e due nodi $i,j$ in $G$, indiachiamo con $\delta_x (i,j)$ la distanza tra $i$ e $j$ nel grafo residuo $G_x$
+}
+\mlenma{}{ \label{lem:BK_distAum}
   Se, durante l'esecuzione di EK il flusso $y$ è ottenuto da $x$ tramite un’operazione di aumento del flusso in un cammino aumentante, allora per ogni nodo $i \in N$ , vale che
   \[
     \delta_x (s, i) \leq \delta_y (s, i)
@@ -579,8 +582,6 @@ Data una rete $G$, un flusso ammissibile $x$ e due nodi $,j$ in $G$, indiachiamo
   oH
 }
 
-
-
 \thm{Teorema sulla complessità di Edmonds-Karp}{
   Il numero di iterazioni di EK è $O(N A)$, quindi la sua complessità è $O(N A^2)$
 }
@@ -590,7 +591,7 @@ Prima della dimostrazione si noti questa definizione
   Un arco $(i,j)$ è detto \textbf{critico} per un cammino aumentante $P$ se la sua capacità (ossia $u_{ij}-x_{ij}$ se è concorde o $x_{ji}$ se è discorde) è uguale a $\theta(P,x)$
 }
 \nt{
-  In ongi cammino aumentante, esiste almeno un arco critico
+  In ongi cammino aumentante, esiste almeno un arco critico (e ce ne possono essere piu' di uno). Sono quindi gli archi che spariscono quando viene aggiunto $ \theta(P, x) $.
 }
 
 \dimostrazione{
@@ -600,13 +601,13 @@ Prima della dimostrazione si noti questa definizione
     \[
       \delta_x (s,j) = \delta_x (s,i)+1
     \]
-    Cioè, $j$ si trova a distanza 1 in più di $i$ dalla sorgente nel BFS.
+      Cioè, $j$ si trova a distanza 1 in più di $i$ dalla sorgente nel BFS.\footnote{Questo e' perche' stiamo usando proprio la BFS, che garantisce che $ (s,i) $ e' un cammino minimo per arrivare a $ i $ e che il nodo $ j $ sia sicuramente piu' lontano da $ s  $ rispetto a $ i $ (altrimenti il cammino aumentante non passerebbe da $ i $). Quindi, dato che $ i $ e $ j $ sono collegati, il cammino minimo per arrivare da $ s  $ a $ j $ non sara' maggiore di $ \delta_x(s,i) + 1 $ e deve essere che $ \delta_x(s,j) \geq \delta_x(s,i) $. Dato che la distanza e' un numero intero, l'unico valore ammissibile e' questo.}
     \item Perché $(i,j)$ possa \textbf{riapparire} nel grafo residuo, deve succedere che il flusso da $i$ a $j$ diminuisca+
     , cioè:
     \begin{equation}
         \delta_y(s, i) = \delta_y(s, j) + 1
     \end{equation}
-    Ma allora:
+      Ma allora, per il lemma \ref{lem:BK_distAum}:
     \begin{equation}
         \delta_y(s, i) = \delta_y(s, j) + 1 \geq \delta_x(s, j) + 1 = \delta_x(s, i) + 2
     \end{equation}
@@ -623,7 +624,7 @@ Prima della dimostrazione si noti questa definizione
 
 \subsection{Algoritmo di Goldberg-Tarjan}
 
-Un'altro approccio possibile che permette di scendere sotto la soglia di una complessità $O(V\,A^2)$ consiste nel rendere la costruzione del flusso massimo più locale    (in opposizione con FF ed EK, in cui ad ogni iterazione occorre procedere con un’analisi globale), un concetto fondamentale che sta dietro all'algoritmo è il concetto di \textbf{preflusso}
+Un'altro approccio possibile che permette di scendere sotto la soglia di una complessità $O(V\,A^2)$ consiste nell'utilizzare sempre un algoritmo iterativo, ma locale rispetto al grafo, in quanto il flusso viene modificato solo in una parte del grafo (in opposizione con FF ed EK, in cui ad ogni iterazione occorre procedere con un’analisi globale), un concetto fondamentale che sta dietro all'algoritmo è il concetto di \textbf{preflusso}
 
 \dfn{preflusso}{
   Un \textbf{preflusso} è un vettore $x$ tale che:
@@ -631,7 +632,10 @@ Un'altro approccio possibile che permette di scendere sotto la soglia di una com
     \sum_{(j,i)\in BS(i)} x_{ji}-\sum_{(i,j)\in BS(i)}x_{ij}\geq 0, \quad i\in N\backslash \{s,t\}
   \end{equation}
 
-  In altre parole, i vincoli di capacità sono soddisfatti, al contrario, quelli di bilanciamento possono non esserlo. \textbf{ciò che entra in un nodo è $\geq$ a quello che esce} 
+  In altre parole, i vincoli di capacità sono soddisfatti, al contrario, quelli di bilanciamento possono non esserlo. \textbf{ciò che entra in un nodo è $\geq$ a quello che esce}. 
+}
+\nt{
+  Usiamo questa definizione di flusso piu' "lasca" dato che modificamndo il flusso di un arco solo difficilmente porta ad un flusso totale ammissibile.
 }
 
 che è collegato all'idea di nodo attivo
@@ -641,3 +645,26 @@ che è collegato all'idea di nodo attivo
     e_i = \sum_{(j,i)\in BF(i)} x_{ji}- \sum_{i,j}x_{i,j}
   \end{equation}
 }
+
+TODO: fai meglio sta parte qua'
+
+Quando $ e_i $ diventa 0 per tutti i nodi, allora il preflusso diventa un flusso ammissibile.
+
+L'idea di GT e' di partire con dell'eccesso, e spostare questo o un pochino avanti verso $ s  $ o un pochino verso $ t $. Non in modo incontrollato (se no puoi andare avanti e indietro e rimanere in loop)
+
+Nella seconda roba e' $ x_{ji} > 0 $. Poi ha detto una roba sulla gravita' che non ho capito
+\section{Algoritmi del Flusso di Costo Minimo}
+
+La teoria dei cammini minimi successivi si trasmette bene da problemi di flusso massimo a problemi di costo minimo, grafi residui e capacita' rimangono uguali, ma e' diverso come determinimao il cammino aumentante di costo minimo dato che dobbiamo tenere in consideraizone il costo.
+
+Definiamo lo pseudoflusso minimale come lo pseudoflusso di costo minmo fra tutti gli stessi flussi con stesso vettore di sbilanciamento $ e_x $. E' un'invariante dell'algoritmo, dato che partiamo con uno pseudoflusso minimale, e questa proprieta' rimane sempre vera, che useremo per dimostrarne la correttezza. NON vale l'ammissibilita', che troviamo solo alla fine, infatti quando diventa ammissibile l'algoritmo termina ($ g_x = 0 $). Ovviamente, uno pseudoflusso minimale ammissibile sara' sicuramente ottimo. 
+
+La presenza di un ciclo aumentante di costo negativo e' una controprova della minimalita'. Il lemma e' da leggere prima senza parentesi e poi solo con le parentesi. Dato che c'e' un not da entrambe i lati, possiamo dimostrare che not B implica not A per entrambe i versi.
+
+Vediamo un teorema che ci permette di collegare due pseudoflussi usando la nozione di aumento del flusso lungo il cammino aumentante. 
+
+Dimostriamo che la minimalita' rimane vera durante tutta la durata dell'algoritmo.
+
+Il theta che collega i due flussi x e y e' dato dalla somma di tutti i theta_i. Siccome i mu i sono tutti maggiori di 0, possiamo toglierli.
+
+Ora parliamo della cancellazzione di cicli, ovvero lavoriamo con flussi ammissibili.
