@@ -216,27 +216,19 @@
  Ora che sappiamo trovare l'evento generato da una variabile aleatoria e un sottoinsieme del suo codominio, possiamo calcolare la probabilita' di tale evento: 
 
  \dfn{Distribuzione di una VA}{
-   Dati $ (\Omega, \mathbb{P}) $ e $ X: \Omega\to \mathbb{R} $ VA, chiamiamo legge di $ X $ la funzione (che dimostreremo essere una probabilita'):
+   Dati $ (\Omega, \mathbb{P}) $ e $ X: \Omega\to \mathbb{R} $ VA, chiamiamo legge di $ X $ la funzione:
    \begin{align*}
      \mathbb{P}_X: \powerset(\mathbb{R}) &\to [0,1]\\
      B &\mapsto \mathbb{P}(X \in B)
    \end{align*}
    Si scrive $ X \sim \mathbb{P}_X $ e si legge "$ X $ ha legge $ \mathbb{P}_X $".
  }
- La legge di una VA ne calcola quindi, dato un insieme di valori reali, la probabilita' che $ X(\omega) $ appartenga a tale intervallo.
-
- \nt{
-   Conoscere $ \mathbb{P}_X $ $ \forall B \subseteq \mathbb{R} $ equivale a conoscere $ \mathbb{P}_X $ $ \forall I $ intervallo di $ \mathbb{R} $. (dato che ogni intervallo e' un sottoinsieme). 
+ \mprop{}{
+   La distribuzione $ \mathbb{P}_X $ di una variabile aleatoria $ X: \Omega \to E $ e' una probabilita' sull'insieme $ E $. (per noi $ E $ sara' quasi sempre $ \mathbb{R} $).
  }
+ La legge di una VA ne calcola quindi, dato un insieme di valori reali, la probabilita' che $ X(\omega) $ appartenga a tale intervallo. Quindi, anche senza conoscere la funzione $ X $, se conosciamo la sua distribuzione sappiamo quali valori puo' assumere e con quale probabilita'.
 
- Dimostreremo che la legge $ \mathbb{P}_X(\cdot) $ e' caratterizzata dalla funzione di \textit{ripartizione}
-  \begin{align*}
-    F_X: \mathbb{R} &\to [0,1]\\
-    n &\mapsto \mathbb{P}_X((-\infty, n]) = \mathbb{P}(\{X \leq n\})
-  \end{align*}
-
-  Quindi per studiare il comportamento daela variabile aleatoria mi devo studiare la probabilita' che $ X \leq x $ per ogni $ x \in \mathbb{R} $ (forse)
-
+ Andiamo a costruire le distribuzioni delle VA "banali" studiate precedentemente:
   \begin{itemize}
   \item Variabili Costanti:
 
@@ -263,15 +255,15 @@
       \Omega & 1, 0 \in B\\
       \emptyset & 1, 0 \notin B\\
       A & 1 \in B \land 0 \notin B\\
-       & 
+      A^{c} & 1 \notin B \land 0 \in B
       \end{cases}
       \]
       \[
         P_X(B) = P(X \in B) = \begin{cases}
-        1 & \\
-        0 & \\
-          P(A) & \\
-          1-P(A) & 
+        1 & 1,0 \in B\\
+        0 & 1,0 \notin B\\
+          P(A) & 1 \in B \land 0 \notin B\\
+          1-P(A) & 1 \notin B \land 0 \in B
         \end{cases}
       \]
       Questa e' una probabilita' discreta, quidni e' possibile crearla usando una combinazione lineare di delta di Dirac: 
@@ -283,156 +275,540 @@
         P_X(\cdot) = P(A)\delta_1(\cdot) + (1-P(A))\delta_0(\cdot)
       \]
       Distribuzione (o legge) di Bernulli. Se la variabile aleatoria diventa piu' complicata, aumentano il numero di delta.
-  \end{itemize}
-
-  $ P_X $ contiene tutte le informazioni di $ X $, ma e' una funzione di insiemi, quindi e' complicata da calcolare.
-  \nt{
-    $ B \subseteq \mathbb{R} $, ma e' un sottoinsieme di reali, ...
-  }
-  \dfn{}{
-    $ (\Omega, P) $ SP $ X: \Omega \to \mathbb{R} $, si chiama funzione di \textit{ripartizione} di $ X $:
-    \[
-      F_X: \mathbb{R} \to [0,1]
-    \]
-    \[
-      x \to P_X((-\infty, x])
-    \]
-  }
-  Ricostruisco 
-
-  $ P_X(B) = \delta_a(B) $, $ F_X(x) = P_X((-\infty, x]) = \delta_a(\{-\infty, x]) $
-  \[
-  = \begin{cases}
-  1 & x \geq a\\
-  0 & x < a
-  \end{cases}
-  \]
-Grafico
-
-$ P_X(B) = P(A)\delta_1 + (1-P(A))\delta_0 $
-\[
-  F_X(x) = P_X((-\infty, x]) = P(A)\delta_1((-\infty, x]) +...
-\]
-\[
-= \begin{cases}
-1 & x \geq 1\\
-  1-P(A) & x < 0\\
- 0 & x \in [0, 1)
-\end{cases}
-\]
-Se io ho una qulunque funzione che rispetta tali proprieta', allora e' di ripartizione
-
-\thm{}{
-  $ (\Omega, P) $ SP, $ X: \Omega \to \mathbb{R} $, $ F_X $ fdr, allora:
-  \begin{itemize}
-  \item $ F_X $ e' monotona crescente
-  \item $ F_X $ e' continua a destra, ovvero $ \lim_{y\to x^{+}} $
-  \item 
-  \end{itemize}
-
-  Vale anche il viceversa: se $ G: \mathbb{R} \to [0,1] $ verifica 1,2,3,4, allora
-  \[
-    \exists(\Omega, P).\ X:\Omega\to \mathbb{R}.\ G \equiv F_X
-  \]
-}
-\mlenma{}{
-  Sia $ (\Omega, P) $ SP
-  $ "A_m" \up A = A_n \subseteq A_{n+1}, \bigcup_{n=1}^{\infty} A_n = A $
-
-  allora $ \lim_{n\to+\infty} P(A_n) = P(A) $
-
-  Stessa roba per monotona al contrario
-}
-\pf{}{
-  Prima parte:
-  \begin{itemize}
-    \item Usiamo la monotonia della probabilita' $ (-\infty, x] \subseteq (-\infty, y] $
-  \item Dobbiamo passare al limite dentro la probabilita' per 2,3,4. Serve la stabilita' della probabilita' per limiti monotoni
-  \end{itemize}
-}
-
-La probabilita' di tutti gli intervalli si scrivono in termini di $ F_X $:
-\[
-  P_X((a,b]) = F_X(b) - F_X(a)
-\]
-\section{Variabili Aleatorie Discrete}
-Possono assumere un numero finito o numerabile di valori
-\dfn{}{
-  $ X: \Omega  $
-}
-
-
-% \end{document}
-
 \dfn{Distribuzioni di Bernulle}{
   $\P_x (\cdot) = \P(A) \delta_1(\cdot) + (1-\P(A))\delta_0(\cdot)$
 }
+  \end{itemize}
 
-\nt{
-  $B\subseteq \mathbb{R}$
-  Conoscere $\P_x(B)\forall B\in \mathbb{R}\iff \P_x(I), \forall I$ interveòòa reaòe 
-}
+  \section{Funzione di Ripartizione}
+  Molto bella la distribuzione di una VA, ma prende come input insiemi (sottoinsiemi di $ \mathbb{R} $) e questo ci complica un po' la vita. Vediamo una caratterizzazione piu' semplice che ci aiutera soprattutto per le VA assolutamente continue:
+  \dfn{Funzione di Ripartizione}{
+    Dati $ (\Omega, P) $ SP e una VA $ X: \Omega \to \mathbb{R} $, si chiama \textit{funzione di ripartizione} o \textit{CDF} di $ X $ la funzione:
+    \begin{align*}
+      F_X: \mathbb{R} &\to [0,1]\\
+      x &\mapsto P_X((-\infty, x]) = P(X \leq x)
+    \end{align*}
+  }
+ Diamo un'occhiata a come sono definite le funzioni di ripartizione per i soliti due casi "banali" di VA:
+ \begin{itemize}
+ \item VA Costanti:
 
-\dfn{Funzione di ripartizione}{
-  Sia $(\Omega, \P)$ uno spazione di probabilita e $X:\Omega \to \mathbb{R}$ una variabile aleatoria. È definita \textbf{funzione di ripartizione} o \textbf{CDF} di $X$ la funzione
+   $ X(\omega) = a \implies P_X(B) = \delta_a(B) $, quindi la relativa funzione di ripartizione sara': 
   \[
-    F_X : \mathbb{R}\to [0,1]
+  F_X(n) = P_X((-\infty, n]) = \delta_a(\{-\infty, n]) = \begin{cases}
+  1 & n \geq a\\
+  0 & n < a
+  \end{cases}
   \]
-  Deginita da
-  \begin{equation}
-    F_X(x)=\P(X\leq x) = \P_X((-\infty,x]), \quad \forall x\in \mathbb{R}
-  \end{equation}
-  Per dire che $X$ ha una funzione di ripartizione $F_X$ scriviremeo 
+    \begin{center}
+      \includegraphics[width=0.5\textwidth]{img/2025-03-31-17-00-15.png}
+    \end{center}
+\item VA Indicatrici:
+
+  $ X(\omega) = \mathbb{1}_A \implies P_X(B) = P(A)\delta_1(B) + (1-P(A))\delta_0(B) $, quindi la relativa funzione di ripartizione sara':
+    \[
+      F_X(x) = P_X((-\infty, x]) = P(A)\delta_1((-\infty, x]) + (1-P(A))\delta_0((-\infty, x])
+    \]
+     \[
+     = \begin{cases}
+     1 & x \geq 1\\
+       1-P(A) & 0 \leq x < 1\\
+     0 & x < 0
+     \end{cases}
+     \]
+     \begin{center}
+       \includegraphics[width=0.5\textwidth]{img/2025-03-31-17-13-24.png}
+     \end{center}
+ \end{itemize}
+
+Teorema datoci dalla Shlein, che ci caratterizza la funzione di ripartizione:
+\thm{Teorema di Teodoro}{
+  $ (\Omega, P) $ SP, $ X: \Omega \to \mathbb{R} $, $ F_X $ fdr, allora:
+  \begin{enumerate}
+  \item $ F_X $ e' monotona crescente
+  \item $ F_X $ e' continua a destra, ovvero $ \forall n \in \mathbb{R}.\ \lim_{y\to x^{+}} F_X(y) = F_X(n) $
+  \item  $ \lim_{n \to +\infty} F_X(n) = 1 $
+  \item $ \lim_{n\to -\infty} F_X(n) = 0 $
+  \end{enumerate}
+
+  Vale anche il viceversa: se $ G: \mathbb{R} \to [0,1] $ verifica 1,2,3,4, allora
   \[
-    X\sim F_X
+    \exists(\Omega, P), X:\Omega\to \mathbb{R}.\ G \equiv F_X
   \]
 }
-
-\nt{
-  $F_X$ determina completamente la distribuzione di $X$_
+\pf{}{
   \begin{itemize}
-    \item  se conosco $P_X$ allora conosco $F_X$
-    \item se conosco $F_X$ allora conosco $\P_X(B)$ per ogni sottoinsieme di $B$
+    \item 1) Devo dimostrare che $ \forall x,y \in \mathbb{R}, x < y.\ F_X(x) \leq F_X(y) $, ovvero che $ P_X((-\infty, x]) \leq P_X((-\infty, y]) $. Dato che $ (-\infty, n] \subset (-\infty, y] $ e col fatto che $ P_X $ e' una probabilia', e' dimostrabile usando la proprieta' di monotonia delle probabilita'.
+    \item 2) 3) 4) Per queste dimostrazioni serve dimostrare prima la \textit{Stabilita' della Probabilita' per limiti monotoni}:
   \end{itemize}
 }
-La Shlein ci da questo teorema
-\thm{Teorema di Teodoro}{
-  Sia $(Ω, P)$ uno spazio di probabilit`a e $X : Ω → R$ una variabile aleatoria. La funzione di ripartizione $F_X$ di $X$ verifica le seguenti propriet`a:
-  \begin{enumerate}
-    \item $F_X$ è monotona crescente (non necessariamente strettamente)
-    \item $F_X$ è continua a destra: 
+\mlenma{}{
+  Sia $ (\Omega, P) $ SP
+  \begin{itemize}
+    \item Data $ "A_x \uparrow A" $, ovvero una successione di eventi tali che $ A_x \subset A_{x+1}, \bigcup_{x=1}^{+\infty} A_x = A $, allora:
+      \[
+        \lim_{x\to+\infty} P(A_x) = P(A)
+      \]
+    \item Data $ "A_x \downarrow A" $, ovvero una successione di eventi tali che $ A_x \supset A_{x+1}, \bigcap_{x=1}^{+\infty} A_x = A $, allora:
+      \[
+        \lim_{x\to+\infty} P(A_x) = P(A)
+      \]
+  \end{itemize}
+
+  Stessa roba per monotona al contrario
+}
+  Dato questo lemma, che non dimostriamo perche' si, possiamo concludere la dimostrazione precedente:
+  \pf{}{
+    3) Dobbiamo dimostrare che $ \lim_{x\to+\infty} P_X((-\infty, x]) = 1 $. Usiamo il lemma appena introdotto, dato che se poniamo $ A_x = (-\infty, x) $, possiamo creare una successione tale che $ A_x \uparrow \mathbb{R} $, per cui $ \lim_{x\to+\infty} P_X(A_x) = P_X(\mathbb{R}) = 1 $.
+
+    Gli altri punti sono lasciati al DarioDestroyer04 come compito per casa
+  }
+
+    $ F_X $ e' continua a destra, quindi $ \lim_{y \to x^{+}}F_X(y) = F_X(x) = P(X \leq x)$. Inoltre si puo' dimostrare (usando il lemma) che esiste anche il limite sinistro e vale:
     \[
-      \lim_{y\to x+}F_X (y) = F_X(x)\forall x\in \mathbb{R}
+      \lim_{y\to x^{-}} F_X(y) = P(X < x)\ (F_X(x^{-}))
     \]
-    \item $F_X_{x\to - \infty} F_X(x)=0$
-    \item $F_X_{x\to + \infty} F_X(x)=1$
+    Inoltre, sappiamo che:
+    \[
+      \underbrace{P(X \leq x)}_{F_X(x)} = \underbrace{P(X < x)}_{F_X(x^{-})} + \underbrace{P(X = x)}_{\Delta F_X(x)}
+    \]
+    \begin{center}
+      \includegraphics[width=0.5\textwidth]{img/2025-03-31-19-35-15.png}
+    \end{center}
 
-  \end{enumerate}
+    Quindi possiamo calcolare la probabilita' di ogni intervallo in termini della $ F_X $:
+    \begin{itemize}
+      \item $ (a,b] $: $ P_X((a,b]) = F_X(b) - F_X(a) $
+      \item $ [a,b) $: $ P_X([a,b)) = F_X(b^{-}) - F_X(a^{-}) $
+      \item $ (a,b) $: $ P_X((a,b)) = F_X(b^{-}) - F_X(a) $
+      \item $ [a,b] $: $ P_X([a,b]) = F_X(b) - F_X(a^{-}) $
+    \end{itemize}
 
-  Vale viceversa: se $G: \mathbb{R}\to [0,1]$ verifica 1.2.3.4. $\implies \exists (\Omega, \P)\land \exists X, G=F_X$ 
+ \nt{
+   Conoscere $ \mathbb{P}_X $ $ \forall B \subseteq \mathbb{R} \iff$  conoscere $ \mathbb{P}_X $ $ \forall I $ intervallo di $ \mathbb{R} $, dato che:
+   \begin{itemize}
+   \item Ogni intervallo e' anche un'insieme
+    \item Dato un sottoinsieme di $ \mathbb{R} $, questo puo' sempre essere scritto come unione di intervalli
+   \end{itemize}
+
+   Quindi, $F_X$ \textbf{determina completamente la distribuzione} di $X$, dato che ci da la distribuzione per tutti gli intervalli, e quindi per tutti gli insiemi.
+ }
+
+ \section{Variabili Aleatorie Discrete}
+
+ Dato che ci stiamo concentrando sulle probabilita' discrete, ci conviene applicare la definizione \ref{dfn:probDiscr} anche per le VA:
+ \dfn{Variabile Aleatoria Discreta}{
+   Una VA $ X: \Omega \to E $ definita su uno spazio di probabilita' $ (\Omega, P) $ e' detta \textit{discreta} se esiste un sottoinsieme $ S_X \subset Im(X) $ finito o numerabile tale che:
+   \[
+     P_X(S_X) \coloneq P(X \in S_X) = 1
+   \]
+   Quindi un VA e' discreta sse la sua distribuzione e' una probabilita' discreta.
+
+   Il sottoinsieme $ S_X $ e' chiamato supporto di $ X $.
+ }
+
+ \nt{
+   Se $ \Omega $ o $ E $ sono finiti o numerabili, allora una VA definita su di essi sara' sicuramente discreto.
+ }
+
+ \subsection{Caratterizzazione delle VA discrete}
+ Che relazione esiste tra $ p_X $ e la distribuzione di $ X $ ($ P_X $)? E tra $ p_X $ e $ F_X $?
+ \subsubsection{Distribuzione}
+ Essendo $ P_X $ una probabilita' discreta, possiamo definirla usando la Delta di Dirac:
+
+ Sia $ S_X = \{x_1,...,x_n\} $ il supporto di $ X $, allora $ \exists p_1,...,p_n \in (0,1], \sum_{i=1}^{n} p_i = 1 $ tale che:
+ \[
+   \forall B \subseteq E.\ P_X(B) = \sum_{i=1}^{n} p_i \delta_{x_i}(B)
+ \]
+ Per definizione di $ P_X $, sappiamo che $ \forall x \in E $:
+ \[
+   P_X(\{x\}) = P(X = x)
+ \]
+ Per cui, mettendo insieme le due definizioni:
+ \[
+   \forall x_i \in S_X.\ P_X(\{x_i\}) = \sum_{j=1}^{n} p_j \underbrace{\delta_{x_j}(\{x_i\})}_{\text{vale 1 solo quando } j = i} = p_i = P(X = x_i)
+ \]
+ Quindi $ \forall x_i \in S_X.\  p_i = P(X = x_i) $ e possiamo dire che $ X $ e' una VA discreta se e solo se:
+ \[
+   \forall B \subseteq E.\ P_X(B) = \sum_{i=1}^{n} P(X = x_i)
+ \]
+Dato che sara' una scrittura ricorrente, definiamo:
+\dfn{Densita' discreta di una VA}{
+  Data una VA discreta $ X $, si definisce \textit{densita' discreta} di $ X $ la funzione:
+  \begin{align*}
+    p_X: \mathbb{R} &\to [0,1]\\
+    x &\mapsto P_X(\{x\}) = P(X = x)
+  \end{align*}
 }
-\pf{Dimostrazione}{
-  Dimostro i veri punti:
+
+Possiamo quindi scrivere
+\[
+  \forall B \subseteq E.\ P_X(B) = \sum_{i=1}^{n} p_X(x_i)
+\]
+ 
+\subsubsection{Funzione di Ripartizione}
+Ricordiamo che possiamo esprimere $ F_X(x) $ come $ P_X((-\infty, x]) $ per tutti i valori di $ x $. Quindi, per quanto abbiamo detto sopra:
+\[
+  F_X(x) = \sum_{x_i \in (-\infty, x]} p_X(x_i)\delta_{x_i}((-\infty, x]) \quad \forall x \in \mathbb{R}
+\]
+Ma se $ x_i \notin S_X $, allora $ p_X(x_i) = 0 $, quindi:
+\begin{itemize}
+  \item Se $ \forall x_i \in S_X.\ x < x_i $, allora $ F_X(x) = 0 $
+  \item Altrimenti, $ F_X(x) = \sum_{x_i \in S_X.\ x_i \leq x} p_X(x_i) $
+\end{itemize}
+Cio' significa che il valore della fdr cambia solo nei punti del supporto, dove abbiamo dei "salti" del valore $ p_X(x_i) $, mentre del resto e' costante.
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2025-04-02-10-14-30.png}
+\end{center}
+\subsubsection{Conclusioni}
+\thm{Caratterizzazione della distribuzione e fdr di una VA discreta tramite la sua densita'}{
+  Sia $ X $ una VA su $ (\Omega, P) $, le seguenti affermazioni sono equivalenti:
   \begin{enumerate}
-    \item $(-\infty, x]\subset (-\infty, y]\implies \P((-\infty, x])\leq \P_X((-\infty, y])$. Quindi $x\leq y$
-    \item Per 3, 4: serve simostrare la stababilitò della probabilità per limiti monotoni. Si noti il lemma seguente
+  \item $ X $ e' VA discreta con supporto $ S_X $ e densita' $ p_X $
+  \item $ X $ ha fdr $ F_X $ \textbf{costante a tratti}: e' costante tranne nei punti di $ S_X $, in cui $ F_X $ "salta" con ampiezza
+    \[
+      F_X(x_i) - F_X(X_i^{-}) = p_X(x_i)
+    \]
+      Quindi $ F_X $ e' data dalla formula:
+      \[
+        F_X(x) = \sum_{x_i \in S_X.\ x_i \leq x} p_X(x_i),\quad \forall x \in \mathbb{R}
+      \]
+  \item La legge di $ X $ e':
+    \[
+      P_X(B) = \sum_{i} p_X(x_i)\delta_{x_i}(B) \quad B \subset \mathbb{R}
+    \]
   \end{enumerate}
 }
-\mlenma{LEmma}{
-  Sia Sia (Ω, P) uno spazio di Probabilità
-  $A_n \uparrow A$: $A_n \subset A_{n+1}, \quad \bigcup^{+\infty}_{n+1}A_n = A, \quad A_i$ eventi
 
-  Allora 
+\section{Indici di sintesi di una distribuzione}
+
+La distribuzione di una VA (discreta ?) puo' essere descritta in maniera sintetica tramite due quantita' numeriche: 
+\begin{itemize}
+\item La \textit{media}, che indica il valore "centrale" della distribuzione, ovvero il valore medio di $ X $ pesato con le probabilita' di ogni valore
+\item La \textit{varianza}, che e' un indice di dispersione, ossia ci dice quanto quanto la distribuzione si concentra attorno alla media
+\end{itemize}
+
+\subsection{Media o valore atteso}
+\dfn{Valore Atteso}{
+  Sia $ X: \Omega \to \mathbb{R} $ VA discreta, si definisce \textit{valore atteso} di $ X $ come:
   \[
-    \lim_{n+\infty} \P(A_n) = \P(A)
-  \]
-  Inoltre
-  \[
-    A_n \downarrow A
+    \mathbb{E}[X]\coloneq \sum_{x \in S_X} x \cdot p_X(x)
   \]
 }
-\pf{Dimostrazione}{
-  \begin{center}
-    \includegraphics{image.png}
-  \end{center}
+\thm{Stabilita' delle VA con composizione}{
+  Se X VA discreta e $ h: \mathbb{R} \to \mathbb{R} $:
+  \[
+    \mathbb{E}[h(X)] = \sum_{i} h(x_i)p_X(x_i)
+  \]
 }
+\mprop{Linearita' del Valore atteso}{
+  Siano $ X,Y $ VA discrete, allora $ \forall \alpha, \beta \in \mathbb{R} $:
+  \[
+    \mathbb{E}[\alpha \cdot X + \beta \cdot Y] = \alpha \mathbb{E}[X] + \beta \mathbb{E}[Y]
+  \]
+}
+\pf{}{
+  Il bro fa una dimostrazione prendendo un solo caso, non ho capito
+}
+
+\subsection{Varianza}
+\dfn{Varianza}{
+  Sia $ X: \Omega \to \mathbb{R} $ una VA discreta con supporto $ S_X $. La \textit{varianza} di $ X $ e' definita come:
+  \[
+    \underbrace{var(X)}_{\sigma_X^2} \coloneq \mathbb{E}[(X - \mathbb{E}[X])^2]
+  \]
+  Si indica anche con $ \sigma^2 $.
+}
+\nt{
+  \[
+    var(X) = \sum_{x \in S_X} (x - \mathbb{E}[X])^2 \cdot p_X(x)
+  \]
+}
+\nt{
+  \begin{align*}
+    \mathbb{E}[X - \mathbb{E}[X]] &= \mathbb{E}[X] - \mathbb{E}[\mathbb{E}[X]]\\
+    &= \mathbb{E}[X] - \mathbb{E}[X] = 0
+  \end{align*}
+}
+
+\dfn{Deviazione standard}{
+  Si definisce \textit{deviazione standard} la quantita':
+  \[
+    \sigma(X) \coloneq \sqrt{var(X)}
+  \]
+}
+\nt{
+  Se $ X $ e' una grandezza fisica espressa in una certa unita di misura, la deviazione standard ha il vantaggio di avere la stessa unita' di misura.
+}
+\mprop{}{
+  \begin{align*}
+    var(X) &= \mathbb{E}[X^2] - (\mathbb{E}[X])^2\\
+    &= \sum_{x \in S_X} x^2 \cdot p_X(x) - \left( \sum_{x \in S_X} x \cdot p_X(x) \right)^2
+  \end{align*}
+}
+\section{Distribuzioni notevoli di VA discrete}
+
+\subsection{Distribuzione uniforme discreta}
+
+$ S_X = \{x_1,...,x_n\} $ finito -> tabella per densita':
+ x x1 x2 ... xn //
+ px 1/n 1/n ... 1/n 1
+
+$ \forall x_i \in S_X.\ p_X(n) = \frac{1}{n} $
+
+$ x \sim Unif(\{x_1,...,x_n\}) $
+
+$ E[x] = \sum_{x_i \in S_X} x_i p_X(x_i) = \sum_{x_i \in S_X} x_i \frac{1}{n} = \frac{1}{n} \sum_{x_i \in S_X} x_i $
+
+$ var(X) = \sum_{x_i \in S_X} (x_i - \mathbb{E}[X])^2p_X(x_i) = \frac{1}{n}\sum_{x_i \in S_X} (x_i - \mathbb{E}[X])^2 $
+
+\subsection{Distribuzione di Bernulli}
+$ S_X = \{0,1\} $
+
+Le VA di Bernoulli sono tutte e sole le VA indicatrici:
+
+$ X = \mathbb{1}_A,\ A \subset \Omega $
+\[
+  X(\omega) = \begin{cases}
+  0 & w \notin A\\
+  1 & w \in A
+  \end{cases}\quad X \sim B(p)
+\]
+$ p_X(x_i) = ? $
+
+$ \mathbb{E}[X] = \sum_{x_i \in S_X} x_i p_X(x_i) = 0 \cdot (1-p) + 1 \cdot p = p $
+
+$ var(X) = \mathbb{E}[X^2] - (\mathbb{E}[X])^2 = p - p^2  = p(1-p) $
+
+\subsection{Distribuzione binomiale}
+Estende Bernulli (n prove indipendenti di Bernulli) quindi sommiamo quante di queste prove hanno successo. Dato che ogni prova puo' essere 0 o 1, il supporto della VA che ci dice quanti successi ci sono stati sono i naturali da 0 a n.
+Interpretiamo la roba di combinatoria come legge di una roba (eh?)
+
+$ n $ prove indipendenti di Bernuoulli con prob. di successo $ p $.
+\[
+X_i = \mathbb{1}_{E_i} = \begin{cases}
+1 & \text{successo all'i-esima prova}\\
+0 & \text{altrimenti}
+\end{cases}
+\]
+$ y \coloneq \sum_{i=1}^{n} X_i\ \sim Bin(n,p) $
+
+$ S_y = \{0,1,...,n\} $ finito
+
+$ p_y(y_i) = P(y = y_i) = ? $
+
+$ p_y(k) = \binom{n}{k} p^{k}(1-p)^{n-k} $, nota che se $ p = 1/2 $, allora e' $ (1/2)^{n} $ (formula delle prove ripetute indipendenti)
+
+Possiamo fare tabellonski
+
+\begin{align*}
+  \mathbb{E}[y] &= \sum_{i} y_i p_y(y_i)\\
+  &= \sum_{k=0}^{n} k \binom{n}{k} p^{k}(1-p)^{n-k}  \\
+  &= \sum_{k=1}^{n} k \frac{n!}{k!(n-k)!} p^{k}(1-p)^{n-k} \\
+  &= np \sum_{k=1}^{n} \frac{(n-1)!}{(k-1)!(n-k)!} p^{k-1}(1-p)^{n-k} \\
+  &= np \sum_{h=0}^{n-1} \binom{n-1}{h} p^{h}(1-p)^{n-1-h} \quad h = k-1 \\
+  &= np (p + (1-p))^{n-1} \\
+  &= np \\
+\end{align*}
+
+\nt{
+  Binomio di Newton:
+  \[
+    (a+b)^{n} = \sum_{k=0}^{n} \binom{n}{k} a^{k}b^{n-k}
+  \]
+  $ a = p, b = 1-p, a+b = 1 $
+}
+
+\begin{align*}
+  var(y) &= \mathbb{E}[y^2] - (\mathbb{E}[y])^2 \\
+  &= \mathbb{E}[y(y-1) + y] - (\mathbb{E}[y])^2 \\
+  &= \mathbb{E}[y(y-1)] + \mathbb{E}[y] - (\mathbb{E}[y])^2 \\
+  &= \mathbb{E}[y(y-1)] + np - n^2p^2 \\
+\end{align*}
+
+\begin{align*}
+  \mathbb{E}[y(y-1)] &= \sum_{k=0}^{n} k(k-1)\binom{n}{k} p^{k}(1-p)^{n-k} \\
+  &= \sum_{k=1}^{n} k(k-1) \frac{n!}{k!(n-k)!} p^{k}(1-p)^{n-k} \\
+  &= n(n-1)p^2 \sum_{k=2}^{n} \frac{(n-2)!}{(k-2)!(n-k)!} p^{k-2}(1-p)^{n-k} \\
+  &= n(n-1)p^2 \\
+\end{align*}
+
+\[
+  var(y) = n(n-1)p^2 + np - n^2p^2 = np(1-p)
+\]
+
+\subsection{Distribuzione di Poisson}
+Caso limite della distribuzione bionmiale, serve per eventi con probabilita' molto piccola. Viene passato un solo parametro $ \lambda $
+
+\[
+n\to +\infty, p\to 0, np \to \lambda > 0
+\]
+
+$ X \sim Poi(\lambda), \lambda > 0 $, $ S_X = \{0,1,...\} = \mathbb{N}_0 $ (il supporto e' infinito numerabile):
+\[
+  \forall k \in \mathbb{N}_0.\ p_X(k) = e^{-\lambda}\frac{\lambda^{k}}{k!}
+\]
+
+Lo sviluppo in serie di Taylor dell'esponenziale $ \forall x \in \mathbb{R} $: 
+\[
+\sum_{k=0}^{+\infty} \frac{x^{k}}{k!} = e^{x}
+\]
+
+\begin{align*}
+  \mathbb{E}[X] &= \sum_{k=0}^{+\infty} k \frac{\lambda^{k}}{k!}e^{-\lambda} \\
+  &= \lambda\sum_{k=1}^{+\infty} \frac{\lambda^{k-1}}{(k-1)!}e^{-\lambda} \\
+  &= \lambda e^{-\lambda} e^{\lambda} \\
+  &= \lambda \\
+\end{align*}
+
+\begin{align*}
+  var(X) &= \mathbb{E}[X(X-1)] + \mathbb{E}[X] - (\mathbb{E}[X])^2\\
+  &= \lambda^2 + \lambda - \lambda^2 = \lambda \\
+\end{align*}
+
+\begin{align*}
+  \mathbb{E}[X(X-1)] &= \sum_{k=0}^{+\infty} k(k-1) \frac{\lambda^{k}}{k!} e^{-\lambda}\\
+  &= \lambda^2 \sum_{k=1}^{+\infty} \frac{\lambda^{k-2}}{(k-2)!}e^{-\lambda} \\
+  &= \lambda^2 \cdot 1 = \lambda^2 \\
+\end{align*}
+
+\ex{Esercizio Riassuntivo (2.1 libro)}{
+  Sia $ G: \mathbb{R} \to [0,1] $ una funzione data da:
+  \[
+    G(x) = \begin{cases}
+    0 & x < 0\\
+    1/2 & 0\leq x < 1\\
+    2/3 & 1\leq x<2\\
+    11/12 & 2\leq x < 3\\
+    1 & x\geq 3
+    \end{cases}
+  \]
+  \begin{enumerate}
+  \item Mostrare che $ G $ e' una funzione di ripartizione.
+  \item Mostrare che $ X $ e' discreta. Determinare supporto e densita' discreta di $ X $.
+  \item Trovare $ P_X $
+  \item Calcolare $ P(X > 1/2), P(2 < X \leq 4), P(1< X<2), P(X < 3) $.
+  \item Mostrare che $ Y = (X-2)^2 $ e' una variabile aleatoria discreta. Determinare $ S_Y e p_Y $.
+  \end{enumerate}
+  \textbf{Soluzione}:
+  \begin{enumerate}
+  \item Dobbiamo dimostrare che $ G $ ha le quattro proprieta' delle funzioni di ripartizione:
+    \begin{itemize}
+    \item E' ovviamente monotona crescente
+    \item In tutti i punti di discontinuita', e' sempre continua a dx ($ \lim_{x\to k^{+}} G(x) = k $)
+    \item I limiti a sx e dx sono 0 e 1
+    \end{itemize}
+    Quindi $ G $ e' una funzione di ripartizione.
+    \item Essendo $ F_X(x) $ costante a tratti, $ X $ e' per forza discreta con supporto $ S_X = \{0, 1, 2, 3\} $.
+
+      La densita' discreta $ p_X(x) $ si calcola guardando il "salto" di $ F_X(x) $ nel punto $ x $:
+      \[
+        \forall x \in S_X.\ p_X(x) = F_X(x) - F_X(x^{-}) = \Delta F_X(x)
+      \]
+      TODO: fare graficuccio e tabellonski
+    \item Per la caratterizzazione della distribuzione usando la densita:
+      \[
+        P_X(B) = \sum_{x \in S_X} p_X(x)\delta_x(B)
+      \]
+    \item Va beh usa il punto prima per fare sta roba
+    \item $ Y $ e' una VA che puo' essere riscritta come una composizione fra una funzione $ Z: \mathbb{R} \to \mathbb{R}.\ Z(x) = (x-2)^2 $ e $ X $. Per questo motivo, se $ X $ ha lo stesso valore per degli $ \omega \in \Omega $, allora anche in $ Y $ quegli $ \omega $ avranno la stessa immagine. Ovvero, $ |Im(Y)| \leq |Im(X)| $, che implica che $ |S_Y| \leq |S_X| $. In piu', possiamo dire che:
+      \[
+        p_Y(y) = \sum_{x \in Z^{-1}(y)} p_X(x) \quad \forall y \in \mathbb{R}
+      \]
+      Quindi $ S_Y = \{y \in \mathbb{R} | \exists x \in S_X.\ y = Z(x)\} $ TODO: molte di ste cose non le ho dimostrate/spiegate bene, forse sarebbe meglio farlo prima?
+  \end{enumerate}
+}
+
+\section{Variabili Aleatorie Continue}
+
+Es X = tempo di vita di un componente Im(X) = [0, +inf)
+
+E' molto piu' naturale modellare l'intervallo di tempi come il continuo, al posto di discretizzarlo (e' una forzatura)
+
+Ma questa scelta ci impone che
+\[
+  p_X(x) = P(X = x) = 0 \ \forall x
+\]
+
+Domanda cruciale: "Come costruiamo la distribuzione di $ X $?"
+
+Mediante una densita' -> nel caso discreto abbiamo caratterizzato la legge di $ X $ con la densita' (discreta)
+
+Ma ora non abbiamo la densita' discreta, abbiamo quella generale $ f_X $, che da' una probabilita' agli intervalli
+
+Da la probabilita' agli eventi $ \{X \in [a,b]\}  = P(a\leq X \leq b) $
+
+\[
+  P(a \leq X \leq b) = \int_{a}^{b} f_X(x)dx
+\]
+
+La densita' deve essere una funzione compatibile con le proprieta' della probabilita':
+\begin{itemize}
+\item Deve essere $ \geq 0 $ per ogni elemento del dominio, perche' l'integrale di una funzione negativa su un intervallo sara' sicuramente negativa
+\item $ P(-\infty \leq X \leq +\infty) $ deve essere 1, dato che e' l'evento certo, quindi:
+  \[
+    \int_{-\infty}^{+\infty}f_X(x)dx = 1
+  \]
+\end{itemize}
+
+\ex{}{
+  \[
+    f_X(x) = \begin{cases}
+    0 & x<0\\
+    e^{-x} & x\geq 0
+    \end{cases}
+  \]
+  todo: graficuz
+
+  calcola se valgono le proprieta' sopra
+}
+
+La probabilita' dell'intervallo graficamente e' l'area del sottografico di $ f_X $ nello stesso intervallo. Il vincolo e' che l'area di tutto il sottografico e' 1.
+
+\dfn{Densita' di probabilita'}{
+  Si dice \textit{densita' di probabilita'} una funzione:
+  \begin{align*}
+    f_X: \mathbb{R} \to \mathbb{R}
+  \end{align*}
+  Se vale che:
+  \begin{itemize}
+    \item $ \forall x \in \mathbb{R}.\ f_X(x) \geq 0 $
+    \item $ \int_{-\infty}^{+\infty}f_X(x)dx = 1 $
+  \end{itemize}
+}
+
+\nt{
+  La densita' non e' necessariamente minore o uguale di 1, dato che a noi ci interessa che l'area sottesa sia minore di uno, non il valore della funzione stessa. 
+
+  Addirittura puo' essere anche illimitata!
+}
+
+\ex{}{
+  Nell'esempio di prima, se mettiamo $ \lambda e^{-x} $ l'integrale e' sempre 1!
+}
+
+\dfn{Variabile Aleatoria Continua}{
+  Sia $ (\Omega, P) $ SP e $ X $ VA. Si dice che $ X $ e' \textit{continua} se $ \exists $ una densita' di probabilita' ...
+}
+
+Una delle funzioni che ci permettono di caratterizzare le VA discrete ora diventa continua: la funzione di ripartizione (Bonzo non ci crede, e' da investigare)
+
+Infatti, $ P(a \leq X \leq a) = P(X = a) = \int_{a}^{a}f_X(x)dx = 0 $, quindi per avere una probabilta' positiva dobbiamo per forza considerare un intervallo. Quindi, tornando alle proprieta' della funzione di ripartizione, vediamo che:
+\begin{itemize}
+\item $ F_X $ e' sempre continua a destra
+\item $ F_X(x) - F_X(x^{-}) = P(X = x) $
+\end{itemize}
+
+Ma per quello che abbiamo detto, $ F_X $ e' continua anche a sx -> no more scalini
+
+\nt{
+  Se $ X $ e' una VA continua
+  \[
+    F_X(x) = \lim_{a \to -\infty} 
+  \]
+}
+
+TODO: ho skippato un po di roba
+
+
+
