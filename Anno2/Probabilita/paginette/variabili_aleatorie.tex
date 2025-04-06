@@ -457,220 +457,81 @@ Ma se $ x_i \notin S_X $, allora $ p_X(x_i) = 0 $, quindi:
   \item Altrimenti, $ F_X(x) = \sum_{x_i \in S_X.\ x_i \leq x} p_X(x_i) $
 \end{itemize}
 Cio' significa che il valore della fdr cambia solo nei punti del supporto, dove abbiamo dei "salti" del valore $ p_X(x_i) $, mentre del resto e' costante.
-\begin{center}
-  \includegraphics[width=0.5\textwidth]{img/2025-04-02-10-14-30.png}
-\end{center}
+
 \subsubsection{Conclusioni}
 \thm{Caratterizzazione della distribuzione e fdr di una VA discreta tramite la sua densita'}{
   Sia $ X $ una VA su $ (\Omega, P) $, le seguenti affermazioni sono equivalenti:
   \begin{enumerate}
   \item $ X $ e' VA discreta con supporto $ S_X $ e densita' $ p_X $
-  \item $ X $ ha fdr $ F_X $ \textbf{costante a tratti}: e' costante tranne nei punti di $ S_X $, in cui $ F_X $ "salta" con ampiezza
+  \item $ X $ ha fdr $ F_X $ \textbf{costante a tratti}: e' costante tranne nei punti di $ S_X = \{x_1,...,x_n\} $, in cui $ F_X $ "salta" con ampiezza
     \[
-      F_X(x_i) - F_X(X_i^{-}) = p_X(x_i)
+    \Delta F_X(x) = F_X(x) - F_X(x^-) = p_X(x) 
     \]
+      La fdr ha quindi la seguente forma:
+      \[
+    F_X(x) =
+    \begin{cases}
+    0 & x < x_1, \\
+    p_1 & x_1 \leq x < x_2, \\
+    p_1 + p_2 & x_2 \leq x < x_3, \\
+    \vdots & \vdots \\
+    1 & x \geq x_n.
+    \end{cases}
+    \]
+
+    % Esempio di grafico
+    \begin{center} % TODO: sistemare
+      
+      \begin{tikzpicture}[scale=1.2]
+        % Assi
+        \draw[->] (-0.5, 0) -- (5.5, 0) node[right] {$x$};
+        \draw[->] (0, -0.1) -- (0, 1.2) node[above] {$F_X(x)$};
+        
+        % Punti di salto
+        \draw[thick] (0, 0) -- (1, 0);
+        \draw[thick] (1, 0) -- (1, 0.3);
+        \draw[thick] (1, 0.3) -- (2, 0.3);
+        \draw[thick] (2, 0.3) -- (2, 0.6);
+        \draw[thick] (2, 0.6) -- (3, 0.6);
+        \draw[thick] (3, 0.6) -- (3, 0.8);
+        \draw[thick] (3, 0.8) -- (4, 0.8);
+        \draw[thick] (4, 0.8) -- (4, 1);
+        \draw[thick] (4, 1) -- (5, 1);
+        
+        % Punti
+        \filldraw[black] (1, 0.3) circle (1pt);
+        \filldraw[black] (2, 0.6) circle (1pt);
+        \filldraw[black] (3, 0.8) circle (1pt);
+        \filldraw[black] (4, 1) circle (1pt);
+        
+        % Cerchi vuoti
+        \draw[thick] (1, 0) circle (1pt);
+        \draw[thick] (2, 0.3) circle (1pt);
+        \draw[thick] (3, 0.6) circle (1pt);
+        \draw[thick] (4, 0.8) circle (1pt);
+
+        % Etichette
+        \node[below] at (1, 0) {$x_1$};
+        \node[below] at (2, 0) {$x_2$};
+        \node[below] at (3, 0) {$x_3$};
+        \node[below] at (4, 0) {$x_4$};
+        \node[left] at (0, 0.3) {$p_1$};
+        \node[left] at (0, 0.6) {$p_1 
+        + p_2$};
+        \node[left] at (0, 0.8) {$p_1 + p_2 + p_3$};
+        \node[left] at (0, 1) {$1$};
+      \end{tikzpicture}
+  \end{center}
       Quindi $ F_X $ e' data dalla formula:
       \[
         F_X(x) = \sum_{x_i \in S_X.\ x_i \leq x} p_X(x_i),\quad \forall x \in \mathbb{R}
       \]
-  \item La legge di $ X $ e':
-    \[
-      P_X(B) = \sum_{i} p_X(x_i)\delta_{x_i}(B) \quad B \subset \mathbb{R}
-    \]
+    \item se $B$ è un sottoinsieme dei possibili valori di $X$ (anche con probabilita' nulla), allora:
+  \begin{equation}
+    \P(X\in B) = \P_X(B) = \sum_{x_i\in B}p_X(x) = \sum_{x_i\in B}\Delta F_X(x_i)
+  \end{equation}
   \end{enumerate}
 }
-
-\section{Indici di sintesi di una distribuzione}
-
-La distribuzione di una VA (discreta ?) puo' essere descritta in maniera sintetica tramite due quantita' numeriche: 
-\begin{itemize}
-\item La \textit{media}, che indica il valore "centrale" della distribuzione, ovvero il valore medio di $ X $ pesato con le probabilita' di ogni valore
-\item La \textit{varianza}, che e' un indice di dispersione, ossia ci dice quanto quanto la distribuzione si concentra attorno alla media
-\end{itemize}
-
-\subsection{Media o valore atteso}
-\dfn{Valore Atteso}{
-  Sia $ X: \Omega \to \mathbb{R} $ VA discreta, si definisce \textit{valore atteso} di $ X $ come:
-  \[
-    \mathbb{E}[X]\coloneq \sum_{x \in S_X} x \cdot p_X(x)
-  \]
-}
-\thm{Stabilita' delle VA con composizione}{
-  Se X VA discreta e $ h: \mathbb{R} \to \mathbb{R} $:
-  \[
-    \mathbb{E}[h(X)] = \sum_{i} h(x_i)p_X(x_i)
-  \]
-}
-\mprop{Linearita' del Valore atteso}{
-  Siano $ X,Y $ VA discrete, allora $ \forall \alpha, \beta \in \mathbb{R} $:
-  \[
-    \mathbb{E}[\alpha \cdot X + \beta \cdot Y] = \alpha \mathbb{E}[X] + \beta \mathbb{E}[Y]
-  \]
-}
-\pf{}{
-  Il bro fa una dimostrazione prendendo un solo caso, non ho capito
-}
-
-\subsection{Varianza}
-\dfn{Varianza}{
-  Sia $ X: \Omega \to \mathbb{R} $ una VA discreta con supporto $ S_X $. La \textit{varianza} di $ X $ e' definita come:
-  \[
-    \underbrace{var(X)}_{\sigma_X^2} \coloneq \mathbb{E}[(X - \mathbb{E}[X])^2]
-  \]
-  Si indica anche con $ \sigma^2 $.
-}
-\nt{
-  \[
-    var(X) = \sum_{x \in S_X} (x - \mathbb{E}[X])^2 \cdot p_X(x)
-  \]
-}
-\nt{
-  \begin{align*}
-    \mathbb{E}[X - \mathbb{E}[X]] &= \mathbb{E}[X] - \mathbb{E}[\mathbb{E}[X]]\\
-    &= \mathbb{E}[X] - \mathbb{E}[X] = 0
-  \end{align*}
-}
-
-\dfn{Deviazione standard}{
-  Si definisce \textit{deviazione standard} la quantita':
-  \[
-    \sigma(X) \coloneq \sqrt{var(X)}
-  \]
-}
-\nt{
-  Se $ X $ e' una grandezza fisica espressa in una certa unita di misura, la deviazione standard ha il vantaggio di avere la stessa unita' di misura.
-}
-\mprop{}{
-  \begin{align*}
-    var(X) &= \mathbb{E}[X^2] - (\mathbb{E}[X])^2\\
-    &= \sum_{x \in S_X} x^2 \cdot p_X(x) - \left( \sum_{x \in S_X} x \cdot p_X(x) \right)^2
-  \end{align*}
-}
-\section{Distribuzioni notevoli di VA discrete}
-
-\subsection{Distribuzione uniforme discreta}
-
-$ S_X = \{x_1,...,x_n\} $ finito -> tabella per densita':
- x x1 x2 ... xn //
- px 1/n 1/n ... 1/n 1
-
-$ \forall x_i \in S_X.\ p_X(n) = \frac{1}{n} $
-
-$ x \sim Unif(\{x_1,...,x_n\}) $
-
-$ E[x] = \sum_{x_i \in S_X} x_i p_X(x_i) = \sum_{x_i \in S_X} x_i \frac{1}{n} = \frac{1}{n} \sum_{x_i \in S_X} x_i $
-
-$ var(X) = \sum_{x_i \in S_X} (x_i - \mathbb{E}[X])^2p_X(x_i) = \frac{1}{n}\sum_{x_i \in S_X} (x_i - \mathbb{E}[X])^2 $
-
-\subsection{Distribuzione di Bernulli}
-$ S_X = \{0,1\} $
-
-Le VA di Bernoulli sono tutte e sole le VA indicatrici:
-
-$ X = \mathbb{1}_A,\ A \subset \Omega $
-\[
-  X(\omega) = \begin{cases}
-  0 & w \notin A\\
-  1 & w \in A
-  \end{cases}\quad X \sim B(p)
-\]
-$ p_X(x_i) = ? $
-
-$ \mathbb{E}[X] = \sum_{x_i \in S_X} x_i p_X(x_i) = 0 \cdot (1-p) + 1 \cdot p = p $
-
-$ var(X) = \mathbb{E}[X^2] - (\mathbb{E}[X])^2 = p - p^2  = p(1-p) $
-
-\subsection{Distribuzione binomiale}
-Estende Bernulli (n prove indipendenti di Bernulli) quindi sommiamo quante di queste prove hanno successo. Dato che ogni prova puo' essere 0 o 1, il supporto della VA che ci dice quanti successi ci sono stati sono i naturali da 0 a n.
-Interpretiamo la roba di combinatoria come legge di una roba (eh?)
-
-$ n $ prove indipendenti di Bernuoulli con prob. di successo $ p $.
-\[
-X_i = \mathbb{1}_{E_i} = \begin{cases}
-1 & \text{successo all'i-esima prova}\\
-0 & \text{altrimenti}
-\end{cases}
-\]
-$ y \coloneq \sum_{i=1}^{n} X_i\ \sim Bin(n,p) $
-
-$ S_y = \{0,1,...,n\} $ finito
-
-$ p_y(y_i) = P(y = y_i) = ? $
-
-$ p_y(k) = \binom{n}{k} p^{k}(1-p)^{n-k} $, nota che se $ p = 1/2 $, allora e' $ (1/2)^{n} $ (formula delle prove ripetute indipendenti)
-
-Possiamo fare tabellonski
-
-\begin{align*}
-  \mathbb{E}[y] &= \sum_{i} y_i p_y(y_i)\\
-  &= \sum_{k=0}^{n} k \binom{n}{k} p^{k}(1-p)^{n-k}  \\
-  &= \sum_{k=1}^{n} k \frac{n!}{k!(n-k)!} p^{k}(1-p)^{n-k} \\
-  &= np \sum_{k=1}^{n} \frac{(n-1)!}{(k-1)!(n-k)!} p^{k-1}(1-p)^{n-k} \\
-  &= np \sum_{h=0}^{n-1} \binom{n-1}{h} p^{h}(1-p)^{n-1-h} \quad h = k-1 \\
-  &= np (p + (1-p))^{n-1} \\
-  &= np \\
-\end{align*}
-
-\nt{
-  Binomio di Newton:
-  \[
-    (a+b)^{n} = \sum_{k=0}^{n} \binom{n}{k} a^{k}b^{n-k}
-  \]
-  $ a = p, b = 1-p, a+b = 1 $
-}
-
-\begin{align*}
-  var(y) &= \mathbb{E}[y^2] - (\mathbb{E}[y])^2 \\
-  &= \mathbb{E}[y(y-1) + y] - (\mathbb{E}[y])^2 \\
-  &= \mathbb{E}[y(y-1)] + \mathbb{E}[y] - (\mathbb{E}[y])^2 \\
-  &= \mathbb{E}[y(y-1)] + np - n^2p^2 \\
-\end{align*}
-
-\begin{align*}
-  \mathbb{E}[y(y-1)] &= \sum_{k=0}^{n} k(k-1)\binom{n}{k} p^{k}(1-p)^{n-k} \\
-  &= \sum_{k=1}^{n} k(k-1) \frac{n!}{k!(n-k)!} p^{k}(1-p)^{n-k} \\
-  &= n(n-1)p^2 \sum_{k=2}^{n} \frac{(n-2)!}{(k-2)!(n-k)!} p^{k-2}(1-p)^{n-k} \\
-  &= n(n-1)p^2 \\
-\end{align*}
-
-\[
-  var(y) = n(n-1)p^2 + np - n^2p^2 = np(1-p)
-\]
-
-\subsection{Distribuzione di Poisson}
-Caso limite della distribuzione bionmiale, serve per eventi con probabilita' molto piccola. Viene passato un solo parametro $ \lambda $
-
-\[
-n\to +\infty, p\to 0, np \to \lambda > 0
-\]
-
-$ X \sim Poi(\lambda), \lambda > 0 $, $ S_X = \{0,1,...\} = \mathbb{N}_0 $ (il supporto e' infinito numerabile):
-\[
-  \forall k \in \mathbb{N}_0.\ p_X(k) = e^{-\lambda}\frac{\lambda^{k}}{k!}
-\]
-
-Lo sviluppo in serie di Taylor dell'esponenziale $ \forall x \in \mathbb{R} $: 
-\[
-\sum_{k=0}^{+\infty} \frac{x^{k}}{k!} = e^{x}
-\]
-
-\begin{align*}
-  \mathbb{E}[X] &= \sum_{k=0}^{+\infty} k \frac{\lambda^{k}}{k!}e^{-\lambda} \\
-  &= \lambda\sum_{k=1}^{+\infty} \frac{\lambda^{k-1}}{(k-1)!}e^{-\lambda} \\
-  &= \lambda e^{-\lambda} e^{\lambda} \\
-  &= \lambda \\
-\end{align*}
-
-\begin{align*}
-  var(X) &= \mathbb{E}[X(X-1)] + \mathbb{E}[X] - (\mathbb{E}[X])^2\\
-  &= \lambda^2 + \lambda - \lambda^2 = \lambda \\
-\end{align*}
-
-\begin{align*}
-  \mathbb{E}[X(X-1)] &= \sum_{k=0}^{+\infty} k(k-1) \frac{\lambda^{k}}{k!} e^{-\lambda}\\
-  &= \lambda^2 \sum_{k=1}^{+\infty} \frac{\lambda^{k-2}}{(k-2)!}e^{-\lambda} \\
-  &= \lambda^2 \cdot 1 = \lambda^2 \\
-\end{align*}
 
 \ex{Esercizio Riassuntivo (2.1 libro)}{
   Sia $ G: \mathbb{R} \to [0,1] $ una funzione data da:
@@ -718,6 +579,292 @@ Lo sviluppo in serie di Taylor dell'esponenziale $ \forall x \in \mathbb{R} $:
       Quindi $ S_Y = \{y \in \mathbb{R} | \exists x \in S_X.\ y = Z(x)\} $ TODO: molte di ste cose non le ho dimostrate/spiegate bene, forse sarebbe meglio farlo prima?
   \end{enumerate}
 }
+\section{Indici di sintesi di una distribuzione}
+
+La distribuzione di una VA discreta puo' essere descritta in maniera sintetica tramite due quantita' numeriche: 
+\begin{itemize}
+\item La \textit{media}, che indica il valore "centrale" della distribuzione, ovvero il valore medio di $ X $ pesato con le probabilita' di ogni valore
+\item La \textit{varianza}, che e' un indice di dispersione, ossia ci dice quanto quanto la distribuzione si concentra attorno alla media
+\end{itemize}
+
+\subsection{Media o valore atteso}
+\dfn{Valore atteso di una variabile aleatoria}{
+  Se $X$ è una variabile aleatoria discreta con densità di probabilità $p_X$, allora il valore atteso di $X$ è:
+  \[
+    E[X] \coloneq \sum_{x\in S_X} x p_X(x)
+  \]
+}
+\nt{
+  \begin{align*}
+    \mathbb{E}[X - \mathbb{E}[X]] &= \mathbb{E}[X] - \mathbb{E}[\mathbb{E}[X]]\\
+    &= \mathbb{E}[X] - \mathbb{E}[X] = 0
+  \end{align*}
+}
+\thm{Stabilita' delle VA con composizione}{
+  Sia $X$ una variabile aleatoria discreta con densità di probabilità $p_X$ e sia $g:\mathbb{R}\to \mathbb{R}$ una funzione. Allora il valore atteso di $g(X)$ è:
+  \[
+    \mathbb{E}[g(X)] = \sum_{x\in S_X} g(x)p_X(x)
+  \]
+}
+\mprop{Linearita' del Valore atteso}{
+  Siano $ X,Y $ VA discrete, allora $ \forall \alpha, \beta \in \mathbb{R} $:
+  \[
+    \mathbb{E}[\alpha \cdot X + \beta \cdot Y] = \alpha \mathbb{E}[X] + \beta \mathbb{E}[Y]
+  \]
+}
+\pf{Dimostrazione}{
+  Il bro fa una dimostrazione prendendo un solo caso, non ho capito TODO: boh
+}
+
+\subsection{Varianza}
+\dfn{Varianza di $X$ }{
+  Se $X$ è una variabile aleatoria discreta con densità di probabilità $p_X$ e valore atteso $E[X]$, allora la varianza di $X$ è:
+  \[
+    Var(X) = E[(X-E[X])^2] = \sum_{x\in S_X} (x-E[X])^2 p_X(x)
+  \]
+  La varianza e' anche indicata con $ \sigma^2 $.
+}
+
+\mprop{}{
+  Si osservi che:
+  \begin{align*}
+    var(X) &= \mathbb{E}[X^2] - (\mathbb{E}[X])^2\\
+    &= \sum_{x \in S_X} x^2 \cdot p_X(x) - \left( \sum_{x \in S_X} x \cdot p_X(x) \right)^2
+  \end{align*}
+}
+
+\dfn{Deviazione standard}{
+  Si definisce \textit{deviazione standard} la quantita':
+  \[
+    \sigma(X) \coloneq \sqrt{var(X)}
+  \]
+}
+\nt{
+  Se $ X $ e' una grandezza fisica espressa in una certa unita di misura, la deviazione standard ha il vantaggio di avere la stessa unita' di misura.
+}
+\section{Distribuzioni notevoli di VA discrete}
+
+\subsection{Distribuzione uniforme discreta}
+\dfn{Distribuzione uniforme discreta}{
+  Una variabile aleatoria $X$ si dice avere una distribuzione uniforme discreta su un insieme di supporto $S_X = \{x_1, \dots, x_n\}$ di cardinalità $n$ se la densità di probabilità di $X$ è:
+  \[
+    p_X(x) = \frac{1}{n}, \quad \forall x\in S_X
+  \]
+  E si scrive $ X \sim Unif(\{x_1,...,x_n\}) $
+}
+
+Si può rappresentare questa distribuzione attraverso questa tabella:
+\begin{center}
+  \begin{tabular}{c|c|c|c|c|c}
+    $X$ & $x_1$ & $x_2$ & $\dots$ & $x_n$ &  \\
+    \hline
+    $p_X(x)$ & $\frac{1}{n}$ & $\frac{1}{n}$ & $\dots$ & $\frac{1}{n}$ & 1\\ 
+  \end{tabular}
+\end{center}
+
+In pratica il valore atteso di una variabile aleatoria con distribuzione uniforme discreta è:
+\[
+  E[X] = \sum_{x\in S_X} x p_X(x) = \sum_{x\in S_X} x \frac{1}{n} = \frac{1}{n}\sum_{x\in S_X} x = \frac{1}{n} \frac{n(n+1)}{2} = \frac{n+1}{2}
+\]
+
+mentre la varianza è:
+\[
+  Var(X) = \sum_{x\in S_X} (x-E[X])^2 p_X(x) = \frac{1}{n} \sum_{i=1}^n (x_i - E[X])^2
+\]
+
+\subsection{Distribuzione di Bernulli}
+\dfn{Distribuzione di Bernulli di parametro $p\in [0,1]$}{
+  Una variabile aleatoria $X$ con un insieme di supporto $S_X = \{ 0,1 \}$ si dice avere una distribuzione di Bernoulli di parametro $p$ se la sua densità di probabilità è:
+  \[
+    p_X(x) = 
+    \begin{cases}
+      p & \text{se } x=1,\\
+      1-p & \text{se } x=0
+    \end{cases}
+  \]
+}
+Si può rappresentare questa distribuzione attraverso questa tabella:
+
+\begin{center}
+  \begin{tabular}{c|c|c|c}
+    $X$ & 0 & 1& \\
+    \hline
+    $p_X(x)$ & $1-p$ & $p$ & 1\\ 
+  \end{tabular}
+\end{center}
+
+Si noti che le variabili aleatorie di bernulli sono tutte Varaibili aleatorie indicatrici:
+\[
+  X = \mathbb{1}_A
+\]
+\[
+  X(w) = \begin{cases}
+    1 & w\in A\\
+    0 & w\notin A
+  \end{cases} \quad X \sim B(p)
+\]
+
+In pratica il valore atteso di una variabile aleatoria con distribuzione uniforme discreta è:
+\[
+  E[X] = \sum_{x \in S_X} x p_X(x) = 0 \cdot (1-p) + 1 \cdot p = p
+\]
+Mentre la sua varianza è:
+\[
+  Var(X) = E[X^2] - (E[X])^2 = p - p^2 = p(1-p)
+\]
+
+Si noti Inoltre che:
+\[
+  E[X^2] = \sum_i x_i^2 p_X (x_i) = 0 \cdot (1-p) + 1 \cdot p = p
+\]
+
+\subsection{Distribuzione binomiale di parametri $ p \in [0,1] $ e $ n \in \mathbb{N} $}
+Si consideri ora una generalizzazione della distribuzione di Bernoulli, detta distribuzione binomiale. Una variabile aleatroia $X$ ha distribuzione di Bernulli sse è una variabile aleatoria indivatrice di un qualche evento $A$. Se invece consideriamo $n$ prove ripetute e indipendenti di un esperimento di Bernoulli, allora la variabile aleatoria che conta il numero di successi ottenuti in $n$ si dice che ha una distribuzione binomiale. Avremo quindi $n$ variabili aleatrie  di Bernulli:
+\[
+  X_1 \sim B(p), X_2\sim B(p),\dots, X_n \sim B(p)
+\]
+Ora si consideri la seguente variabile aleatoria:
+\[
+  X =\text{“n di successi negli n esperimenti”} =X_1 + X_2 + \dots + X_n
+\]
+
+Si noti questo esempio:
+  \ex{Estrazione con reimmissione da un'urna}{
+    Consideriamo un'urna contenente $b$ palline bianche e $r$ palline rosse, per un totale di $b + r$ palline. Si effettuano $n$ estrazioni con reimmissione, e definiamo la variabile aleatoria $X$ come:
+    \[
+      X = \text{``numero di palline bianche estratte''}.
+    \]
+    Mostrare che X `e una variabile aleatoria discreta e determinarne supporto e densità discreta.
+
+    
+  }
+
+  \pf{Soluxione}{
+    Si ha che $S_x =\{0,1,2,\dots, n\}$. Occorre calcolare $p_X(k)$ per $k = 0,1,2,\dots, n$. Sia:
+    \[
+      A_k = \{ X=k \}, \quad \forall k \in S_X
+    \]
+
+    l'evento si può definire:
+    \[
+      A_k = \{ \text{“esattamente $k$ palline bianche estratte”} \}
+    \]
+
+    Ovviamete la probabilità di $A_k$ è:
+  \[
+    \P(A_k) = \binom{n}{k} p^k (1-p)^{n-k}
+  \]
+  Dove $p= \frac{b}{b+r}$ è la probabilità di estrarre una pallina bianca in una singola estrazione.
+  Quindi 
+  \[
+    \P(X=k) = p_X(k) = \binom{n}{k} p^k (1-p)^{n-k} \quad k = 0,1,2,\dots, n
+  \]
+
+  Come seguirà dalla definizione, $X$ ha distribuzione binomiale di parametri $n$ e $p$, ovvero $X\sim B(n,p)$
+
+  }
+
+Si può arrivare cisì alla definizione di distribuzione binomiale:
+\dfn{}{
+  Una variabile aleatoria $X$ con un insieme di supporto $S_X = \{ 0,1, \dots, n \}$ si dice avere una distribuzione binomiale di parametri $p$ e $n$ se la sua densità di probabilità è:
+  \[
+    p_X(x) = \binom{n}{x} p^x (1-p)^{n-x}, \quad \forall x \in S_X
+  \]
+}
+  riassunta nella seguente tabella:
+  \begin{center}
+    \begin{tabular}{c|c|c|c|c|c}
+      $X$ & 0 & 1 & 2 & $\dots$ & n\\
+      \hline
+      $p_X(x)$ & $\binom{n}{0} p^0 (1-p)^n$ & $\binom{n}{1} p^1 (1-p)^{n-1}$ & $\binom{n}{2} p^2 (1-p)^{n-2}$ & $\dots$ & $\binom{n}{n} p^n (1-p)^0$\\ 
+    \end{tabular}
+  \end{center}
+  In tal caso scriviamo
+  \[
+    X\sim B(n,p)
+  \]
+  \nt{
+    Quando $n=1$ si ha la distribuzione di Bernoulli, ovvero $B(1,p)$
+  }
+  \mprop{}{
+    Siano$ 0 \leq p \leq 1$, $n \in N$ e $X \sim B(n, p)$. Allora
+    \[
+    \begin{aligned}
+      E[X] &= np\\
+      Var(X) &= np(1-p)
+    \end{aligned}
+    \]
+  }
+  \pf{Dimostrazione}{
+    \begin{enumerate}
+      \item Calcoliamo prima l'attesa $\mathbb{E}[X]$:
+      \begin{align*}
+      \mathbb{E}[X] &= \sum_{k=0}^n k p_X(k) = \sum_{k=1}^n k p_X(k) \\
+      &= \sum_{k=1}^n k \binom{n}{k} p^k (1-p)^{n-k} \\
+      &= \sum_{k=1}^n k \frac{n!}{k!(n-k)!} p^k (1-p)^{n-k} \\
+      &= \sum_{k=1}^n \frac{n!}{(k-1)!(n-k)!} p^k (1-p)^{n-k} \\
+      &= n p \sum_{k=1}^n \frac{(n-1)!}{(k-1)!(n-k)!} p^{k-1} (1-p)^{n-k} \\
+      &\stackrel{h=k-1}{=} n p \sum_{h=0}^{n-1} \frac{(n-1)!}{h!(n-1-h)!} p^h (1-p)^{n-1-h} \\
+      &\stackrel{\text{form. binom., Newton}}{=} n p.
+      \end{align*}
+      Qui abbiamo usato la formula del binomio e il teorema di Newton per concludere che:
+      \[
+      \sum_{h=0}^{n-1} \binom{n-1}{h} p^h (1-p)^{n-1-h} = 1.
+      \]
+      \item Calcoliamo ora la varianza $\text{Var}(X)$:
+      dato che $\text{Var}(X) = \mathbb{E}[X^2] - (\mathbb{E}[X])^2$, resta da calcolare $\mathbb{E}[X^2]$. Inoltre, $\mathbb{E}[X^2] = \mathbb{E}[X(X-1)] + \mathbb{E}[X] = \mathbb{E}[X(X-1)] + np$, quindi dobbiamo calcolare $\mathbb{E}[X(X-1)]$. Si ha che:
+\begin{align*}
+\mathbb{E}[X(X-1)] &= \sum_{k=0}^n k(k-1) p_X(k) = \sum_{k=2}^n k(k-1) p_X(k) \\
+&= \sum_{k=2}^n k(k-1) \binom{n}{k} p^k (1-p)^{n-k} \\
+&= \sum_{k=2}^n k(k-1) \frac{n!}{k!(n-k)!} p^k (1-p)^{n-k} \\
+&= \sum_{k=2}^n \frac{n!}{(k-2)!(n-k)!} p^k (1-p)^{n-k} \\
+&= n(n-1) p^2 \sum_{k=2}^n \frac{(n-2)!}{(k-2)!(n-k)!} p^{k-2} (1-p)^{n-k} \\
+&\stackrel{h=k-2}{=} n(n-1) p^2 \sum_{h=0}^{n-2} \frac{(n-2)!}{h!(n-2-h)!} p^h (1-p)^{n-2-h} \\
+&\stackrel{\text{form. binom., Newton}}{=} n(n-1) p^2.
+\end{align*}
+Qui abbiamo nuovamente usato la formula del binomio e il teorema di Newton per concludere che:
+\[
+\sum_{h=0}^{n-2} \binom{n-2}{h} p^h (1-p)^{n-2-h} = 1.
+\]
+
+    \end{enumerate}
+  }
+
+\subsection{Distribuzione di Poisson}
+Caso limite della distribuzione bionmiale, serve per eventi con probabilita' molto piccola. Viene passato un solo parametro $ \lambda $
+
+\[
+n\to +\infty, p\to 0, np \to \lambda > 0
+\]
+
+$ X \sim Poi(\lambda), \lambda > 0 $, $ S_X = \{0,1,...\} = \mathbb{N}_0 $ (il supporto e' infinito numerabile):
+\[
+  \forall k \in \mathbb{N}_0.\ p_X(k) = e^{-\lambda}\frac{\lambda^{k}}{k!}
+\]
+
+Lo sviluppo in serie di Taylor dell'esponenziale $ \forall x \in \mathbb{R} $: 
+\[
+\sum_{k=0}^{+\infty} \frac{x^{k}}{k!} = e^{x}
+\]
+
+\begin{align*}
+  \mathbb{E}[X] &= \sum_{k=0}^{+\infty} k \frac{\lambda^{k}}{k!}e^{-\lambda} \\
+  &= \lambda\sum_{k=1}^{+\infty} \frac{\lambda^{k-1}}{(k-1)!}e^{-\lambda} \\
+  &= \lambda e^{-\lambda} e^{\lambda} \\
+  &= \lambda \\
+\end{align*}
+
+\begin{align*}
+  var(X) &= \mathbb{E}[X(X-1)] + \mathbb{E}[X] - (\mathbb{E}[X])^2\\
+  &= \lambda^2 + \lambda - \lambda^2 = \lambda \\
+\end{align*}
+
+\begin{align*}
+  \mathbb{E}[X(X-1)] &= \sum_{k=0}^{+\infty} k(k-1) \frac{\lambda^{k}}{k!} e^{-\lambda}\\
+  &= \lambda^2 \sum_{k=1}^{+\infty} \frac{\lambda^{k-2}}{(k-2)!}e^{-\lambda} \\
+  &= \lambda^2 \cdot 1 = \lambda^2 \\
+\end{align*}
+
 
 \section{Variabili Aleatorie Continue}
 
@@ -809,6 +956,3 @@ Ma per quello che abbiamo detto, $ F_X $ e' continua anche a sx -> no more scali
 }
 
 TODO: ho skippato un po di roba
-
-
-
