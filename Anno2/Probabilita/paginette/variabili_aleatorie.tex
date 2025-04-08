@@ -956,3 +956,111 @@ Ma per quello che abbiamo detto, $ F_X $ e' continua anche a sx -> no more scali
 }
 
 TODO: ho skippato un po di roba
+
+\section{ricapitolazione}
+
+va discrete
+
+densita' discreta $ p_X(x): \mathbb{R} \to [0,1] $
+
+supporto $ S_X $
+
+legge $ P_X(B) = \sum_{x \in B \cap S_X} p_X(x) $
+
+$ F_X(x) = P(X \leq x) $
+
+$ F_X $ e' costante a tratti
+
+va ass. continue (proprieta' della funzione di ripartizione -> e' una funzione integrale, ecco perche' "assolutamente")
+
+densita' continua $ f_X(x) $ funzione strettamente positiva
+
+$ P(X \in B) = \int_{B \cap (f_X(x) > 0)} f_X(x)dx $
+
+$ F_X(x) = P(X \leq x) = P_X((-\infty,x])) = \int_{-\infty}^{x}f_X(y)dy $
+
+$ F_X $ e' una funzione integrale (proprieta' di assoluta continuita $ C^{1} $ a tratti: ci sono delle condizioni sufficenti per determinarla, $ F_X $ e' derivabile tranne un insieme finito o infinito numerabile di punti e la derivata prima e' anche continua)
+
+Come si trova la densita' a partire dalla fdr? Sicuramente integrare
+
+A partire da $ F_X(x) $ fdr come si trova la densita'?
+\[
+  f_X(x) = F'_X(x)
+\]  
+In tutti i punti dove $ F_X $ e' derivabile, nelgi altri punti possiamo dare un valore arbitrario, quindi $ f_X $ non e' unica.
+
+\nt{
+  Le VA possono essere ne continue ne discretej
+
+  TODO: grafico di fdr continua ma con un salto maggiore di 0 ma minore di 1
+
+  Si chiamano VA miste
+}
+
+\ex{2.1}{
+
+\textbf{Soluzione}
+
+Nelle VA continue, prendere o no gli estremi e' uguale
+
+NOTA: il doppio $ \leq $ e $ \geq $ in 0 non e' un errore, dato che sappiamo che e' continua, quindi quando calcoliamo la densista' possiamo scegliere quale valore dargli perche dentro ai punti possiamo fare quello che vogliamo (??? TODO capisci cosa sta dicendo) proprio un valore anche a caso
+
+}
+  Se $ X $ e' VA continua, allora $ h(X) $:
+  \begin{itemize}
+  \item $ Y = h(X) $ e' discreta
+  \item $ Y $ e' continua
+  \item $ Y $ e' mista
+  \end{itemize} 
+  Entra in gioco come trovare la fdr di $ Y $ ($ F_Y $) e da questa ottenere la densita'. In generale, per trovare la legge, si trova la fdr da cui si calcola la densita' derivando
+
+  \begin{enumerate}
+  \item $ X $ VA continua
+    \[
+    Y = \mathbb{1}_{\{X \geq 2\}} = \begin{cases}
+    1 & x\geq 2\\
+    0 & x < 2
+    \end{cases}
+    \]
+  \item $ X $ VA continua, $ h: \mathbb{R} \to \mathbb{R} $, $ Y = h(X) $ VA continua (immaginiamo di saperlo), come si trova la legge? Troviamo $ F_Y $ (con la densita non riusciro' mai a trovare la legge dato che la densita' e' arbitraria in quei punti)
+    \begin{itemize}
+      \item $ h $ e' invertibile: $ F_Y(y) = P(X \leq h^{-1}(y)) = F_X(h^{-1}(y)) $
+      \item $ h $ non e' invertibile: non e' biunivoca
+        \[
+        S_X \sim > S_Y?
+        \]
+
+    \end{itemize}
+  \end{enumerate}
+\ex{Esempio 2.2}{ 
+  \textbf{Soluzione}
+
+  $ Y = e^{X} $
+
+  $ S_X = [0, +\infty] $, dobbiamo trovare $ S_Y $: troviamo le $ y $ tali per cui $ F_X(h^{-1}(y)) > 0 $
+
+  TODO: copiare soluzione prof
+
+  Attenzione, non sappiamo se $ Y $ e' una VA continua, per questo motivo prende l'intervallo aperto a sx (eh?
+  )
+
+  Calcolliamo $ F_Y $ usando $ F_X $, e vediamo che $ F_Y $ e' continua e non solo, e' $ C^{1} $
+
+}
+
+\ex{}{
+  Continuiamo con l'esempio di prima ma con una $ Y $ diversa:
+  \[
+  Y = \begin{cases}
+  3 & x < 1/2\\
+  x^{4} & x \geq 1/2
+  \end{cases}
+  \]
+  la $ F_X $ e' la stessa
+
+  DAto che abbiamo un salto, ma la somma di tutti i salti non e' 1, $ Y $ e' MISTA
+
+  Per dare una probabilita' quando $ X $ ha un certo valore e un'altra per quando ha un valore diverso, uso le probabilita' totali
+
+  Quando calcolo $ F_Y $ devo stare attento algi estremi dato che non e' continua nel punto 3
+}
