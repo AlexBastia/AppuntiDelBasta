@@ -1,5 +1,5 @@
+\begin{document}
 \chapter{Reti di Flusso}
-
 Innanzi tutto inziamo con alcune definzioni:
 \dfn{Rete}{
   definiamo \textbf{rete} un grafo \textit{pesato} $ G = (N,A) $ dove
@@ -842,3 +842,21 @@ ancora pseudoflusso minimale.
 \end{itemize}
 
 }
+
+\section{Problemi di Accoppiamento}
+\begin{itemize}
+\item \textbf{Accoppiamento di Massima Cardinalita'}
+\item \textbf{Accoppiamento di Costo Minimo}
+\end{itemize}
+
+\subsection{Massima Cardinalita'}
+Possiamo vederlo come un problema di flusso massimo con piu' sorgenti e piu' pozzi (ma questo l'abbiamo gia risolto). Bisogna un po' riflettere su come attribuire le capacita', in questo caso abbiamo due valori: 0 o 1 (non sceglere o scegliere). 
+
+Ogni volta che abbiamo un flusso ammissibile intero, abbiamo un accoppiamento. Dato che non abbiamo flussi frazionari, la proprieta' di unico arco e' rispettata perche' sarebbe impossibile avere un grafo bilanciato con piu' archi per nodo. 
+
+
+Il valore massimo teorico sara' $ min \{|O|, |D|\} $, dato che non hanno necessariamente la stessa cardinalita'. Non e' necessario usare EK, dato che non c'e' il rischio delle situaizoni patologiche che rallentano FF. 
+
+\subsection{Costo Minimo}
+In questo caso, vediamo il problema come uno di flusso di costo minimo, dove i nodi in O hanno sbilanciamento -1 e quelli in D 1, dove ogni arco ha un certo costo 
+\end{document}
