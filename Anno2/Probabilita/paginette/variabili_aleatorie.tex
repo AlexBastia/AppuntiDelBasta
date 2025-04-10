@@ -935,7 +935,25 @@ La probabilita' dell'intervallo graficamente e' l'area del sottografico di $ f_X
 }
 
 \dfn{Variabile Aleatoria Continua}{
-  Sia $ (\Omega, P) $ SP e $ X $ VA. Si dice che $ X $ e' \textit{continua} se $ \exists $ una densita' di probabilita' ...
+  Sia $ (\Omega, P) $ SP e $ X $ VA. Si dice che $ X $ e' \textit{continua} se $ \exists $ una densita' di probabilita' se esiste una densità continua, indicata con $f_X$, tale che:
+  \begin{equation}
+   \P(a \leq X \leq b) = \int_{a}^{b} f_X(x)dx \quad \forall [a,b] \subset \mathbb{R}
+  \end{equation}
+}
+
+\nt{
+  Esempi di utilizzo della formula:
+  \begin{itemize}
+    \item $ P(X \leq a) = \int_{-\infty}^{a} f_X(x)dx $
+    \item $ P(X < a) = \int_{-\infty}^{a} f_X(x)dx $
+    \item $ P(X > a) = \int_{a}^{+\infty} f_X(x)dx $
+    \item $ P(X \in B) = \int_{B} f_X(x)dx $
+    \item $ P(X \in [a,b]) = \int_{a}^{b} f_X(x)dx $
+    \item $ P(X \in (a,b)) = \int_{a}^{b} f_X(x)dx $
+    \item $ P(X \in [a,b)) = \int_{a}^{b} f_X(x)dx $
+    \item $ P(X \in (a,b]) = \int_{a}^{b} f_X(x)dx $
+    \item $ P(X \in \{a\}) = \int_{a}^{a} f_X(x)dx = 0 $
+  \end{itemize}
 }
 
 Una delle funzioni che ci permettono di caratterizzare le VA discrete ora diventa continua: la funzione di ripartizione (Bonzo non ci crede, e' da investigare)
@@ -955,4 +973,174 @@ Ma per quello che abbiamo detto, $ F_X $ e' continua anche a sx -> no more scali
   \]
 }
 
-TODO: ho skippato un po di roba
+Ebbene buon bastianini, sai come lo vedremo? GRAZIE A QUESTO EFFICACISSIMO TEOREMA:
+\thm{Teorma della della densità e della continuità di $f_x$}{
+  Sia $X$ una variabile aleatoria continua con densità di probabilità $f_X$. Allora:
+  \begin{itemize}
+    \item La densità discreta discrta di $X$ è identivamente uguale a zrto, ovvero:
+    
+    \[
+      p_X(x) = 0 \quad \forall x \in \mathbb{R}
+    \]
+    \item La funzione di ripartizione $F_X$ è continua e si può calcolare come:
+    \[
+      F_X(x) = \int_{-\infty}^{x} f_X(y) dy
+    \]
+  \end{itemize}
+}
+\pf{Dimostrazione}{
+  \begin{itemize}
+    \item Dalla definizione di $p_X(x)$, abbiamo che:
+    \[
+      p_X(x) = P(X = x) = \int_{x}^{x} f_X(y) dy = 0
+    \]
+    
+    Dimostrato
+    \item Dalla definizione di $F_X$ si ha che 
+    \[
+      F_X(x) = P(X \leq x) = P(-\infty < X \leq x) = \int_{-\infty}^{x} f_X(y) dy
+    \]
+    Devo dimostrare che $F_X$ è contunua a destra e a sinistra:
+    \begin{itemize}
+      \item Devo dimostrare che $F_X$ è continua a destra, ovvero che
+      
+      \[
+        F_X(x) = \lim_{a \to x^+} F_X(a)
+      \]
+      Si ha che:
+      \[
+        \lim_{a \to x^{+}}F_X(a) = \lim_{a \to x^{+}} \P(X \leq a) = \lim_{a \to x^{+}} \int_{-\infty}^{a} f_X(y) dy = \int_{-\infty}^{x} f_X(y) dy = F_X(x)
+      \]
+      Dimostrato
+      \item Devo dimostrare che $F_X$ è continua a sinistra, ovvero che
+      \[
+        F_X(x) = \lim_{a \to x^{-}} F_X(a)
+      \]
+      E si ha che $\lim_{a\to x^-}F_X(a) = \P(X<x)$, allora
+      \[
+        \lim_{a \to x^{-}} F_X(a) = \P(X < x) = \lim_{a \to x^{-}} \int_{-\infty}^{a} f_X(y) dy = \int_{-\infty}^{x} f_X(y) dy = F_X(x)
+      \]
+    \end{itemize}
+  \end{itemize}
+}
+
+\nt{
+  Si può notare quindi che:
+  \[
+    \P(a<X<b) = \P(a\leq X \leq b) = \P(a<X\leq b) = \P(a\leq X< b) = \int_{a}^{b} f_X(x) dx
+  \]
+
+  sono in particolare date da
+
+  \[
+    F_X (b) - F_X(a) = \int_{a}^{b} f_X(x) dx
+  \]
+}
+
+
+\subsection{Confronto tra VA continua e discreta}
+\begin{tabular}{|c|c|}
+  \hline
+  \textbf{Variabili aleatorie discrete} & \textbf{Variabili aleatorie continue} \\
+  \hline
+  densità discreta $p_X$ & densità continua $f_X$ \\
+  \hline
+  $\mathbb{P}(X \in B) = \sum_{x_i \in B} p_X(x_i)$ & $\mathbb{P}(X \in B) = \int_B f_X(x) \, dx$ \\
+  \hline
+  $F_X$ è costante a tratti: & $F_X$ è una funzione integrale o, equivalentemente, è una funzione assolutamente continua: \\
+  $F_X(x) = \sum_{x_i \leq x} p_X(x_i)$ & $F_X(x) = \int_{-\infty}^x f_X(y) \, dy$ \\
+  \hline
+\end{tabular}
+
+\subsection{Dalla funzione di ripartizione alla densità continua}
+Dal teorema precedente sappiamo che 
+\[
+  F_X(x) = \int_{-\infty}^{x} f_X(y) dy
+\]
+
+Viene quindi da chiedersi come calcolare il contrario
+
+\mprop{}{
+  Sia $X$ una variabile aleatoria continua con densità di probabilità con $F_X$ la sua funzione di ripartizione. Allora la densità di probabilità è data da:
+  \[
+    f_X(x) := \frac{d}{dx}F_X(x)
+  \]
+}
+
+\pf{Dimostrazione}{
+  Sia $F_X(x)$ la funzione di ripartizione di una variabile aleatoria continua $X$. Per definizione:
+  \[
+    F_X(x) = \int_{-\infty}^x f_X(y) \, dy.
+  \]
+  Per il teorema fondamentale del calcolo integrale, se $f_X$ è continua, allora $F_X$ è derivabile e la derivata di $F_X$ è uguale alla funzione integranda $f_X$. Quindi:
+  \[
+    \frac{d}{dx}F_X(x) = f_X(x).
+  \]
+  Dimostrato.
+}
+
+\subsection{Funzioni di variabili aleatorie continue}
+Siano $h: \mathbb{R} \to \mathbb{R}$ una qualunque funzione e $X$ una variabile aleatoria continua. Poniamo:
+\[
+  Y = h(X)
+\]
+
+Ricordiamo che quando $X$ è discreta, $Y$ è necessariamente anch’essa una variabile aleatoria discreta. Al contrario, quando X è continua, non possiamo dire nulla su $Y$ . In particolare, $Y$ potrebbe essere discreta, continua, mista. Adesso viene mostrato come calcolare la densità di probabilità di $Y$ in funzione della densità di probabilità di $X$.
+
+\subsubsection{Metodo generale per caolare la densità di $Y$}
+
+Per calcolare la densità di $Y$ in funzione della densità di $X$ calcolare le CDF, in pratica:
+\begin{itemize}
+  \item Calcolare la funzione di ripartizione $F_Y(y)$:
+  \[
+    F_Y (y) = P(Y \leq y) = P(h(X) \leq y) 
+  \]
+  \item Calcolare la densità di $Y$:
+  \[
+    f_Y(y) = \frac{d}{dy}F_Y(y) = \frac{d}{dy}P(h(X) \leq y)
+  \]
+\end{itemize}
+
+\ex{}{
+  Sia $h(x) = x^2$, quindi $Y = h(X) = X^2$. Si trovi la densità di probabilità di $Y$ in funzione della densità di probabilità di $X$.
+}
+\pf{Soluzione}{
+  Iniziamo col determinare la funzione di ripartizione di $Y$:
+  \[
+    F_y (y) = P(Y \leq y) = P(X^2 \leq y) 
+  \]
+
+  Dobbiamo risolvere la disuguaglianza $X^2 \leq y$, distinguendo i due casi:
+  \begin{itemize}
+    \item Se $y < 0$, allora $X^2 \leq y$ non ha soluzioni, quindi $F_Y(y) = 0$.
+    \item Se $y \geq 0$, allora $X^2 \leq y$ è equivalente a $-\sqrt{y} \leq X \leq \sqrt{y}$, quindi:
+    \[
+      F_Y(y) = P(-\sqrt{y} \leq X \leq \sqrt{y}) = P(X \leq \sqrt{y}) - P(X < -\sqrt{y}) = F_X(\sqrt{y}) - F_X(-\sqrt{y})
+    \]
+  \end{itemize}
+  Quindi, la funzione di ripartizione di $Y$ è:
+  \[
+    F_Y(y) = 
+    \begin{cases}
+      0 & y < 0\\
+      F_X(\sqrt{y}) - F_X(-\sqrt{y}) & y \geq 0
+    \end{cases}
+  \]
+  Ora calcoliamo la densità di probabilità di $Y$:
+  \[
+    f_Y(y) = \frac{d}{dy}F_Y(y) = \frac{d}{dy}F_X(\sqrt{y}) - \frac{d}{dy}F_X(-\sqrt{y})
+  \]
+  Applicando la regola della catena, otteniamo:
+  \[
+    f_Y(y) = \frac{1}{2\sqrt{y}}f_X(\sqrt{y}) - \frac{1}{2\sqrt{y}}f_X(-\sqrt{y})
+  \]
+  Quindi, la densità di probabilità di $Y$ è:
+  \[
+    f_Y(y) = 
+    \begin{cases}
+      0 & y < 0\\
+      \frac{1}{2\sqrt{y}}f_X(\sqrt{y}) - \frac{1}{2\sqrt{y}}f_X(-\sqrt{y}) & y \geq 0
+    \end{cases}
+  \]
+
+}
