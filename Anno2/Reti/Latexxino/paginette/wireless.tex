@@ -1,0 +1,79 @@
+% \begin{document}
+\chapter{Comunicazioni Wireless}
+
+\section{Misura della Potenza}
+La forma dell'antenna influenza la forma della propagazione delle onde radio. Se l'antenna ha il $ 100\% $ di efficenza in tutte le direzioni, allora si dice \textit{isotropica}, che avrebbe un dipolo di lunghezza 0.
+
+Si usa 
+
+\section{Power Monitoring}
+Misurare con strumenti l'intensita delle onde radio nelle varie frequenze. Per fare in modo che sia utilizzabile, la quantita di energia che raggiunge un dispositivo sta nel range -110dBm (era -90dBm) - boh. La soglia superiore non e' un vero problema reale, pero' si rischierebbe distorzione, ma e' facile mettere un dispositivo che dissipa la corrente con una resistenza per ovviare questo problema.
+
+E' importante capire dove ci troviamo in questo range, per capire se dobbiamo rallentare o velocizzare la trasmissione di bit. 
+
+Non c'e' una scala standard RSSI, quindi il suo valore e' device dependent, da quel che ho capito indica quanta banda serve al dispositivo per lavorare bene, ed e' quindi tarato in base al valore massimo che puo' essere utilizzato effettivamente dal dispositivo.
+
+\section{Antenne}
+Ce le spiega con le lampadine, alcune concentrano in direzioni specifiche, lasciando al buio il resto, mentre altre irradiano tutto in modo meno potente.
+
+E' la forma dell'antenna che decide le sue caratteristiche:
+\begin{itemize}
+\item Vogliamo che l'antenna sia in grado di comunicare a grandi distanze per raggiungere tutti i client
+\item Sicurezza: sarebbe meglio lasciare al buio tutti gli altri che non dovrebbero spiarci (e' un po' piu' segreto)
+\item Le antenne vengono bombardate - ma che cazzo sta dicendo - bononi si prepara alla terza guerra mondiale. Alcune vengono mimetizzate come palme o scuretti di finestre
+\end{itemize}
+
+Esistono tre cataegorie:
+\begin{itemize}
+  \item Omnidirezionali: significa \textit{anche} isotropica (e' un caso speciale omogeneo), il dipolo (che e' limitato solo ad alcune direzioni)
+  \item Semidirezionali: in grado di concentrare energia solo verso un lato
+  \item Direzionali: es. parabola del satellite, tutta l'energia e' concentrata in un cono di angolo molto stretto
+\end{itemize}
+
+\subsection{Omnidirezionali}
+Il dipolo e' il piu' semplice e piu' conosciuto (come negli accesspoint di casa). 
+
+\thm{Antenna Pringles}{
+Il tubo delle Pringles puo' fare da "rete che cattura pesci" ma che cattura onde radio focalizzandole nel punto in cui il dipolo puo' catturarle meglio, si vede un aumento di +3dB (il doppio!!)
+}
+\pf{Dimostrazione}{Giova mi sa che tocca a te}
+
+Piu' e' elevata la frequenza, piu' si riduce l'ampiezza d'onda e quindi la forma dell'antenna piu' adatta.
+
+Esistono dipoli ciccioni e magrolini schiacciati, relativamente dipoli a basso guadagno e ad alto guadagno. Infatti, piu' e' schiacciata la forma dell'irradiazione piu' e' l'energia che arriva a un punto nella direzione orizzaontale, ma meno in verticale. 
+
+\nt{
+  \textbf{NON COSTRUIRE UN DIPOLO A CASA PROPRIA} @BonzoIlBolognese
+}
+
+\subsection{Semidirezionali}
+Sono la via di mezzo. Sono ad esempio:
+\begin{itemize}
+\item Yagi
+  \item Patch
+  \item Panel
+\end{itemize}
+
+La forma dell'emissione non e' una ciambella, ma sono forme strane con un lobo principale dentro alla quale viene forzata la maggior parte dell'energia. La forma ha dei lobi secondari per rimbalzare su superfici. E' importante l'ampiezza del cono. La Yagi ha un guadagno maggiore degli altri, quindi l'ampiezza del cono e' minore
+
+\subsection{Direzionali}
+\begin{itemize}
+\item Parabolic DIsh
+\item Grid
+\end{itemize}
+TODO: **DISEGNO CABBO**
+
+Il raggio e' molto basso, altissimo guadagno.
+
+Anche la polarizzazione ha il suo peso, l'asse di ricevuta e di spedizione devono essere simili. La zona di Frezsnel e' un insieme annidato di aree ellittiche che hanno origine dal fatto che i segnali radio emessi dalle antenne subiscono in particolare l'effetto della diffrazione, che causa alcune componenti dell'onda che si propaga di deviare rispetto alla direzione originale. Tale effetto si applica ricorsivamente, aumentando sempre di piu' l'angolo di differenza. Una parte dell'energia che si allarga riconverge verso il bersaglio, arrivando con un ritardo proporzionale all'allargamento.
+
+TODO: **DISEGNO FICA**
+
+Abbiamo un problema quando le onde "allargate" rientrano fuori fase, in verita' no perche si annullano con quelle in fase quindi gg. Ci interessa solo il corpo centrale, che e' proprio la zona di fresnel. Non vogliamo interrompere sta zona qua con edifici o alberi o nuveli
+
+Dobbiamo ricordarci la formula del Path Loss
+
+Il Link Budget e' la rappresentazione di "solidita'" del segnale, ha detto questo in piu' o meno 2 ore...ha detto questo in piu' o meno 2 ore...
+
+\section{}
+% \end{document}

@@ -1,3 +1,4 @@
+% \begin{document}
 \chapter{Esercitazioni}
 
 \section{Problemi e modelli}
@@ -511,3 +512,60 @@ $ m_i > (1-b_i) k_i $
 \[
   min \{\sum_{i=1}^{n} b_i c_i + (1-b_i) d_i \}
 \]
+
+\section{Esercitazioni reti di flusso con Luca}
+
+\subsection{Ex 1}
+
+\subsubsection{Testo}
+Si risolva, tramite l’algoritmo di Edmonds e Karp il seguente problema di flusso massimo. Si determini altres`ı un taglio di capacit`a minima
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2025-04-07-09-32-32.png}
+\end{center}
+
+\subsubsection{Soluzione}
+In modo molto pratico, i passi sono:
+\begin{enumerate}
+\item Metti il flusso iniziale a 0 ovunque
+\item Costruisci il grafo residuo (nota: il primo grafo residuo sara' uguale al grafo stesso)
+\item Trova il cammino di lunghezza minima da s a t sul grafo residuo. Se non esiste, fine.
+\item Identifica il valore minore fra gli archi del cammino. Poi, per tutti questi archi, aumentare o diminuire di questo valore il flusso dell'arco corrispondente sul grafo originale, in base a se l'arco residuo e' concorde o discorde all'arco associato.
+\item Ritorna al punto 2
+\end{enumerate}
+Quindi, il meccanismo e':
+\begin{enumerate}
+\item Copia il grafo originale e trova su di esso un cammino, se non c'e' fine
+\item Se c'e', calcola il valore minimo fra gli archi e aggiorna correttamente il valore dei flussi sul grafo originale
+\item Col grafo OG aggiornato, costruire da questo un altro grafo residuo e ripetere da 2
+\end{enumerate}
+
+\nt{
+  E' possibile risparmiarsi di etichettare i valori degli archi sui grafi residui, usando semplicemente le capacita' ed i flussi del grafo OG per trovare il valore minimo. Se l'arco e' concorde, il suo valore e' capienza - flusso, altrimenti e' semplicemente il flusso.
+}
+
+Facendo correttamente sti passi, arrivi a fine esecuzione con il valore del flusso $ v = 14 $.
+
+\subsection{Ex 2}
+
+\subsubsection{Testo}
+Si risolva, tramite l’algoritmo di Goldberg-Tarjan il seguente problema MF.
+
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2025-04-07-19-57-28.png}
+\end{center}
+
+Con Goldberg, si lavora a livello locale e non ci serve il grafo residuo. 
+
+\subsection{Ex 3}
+
+\subsubsection{Testo}
+Si risolva il seguente problema MCF tramite l’algoritmo dei cammini minimi successivi.
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2025-04-07-10-27-08.png}
+\end{center}
+
+\subsection{Ex 4}
+\subsubsection{Testo}
+Si risolva il precedente problema tramite l’algoritmo di cancellazione dei cicli.
+
+% \end{document}

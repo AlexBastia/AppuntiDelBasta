@@ -1,0 +1,20 @@
+\begin{document}
+\chapter{Programmazione Lineare}
+\section{Geometria della PL}
+Ci concentriamo su algoritmi \textit{senza} vincoli di iterezza. Come accennato in precedenza, questi sono piu' facili da risolvere rispetto alle varianti intere dato che, anche se l'insieme di soluzioni e' infinito, e' possibile guardare le caratterisctiche geometriche delle soluzioni ammissibili in modo da non dover guardarle tutte, ma solo alcune principali.
+
+I vincoli lineari definiscono un'"area" di soluzioni ammissibili, che sara' definita da un poliedro (che puo' anche essere infinito) in quanto i vincoli sono lineari. Anche la funzione obbiettivo e' lineare, quindi guardando ogni valore che puo' assumere, forma una "retta" che puo' intersecare la regione ammissibile. L'ultima retta che forma la funzione obbiettivo che interseca quest'area (che ha quindi il valore ottimo) interseca per forza uno dei vertici che la delimitano.
+
+Quindi ci basta controllare il valore della FO ai vertici per decidere. Ovviamente, il piano non e' per forza bidimensionale, quindi questa intuizione ci abbandona quando abbiamo piu' variabili. Dobbiamo dimostrarlo quindi usando la MATEMATICA
+
+\subsection{Nozioni Preliminari}
+Natura matriciale di oggetti geometrici in piu' dimensioni
+\begin{itemize}
+  \item Iperpiano: generalizzazione di una retta (in 3 dimensioni e' un piano)
+  \item Semispaizo: zona dello spazio delineata da un iperpiano
+  \item Poliedro: intersezione di un numero finito di semispazi
+  \item Iniseme Convesso: ne fanno parte tutti i poliedri e i semispazi, tracciando una retta fra ogni due punti, questa attraversa solo punti dell'insieme. Ci servera' per il teorema fondamentale.
+\end{itemize}
+
+Le facce ci permettono di devinire i vertici
+\end{document}
