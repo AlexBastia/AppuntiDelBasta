@@ -554,18 +554,49 @@ Si risolva, tramite l’algoritmo di Goldberg-Tarjan il seguente problema MF.
   \includegraphics[width=0.5\textwidth]{img/2025-04-07-19-57-28.png}
 \end{center}
 
-Con Goldberg, si lavora a livello locale e non ci serve il grafo residuo. 
+\subsubsection{Soluzione}
+Con Goldberg, si lavora a livello locale e non ci serve il grafo residuo. I passi dell'algoritmo sono:
+\begin{enumerate}
+  \item Inizializzazione: pongo tutti i flussi a 0 tranne per gli archi uscenti da $ s $, che metto al massimo della capienza. Poi etichetto tutti i nodi con la loro distanza da $ t $, tranne per il nodo $ s  $ che prende il numero totale di nodi (la massima distanza possibile)
+  \item Se non ci sono nodi sbilanciati, fine. Altrimenti, scegli un nodo a caso $ v $ fra quelli sbilanciati
+  \item Se c'e' un arco uscente da $ v $ non saturo tale che l'altro nodo ha etichetta di 1 minore rispetto a $ v $, metti tutto il flusso possibile su quell'arco
+  \item Altrimenti, se c'e' un arco entrnte a $ v $ con flusso non nullo tale che l'altro nodo ha etichetta minore di 1 rispetto a $ v $, togliere tutto il flusso possibile da quell'arco
+  \item Se il nodo e' sbilanciato ma non e' possibile fare nessuna delle mosse sopra, allora tocca aumentare l'etichetta del valore \textbf{minimo} finche' esiste un arco (entrante o uscente) tale che l'altro nodo ha etichetta minore di 1.
+  \item Torna a 2
+\end{enumerate}
 
-\subsection{Ex 3}
-
-\subsubsection{Testo}
+Se fatto correttamente, il valore del flusso massimo $ v = 10 $.
+\begin{Exercise}{}{}   
 Si risolva il seguente problema MCF tramite l’algoritmo dei cammini minimi successivi.
 \begin{center}
   \includegraphics[width=0.5\textwidth]{img/2025-04-07-10-27-08.png}
 \end{center}
+\textbf{Soluzione}
 
-\subsection{Ex 4}
-\subsubsection{Testo}
+I passi dell'algoritmo dei cammini minimi successivi sono:
+\begin{enumerate}
+\item Assegna uno pseudoflusso minimale: per ogni arco, se il costo e' positivo metti 0, se e' negativi metti il massimo possibile.
+\item Se tutti i nodi sono bilanciati, fine. Altrimenti vai avanti.
+\item Costruisci il grafo residuo, indicando per ogni nodo il valore del suo sbilanciamento e per ogni arco il suo costo. Poi identifica qual'e' il cammino di costo minore che va da un nodo con sbilanciamento positivo a uno con sbilanciamento negativo, se non c'e' il problema non ha soluzioni valide (e' vuoto).
+\item Invia il massimo flusso possibile su questo cammino senza cambiare di segno lo sbilanciamento dei due nodi. Quindi ci assicuriamo o di saturare l'arco o di bilanciare uno dei due nodi (nota che lo sbilanciamento dei nodi di mezzo rimane uguale).
+\item Aggiornare flussi e sbilanciamenti sul grafo OG e torna a punto 2.
+\end{enumerate}
+Se fatto tutto bene, penso il costo venga 100.
+\end{Exercise}
+
+\begin{Exercise}{}{}
 Si risolva il precedente problema tramite l’algoritmo di cancellazione dei cicli.
 
+\textbf{Soluzione}
+
+I passi dell'algoritmo di cancellazione dei cicli sono:
+\begin{enumerate}
+\item Fai EK per trovare il flusso massimo ammissibile. Se questo fallisce, fine.
+\item Crea il grafo residuo e cerca un ciclo con valore negativo, se non c'e' allora il flusso e' ottimo.
+\item Altrimenti, vedere di quando possiamo aumentare il flusso sugli archi del ciclo (concordi aumento, discordi diminuisco) e cambia il flusso (notare che gli sbilanciamenti rimangono uguali)
+\item Vai al passo 2.
+\end{enumerate}
+Se fatto correttamente, dovrebbe venire lo stesso costo minimo di prima.
+\end{Exercise}
 % \end{document}
+
