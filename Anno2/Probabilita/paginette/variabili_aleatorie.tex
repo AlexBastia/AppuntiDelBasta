@@ -1144,3 +1144,490 @@ Per calcolare la densità di $Y$ in funzione della densità di $X$ calcolare le 
   \]
 
 }
+\subsection{Distribuzioni notevoli di VA continue}
+\subsubsection{Distribuzione uniforme continua}
+\dfn{Distribuzione uniforme continua}{
+  Una variabile aleatoria $X$ si dice avere una distribuzione uniforme continua su un intervallo $[a,b]$ se la sua densità di probabilità è:
+  \begin{equation}
+    f_X(x) = \frac{1}{b-a} \cdot \mathbb{1}_{(a,b)}(x) = \begin{cases}
+      \frac{1}{b-a} & a \leq x \leq b\\
+      0 & \text{altrimenti}
+    \end{cases}
+  \end{equation}
+}
+
+Si ha, quindi, che
+\[
+  \int_{-\infty}^{+\infty} f_X(x) dx = 1 = \int_{a}^{b} \frac{1}{b-a} dx = \frac{1}{b-a} (b-a) 
+\]
+
+
+Pertanto la dunzione di densità di probabilità è costante in $[a,b]$ e nulla al di fuori di questo intervallo. Si può rappresentare questa distribuzione attraverso questa tabella:
+\begin{center}
+  \begin{tabular}{c|c|c|c|c|c}
+    $X$ & a & b & \\
+    \hline
+    $f_X(x)$ & $\frac{1}{b-a}$ & $\frac{1}{b-a}$ & 1\\ 
+  \end{tabular}
+\end{center}
+Il grafico della distribuzione è il seguente:
+\begin{tikzpicture}
+  \begin{axis}[
+      xlabel={$x$}, ylabel={$f_X(x)$},
+      xmin=-0.5, xmax=6,
+      ymin=-0.2, ymax=1.5,
+      axis lines=middle,
+      xticklabel style={anchor=north}, % Align x-axis labels properly
+      enlargelimits=true,
+      grid=both,
+      grid style={line width=.1pt, draw=gray!10},
+      major grid style={line width=.2pt,draw=gray!50},
+      minor tick num=4,
+      width=10cm, height=6cm,
+      domain=0:6, samples=100,
+      restrict y to domain=-0.2:1.5,
+      legend pos=north east
+  ]
+      % Plot the exponential function
+      \addplot[blue, thick] {exp(-x)} node [pos=0.9, above right] {$f_X(x) = \lambda e^{-\lambda x}$};
+      
+      % Add axis labels and annotations
+      \node at (axis cs:1,-0.2) [below] {$1$};
+      \node at (axis cs:3,-0.2) [below] {$3$};
+      \node at (axis cs:-0.2,1) [left] {$\lambda$};
+      
+      % Highlight the area under the curve
+      \addplot[blue!20] fill between[of=A and B, soft clip={domain=0:6}];
+  \end{axis}
+\end{tikzpicture}
+
+Si possono fare ulteriori considerazioni:
+\mprop{Fuznione di ripartizione di una variabile aleatoria continua con distribuzione costante}{
+  Sia $X$ una variabile aleatoria continua con distribuzione uniforme continua su $[a,b]$. Allora la funzione di ripartizione di $X$ è:
+  \[
+    F_X(x) = 
+    \begin{cases}
+      0 & x < a\\
+      \frac{x-a}{b-a} & a \leq x \leq b\\
+      1 & x > b
+    \end{cases}
+  \]
+  }
+  \nt{
+    Si noti che la funzione di ripartizione è continua e crescente in $[a,b]$.
+  }
+  \pf{Dimostrazione}{
+    La funzione di ripartizione è definita come:
+    \[
+      F_X(x) = P(X \leq x) = \int_{-\infty}^{x} f_X(y) dy
+    \]
+    Quindi, per calcolare la funzione di ripartizione, dobbiamo considerare i tre casi:
+    \begin{itemize}
+      \item Se $x < a$, allora $F_X(x) = 0$.
+      \item Se $a \leq x \leq b$, allora:
+      \[
+        F_X(x) = \int_{-\infty}^{x} f_X(y) dy = \int_{a}^{x} f_X(y) dy = \int_{a}^{x} \frac{1}{b-a} dy = \frac{x-a}{b-a}
+      \]
+      \item Se $x > b$, allora $F_X(x) = 1$.
+    \end{itemize}
+  }
+
+
+Ora passiamo a calcolare il valore atteso e la varianza di una variabile aleatoria continua con distribuzione uniforme continua:
+\mprop{}{
+  Sia $X$ una variabile aleatoria continua con distribuzione uniforme continua su $[a,b]$. Allora:
+  \[
+    E[X] = \frac{a+b}{2}
+  \]
+  \[
+    Var(X) = \frac{(b-a)^2}{12}
+  \]
+}
+\pf{Dimostrazione}{
+  Ricordando che
+  \[
+    f_X(x) =\frac{1}{b-a}
+  \]
+  \begin{align*}
+    E[X] &= \int_{-\infty}^{+\infty} x f_X(x) dx = \int_{a}^{b} x \frac{1}{b-a} dx = \frac{1}{b-a} \left[ \frac{x^2}{2} \right]_{a}^{b} = \frac{1}{b-a} \left( \frac{b^2}{2} - \frac{a^2}{2} \right)\\
+    &= \frac{1}{b-a} \cdot \frac{(b-a)(b+a)}{2} = \frac{a+b}{2}
+  \end{align*}
+  Quindi, il valore atteso di una variabile aleatoria continua con distribuzione uniforme continua su $[a,b]$ è:
+  \[
+    E[X] = \frac{a+b}{2}
+  \]
+  Per calcolare la varianza, utilizziamo la formula:
+  \[
+    Var(X) = E[X^2] - (E[X])^2
+  \]
+  Calcoliamo prima $E[X^2]$:
+  \begin{align*}
+    E[X^2] &= \int_{-\infty}^{+\infty} x^2 f_X(x) dx = \int_{a}^{b} x^2 f_X(x) dx = \int_{a}^{b} x^2 \frac{1}{b-a} dx\\
+    &= \frac{1}{b-a} \left[ \frac{x^3}{3} \right]_{a}^{b} = \frac{1}{b-a} \left( \frac{b^3}{3} - \frac{a^3}{3} \right)\\
+    &=\frac{1}{3(b-a)} (b^3 - a^3) =\frac{(b-a)(b^2 + ab + a^2)}{3(b-a)}\\
+    &=\frac{(b^2 + ab + a^2)}{3}
+  \end{align*}
+  Quindi, la varianza è:
+  \begin{align*}
+    Var(X) &= E[X^2] - (E[X])^2 = \frac{(b^2 + ab + a^2)}{3} - \left( \frac{a+b}{2} \right)^2\\
+    &= \frac{(b^2 + ab + a^2)}{3} - \frac{(a^2 + 2ab + b^2)}{4}\\
+    &= \frac{4(b^2 + ab + a^2) - 3(a^2 + 2ab + b^2)}{12}\\
+    &= \frac{(b^2 - 2ab + a^2)}{12} = \frac{(b-a)^2}{12}
+  \end{align*}
+}
+
+\subsubsection{Distribuzione esponenziale}
+
+La distribuzione esponenziale si ha quando si ha un processo di Poisson, ovvero quando si ha un evento che accade in un certo intervallo di tempo, ad esempio si usa per descrivere il tempo di vita di un macchinario oppure di un componente elettronico
+\dfn{Distribuzione esponenziale}{
+  Una variabile aleatoria $X$ si dice avere una distribuzione esponenziale con parametro $\lambda > 0$ se la sua densità di probabilità è:
+  \[
+    f_X(x) = \lambda e^{-\lambda x} \cdot \mathbb{1}_{(0,+\infty)}(x) = \begin{cases}
+      \lambda e^{-\lambda x} & x \geq 0\\
+      0 & \text{altrimenti}
+    \end{cases}
+      \addplot[blue, thick, name path=A] {\lambda * exp(-\lambda * x)} node [pos=0.9, above right] {$f_X(x)$};
+  \]
+}
+
+il cui grafico è: TODO
+% \begin{tikzpicture}
+%   \begin{axis}[
+%       xlabel={$x$},
+%       ylabel={$f_X(x)$},
+%       xmin=-0.5, xmax=6,
+%       ymin=-0.2, ymax=1.5,
+%       axis lines=middle,
+%       enlargelimits=true,
+%       grid=both,
+%       grid style={line width=.1pt, draw=gray!10},
+%       major grid style={line width=.2pt,draw=gray!50},
+%       minor tick num=4,
+%       width=10cm,
+%       height=6cm,
+%       domain=0:6,
+%       samples=100,
+%       restrict y to domain=-0.2:1.5,
+%       legend pos=north west,
+%       xtick=\empty, % Rimuove le etichette sull'asse x
+%       ytick=\empty  % Rimuove le etichette sull'asse y
+%   ]
+      
+%       % Disegna la funzione esponenziale
+%       \addplot[blue, thick, name path=A] {exp(-x)} node [pos=0.9, above right] {$f_X(x)$};
+      
+%       % Riempi l'area sotto la curva
+%       \addplot[blue!20] fill between[of=A and B, soft clip={domain=0:6}];
+      
+%       % Linee tratteggiate verticali
+%       \draw[dashed] (axis cs:1,0) -- (axis cs:1,{exp(-1)});
+%       \draw[dashed] (axis cs:3,0) -- (axis cs:3,{exp(-3)});
+      
+%       % Etichette degli assi
+%       \node at (axis cs:1,-0.2) [below] {$a$};
+%       \node at (axis cs:3,-0.2) [below] {$b$};
+%       \node at (axis cs:-0.2,1) [left] {$\lambda$};
+      
+%       % Aggiungi legenda
+%       \addlegendentry{Area sotto la curva: $P(a \leq X \leq b)$}
+      
+%       % Asse x
+%       \addplot[black, thick, name path=B] {0};
+%   \end{axis}
+% \end{tikzpicture}
+
+
+Si noti che
+\mprop{
+  Funzione di ripartizione di una variabile aleatoria continua con distribuzione esponenziale
+}{
+  Sia $X$ una variabile aleatoria continua con distribuzione esponenziale con parametro $\lambda > 0$. Allora la funzione di ripartizione di $X$ è:
+  \begin{equation}
+    
+    F_X(x) = 
+    \begin{cases}
+      0 & x < 0\\
+      1 - e^{-\lambda x} & x \geq 0
+    \end{cases}
+  
+  \end{equation}
+  In tal caso scriviamo
+  \[
+    X \sim \text{Exp}(\lambda)
+  \]
+}
+\pf{Dimostrazione}{
+  La funzione di ripartizione è definita come:
+  \[
+    F_X(x) = P(X \leq x) = \int_{-\infty}^{x} f_X(y) dy
+  \]
+  Quindi, per calcolare la funzione di ripartizione, dobbiamo considerare i due casi:
+  \begin{itemize}
+    \item Se $x < 0$, allora $F_X(x) = 0$.
+    \item Se $x \geq 0$, allora:
+    \[
+      F_X(x) = \int_{-\infty}^{x} f_X(y) dy = \int_{0}^{x} f_X(y) dy = \int_{0}^{x} \lambda e^{-\lambda y} dy = -e^{-\lambda y} \bigg|_0^x = -e^{-\lambda x} + 1
+    \]
+    Quindi, la funzione di ripartizione di $X$ è:
+    \[
+      F_X(x) = 
+      \begin{cases}
+        0 & x < 0\\
+        1 - e^{-\lambda x} & x \geq 0
+      \end{cases}
+    \]
+  \end{itemize}
+}
+
+\nt{
+  Si noti che la funzione di ripartizione è continua e crescente in $[0,+\infty)$.
+}
+
+\mprop{}{
+  Sia $X$ una variabile aleatoria continua con distribuzione esponenziale con parametro $\lambda > 0$. Allora:
+  \[
+    E[X] = \frac{1}{\lambda}
+  \]
+  \[
+    Var(X) = \frac{1}{\lambda^2}
+  \]
+}
+\pf{Dimostrazione}{
+  Ricordando che
+  \[
+    f_X(x) = \lambda e^{-\lambda x}
+  \]
+  \begin{align*}
+    E[X] &= \int_{-\infty}^{+\infty} x f_X(x) dx = \int_{0}^{+\infty} x \lambda e^{-\lambda x} dx\\
+    &= -\frac{1}{\lambda^2} e^{-\lambda x} (x + \frac{1}{\lambda}) \bigg|_0^{+\infty}\\
+    &= -\frac{1}{\lambda^2} (0 + 0) + \frac{1}{\lambda^2} = \frac{1}{\lambda}
+  \end{align*}
+  Quindi, il valore atteso di una variabile aleatoria continua con distribuzione esponenziale è:
+  \[
+    E[X] = \frac{1}{\lambda}
+  \]
+  Per calcolare la varianza, utilizziamo la formula:
+  \[
+    Var(X) = E[X^2] - (E[X])^2
+  \]
+  Calcoliamo prima $E[X^2]$:
+  \begin{align*}
+    E[X^2] &= \int_{-\infty}^{+\infty} x^2 f_X(x) dx = \int_{0}^{+\infty} x^2 \lambda e^{-\lambda x} dx\\
+    &= -\frac{1}{\lambda^3} e^{-\lambda x} (x^2 + 2\frac{x}{\lambda} + \frac{1}{\lambda^2}) \bigg|_0^{+\infty}\\
+    &= -\frac{1}{\lambda^3} (0 + 0 + 0) + \frac{1}{\lambda^3} = \frac{2}{\lambda^2}
+  \end{align*}
+  Quindi, la varianza è:
+  \begin{align*}
+    Var(X) &= E[X^2] - (E[X])^2 = \frac{2}{\lambda^2} - \left( \frac{1}{\lambda} \right)^2\\
+    &= \frac{2}{\lambda^2} - \frac{1}{\lambda^2} = \frac{1}{\lambda^2}
+  \end{align*}
+}
+
+\nt{
+  Si noti che la varianza è sempre positiva e tende a zero quando $\lambda$ tende a infinito.
+}
+
+\subsubsection{
+  Distribuzione Normale (o Gaussiana)
+}
+\dfn{Distribuzione Normale}{
+  Una variabile aleatoria $X$ si dice avere una distribuzione normale con media $\mu \in \mathbb{R}$ e varianza $\sigma^2 > 0$ se la sua densità di probabilità è:
+  \[
+    f_X(x) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x - \mu)^2}{2\sigma^2}}
+  \]
+  in tal caso scriviamo
+  \[
+    X \sim \mathcal{N}(\mu, \sigma^2)
+  \]
+}
+Qui la sua funzione di ripartizione è
+\mprop{
+  Funzione di ripartizione di una variabile aleatoria continua con distribuzione normale}{
+  Sia $X$ una variabile aleatoria continua con distribuzione normale con media $\mu \in \mathbb{R}$ e varianza $\sigma^2 > 0$. Allora la funzione di ripartizione di $X$ è:
+  \[
+    F_X(x)= \frac{1}{2} \left( 1 + \text{erf}\left( \frac{x - \mu}{\sigma\sqrt{2}} \right) \right)
+  \]
+}
+\pf{Dimostrazione}{
+  La funzione di ripartizione è definita come:
+  \[
+    F_X(x) = P(X \leq x) = \int_{-\infty}^{x} f_X(y) dy
+  \]
+  Quindi, per calcolare la funzione di ripartizione, dobbiamo considerare i due casi:
+  \begin{itemize}
+    \item Se $x < -\infty$, allora $F_X(x) = 0$.
+    \item Se $x > +\infty$, allora $F_X(x) = 1$.
+    \item Se $-\infty < x < +\infty$, allora:
+    \[
+      F_X(x) = \int_{-\infty}^{x} f_X(y) dy = \int_{-\infty}^{x} \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(y - \mu)^2}{2\sigma^2}} dy
+    \]
+    Questa integrale non ha una soluzione analitica, ma può essere calcolato numericamente utilizzando la funzione errore $\text{erf}$.
+  \end{itemize}
+}
+
+\subsubsection{Distribuzione Normale standard}
+La distribuzione normale standard è un caso particolare della distribuzione normale in cui:
+\begin{itemize}
+  \item La media $\mu=0$
+  \item La varianza $\sigma^2=1$
+\end{itemize}
+La notazione è
+\[
+  Z \sim \mathcal{N}(0, 1)
+\]
+Per dovere di cronaca riporto la definizione
+\dfn{Distribuzione Normale standard}{
+  Una variabile aleatoria $Z$ si dice avere una distribuzione normale standard se la sua densità di probabilità è:
+  \[
+    \varphi_X(x) = \frac{1}{\sqrt{2\pi}} e^{-\frac{x^2}{2}}
+  \]
+  in tal caso scriviamo
+  \[
+    Z \sim \mathcal{N}(0, 1)
+  \]
+}
+
+Si noti che la distribuzione normale standard è simmetrica rispetto all'asse $y$ e ha una forma a campana
+\begin{center}
+  \begin{tikzpicture}
+    \begin{axis}[
+      xlabel={$x$},
+      ylabel={$f_X(x)$},
+      xmin=-4, xmax=4,
+      ymin=-0.2, ymax=0.5,
+      axis lines=middle,
+      enlargelimits=true,
+      grid=both,
+      grid style={line width=.1pt, draw=gray!10},
+      major grid style={line width=.2pt,draw=gray!50},
+      minor tick num=4,
+      width=10cm,
+      height=6cm,
+      domain=-4:4,
+      samples=100,
+      restrict y to domain=-0.2:0.5,
+      xtick=\empty, % Rimuove le etichette sugli assi x
+      ytick=\empty  % Rimuove le etichette sugli assi y
+  ]
+      
+      % Disegna la distribuzione normale standard
+      \addplot[blue, thick, name path=A] {1/sqrt(2*pi) * exp(-x^2/2)} node [pos=0.9, above right] {$\varphi_X(x)$};
+      
+      % Asse x (per il riempimento)
+      \addplot[draw=none, name path=B] {0};
+      
+      % Riempi l'area sotto la curva
+      \addplot[blue!20] fill between[of=A and B, soft clip={domain=-4:0}];
+      
+  \end{axis}
+\end{tikzpicture}
+\end{center}
+
+Si noti la funzione di ripartizione
+\mprop{funzione di ripartizione della distribuzione normale standard}{
+  Sia $Z$ una variabile aleatoria continua con distribuzione normale standard. Allora la funzione di ripartizione di $Z$ è:
+  \[
+    F_Z(z) = \frac{1}{2} \left( 1 + \text{erf}\left( \frac{z}{\sqrt{2}} \right) \right)
+  \]
+}
+\pf{Dimostrazione}{
+  La funzione di ripartizione è definita come:
+  \[
+    \Phi_Z(x) = P(Z \leq z) = \int_{-\infty}^{z} f_Z(y) dy
+  \]
+  Quindi, per calcolare la funzione di ripartizione, dobbiamo considerare i due casi:
+  \begin{itemize}
+    \item Se $z < -\infty$, allora $F_Z(z) = 0$.
+    \item Se $z > +\infty$, allora $F_Z(z) = 1$.
+    \item Se $-\infty < z < +\infty$, allora:
+    \[
+      F_Z(z) = \int_{-\infty}^{z} f_Z(y) dy = \int_{-\infty}^{z} \frac{1}{\sqrt{2\pi}} e^{-\frac{y^2}{2}} dy
+    \]
+    Questa integrale non ha una soluzione analitica, ma può essere calcolato numericamente utilizzando la funzione errore $\text{erf}$.
+  \end{itemize}
+}
+
+Questo è il grafico della funzione di ripartizione della distribuzione normale standard: TODO (non c'ho voglia di farlo ora)
+
+Proposizione utilina
+\mprop{}{
+  Sia $X$ una variabile aleatoria continua con distribuzione normale standard $Z \sim \mathcal{N}(0, 1)$. Allora:
+  \[
+    E[Z] = 0
+  \]  
+  \[
+    Var(Z) = 1
+  \]
+}
+\pf{Dimostrazione}
+{
+  Ricordando che
+  \[
+    f_Z(z) = \frac{1}{\sqrt{2\pi}} e^{-\frac{z^2}{2}}
+  \]
+  Si ha:
+  \begin{align*}
+    E[Z] &= \int_{-\infty}^{+\infty} z f_Z(z) dz = \int_{-\infty}^{+\infty} z \frac{1}{\sqrt{2\pi}} e^{-\frac{z^2}{2}} dz\\
+    &= 0
+  \end{align*}
+  Quindi, il valore atteso di una variabile aleatoria continua con distribuzione normale standard è:
+  \[
+    E[Z] = 0
+  \]
+  Per calcolare la varianza, utilizziamo la formula:
+  \[
+    Var(Z) = E[Z^2] - (E[Z])^2
+  \]
+  Calcoliamo prima $E[Z^2]$:
+  \begin{align*}
+    E[Z^2] &= \int_{-\infty}^{+\infty} z^2 f_Z(z) dz = \int_{-\infty}^{+\infty} z^2 \frac{1}{\sqrt{2\pi}} e^{-\frac{z^2}{2}} dz\\
+    &= 1
+  \end{align*}
+  Quindi, la varianza è:
+  \begin{align*}
+    Var(Z) &= E[Z^2] - (E[Z])^2 = 1 - 0 = 1  \end{align*}
+}
+
+Adesso vengono qui riportate alcune proprietà della distribuzione normale
+\mprop{
+
+}{
+  Se $X \sim \mathcal{N}(\mu, \sigma^2)$, allora la trasformazione
+  \[
+    Z = \frac{X - \mu}{\sigma}
+  \]
+  è una variabile aleatoria standardizzata, ovvero $Z \sim \mathcal{N}(0, 1)$ 
+}
+\pf{Dimostrazione}{
+  Sia $X \sim \mathcal{N}(\mu, \sigma^2)$, quindi la funzione di densità di probabilità di $X$ è:
+  \[
+    f_X(x) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x - \mu)^2}{2\sigma^2}}
+  \]
+  Devo dimostrare che $Z = \frac{X - \mu}{\sigma}$ ha una distribuzione normale standard, quindi:
+  \[
+    f_Z(z) = \frac{1}{\sqrt{2\pi}} e^{-\frac{z^2}{2}}
+  \]
+  Si ha che la dunzione di ripartizione di $Z$ è:
+  \[
+    F_Z(z) = P(Z \leq z) = P\left( \frac{X - \mu}{\sigma} \leq z \right) = P(X \leq z\sigma + \mu) = F_X(z\sigma + \mu)
+  \]
+  Dove $F_X(x)$ è la funzione di ripartizione di $X$.
+
+  Per trovare la funzione di densità di probabilità di $Z$, deriviamo $F_Z(z)$ rispetto a $z$:
+  \[
+    f_Z(z) = \frac{d}{dz}F_Z(z) = \frac{d}{dz}F_X(z\sigma + \mu) = f_X(z\sigma + \mu) \cdot \sigma
+  \]
+  Sostituendo $f_X(x)$, otteniamo:
+  \[
+    f_Z(z) =f_X(z\sigma +\mu) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(z\sigma + \mu - \mu)^2}{2\sigma^2}} \cdot \sigma = \frac{1}{\sqrt{2\pi}} e^{-\frac{z^2}{2}}
+  \]
+  
+  Questo dimostra che $Z$ ha una distribuzione normale standard
+}
+
+\chapter{Integrale di Gauss}
+perché sì
+
+\[
+  \int_{-\infty}^{+\infty} e^{-x^2} dx = \sqrt{\pi}
+\]
