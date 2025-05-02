@@ -273,10 +273,12 @@ All'aumentare delle dimensioni, i vertici aumentano in modo esponenziale $ 2^{n}
     \item $\Rightarrow$: se fosse $cv_j > 0$ per un certo $j$, allora $\nu_j$ potrebbe essere scelto arbitrariamente grande, e quindi la funzione obbiettivo divergerebbe
     \item $\Leftarrow$: Supponiamo che $cv_j \leq 0$ per ogni $j \in \{1, \ldots, t\}$, e prendiamo un $y \in P$. Abbiamo che, se $\lambda_i$ e $\nu_j$ sono i corrispondenti coefficienti del teorema di decomposizione,
 
+    \[
     \begin{aligned}
-      cy &= \sum_{i=1}^{s} \lambda_i (cx_i) + \sum_{j=1}^{t} \nu_j (cv_j)\\
-      &\leq \sum_{i=1}^{s} \lambda_i (cx_i) \leq \sum_{i=1}^{s} \lambda_i (cx_k) = cx_k
+          cy &= \sum_{i=1}^{s} \lambda_i (cx_i) + \sum_{j=1}^{t} \nu_j (cv_j)\\
+          &\leq \sum_{i=1}^{s} \lambda_i (cx_i) \leq \sum_{i=1}^{s} \lambda_i (cx_k) = cx_k
     \end{aligned}
+    \]
     
     dove $x_k$ è il vettore tale che $x_k = \max\{cx_i \mid i = 1, \ldots, s\}$. Quindi $x_k$ è una soluzione ottima finita.
     
@@ -285,11 +287,10 @@ All'aumentare delle dimensioni, i vertici aumentano in modo esponenziale $ 2^{n}
 
 \nt{
   La condizione $ cv_j \leq 0 $ significa che andando verso le direzioni, la funzione da massimizzare decresce. Dato che le soluzioni ammissibili possono essere illimitate solo lungo queste direzioni, significa che la funzione obbiettivo non puo' aumentare illimitatamente.
-}
+  }
 
-\pf{Dimostrazione}{
   
-}
+
 
 \section{Dualita'}
 % \end{document}
