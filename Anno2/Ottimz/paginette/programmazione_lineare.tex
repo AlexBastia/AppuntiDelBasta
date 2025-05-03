@@ -292,5 +292,203 @@ All'aumentare delle dimensioni, i vertici aumentano in modo esponenziale $ 2^{n}
   
 
 
-\section{Dualita'}
-% \end{document}
+\section{Dualità}
+
+La \textbf{teoria della dualità} è  una branca dell'algebra lineare che studia le relazioni tra problemi di ottimizzazione. Si basa sull'udea che ad ogni problema di PL (chiamato \textbf{primale}) è associato mediante una funzione detta \textbf{involuzione} un altro problema (chiamato \textbf{duale}) che ha una struttra simile. Applicando l'involuzione al problema duale si ottiene il problema primale. 
+
+\subsection{Coppie di problemi}
+\dfn{Coppia di problemi}{
+  Si definisce \textbf{coppia di problemi} la coppia di problemi
+  \[
+    \begin{aligned}
+      \text{primale:} & \quad \max{cx} \\
+      & \quad Ax \leq b\\
+      & \quad x\geq 0\\
+      \text{duale:} & \quad \min{by}\\
+      & \quad A^Ty = c\\
+      & \quad y\geq 0
+    \end{aligned}
+  \]
+}
+
+Qui verranno presentate le coppie simmetriche e quelle asimmetriche in maniera approssimativa
+\subsubsection{Coppie asimmetriche}
+\dfn{
+  Coppia asimmetriche
+}{
+  Si definisce \textbf{coppia asimmetrica} la coppia di problemi
+  \[
+    \begin{aligned}
+      \text{primale:} &\quad \max{cx\mid (Ax \leq b) \land (x\geq 0)} \\
+      \text{duale:} &\quad \min{yb\mid (yA = c) \land (y\geq 0)}\\
+    \end{aligned}
+  \]
+}
+
+\subsubsection{Coppie simmetriche}
+\dfn{Coppia simmetrica}{ \label{def:coppia_simmetrica}
+  Si definisce \textbf{coppia simmetrica} la coppia di problemi
+  \[
+    \begin{aligned}
+      \text{primale:} & \quad \max{\{cx \mid Ax \leq b\}} \\
+      \text{duale:} & \quad \min{\{yb \mid (yA = c) \land (y \geq 0)\}}\\
+    \end{aligned}
+  \]
+}
+
+\subsection{Teoremi sualla dualità}
+
+\subsubsection{Teorema del duale del duale}
+
+\mlenma{}{ \label{lem:minmax}
+  Per qualsiasi funzione $f(y)$ e per qualsiasi insieme ammissibile $S$ su cui $f(y)$ è definita, vale la seguente relazione:
+  \[
+  \min{\{f(y) \mid y \in S\}} = -\max{\{-f(y) \mid y \in S\}}
+  \]
+}
+
+\pf{Dimostrazione}{
+  Sia $f(y)$ una funzione definita su un insieme ammissibile $S$. Minimizzare $f(y)$ equvale a trovare un $v_m\leq f(y)\,\forall y\in S$, invece massimizzare $-f(y)$ equivale a trovare un $v_M\geq -f(y)\,\forall y\in S$, moltiplicando per $-1$ si ha che $-v_M\leq f(y)\,\forall y\in S$.
+}
+
+\thm{sul duale del duale}{
+  Sia $P$ un problema primale e sia $D$ il suo duale. Allora $D$ è il duale di $P$ e $P$ è il duale di $D$
+
+  \begin{center}
+    
+    \includegraphics[width=10cm]{img/duale_primale.png}
+  \end{center}
+}
+\pf{
+  Dimostrazione nel caso della coppia simmetriche
+}{
+  È possibile esprimere il duale della coppia simmetrica per \ref{lem:minmax} e \ref{def:coppia_simmetrica}:
+  \[
+    \begin{aligned}
+      &-\max{\{ -yb \mid (yA\geq c) \land (y\geq 0) \}}=\\
+      &-\max{\{ (-b^T)y \mid ((-A^T)y \leq -c) \land (y\leq 0) \}}\\
+    \end{aligned}
+  \]
+  Il cui duale è
+  \[
+    \begin{aligned}
+      &-\min{\{ -xc \mid (x(-A^T) \geq -b) \land (x\geq 0) \}}=\\
+      &\max{\{ cx \mid Ax\leq b \land x\geq 0 \}}\\
+    \end{aligned}\]
+}
+
+\subsubsection{Teorema Debole di Dualità}
+\thm{Teorema Debole di Dualità}{  \label{thm:teorema_debole_di_dualita}
+  Siano $\overline{x}$ e $\overline{y}$ rispettivamente una soluzione ammissibile del problema primale e del problema duale. Allora vale la seguente disuguaglianza:
+  \[
+    c\overline{x} \leq b\overline{y}
+  \]
+}
+\pf{Dimostrazione nel caso della coppia asimmetrica}{
+    \[
+      \begin{cases}
+        A\overline{x} \leq b \\
+        \overline{y}A = c \\
+        \overline{y} \geq 0
+      \end{cases}\implies
+      \begin{cases}
+        \overline{y}A\overline{x} \leq \overline{y} b \\
+        \overline{y}A\overline{x} = c\overline{x} \\
+        \overline{y} \geq 0 \\
+      \end{cases}\implies
+      c\overline{x} \leq b\overline{y}
+    \]
+}
+
+\pf{Nel caso di coppia simmetrica}{
+  \[
+    \begin{cases}
+      A\overline{x} \leq b \\
+      \overline{y}A \geq c \\
+      \overline{y} \geq 0\\
+      \overline{x} \geq 0
+    \end{cases}\implies
+    \begin{cases}
+      \overline{y}A\overline{x} \leq \overline{y} b \\
+      \overline{y}A\overline{x} \geq c\overline{x} \\
+      \overline{y} \geq 0 \\
+      \overline{x} \geq 0
+    \end{cases}\implies
+    c\overline{x} \leq b\overline{y}
+  \]
+}
+
+\cor{Illimitatezza del primale e duale vuoto}{
+  Se il problema primale è illimitato, allora il problema duale è vuoto. Viceversa, se il problema duale è vuoto, allora il problema primale è illimitato.
+}
+\pf{Dimostrazione}{
+  Se il problema primale è illimitato, allora 
+  \[
+    \forall M\in \mathbb{R}\,\exists \overline{x}\in P :cx > M
+  \]
+  Poniamo per assurdo che $\exists \overline{y}$ soluzione ammissibile del duale. Allora, per la precedenze deduzione, si ha che
+  \[
+    \exists \overline{x} \in P : c\overline{x} > b\overline{y}
+  \]
+  Tuttavia per \ref{thm:teorema_debole_di_dualita} si ha una contraddizione
+}
+
+\cor{
+  sulle soluzioni ottime
+}{
+  Siano $\overline{x}$ e $\overline{y}$ rispettivamente soluzioni ammissibili per il problema primale e per il problema duale e valga la seguente uguaglianza:
+  \[
+    c\overline{x} = b\overline{y}
+  \]
+  Allora $\overline{x}$ e $\overline{y}$ sono soluzioni ottime
+}
+\pf{Dimostrazione}{
+  Sia $c\overline{x} = b\overline{y}$. Assumiamo per assurdo che $\overline{x}$ non sia una soluzione ottima. Allora esiste un $z$ ammissibile per il primale tale che $cz >\overline{y}b$, ma per \ref{thm:teorema_debole_di_dualita} si ha uan contraddizione
+}
+\subsection{Direzioni ammissibili}
+
+È lecito chiedersi se, data una coppia assimetrica e considerato un $\overline{x}$ soluzione ammissibile per il primale, spostando $\overline{x}$ lungo una direzione dell'iperspazio, si ottiene o meno una nuova soluzione ammissibile. Ebbene ci si sta chiedendo se esiste la cosidetta direzione ammissibile
+
+\dfn{Direzione ammissibile}{
+  Si definisce \textbf{direzione ammissibile} un vettore $\xi$ sse
+  \[
+    \exists \overline{\lambda} >0 : x ( \lambda) = \overline{x} + \lambda \xi 
+  \]
+  Dove x($\lambda$) è ammissibile nel primale $\forall \lambda\in [0,\overline{\lambda}]$
+}
+
+\mlenma{sull'ammissibilità del vettore direzione}{
+  il vettore $\xi$ è direzione ammissibile per $\overline{x}$ sse
+  \[
+    A_{I(\overline{x})} \xi \leq 0
+  \]
+}
+
+\pf{Dimostrazione}{
+  Devo dimostrare che
+  \[
+    \forall i\in\{1,\dots, m\}\quad A_{i}x(\lambda)=A_{i}\overline{x} +\lambda A_{i}\xi \leq b_{i}
+  \]
+  Si ha che 
+  \begin{itemize}
+    \item se $i\in I(\overline{x})$, allora $A_{i}\overline{x} = b_{i}$ pertanto l'quazione è verificata sse $\lambda A_{i}\xi \leq 0$
+    \item se $i\notin I(\overline{x})$, allora $A_{i}\overline{x} < b_{i}$ pertanto l'quazione è verificata sse $\lambda A_{i}\xi \leq b_{i} - A_{i}\overline{x}$ e dato che $b_{i} - A_{i}\overline{x}\geq 0$ l'equazione è sicuramente verificata se $\lambda A_{i}\xi \leq 0$
+  \end{itemize}
+}
+
+\subsection{Direzione di crescita}
+\dfn{Direzione di crescita}{
+  Si definisce \textbf{direzione di crescita} per $\overline{x}$ un vettore direzione $\xi\in \mathbb{R}^n$ se
+  \[
+    \exists \lambda : cx(\lambda) = c\overline{x} + \lambda c\xi > c\overline{x} \iff c\xi > 0
+  \]
+  Ossia se uno spostamento lungo la direzione $\xi$ porta ad un incremento della funzione obbiettivo
+}
+
+si osservi che 
+\nt{
+  \begin{itemize}
+    \item se $c=0$ la funzione obbiettivo è sempre zero, quindi tutte le soluzioni ammissibili sono ottime
+    \item se $c\neq 0$ allora se esiste una direzione ammissibile per $\overline{x}$ che sia anche di crescita, allora $\overline{x}$ non può essere ottimo.
+  \end{itemize}
+}
