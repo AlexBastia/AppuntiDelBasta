@@ -1,5 +1,51 @@
 % \begin{document}
 \chapter{Vettori Aleatori}
+
+\section{Introduzione}
+
+Si introduce tale concetto di \textit{vettori aleatori} per trattare variabili aleatorie che non sono più scalari, ma vettori. Infatti ciò che è stato presentato fino ad ora, dato uno spazio di probabilità $(\Omega, \mathbb{P})$, sono esempi con una sola variabile aleatoria, che assume valori in $\mathbb{R}$, tuttavia, è possibile definire più variabili aleatoria in un qualsiasi spazio di probabilità, questo ci induce, così, a considerare la tupla $(X,X_1, \dots, X_n)$ definita su $\Omega$ e che assume valori in $\mathbb{R}^n$ (in base alla quantità di variabili aleatorie). Questa tupla è detta \textit{vettore aleatorio}
+
+\dfn{Vettore aleatorio}{
+    Sia $(\Omega, \mathbb{P})$ uno spazio di probabilità, una qualunque funzione
+    \begin{equation}
+        (X_1, \dots, X_n): \Omega \to \mathbb{R}^n
+    \end{equation}
+    è definita \textbf{vettore aleatorio}
+}
+
+\subsection{Legge di un vettore aleatorio}
+Come per le variabili aleatorie, possiamo associare ad ogni vettore aleatorio la sua distribuzione o legge. Diamo la definizione solo per il caso bidimensionale.
+
+\dfn{Legge di un vettore aleatorio}{
+    Sia $(\Omega, \mathbb{P})$ uno spazio di probabilità $(X,Y):\Omega\to\mathbb{R}^2$. Si definisce \textbf{legge di un vettore aleatorio} la probabilità
+    \begin{equation}
+        \mathbb{P}_{(X,Y)} = \mathcal{P}(\mathbb{R^2})\to [0,1]
+    \end{equation}
+    definita da
+    \begin{equation}
+        \mathbb{P}_{(X,Y)}(B) = \mathbb{P}((X,Y)\in B) \quad \forall B\subset\mathbb{R}^2
+    \end{equation}
+    Per dire che $(X, Y )$ ha distribuzione o legge $\mathbb{P}_{(X,Y)}$ si screive
+    \[
+        (X,Y)\sim\mathbb{P}_{(X,Y)}
+    \]
+}
+
+\nt{
+    Se $B\subset\mathbb{R}^2$è il prodotto cartesiano di due insiemi $B_1$ e $B_2$ in $\mathbb{R}$, allora
+    \[
+        \mathbb{P}(\xy\in B_1\times B_2) = \P(\{X\in B_1\}\cap\P\{Y\in B_2\})
+    \]
+    Infatti l'evento $\{(X,Y)\in B_1\times B_2\}$ è dato da
+    \[
+        \{\xy\in B_1\times B_2\} = \{X\in B_1\}\cap\{Y\in B_2\}
+    \]
+}
+
+$\mathbb{P}(\{X \in B_1\} \cap \{Y \in B_2\})$ verrà scritto nella forma nella forma $\mathbb{P}(X \in B_1, Y \in B_2)$.
+
+
+
 Introduciamo il concetto di dipendenza fra variabili aleatorie. 
 
 definizione di vettori aleatori n-dimensionali
