@@ -422,7 +422,55 @@ Per calcolare la covarianza di $X$ e $Y$ è utile la seguente formula
 }
 \pf{Dimostrazione}{
     Per definizione, si ha che
+\begin{align*}
+\text{Cov}(X,Y) &= \mathbb{E}[(X-\mathbb{E}[X])(Y-\mathbb{E}[Y])] \\
+&= \mathbb{E}[XY - X\mathbb{E}[Y] - \mathbb{E}[X]Y + \mathbb{E}[X]\mathbb{E}[Y]]
+\end{align*}
+Dalla linearità del valore atteso, si ottiene (si noti che $\mathbb{E}[X]$ e $\mathbb{E}[Y]$ sono costanti)
+\begin{align*}
+\text{Cov}(X,Y) &= \mathbb{E}[XY] - \mathbb{E}[X]\mathbb{E}[Y] - \mathbb{E}[X]\mathbb{E}[Y] + \mathbb{E}[X]\mathbb{E}[Y] \\
+&= \mathbb{E}[XY] - \mathbb{E}[X]\mathbb{E}[Y]
+\end{align*}
+Infine se le variabili aleatorie $X$ e $Y$ sono indipendenti allora dal Corollario 2.2 si ha che
+\[ \mathbb{E}[XY] = \mathbb{E}[X]\mathbb{E}[Y], \]
+quindi $\text{Cov}(X,Y) = 0$, ovvero $X$ e $Y$ sono scorrelate
+}
+
+La covarianza interviene nella formula della varianza di $X + Y$ 
+\thm{
+    Varianza della somma di due variabili aleatorie discrete
+}{ \label{thm:var_somma}
+    Siano $X$ e $Y$ due variabili aleatorie discrete. Allora
     \[
-        Cov(X,Y) = \mathbb{E}[(X-\mathbb{E}[X])(Y-\mathbb{E}[Y])] = \mathbb{E}[XY] - \mathbb{E}[X]\mathbb{E}[Y]
+        Var(X+Y) = Var(X) + Var(Y) + 2Cov(X,Y)
     \]
+    Se $X$ e $Y$ sono scorrelate, allora
+    \[
+        Var(X+Y) = Var(X) + Var(Y)
+    \]
+}
+
+\pf{Dimostrazione}{
+    Applicando il teorema \ref{thm:valore_atteso_varianza} con $h(x,y)=x+y$ si ha che
+    \[
+        \begin{aligned}
+            &Var(X+Y) = \mathbb{E}[(X+Y-\mathbb{E}[X+Y])^2] = \mathbb{E}[(X+Y-\mathbb{E}[X]-\mathbb{E}[Y])^2]\\
+            &= \mathbb{E}[(X - \mathbb{E}[X])^2 + (Y - \mathbb{E}[Y])^2 + 2(X - \mathbb{E}[X])(Y - \mathbb{E}[Y])] \\
+            &= \text{Var}(X) + \text{Var}(Y) + 2\text{Cov}(X,Y).
+        \end{aligned}
+    \]
+}
+\nt{
+    La covarianza è un indicatore di dipendenza tra due variabili aleatorie $X$ e $Y$. Più precisamente, supponiamo$^3$ che $\text{Var}(X) > 0$ e $\text{Var}(Y) > 0$. In tal caso, ha senso definire il \textbf{coefficiente di correlazione}
+\[ \rho_{X,Y} = \frac{\text{Cov}(X,Y)}{\sqrt{\text{Var}(X)\text{Var}(Y)}} \]
+Si può dimostrare che
+\[ -1 \le \rho_{X,Y} \le 1. \]
+Ricordiamo che se $\text{Cov}(X,Y) = 0$ allora $X$ e $Y$ si dicono scorrelate. Si noti che $\text{Cov}(X,Y) = 0$ equivale a $\rho_{X,Y} = 0$. Al contrario, quando la correlazione è massima in valore assoluto (quindi $\rho_{X,Y} = -1$ oppure $\rho_{X,Y} = 1$), si ha che
+\[ \rho_{X,Y} = \pm 1 \iff Y = aX + b. \]
+Più precisamente, $\rho_{X,Y} = \pm 1$ se e solo se esistono due costanti $a \ne 0$ e $b \in \mathbb{R}$ tali che $Y = aX + b$. La correlazione misura dunque se esiste tra $X$ e $Y$ una dipendenza di tipo lineare. Quindi quando $X$ e $Y$ sono scorrelate ($\text{Cov}(X,Y) = 0$) significa solamente che non esiste una dipendenza lineare tra $X$ e $Y$. Ricordiamo invece che se $X$ e $Y$ sono indipendenti allora non esiste alcuna dipendenza funzionale tra $X$ e $Y$ (non solo di tipo lineare). Perciò se sappiamo solamente che $\text{Cov}(X,Y) = 0$ non possiamo dire che $X$ e $Y$ sono indipendenti. Riassumendo:
+\begin{align*}
+X \perp \!\!\! \perp Y &\implies \text{Cov}(X,Y) = 0, \\
+\text{invece } X \not\perp \!\!\! \perp Y &\not\implies \text{Cov}(X,Y) = 0.
+\end{align*}
+
 }
