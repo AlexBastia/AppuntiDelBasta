@@ -868,28 +868,36 @@ Lo sviluppo in serie di Taylor dell'esponenziale $ \forall x \in \mathbb{R} $:
 
 \section{Variabili Aleatorie Continue}
 
-Es X = tempo di vita di un componente Im(X) = [0, +inf)
+E' possibile trovarsi in una situazione in cui una variabile aleatoria puo' assumere un'infinita' \textit{continua} (e quindi non numerabile) di valori. Per questo motivo e' utile studiare le variabili aleatorie continue, che si differenziano rispetto a quelle discrete in diversi aspetti.
+
+\ex{}{ \label{ex:VAcontTime}
+  $ X = tempo di vita di un componente $
+
+  Quindi $ X $ puo' assumere qualunque valore positivo o 0, da cui si ha
+  \[  
+    Im(X) = [0, +inf)
+  \]
 
 E' molto piu' naturale modellare l'intervallo di tempi come il continuo, al posto di discretizzarlo (e' una forzatura)
+}
 
-Ma questa scelta ci impone che
+Ma, per le proprieta' del continua, questa scelta ci impone che
 \[
   p_X(x) = P(X = x) = 0 \ \forall x
 \]
+Ovvero, le densita' discrete e' nulla per tutti i possibili valori singoli di una VA continua.
 
 Domanda cruciale: "Come costruiamo la distribuzione di $ X $?"
 
-Mediante una densita' -> nel caso discreto abbiamo caratterizzato la legge di $ X $ con la densita' (discreta)
-
-Ma ora non abbiamo la densita' discreta, abbiamo quella generale $ f_X $, che da' una probabilita' agli intervalli
-
-Da la probabilita' agli eventi $ \{X \in [a,b]\}  = P(a\leq X \leq b) $
-
+Possiamo provare a calcolare la probabilita' di un intervallo di valori. Tornando all' esempio \ref{ex:VAcontTime}, ci aspettiamo che:
+\[
+  \forall a,b \in [0, +\infty), a < b. \quad P(a \leq X \leq b) > 0
+\]
+Non ci interessa quindi il valore in un punto della nostra funzione di densita', ma il valore sugli intervalli. Data una funzione $ f_X: \mathbb{R} \to \mathbb{R} $ (che chiameremo \textit{densita' continua}), possiamo provare a usare l'integrale per calcolare la probabilita' agli eventi $ \{X \in [a,b]\}  = P(a\leq X \leq b) $
 \[
   P(a \leq X \leq b) = \int_{a}^{b} f_X(x)dx
 \]
-
-La densita' deve essere una funzione compatibile con le proprieta' della probabilita':
+Notare che se $ a = b $, allora il valore dell'integrale e' nullo, proprio come ci aspettavamo. Per assicurarci che l'integrale di tale funzione sia effettivamente una proabilita', la $ f_X $ deve verificare due proprieta':
 \begin{itemize}
 \item Deve essere $ \geq 0 $ per ogni elemento del dominio, perche' l'integrale di una funzione negativa su un intervallo sara' sicuramente negativa
 \item $ P(-\infty \leq X \leq +\infty) $ deve essere 1, dato che e' l'evento certo, quindi:
@@ -898,7 +906,19 @@ La densita' deve essere una funzione compatibile con le proprieta' della probabi
   \]
 \end{itemize}
 
+\subsection{Definizioni di densita' e VA continue}
+Diamo quindi la definizione formale di \textit{densita' continua}:
+\dfn{Densita' continua}{
+  Una funzione $ f_X: \mathbb{R} \to \mathbb{R} $ e' una \textit{densita' continua} se:
+  \begin{itemize}
+    \item $ \forall x \in \mathbb{R}.\  f(x) \geq 0 $
+    \item $ \int_{+\infty}^{-\infty}f(x)dx = 1 $
+  \end{itemize}
+}
+
+
 \ex{}{
+  Un possibile valore per la densita' continua dell'esempio \ref{ex:VAcontTime}:
   \[
     f_X(x) = \begin{cases}
     0 & x<0\\
@@ -910,38 +930,25 @@ La densita' deve essere una funzione compatibile con le proprieta' della probabi
   calcola se valgono le proprieta' sopra
 }
 
-La probabilita' dell'intervallo graficamente e' l'area del sottografico di $ f_X $ nello stesso intervallo. Il vincolo e' che l'area di tutto il sottografico e' 1.
-
-\dfn{Densita' di probabilita'}{
-  Si dice \textit{densita' di probabilita'} una funzione:
-  \begin{align*}
-    f_X: \mathbb{R} \to \mathbb{R}
-  \end{align*}
-  Se vale che:
-  \begin{itemize}
-    \item $ \forall x \in \mathbb{R}.\ f_X(x) \geq 0 $
-    \item $ \int_{-\infty}^{+\infty}f_X(x)dx = 1 $
-  \end{itemize}
-}
+La probabilita' dell'intervallo graficamente e' l'area del sottografico di $ f_X $ nello stesso intervallo. Il vincolo e' che l'area di tutto il sottografico sia 1.
 
 \nt{
-  La densita' non e' necessariamente minore o uguale di 1, dato che a noi ci interessa che l'area sottesa sia minore di uno, non il valore della funzione stessa. 
-
-  Addirittura puo' essere anche illimitata!
+  Notare che, a differenza della densita' discreta che ha valore massimo 1, la densita' continua non ha valore limite superiore. Cio' e' dovuto al fatto che ci interessa il suo integrale su un intervallo che non e' determinato dal valore della funzione in un solo punto, quindi puo' benissimo valere $ f_X(x) > 1 $ (puo' anche essere illimitata).
 }
 
 \ex{}{
-  Nell'esempio di prima, se mettiamo $ \lambda e^{-x} $ l'integrale e' sempre 1!
+  Nell'esempio di prima, se mettiamo $ \lambda e^{-\lambda x} $ per qualunque  l'integrale e' sempre 1!
 }
 
+Dalla definizione di densita' continua possiamo definire anche le VA continue:
 \dfn{Variabile Aleatoria Continua}{
-  Sia $ (\Omega, P) $ SP e $ X $ VA. Si dice che $ X $ e' \textit{continua} se $ \exists $ una densita' di probabilita' se esiste una densità continua, indicata con $f_X$, tale che:
+  Sia $ (\Omega, P) $ SP e $ X $ VA. Si dice che $ X $ e' \textit{continua} se $ \exists $ una densita' di probabilita', indicata con $f_X$, tale che:
   \begin{equation}
    \P(a \leq X \leq b) = \int_{a}^{b} f_X(x)dx \quad \forall [a,b] \subset \mathbb{R}
   \end{equation}
 }
 
-\nt{
+\ex{}{
   Esempi di utilizzo della formula:
   \begin{itemize}
     \item $ P(X \leq a) = \int_{-\infty}^{a} f_X(x)dx $
@@ -956,6 +963,21 @@ La probabilita' dell'intervallo graficamente e' l'area del sottografico di $ f_X
   \end{itemize}
 }
 
+\nt{
+  Non esiste una sola funzione di densita' continua per una variabile. Infatti, data $ f_X $, e' possibile modificare il suo valore in un numero limitato o infinito numerabile di punti senza cambiare il valore dell'integrale:
+  \[
+    \forall [a,b] \subset \mathbb{R}.\quad \int_{a}^{b} f_X dx = \int_{a}^{b} g_X dx
+  \]
+  In questo caso, anche $ g_X $ e' una densita' di $ X $. Vedremo che cio' non causa problemi, e che in molti casi esiste una versione canonica.
+
+  A causa di tale non unicita', non e' possibile definire un supporto, che sarebbe dato dall'insieme
+  \[
+    S_X = \{x \in \mathbb{R} | f_X(x) > 0\}
+  \]
+  dato che per diverse densita' della stessa VA gli insiemi sono diversi. Anche in questo caso possiamo considerare la densita' canonica (se c'e'), da cui deriva il supporto canonico.
+}
+
+\subsection{Funzione di Ripartizione Continua}
 Una delle funzioni che ci permettono di caratterizzare le VA discrete ora diventa continua: la funzione di ripartizione (Bonzo non ci crede, e' da investigare)
 
 Infatti, $ P(a \leq X \leq a) = P(X = a) = \int_{a}^{a}f_X(x)dx = 0 $, quindi per avere una probabilta' positiva dobbiamo per forza considerare un intervallo. Quindi, tornando alle proprieta' della funzione di ripartizione, vediamo che:
@@ -964,14 +986,7 @@ Infatti, $ P(a \leq X \leq a) = P(X = a) = \int_{a}^{a}f_X(x)dx = 0 $, quindi pe
 \item $ F_X(x) - F_X(x^{-}) = P(X = x) $
 \end{itemize}
 
-Ma per quello che abbiamo detto, $ F_X $ e' continua anche a sx -> no more scalini
-
-\nt{
-  Se $ X $ e' una VA continua
-  \[
-    F_X(x) = \lim_{a \to -\infty} 
-  \]
-}
+Ma per quello che abbiamo detto, $ F_X $ e' continua anche a sx, quindi no more scalini.
 
 Ebbene buon bastianini, sai come lo vedremo? GRAZIE A QUESTO EFFICACISSIMO TEOREMA:
 \thm{Teorma della della densità e della continuità di $f_x$}{
@@ -1024,6 +1039,8 @@ Ebbene buon bastianini, sai come lo vedremo? GRAZIE A QUESTO EFFICACISSIMO TEORE
   \end{itemize}
 }
 
+Quindi, la funzione di ripartizione di una VA continua e' una funzione integrale, ed e' percio' \textit{assolutamente continua} (quindi e' continua con altre proprieta' in piu')
+
 \nt{
   Si può notare quindi che:
   \[
@@ -1035,8 +1052,8 @@ Ebbene buon bastianini, sai come lo vedremo? GRAZIE A QUESTO EFFICACISSIMO TEORE
   \[
     F_X (b) - F_X(a) = \int_{a}^{b} f_X(x) dx
   \]
+  A differenza delle VA discrete, quindi, l'inclusione o meno degli estremi non cambia il valore della probabilita' su un intervallo.
 }
-
 
 \subsection{Confronto tra VA continua e discreta}
 \begin{tabular}{|c|c|}
@@ -1058,12 +1075,24 @@ Dal teorema precedente sappiamo che
   F_X(x) = \int_{-\infty}^{x} f_X(y) dy
 \]
 
-Viene quindi da chiedersi come calcolare il contrario
+Viene quindi da chiedersi come calcolare il contrario, ci dobbiamo porre quindi due domande:
+\begin{itemize}
+\item Che proprieta' deve avere $ F_X $ per essere sicuri che $ X $ e' continua?
+\item Come si trova $ f_X $ partendo da $ F_X $?
+\end{itemize}
+
+Per rispondere alla prima domanda, sappiamo che $ X $ e' continua sse $ F_X $ e' assolutamente continua. Ma dimostrare cio' e' abbastanza difficile, quindi solitamente se non ci e' detto che $ X $ e' continua si usa tale proprieta':
+
+\mprop{Condizione sufficente per continuita' assoluta}{
+  Se una funzione $ f: \mathbb{R} \to \mathbb{R} $ e' $ C^{1} $ (differenziabile almeno una volta) a tratti, allora e' assolutamente continua
+}
+
+Dato per vero che $ X $ e' continua, dobbiamo calcolare la sua densita':
 
 \mprop{}{
-  Sia $X$ una variabile aleatoria continua con densità di probabilità con $F_X$ la sua funzione di ripartizione. Allora la densità di probabilità è data da:
+  Sia $X$ una variabile aleatoria continua con $F_X$ la sua funzione di ripartizione. Allora una densità di probabilità è data da:
   \[
-    f_X(x) := \frac{d}{dx}F_X(x)
+    f_X(x) := \frac{d}{dx}F_X(x) \quad \forall x \text{ in cui } F_X \text{ e' derivabile}
   \]
 }
 
@@ -1170,36 +1199,36 @@ Pertanto la dunzione di densità di probabilità è costante in $[a,b]$ e nulla 
     $f_X(x)$ & $\frac{1}{b-a}$ & $\frac{1}{b-a}$ & 1\\ 
   \end{tabular}
 \end{center}
-Il grafico della distribuzione è il seguente:
-\begin{tikzpicture}
-  \begin{axis}[
-      xlabel={$x$}, ylabel={$f_X(x)$},
-      xmin=-0.5, xmax=6,
-      ymin=-0.2, ymax=1.5,
-      axis lines=middle,
-      xticklabel style={anchor=north}, % Align x-axis labels properly
-      enlargelimits=true,
-      grid=both,
-      grid style={line width=.1pt, draw=gray!10},
-      major grid style={line width=.2pt,draw=gray!50},
-      minor tick num=4,
-      width=10cm, height=6cm,
-      domain=0:6, samples=100,
-      restrict y to domain=-0.2:1.5,
-      legend pos=north east
-  ]
-      % Plot the exponential function
-      \addplot[blue, thick] {exp(-x)} node [pos=0.9, above right] {$f_X(x) = \lambda e^{-\lambda x}$};
-      
-      % Add axis labels and annotations
-      \node at (axis cs:1,-0.2) [below] {$1$};
-      \node at (axis cs:3,-0.2) [below] {$3$};
-      \node at (axis cs:-0.2,1) [left] {$\lambda$};
-      
-      % Highlight the area under the curve
-      \addplot[blue!20] fill between[of=A and B, soft clip={domain=0:6}];
-  \end{axis}
-\end{tikzpicture}
+Il grafico della distribuzione è il seguente: TODO: non compila
+% \begin{tikzpicture}
+%   \begin{axis}[
+%       xlabel={$x$}, ylabel={$f_X(x)$},
+%       xmin=-0.5, xmax=6,
+%       ymin=-0.2, ymax=1.5,
+%       axis lines=middle,
+%       xticklabel style={anchor=north}, % Align x-axis labels properly
+%       enlargelimits=true,
+%       grid=both,
+%       grid style={line width=.1pt, draw=gray!10},
+%       major grid style={line width=.2pt,draw=gray!50},
+%       minor tick num=4,
+%       width=10cm, height=6cm,
+%       domain=0:6, samples=100,
+%       restrict y to domain=-0.2:1.5,
+%       legend pos=north east
+%   ]
+%       % Plot the exponential function
+%       \addplot[blue, thick] {exp(-x)} node [pos=0.9, above right] {$f_X(x) = \lambda e^{-\lambda x}$};
+%      
+%       % Add axis labels and annotations
+%       \node at (axis cs:1,-0.2) [below] {$1$};
+%       \node at (axis cs:3,-0.2) [below] {$3$};
+%       \node at (axis cs:-0.2,1) [left] {$\lambda$};
+%      
+%       % Highlight the area under the curve
+%       \addplot[blue!20] fill between[of=A and B, soft clip={domain=0:6}];
+%   \end{axis}
+% \end{tikzpicture}
 
 Si possono fare ulteriori considerazioni:
 \mprop{Fuznione di ripartizione di una variabile aleatoria continua con distribuzione costante}{
@@ -1280,13 +1309,13 @@ Ora passiamo a calcolare il valore atteso e la varianza di una variabile aleator
 
 La distribuzione esponenziale si ha quando si ha un processo di Poisson, ovvero quando si ha un evento che accade in un certo intervallo di tempo, ad esempio si usa per descrivere il tempo di vita di un macchinario oppure di un componente elettronico
 \dfn{Distribuzione esponenziale}{
-  Una variabile aleatoria $X$ si dice avere una distribuzione esponenziale con parametro $\lambda > 0$ se la sua densità di probabilità è:
+  Una variabile aleatoria $X$ si dice avere una distribuzione esponenziale con parametro $\lambda > 0$ se la sua densità di probabilità è: TODO: non compila plot
   \[
     f_X(x) = \lambda e^{-\lambda x} \cdot \mathbb{1}_{(0,+\infty)}(x) = \begin{cases}
       \lambda e^{-\lambda x} & x \geq 0\\
       0 & \text{altrimenti}
     \end{cases}
-      \addplot[blue, thick, name path=A] {\lambda * exp(-\lambda * x)} node [pos=0.9, above right] {$f_X(x)$};
+      % \addplot[blue, thick, name path=A] {\lambda * exp(-\lambda * x)} node [pos=0.9, above right] {$f_X(x)$};
   \]
 }
 
@@ -1338,18 +1367,14 @@ il cui grafico è: TODO
 
 
 Si noti che
-\mprop{
-  Funzione di ripartizione di una variabile aleatoria continua con distribuzione esponenziale
-}{
+\mprop{Funzione di ripartizione di una variabile aleatoria continua con distribuzione esponenziale}{
   Sia $X$ una variabile aleatoria continua con distribuzione esponenziale con parametro $\lambda > 0$. Allora la funzione di ripartizione di $X$ è:
-  \begin{equation}
-    
+  \begin{equation} 
     F_X(x) = 
     \begin{cases}
       0 & x < 0\\
       1 - e^{-\lambda x} & x \geq 0
-    \end{cases}
-  
+    \end{cases}  
   \end{equation}
   In tal caso scriviamo
   \[
@@ -1589,9 +1614,7 @@ Proposizione utilina
 }
 
 Adesso vengono qui riportate alcune proprietà della distribuzione normale
-\mprop{
-
-}{
+\mprop{}{
   Se $X \sim \mathcal{N}(\mu, \sigma^2)$, allora la trasformazione
   \[
     Z = \frac{X - \mu}{\sigma}

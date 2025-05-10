@@ -226,13 +226,14 @@ Esiste tuttavia una definizione basata sulle direzione (ovvero vettori di punti)
 Si noti l'esempio di cono convesso:
 \ex{Esempio visuale del cono convesso}{
   Si parte dai seguenti punti
-  \begin{center}
-    \includegraphics[width=0.5\textwidth]{img/inisieme_X_iniziale_per_il_cono.png}
-  \end{center}
+  % \begin{center}
+  %   \includegraphics[width=0.5\textwidth]{img/inisieme_X_iniziale_per_il_cono.png}
+  % \end{center}
   Il cono convesso generato da questi punti non è altro che
-  \begin{center}
-    \includegraphics[width=0.5\textwidth]{img/cono_convesso_di_X.png}
-  \end{center}
+  % \begin{center}
+  %   \includegraphics[width=0.5\textwidth]{img/cono_convesso_di_X.png}
+  % \end{center}
+  TODO: non esistono ste foto brodiz
 }
 
 \subsection{Teorema di Motzkin}
@@ -354,10 +355,10 @@ Qui verranno presentate le coppie simmetriche e quelle asimmetriche in maniera a
 \thm{sul duale del duale}{
   Sia $P$ un problema primale e sia $D$ il suo duale. Allora $D$ è il duale di $P$ e $P$ è il duale di $D$
 
-  \begin{center}
-    
-    \includegraphics[width=10cm]{img/duale_primale.png}
-  \end{center}
+  % \begin{center}
+  %   \includegraphics[width=10cm]{img/duale_primale.png}
+  % \end{center}
+  TODO: non esiste neanche sta foto qua
 }
 \pf{
   Dimostrazione nel caso della coppia simmetriche
@@ -492,3 +493,9 @@ si osservi che
     \item se $c\neq 0$ allora se esiste una direzione ammissibile per $\overline{x}$ che sia anche di crescita, allora $\overline{x}$ non può essere ottimo.
   \end{itemize}
 }
+
+\section{Tecnica Branch-and-Bound}
+Usiamo per problemi PLI (NP-completi) ma funziona per generici problemi PL. Rilassiamo i vincoli aggiungendo soluzioni e facciamo branching assumendo che sia possibile partizionare il problema in due sottoproblemi che una volta risolti ci danno la soluzione ottima del problema originale. il "bound" viene dal rilassamento dato che questo ci permette di dare una limitazione inferiore risolvendo il problema semplificato.
+
+Il rilassamento del PLI e' semplicemente il non considerare l vincolo di interezza, la FO non cambia e le soluzioni ammissibili aumentano, rendendo possibile la soluzione con il simplesso. Ma dobbiamo fare prima il branching, 
+% \end{document}
