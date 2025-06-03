@@ -1,0 +1,11 @@
+Adiacenti a: 0  1 4.0  7 8.0
+Adiacenti a: 1  1 4.0
+Adiacenti a: 2  8 2.0  5 4.0  3 7.0
+Adiacenti a: 3  3 7.0  4 9.0
+Adiacenti a: 4  4 9.0
+Adiacenti a: 5  6 2.0  5 4.0
+Adiacenti a: 6  7 1.0  6 2.0
+Adiacenti a: 7  7 1.0  7 8.0
+Adiacenti a: 8  8 2.0
+Costo tot: 37.0
+Elapsed time: 0 minuti e 0.001 secondi
