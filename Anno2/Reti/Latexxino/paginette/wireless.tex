@@ -1,82 +1,205 @@
-% \begin{document}
-\chapter{Comunicazioni Wireless}
+\section{Reti Wireless e il Livello Fisico}
+Le reti wireless hanno rivoluzionato il modo in cui ci connettiamo, ma la loro apparente semplicità nasconde una notevole complessità a livello fisico. La trasmissione di dati attraverso l'etere, senza un mezzo guidato come un cavo, è soggetta a una moltitudine di fenomeni fisici che ne influenzano le prestazioni e l'affidabilità. Questo capitolo esplora i fondamenti delle onde radio, la loro propagazione e i parametri chiave per la progettazione di un sistema wireless.
 
-\section{Misura della Potenza}
-La forma dell'antenna influenza la forma della propagazione delle onde radio. Se l'antenna ha il $ 100\% $ di efficenza in tutte le direzioni, allora si dice \textit{isotropica}, che avrebbe un dipolo di lunghezza 0.
+\section{Fondamenti delle Onde Radio (RF)}
 
-Si usa 
-
-\section{Power Monitoring}
-Misurare con strumenti l'intensita delle onde radio nelle varie frequenze. Per fare in modo che sia utilizzabile, la quantita di energia che raggiunge un dispositivo sta nel range -110dBm (era -90dBm) - boh. La soglia superiore non e' un vero problema reale, pero' si rischierebbe distorzione, ma e' facile mettere un dispositivo che dissipa la corrente con una resistenza per ovviare questo problema.
-
-E' importante capire dove ci troviamo in questo range, per capire se dobbiamo rallentare o velocizzare la trasmissione di bit. 
-
-Non c'e' una scala standard RSSI, quindi il suo valore e' device dependent, da quel che ho capito indica quanta banda serve al dispositivo per lavorare bene, ed e' quindi tarato in base al valore massimo che puo' essere utilizzato effettivamente dal dispositivo.
-
-\section{Antenne}
-Ce le spiega con le lampadine, alcune concentrano in direzioni specifiche, lasciando al buio il resto, mentre altre irradiano tutto in modo meno potente.
-
-E' la forma dell'antenna che decide le sue caratteristiche:
-\begin{itemize}
-\item Vogliamo che l'antenna sia in grado di comunicare a grandi distanze per raggiungere tutti i client
-\item Sicurezza: sarebbe meglio lasciare al buio tutti gli altri che non dovrebbero spiarci (e' un po' piu' segreto)
-\item Le antenne vengono bombardate - ma che cazzo sta dicendo - bononi si prepara alla terza guerra mondiale. Alcune vengono mimetizzate come palme o scuretti di finestre
-\end{itemize}
-
-Esistono tre cataegorie:
-\begin{itemize}
-  \item Omnidirezionali: significa \textit{anche} isotropica (e' un caso speciale omogeneo), il dipolo (che e' limitato solo ad alcune direzioni)
-  \item Semidirezionali: in grado di concentrare energia solo verso un lato
-  \item Direzionali: es. parabola del satellite, tutta l'energia e' concentrata in un cono di angolo molto stretto
-\end{itemize}
-
-\subsection{Omnidirezionali}
-Il dipolo e' il piu' semplice e piu' conosciuto (come negli accesspoint di casa). 
-
-\thm{Antenna Pringles}{
-Il tubo delle Pringles puo' fare da "rete che cattura pesci" ma che cattura onde radio focalizzandole nel punto in cui il dipolo puo' catturarle meglio, si vede un aumento di +3dB (il doppio!!)
-}
-\pf{Dimostrazione}{Giova mi sa che tocca a te}
-
-Piu' e' elevata la frequenza, piu' si riduce l'ampiezza d'onda e quindi la forma dell'antenna piu' adatta.
-
-Esistono dipoli ciccioni e magrolini schiacciati, relativamente dipoli a basso guadagno e ad alto guadagno. Infatti, piu' e' schiacciata la forma dell'irradiazione piu' e' l'energia che arriva a un punto nella direzione orizzaontale, ma meno in verticale. 
-
-\nt{
-  \textbf{NON COSTRUIRE UN DIPOLO A CASA PROPRIA} @BonzoIlBolognese
+\dfn{Onda a Radiofrequenza (RF)}{
+    Un'onda elettromagnetica generata da una corrente alternata ad alta frequenza che scorre in un'antenna. L'antenna agisce come un trasduttore, convertendo la corrente elettrica in onde elettromagnetiche durante la trasmissione e viceversa durante la ricezione.
 }
 
-\subsection{Semidirezionali}
-Sono la via di mezzo. Sono ad esempio:
+Un'onda elettromagnetica è composta da un campo elettrico e un campo magnetico che oscillano in modo perpendicolare tra loro e alla direzione di propagazione. Questa onda può viaggiare anche nel vuoto, a differenza della corrente elettrica che necessita di un conduttore.
+
+\subsection{Parametri di un'Onda RF}
+Un'onda RF sinusoidale è caratterizzata da tre parametri fondamentali, che possono essere modulati per codificare le informazioni (i bit):
 \begin{itemize}
-\item Yagi
-  \item Patch
-  \item Panel
+    \item \textbf{Ampiezza (Amplitude)}: Rappresenta l'intensità o la potenza del segnale, misurata in Watt (W) o milliwatt (mW). A parità di altre condizioni, un segnale con ampiezza maggiore può percorrere una distanza maggiore prima di diventare troppo debole per essere ricevuto. La potenza necessaria per coprire una certa distanza cresce in modo quadratico (o peggio) con la distanza stessa: per raddoppiare la portata, è necessario quadruplicare la potenza.
+    \item \textbf{Frequenza (Frequency)}: Misurata in Hertz (Hz), indica il numero di oscillazioni complete che l'onda compie in un secondo. Le diverse tecnologie wireless operano su bande di frequenza specifiche, assegnate da enti regolatori per evitare interferenze.
+    \item \textbf{Lunghezza d'onda (Wavelength, $\lambda$)}: È la distanza fisica tra due picchi consecutivi dell'onda. È inversamente proporzionale alla frequenza, secondo la relazione $\lambda = c/f$, dove $c$ è la velocità della luce. La lunghezza d'onda è un parametro critico per la progettazione delle antenne, la cui dimensione fisica ottimale è tipicamente una frazione ($\frac{1}{2}$ o $\frac{1}{4}$) della lunghezza d'onda del segnale.
 \end{itemize}
 
-La forma dell'emissione non e' una ciambella, ma sono forme strane con un lobo principale dentro alla quale viene forzata la maggior parte dell'energia. La forma ha dei lobi secondari per rimbalzare su superfici. E' importante l'ampiezza del cono. La Yagi ha un guadagno maggiore degli altri, quindi l'ampiezza del cono e' minore
+\ex{Dimensione di un'antenna Wi-Fi}{
+    Una rete Wi-Fi opera nella banda a 2.4 GHz ($2.4 \times 10^9$ Hz). La sua lunghezza d'onda è:
+    $$ \lambda = \frac{3 \times 10^8 \text{ m/s}}{2.4 \times 10^9 \text{ Hz}} = 0.125 \text{ m} = 12.5 \text{ cm} $$
+    Per questo motivo, le antenne dei router Wi-Fi hanno dimensioni dell'ordine di pochi centimetri. Al contrario, una radio FM che trasmette a 100 MHz ha una lunghezza d'onda di 3 metri, richiedendo antenne molto più grandi.
+}
 
-\subsection{Direzionali}
+\section{Propagazione dei Segnali Wireless}
+Nel mondo reale, la propagazione di un'onda RF è tutt'altro che lineare. È influenzata dall'ambiente in modi complessi.
+
+\subsection{Attenuazione e Aree di Copertura}
+L'energia di un segnale si disperde man mano che si allontana dalla fonte, un fenomeno noto come \textbf{attenuazione}. Questo definisce tre aree di copertura concentriche attorno a un trasmettitore:
+\begin{enumerate}
+    \item \textbf{Transmission Range}: L'area in cui il segnale è sufficientemente forte per permettere una comunicazione affidabile e a basso tasso di errore.
+    \item \textbf{Detection Range}: L'area in cui il segnale può ancora essere rilevato, ma è troppo debole per estrarre le informazioni in modo corretto.
+    \item \textbf{Interference Range}: L'area più esterna, in cui il segnale non è più rilevabile singolarmente ma contribuisce comunque al rumore di fondo, potenzialmente interferendo con altre comunicazioni.
+\end{enumerate}
+
+% \begin{center}
+%     \includegraphics[width=8cm]{img/Wireless signal propagation ranges}
+% \end{center}
+
+\subsection{Effetti Ambientali sulla Propagazione}
+Un segnale RF che viaggia attraverso l'ambiente interagisce con gli oggetti che incontra, dando luogo a diversi fenomeni:
 \begin{itemize}
-\item Parabolic DIsh
-\item Grid
+    \item \textbf{Shadowing (Assorbimento)}: Ostacoli come muri, edifici o vegetazione assorbono parte dell'energia del segnale, creando "zone d'ombra" con una copertura molto debole. Le frequenze più basse tendono a penetrare gli ostacoli meglio di quelle più alte.
+    \item \textbf{Riflessione, Diffrazione e Scattering}: Il segnale viene riflesso da superfici grandi (come un palazzo), diffratto attorno agli spigoli e disperso (scattering) da oggetti piccoli.
 \end{itemize}
-TODO: **DISEGNO CABBO**
 
-Il raggio e' molto basso, altissimo guadagno.
+\subsection{Multipath Propagation e Fase}
+A causa di questi fenomeni, il segnale raggiunge il ricevitore attraverso percorsi multipli. Il ricevitore riceve quindi non una singola onda, ma la sovrapposizione del segnale diretto (se presente) e di molteplici "echi" riflessi che arrivano in momenti diversi e con fasi diverse.
 
-Anche la polarizzazione ha il suo peso, l'asse di ricevuta e di spedizione devono essere simili. La zona di Frezsnel e' un insieme annidato di aree ellittiche che hanno origine dal fatto che i segnali radio emessi dalle antenne subiscono in particolare l'effetto della diffrazione, che causa alcune componenti dell'onda che si propaga di deviare rispetto alla direzione originale. Tale effetto si applica ricorsivamente, aumentando sempre di piu' l'angolo di differenza. Una parte dell'energia che si allarga riconverge verso il bersaglio, arrivando con un ritardo proporzionale all'allargamento.
+\dfn{Multipath Propagation (Propagazione Multipath)}{
+    La ricezione di un segnale radio come somma di più repliche dello stesso, che hanno percorso cammini diversi e sono quindi sfasate nel tempo e nella fase.
+}
 
-TODO: **DISEGNO FICA**
+La \textbf{fase} di un'onda descrive la sua posizione nel ciclo di oscillazione. L'effetto del multipath dipende criticamente dalla fase con cui gli echi si sovrappongono:
+\begin{itemize}
+    \item \textbf{Interferenza Costruttiva}: Se due onde arrivano "in fase", le loro ampiezze si sommano, rafforzando il segnale ricevuto.
+    \item \textbf{Interferenza Distruttiva}: Se due onde arrivano "in opposizione di fase" (sfasate di 180°), le loro ampiezze si sottraggono, indebolendo o addirittura annullando completamente il segnale.
+\end{itemize}
 
-Abbiamo un problema quando le onde "allargate" rientrano fuori fase, in verita' no perche si annullano con quelle in fase quindi gg. Ci interessa solo il corpo centrale, che e' proprio la zona di fresnel. Non vogliamo interrompere sta zona qua con edifici o alberi o nuveli
+Questo è il motivo per cui, spostandosi anche solo di pochi centimetri in un ambiente interno, la qualità del segnale Wi-Fi può cambiare drasticamente.
 
-Dobbiamo ricordarci la formula del Path Loss
+\subsection{Mobilità e Fading}
+Quando un dispositivo wireless è in movimento, il suo ambiente multipath cambia continuamente, causando rapide e profonde fluttuazioni della potenza del segnale ricevuto.
 
-Il Link Budget e' la rappresentazione di "solidita'" del segnale, ha detto questo in piu' o meno 2 ore...ha detto questo in piu' o meno 2 ore...
+\dfn{Fading}{
+    La variazione della potenza del segnale ricevuto dovuta agli effetti del multipath. Può essere \textit{short-term} (variazioni veloci dovute all'interferenza) o \textit{long-term} (variazioni lente dovute allo shadowing).
+}
 
-\section{Spettro fisico e Topologia}
-\subsection{Spettro}
-\subsection{Larghezza di Banda}
-\subsection{Tecnologie di reti wireless}
-% \end{document}
+\subsection{Polarizzazione}
+La polarizzazione descrive l'orientamento del campo elettrico dell'onda radio ed è determinata dall'orientamento fisico dell'antenna. Per un trasferimento di potenza ottimale, l'antenna trasmittente e quella ricevente devono avere la stessa polarizzazione (es. entrambe verticali). Una polarizzazione disallineata (es. una verticale e una orizzontale) introduce una significativa perdita di segnale.
+
+\section{Progettazione e Misura della Potenza nei Sistemi Wireless}
+La progettazione di un sistema wireless affidabile richiede un'attenta analisi di tutti i guadagni e le perdite di potenza lungo il percorso, un processo noto come \textit{link budget}.
+
+\subsection{Unità di Misura della Potenza: dB, dBm, dBi}
+Poiché la potenza dei segnali RF varia su molti ordini di grandezza, si utilizzano unità logaritmiche per semplificare i calcoli.
+\begin{itemize}
+    \item \textbf{Decibel (dB)}: È un'unità \textbf{relativa} che esprime il rapporto tra due valori di potenza. Trasforma moltiplicazioni e divisioni in addizioni e sottrazioni.
+    \begin{itemize}
+        \item $+3 \text{ dB} \approx \times 2$ la potenza
+        \item $-3 \text{ dB} \approx / 2$ la potenza
+        \item $+10 \text{ dB} = \times 10$ la potenza
+        \item $-10 \text{ dB} = / 10$ la potenza
+    \end{itemize}
+    \item \textbf{dBm}: È un'unità \textbf{assoluta} di potenza. Il valore è espresso in decibel rispetto a un riferimento fisso di 1 milliwatt (mW). Quindi, $0 \text{ dBm} = 1 \text{ mW}$, $20 \text{ dBm} = 100 \text{ mW}$. È l'unità standard per misurare la potenza di trasmettitori e la sensibilità dei ricevitori.
+    \item \textbf{dBi}: È un'unità che misura il \textbf{guadagno passivo} di un'antenna. Le antenne reali non irradiano energia uniformemente in tutte le direzioni come una teorica \textbf{antenna isotropica}, ma la concentrano in una direzione preferenziale. Il guadagno in dBi indica di quanti decibel il segnale in quella direzione è più forte rispetto a quello che avrebbe prodotto un'antenna isotropica.
+\end{itemize}
+
+\subsection{Potenza Irradiata e Normative}
+Le agenzie governative impongono limiti sulla massima potenza che un dispositivo può irradiare per evitare interferenze.
+
+\dfn{EIRP (Equivalent Isotropically Radiated Power)}{
+    La potenza totale effettivamente irradiata da un'antenna nella sua direzione di massimo guadagno. Si calcola sommando la potenza in uscita dal trasmettitore (in dBm) e il guadagno dell'antenna (in dBi).
+}
+
+Un progettista deve quindi regolare la potenza del trasmettitore in modo che, una volta aggiunto il guadagno dell'antenna, l'EIRP totale non superi i limiti di legge.
+
+\subsection{Il Calcolo del Link Budget}
+Il link budget è un bilancio energetico che verifica se una connessione wireless è fattibile.
+
+\dfn{Link Budget}{
+    Un calcolo che somma tutti i guadagni (potenza del trasmettitore, guadagno delle antenne) e sottrae tutte le perdite (perdite dei cavi, attenuazione nello spazio libero, ostacoli) per determinare la potenza del segnale che arriva al ricevitore.
+}
+
+Questo valore deve essere confrontato con la \textbf{Sensibilità del Ricevitore (Receiver Sensitivity, RS)}, che è la minima potenza (in dBm) necessaria al ricevitore per decodificare correttamente il segnale a una data velocità. Un buon progetto richiede che la potenza ricevuta sia significativamente superiore alla sensibilità, lasciando un \textbf{Fade Margin} (es. 10-20 dB) per far fronte a imprevisti come il fading o le cattive condizioni atmosferiche.
+\subsection{Dettagli sulle Unità di Misura della Potenza}
+Per progettare e analizzare un sistema wireless, è fondamentale padroneggiare le unità di misura logaritmiche, che semplificano notevolmente i calcoli di guadagni e perdite.
+
+\paragraph{Il Decibel (dB)}
+Il Decibel è un'unità \textbf{relativa} utilizzata per esprimere il rapporto tra due livelli di potenza, $P_1$ e $P_2$. La sua definizione è:
+$$ \text{dB} = 10 \cdot \log_{10}\left(\frac{P_1}{P_2}\right) $$
+
+Il suo grande vantaggio è che trasforma le moltiplicazioni e divisioni in addizioni e sottrazioni, rendendo i calcoli più intuitivi. Si usano spesso le seguenti regole pratiche:
+\begin{itemize}
+    \item \textbf{+3 dB}: Raddoppia la potenza (x2).
+    \item \textbf{-3 dB}: Dimezza la potenza (/2).
+    \item \textbf{+10 dB}: Moltiplica la potenza per 10 (x10).
+    \item \textbf{-10 dB}: Divide la potenza per 10 (/10).
+\end{itemize}
+
+\ex{Calcolo con i dB}{
+    Se un segnale di 100 mW subisce una perdita di 7 dB, la potenza finale è:
+    $$-7 \text{ dB} = -10 \text{ dB} + 3 \text{ dB}$$
+    Quindi la potenza finale sarà: $(100 \text{ mW} / 10) \times 2 = 20 \text{ mW}$. L'uso dei dB ha trasformato un calcolo complesso in semplici somme.
+}
+
+\paragraph{Il dBm e il dBi}
+Poiché il dB è relativo, sono state introdotte unità assolute con un punto di riferimento fisso.
+\begin{itemize}
+    \item \textbf{dBm}: È un'unità di potenza \textbf{assoluta}, dove il riferimento è 1 milliwatt (mW). Pertanto, per definizione:
+    $$ 0 \text{ dBm} = 1 \text{ mW} $$
+    È l'unità standard per indicare la potenza di un trasmettitore o la sensibilità di un ricevitore. Ad esempio, $20 \text{ dBm} = 100 \text{ mW}$.
+    \item \textbf{dBi}: È un'unità che misura il \textbf{guadagno} di un'antenna. Indica di quanti decibel la potenza irradiata dall'antenna in una specifica direzione è maggiore rispetto a quella che sarebbe irradiata da un'antenna isotropica teorica.
+\end{itemize}
+
+\section{Le Antenne Wireless}
+
+\dfn{Antenna}{
+    Un dispositivo passivo che funge da trasduttore: converte l'energia elettrica guidata da un cavo in onde elettromagnetiche che si propagano nello spazio (in trasmissione) e viceversa (in ricezione).
+}
+
+La forma e la dimensione di un'antenna determinano il suo \textbf{diagramma di radiazione} (\textit{radiation pattern}), ovvero come l'energia viene distribuita nello spazio.
+
+\subsection{Tipi di Antenne}
+\begin{itemize}
+    \item \textbf{Antenna Isotropica}: Un'antenna teorica e ideale che irradia potenza in modo perfettamente uniforme in tutte le direzioni, formando una sfera. È il punto di riferimento (0 dBi) per misurare il guadagno di tutte le antenne reali.
+    \item \textbf{Antenne Omnidirezionali}: Irradiano potenza uniformemente sul piano orizzontale, creando un diagramma di radiazione a forma di "ciambella" (toroide). Sono ideali per coprire un'area a 360° attorno a un punto centrale. L'esempio più comune è l'\textbf{antenna a dipolo} dei router Wi-Fi domestici. Un dipolo ad alto guadagno produce una ciambella più piatta e larga, coprendo una maggiore distanza orizzontale a scapito della copertura verticale.
+    \item \textbf{Antenne Direzionali}: Concentrano la maggior parte dell'energia in una direzione specifica, formando un "lobo" di radiazione principale. Questo permette di coprire distanze maggiori con meno potenza o di creare collegamenti punto-punto sicuri. Il grado di direzionalità è misurato dal \textbf{beamwidth}, l'ampiezza angolare del lobo principale. Esempi includono le antenne \textbf{Yagi}, \textbf{Patch/Panel} e le \textbf{paraboliche}.
+\end{itemize}
+
+% \begin{center}
+%     \includegraphics[width=12cm]{img/Diagrams of different antenna radiation patterns}
+% \end{center}
+
+\subsection{Utilizzo delle Antenne Direzionali}
+Le antenne direzionali sono cruciali per i collegamenti wireless a lunga distanza. Il loro uso richiede però la comprensione di due concetti chiave:
+\begin{itemize}
+    \item \textbf{Line of Sight (LOS)}: Deve esistere una linea di vista ottica libera da ostacoli tra l'antenna trasmittente e quella ricevente.
+    \item \textbf{Zona di Fresnel (Fresnel Zone)}: L'energia RF non viaggia come un raggio laser, ma occupa un volume a forma di ellissoide attorno alla linea di vista. Questa zona deve essere per la maggior parte libera da ostacoli (alberi, edifici). Un'ostruzione significativa della zona di Fresnel può interrompere il collegamento anche se la linea di vista ottica è libera. La dimensione della zona di Fresnel dipende dalla frequenza e dalla distanza del link.
+\end{itemize}
+
+\subsection{Concetti Avanzati sulle Antenne}
+\begin{itemize}
+    \item \textbf{Antenne Settorizzate}: Tipiche delle torri per la telefonia mobile, sono composte da un array di più antenne direzionali, ognuna delle quali copre un "settore" (es. 120°). Questo permette di riutilizzare le stesse frequenze in settori non adiacenti, aumentando la capacità totale della cella.
+    \item \textbf{Antenna Diversity}: Una tecnica fondamentale per combattere il fading causato dal multipath. Si utilizzano due o più antenne distanziate di una piccola frazione di lunghezza d'onda. La probabilità che tutte le antenne si trovino contemporaneamente in un punto di interferenza distruttiva è molto bassa. Il ricevitore può quindi scegliere dinamicamente il segnale proveniente dall'antenna con la qualità migliore in un dato istante. È il motivo per cui i moderni router Wi-Fi hanno più antenne.
+\end{itemize}
+
+\section{Calcolo del Link Budget: Esempio Pratico}
+Il \textbf{link budget} è il calcolo fondamentale nella progettazione di un collegamento wireless, specialmente outdoor. Esso fa un bilancio di tutti i guadagni e le perdite per assicurarsi che il segnale arrivi a destinazione con una potenza sufficiente.
+
+\dfn{Link Budget}{
+    La differenza, misurata in dB, tra la potenza del segnale ricevuto e la sensibilità minima del ricevitore. Un link budget positivo indica che il collegamento è fattibile.
+}
+
+La formula generale è:
+$$ \text{Potenza Ricevuta (dBm)} = P_{TX} + G_{TX} - L_{TX} - L_{FS} - L_{M} + G_{RX} - L_{RX} $$
+dove:
+\begin{itemize}
+    \item $P_{TX}$: Potenza del trasmettitore (dBm)
+    \item $G_{TX}, G_{RX}$: Guadagno delle antenne trasmittente e ricevente (dBi)
+    \item $L_{TX}, L_{RX}$: Perdite nei cavi e connettori (dB)
+    \item $L_{FS}$: Perdita di propagazione nello spazio libero (\textit{Free Space Path Loss}), che dipende da distanza e frequenza (dB).
+    \item $L_{M}$: Margine per perdite varie (es. pioggia, fogliame) (dB)
+\end{itemize}
+
+Il risultato, `Potenza Ricevuta`, deve essere maggiore della `Sensibilità del Ricevitore` di un valore detto \textbf{Fade Margin}, che garantisce la stabilità del link.
+
+\ex{Calcolo di un Link Budget}{
+    Consideriamo un link di 10 km a 2.4 GHz.
+    \begin{itemize}
+        \item Potenza del Trasmettitore: +15 dBm
+        \item Guadagno Antenna TX: +24 dBi
+        \item Perdite cavi/connettori TX: -5.4 dB
+        \item Path Loss per 10 km a 2.4 GHz: -120 dB
+        \item Guadagno Antenna RX: +24 dBi
+        \item Perdite cavi/connettori RX: -5.4 dB
+        \item \textbf{Guadagno Totale}: $15 + 24 + 24 = +63 \text{ dB}$
+        \item \textbf{Perdita Totale}: $-5.4 - 120 - 5.4 = -130.8 \text{ dB}$
+        \item \textbf{Potenza Ricevuta}: $+63 - 130.8 = -67.8 \text{ dBm}$
+    \end{itemize}
+    Se la sensibilità del ricevitore per la velocità desiderata è di -82 dBm:
+    $$ \text{Link Budget} = -67.8 \text{ dBm} - (-82 \text{ dBm}) = +14.2 \text{ dB} $$
+    Il budget è positivo di 14.2 dB. Se questo valore è considerato un Fade Margin sufficiente, il collegamento è affidabile e non necessita di amplificatori o antenne a più alto guadagno.
+}

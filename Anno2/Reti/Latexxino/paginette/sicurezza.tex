@@ -118,6 +118,298 @@ Tuttavia è poco sicuro perché mantiene la frequenza delle lettere originali e 
 
 La chiave di cifratura quindi è un insieme di $n$ cifrari sostituzione ($M_1,M_2,\dots,M_n$) ed un modello cicilico su come usarli. Ogni lettera del plaintext quindi viene cifrata con un cifrario diverso seguendo il ciclo 
 
+\subsubsection{DES (Data Encryption Standard)}
+Il DES è stato uno standard di crittografia a chiave simmetrica ampiamente adottato. Funziona come un \textbf{cifrario a blocchi}: il messaggio in chiaro viene suddiviso in blocchi di 64 bit, e ogni blocco viene cifrato indipendentemente utilizzando una chiave a 56 bit.
+
+La struttura del DES prevede 16 "round" identici di elaborazione, dove ogni round utilizza una porzione diversa (48 bit) della chiave principale. Questo processo complesso di permutazioni e sostituzioni mira a offuscare la relazione tra il testo in chiaro e quello cifrato.
+
+\nt{Oggi il DES è considerato \textbf{insicuro}. Una chiave a 56 bit è troppo corta per resistere a un attacco a forza bruta con la potenza di calcolo moderna. Nel 1998, una chiave DES fu violata in meno di un giorno.}
+
+Per aumentarne la sicurezza, è stato introdotto il \textbf{3DES (Triple DES)}, che applica l'algoritmo DES tre volte consecutive con tre chiavi diverse, portando la dimensione effettiva della chiave a 168 bit e rendendo gli attacchi a forza bruta computazionalmente impraticabili.
+
+\subsubsection{AES (Advanced Encryption Standard)}
+L'AES è lo standard attuale che ha sostituito il DES. Come il DES, è un cifrario a blocchi, ma è più robusto e flessibile:
+\begin{itemize}
+    \item Elabora dati in blocchi da \textbf{128 bit}.
+    \item Supporta chiavi di tre dimensioni diverse: \textbf{128, 192 o 256 bit}.
+\end{itemize}
+Grazie alla maggiore lunghezza della chiave, l'AES è esponenzialmente più sicuro del DES. Si stima che un attacco a forza bruta che violasse una chiave DES in 1 secondo impiegherebbe circa 149 trilioni di anni per violare una chiave AES a 128 bit.
+
+\subsection{Crittografia a chiave pubblica (o asimmetrica)}
+
+La crittografia a chiave pubblica rappresenta un cambio di paradigma rispetto a quella simmetrica. Il suo vantaggio principale è che \textbf{mittente e destinatario non devono condividere una chiave segreta}. Ogni utente possiede una coppia di chiavi:
+\begin{itemize}
+    \item Una \textbf{chiave pubblica ($K^+$)}, nota a tutti, che serve per cifrare i messaggi.
+    \item Una \textbf{chiave privata ($K^-$)}, conosciuta solo dal proprietario, che serve per decifrare i messaggi.
+\end{itemize}
+Se Alice vuole inviare un messaggio a Bob, cifra il messaggio con la chiave pubblica di Bob ($K_B^+$). Solo Bob, in possesso della sua chiave privata ($K_B^-$), potrà decifrarlo.
+\begin{center}
+    \includegraphics[width=10cm]{CHIAVE_PUBBLICA.png}
+\end{center}
+Questo sistema si basa su \textbf{funzioni matematiche unidirezionali (one-way)}, facili da calcolare in una direzione ma computazionalmente impossibili da invertire senza informazioni aggiuntive. Un esempio è la fattorizzazione di numeri molto grandi.
+
+\subsubsection{Algoritmo RSA (Rivest, Shamir, Adelson)}
+L'algoritmo RSA è l'implementazione più nota della crittografia a chiave pubblica. La sua sicurezza si basa sulla difficoltà di fattorizzare un numero intero che è il prodotto di due numeri primi molto grandi.
+
+\paragraph{Generazione delle chiavi}
+\begin{enumerate}
+    \item Scegliere due numeri primi molto grandi, $p$ e $q$.
+    \item Calcolare $n = p \times q$ e $z = (p-1)(q-1)$.
+    \item Scegliere un numero intero $e$ (con $e < n$) tale che non abbia fattori comuni con $z$.
+    \item Calcolare un numero $d$ tale che $ed \pmod z = 1$.
+    \item La \textbf{chiave pubblica} è la coppia $(n, e)$.
+    \item La \textbf{chiave privata} è la coppia $(n, d)$.
+\end{enumerate}
+
+\paragraph{Cifratura e Decifratura}
+Per poter applicare le operazioni matematiche, un messaggio $m$ viene prima convertito in un numero intero.
+\begin{itemize}
+    \item \textbf{Cifratura}: $c = m^e \pmod n$
+    \item \textbf{Decifratura}: $m = c^d \pmod n$
+\end{itemize}
+La magia matematica assicura che $m = (m^e \pmod n)^d \pmod n$. La sicurezza risiede nel fatto che, pur conoscendo la chiave pubblica $(n, e)$, è computazionalmente infattibile determinare la chiave privata $d$ senza conoscere i fattori primi $p$ e $q$ di $n$.
+
+\nt{Una proprietà fondamentale di RSA è che le operazioni possono essere invertite: $K_B^+(K_B^-(m)) = m$. Cifrare con la chiave privata e decifrare con quella pubblica è alla base delle \textbf{firme digitali}, usate per garantire l'autenticità.}
+
+\subsection{L'approccio ibrido: le chiavi di sessione}
+
+La crittografia a chiave pubblica (come RSA) è molto potente ma anche molto \textbf{lenta} e computazionalmente costosa. Al contrario, la crittografia a chiave simmetrica (come AES) è estremamente veloce.
+
+Nella pratica, si usa quasi sempre un approccio ibrido che combina il meglio di entrambi i mondi:
+\begin{enumerate}
+    \item \textbf{Fase 1: Scambio della chiave.} Alice e Bob usano la crittografia a chiave pubblica (lenta ma sicura) per scambiarsi una chiave simmetrica temporanea, detta \textbf{chiave di sessione ($K_S$)}.
+    \item \textbf{Fase 2: Comunicazione.} Una volta che entrambi possiedono $K_S$, usano la crittografia simmetrica (veloce ed efficiente) con quella chiave per tutta la durata della loro comunicazione.
+\end{enumerate}
+
+Questo approccio risolve il problema della condivisione della chiave della crittografia simmetrica, mantenendo al contempo alte prestazioni per lo scambio di grandi quantità di dati.
+\section{Integrità del Messaggio e Autenticazione}
+Oltre alla confidenzialità, è cruciale garantire che il messaggio non sia stato alterato e che l'identità degli interlocutori sia certa.
+
+\subsection{Autenticazione}
+L'obiettivo è permettere a Bob di essere sicuro che sta comunicando con la vera Alice. Protocolli semplici sono insicuri:
+\begin{itemize}
+    \item "Sono Alice": Trudy può semplicemente mentire.
+    \item "Sono Alice" con IP di Alice: Trudy può falsificare (spoof) l'indirizzo IP del mittente.
+    \item Invio della password in chiaro: Trudy può intercettare la password e riutilizzarla in un \textbf{playback attack}.
+\end{itemize}
+
+Per evitare i playback attack, si usa una tecnica di \textbf{challenge-response} con un \textit{nonce}.
+
+\dfn{Nonce}{
+    Un numero casuale (R) che viene utilizzato una sola volta (\textit{Number used once}) in una sessione di comunicazione.
+}
+
+Il protocollo diventa:
+\begin{enumerate}
+    \item Alice si annuncia a Bob.
+    \item Bob le invia un nonce casuale R.
+    \item Alice deve cifrare R con una chiave segreta condivisa e inviarlo a Bob. Poiché R è nuovo per ogni sessione, Trudy non può riutilizzare una risposta registrata in passato. Questo prova che Alice è "live" e conosce la chiave segreta.
+\end{enumerate}
+
+Questo approccio, seppur efficace per l'autenticazione, è vulnerabile a un attacco \textbf{Man-in-the-Middle (MitM)} se la chiave pubblica usata non è certificata.
+
+\subsection{Firme Digitali e Funzioni Hash}
+La crittografia a chiave pubblica ha un'altra proprietà fondamentale: $K_B^{+}(K_B^{-}(m)) = m$. Cifrare con la chiave privata e decifrare con quella pubblica funziona, ed è la base della \textbf{firma digitale}.
+
+\dfn{Firma Digitale}{
+    Una tecnica crittografica che permette a un mittente di "firmare" un documento digitale per garantirne l'autenticità, l'integrità e il non ripudio (il mittente non può negare di averlo firmato).
+}
+
+Poiché cifrare un intero messaggio con RSA è lento, non si firma il messaggio, ma un suo "riassunto" di dimensione fissa, chiamato \textit{message digest}.
+
+\dfn{Funzione Hash Crittografica}{
+    Un algoritmo matematico (es. MD5, SHA-1) che prende in input un messaggio di lunghezza arbitraria e produce un output di lunghezza fissa (es. 128 o 160 bit), detto \textbf{hash} o \textbf{message digest}. Deve essere computazionalmente impossibile trovare due messaggi diversi che producano lo stesso hash.
+}
+
+Il processo di firma digitale diventa:
+\begin{enumerate}
+    \item Bob calcola l'hash del suo messaggio, $H(m)$.
+    \item Bob cifra l'hash con la sua \textbf{chiave privata}, $K_B^-(H(m))$. Questo è la firma.
+    \item Bob invia ad Alice il messaggio in chiaro $m$ e la firma $K_B^-(H(m))$.
+    \item Alice riceve il tutto, ricalcola autonomamente l'hash del messaggio $m$, e decifra la firma usando la \textbf{chiave pubblica di Bob}, $K_B^+(K_B^-(H(m)))$.
+    \item Se i due hash coincidono, Alice ha la certezza che il messaggio proviene da Bob e non è stato alterato.
+\end{enumerate}
+
+\subsection{Autorità di Certificazione (Certification Authorities - CA)}
+Resta un problema: come fa Alice ad essere sicura che la chiave pubblica che sta usando per verificare la firma di Bob appartenga davvero a Bob e non a Trudy? La soluzione sono le Autorità di Certificazione.
+
+\dfn{Certification Authority (CA)}{
+    Un'entità terza fidata (es. Verisign, Let's Encrypt) che ha il compito di associare un'identità a una chiave pubblica.
+}
+
+Una CA emette un \textbf{certificato digitale}, che è un documento elettronico contenente l'identità di un'entità (es. Bob), la sua chiave pubblica, e altri dati. L'intero certificato è \textbf{firmato digitalmente dalla CA} con la propria chiave privata.
+
+Quando Alice vuole comunicare con Bob, lui le invia il suo certificato. Alice, che si fida della CA e possiede la chiave pubblica della CA, può verificare la firma sul certificato. Se la verifica ha successo, Alice è certa che la chiave pubblica contenuta nel certificato appartiene legittimamente a Bob, sventando così l'attacco Man-in-the-Middle.
+
+\section{Mettere in Sicurezza l'E-mail}
+Un'applicazione come la posta elettronica richiede di garantire tutti e tre i pilastri della sicurezza: confidenzialità, autenticazione e integrità. Questo si ottiene combinando in modo intelligente la crittografia simmetrica e quella asimmetrica.
+
+\subsection{Confidenzialità per l'E-mail}
+Per inviare un messaggio confidenziale $m$ a Bob, Alice non usa direttamente la lenta crittografia a chiave pubblica per cifrare l'intero messaggio. Adotta invece un approccio ibrido:
+\begin{enumerate}
+    \item Alice genera una \textbf{chiave di sessione simmetrica} casuale, $K_S$.
+    \item Usa la veloce crittografia simmetrica per cifrare il messaggio: $K_S(m)$.
+    \item Usa la lenta crittografia a chiave pubblica per cifrare solo la chiave di sessione, utilizzando la \textbf{chiave pubblica di Bob}: $K_B^+(K_S)$.
+    \item Alice invia a Bob entrambi gli elementi: il messaggio cifrato e la chiave di sessione cifrata.
+\end{enumerate}
+
+Quando Bob riceve il tutto:
+\begin{enumerate}
+    \item Usa la sua \textbf{chiave privata} per decifrare e recuperare la chiave di sessione: $K_B^-(K_B^+(K_S)) = K_S$.
+    \item Usa la chiave di sessione $K_S$ appena recuperata per decifrare il messaggio: $K_S(K_S(m)) = m$.
+\end{enumerate}
+
+\subsection{Autenticazione e Integrità per l'E-mail}
+Per garantire l'autenticità e l'integrità, Alice utilizza una firma digitale:
+\begin{enumerate}
+    \item Calcola un \textit{message digest} del messaggio tramite una funzione hash: $H(m)$.
+    \item Cifra l'hash con la sua \textbf{chiave privata} per creare la firma: $K_A^-(H(m))$.
+    \item Invia a Bob il messaggio in chiaro $m$ insieme alla firma digitale.
+\end{enumerate}
+
+Bob può verificare la firma utilizzando la chiave pubblica di Alice, garantendo così che il messaggio provenga da lei e non sia stato alterato.
+
+\subsection{Combinare tutte le Proprietà di Sicurezza}
+Per ottenere contemporaneamente confidenzialità, autenticazione e integrità, Alice combina i due processi: firma prima il messaggio e poi cifra il tutto.
+
+% \begin{center}
+%     \includegraphics[width=14cm]{img/secure_email_combined.png}
+% \end{center}
+
+\section{Mettere in Sicurezza le Connessioni TCP: SSL/TLS}
+Mentre la sicurezza dell'e-mail protegge il contenuto "a riposo", è spesso necessario proteggere i dati "in transito" per qualsiasi applicazione che utilizzi TCP. La soluzione standard per questo è SSL.
+
+\dfn{SSL (Secure Sockets Layer)}{
+    Un protocollo che fornisce un canale di comunicazione sicuro, inserendosi tra il livello Applicazione e il livello Trasporto (TCP). Fornisce confidenzialità, integrità e autenticazione a qualsiasi applicazione basata su TCP. La sua versione moderna e standardizzata è chiamata \textbf{TLS (Transport Layer Security)}.
+}
+
+SSL è la tecnologia alla base di \textbf{HTTPS}. È supportato da quasi tutti i browser e server web e viene utilizzato per proteggere miliardi di transazioni ogni giorno.
+
+\subsection{Funzionamento di SSL}
+SSL opera in due fasi principali:
+\begin{enumerate}
+    \item \textbf{Handshake Phase}: È una fase di negoziazione iniziale in cui client e server si autenticano a vicenda (tipicamente, il server si autentica al client tramite un certificato digitale), concordano gli algoritmi crittografici da utilizzare e generano le chiavi di sessione simmetriche che verranno usate per la comunicazione.
+    \item \textbf{Data Transfer Phase}: I dati dell'applicazione vengono frammentati in record. Ogni record viene protetto con un MAC (Message Authentication Code) per garantirne l'integrità e poi cifrato con la chiave di sessione simmetrica per garantirne la confidenzialità, prima di essere passato a TCP per la trasmissione.
+\end{enumerate}
+
+\paragraph{Il protocollo di Handshake}
+L'handshake è il cuore di SSL e stabilisce la connessione sicura. In sintesi:
+\begin{enumerate}
+    \item Il client invia un messaggio `ClientHello` con una lista di suite crittografiche che supporta e un numero casuale (nonce).
+    \item Il server sceglie una suite dalla lista, invia un `ServerHello`, il suo certificato digitale (contenente la sua chiave pubblica) e un suo nonce.
+    \item Il client verifica il certificato del server (usando la chiave pubblica della CA). Se valido, genera un segreto condiviso (\textit{pre-master secret}), lo cifra con la chiave pubblica del server e glielo invia.
+    \item A questo punto, sia client che server, utilizzando i due nonce e il pre-master secret, derivano in modo indipendente lo stesso insieme di chiavi di sessione (per cifratura e MAC in entrambe le direzioni).
+    \item La fase si conclude con lo scambio di messaggi `Finished`, cifrati con le nuove chiavi, che confermano che l'handshake è avvenuto correttamente e senza manomissioni.
+\end{enumerate}
+
+\section{Sicurezza a Livello Rete: IPsec}
+SSL/TLS è ottimo per proteggere singole applicazioni, ma cosa succede se si vuole fornire una "copertura di sicurezza" generale a tutto il traffico che esce da un host o da un'intera rete? A questo scopo, si opera a un livello più basso, il Livello 3, con il protocollo \textbf{IPsec}.
+
+\dfn{IPsec (IP Security)}{
+    Una suite di protocolli che fornisce sicurezza a livello di pacchetti IP. Può cifrare e/o autenticare tutto il traffico IP, indipendentemente dall'applicazione (TCP, UDP, ICMP, ecc.). È la tecnologia fondamentale per la creazione di \textbf{Virtual Private Networks (VPN)}.
+}
+
+\dfn{VPN (Virtual Private Network)}{
+    Una rete che utilizza l'infrastruttura di una rete pubblica (come Internet) per trasportare traffico di una rete privata, mantenendolo logicamente separato e sicuro tramite cifratura e "tunnelling". Ad esempio, permette a un'azienda di collegare in modo sicuro la sua sede centrale e una filiale, facendo viaggiare i dati su Internet come se fossero su una linea privata.
+}
+
+\subsection{Protocolli e Modalità di IPsec}
+IPsec offre flessibilità attraverso due protocolli e due modalità operative:
+\begin{itemize}
+    \item \textbf{Protocolli IPsec}:
+    \begin{itemize}
+        \item \textbf{AH (Authentication Header)}: Fornisce autenticazione dell'origine e integrità dei dati, ma \textit{non} la confidenzialità (i dati non sono cifrati).
+        \item \textbf{ESP (Encapsulating Security Payload)}: Fornisce autenticazione, integrità \textit{e} confidenzialità. È il protocollo più utilizzato.
+    \end{itemize}
+    \item \textbf{Modalità Operative}:
+    \begin{itemize}
+        \item \textbf{Transport Mode}: Cifra solo il payload del pacchetto IP (es. il segmento TCP), lasciando l'header IP originale in chiaro. Viene usato per proteggere la comunicazione tra due host finali.
+        \item \textbf{Tunnel Mode}: Cifra l'intero pacchetto IP originale (header incluso), e lo "incapsula" in un nuovo pacchetto IP con un nuovo header. È la modalità utilizzata per le VPN tra router.
+    \end{itemize}
+\end{itemize}
+
+% \begin{center}
+%     \includegraphics[width=13cm]{img/IPsec_VPN_diagram.png}
+% \end{center}
+
+\subsection{Security Associations (SA)}
+A differenza di IP, che è connectionless, IPsec è \textbf{connection-oriented}. Prima che due entità possano scambiarsi dati protetti, devono stabilire una \textbf{Security Association (SA)}.
+
+\dfn{Security Association (SA)}{
+    Un accordo unidirezionale tra due entità che definisce tutti i parametri di sicurezza per il loro traffico, come il protocollo da usare (ESP o AH), gli algoritmi di cifratura e autenticazione, le chiavi e la loro durata. Per una comunicazione bidirezionale sono necessarie due SA (una per ogni direzione).
+}
+
+La configurazione manuale delle SA è impraticabile in reti complesse. Per questo, si utilizza il protocollo \textbf{IKE (Internet Key Exchange)} per negoziare e stabilire le SA in modo automatico e sicuro.
+\section{Mettere in Sicurezza le LAN Wireless (IEEE 802.11)}
+Le reti wireless presentano sfide di sicurezza uniche, poiché il loro mezzo trasmissivo (le onde radio) è intrinsecamente aperto e accessibile a chiunque si trovi nel raggio di copertura, rendendo l'intercettazione molto più semplice rispetto a una rete cablata.
+
+\subsection{WEP (Wired Equivalent Privacy) e le sue vulnerabilità}
+Il primo standard di sicurezza per le reti Wi-Fi fu il WEP. Il suo obiettivo era fornire un livello di privacy paragonabile a quello di una rete cablata, ma il suo design si rivelò catastroficamente fallimentare.
+
+WEP utilizza la crittografia a flusso (RC4) con una chiave simmetrica condivisa. Per evitare di usare sempre lo stesso flusso di cifratura, combina la chiave segreta con un \textbf{Initialization Vector (IV)} di 24 bit, che dovrebbe essere unico per ogni pacchetto. L'IV viene trasmesso in chiaro insieme al pacchetto cifrato.
+
+Le sue debolezze fatali sono:
+\begin{itemize}
+    \item \textbf{Spazio dell'IV troppo piccolo}: Un IV a 24 bit è estremamente corto. Su una rete trafficata, la riutilizzazione dello stesso IV è garantita in poche ore o addirittura minuti.
+    \item \textbf{IV trasmesso in chiaro}: Un attaccante può facilmente rilevare quando un IV viene riutilizzato.
+    \item \textbf{Vulnerabilità della crittografia a flusso}: Se un attaccante conosce il testo in chiaro di un pacchetto cifrato con un certo IV, può calcolare il keystream corrispondente a quell'IV. Quando lo stesso IV viene riutilizzato, l'attaccante può usare il keystream che ha scoperto per decifrare il nuovo pacchetto.
+\end{itemize}
+
+Queste falle hanno reso il WEP completamente insicuro e obsoleto.
+
+\subsection{802.11i (WPA2/WPA3): la Sicurezza Moderna}
+Per rimediare alle falle del WEP, è stato introdotto lo standard \textbf{IEEE 802.11i}, commercialmente noto come \textbf{WPA2} (e il suo successore \textbf{WPA3}). Questo standard fornisce un meccanismo di sicurezza robusto, che include:
+\begin{itemize}
+    \item Algoritmi di crittografia forti (come AES).
+    \item Meccanismi robusti per l'autenticazione degli utenti e la distribuzione delle chiavi.
+\end{itemize}
+
+In un ambiente aziendale, l'autenticazione non è gestita direttamente dall'Access Point (AP), ma viene delegata a un \textbf{Authentication Server (AS)} separato. Il processo avviene in più fasi, durante le quali il client (STA) e il server di autenticazione si autenticano a vicenda e derivano in modo sicuro una gerarchia di chiavi temporanee utilizzate per cifrare i dati della sessione.
+
+\section{Sicurezza Operativa: Firewall e IDS}
+Oltre alla crittografia, la sicurezza di una rete si basa su strumenti operativi che ne controllano i confini e ne monitorano il traffico.
+
+\subsection{Firewall}
+
+\dfn{Firewall}{
+    Un sistema di sicurezza hardware o software che agisce come un filtro al perimetro di una rete, isolando la rete interna "fidata" dalla rete esterna "non fidata" (Internet). Ispeziona il traffico in entrata e in uscita e decide se bloccarlo o lasciarlo passare in base a un insieme di regole di sicurezza predefinite.
+}
+
+% \begin{center}
+%     \includegraphics[width=10cm]{img/firewall_diagram.png}
+% \end{center}
+
+I firewall sono essenziali per:
+\begin{itemize}
+    \item Prevenire attacchi come il \textbf{Denial of Service (DoS)}.
+    \item Impedire accessi non autorizzati ai dati interni.
+    \item Applicare policy di accesso, consentendo la comunicazione solo agli utenti e ai servizi autorizzati.
+\end{itemize}
+
+Esistono tre tipi principali di firewall:
+\begin{enumerate}
+    \item \textbf{Stateless Packet Filter}: È il tipo più semplice. Esamina ogni pacchetto individualmente, senza tenere traccia delle connessioni. La decisione di inoltrare o bloccare si basa su regole definite in una \textbf{Access Control List (ACL)}, che filtrano in base a indirizzi IP, numeri di porta e flag TCP.
+    \item \textbf{Stateful Packet Filter}: È un firewall più intelligente. Tiene traccia dello stato di ogni connessione TCP attiva. Ad esempio, permette l'ingresso di un pacchetto con il flag ACK impostato solo se questo appartiene a una connessione legittimamente avviata dall'interno. Questo lo rende molto più efficace contro tecniche di scansione e attacchi di spoofing.
+    \item \textbf{Application Gateway (Proxy Firewall)}: È il tipo più sofisticato, in quanto opera a livello applicazione. Invece di far comunicare direttamente client e server, agisce da intermediario. Poiché comprende il protocollo applicativo (es. HTTP), può ispezionare il contenuto dei dati e applicare regole molto più granulari, ad esempio bloccando l'upload di certi tipi di file o filtrando comandi specifici.
+\end{enumerate}
+
+\subsection{Intrusion Detection Systems (IDS)}
+Mentre un firewall applica regole per prevenire attacchi, un IDS si concentra sul rilevarli mentre accadono.
+
+\dfn{Intrusion Detection System (IDS)}{
+    Un dispositivo o software che monitora il traffico di rete o i sistemi alla ricerca di attività malevole o violazioni delle policy. A differenza di un firewall, il suo scopo principale non è bloccare, ma \textbf{rilevare e allertare}.
+}
+
+Le tecniche utilizzate dagli IDS includono:
+\begin{itemize}
+    \item \textbf{Deep Packet Inspection}: Analisi del contenuto (payload) dei pacchetti alla ricerca di "firme" corrispondenti a virus o attacchi noti.
+    \item \textbf{Analisi Correlata}: Esame del traffico su più pacchetti per identificare pattern sospetti che un firewall tradizionale non vedrebbe, come una scansione delle porte, un tentativo di mappatura della rete o un attacco DoS distribuito.
+\end{itemize}
+
+Gli IDS sono spesso dispiegati in congiunzione con i firewall per fornire una difesa a più livelli, offrendo visibilità sulle minacce che potrebbero superare i filtri perimetrali.
+
+
+
 \section{Firewall e IDS}
 
 Innanzi definiamo che cos'è un \textit{Firewall}
