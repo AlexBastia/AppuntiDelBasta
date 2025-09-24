@@ -1,0 +1,203 @@
+\chapter{Il Livello Rete: Il Piano di Controllo (Control Plane)}
+Dopo aver analizzato il \textit{data plane}, ovvero come un router inoltra i pacchetti basandosi su una tabella di forwarding, esploriamo ora il \textit{control plane}. Il suo compito è determinare come vengono costruite e aggiornate queste tabelle. È qui che risiede l'intelligenza della rete, incarnata dagli algoritmi di routing.
+
+\section{Introduzione al Piano di Controllo}
+Il piano di controllo ha il compito di calcolare i percorsi che i pacchetti devono seguire. Questo processo, chiamato \textbf{routing}, si contrappone al \textbf{forwarding} (l'azione meccanica di inoltro dei pacchetti). L'obiettivo di un algoritmo di routing è popolare le tabelle di forwarding dei router con percorsi "buoni", ovvero a costo minimo.
+
+Come visto in precedenza, il control plane può essere implementato in due modi:
+\begin{itemize}
+    \item \textbf{Per-Router Control Plane (Tradizionale)}: Ogni router esegue un algoritmo di routing e comunica con gli altri router per calcolare in modo distribuito la propria tabella di forwarding.
+    \item \textbf{Logically Centralized Control Plane (SDN)}: Un controller centrale calcola tutte le tabelle e le distribuisce ai router, che agiscono come semplici esecutori.
+\end{itemize}
+
+In questa sezione ci concentreremo sul primo approccio, quello tradizionale, che è alla base dei protocolli storici di Internet.
+
+\section{Algoritmi di Routing}
+Per un algoritmo di routing, la rete è un \textbf{grafo}, dove i nodi sono i router e gli archi sono i link fisici tra di essi. A ogni arco è associato un \textbf{costo}, che può rappresentare la distanza, il ritardo, o essere inversamente proporzionale alla banda. L'obiettivo dell'algoritmo è trovare il percorso a costo minimo tra una sorgente e una destinazione.
+
+\subsection{Classificazione degli Algoritmi di Routing}
+Gli algoritmi di routing si classificano principalmente secondo due criteri:
+\begin{enumerate}
+    \item \textbf{Globali vs. Decentralizzati}:
+    \begin{itemize}
+        \item \textbf{Algoritmi Link-State (Globali)}: Ogni router possiede una conoscenza completa della topologia della rete e dei costi di tutti i link. Con questa mappa globale, ogni router può calcolare il percorso migliore in autonomia.
+        \item \textbf{Algoritmi Distance-Vector (Decentralizzati)}: Ogni router conosce solo i propri vicini diretti e i costi per raggiungerli. I percorsi vengono calcolati in modo iterativo, attraverso lo scambio di informazioni solo con i router adiacenti. Nessun router ha una visione completa della rete.
+    \end{itemize}
+    \item \textbf{Statici vs. Dinamici}:
+    \begin{itemize}
+        \item \textbf{Routing Statico}: I percorsi vengono configurati manualmente e cambiano raramente. Adatto a reti piccole e stabili.
+        \item \textbf{Routing Dinamico}: I percorsi vengono aggiornati automaticamente in risposta a cambiamenti nella topologia o nei costi dei link. È l'approccio utilizzato nella maggior parte delle reti moderne.
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Algoritmi Link-State (LS)}
+L'approccio Link-State si basa su un principio semplice: "informa tutti di tutto".
+\begin{enumerate}
+    \item Ogni router scopre i propri vicini e il costo dei link per raggiungerli.
+    \item Queste informazioni (il suo "link state") vengono impacchettate e diffuse a \textbf{tutti gli altri router} della rete tramite un processo chiamato \textit{flooding}.
+    \item Al termine di questo processo, ogni router possiede una mappa completa e identica dell'intera rete.
+    \item Su questa mappa, ogni router esegue in locale un algoritmo per trovare il percorso a costo minimo verso tutte le destinazioni. L'algoritmo standard per questo compito è l'\textbf{algoritmo di Dijkstra}.
+\end{enumerate}
+
+\paragraph{L'Algoritmo di Dijkstra}
+L'algoritmo di Dijkstra calcola, da un nodo sorgente `u`, l'albero dei cammini minimi verso tutti gli altri nodi del grafo. Procede in modo iterativo: a ogni passo, aggiunge all'insieme dei nodi `N'` di cui si conosce il percorso definitivo, il nodo `w` non ancora in `N'` che ha il costo minimo attuale. Successivamente, aggiorna i costi di tutti i vicini di `w`.
+
+\ex{Esempio di Dijkstra}{
+    Dato il grafo seguente, calcoliamo i percorsi a costo minimo a partire dal nodo `u`.
+
+    % \begin{center}
+    %     \includegraphics[width=9cm]{img/Dijkstra's algorithm example graph}
+    % \end{center}
+
+    L'algoritmo procede per passi, aggiornando la tabella dei costi. Alla fine, il risultato per il nodo `u` sarà la seguente tabella di forwarding:
+
+    \begin{center}
+        \begin{tabular}{|c|c|}
+            \hline
+            \textbf{destination} & \textbf{link} \\ \hline
+            v & (u,v) \\ \hline
+            x & (u,x) \\ \hline
+            y & (u,x) \\ \hline
+            w & (u,x) \\ \hline
+            z & (u,x) \\ \hline
+        \end{tabular}
+    \end{center}
+
+    Questo significa che per raggiungere `y`, `w` o `z`, `u` deve prima inviare il pacchetto al suo vicino `x`.
+}
+
+\subsection{Algoritmi Distance-Vector (DV)}
+L'approccio Distance-Vector è decentralizzato e si basa sul principio "informa solo i tuoi vicini". Ogni router conosce molto poco della rete, ma collabora con i vicini per costruire una visione globale.
+
+L'algoritmo si basa sull'equazione di \textbf{Bellman-Ford}:
+$$ d_x(y) = \min_{v} \{ c(x,v) + d_v(y) \} $$
+
+In parole: il costo minimo per andare da `x` a `y` è il minimo, calcolato su tutti i vicini `v` di `x`, della somma tra il costo per raggiungere il vicino `v` ($c(x,v)$) e il costo che `v` dichiara di avere per raggiungere `y` ($d_v(y)$).
+
+Il processo è iterativo:
+\begin{enumerate}
+    \item Ogni router mantiene un proprio \textbf{distance vector}, ovvero una stima del costo per raggiungere ogni destinazione.
+    \item Periodicamente, ogni router invia il proprio distance vector ai suoi vicini.
+    \item Quando un router riceve un nuovo distance vector da un vicino, ricalcola le proprie stime usando l'equazione di Bellman-Ford.
+    \item Se i propri costi cambiano, informa a sua volta i suoi vicini.
+\end{enumerate}
+
+Questo processo continua finché le stime non convergono ai valori reali.
+
+\paragraph{Problemi del DV: Count-to-Infinity}
+Un grosso svantaggio degli algoritmi DV è il problema del "count-to-infinity". Mentre le "buone notizie" (la scoperta di un percorso migliore con costo inferiore) si propagano velocemente, le "cattive notizie" (un aumento del costo di un link o un guasto) si propagano molto lentamente. In caso di guasto, i router possono entrare in un loop in cui si scambiano informazioni di routing errate, facendo crescere il costo di un percorso verso l'infinito prima di rendersi conto che la destinazione non è più raggiungibile.
+
+\subsection{Confronto tra LS e DV}
+\begin{itemize}
+    \item \textbf{Complessità dei messaggi}: LS richiede la diffusione di informazioni a tutti i nodi ($O(nE)$ messaggi), mentre DV scambia informazioni solo tra vicini.
+    \item \textbf{Velocità di convergenza}: LS è più veloce e robusto. DV può essere lento a convergere e soffre del problema del count-to-infinity.
+    \item \textbf{Robustezza}: In LS, un router malfunzionante può inviare informazioni errate sul costo dei propri link, ma ogni altro router calcola la propria tabella in autonomia. In DV, l'errore di un router può propagarsi e influenzare le tabelle di molti altri router nella rete.
+\end{itemize}
+
+\section{Routing su Internet: Intra-AS e Inter-AS}
+Internet è troppo grande per essere gestita da un unico algoritmo di routing. Per garantire la scalabilità, è organizzata gerarchicamente in \textbf{Sistemi Autonomi (AS)}.
+
+\dfn{Sistema Autonomo (AS)}{
+    Un insieme di router e reti sotto un'unica amministrazione tecnica, che presenta una politica di routing comune verso il resto di Internet. Esempi sono la rete di un provider (come TIM), di una grande università o di un'azienda come Google.
+}
+
+Questa struttura divide il problema del routing in due:
+\begin{enumerate}
+    \item \textbf{Routing Intra-AS (Interior Gateway Protocol - IGP)}: L'algoritmo di routing utilizzato \textit{all'interno} di un singolo AS. Tutti i router dell'AS eseguono lo stesso protocollo. L'obiettivo principale qui è l'ottimizzazione delle prestazioni (trovare il percorso migliore).
+    \item \textbf{Routing Inter-AS (Exterior Gateway Protocol - EGP)}: L'algoritmo utilizzato per scambiare informazioni di raggiungibilità \textit{tra} AS diversi. L'obiettivo qui non è tanto trovare il percorso più performante, quanto implementare le \textbf{politiche} commerciali e di interconnessione tra i provider.
+\end{enumerate}
+
+I router al confine di un AS, che si connettono ad altri AS, sono chiamati \textbf{gateway router}.
+
+\subsection{OSPF: Un Protocollo di Routing Intra-AS}
+\textbf{OSPF (Open Shortest Path First)} è uno dei protocolli IGP più diffusi su Internet.
+\begin{itemize}
+    \item È un protocollo di tipo \textbf{Link-State}.
+    \item Ogni router in un AS che usa OSPF ottiene una mappa completa dell'AS.
+    \item Su questa mappa, ogni router esegue l'\textbf{algoritmo di Dijkstra} per calcolare i percorsi a costo minimo.
+    \item "Open" significa che le sue specifiche sono pubbliche (non è proprietario).
+    \item Offre funzionalità avanzate come l'autenticazione dei messaggi di routing per la sicurezza e la possibilità di definire percorsi multipli a parità di costo.
+\end{itemize}
+
+Per migliorare ulteriormente la scalabilità all'interno di AS molto grandi, OSPF può essere strutturato gerarchicamente, suddividendo l'AS in \textbf{aree}. I router all'interno di un'area conoscono solo la topologia della propria area, riducendo così il sovraccarico di comunicazione e di calcolo.
+
+% \begin{center}
+%     \includegraphics[width=10cm]{img/Hierarchical OSPF diagram}
+% \end{center}
+
+\section{Routing Inter-AS: il Protocollo BGP}
+Mentre protocolli come OSPF gestiscono in modo efficiente il routing \textit{all'interno} di un singolo Sistema Autonomo (AS), è necessario un protocollo diverso per gestire il routing \textit{tra} AS differenti. Questo compito è affidato al BGP.
+
+\dfn{BGP (Border Gateway Protocol)}{
+    È il protocollo di routing Inter-AS (o EGP) standard de facto su Internet. È la "colla" che tiene insieme le migliaia di reti dei provider (ISP), permettendo loro di scambiarsi informazioni su quali destinazioni sono raggiungibili attraverso le rispettive reti.
+}
+
+BGP permette a ogni AS di:
+\begin{itemize}
+    \item \textbf{Ottenere informazioni di raggiungibilità} dai propri AS vicini. Questo avviene tramite una sessione \textbf{eBGP} (external BGP) tra i gateway router di confine.
+    \item \textbf{Propagare queste informazioni} a tutti i router interni al proprio AS. Questo avviene tramite sessioni \textbf{iBGP} (internal BGP).
+    \item \textbf{Determinare le rotte "migliori"} verso le reti esterne, basandosi non solo sulla performance, ma soprattutto su \textbf{politiche} economiche e di interconnessione.
+\end{itemize}
+
+\subsection{Path Vector e Politiche di Routing}
+A differenza di OSPF, BGP non si basa sul costo dei link, ma è un protocollo \textbf{Path Vector}.
+\begin{itemize}
+    \item Quando un AS pubblicizza una rotta verso una destinazione, non comunica un semplice costo, ma l'intero percorso di Sistemi Autonomi da attraversare. Questo percorso è contenuto in un attributo chiamato \textbf{AS-PATH}.
+    \item L'attributo AS-PATH è fondamentale per prevenire i loop: un router scarta ogni rotta pubblicizzata in cui compare già il numero del proprio AS.
+\end{itemize}
+
+La caratteristica più importante di BGP è che la selezione delle rotte è guidata dalla \textbf{policy}. Un provider può decidere, ad esempio, di non far transitare traffico tra due altri provider attraverso la propria rete (perché non ne trarrebbe alcun guadagno). Questa policy viene implementata semplicemente scegliendo di non ri-pubblicizzare certe rotte ai propri vicini.
+
+\ex{Hot Potato Routing}{
+    Una comune politica di routing in BGP è l'hot potato routing. Se un router all'interno di un AS ha più possibili uscite per raggiungere una destinazione esterna, sceglierà l'uscita che ha il costo \textit{interno} (calcolato con OSPF) più basso. In pratica, cerca di "liberarsi" del pacchetto il più velocemente possibile, passandolo a un altro AS, anche se questo potrebbe non corrispondere al percorso globale più breve per il pacchetto stesso.
+}
+
+\section{Approfondimento sul Control Plane SDN}
+Come anticipato, l'approccio \textbf{Software-Defined Networking (SDN)} rappresenta un cambio di paradigma rispetto al routing tradizionale, separando il "cervello" della rete (il control plane) dal "corpo" (il data plane).
+
+\subsection{L'Architettura di un Controller SDN}
+Un controller SDN è un sistema software complesso, un vero e proprio "sistema operativo di rete", che può essere scomposto in tre livelli funzionali:
+\begin{enumerate}
+    \item \textbf{Livello di Comunicazione (Southbound API)}: È l'interfaccia verso il basso, con cui il controller comunica con i dispositivi di rete (gli switch). Il protocollo più comune per questa interfaccia è \textbf{OpenFlow}. Tramite questa API, il controller può installare/modificare le tabelle di flusso e ricevere notifiche dagli switch (es. un link è caduto).
+    \item \textbf{Livello di Gestione dello Stato della Rete}: È il cuore del controller. Mantiene una visione centralizzata e costantemente aggiornata dell'intera rete: la topologia (switch e link), le statistiche di traffico, le informazioni sugli host, ecc.
+    \item \textbf{Interfaccia per le Applicazioni (Northbound API)}: È l'interfaccia verso l'alto, con cui le \textbf{applicazioni di controllo di rete} interagiscono con il controller per implementare la logica di rete. Queste applicazioni (per il routing, il bilanciamento del carico, il controllo degli accessi) possono leggere lo stato della rete dal controller e usare l'API per programmare il comportamento desiderato, che il controller tradurrà in regole di flusso per gli switch.
+\end{enumerate}
+
+% \begin{center}
+%     \includegraphics[width=12cm]{img/SDN controller components}
+% \end{center}
+
+\ex{Gestione di un guasto in una rete SDN}{
+    \begin{enumerate}
+        \item Lo switch S1 rileva che un suo link è caduto.
+        \item S1 invia un messaggio OpenFlow `Port Status` al controller.
+        \item Il controller aggiorna il suo stato interno della rete per riflettere il guasto.
+        \item Un'applicazione di routing, che si era registrata per ricevere notifiche sui cambiamenti di topologia, viene attivata.
+        \item L'applicazione di routing ricalcola i nuovi percorsi a costo minimo (es. con Dijkstra) basandosi sulla nuova topologia.
+        \item L'applicazione istruisce il controller di installare le nuove tabelle di flusso negli switch interessati dal cambiamento.
+        \item Il controller traduce queste istruzioni in messaggi OpenFlow `Modify-State` e li invia agli switch, riprogrammando così il forwarding della rete in tempo reale.
+    \end{enumerate}
+}
+
+\section{ICMP: il Protocollo di Controllo di Internet}
+
+\dfn{ICMP (Internet Control Message Protocol)}{
+    Un protocollo di supporto del livello rete, utilizzato da host e router per comunicare informazioni di controllo e, soprattutto, per segnalare errori. I messaggi ICMP non sono pacchetti ordinari, ma sono incapsulati direttamente all'interno di datagrammi IP.
+}
+
+Un messaggio ICMP è definito da un campo `Type` e un campo `Code` che ne specificano il significato. I messaggi più comuni includono:
+\begin{itemize}
+    \item \textbf{Echo Request/Reply (Type 8/0)}: Usati dal comando \textbf{ping} per verificare la raggiungibilità di un host.
+    \item \textbf{Destination Unreachable (Type 3)}: Inviato da un router quando non può inoltrare un pacchetto (es. host irraggiungibile, porta non disponibile).
+    \item \textbf{Time Exceeded (Type 11)}: Inviato da un router quando scarta un pacchetto perché il suo campo TTL ha raggiunto zero. È il meccanismo alla base di \textbf{traceroute}.
+\end{itemize}
+
+\ex{Funzionamento di Traceroute}{
+    Traceroute scopre i router su un percorso inviando una serie di pacchetti (tipicamente UDP) verso la destinazione:
+    \begin{enumerate}
+        \item Il primo pacchetto viene inviato con un TTL=1. Il primo router lungo il percorso lo scarta e invia indietro un ICMP `Time Exceeded`.
+        \item Il secondo pacchetto viene inviato con TTL=2. Il secondo router lo scarta e invia indietro un ICMP.
+        \item Il processo continua, aumentando il TTL di uno a ogni passo, fino a quando i pacchetti non raggiungono la destinazione finale.
+        \item L'host di destinazione, ricevendo un pacchetto UDP destinato a una porta non in uso, risponde con un ICMP `Destination Port Unreachable`, segnalando la fine del tracciamento.
+    \end{enumerate}
+}

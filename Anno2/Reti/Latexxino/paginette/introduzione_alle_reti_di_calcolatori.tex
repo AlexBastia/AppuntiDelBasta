@@ -1,0 +1,438 @@
+\chapter{Introduzione alle Reti di Calcolatori}
+
+\section{Cos'è una Rete di Calcolatori?}
+
+\dfn{Rete di Calcolatori}{
+    Un insieme di dispositivi di calcolo, autonomi e interconnessi, in grado di scambiare informazioni. L'autonomia è una caratteristica cruciale: ogni dispositivo, o \textit{host}, deve essere capace di svolgere compiti di calcolo e comunicazione in modo indipendente, senza un controllo centralizzato esterno per ogni singola operazione. Ad esempio, i terminali di una rete telefonica tradizionale non sono autonomi, e quindi non costituiscono una rete di calcolatori.
+}
+
+Le reti nascono per soddisfare esigenze fondamentali, evolutesi nel tempo:
+\begin{itemize}
+    \item \textbf{Supporto alla comunicazione tra utenti}: La motivazione originaria. Ha portato allo sviluppo di servizi rivoluzionari come la posta elettronica (e-mail) e il World Wide Web (WWW).
+    \item \textbf{Condivisione di informazioni}: Accesso a database, pagine web e file remoti, rendendo l'informazione distribuita e universalmente accessibile.
+    \item \textbf{Condivisione di risorse e dispositivi}: Permette a più utenti di utilizzare dispositivi costosi o centralizzati, come stampanti ad alte prestazioni o grandi sistemi di archiviazione (storage), ottimizzandone l'uso.
+    \item \textbf{Accesso a calcolatori remoti}: Possibilità di utilizzare la potenza di calcolo di un computer senza essere fisicamente presenti.
+    \item \textbf{Calcolo distribuito e sistemi scalabili}: Le reti consentono di suddividere calcoli complessi tra più macchine, eseguendoli in parallelo e aumentando enormemente le prestazioni. Questo rende possibile la creazione di sistemi scalabili.
+\end{itemize}
+
+\nt{Tutte queste reti interconnesse tra loro formano quella che oggi conosciamo come Internet, la "RETE delle RETI", un agglomerato globale di reti eterogenee che comunicano grazie a protocolli standard.}
+
+\dfn{Sistema Scalabile}{
+    Un sistema è definito \textbf{scalabile} quando i suoi tempi di risposta rimangono accettabili anche a fronte di un aumento massiccio della dimensione del problema o del numero di utenti. Internet è l'esempio per eccellenza di un sistema scalabile.
+}
+
+\section{Classificazione delle Reti}
+
+Le reti di calcolatori possono essere classificate in base alla loro estensione geografica, ovvero l'area coperta dai dispositivi connessi.
+\begin{itemize}
+    \item \textbf{PAN (Personal Area Network)}: Reti personali che connettono dispositivi molto vicini, tipicamente entro una stanza o su una scrivania. Sono gestite dal singolo utente.
+    \ex{Esempi di PAN}{Connessioni Bluetooth tra uno smartphone, auricolari wireless e uno smartwatch.}
+    \item \textbf{LAN (Local Area Network)}: Reti locali che coprono un'area limitata come un ufficio, un edificio o un campus universitario (raggio di circa 100-200 metri). Sono generalmente gestite da un'unica organizzazione (azienda, università).
+    \item \textbf{MAN (Metropolitan Area Network)}: Reti metropolitane che si estendono su un'intera area urbana, con un raggio di decine di chilometri. Sono gestite da provider di servizi di comunicazione.
+    \ex{Esempio di MAN}{La rete ALMAWIFI dell'Università di Bologna, che collega diversi edifici sparsi per la città.}
+    \item \textbf{WAN (Wide Area Network)}: Reti geografiche che coprono aree molto vaste, come nazioni o interi continenti. Possono utilizzare tecnologie complesse e integrate, incluse le comunicazioni satellitari.
+    \item \textbf{Internet}: È la rete globale, un'interconnessione di innumerevoli PAN, LAN, MAN e WAN. La sua esistenza è resa possibile dall'adozione di un insieme comune di regole di comunicazione: i protocolli di Internet.
+\end{itemize}
+
+\section{Evoluzione e Costi di Internet}
+
+Lo sviluppo di Internet è stato un processo incrementale, reso possibile dalla distribuzione dei costi di realizzazione e gestione tra innumerevoli entità.
+\begin{itemize}
+    \item \textbf{1969}: La prima rete progenitrice di Internet (ARPANET) nasce come un esperimento connettendo solo 4 calcolatori di 4 università americane. L'idea era trasmettere bit di informazione su linee telefoniche usando un dispositivo intermedio, il \textbf{MODEM} (Modulatore-Demodulatore), che converte i segnali digitali del computer in segnali analogici per la linea telefonica e viceversa.
+    \item \textbf{Inizio 2003}: Internet conta già oltre 172 milioni di computer connessi.
+    \item \textbf{Oggi (2020)}: Si stimano oltre 4 miliardi di dispositivi con indirizzo IP e oltre 25 miliardi includendo i dispositivi dell'Internet of Things (IoT).
+    \item \textbf{Previsione 2022-2025}: Si stima che si raggiungeranno oltre 60 miliardi di dispositivi connessi.
+\end{itemize}
+
+% \begin{center}
+%     \includegraphics[width=12cm]{img/internet_hosts_growth.png}
+% \end{center}
+\nt{Il grafico mostra una crescita esponenziale del numero di host (dispositivi con nome logico nei servizi DNS), che tende a stabilizzarsi intorno al 2017. In realtà, questa metrica non cattura l'esplosione dei dispositivi IoT, che continua a far crescere esponenzialmente il numero totale di nodi connessi.}
+
+La gestione dei costi è distribuita su diverse scale:
+\begin{itemize}
+    \item \textbf{Scala Globale}: Le grandi infrastrutture (WAN, dorsali oceaniche) sono finanziate e gestite da consorzi multinazionali e grandi provider di servizi, che sostengono costi elevatissimi.
+    \item \textbf{Scala Locale}: La maggior parte dell'infrastruttura capillare è costituita da piccole reti (LAN) gestite da singole aziende, enti o privati, con costi limitati e distribuiti.
+    \item \textbf{Costo per l'utente}: L'utente finale paga per l'accesso alla rete, con tariffe che possono essere basate sul tempo di connessione, sulla quantità di dati scambiati ("a consumo") o forfettarie ("flat" o "tutto incluso").
+\end{itemize}
+
+\section{Prestazioni di una Rete}
+
+Per un utente, le prestazioni di una rete sono definite principalmente da due indici fondamentali.
+\begin{itemize}
+    \item \textbf{Capacità di Trasmissione (Bandwidth)}: Comunemente ma impropriamente chiamata "velocità della rete", indica la quantità di dati (misurata in bit o Byte, dove 1 Byte = 8 bit) che possono essere trasmessi in un secondo. Si misura in bit/sec o byte/sec, con i relativi multipli (Kilo, Mega, Giga, Tera).
+    
+    \nt{Pensando a una rete come a un tubo, la capacità di trasmissione è il diametro del tubo: più è largo, più dati possono passare contemporaneamente.}
+
+    \item \textbf{Ritardo di Collegamento (Latency)}: Indica il tempo necessario affinché un dato transiti dal mittente al destinatario. È determinato non solo dalla distanza fisica (la velocità della luce è un limite invalicabile), ma anche dai tempi di elaborazione e gestione che i dati subiscono nei nodi intermedi della rete (router, switch), a causa dei protocolli di comunicazione.
+    
+    \nt{Continuando l'analogia, il ritardo è il tempo che i dati impiegano per percorrere l'intera lunghezza del tubo.}
+\end{itemize}
+
+\ex{Capacità vs. Ritardo}{
+    Immaginiamo di dover trasferire una grande quantità di dati (es. 1 Terabyte) da Milano a Roma.
+    \begin{itemize}
+        \item \textbf{Opzione A (Rete)}: Utilizzare una connessione in fibra ottica con capacità di 1 Gbit/s.
+        \item \textbf{Opzione B (Furgone)}: Caricare i dati su un hard disk e trasportarlo con un furgone.
+    \end{itemize}
+    Il furgone ha una "capacità di trasmissione" enorme (trasporta 1 TB in un colpo solo), ma ha un ritardo molto alto (diverse ore per il viaggio). La fibra ottica ha una capacità inferiore ma un ritardo quasi istantaneo. La scelta migliore dipende dall'esigenza specifica: per applicazioni interattive (come il gaming online), un basso ritardo è cruciale.
+}
+
+Esistono anche indici di prestazione più complessi e specifici per determinate applicazioni:
+\begin{itemize}
+    \item \textbf{Jitter}: È la variazione statistica del ritardo di rete. Un jitter elevato significa che i pacchetti di dati arrivano a intervalli irregolari. È un parametro critico per le applicazioni di streaming (audio/video), dove un flusso costante è essenziale per evitare interruzioni o "scatti". Per compensare il jitter, i dispositivi usano un \textit{buffer di ricezione}, una memoria temporanea che immagazzina i pacchetti in arrivo e li riproduce a un ritmo costante.
+    \item \textbf{RTT (Round Trip Time)}: È il tempo totale di andata e ritorno, ovvero il tempo che intercorre tra l'invio di un pacchetto e la ricezione della relativa risposta. È fondamentale nelle applicazioni interattive come i giochi online.
+\end{itemize}
+
+\ex{Importanza dell'RTT nel Gaming}{
+    Due giocatori, A e B, si sfidano online.
+    \begin{itemize}
+        \item Il giocatore A ha un RTT di 10 ms verso il server di gioco.
+        \item Il giocatore B ha un RTT di 25 ms.
+    \end{itemize}
+    Quando entrambi si vedono sullo schermo nello stesso momento e sparano, l'azione del giocatore A raggiunge il server 15 ms prima di quella del giocatore B. Di conseguenza, il server registrerà che A ha sparato per primo, e B "muore prima", anche se dal suo punto di vista ha sparato simultaneamente. Questo dimostra come una bassa latenza sia più importante della capacità di trasmissione in questo contesto.
+}
+
+\section{Componenti per la Connessione di Rete}
+
+Per connettere un calcolatore a una rete sono necessari componenti hardware e software specifici.
+
+\begin{itemize}
+    \item \textbf{Dispositivo o Scheda di Rete (Hardware)}: È il componente fisico (spesso integrato nella scheda madre) che si occupa di codificare i dati digitali del computer in segnali trasmissibili sul mezzo fisico (in trasmissione) e di decodificare i segnali ricevuti in dati digitali (in ricezione).
+    \item \textbf{Mezzo di Trasmissione}: È il supporto fisico attraverso cui si propagano i segnali (es. cavi di rame, fibre ottiche, onde radio). Realizza l'infrastruttura fisica della rete.
+    \item \textbf{Connettore di Rete}: È l'interfaccia standard (es. la porta RJ45 per i cavi Ethernet) che collega fisicamente la scheda di rete al mezzo di trasmissione.
+    \item \textbf{Protocolli di Rete (Software)}: Sono un insieme di regole e procedure, implementate a livello software (spesso nel sistema operativo), che gestiscono ogni aspetto della comunicazione per garantirne il corretto funzionamento e la compatibilità tra dispositivi diversi.
+    \item \textbf{Driver (Software)}: È un software di basso livello che permette al sistema operativo di comunicare e utilizzare le funzionalità hardware della scheda di rete. Se una scheda non funziona, spesso è a causa di driver mancanti o non corretti.
+\end{itemize}
+
+\nt{La standardizzazione di connettori, schede e protocolli è ciò che garantisce la compatibilità e l'interoperabilità, permettendo a dispositivi di produttori diversi di comunicare senza problemi.}
+
+% \begin{center}
+%     \includegraphics[width=12cm]{img/componenti_rete.png}
+% \end{center}
+
+\section{Collegamenti e Infrastrutture di Rete}
+
+\dfn{Infrastruttura di Rete}{
+    L'infrastruttura di rete descrive la struttura complessiva dei collegamenti fisici tra tutti i dispositivi (host) di una rete. La comunicazione tra due host è possibile se esiste un collegamento diretto o una sequenza di collegamenti intermedi, detta \textbf{cammino}.
+}
+Esistono diversi schemi di connessione (infrastrutture):
+\begin{itemize}
+    \item \textbf{Punto a Punto}: La connessione più semplice, collega direttamente solo due host. È facile da gestire e poco costosa. Esempi comuni sono le connessioni Bluetooth o il collegamento di un modem domestico al provider.
+    \item \textbf{Completamente Connessa}: Ogni host è collegato direttamente a tutti gli altri host della rete.
+    \begin{itemize}
+        \item \textbf{Vantaggi}: Altissima \textbf{resilienza} (se un collegamento si rompe, ne esistono molti altri alternativi), possibilità di \textbf{parallelismo} (più comunicazioni possono avvenire simultaneamente su cavi diversi, senza collisioni) e prestazioni elevate.
+        \item \textbf{Svantaggi}: Estremamente \textbf{costosa} e complessa da cablare. Il numero di collegamenti cresce esponenzialmente con il numero di host.
+    \end{itemize}
+    \item \textbf{Parzialmente Connessa (o Minimamente Connessa)}: Esiste almeno un cammino tra ogni coppia di host, ma non tutti sono collegati direttamente. È un compromesso tra costo e connettività.
+    \begin{itemize}
+        \item \textbf{Vantaggi}: Costo e complessità ridotti rispetto a una rete completamente connessa.
+        \item \textbf{Svantaggi}: Meno resiliente. Il guasto di un singolo collegamento critico può portare a una \textbf{partizione di rete}.
+    \end{itemize}
+    \item \textbf{Partizione di Rete}: Si verifica quando, a seguito di un guasto, la rete si divide in due o più sottogruppi di host isolati, incapaci di comunicare tra loro.
+\end{itemize}
+
+\nt{Per comunicare, è necessario identificare univocamente ogni scheda di rete. A questo scopo, ogni scheda possiede un indirizzo fisico unico al mondo, chiamato indirizzo \textbf{MAC (Media Access Control)}, lungo 48 bit (6 byte).}
+
+\section{Topologie di Rete}
+
+\dfn{Topologia di Rete}{
+    La topologia descrive lo schema geometrico delle connessioni in una rete. Le topologie standard rappresentano un buon compromesso tra costo, complessità e benefici, e sono tipicamente usate in reti piccole (LAN e PAN).
+}
+
+Le principali topologie sono:
+\begin{itemize}
+    \item \textbf{Anello (Ring)}: Ogni host è connesso solo ai due vicini, formando un anello chiuso. I dati viaggiano in una direzione (oraria o antioraria). È più robusta di una rete minimamente connessa: se un collegamento si interrompe, i dati possono viaggiare nel verso opposto per raggiungere la destinazione, mantenendo la rete connessa.
+    \item \textbf{Stella (Star)}: Tutti gli host sono collegati a un dispositivo centrale (un \textbf{hub} o uno \textbf{switch}). È la topologia più utilizzata oggi nelle LAN.
+    \item \textbf{Bus}: Tutti gli host sono collegati a un unico cavo condiviso, detto bus. È una topologia semplice ed economica, ma la gestione delle collisioni è critica.
+    \item \textbf{Albero (Tree)}: È una struttura gerarchica, simile a una stella estesa, dove un nodo centrale si collega ad altri nodi che, a loro volta, possono fungere da centro per altri dispositivi.
+    \item \textbf{Maglia (Mesh)}: È una topologia complessa e non strutturata, tipica delle grandi reti (come Internet), dove i nodi hanno connessioni multiple e ridondanti, creando un grafo complesso.
+\end{itemize}
+
+\subsection{Dettagli sulla Topologia ad Anello e a Stella}
+
+\paragraph{Topologia ad Anello e il Token Ring}
+Per evitare collisioni in una topologia ad anello, si usa un protocollo di accesso al mezzo chiamato \textbf{Token Ring}.
+\begin{itemize}
+    \item Un pacchetto speciale di bit, il \textbf{token} (testimone), circola continuamente sull'anello.
+    \item Solo l'host che possiede il token ha il diritto di trasmettere dati.
+    \item Una volta terminata la trasmissione, l'host rilascia il token, passandolo all'host successivo.
+    \item Questo meccanismo \textbf{garantisce l'assenza di collisioni}.
+    \item \textbf{Svantaggio critico}: Se il token viene perso o danneggiato, nessun host può più trasmettere, paralizzando la rete.
+\end{itemize}
+
+\paragraph{Topologia a Stella: Hub vs. Switch}
+Il dispositivo centrale in una topologia a stella può essere un hub o uno switch, che operano a livelli diversi e hanno comportamenti molto differenti.
+\begin{itemize}
+    \item \textbf{Hub (Livello 1 - Fisico)}: È un "ripetitore multiporta". Quando riceve un segnale su una porta, semplicemente lo rigenera e lo ritrasmette \textbf{a tutte le altre porte}. Tutti gli host connessi a un hub condividono lo stesso \textbf{dominio di collisione}, il che significa che se due host trasmettono contemporaneamente, si verifica una collisione.
+    \item \textbf{Switch (Livello 2 - MAC/LLC)}: È un dispositivo più intelligente. Analizza i pacchetti di dati in arrivo, legge l'indirizzo MAC di destinazione e inoltra il pacchetto \textbf{solo sulla porta a cui è collegato il destinatario}.
+    \begin{itemize}
+        \item \textbf{Vantaggi}: Riduce drasticamente le collisioni (ogni porta è un dominio di collisione separato), aumenta le prestazioni permettendo comunicazioni multiple e simultanee (es. A può parlare con B mentre C parla con D), ed evita di congestionare la rete con traffico inutile.
+        \item \textbf{Costo}: È più costoso di un hub, ma offre prestazioni notevolmente superiori.
+    \end{itemize}
+    \item \textbf{Criticità}: In entrambi i casi, se il dispositivo centrale (hub o switch) si guasta, l'intera rete collegata ad esso smette di funzionare.
+\end{itemize}
+
+\section{Il Mezzo Fisico di Trasmissione}
+
+Il mezzo fisico è il canale attraverso cui viaggiano i segnali. Ne esistono tre tipi principali.
+\begin{enumerate}
+    \item \textbf{Cavi Metallici (es. rame)}: Trasmettono segnali elettrici (variazioni di tensione e corrente).
+    \begin{itemize}
+        \item \textbf{Tipi}: Doppino intrecciato (cavi Ethernet), cavo coassiale.
+        \item \textbf{Caratteristiche}: È il metodo più diffuso per il buon rapporto costo/prestazioni.
+        \item \textbf{Problemi}: \textbf{Attenuazione} (il segnale perde energia con la distanza) e \textbf{interferenza} da rumore elettromagnetico esterno.
+    \end{itemize}
+    \item \textbf{Fibre Ottiche}: Trasmettono segnali luminosi (fotoni) vincolati all'interno di sottilissime fibre di vetro.
+    \begin{itemize}
+        \item \textbf{Caratteristiche}: Offrono le prestazioni migliori in termini di capacità (migliaia di Gbit/s) e sono immuni alle interferenze elettromagnetiche.
+        \item \textbf{Problemi}: Il costo dell'infrastruttura e soprattutto della giunzione (collegamento) delle fibre è molto elevato.
+    \end{itemize}
+    \item \textbf{Senza Fili (Wireless)}: Utilizzano la propagazione di onde elettromagnetiche nello spazio.
+    \begin{itemize}
+        \item \textbf{Tipi}: Onde radio (Wi-Fi, Bluetooth), infrarossi.
+        \item \textbf{Caratteristiche}: Permettono la mobilità dei dispositivi e riducono la necessità di cablaggio.
+        \item \textbf{Problemi}: Il collegamento non è sempre affidabile, la capacità è generalmente inferiore a quella cablata, la distanza di copertura è limitata e il segnale si attenua fortemente con la distanza (l'energia necessaria per raddoppiare la distanza di comunicazione quadruplica).
+    \end{itemize}
+\end{enumerate}
+
+\section{Il Dispositivo di Rete (Scheda di Rete)}
+
+\dfn{Scheda di Rete}{
+    È il componente hardware che funge da intermediario tra il calcolatore e il mezzo di trasmissione. Le sue funzioni principali sono memorizzare temporaneamente i dati, codificarli in segnali per la trasmissione, decodificare i segnali in ricezione e gestire l'accesso al mezzo fisico.
+}
+Le sue caratteristiche principali sono:
+\begin{itemize}
+    \item Prende il nome dal protocollo standard che utilizza (es. scheda \textbf{Ethernet}, scheda \textbf{Wi-Fi}).
+    \item Dipende strettamente dal mezzo di trasmissione a cui deve collegarsi.
+    \item Possiede un indirizzo fisico univoco a livello mondiale, non modificabile, detto \textbf{indirizzo MAC (Medium Access Control)}, assegnato dal costruttore.
+\end{itemize}
+% \begin{center}
+%     \includegraphics[width=10cm]{img/scheda_di_rete.png}
+% \end{center}
+
+\section{Canali di Comunicazione della Rete}
+
+\dfn{Canale di Comunicazione}{
+    È una visione astratta del mezzo di trasmissione, che può essere considerato come un insieme di "tubi virtuali" separati. Un singolo mezzo fisico può supportare più canali di comunicazione contemporaneamente (ad esempio, usando frequenze diverse per le onde radio).
+}
+
+Esistono due tipi fondamentali di canali:
+\begin{itemize}
+    \item \textbf{Canale Punto a Punto}: Un canale riservato e utilizzato esclusivamente da due dispositivi, un mittente e un destinatario. Il problema dell'arbitraggio è banale (es. "prima parlo io, poi parli tu").
+    \item \textbf{Canale ad Accesso Multiplo (o Broadcast)}: Un canale condiviso su cui tutti i dispositivi connessi possono trasmettere e ricevere. È il tipo di canale più comune nelle reti locali.
+\end{itemize}
+I canali ad accesso multiplo introducono due problemi critici che devono essere risolti dai protocolli:
+\begin{enumerate}
+    \item \textbf{Rischio di Collisione}: Se due o più dispositivi trasmettono contemporaneamente sullo stesso canale, i loro segnali si sovrappongono e si "distruggono" a vicenda, rendendo l'informazione illeggibile.
+    \item \textbf{Arbitraggio}: È necessario definire regole precise (protocolli) per decidere \textbf{chi} può trasmettere e \textbf{quando}, al fine di evitare o gestire le collisioni.
+    \item \textbf{Indirizzamento}: Poiché tutti ricevono la trasmissione, ogni messaggio deve contenere l'indirizzo (MAC address) del destinatario specifico, in modo che solo quel dispositivo processi il messaggio e tutti gli altri lo ignorino.
+\end{enumerate}
+
+\nt{Esiste un indirizzo MAC speciale, detto \textbf{indirizzo di broadcast} (composto da tutti 1), che, se usato come destinazione, indica che il messaggio è rivolto a tutte le schede di rete connesse al canale.}
+
+% \begin{center}
+%     \includegraphics[width=12cm]{img/canali_comunicazione.png}
+% \end{center}
+
+\section{Reti a Commutazione di Circuito}
+Una volta stabiliti i canali di comunicazione, si possono realizzare servizi di trasferimento dati su vasta scala secondo due modalità principali: a commutazione di circuito e a commutazione di pacchetto.
+
+\dfn{Commutazione di Circuito}{
+    Una modalità di comunicazione in cui viene stabilito e riservato un cammino fisico dedicato (un \textbf{circuito}) di canali di comunicazione punto a punto, che si estende dal mittente al destinatario, \textit{prima} che la trasmissione dei dati abbia inizio. Questo circuito rimane ad uso esclusivo dei due interlocutori per tutta la durata della comunicazione. L'esempio classico è la rete telefonica tradizionale.
+}
+La creazione del circuito avviene attraverso una fase iniziale di \textit{setup}, durante la quale il protocollo negozia e prenota ogni singolo canale lungo il percorso. Una volta stabilito, il circuito si comporta come se ci fosse un collegamento fisico diretto tra mittente e destinatario.
+
+\begin{itemize}
+    \item \textbf{Vantaggi}:
+    \begin{itemize}
+        \item \textbf{Prestazioni Garantite}: Una volta creato il circuito, non c'è rischio di collisioni o di contesa per le risorse.
+        \item \textbf{Ritardo Basso e Costante}: Poiché il percorso è predefinito, i nodi intermedi non devono prendere decisioni di instradamento. I dati fluiscono senza interruzioni, garantendo una latenza minima e un jitter (variazione del ritardo) quasi nullo. Questo la rende ideale per applicazioni in tempo reale come le chiamate vocali.
+        \item \textbf{Semplicità dei Dati}: Non è necessario includere indirizzi di mittente e destinatario in ogni frammento di dato, poiché il percorso è già fissato.
+    \end{itemize}
+    \item \textbf{Svantaggi}:
+    \begin{itemize}
+        \item \textbf{Ritardo Iniziale Elevato}: La fase di setup per la prenotazione del canale può richiedere un tempo significativo prima che la comunicazione possa iniziare.
+        \item \textbf{Inefficienza e Spreco di Risorse}: Il canale rimane riservato e pagato per tutta la durata della connessione, anche nei momenti in cui non vengono trasmessi dati. Questo porta a un basso utilizzo delle risorse di rete.
+        \item \textbf{Costo Elevato}: Tipicamente il servizio si paga in base al tempo di connessione, indipendentemente dalla quantità di dati scambiati.
+    \end{itemize}
+\end{itemize}
+
+\section{Reti a Commutazione di Pacchetto}
+È l'alternativa alla commutazione di circuito e costituisce la base di quasi tutte le reti di calcolatori moderne, inclusa Internet.
+
+\dfn{Commutazione di Pacchetto}{
+    Una modalità di comunicazione in cui i dati da trasmettere vengono suddivisi in blocchi di dimensioni definite, detti \textbf{pacchetti}. Ogni pacchetto è un'entità indipendente, contenente, oltre a una porzione dei dati, informazioni di controllo come l'indirizzo del mittente e del destinatario. I pacchetti vengono poi inviati sulla rete senza che venga riservato un percorso predefinito.
+}
+In questo modello, i canali di comunicazione (specialmente quelli ad accesso multiplo) sono condivisi tra molti utenti. I pacchetti di diverse comunicazioni vengono intercalati (\textit{multiplexati}) sullo stesso mezzo fisico, ottimizzando l'uso delle risorse.
+
+\begin{itemize}
+    \item \textbf{Vantaggi}:
+    \begin{itemize}
+        \item \textbf{Utilizzo Efficiente delle Risorse}: Il canale viene utilizzato solo quando c'è effettivamente un pacchetto da trasmettere, permettendo a più utenti di condividerlo simultaneamente e riducendo gli sprechi.
+        \item \textbf{Costo Basato sul Consumo}: L'utente paga in base alla quantità di dati trasmessi, non per il tempo di connessione.
+    \end{itemize}
+    \item \textbf{Svantaggi}:
+    \begin{itemize}
+        \item \textbf{Ritardo Maggiore e Variabile (Jitter)}: I pacchetti possono dover attendere nei nodi intermedi (router) se la rete è congestionata, introducendo ritardi non costanti.
+        \item \textbf{Nessuna Garanzia di Consegna}: I pacchetti possono essere persi (ad esempio, a causa della congestione) o arrivare a destinazione in un ordine diverso da quello di invio.
+    \end{itemize}
+\end{itemize}
+
+\section{Servizi di Trasmissione a Pacchetto}
+Il fatto che la commutazione di pacchetto sia intrinsecamente inaffidabile non significa che la comunicazione debba esserlo. I protocolli di rete possono costruire, al di sopra di questa infrastruttura, due tipi di servizi per l'utente.
+
+\subsection{Servizi orientati alla connessione (Connection-Oriented)}
+\dfn{Servizio Connection-Oriented}{
+    Un servizio di trasmissione che \textbf{garantisce} la consegna affidabile e ordinata di tutti i pacchetti dal mittente al destinatario. Simula il comportamento di un circuito dedicato, creando un cosiddetto "circuito virtuale".
+}
+Per ottenere questa affidabilità, i protocolli implementano meccanismi sofisticati:
+\begin{itemize}
+    \item \textbf{Numerazione dei Pacchetti}: Ogni pacchetto viene etichettato con un numero di sequenza.
+    \item \textbf{Riordino alla Destinazione}: Il destinatario utilizza una memoria temporanea (\textit{buffer}) per memorizzare i pacchetti ricevuti e riordinarli secondo il loro numero di sequenza, ricostruendo il messaggio originale.
+    \item \textbf{Conferma di Ricezione (Acknowledgement - ACK)}: Per ogni pacchetto ricevuto correttamente, il destinatario invia al mittente un piccolo messaggio di conferma, detto ACK.
+    \item \textbf{Ritrasmissione}: Il mittente avvia un timer per ogni pacchetto inviato. Se non riceve il corrispondente ACK entro la scadenza del timer (\textit{timeout}), assume che il pacchetto sia andato perso e lo \textbf{ritrasmette}.
+\end{itemize}
+\nt{Il protocollo per eccellenza che fornisce questo servizio su Internet è il \textbf{TCP (Transmission Control Protocol)}.}
+
+\subsection{Servizi non orientati alla connessione (Connectionless)}
+\dfn{Servizio Connectionless}{
+    Un servizio di trasmissione che \textbf{non offre alcuna garanzia} sulla consegna, sull'ordine o sulla non-duplicazione dei pacchetti. Opera secondo un principio di "massimo sforzo" (\textit{best-effort}): la rete fa del suo meglio per consegnare i pacchetti, ma senza alcuna certezza. È analogo a spedire una serie di lettere con la posta ordinaria.
+}
+Questo servizio viene utilizzato da applicazioni che privilegiano la velocità e un basso ritardo rispetto all'affidabilità totale, come lo streaming video o audio e i giochi online, dove la perdita occasionale di un pacchetto è preferibile all'attesa di una sua ritrasmissione.
+
+\nt{Il protocollo che fornisce questo servizio su Internet è l' \textbf{UDP (User Datagram Protocol)}.}
+
+\dfn{Congestione di Rete}{
+    La congestione si verifica quando un nodo della rete, tipicamente un router, riceve pacchetti a una velocità superiore a quella con cui può inoltrarli. Le code di attesa (buffer) del router si riempiono, e i pacchetti in arrivo vengono scartati (\textit{dropped}), causando perdita di dati.
+}
+
+\chapter{Architetture e Protocolli di Rete}
+\section{L'Architettura a Livelli}
+La gestione della comunicazione in una rete è un problema estremamente complesso. Per dominarlo, si adotta un approccio basato sulla \textbf{separazione delle competenze}, organizzando i protocolli in una gerarchia di \textbf{livelli} sovrapposti (\textit{stack}).
+Questa architettura, detta \textit{a livelli}, si basa su alcuni principi fondamentali:
+\begin{itemize}
+    \item Ogni livello è progettato per risolvere una specifica classe di problemi della comunicazione.
+    \item Ogni livello fornisce dei \textbf{servizi} al livello immediatamente superiore, nascondendo i dettagli di come tali servizi vengono realizzati. Ad esempio, il livello superiore non deve preoccuparsi di come i bit vengono trasformati in segnali elettrici.
+    \item Ogni livello utilizza i servizi offerti dal livello immediatamente inferiore per svolgere le proprie funzioni.
+    \item La comunicazione tra livelli adiacenti avviene attraverso interfacce ben definite.
+\end{itemize}
+
+\ex{Analogia della Comunicazione a Livelli}{
+    Due innamorati, un italiano e una giapponese, devono comunicare superando una serie di vincoli: parlano solo la loro lingua madre, l'unico mezzo di trasmissione è un FAX e l'unica macchina da scrivere disponibile usa l'alfabeto cirillico, adatto per la lingua russa.
+
+    Creano un'architettura a 4 livelli:
+    \begin{enumerate}
+        \item \textbf{Livello 4 (Dialogo)}: L'italiano formula la sua dichiarazione in italiano. Il suo unico compito è creare il messaggio.
+        \item \textbf{Livello 3 (Traduzione)}: Il livello dialogo passa il messaggio al livello traduzione, chiedendo il servizio di "traduzione in russo". Questo livello si occupa solo della traduzione linguistica.
+        \item \textbf{Livello 2 (Dattilografia)}: Il testo in russo viene passato al livello dattilografia, che lo scrive usando l'alfabeto cirillico sulla macchina da scrivere.
+        \item \textbf{Livello 1 (FAX)}: Il foglio in cirillico viene passato al livello FAX, che si occupa della trasmissione fisica.
+    \end{enumerate}
+    Dal lato della ricevente, avviene il processo inverso: il livello FAX riceve i dati, il livello dattilografia li interpreta, il livello traduzione li converte in giapponese e infine il livello dialogo li presenta all'innamorata. Ad ogni livello, non ci si cura dei problemi risolti dagli altri: l'innamorato al livello 4 non sa nulla di russo, cirillico o FAX; sa solo che la sua dichiarazione arriverà a destinazione nella lingua corretta.
+}
+
+\section{Lo Standard ISO/OSI RM}
+Per standardizzare le architetture di rete, l'International Organization for Standardization (ISO) ha definito l' \textbf{Open Systems Interconnection Reference Model (ISO/OSI RM)}. È un modello concettuale rigoroso che organizza i protocolli in sette livelli.
+\begin{enumerate}
+    \item[7.] \textbf{Livello Applicazione}: Fornisce i servizi di rete direttamente alle applicazioni dell'utente (es. browser web, client di posta). Protocolli come HTTP, SMTP operano qui.
+    \item[6.] \textbf{Livello Presentazione}: Si occupa della sintassi e della semantica dei dati, gestendo la traduzione tra formati dati diversi per superare eterogeneità (es. conversione tra codifiche di caratteri o gestione dell'ordine dei byte Big/Little Endian).
+    \item[5.] \textbf{Livello Sessione}: Stabilisce, gestisce e termina le sessioni di comunicazione tra applicazioni, mantenendo lo stato del dialogo.
+    \item[4.] \textbf{Livello Trasporto}: Fornisce servizi di trasferimento dati end-to-end (da processo a processo). È responsabile dell'affidabilità (con protocolli come TCP) o della velocità (con UDP), del controllo di flusso e del controllo della congestione.
+    \item[3.] \textbf{Livello Rete}: Gestisce l'instradamento (\textit{routing}) dei pacchetti attraverso la rete di reti (internetwork). Si occupa dell'indirizzamento logico (indirizzi IP) e della frammentazione dei pacchetti, se necessario.
+    \item[2.] \textbf{Livello Data Link (Collegamento Dati)}: Suddiviso in MAC e LLC. Si occupa di trasferire dati in modo affidabile su un singolo collegamento fisico (un "salto" o "hop"). Gestisce l'indirizzamento fisico (indirizzi MAC), l'accesso al mezzo (per evitare collisioni) e il controllo degli errori a livello di frame.
+    \item[1.] \textbf{Livello Fisico}: Definisce le caratteristiche fisiche della trasmissione: voltaggi, temporizzazioni, tipi di cavi e connettori. Si occupa di codificare i bit in segnali (elettrici, luminosi, radio) e trasmetterli sul mezzo fisico.
+\end{enumerate}
+
+\section{L'Architettura di Internet (TCP/IP Stack)}
+Sebbene il modello ISO/OSI sia il riferimento teorico, l'architettura di Internet, nota come \textbf{TCP/IP Stack}, utilizza un modello semplificato a 5 livelli, che fonde i tre livelli superiori dell'OSI in un unico livello Applicazione.
+
+\subsection{Incapsulamento (Encapsulation)}
+Il principio fondamentale della comunicazione a livelli è l'incapsulamento.
+
+\dfn{Incapsulamento}{
+    In fase di trasmissione, ogni livello prende i dati ricevuti dal livello superiore e vi aggiunge le proprie informazioni di controllo, creando una nuova unità di dati più grande. Queste informazioni aggiuntive sono dette \textbf{header} (intestazione) e, a volte, \textbf{trailer} (coda). Questo processo è simile a inserire una lettera in una busta, su cui si scrivono gli indirizzi.
+}
+% \begin{center}
+%     \includegraphics[width=12cm]{img/incapsulamento_dati.png}
+% \end{center}
+Il processo inverso, che avviene sul dispositivo ricevente, è il \textbf{decapsulamento}: ogni livello legge ed elabora l'header del proprio livello, lo rimuove e passa i dati rimanenti al livello superiore.
+I dati assumono nomi diversi a seconda del livello:
+\begin{itemize}
+    \item \textbf{Segmento}: L'unità di dati al Livello Trasporto (TCP/UDP).
+    \item \textbf{Pacchetto (o Datagramma)}: L'unità di dati al Livello Rete (IP).
+    \item \textbf{Frame}: L'unità di dati al Livello Data Link (MAC).
+\end{itemize}
+\nt{Per identificare l'applicazione specifica a cui sono destinati i dati su un host (es. il browser e non il client di posta), il Livello Trasporto utilizza un identificatore chiamato \textbf{Numero di Porta}. La combinazione di un \textbf{indirizzo IP} e un \textbf{Numero di Porta} costituisce un \textbf{Socket di comunicazione}, che identifica univocamente un'applicazione in esecuzione su un host specifico in tutta Internet.}
+
+\section{Dispositivi di Interconnessione di Rete}
+Le reti sono costruite collegando segmenti e reti diverse tramite dispositivi specializzati che operano a livelli differenti dello stack.
+\begin{itemize}
+    \item \textbf{Repeater e Hub (Livello 1 - Fisico)}:
+    \begin{itemize}
+        \item \textbf{Repeater}: Un dispositivo a due porte che riceve un segnale, lo "ripulisce", lo amplifica e lo ritrasmette, estendendo la lunghezza massima di un segmento di rete.
+        \item \textbf{Hub}: Un repeater multiporta, funge da punto di connessione centrale per una topologia a stella. Trasmette ogni pacchetto ricevuto a tutte le altre porte.
+    \end{itemize}
+    \item \textbf{Bridge e Switch (Livello 2 - Data Link)}:
+    \begin{itemize}
+        \item \textbf{Bridge}: Connette due segmenti di rete (che possono usare tecnologie MAC diverse, es. Ethernet e Token Ring) per formare una singola LAN. Legge gli indirizzi MAC e può tradurre i frame da un formato all'altro.
+        \item \textbf{Switch}: Un bridge multiporta e più evoluto. Impara quali indirizzi MAC sono raggiungibili su ciascuna delle sue porte e inoltra i frame in modo selettivo solo sulla porta corretta, riducendo il traffico e le collisioni.
+    \end{itemize}
+    \item \textbf{Router (Livello 3 - Rete)}:
+    \begin{itemize}
+        \item È il dispositivo che \textbf{connette reti diverse} e indipendenti (es. la rete di casa con Internet).
+        \item A differenza di switch e bridge che operano con indirizzi fisici (MAC), i router operano con indirizzi logici e gerarchici (IP).
+        \item La sua funzione principale è l'\textbf{instradamento} (\textit{routing}): esamina l'indirizzo IP di destinazione di un pacchetto e, consultando la propria tabella di routing, decide quale sia il percorso migliore per inoltrare il pacchetto verso la sua destinazione finale.
+    \end{itemize}
+\end{itemize}
+
+\ex{Esempio di Rete Locale Complessa}{
+    La figura mostra una rete locale aziendale. Un utente sulla rete ad anello \textbf{token ring} (MAC A) deve comunicare con un utente su un lontano segmento \textbf{ethernet} (MAC B).
+    \begin{enumerate}
+        \item Il frame token ring di A arriva a un \textbf{Bridge (B)}.
+        \item Il Bridge opera a livello 2: legge l'indirizzo MAC di destinazione, converte il frame dal formato token ring al formato ethernet e lo inoltra sul segmento successivo.
+        \item Il frame ethernet attraversa un \textbf{Hub (H)}, che lo propaga a tutti i suoi segmenti.
+        \item Arriva a un \textbf{Repeater (R)}, che rigenera il segnale per coprire una distanza maggiore.
+        \item Attraversa un secondo repeater e finalmente raggiunge il segmento bus a cui è collegato il destinatario (MAC B).
+    \end{enumerate}
+    In questo percorso, solo il Bridge ha "aperto" il frame per leggerne il contenuto a livello 2; Hub e Repeater hanno lavorato solo a livello 1, manipolando i segnali fisici senza interpretarne i dati.
+}
+% \begin{center}
+%     \includegraphics[width=13cm]{img/rete_locale_complessa.png}
+% \end{center}
+
+\chapter{Analisi Dettagliata dei Livelli}
+\section{Il Livello 2: Accesso al Mezzo (MAC/LLC)}
+\subsection{Rendere il Canale Affidabile}
+Il livello fisico è intrinsecamente inaffidabile: i segnali possono essere corrotti dal rumore. Il compito del livello Data Link è di mascherare questa inaffidabilità e fornire al livello superiore l'illusione di un canale privo di errori, almeno su un singolo collegamento.
+Un protocollo semplice per ottenere ciò è basato su conferme e ritrasmissioni:
+\begin{enumerate}
+    \item Il mittente invia un frame e avvia un timer.
+    \item Il destinatario riceve il frame. Se il frame è corretto (lo verifica tramite bit di controllo), invia un frame di conferma (ACK) al mittente.
+    \item Se il frame ricevuto è danneggiato, il destinatario lo scarta e non fa nulla.
+    \item Se il mittente riceve l'ACK prima dello scadere del timer, la trasmissione è conclusa con successo.
+    \item Se il timer scade senza che sia arrivato un ACK (perché il frame originale o l'ACK stesso sono andati persi), il mittente assume un fallimento e ritrasmette il frame da capo.
+\end{enumerate}
+
+\subsection{Affidabilità Locale (Livello 2) vs. Globale (Livello 4)}
+È fondamentale comprendere la portata dell'affidabilità fornita dai diversi livelli.
+\begin{itemize}
+    \item \textbf{Affidabilità a Livello 2 (MAC/LLC)}: È un'affidabilità \textit{hop-by-hop} (salto per salto). Il meccanismo di ACK e ritrasmissione garantisce che un frame arrivi correttamente \textbf{solo al nodo successivo} nel percorso. Se dopo un numero massimo di tentativi (\textit{Max Retry Limit}, es. 8 in Ethernet) la trasmissione fallisce, il livello 2 si "arrende", scarta il frame e notifica il fallimento al livello 3.
+    \item \textbf{Affidabilità a Livello 3 (Rete)}: In caso di fallimento notificato dal livello 2, il livello Rete può decidere di tentare un \textbf{percorso alternativo}, se ne esiste uno, per aggirare il collegamento problematico. Questa è una decisione di \textit{routing}.
+    \item \textbf{Affidabilità a Livello 4 (Trasporto)}: È l'unica vera affidabilità \textit{end-to-end} (da capo a capo). Il protocollo TCP sul mittente originale e sul destinatario finale si assicura che \textbf{tutti i segmenti} del messaggio originale arrivino a destinazione, corretti e in ordine, orchestrando le ritrasmissioni attraverso l'intera rete, indipendentemente da quanti salti intermedi falliscano o da quanti percorsi vengano cambiati.
+\end{itemize}
+% \begin{center}
+%     \includegraphics[width=12cm]{img/affidabilita_livelli.png}
+% \end{center}
+
+\subsection{Esempi di Protocolli MAC}
+I protocolli di accesso al mezzo definiscono le regole per l'arbitraggio.
+\begin{itemize}
+    \item \textbf{Ethernet (Random Access)}: Molto usato nelle LAN cablate. Si basa sul principio \textit{CSMA/CD (Carrier Sense Multiple Access with Collision Detection)}.
+    \begin{enumerate}
+        \item \textbf{Ascolta prima di parlare}: La scheda di rete trasmette solo se il canale è libero.
+        \item \textbf{Rileva le collisioni}: Se, nonostante l'ascolto, si verifica una collisione, la scheda la rileva, interrompe la trasmissione e attende un tempo casuale prima di riprovare.
+    \end{enumerate}
+    \item \textbf{Wi-Fi (IEEE 802.11)}: Usato nelle LAN wireless. Nelle reti radio è difficile rilevare le collisioni, quindi si usa un approccio di \textit{prevenzione} (\textit{CSMA/CA - Collision Avoidance}), dilazionando le trasmissioni per ridurre la probabilità che avvengano.
+    \item \textbf{Token Ring (Accesso Controllato)}: Usato in topologie ad anello. Evita completamente le collisioni garantendo che solo chi possiede il "testimone" (token) possa trasmettere. Questo garantisce prestazioni prevedibili e una qualità del servizio (QoS) controllabile.
+\end{itemize}
+\nt{Il teorema dei "Due Generali" nella teoria dei sistemi distribuiti dimostra formalmente che in una rete inaffidabile è impossibile per due entità raggiungere un accordo con certezza al 100\% in un tempo finito. Questo evidenzia perché i protocolli di rete si basano su meccanismi di ritrasmissione e timeout, che forniscono un'affidabilità pratica ma non una garanzia matematica assoluta.}

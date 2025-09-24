@@ -1,0 +1,263 @@
+\chapter{Il Livello Applicazione}
+Il livello più alto dello stack, il \textbf{Livello Applicazione}, è dove le applicazioni di rete vivono. A differenza degli altri livelli, non fornisce servizi a un livello superiore, ma direttamente alle applicazioni con cui l'utente interagisce (browser, client di posta, ecc.). Questo capitolo esplora i principi di funzionamento di queste applicazioni e approfondisce i protocolli che le rendono possibili, come HTTP e SMTP.
+
+\section{Principi delle Applicazioni di Rete}
+La creazione di un'applicazione di rete consiste nello scrivere programmi che vengono eseguiti su host diversi (\textit{end systems}) e comunicano tra loro attraverso la rete. Una caratteristica fondamentale è che gli sviluppatori di applicazioni non hanno bisogno di programmare i dispositivi del nucleo della rete (come router e switch), i quali non eseguono applicazioni utente. Tutta la complessità applicativa risiede ai bordi della rete (\textit{network edge}), un principio di progettazione che ha permesso uno sviluppo e una diffusione delle applicazioni estremamente rapidi.
+
+\subsection{Architetture Applicative}
+Le applicazioni di rete sono tipicamente strutturate secondo due paradigmi principali: client-server o peer-to-peer (P2P).
+
+\paragraph{Architettura Client-Server}
+È il modello tradizionale. Le responsabilità sono nettamente separate:
+\begin{itemize}
+    \item \textbf{Server}: È un host sempre attivo (\textit{always-on}) con un indirizzo IP permanente e conosciuto. Attende passivamente le richieste dai client e risponde fornendo il servizio richiesto. Per gestire un gran numero di richieste, i server sono spesso ospitati in grandi data center.
+    \item \textbf{Client}: È un host che avvia la comunicazione inviando una richiesta al server. Può essere connesso in modo intermittente e avere un indirizzo IP dinamico. I client non comunicano mai direttamente tra loro.
+\end{itemize}
+
+\paragraph{Architettura Peer-to-Peer (P2P)}
+In questo modello, non esiste un server centrale sempre attivo. La comunicazione avviene direttamente tra host arbitrari, chiamati \textbf{peer}.
+\begin{itemize}
+    \item Ogni peer agisce contemporaneamente sia da client, richiedendo servizi ad altri, sia da server, fornendo servizi ad altri.
+    \item Questa architettura gode di \textbf{auto-scalabilità}: ogni nuovo peer che si unisce alla rete porta non solo nuova domanda di servizi, ma anche nuova capacità per offrirli.
+    \item I peer sono connessi in modo intermittente e possono cambiare indirizzo IP, rendendo la gestione del sistema più complessa rispetto al modello client-server.
+\end{itemize}
+
+\subsection{Comunicazione tra Processi}
+A un livello più basso, la comunicazione di rete avviene tra \textbf{processi} (programmi in esecuzione) su host diversi.
+\begin{itemize}
+    \item Un processo \textbf{client} è quello che inizia la comunicazione.
+    \item Un processo \textbf{server} è quello che attende di essere contattato.
+\end{itemize}
+I processi si scambiano messaggi attraverso un'interfaccia software chiamata \textbf{socket}. Un socket è l'equivalente di una "porta" dell'abitazione di un processo: il processo mittente spinge il messaggio fuori dalla sua porta, affidandosi all'infrastruttura di trasporto (gestita dal sistema operativo) per recapitarlo alla porta del processo destinatario. Per identificare univocamente un processo su Internet, non basta l'indirizzo IP dell'host, poiché su un singolo host possono essere in esecuzione molti processi. L'identificativo completo è quindi la coppia: (\textbf{indirizzo IP}, \textbf{numero di porta}).
+
+\subsection{Protocolli di Livello Applicazione}
+Un protocollo di livello applicazione definisce le regole della comunicazione tra processi. Specifica:
+\begin{itemize}
+    \item \textbf{Tipi di messaggi}: Ad esempio, messaggi di richiesta e messaggi di risposta.
+    \item \textbf{Sintassi dei messaggi}: La struttura dei messaggi, i campi che contengono e come sono formattati.
+    \item \textbf{Semantica dei messaggi}: Il significato delle informazioni contenute nei campi.
+    \item \textbf{Regole}: Quando e come i processi inviano e rispondono ai messaggi.
+\end{itemize}
+
+\nt{I protocolli possono essere \textbf{aperti} (definiti in documenti pubblici chiamati RFC, come HTTP e SMTP) o \textbf{proprietari} (controllati da un'entità specifica, come Skype).}
+
+\subsection{Servizi del Livello Trasporto}
+Le applicazioni hanno esigenze diverse dal livello di trasporto sottostante, che su Internet è fornito da TCP o UDP.
+\begin{itemize}
+    \item \textbf{TCP (Transmission Control Protocol)}: Offre un servizio \textbf{affidabile} e orientato alla connessione. Garantisce che tutti i dati arrivino a destinazione senza errori e in ordine. Include anche meccanismi di controllo di flusso e di congestione. È la scelta per applicazioni che non tollerano la perdita di dati, come il trasferimento di file, il web e l'e-mail.
+    \item \textbf{UDP (User Datagram Protocol)}: Offre un servizio "leggero", \textbf{non affidabile} e senza connessione. Non offre alcuna garanzia. Il suo vantaggio è la velocità e l'assenza di overhead, che lo rendono adatto per applicazioni sensibili al ritardo che possono tollerare qualche perdita di dati, come lo streaming audio/video o i giochi online.
+\end{itemize}
+
+---
+\section{Il Web e il Protocollo HTTP}
+Il World Wide Web è un'applicazione basata sul protocollo \textbf{HTTP (HyperText Transfer Protocol)}. Una pagina web è composta da \textbf{oggetti} (un file HTML di base, immagini JPEG, file audio, ecc.). Ogni oggetto è indirizzabile tramite un \textbf{URL (Uniform Resource Locator)}.
+
+\ex{Struttura di un URL}{
+    \begin{itemize}
+        \item `http`: Protocollo di livello applicazione.
+        \item `www.someschool.edu`: Nome dell'host (server).
+        \item `/someDept/pic.gif`: Percorso (\textit{path}) dell'oggetto sul server.
+    \end{itemize}
+}
+
+HTTP è un protocollo client-server. Il client (un browser) richiede, riceve e visualizza gli oggetti web; il server invia gli oggetti in risposta alle richieste. Utilizza TCP come protocollo di trasporto, tipicamente sulla porta 80.
+
+\dfn{Protocollo Stateless}{
+    HTTP è un protocollo \textbf{stateless} (senza stato), il che significa che il server non conserva alcuna informazione sulle richieste passate di un client. Ogni richiesta è trattata in modo indipendente. Mantenere uno stato renderebbe i server molto più complessi e difficili da gestire in caso di crash.
+}
+
+\subsection{Connessioni HTTP: Non-persistenti vs. Persistenti}
+Esistono due modalità con cui HTTP gestisce le connessioni TCP sottostanti.
+\begin{itemize}
+    \item \textbf{HTTP Non-persistente}: Utilizza una connessione TCP separata per ogni oggetto. Se una pagina contiene 1 file HTML e 10 immagini, vengono aperte e chiuse 11 connessioni TCP. Questo approccio è molto inefficiente, poiché ogni connessione richiede tempo per essere stabilita (almeno un RTT). Il tempo totale di risposta per un oggetto è di circa \textbf{2 RTT + tempo di trasmissione del file}.
+    \item \textbf{HTTP Persistente (default in HTTP/1.1)}: Permette di scaricare più oggetti attraverso la stessa connessione TCP, che viene mantenuta aperta dal server dopo aver inviato una risposta. Questo riduce drasticamente il ritardo e l'overhead, richiedendo potenzialmente un solo RTT per tutti gli oggetti referenziati dopo il setup iniziale della connessione.
+\end{itemize}
+
+\subsection{Messaggi HTTP}
+HTTP definisce due tipi di messaggi, entrambi in formato ASCII leggibile dall'uomo: richiesta e risposta.
+
+\paragraph{Messaggio di Richiesta HTTP}
+È composto da tre parti:
+\begin{enumerate}
+    \item \textbf{Request Line}: Specifica il metodo, l'URL dell'oggetto e la versione del protocollo. Es: `GET /index.html HTTP/1.1`.
+    \item \textbf{Header Lines}: Coppie `nome: valore` che forniscono informazioni aggiuntive. Esempi comuni sono `Host:` (obbligatorio in HTTP/1.1), `User-Agent:` (il tipo di browser) e `Accept-Language:` (la lingua preferita per la risposta).
+    \item \textbf{Entity Body}: Contiene i dati inviati al server, ad esempio i dati di un form compilato dall'utente. È presente solo con alcuni metodi, come POST.
+\end{enumerate}
+
+I metodi HTTP principali sono:
+\begin{itemize}
+    \item \textbf{GET}: Richiede una risorsa. I parametri possono essere passati direttamente nell'URL (es. `.../animalsearch?monkeys\&banana`).
+    \item \textbf{POST}: Invia dati al server affinché li processi (es. i dati di un form), includendoli nell'entity body del messaggio.
+    \item \textbf{HEAD}: Come GET, ma chiede al server di non inviare l'oggetto, ma solo gli header. Utile per verificare la data di ultima modifica senza scaricare il file.
+    \item \textbf{PUT}: Carica un file sul server, specificato nell'URL.
+    \item \textbf{DELETE}: Cancella il file specificato nell'URL.
+\end{itemize}
+
+\paragraph{Messaggio di Risposta HTTP}
+Anche questo è composto da tre parti:
+\begin{enumerate}
+    \item \textbf{Status Line}: Indica la versione del protocollo, un codice di stato numerico e una frase esplicativa. Es: `HTTP/1.1 200 OK`.
+    \item \textbf{Header Lines}: Forniscono meta-informazioni sull'oggetto inviato. Esempi: `Content-Type:` (il tipo di file, es. `text/html`), `Content-Length:` (la dimensione in byte) e `Last-Modified:`.
+    \item \textbf{Entity Body}: L'oggetto richiesto (es. il contenuto del file HTML).
+\end{enumerate}
+
+Alcuni codici di stato comuni:
+\begin{itemize}
+    \item `200 OK`: La richiesta ha avuto successo.
+    \item `301 Moved Permanently`: L'oggetto è stato spostato permanentemente a un nuovo URL.
+    \item `400 Bad Request`: Il server non ha compreso la richiesta.
+    \item `404 Not Found`: L'oggetto richiesto non è stato trovato sul server.
+\end{itemize}
+
+---
+\section{Posta Elettronica (E-mail)}
+Il sistema di posta elettronica è una delle applicazioni più antiche e fondamentali di Internet. La sua architettura è composta da tre elementi principali: \textbf{User Agent}, \textbf{Mail Server} e il protocollo \textbf{SMTP}.
+\begin{itemize}
+    \item \textbf{User Agent (UA)}: È il programma con cui l'utente interagisce per comporre, leggere e gestire le email (es. Outlook, Thunderbird, l'app Mail dell'iPhone).
+    \item \textbf{Mail Server}: È il cuore del sistema. Ogni utente ha una \textbf{mailbox} (casella di posta) su un mail server, dove vengono conservati i messaggi in arrivo. I server dispongono anche di una \textbf{coda di messaggi} per le email in uscita, in attesa di essere inviate. I mail server sono sempre attivi.
+    \item \textbf{SMTP (Simple Mail Transfer Protocol)}: È il protocollo di livello applicazione che si occupa di trasferire i messaggi \textbf{tra i mail server} e dal User Agent del mittente al suo mail server. SMTP è un protocollo di tipo "push", in quanto spinge i messaggi dal client al server.
+\end{itemize}
+
+\subsection{SMTP (Simple Mail Transfer Protocol)}
+SMTP è il protocollo standard per l'invio di email, definito nell'RFC 2821.
+\begin{itemize}
+    \item Utilizza TCP sulla porta 25 per garantire un trasferimento affidabile dei messaggi.
+    \item La comunicazione avviene tramite comandi e risposte in formato testo ASCII, in modo simile a HTTP.
+    \item Il trasferimento di un messaggio avviene in tre fasi: \textbf{handshaking} (presentazione), \textbf{trasferimento} dei messaggi e \textbf{chiusura} della connessione.
+    \item I messaggi devono essere codificati in ASCII a 7 bit.
+\end{itemize}
+
+\ex{Invio di una mail da Alice a Bob}{
+    \begin{enumerate}
+        \item Alice compone il messaggio con il suo User Agent e lo invia al suo mail server.
+        \item Il mail server di Alice inserisce il messaggio nella sua coda di uscita.
+        \item Il lato client di SMTP sul server di Alice apre una connessione TCP con il mail server di Bob.
+        \item Attraverso questa connessione, il server di Alice invia (push) il messaggio al server di Bob.
+        \item Il mail server di Bob riceve il messaggio e lo deposita nella mailbox di Bob.
+        \item Bob, quando vuole, usa il suo User Agent per leggere il messaggio dalla sua mailbox sul suo server.
+    \end{enumerate}
+}
+
+\subsection{Protocolli di Accesso alla Posta: POP3 e IMAP}
+Come visto nell'esempio, SMTP si occupa di far arrivare il messaggio al server del destinatario, ma non di come il destinatario lo preleva. Per quest'ultima fase, sono necessari protocolli di accesso alla posta.
+\begin{itemize}
+    \item \textbf{POP3 (Post Office Protocol 3)}: È un protocollo molto semplice che permette a un utente di autenticarsi e scaricare i messaggi dalla sua mailbox. La modalità di default è "download and delete": i messaggi vengono spostati dal server al client locale e cancellati dal server. È stateless tra le sessioni.
+    \item \textbf{IMAP (Internet Mail Access Protocol)}: È un protocollo più complesso e potente. I messaggi rimangono sempre sul server, e il client li manipola a distanza. Permette di organizzare la posta in cartelle e mantiene lo stato tra una sessione e l'altra (es. quali messaggi sono stati letti). È la scelta ideale per chi accede alla posta da più dispositivi diversi.
+    \item \textbf{HTTP}: I servizi di webmail (Gmail, Outlook.com) usano HTTP come protocollo di accesso. L'utente interagisce con un browser, e il web server del servizio di posta agisce da client IMAP/POP per accedere alla mailbox per conto dell'utente.
+\end{itemize}
+
+\section{Approfondimento sul DNS (Domain Name System)}
+Come abbiamo visto, gli esseri umani preferiscono usare nomi mnemonici per identificare le risorse di rete (es. `www.google.com`), mentre i protocolli di rete operano con indirizzi IP numerici. Il DNS è il servizio di livello applicazione che funge da "rubrica telefonica" di Internet, traducendo i nomi in indirizzi e viceversa.
+
+\subsection{Servizi e Caratteristiche del DNS}
+Il DNS non si limita a una semplice traduzione nome-IP, ma offre diversi servizi cruciali:
+\begin{itemize}
+    \item \textbf{Traduzione Hostname-IP}: Il suo compito primario.
+    \item \textbf{Host Aliasing}: Un singolo host può avere più nomi (alias). Il DNS può mappare un nome alias a un nome "canonico" più complesso. Ad esempio, `www.ibm.com` potrebbe essere un alias per `servereast.backup2.ibm.com`.
+    \item \textbf{Mail Server Aliasing}: Permette a un client di posta di trovare il server di posta corretto per un dominio (es. `unibo.it`) interrogando il DNS.
+    \item \textbf{Distribuzione del Carico (Load Distribution)}: Per siti web ad alto traffico, un singolo nome di dominio può essere associato a un insieme di indirizzi IP, ognuno corrispondente a un server replicato. Il server DNS, quando interrogato, può restituire a client diversi indirizzi IP differenti, distribuendo così il carico di lavoro su più macchine.
+\end{itemize}
+
+\nt{Il DNS è un esempio perfetto del principio "complessità ai bordi della rete". Sebbene sia una funzione critica per il funzionamento di Internet, è implementato interamente a livello applicazione, senza richiedere modifiche ai router o al nucleo della rete.}
+
+\subsection{Gerarchia del DNS}
+Una singola base di dati centralizzata per l'intero DNS non sarebbe scalabile. Per questo, il DNS è implementato come un database distribuito e gerarchico, strutturato ad albero.
+\begin{itemize}
+    \item \textbf{Root DNS Servers}: Al vertice della gerarchia. Esistono 13 server radice logici (identificati dalle lettere da A a M), ma ognuno è replicato in centinaia di server fisici in tutto il mondo per garantire ridondanza e basse latenze.
+    \item \textbf{Top-Level Domain (TLD) Servers}: Gestiscono i domini di primo livello come `.com`, `.org`, `.net`, e tutti i domini nazionali come `.it`, `.uk`, `.fr`.
+    \item \textbf{Authoritative DNS Servers}: Sono i server DNS di un'organizzazione, che contengono le associazioni (record) ufficiali tra i nomi degli host di quell'organizzazione (es. `unibo.it`) e i loro indirizzi IP.
+\end{itemize}
+
+\subsection{Risoluzione dei Nomi e Caching}
+Quando un host ha bisogno di tradurre un nome in un IP, non interroga direttamente la gerarchia, ma si rivolge al suo \textbf{Local DNS Server} (solitamente fornito dall'ISP).
+Il processo di risoluzione può avvenire in due modi:
+\begin{itemize}
+    \item \textbf{Query Iterativa}: Il server locale interroga il server radice. Il radice risponde: "Non conosco la risposta, ma chiedi al TLD server per `.com` a questo indirizzo". Il server locale contatta allora il server `.com`, che a sua volta lo reindirizza al server autoritativo per `google.com`, e così via. Il "lavoro" di contattare i vari server è a carico del server locale.
+    \item \textbf{Query Ricorsiva}: Il server locale chiede al server radice di trovare la risposta per lui. Il server radice contatta il TLD, che contatta l'autoritativo, e la risposta finale viene passata a ritroso fino al server locale. Questo approccio mette un carico maggiore sui server in alto nella gerarchia.
+\end{itemize}
+Per rendere il sistema efficiente, il \textbf{caching} è fondamentale. Ogni volta che un server DNS riceve una mappatura, la memorizza in una cache locale per un certo periodo di tempo (definito dal valore \textbf{TTL - Time To Live}). In questo modo, le richieste successive per lo stesso nome possono essere risolte istantaneamente, senza dover interrogare di nuovo l'intera gerarchia.
+
+---
+
+\section{Applicazioni Peer-to-Peer (P2P)}
+Come anticipato, l'architettura P2P si distingue per l'assenza di un server centrale, promuovendo la comunicazione diretta tra i peer.
+
+\subsection{Analisi delle Prestazioni: Client-Server vs. P2P}
+L'efficienza del P2P, specialmente nella distribuzione di file di grandi dimensioni a molti utenti, può essere dimostrata matematicamente. Consideriamo la distribuzione di un file di dimensione $F$ a $N$ peer.
+\begin{itemize}
+    \item \textbf{Tempo di distribuzione in Client-Server}: Il tempo è limitato da due colli di bottiglia: il server deve caricare $N$ copie del file, e il client con la connessione più lenta deve scaricarne una copia. Il tempo totale è quindi $D_{C-S} \ge \max(\frac{N \cdot F}{u_s}, \frac{F}{d_{min}})$, dove $u_s$ è la capacità di upload del server e $d_{min}$ la capacità di download del client più lento. \textbf{Il tempo cresce linearmente con il numero di client N}.
+    \item \textbf{Tempo di distribuzione in P2P}: Il server deve caricare solo una copia. Il client più lento deve sempre scaricare una copia. Tuttavia, la risorsa critica, ovvero la capacità totale di upload del sistema, ora è data dalla somma della capacità del server e di \textit{tutti i peer} che, una volta ricevuto un pezzo del file, possono a loro volta ridistribuirlo. Il tempo totale è $D_{P2P} \ge \max(\frac{F}{u_s}, \frac{F}{d_{min}}, \frac{N \cdot F}{u_s + \sum_{i=1}^{N} u_i})$. Poiché la capacità totale di upload cresce con N, \textbf{il tempo di distribuzione in P2P scala in modo molto più efficiente}.
+\end{itemize}
+% \begin{center}
+%     \includegraphics[width=10cm]{img/p2p_vs_clientserver_performance.png}
+% \end{center}
+
+\subsection{Caso di Studio: BitTorrent}
+BitTorrent è un popolare protocollo di file-sharing P2P.
+\begin{itemize}
+    \item Il file è diviso in piccoli pezzi (\textbf{chunks}). L'insieme dei peer che si scambiano i chunk di un file è chiamato \textbf{torrent}.
+    \item Un server centrale, detto \textbf{tracker}, non distribuisce il file, ma si limita a tenere traccia dei peer che partecipano al torrent.
+    \item Quando un nuovo peer si unisce, contatta il tracker per ottenere una lista di altri peer. Inizia quindi a scaricare i chunk che gli mancano e, contemporaneamente, a caricare i chunk che già possiede verso altri.
+    \item \textbf{Strategia di richiesta}: Per massimizzare la disponibilità, un peer richiede prioritariamente i chunk più \textbf{rari} tra i suoi vicini.
+    \item \textbf{Strategia di invio (Tit-for-Tat)}: Per incentivare la condivisione, un peer dà priorità di upload a quei peer che gli stanno fornendo dati alla velocità più alta. Questo crea un meccanismo meritocratico: più contribuisci, più velocemente scarichi.
+\end{itemize}
+
+---
+
+\section{Video Streaming e Content Distribution Networks (CDN)}
+Lo streaming video costituisce la maggior parte del traffico Internet. Distribuire video a milioni di utenti presenta enormi sfide di scalabilità e di gestione dell'eterogeneità degli utenti (connessioni veloci, lente, mobili, ecc.).
+
+\subsection{DASH (Dynamic, Adaptive Streaming over HTTP)}
+DASH è la tecnologia standard per lo streaming video.
+\dfn{DASH}{
+    Una tecnica di streaming in cui il video è suddiviso in piccoli "chunk" di pochi secondi. Ogni chunk è pre-codificato a diverse qualità (bitrate). Un file manifesto, scaricato all'inizio, contiene gli URL di tutte le versioni di tutti i chunk.
+}
+L'intelligenza è demandata al client (il player video):
+\begin{enumerate}
+    \item Il player misura costantemente la larghezza di banda disponibile.
+    \item In base alla banda, sceglie e richiede il chunk successivo alla massima qualità possibile che può essere scaricata in tempo, senza causare interruzioni (buffering).
+    \item Può cambiare la qualità richiesta da un chunk all'altro, adattandosi dinamicamente e in modo trasparente alle fluttuazioni della rete.
+\end{enumerate}
+
+\subsection{Content Distribution Networks (CDN)}
+Per risolvere il problema della scalabilità, i fornitori di contenuti come Netflix e YouTube non usano un singolo "mega-server". Si affidano invece alle CDN.
+\dfn{CDN}{
+    Una rete di server (chiamati cache o nodi edge), distribuiti geograficamente in tutto il mondo, che memorizzano copie dei contenuti.
+}
+Quando un utente richiede un video:
+\begin{enumerate}
+    \item La richiesta viene intercettata.
+    \item Utilizzando meccanismi di reindirizzamento (spesso basati su DNS), l'utente viene indirizzato non al server di origine, ma al server CDN geograficamente più vicino a lui.
+    \item L'utente riceve il video dal server CDN locale, con una latenza molto più bassa e prestazioni migliori.
+\end{enumerate}
+Le CDN riducono drasticamente il ritardo per gli utenti, il traffico sulle dorsali Internet e il carico sui server di origine.
+
+---
+
+\section{Programmazione di Rete: l'API dei Socket}
+Per concludere, vediamo come, in pratica, un programmatore costruisce applicazioni client/server utilizzando l'API dei socket.
+
+\subsection{Programmazione con UDP}
+La programmazione con UDP è connectionless.
+\begin{itemize}
+    \item \textbf{Server UDP}: Crea un socket legato a una porta specifica e si mette in un ciclo infinito, in attesa di datagrammi. Quando ne riceve uno, estrae i dati, l'indirizzo IP e la porta del client, elabora una risposta e la invia all'indirizzo del client.
+    \item \textbf{Client UDP}: Crea un socket, costruisce un messaggio includendo l'IP e la porta del server, e lo invia. Poi si mette in attesa della risposta sullo stesso socket. Non c'è una "connessione" formale.
+\end{itemize}
+
+\subsection{Programmazione con TCP}
+La programmazione con TCP è orientata alla connessione.
+\begin{itemize}
+    \item \textbf{Server TCP}:
+    \begin{enumerate}
+        \item Crea un "welcoming socket" legato a una porta specifica.
+        \item Chiama la funzione `listen()` su questo socket, mettendolo in attesa di richieste di connessione.
+        \item Chiama la funzione `accept()`, che blocca l'esecuzione finché un client non si connette. Quando ciò accade, `accept()` crea un \textbf{nuovo socket dedicato} a quel client e restituisce il controllo.
+        \item Lo scambio di dati avviene sul nuovo socket, mentre il welcoming socket torna in ascolto per altri client.
+    \end{enumerate}
+    \item \textbf{Client TCP}:
+    \begin{enumerate}
+        \item Crea un socket.
+        \item Chiama la funzione `connect()`, specificando l'IP e la porta del server. Questa chiamata avvia il three-way handshake e stabilisce la connessione.
+        \item Una volta che la connessione è stabilita, invia e riceve dati attraverso il socket come se fosse un "tubo" affidabile.
+    \end{enumerate}
+\end{itemize}

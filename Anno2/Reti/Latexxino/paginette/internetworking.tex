@@ -1,0 +1,279 @@
+\chapter{Il Livello Rete: Internetworking}
+\section{Reti di Reti e il Problema della Scalabilità}
+Il livello Data Link (MAC/LLC) permette di creare reti locali (LAN) efficienti, ma la vera potenza di Internet risiede nella sua capacità di interconnettere miliardi di dispositivi appartenenti a reti eterogenee sparse in tutto il mondo. Questa interconnessione, o \textbf{internetworking}, è gestita dal \textbf{Livello Rete} (Livello 3).
+L'architettura di Internet è gerarchica: le singole reti locali sono collegate tra loro attraverso dispositivi specializzati chiamati \textbf{router}, che a loro volta comunicano tramite linee di comunicazione ad alta velocità, dette \textbf{dorsali} (\textit{backbone}).
+Se Internet fosse una singola, enorme rete locale "piatta", la comunicazione sarebbe impossibile. Ogni dispositivo dovrebbe mantenere una tabella con gli indirizzi MAC di tutti gli altri miliardi di dispositivi nel mondo per sapere dove inoltrare i dati. Un sistema del genere non sarebbe assolutamente \textbf{scalabile}.
+La soluzione è un'astrazione gerarchica gestita al Livello 3:
+\begin{itemize}
+    \item Ogni rete locale elegge un \textbf{router} come suo rappresentante verso l'esterno.
+    \item I router nascondono la complessità interna delle proprie reti locali, che dall'esterno appaiono come un'unica entità.
+    \item I router si scambiano informazioni solo tra di loro per decidere il percorso migliore per i pacchetti. Per farlo, ogni router mantiene una \textbf{tabella di instradamento} (\textit{forwarding table}).
+\end{itemize}
+
+\dfn{Forwarding e Routing}{
+    Sebbene spesso usati in modo intercambiabile, questi due termini descrivono processi distinti:
+    \begin{itemize}
+        \item \textbf{Forwarding (Inoltro)}: È l'azione meccanica di prendere un pacchetto in arrivo, consultare la tabella di instradamento e inviarlo all'interfaccia di uscita corretta verso il prossimo router (\textit{next hop}).
+        \item \textbf{Routing (Instradamento)}: È il processo più complesso e intelligente con cui i router costruiscono e mantengono aggiornate le loro tabelle di instradamento. Questo viene fatto tramite \textbf{protocolli di routing} che permettono ai router di scambiarsi informazioni sulla topologia della rete.
+    \end{itemize}
+}
+% \begin{center}
+%     \includegraphics[width=13cm]{img/internetworking_abstraction.png}
+% \end{center}
+
+\section{Il Protocollo Internet (IP)}
+Il protocollo cardine del livello rete su Internet è l'\textbf{Internet Protocol (IP)}. I suoi compiti principali sono:
+\begin{itemize}
+    \item Fornire uno schema di \textbf{indirizzamento globale e gerarchico} (gli indirizzi IP) che identifica univocamente ogni host e la rete a cui appartiene.
+    \item Gestire l'\textbf{inoltro (forwarding)} dei pacchetti attraverso la rete di reti, dal mittente al destinatario finale.
+    \item Suddividere i dati in pacchetti e, se necessario, gestirne la \textbf{frammentazione} (dividere un pacchetto in pezzi più piccoli se una rete intermedia non può gestirne le dimensioni originali).
+    \item Fornire un servizio di comunicazione \textbf{connectionless} e \textit{best-effort}, ovvero senza garanzie di consegna.
+\end{itemize}
+
+\nt{Il protocollo IP esiste in due versioni principali: \textbf{IPv4}, che utilizza indirizzi a 32 bit ed è ancora largamente diffuso, e \textbf{IPv6}, la nuova versione con indirizzi a 128 bit, introdotta per superare i limiti di IPv4.}
+
+\subsection{Indirizzamento IPv4}
+Un indirizzo IPv4 è una sequenza di 32 bit, convenzionalmente scritta come quattro numeri decimali (ognuno da 0 a 255) separati da un punto. Esempio: `130.136.25.1`.
+Ogni indirizzo IP identifica univocamente un'interfaccia di rete (es. una scheda di rete) e si compone di due parti:
+\begin{enumerate}
+    \item \textbf{Network Number}: Identifica la rete a cui l'host è connesso.
+    \item \textbf{Host Number}: Identifica l'host specifico all'interno di quella rete.
+\end{enumerate}
+Gli indirizzi IP possono essere assegnati in due modi:
+\begin{itemize}
+    \item \textbf{IP Statico}: L'indirizzo è assegnato permanentemente a un dispositivo. È una configurazione tipica per i server, che devono essere sempre raggiungibili allo stesso indirizzo.
+    \item \textbf{IP Dinamico}: L'indirizzo viene assegnato temporaneamente a un dispositivo ogni volta che si connette alla rete. È la modalità usata per i dispositivi client come laptop e smartphone, che si muovono e si connettono a reti diverse.
+\end{itemize}
+
+\subsection{Classi di Reti IPv4}
+L'indirizzamento originale di IPv4 suddivideva lo spazio degli indirizzi in classi, per accomodare reti di dimensioni diverse. La classe è determinata dai primi bit dell'indirizzo.
+\begin{itemize}
+    \item \textbf{Classe A}: Indirizzi che iniziano con il bit `0`. Usano il primo byte per il \textit{network number} e i restanti tre per l'\textit{host number}. Questo permette di avere poche reti (126 in totale), ma ognuna può contenere un numero enorme di host (oltre 16 milioni). Sono assegnate a grandi provider e organizzazioni.
+    \item \textbf{Classe B}: Indirizzi che iniziano con i bit `10`. Usano i primi due byte per il \textit{network number} e i restanti due per l'\textit{host number}. Permettono di avere più reti (circa 16.000) con un numero considerevole di host ciascuna (circa 65.000).
+    \item \textbf{Classe C}: Indirizzi che iniziano con i bit `110`. Usano i primi tre byte per il \textit{network number} e l'ultimo per l'\textit{host number}. Permettono di avere moltissime reti (oltre 2 milioni), ma ognuna con un numero limitato di host (254). Sono tipiche per piccole e medie imprese.
+\end{itemize}
+% \begin{center}
+%     \includegraphics[width=12cm]{img/ipv4_address_classes.png}
+% \end{center}
+
+\subsection{Sottoreti (Subnetting)}
+Le classi di indirizzi si sono rivelate troppo rigide. Una grande organizzazione a cui veniva assegnata una rete di classe B poteva trovarsi a dover gestire 65.000 host in un'unica rete locale, con enormi problemi di traffico e amministrazione. La soluzione è il \textbf{subnetting}.
+
+\dfn{Subnetting}{
+    Una tecnica che permette di suddividere una singola rete IP di grandi dimensioni in più sottoreti (subnetwork) logiche più piccole. Questo si ottiene "prendendo in prestito" alcuni bit dalla parte \textit{host number} dell'indirizzo per creare un nuovo campo, il \textit{subnet number}.
+}
+
+\dfn{Netmask}{
+    Una sequenza di 32 bit, scritta come un indirizzo IP, che specifica quali bit dell'indirizzo IP appartengono alla rete/sottorete (indicati da `1`) e quali all'host (indicati da `0`).
+}
+
+\ex{Esempio di Subnetting}{
+    Si consideri una rete di classe B `130.136.0.0`. L'organizzazione decide di suddividerla in 256 sottoreti.
+    \begin{itemize}
+        \item \textbf{Netmask}: Si utilizza la maschera `255.255.255.0`. In binario: `11111111.11111111.11111111.00000000`.
+        \item \textbf{Effetto}: I primi due byte (`130.136`) identificano la rete principale. Il terzo byte, che originariamente faceva parte dell'host number, ora identifica la sottorete (grazie ai bit `1` della maschera). L'ultimo byte rimane per identificare l'host all'interno della sottorete.
+        \item \textbf{Risultato}: Si creano le sottoreti `130.136.1.0`, `130.136.2.0`, ..., `130.136.255.0`. L'host `130.136.3.48` è l'host numero 48 della sottorete numero 3.
+    \end{itemize}
+}
+
+\nt{Ogni host, per poter comunicare, deve essere configurato con tre parametri fondamentali: il proprio indirizzo IP, la netmask della sua sottorete e l'indirizzo IP del suo \textbf{default router} (o gateway), ovvero il router a cui inviare tutti i pacchetti destinati a reti esterne.}
+
+\section{Instradamento e Protocolli di Supporto}
+\subsection{Forwarding: il Viaggio di un Pacchetto}
+Il processo di forwarding si basa su decisioni prese hop-by-hop da ogni router.
+
+\ex{Tragitto di un pacchetto}{
+    L'host `140.217.2.10` deve inviare un pacchetto all'host `130.136.2.33`.
+    \begin{enumerate}
+        \item L'host mittente si accorge che la destinazione non è nella sua sottorete (`140.217.2.0`). Invia quindi il pacchetto al suo default router (`140.217.2.254`).
+        \item Il router `140.217.2.254` lo inoltra al router di livello superiore della sua rete (`140.217.0.254`).
+        \item Il router `140.217.0.254` consulta la sua tabella di forwarding. Per raggiungere la rete `130.136.0.0`, la tabella indica di inoltrare il pacchetto al router `190.89.0.254`.
+        \item Il router `190.89.0.254` fa lo stesso: consulta la sua tabella e inoltra il pacchetto al router successivo, `130.136.0.254`.
+        \item Il router `130.136.0.254` riconosce che il pacchetto è destinato a una delle sue sottoreti e lo inoltra internamente al router della sottorete corretta (`130.136.2.254`).
+        \item Infine, il router `130.136.2.254` consegna il pacchetto direttamente all'host di destinazione `130.136.2.33` sulla sua rete locale.
+    \end{enumerate}
+}
+
+\subsection{Protocollo ICMP}
+\dfn{ICMP (Internet Control Message Protocol)}{
+    Un protocollo di supporto del livello rete utilizzato da host e router per scambiare messaggi di controllo e notificare errori. I messaggi ICMP viaggiano all'interno di normali pacchetti IP.
+}
+ICMP è la base per notificare problemi come:
+\begin{itemize}
+    \item \textbf{Rete di destinazione non raggiungibile}: Un router lungo il percorso non sa come raggiungere la rete di destinazione.
+    \item \textbf{Host di destinazione non raggiungibile}: L'host è spento o non connesso.
+\end{itemize}
+Due utility di diagnostica fondamentali si basano su ICMP:
+\begin{itemize}
+    \item \textbf{ping}: Invia un messaggio ICMP `echo request` a un host. Se l'host è raggiungibile, risponde con un `echo reply`. Permette di verificare la connettività e misurare il tempo di andata e ritorno (\textbf{RTT - Round Trip Time}).
+    \item \textbf{traceroute} (o `tracert`): Mostra il percorso (la sequenza di router) che i pacchetti seguono per raggiungere una destinazione. Funziona inviando pacchetti con un \textbf{TTL (Time To Live)} progressivamente crescente. Ogni router che scarta un pacchetto perché il suo TTL è scaduto, invia indietro un messaggio ICMP, rivelando così la sua identità.
+\end{itemize}
+
+\subsection{Protocollo ARP}
+C'è un problema fondamentale: il livello rete (IP) ragiona in termini di indirizzi IP, ma per trasmettere dati su una rete locale come Ethernet, il livello data link ha bisogno dell'indirizzo fisico \textbf{MAC}.
+
+\dfn{ARP (Address Resolution Protocol)}{
+    È il protocollo che si occupa di "tradurre" un indirizzo IP in un indirizzo MAC all'interno di una rete locale.
+}
+Il processo funziona così:
+\begin{enumerate}
+    \item L'host A vuole inviare dati all'host B sulla stessa LAN, ma conosce solo l'IP di B.
+    \item L'host A invia un \textbf{ARP request} in \textit{broadcast} sulla LAN, che essenzialmente chiede: "Chi possiede l'indirizzo IP `192.168.1.5`?".
+    \item Tutti gli host sulla LAN ricevono la richiesta, ma solo l'host B, che possiede quell'IP, risponde.
+    \item L'host B invia un \textbf{ARP reply} direttamente all'host A, dicendo: "Sono io, e il mio indirizzo MAC è `00:1A:2B:3C:4D:5E`".
+    \item A questo punto, A conosce il MAC di B e può inviargli il frame. A memorizza questa associazione IP-MAC nella sua \textbf{tabella ARP} per non dover ripetere la richiesta in futuro.
+\end{enumerate}
+
+\section{Assegnazione degli Indirizzi IP e DHCP}
+Come ottiene un host il suo indirizzo IP?
+\begin{itemize}
+    \item \textbf{Manualmente}: Un amministratore di rete configura l'IP staticamente su ogni dispositivo.
+    \item \textbf{Automaticamente (DHCP)}: È il metodo più comune.
+\end{itemize}
+
+\dfn{DHCP (Dynamic Host Configuration Protocol)}{
+    Un protocollo di livello applicazione che permette a un server (il server DHCP) di assegnare automaticamente e dinamicamente un indirizzo IP e altri parametri di configurazione (netmask, default gateway, DNS server) ai client che si connettono alla rete.
+}
+Il server DHCP gestisce un \textbf{pool} (un insieme) di indirizzi IP disponibili. Quando un client si connette, richiede un indirizzo al server. Il server ne assegna uno dal pool per un periodo di tempo limitato, detto \textbf{lease time}. Se il client si disconnette, l'indirizzo torna disponibile nel pool dopo la scadenza del lease e può essere riassegnato a un altro dispositivo. Questo meccanismo permette un uso efficiente degli indirizzi IP disponibili.
+
+\section{Il Futuro: IPv6}
+La crescita esponenziale di Internet ha portato all'esaurimento degli indirizzi IPv4 disponibili. Per questo, è stato sviluppato IPv6.
+Le sue caratteristiche principali sono:
+\begin{itemize}
+    \item \textbf{Spazio di Indirizzamento Enorme}: Gli indirizzi IPv6 sono lunghi \textbf{128 bit}, offrendo un numero quasi inimmaginabile di indirizzi unici (circa $3.4 \times 10^{38}$).
+    \item \textbf{Header Semplificato}: L'header dei pacchetti IPv6 è stato riprogettato e semplificato. Ad esempio, la \textbf{frammentazione} dei pacchetti non è più gestita dai router intermedi ma solo dall'host sorgente, velocizzando l'inoltro.
+    \item \textbf{Supporto Nativo per Qualità del Servizio (QoS)}: Permette di identificare e gestire flussi di dati con priorità diverse.
+\end{itemize}
+Poiché IPv4 e IPv6 non sono direttamente compatibili, la transizione è lenta e complessa. Una delle tecniche utilizzate è il \textbf{tunnelling}.
+
+\dfn{Tunnelling}{
+    Una tecnica che permette di trasportare pacchetti di un protocollo (es. IPv6) "incapsulandoli" all'interno di pacchetti di un altro protocollo (es. IPv4). In questo modo, un pacchetto IPv6 può attraversare una porzione di Internet che supporta solo IPv4, come se viaggiasse in un tunnel.
+}
+% \begin{center}
+%     \includegraphics[width=12cm]{img/ipv6_tunnelling.png}
+% \end{center}
+
+\section{Il Livello Trasporto}
+Il livello Rete (IP) fornisce un servizio di consegna \textit{best-effort}, il che significa che i pacchetti possono essere persi, duplicati o arrivare fuori ordine. Il compito del \textbf{Livello Trasporto} (Livello 4) è quello di costruire, al di sopra di questa base inaffidabile, servizi di comunicazione end-to-end direttamente per le applicazioni. Su Internet, questo livello è dominato da due protocolli: TCP e UDP.
+
+\subsection{TCP: Servizio di Trasporto Affidabile (Connection-Oriented)}
+Il \textbf{Transmission Control Protocol (TCP)} è il protocollo che fornisce un servizio di trasporto affidabile e orientato alla connessione. Le sue responsabilità principali sono:
+\begin{itemize}
+    \item \textbf{Servizio Affidabile}: Garantisce che tutti i dati inviati dal mittente arrivino al destinatario, senza errori, senza perdite e nello stesso ordine in cui sono stati spediti. Per fare ciò, utilizza i meccanismi di numerazione dei segmenti, acknowledgment (ACK) e ritrasmissione basata su timeout.
+    \item \textbf{Controllo di Flusso}: Si assicura che il mittente non trasmetta dati a una velocità superiore a quella che il destinatario può gestire, evitando di sovraccaricare il buffer di ricezione di quest'ultimo.
+    \item \textbf{Controllo della Congestione}: Modula la velocità di trasmissione per evitare di sovraccaricare la rete stessa (i router intermedi), contribuendo alla stabilità generale di Internet.
+\end{itemize}
+
+\subsection{UDP: Servizio di Trasporto non Affidabile (Connectionless)}
+Lo \textbf{User Datagram Protocol (UDP)} è l'alternativa a TCP. È un protocollo estremamente semplice e leggero che fornisce un servizio non affidabile e non orientato alla connessione. Essenzialmente, prende i dati dall'applicazione, aggiunge un header con i numeri di porta di origine e destinazione, e li passa al livello IP. Non offre alcuna garanzia: i segmenti possono perdersi, arrivare duplicati o fuori ordine. Il suo unico vantaggio è la \textbf{velocità} e il \textbf{basso overhead}, che lo rendono ideale per applicazioni sensibili al ritardo che possono tollerare qualche perdita, come le videochiamate, i giochi online o il servizio DNS.
+
+\subsection{Dettagli del Protocollo TCP}
+TCP è il cavallo di battaglia di Internet e realizza la sua affidabilità attraverso il concetto di \textbf{connessione}.
+
+\dfn{Socket}{
+    Un socket è l'endpoint di una comunicazione. È una costruzione software, gestita dal sistema operativo, che rappresenta un'estremità di una connessione di rete. Viene identificato univocamente dalla coppia (\textbf{Indirizzo IP}, \textbf{Numero di Porta}). Il numero di porta (un intero a 16 bit) serve a distinguere tra le diverse applicazioni in esecuzione sullo stesso host.
+}
+
+Il ciclo di vita di una comunicazione TCP si articola in tre fasi:
+\begin{enumerate}
+    \item \textbf{Apertura della Connessione (Three-Way Handshake)}: Prima di scambiare dati, client e server devono stabilire una connessione. Questo avviene tramite uno scambio di tre pacchetti (SYN, SYN-ACK, ACK) con cui sincronizzano i loro parametri iniziali.
+    \item \textbf{Trasferimento Dati}: I dati vengono scambiati in modo affidabile e bidirezionale.
+    \item \textbf{Chiusura della Connessione}: Al termine dello scambio, la connessione viene chiusa in modo ordinato tramite uno scambio di pacchetti FIN.
+\end{enumerate}
+
+\nt{Esistono dei \textbf{Numeri di Porta Ben Noti (Well-Known Ports)}, compresi tra 0 e 1023, che sono standardizzati per servizi specifici. Ad esempio, i server web attendono richieste sulla porta \textbf{80} (per HTTP), mentre i server di posta per l'invio attendono sulla porta \textbf{25} (per SMTP).}
+
+% \begin{center}
+%     \includegraphics[width=13cm]{img/tcp_connection_lifecycle.png}
+% \end{center}
+
+\subsection{Multiplexing, Demultiplexing e Architetture Server}
+Il livello trasporto gestisce la comunicazione tra processi, non solo tra host.
+\begin{itemize}
+    \item \textbf{Multiplexing}: Sul lato del mittente, il livello trasporto raccoglie i dati provenienti da più socket (cioè da diverse applicazioni), aggiunge a ciascun segmento l'header TCP/UDP corretto e li passa al livello rete come un unico flusso di pacchetti.
+    \item \textbf{Demultiplexing}: Sul lato del ricevente, il livello trasporto riceve i segmenti dal livello rete e, leggendo il numero di porta di destinazione nell'header, smista i dati al socket dell'applicazione corretta.
+\end{itemize}
+
+Per gestire le richieste provenienti da molti client contemporaneamente, i server TCP utilizzano un'architettura specifica:
+\begin{enumerate}
+    \item Il server ha un processo principale in ascolto su un \textbf{welcoming socket} (es. sulla porta 80).
+    \item Quando arriva una richiesta di connessione da un client, il sistema operativo del server crea un \textbf{nuovo socket dedicato} per quella specifica connessione.
+    \item Il server tipicamente genera un nuovo processo o, più efficientemente, un nuovo \textbf{thread} per gestire la comunicazione con quel client sul nuovo socket.
+    \item In questo modo, il welcoming socket rimane libero per accettare nuove connessioni, e il server può gestire centinaia di client in parallelo.
+\end{enumerate}
+
+\section{Controllo di Flusso e Congestione in TCP}
+Un mittente TCP non può inviare dati alla massima velocità possibile senza criterio. Deve adattare la sua velocità di trasmissione per due motivi: non sovraccaricare il ricevente (\textbf{controllo di flusso}) e non sovraccaricare la rete (\textbf{controllo di congestione}).
+
+\dfn{Finestra Scorrevole (Sliding Window)}{
+    È il meccanismo fondamentale usato da TCP. La "finestra" è un valore numerico che rappresenta la quantità massima di dati che un mittente può inviare senza aver ancora ricevuto la conferma (ACK) dal destinatario. Questo permette di "riempire il canale" inviando più pacchetti in sequenza invece di attendere l'ACK per ogni singolo pacchetto, migliorando drasticamente l'efficienza.
+}
+
+Il controllo di congestione in TCP è un algoritmo sofisticato che regola dinamicamente la dimensione della finestra, ora chiamata \textbf{Congestion Window (CWND)}, per adattarsi alle condizioni della rete.
+\begin{itemize}
+    \item \textbf{Fase di crescita (Slow Start / Congestion Avoidance)}: TCP inizia inviando pochi dati. Finché riceve gli ACK regolarmente, interpreta che la rete è libera e aumenta esponenzialmente (e poi linearmente) la dimensione della sua finestra, diventando sempre più "aggressivo" nell'invio.
+    \item \textbf{Rilevamento della Congestione}: Se un ACK non arriva entro il timeout, TCP assume che un pacchetto sia andato perso a causa della congestione in un router.
+    \item \textbf{Fase di riduzione}: In risposta alla congestione, TCP riduce drasticamente la dimensione della CWND (ad esempio, la dimezza o la riporta al valore minimo) e ricomincia a crescere lentamente.
+\end{itemize}
+
+Questo comportamento adattivo, che accelera quando la via è libera e frena bruscamente al primo segno di difficoltà, è la chiave della stabilità di Internet. Il risultato è un andamento a "dente di sega" della velocità di trasmissione.
+
+% \begin{center}
+%     \includegraphics[width=10cm]{img/tcp_congestion_window.png}
+% \end{center}
+
+\section{Livello Applicazione: Servizi per l'Utente}
+Il \textbf{Livello Applicazione} (Livello 7) è il livello più alto dello stack. Non fornisce servizi ad altri livelli, ma direttamente alle applicazioni con cui l'utente interagisce. Contiene i protocolli che definiscono le regole per specifici servizi di rete.
+
+\subsection{Il Servizio DNS (Domain Name System)}
+Gli esseri umani trovano più facile ricordare nomi come `www.unibo.it`, ma i router e i protocolli di rete necessitano di indirizzi IP numerici. Il DNS fa da ponte tra questi due mondi.
+
+\dfn{DNS (Domain Name System)}{
+    Un sistema di database distribuito e gerarchico che ha il compito di tradurre i nomi di dominio, leggibili dall'uomo, nei corrispondenti indirizzi IP, e viceversa.
+}
+
+Il DNS è strutturato come un albero gerarchico. Quando un'applicazione deve risolvere un nome:
+\begin{enumerate}
+    \item Interroga il suo server DNS locale.
+    \item Se il server locale non conosce la risposta, inizia una catena di interrogazioni che risale la gerarchia: interroga i server \textbf{radice} (`.`), poi i server del \textbf{Top-Level Domain} (es. `.it`, `.com`), e così via, fino a trovare il server autoritativo che conosce l'associazione nome-IP.
+\end{enumerate}
+
+\nt{Le query DNS, essendo richieste brevi che necessitano di una risposta rapida, utilizzano tipicamente il protocollo UDP.}
+
+\subsection{Altri Protocolli Applicativi}
+\begin{itemize}
+    \item \textbf{World Wide Web (WWW)}: Utilizza il protocollo \textbf{HTTP (HyperText Transfer Protocol)} per il trasferimento di pagine web tra server e client (browser).
+    \item \textbf{Posta Elettronica (E-mail)}: Si basa su più protocolli:
+    \begin{itemize}
+        \item \textbf{SMTP (Simple Mail Transfer Protocol)}: Utilizzato per inviare e trasferire i messaggi tra server di posta.
+        \item \textbf{POP3 (Post Office Protocol 3)} e \textbf{IMAP (Internet Mail Access Protocol)}: Utilizzati dai client di posta per scaricare e gestire i messaggi dal server.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Architetture Applicative}
+Le applicazioni di rete possono essere progettate secondo due paradigmi principali:
+\begin{itemize}
+    \item \textbf{Client/Server}: È l'architettura tradizionale. Un \textbf{server}, un host potente e sempre attivo, offre un servizio. Molti \textbf{client} si connettono al server per richiederlo. La comunicazione è centralizzata. Esempi: web, posta elettronica.
+    \item \textbf{Peer-to-Peer (P2P)}: Non esiste una distinzione netta tra client e server. Tutti i partecipanti, detti \textbf{peer}, sono equivalenti e possono agire sia da client (richiedendo risorse) sia da server (offrendo risorse). La comunicazione è decentralizzata e avviene direttamente tra i peer. Esempio: sistemi di file-sharing come Gnutella.
+    \item \textbf{Ibrida}: Un modello che combina elementi di entrambi. Ad esempio, il Napster originale usava un server centrale per l'indicizzazione (per scoprire quali peer avessero un certo file), ma il trasferimento del file avveniva poi in modalità P2P.
+\end{itemize}
+
+\section{Cenni sulla Sicurezza e Qualità del Servizio}
+\subsection{Sicurezza in Rete}
+La connettività globale di Internet introduce significative sfide di sicurezza. Le contromisure principali includono:
+\begin{itemize}
+    \item \textbf{Firewall}: Dispositivi, tipicamente router specializzati, posti al confine di una rete privata, che filtrano il traffico in entrata e in uscita sulla base di un insieme di regole di sicurezza, bloccando accessi non autorizzati.
+    \item \textbf{Crittografia}: Protegge la \textbf{confidenzialità} dei dati, rendendoli illeggibili a chiunque li intercetti senza possedere la chiave di decifratura corretta.
+    \item \textbf{Autenticazione}: Processi (come login e password) che verificano l'identità di un utente per garantire che solo le persone autorizzate possano accedere a dati e servizi.
+    \item \textbf{Prevenzione da Malware}: Difesa contro software dannosi (virus, worm) che possono diffondersi attraverso la rete e causare danni.
+\end{itemize}
+
+\subsection{Qualità del Servizio (QoS)}
+Internet, basata su un modello \textit{best-effort}, non offre garanzie sui tempi di consegna dei pacchetti. Sebbene TCP garantisca che i dati arrivino, non può garantire \textit{quando} arriveranno. Questo è un limite per applicazioni in tempo reale.
+
+Per superare questo limite, sono state sviluppate architetture come \textbf{Internet2} e i \textbf{Servizi Differenziati}, che introducono il concetto di \textbf{Qualità del Servizio (QoS)}.
+
+\dfn{Qualità del Servizio (QoS)}{
+    Un insieme di tecnologie che permettono a una rete di gestire il traffico in modo differenziato, dando priorità ai pacchetti di applicazioni sensibili al ritardo (es. VoIP, videoconferenze) rispetto a quelli di applicazioni meno critiche (es. e-mail, file transfer). I router abilitati alla QoS possono gestire code separate per i diversi tipi di traffico, assicurando che i pacchetti urgenti vengano inoltrati per primi.
+}
+

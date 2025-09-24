@@ -1,0 +1,149 @@
+\chapter{Il Controllo di Accesso al Mezzo (MAC) nelle Reti Wireless}
+Nei capitoli precedenti abbiamo esplorato i fondamenti fisici della trasmissione wireless. Ora ci addentriamo nel livello immediatamente superiore, il \textbf{MAC (Medium Access Control)}, per capire come i dispositivi wireless coordinano l'accesso al canale di comunicazione condiviso, un problema molto più complesso rispetto al mondo cablato.
+
+\section{La Sfida del MAC Wireless}
+In una rete wireless, tutti i dispositivi comunicano sullo stesso canale broadcast. Se più dispositivi trasmettono contemporaneamente, i loro segnali si sovrappongono e si distruggono a vicenda, generando una \textbf{collisione}. Il compito del protocollo MAC è orchestrare le trasmissioni per minimizzare le collisioni e utilizzare in modo efficiente le scarse risorse a disposizione: la capacità del canale e l'energia delle batterie.
+
+\subsection{L'Inadeguatezza di Ethernet nel Wireless}
+Il protocollo MAC per eccellenza delle reti cablate, Ethernet, si basa su un meccanismo chiamato \textbf{CSMA/CD (Carrier Sense Multiple Access with Collision Detection)}.
+\begin{itemize}
+    \item \textbf{Carrier Sense}: Un dispositivo "ascolta" il canale e trasmette solo se lo percepisce come libero.
+    \item \textbf{Collision Detection}: Un dispositivo, mentre trasmette, continua ad ascoltare. Se rileva una collisione, interrompe immediatamente la trasmissione, attende per un tempo casuale e riprova.
+\end{itemize}
+
+Questo approccio \textbf{non è praticabile} in un ambiente wireless per due ragioni fondamentali:
+\begin{enumerate}
+    \item \textbf{Impossibilità della Collision Detection}: Un'antenna radio non può trasmettere e ricevere contemporaneamente sulla stessa frequenza. La potenza del segnale trasmesso è immensamente superiore a quella di qualsiasi segnale in ricezione, rendendo impossibile per il trasmettitore "accorgersi" di una collisione mentre sta avvenendo. La collisione si manifesta solo presso il \textbf{ricevitore}.
+    \item \textbf{Problemi del Carrier Sensing (Terminali Nascosti/Esposti)}: Il concetto di canale "libero" o "occupato" è relativo alla posizione. Un dispositivo potrebbe non sentire una trasmissione in corso perché troppo distante dal trasmettitore (problema del \textbf{terminale nascosto}), e iniziare a sua volta una trasmissione che causerà una collisione presso un ricevitore comune.
+\end{enumerate}
+
+Di conseguenza, il MAC wireless deve abbandonare la \textit{rilevazione} delle collisioni in favore della loro \textit{prevenzione} (\textbf{Collision Avoidance}).
+
+\section{Classificazione dei Protocolli MAC Wireless}
+I protocolli MAC si possono classificare in base a come gestiscono la contesa (\textit{contention}) per il canale.
+
+% \begin{center}
+%     \includegraphics[width=13cm]{img/Classification of MAC protocols}
+% \end{center}
+
+La distinzione principale è tra:
+\begin{itemize}
+    \item \textbf{Contention-Free}: L'accesso al canale è regolato in modo da eliminare a priori le collisioni. Questo si ottiene tipicamente tramite un \textbf{coordinatore centralizzato} che assegna a ogni dispositivo il proprio turno per trasmettere (es. tramite \textit{polling} o assegnando slot di tempo fissi - \textit{TDMA}). Garantisce prestazioni prevedibili ma può essere inefficiente.
+    \item \textbf{Contention-Based}: Non c'è un coordinatore centrale (o il suo ruolo è limitato). I dispositivi competono per l'accesso al canale, e il protocollo si occupa di risolvere le collisioni quando avvengono. Sono protocolli più flessibili e adatti a traffico "a raffica" (\textit{bursty}). Questi si dividono a loro volta in \textbf{deterministici} e \textbf{probabilistici} (o ad accesso casuale).
+\end{itemize}
+
+\subsection{Protocolli ad Accesso Casuale (Random Access)}
+Questi protocolli sono il fondamento dei sistemi Wi-Fi moderni e si sono evoluti nel tempo per migliorare l'efficienza.
+
+\paragraph{ALOHA}
+È il protocollo più semplice: quando un nodo ha un pacchetto da inviare, lo trasmette immediatamente. Se il pacchetto collide con un altro, il mittente non riceve la conferma (ACK) dal destinatario, attende un tempo casuale e ritrasmette.
+\begin{itemize}
+    \item \textbf{Vulnerabilità}: Una trasmissione è vulnerabile per un tempo pari al doppio della durata del frame, perché una collisione si verifica se un altro nodo inizia a trasmettere in qualsiasi momento durante questo intervallo.
+    \item \textbf{Efficienza}: Molto bassa, con un throughput massimo teorico di circa il 18\%.
+\end{itemize}
+
+\paragraph{Slotted ALOHA}
+Un miglioramento di ALOHA in cui il tempo è suddiviso in slot discreti di durata pari a un frame. Le stazioni possono iniziare a trasmettere solo all'inizio di uno slot.
+\begin{itemize}
+    \item \textbf{Vulnerabilità}: La finestra di vulnerabilità si dimezza, poiché le collisioni possono avvenire solo se due stazioni scelgono lo stesso slot.
+    \item \textbf{Efficienza}: Il throughput massimo raddoppia, raggiungendo circa il 37\%.
+\end{itemize}
+
+\paragraph{CSMA (Carrier Sense Multiple Access)}
+Aggiunge il principio "ascolta prima di parlare". Una stazione trasmette solo se sente il canale libero. Questo riduce drasticamente il numero di collisioni, ma non le elimina a causa del ritardo di propagazione.
+\begin{itemize}
+    \item \textbf{Vulnerabilità}: La finestra di vulnerabilità è legata al tempo di propagazione del segnale.
+    \item \textbf{Efficienza}: Molto più alta di ALOHA a bassi carichi, ma le prestazioni crollano a carichi elevati, quando il canale è quasi sempre occupato e le collisioni tra stazioni in attesa diventano frequenti.
+\end{itemize}
+
+% \begin{center}
+%     \includegraphics[width=10cm]{img/Throughput comparison of random access protocols}
+% \end{center}
+
+\section{La Dimensione Spaziale: Terminali Nascosti ed Esposti}
+Gli algoritmi visti finora si concentrano sul dominio del tempo, ma nel wireless è fondamentale gestire anche il dominio dello spazio.
+
+\dfn{Problema del Terminale Nascosto (Hidden Terminal)}{
+    Si verifica quando un nodo A è visibile a un ricevitore C, ma non a un altro nodo B, che è anch'esso visibile a C. Se A sta trasmettendo a C, B non lo sente, percepisce il canale come libero e potrebbe iniziare una sua trasmissione verso C, causando una collisione che corrompe entrambi i messaggi.
+}
+
+% \begin{center}
+%     \includegraphics[width=9cm]{img/Hidden terminal problem diagram}
+% \end{center}
+
+\dfn{Problema del Terminale Esposto (Exposed Terminal)}{
+    È la situazione opposta. Il nodo B sta trasmettendo al nodo A. Il nodo C, vicino a B ma lontano da A, vorrebbe trasmettere a D. C sente la trasmissione di B, percepisce il canale come occupato e si astiene dal trasmettere, anche se la sua trasmissione non avrebbe interferito con la ricezione di A. È uno spreco di capacità del canale.
+}
+
+\subsection{La Soluzione: l'Handshake RTS/CTS}
+Per risolvere in particolare il problema del terminale nascosto, sono stati introdotti meccanismi di \textbf{Collision Avoidance} basati su un handshake a quattro vie.
+
+\dfn{Handshake RTS/CTS (Request to Send / Clear to Send)}{
+    Un meccanismo in cui un trasmettitore, prima di inviare un lungo pacchetto di dati, "prenota" il canale inviando un breve pacchetto di controllo \textbf{RTS} (Richiesta di Invio). Il ricevitore, se è pronto, risponde con un pacchetto \textbf{CTS} (Pronto a Ricevere).
+}
+
+Questo semplice scambio risolve il problema:
+\begin{itemize}
+    \item Il pacchetto CTS viene sentito da tutti i nodi vicini al \textbf{ricevitore} (incluso il terminale nascosto B).
+    \item Il messaggio CTS contiene la durata della trasmissione che sta per avvenire.
+    \item Qualsiasi nodo che sente il CTS sa che deve rimanere in silenzio per quella durata, anche se non sente l'RTS o il trasmettitore stesso.
+\end{itemize}
+
+In questo modo, lo spazio attorno al ricevitore viene "silenziato" per la durata della trasmissione, evitando collisioni da parte di terminali nascosti. L'uso di RTS/CTS introduce un overhead, e per questo motivo viene tipicamente attivato solo per pacchetti di dati che superano una certa soglia di dimensione.
+\subsection{Limiti di RTS/CTS e Variazioni sul Tema}
+L'handshake RTS/CTS, sebbene efficace contro il problema del terminale nascosto, non è una panacea e introduce le sue complessità.
+
+\paragraph{Vulnerabilità e Overhead}
+L'uso di RTS/CTS aggiunge un sovraccarico significativo: prima di ogni pacchetto di dati, è necessario scambiare due pacchetti di controllo, consumando tempo e capacità del canale. Per questo motivo, il suo utilizzo è tipicamente limitato ai pacchetti di grandi dimensioni. Inoltre, non è immune da attacchi: un malintenzionato potrebbe inondare la rete di pacchetti CTS falsi (\textit{CTS flooding}), silenziando di fatto tutti i nodi nell'area e causando un attacco Denial of Service.
+
+\paragraph{Evoluzioni del Protocollo: MACA, MACAW, FAMA}
+L'idea di base del Collision Avoidance si è evoluta attraverso una serie di protocolli di ricerca:
+\begin{itemize}
+    \item \textbf{MACA (Multiple Access with Collision Avoidance)}: Formalizza l'uso di RTS/CTS, eliminando del tutto il carrier sensing e affidandosi unicamente all'handshake per gestire la contesa, che di fatto avviene attorno al ricevitore.
+    \item \textbf{MACAW}: Migliora MACA introducendo un pacchetto \textbf{ACK} dopo la ricezione dei dati. Questo crea un handshake a 4 vie (\textbf{RTS-CTS-DATA-ACK}) che non solo previene le collisioni, ma fornisce anche un meccanismo di riscontro per la trasmissione affidabile a livello MAC.
+    \item \textbf{FAMA}: Reintroduce il \textbf{carrier sensing} prima dell'invio dell'RTS. Combina così i vantaggi di entrambi gli approcci: si "ascolta" il canale per evitare collisioni ovvie e si usa l'handshake per risolvere i problemi spaziali più complessi come i terminali nascosti.
+\end{itemize}
+
+\section{Il MAC dello Standard IEEE 802.11 (Wi-Fi)}
+Lo standard IEEE 802.11, su cui si basano tutte le reti Wi-Fi, definisce un'architettura MAC ibrida e sofisticata, progettata per operare in due modalità diverse.
+
+\subsection{Le Due Funzioni di Coordinamento: DCF e PCF}
+Il MAC 802.11 è composto da due meccanismi che possono coesistere, alternandosi nel tempo all'interno di una \textbf{super-frame}:
+\begin{enumerate}
+    \item \textbf{DCF (Distributed Coordination Function)}: È la modalità fondamentale, obbligatoria e più comune. È un meccanismo \textbf{distribuito e basato sulla contesa} (\textit{contention-based}). Utilizza l'algoritmo \textbf{CSMA/CA} (Carrier Sense Multiple Access with Collision Avoidance) per gestire l'accesso. Offre un servizio \textit{best-effort} senza garanzie sulla qualità del servizio (QoS). È la modalità usata nelle reti domestiche e nelle configurazioni \textit{ad-hoc}.
+    \item \textbf{PCF (Point Coordination Function)}: È una modalità opzionale e \textbf{centralizzata, priva di contesa} (\textit{contention-free}). Richiede un coordinatore centrale, l'\textbf{Access Point (AP)}, che gestisce l'accesso al canale tramite \textit{polling}: interroga a turno le stazioni, dando loro il permesso di trasmettere. Questo elimina le collisioni e permette di offrire garanzie di base sulla banda e sul ritardo (soft QoS).
+\end{enumerate}
+
+\subsection{Gli Interframe Spaces (IFS): la Base della Priorità}
+Per orchestrare l'alternanza tra DCF, PCF e le risposte immediate (come gli ACK), lo standard 802.11 definisce degli intervalli di tempo di attesa obbligatori, chiamati \textbf{Interframe Spaces}, di diversa durata. La regola è semplice: chi deve attendere per meno tempo ha una priorità più alta.
+\begin{itemize}
+    \item \textbf{SIFS (Short IFS)}: L'intervallo più breve. Ha la priorità più alta ed è usato per operazioni che devono avvenire immediatamente dopo una trasmissione, come l'invio di un CTS in risposta a un RTS, o di un ACK in risposta a un pacchetto di dati.
+    \item \textbf{PIFS (PCF IFS)}: Intervallo di media durata. Viene usato dall'Access Point. Se il canale è libero per un tempo pari a un PIFS, l'AP ha il diritto di prenderne il controllo per avviare una fase PCF (contention-free).
+    \item \textbf{DIFS (DCF IFS)}: L'intervallo più lungo. Una stazione che deve inviare un nuovo pacchetto di dati in modalità DCF deve attendere che il canale sia libero per almeno un tempo pari a un DIFS.
+\end{itemize}
+
+Questa gerarchia ($SIFS < PIFS < DIFS$) garantisce che un ACK abbia sempre la precedenza su un poll del PCF, che a sua volta ha la precedenza su una nuova trasmissione dati in DCF.
+
+% \begin{center}
+%     \includegraphics[width=12cm]{img/IEEE 802.11 Interframe Spaces (IFS)}
+% \end{center}
+
+\subsection{La Distributed Coordination Function (DCF) in Dettaglio}
+La DCF è il cuore del Wi-Fi e si basa sul CSMA/CA con un meccanismo di backoff per evitare le collisioni.
+
+\paragraph{La Procedura di Backoff}
+Quando una stazione vuole trasmettere e rileva che il canale è libero da almeno un DIFS, non trasmette immediatamente. Per evitare che più stazioni in attesa trasmettano contemporaneamente, avvia una procedura di attesa casuale:
+\begin{enumerate}
+    \item \textbf{Scelta del contatore}: La stazione sceglie un numero intero casuale, il \textit{backoff counter}, in un intervallo $[0, CW]$, dove $CW$ è la \textbf{Contention Window} (finestra di contesa).
+    \item \textbf{Conto alla rovescia}: La stazione continua a monitorare il canale. Per ogni \textit{slot time} in cui il canale rimane libero, decrementa il suo contatore. Se il canale diventa occupato, il contatore viene "congelato" e riprenderà il conto alla rovescia non appena il canale sarà di nuovo libero per un DIFS.
+    \item \textbf{Trasmissione}: La stazione trasmette il suo frame solo quando il suo contatore di backoff ha raggiunto lo zero.
+\end{enumerate}
+
+\paragraph{Binary Exponential Backoff (BEB)}
+Per adattarsi al livello di congestione della rete, la dimensione della Contention Window non è fissa.
+\begin{itemize}
+    \item All'inizio (o dopo una trasmissione riuscita), la $CW$ è impostata al suo valore minimo ($CW_{min}$).
+    \item A ogni collisione (rilevata dalla mancata ricezione di un ACK), la stazione \textbf{raddoppia} la dimensione della $CW$, fino a un valore massimo ($CW_{max}$).
+\end{itemize}
+
+Questo meccanismo, noto come \textbf{Binary Exponential Backoff}, aumenta esponenzialmente l'intervallo da cui viene estratto il contatore casuale, "sparpagliando" maggiormente nel tempo i tentativi di ritrasmissione e riducendo la probabilità di ulteriori collisioni.
