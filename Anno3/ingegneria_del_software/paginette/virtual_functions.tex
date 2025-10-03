@@ -251,5 +251,5 @@ Given the C++ classes defined above, here are some interesting function calls to
     \item a->g(): because g is not declared as virtual in A, early binding is used and the function declared in A is used and "A::g()" is output.
     \item aG->f(): a function with signature f() is decalred in class G's superclass (E), but G also defines a function with name f but with a different signature (f(int)). Thus the homonymous function in the superclass is hidden and an error occurs.
     \item a = \&aG; a->f(): f() is virtual in A, so late binding is used. f(int) is defined in G but its signatura doesn't match, so E's definition for f() is used instead.
-    \item a = \&aG; a->f(int): because A doesn't have any definition for a function with signature f(int), an error is thrown
+    \item a = \&aG; a->f(int): because A doesn't have any definition for a function with signature f(int), an error is thrown.
 \end{itemize}
