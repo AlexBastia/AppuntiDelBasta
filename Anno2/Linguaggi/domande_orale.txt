@@ -1,0 +1,218 @@
+Modulo 2:
+
+-- Nomi e scope:
+
+Cos'e un nome? Il binding? 
+Che tipi di binding time ci sono? Che tipo di variabili possono essere legate staticamente?
+Cos'e l'ambiente? Cos'e una dichiarazione? L'aliasing?
+Cosa sono i blocchi? Che tipi di blocchi esistono? Perche sono utili?
+Come sono strutturati i blocchi? Cosa sono le regole di visibilita'?
+Come puo' essere diviso l'ambiente di un blocco? Che operazioni possono essere fatte su di esso? E sugli oggetti denotabili?
+Cosa si intente con lifetime di un oggetto? e dell'associazione? Che eventi fondamentali seguono? Conincidono sempre? Cos'e un dangling pointer? 
+Come puo' essere interpretata la regola di scope per variabili non locali dentro a funzioni?
+Cosa sono scope statico e dinamico? In che modo lo scope statico e' indipendente? Che vantaggi offre sopra quello dinamico?
+Da che regole e' determinato l'amibiente?
+
+-- Gestione Memoria:
+
+Che tipi di allocazione in memoria esistono in base alla lifetime di un oggetto? Cos'e' l'allocazione statica? Quando viene usata? Che limiti ha?
+Cos'e' l'allocazione dinamica a pila? Quando viene usata? Con che struttura viene implementata (e perche')?
+Cosa viene usato in pratica? Perche' sono necessari l'RdA e il link dinamico? Da chi viene gestita la pila? Che compiti eseguono?
+Cos'e' l'allocazione dinamica con heap? Quando serve? Che problemi dobbiamo gestire?
+Com'e' l'implementazione a blocchi di dimensione fissa? Che problemi ha?
+E quella variabile? Cosa sono frammentazione interna/esterna? 
+Quali sono gli algortmi principali a lista unica? E a lista multipla? 
+In quali modi viene implementato lo scope statico? 
+Come viene implementata la catena statica? Come sono ripartiti i compiti? Quali sono i costi?
+Cos'e' il display? In che modo riduce i costi? Da chi e' mantenuto? Quando viene usato?
+In quali modi viene implementato lo scope dinamico?
+In cosa consiste l'A-list? In che modo e' piu' efficente rispetto all'implementazione a lista dinamica? Che costi ha?
+Cos'e' la CRT? In che modi e' piu' efficente dell'A-list? Che costi ha?
+
+-- Strutturare il controllo:
+
+Che strumenti ha il programmatore per controllare il programma? 
+Cosa sono le espressioni? A cosa servono? Che semantiche sono usate? Che regole e' importante definire? Come vengono valutate? Perche' e' importante l'ordine di valutazione? Cosa sono gli effetti collaterali? Quando una valutazione e lazy o eager?
+Cos'e' un comando? E una variabile? L'assegnamento? Cosa sono gli l e r value? Come si differenziano i modelli di variabile? 
+Come funziona il modello a riferimento? A cosa servono gli operatori di assegnamento? 
+Quali domini devono usare i linguaggi imperativi? Che funzioni usa la semantica? Perche'?
+Quali sono i tipi di comandi per il controllo della sequenza? Cosa si intende con programmazione strutturata? Che vantaggi offre e quali comandi rifiuta? 
+Cosa si intende con short circuit? In che modo viene compilato il case e che vantaggi offre? 
+Perche' sono importanti l'iterazione e la ricorsione? Che tipi di iterazione esistono? 
+Che tipi di iterazione esistono? Che espressivita' hanno? Come viene implementato?
+Cos'e' la ricorsione? E la definizione induttiva? 
+Che confronto c'e' fra iterazione e ricorsione? Come viene ottimizzata la ricorsione?
+
+-- Astrarre sul controllo e passaggio parametri:
+
+Cosa si intende con astrazione sul controllo e sui dati?
+Cosa si intende con parametro attuale/formale? Che tipi di pragmatica possiamo avere?
+Quali modalita' di passaggio di parametri esistono? (e a quali pragmatiche corrispondono)?
+Che problemi ha il passaggio per valore? Come viene implementato il passaggio per riferimento? E quello per costante?
+E quello per risultato? E valore-risultato? Che differenze ci sono con il passaggio a riferimento?
+Quando si usa quale? E il passaggio per nome? Che differenze ci sono? Come viene implementato? 
+Cosa si intende con funzioni di ordine superiore? A cosa dobbiamo stare attenti quando passiamo funzioni come parametro?
+Come ci aspettiamo funzionino le regole di scope? Come vengono risolte le ambiguita'?
+Come viene implementato lo scoping statico? E quello dinamico? Parlare sia di deep che shallow binding
+Cosa sono i funarg problems? Cosa si intende con uscita strutturata? Come viene implementata? Come si solleva e propaga un'eccezione? Come si puo' migliorare l'efficenza delle eccezioni?
+
+Modulo 3:
+
+-- Tipi (introduzione):
+
+#1 Esistono linguaggi non tipati, se sì le sembra un’idea ragionevole, se no perchè?
+#2 che vantaggi ci sono per essere non tipato?
+#59 Come i tipi possono aiutare la programmazione?
+#39 Quando un linguaggio è strongly typed e quando è weakly typed e perchè? in C alcune cose si “rompono” anche se lo definiamo strongly typed, cosa accade?
+#3 dal punto di vista dell’efficienza cambia qualcosa?
+#4 Il tipo void cos’è?
+#5 Differenza tra manifest e infered typing
+#6 Pro e contro di infered e manifest typing
+# Differenza tra dynamic e static typing ed esempi di linguaggi
+#22 si può dire in maniera statica il risultato di un’operazione?
+# Relazione fra queste caratteristiche (e il linguaggi interpretati o meno)
+# Pro e contro di dynamic e static
+#30 che tipo di linguaggio è JavaScript?
+#40 Java è strongly typed? perchè? solo a livello statico o ci possono essere più parti? vedi tipaggio statico e dinamico
+
+-- Tipi di base e algebra dei tipi:
+
+Cosa comprende il sistema di tipi di un linguaggio?
+Cosa sono i tipi base? Chi e' il tipo Unit? Che differenze ci sono con il Void?
+In cosa consistono i tipi enumerazione? Com'e' implementata in C?
+#43 Differenza tra la definizione intensionale ed estensionale nella definizione dei tipi
+#44 un esempio tipico di tipo estensionale > enumerators
+– che differenza hanno gli int dagli enum?
+Cosa sono gli array? Che tipi esistono? 
+#19 svantaggi e vantaggi dell’interoperabilità tra gli array e i puntatori, e fare un esempio
+#11 il fatto di avere una row manage o una column manage cosa ci implica?
+#13 è vero dire che questi array non sono staticamente definiti? In che modo sono memorizzati array dinamici
+#18 Quali sono i vantaggi e svantaggi del fatto che alcuni linguaggi permettono di avere interoperabilità tra gli array e i puntatori?
+#21 se non avessimo l’interoperabilità e avessimo solo gli array, potremmo fare un controllo statico? Oppure si possono fare solo controlli dinamici?
+#32 differenza tra record e array
+#33 cosa serve per essere un record?
+#34 se non avessimo la possibilità di dare dei campi cosa avremmo al posto dei record? > tuple
+Cos'e' il tipo insieme? E il reference type? Come puo' essere implementato?
+#16 quale può essere un’implementazione di reference types?
+#20 cosa significa che un puntatore diventa dangling?
+#64 Cosa sono i dangling pointers e le dangling reference?
+#65 quando abbiamo i wide pointers/referenc
+A cosa serve il puntatore canonico?
+
+#31 Cos’è un tipo prodotto e fare un esempio come struttura. Dal punto di vista matematico?
+Cosa sono le tuple? E i record? Che differenza c'e'?
+Cosa fa il pattern matching? 
+
+Cos'e' un tipo somma? Perche' si usano insiemi etichettati? Come vengono implementati in C,Java e Rust?
+
+Cosa sono i tipi ricorsivi? Come possono essere implementati?
+
+Cosa sono i tipi funzione? Su che costrutto matematico si basano? Sono sempre denotabili e/o esprimibili?
+
+Cosa si intende con algebra dei tipi? Per cosa ci e' utile sta cosa?
+Cosa sono le equivalenze e i preordini? Che tipi di equivalenza vengono usati? Quali sono i pro/contro?
+#28 Differenza tra tipaggio nominale e strutturale. perchè scelgo uno o l’altro? sull’efficienza cosa si intende? riesce a fare un esempio? quali sono i pro e i contro?
+#42 Cos’è il duck typing e connessione con la structural typing? 
+– è riferito a qualcosa di specifico?
+– con le strutture invece?
+– dal punto di vista di espressibilità qual è la loro differenza?
+– il tipaggio strutturale è più o meno specifico?
+– a livello di espressività del linguaggio cosa cambia? > static typing
+– pro e contro > espressività maggiore => rischi > > dinamico vs statico
+#49 un esempio di duck typing dove si riesce a spaccare le garanzie dei tipi del sistema come in C, con strongly typed.
+∗ Java è strongly typed, però…
+∗ qualcosa è da fare comunque in dinamico, si può fare comunque con strongly typed? > si può scollegare . . .
+Cos'e' la compatibilita' di tipo? Come viene definita solitamente?
+Cosa sono la coercizione e il casting ti tipo? E l'inferenza? Come funziona? Descrivi l'algoritmo di unificazione
+#52 Differenza tra typed casting e type coertion
+– un esempio
+– perchè non possiamo utilizzare questi costrutti all’interno del polimorfismo generale in Java?
+
+-- Polimorfismo:
+
+Cosa si intende con polimorfismo di tipo? A cosa serve? Che tipi esistono?
+Come funziona il polimorfismo ad-hoc? Quando e' staico/dinamico? Che relazione c'e' con la coercizione di tipi?
+Cos'e' un sottotipo? Che tipo di ordine e'? Che tipi di sottotipaggio esistono? 
+Come si comporta il sottotipaggio in profondita' in lettura e scrittura? Che relazione c'e' con le funzioni "consumo" e "produzione"?
+Cosa si intende con sussunsione? Come puo' essere implementata? Che problemi ci sono con il polimorfismo di tipo?
+Cos'e' un tipo parametrico? Perche' il polimorfismo parametrico e' detto universale?
+Cazzo e' il polimorfismo parametrico ibrido? Cosa si sacrifica? Quando e' utile? 
+Come si comportano i tipi parametrici con sottotipaggio in profondita' e larghezza?
+Cosa sono i tipi monadici opzione e risultato? A cosa servono?
+#62 cosa abbiamo dal punto di vista pratico con il result type?
+#17 che differenza c’è tra maybe e option?
+
+-- Exceptions:
+
+Che problemi pongono i tipi risultato? Che alternative esistono?  
+Come funzionano le eccezioni? Come venogono implementate in Java?
+– come possiamo definire le nostre eccezioni, come si integrano in Java?
+
+-- Sicurezza della memoria:
+
+Quando un riferimento e' wild? Che problemi ci sono nell'individuazione dei dangling pointer?
+Come funzionano le tombstones? Che costi ha?
+Come funzionano i locks and keys? Che costi ha?
+#27 Quali sono le tecniche di protezione della memoria? qual è uno dei grandi problemi di queste tecniche?
+
+Cos'e' il garbage collection? Che operazioni svolge? Quali sono i principali fattori che determinano le prestazioni?
+#25 è possibile avere dangling pointers con la garbage collection?
+#?? Ci sono alternative alla garbage collection? Quali sono i pro e contro?
+Come funziona il reference count? Che limitazioni ha?
+Cosa fa il mark and sweep? Quali sono i pro e contro? In che modo possiamo migliorare l'efficenza della memoria usata?
+Come funziona la stop and copy? Quali sono i pro e contro? 
+
+Cos'e' il borrow-checking? In che modi possiamo estendere l'idea di ownership?
+Quando viene usato lo spostamento di proprieta' in Rust? Che errori puo' generare? Cosa succede nel caso delle collezioni indicizzate? Come viene risolto?
+Cosa sono i tipi copia? A cosa servono?
+Cosa sono i tipi reference count in rust? In che modo si evitano i problemi del reference count nella garbage collection?
+In che modo sono diversi i riferimenti? Che tipi esistono? Che vincoli deve controllare il compilatore? Che ambiguita' possono esserci? Come vengono risolte?
+Che restrizioni impongono i riferimenti mutabili? Perche'?
+
+-- Tipi di Dato Astratto e OO:
+
+Cos'e' un tipo di dato astratto? Perche' ci aiuta? Cos'e' l'interfaccia? Cosa si intende con indipendenza dalla rappresentazione?
+Come sono implementati in Rust?
+Cosa sono i moduli? A cosa servono?
+Cosa sono i tipi esistenziali? In che relazione sono con gli ADT? Cosa permettono di fare? Cosa cambia dagli ADT?
+#56 Differenza tra abstract data types e oggetti dal punto di vista implementativo?
+- posso farli convivere nello stesso codice? perchè?
+
+Cosa sono gli oggetti? E le classi? Come vengono implementate? E i prototipi? Che differenze ci sono con le classi?
+#46 ! Differenza tra sistemi basati su classi e sistemi basati su prototipi
+– dal punto di vista delle garanzie cosa possiamo dare nel caso di uno e nel caso dell’altro?
+Come viene implementato l'incapsulamento negli oggetti?
+Perche' possiamo considerare le classi come tipi? In che modo sono diversi? Cosa dice il principio di sostituzione di Liskov?
+In che cosa consitste il sottotipaggio interfaccia-classe? Cosa si intende con ereditarieta' e cosa aggiunge? 
+Cos'e' lo shadowing nel contesto delle super/sotto classi? E l'overriding? Che differenze ci sono nella risoluzione?
+#51 ! Quali sono i principali valori fondanti dell’object orientation?
+– per avere un’implementazione quale polimorfismo è il più adatto?
+Cosa significano package e protected? 
+#38 Cosa vuol dire dal punto di vista concettuale e pratico (del design) il poter avere diverse visibilità? > pubblica-privata Cosa tengo privato? Perchè?
+Che differenza c'e' fra eredita' e sottotipaggio?
+Cosa sono le classi astratte?
+Come possiamo rappresentare preordini anti-simmetrici? Che utilita' puo' avere definire un TOP?
+#15 Il tipo più generico in java > objects
+Cosa sono i tipi  intersezine e come variano in base alla sovrapposizione dei supertipi? 
+Cosa sono i costruttori? Come vengono scelti nel caso di multipli? E per superclassi? 
+Che problemi ci sono nell'ereditarieta' multipla? Come vengono risolti? 
+Cos'e' il dispatch dinamico dei metodi (overriding)? Cosa cambia dall'overloading? 
+#55 dal punto di vista dell’implementazione, come differenziamo i due codici tra polimorfismo ad hoc e dynamic dispatch? con che metodo si possono implementare?
+Cosa sono i metodi statici? Come si comportano con il sottotipaggio?
+Che differenza c'e' fra early e late binding? Come possiamo implementare gli oggetti nei linguaggi statici? Come funziona per i sottotipi?
+Come viene implementato il dispatch dinamico? Che problemi ha?
+Come si accede alle variabili di istanza di un oggetto da un metodo invocato da un oggetto? 
+Come possiamo migliorare l'efficenza della ricerca dei metodi dato un sistema di tipi statici? Cosa sono le vtable? Come funzionano nei sottotipi? Cosa succede all'invocazione di un metodo?
+Che problemi comporta il late binding di this? Da cosa dipende dal punto di vista dell'implementazione?
+Come fa la JVM a superare questo problema? Che differenza c'e' fra le vtable e i descrittori di classe?
+Differenza fra polimorfismo parametrico e generici. Cos'e' il type erasure? Che problemi comporta? Come possono essere superati?
+Cosa sono i wildcard in Java?
+
+
+Cazzo e' sta domanda qua???
+#60 Cos’è il doc vector e qual è il suo utilizzo?
+– dove viene allocato il suo contenuto?
+• Se le funzioni nei linguaggi fossero come le funzioni matematiche, come potremmo ottimizzarne la loro esecuzione?
+– come si scriverebbe?
+– un esempio > var globale lo chiamo una volta la incremento, la ritorno etc …
+– che ottimizzazioni possiamo fare con le funzioni matematiche? > di memoria: una tabella, per salvare i valori e lo riporto.
