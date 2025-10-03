@@ -147,6 +147,27 @@
 	,separator sign none
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CUSTOM AXIOMS BOX
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newtcolorbox{TitledAxiomsBox}[1]{%
+    enhanced,
+    breakable,
+    colback=mydefinitbg,      % background color
+    colframe=mydefinitfr,     % frame color
+    boxrule=1pt,
+    sharp corners,
+    attach boxed title to top left={yshift*=-\tcboxedtitleheight},
+    boxed title style={
+        colback=mydefinitfr,   % title background color
+        coltitle=white,        % title text color
+        fonttitle=\bfseries\sffamily,
+    },
+    title={#1}                 % title of the box
+}
+
+
+
 %================================
 % Corollery
 %================================
@@ -603,6 +624,11 @@
 \newcommand{\qs}[2]{\begin{question}{#1}{}#2\end{question}}
 \newcommand{\pf}[2]{\begin{myproof}[#1]#2\end{myproof}}
 \newcommand{\nt}[1]{\begin{note}#1\end{note}}
+\newcommand{\ax}[2]{%
+    \begin{TitledAxiomsBox}{#1}%
+    #2
+    \end{TitledAxiomsBox}%
+}
 
 \newcommand*\circled[1]{\tikz[baseline=(char.base)]{
 		\node[shape=circle,draw,inner sep=1pt] (char) {#1};}}

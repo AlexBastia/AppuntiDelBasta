@@ -102,6 +102,7 @@ and:
         Best means: the attribute that gives the most information gain
         \item \textbf{Create a child node for each possible value of $X_i$}: for instance if attribute is "weather" with values "sunny", "rainy", "overcast", create three child nodes.
         \item \textbf{check if all examples in the chils node are pure}: if all examples belong to the same class (e.g., all "yes" or all "no"), make that node a leaf node with that class label. If not repeat the process recursively for each child node.
+    \end{itemize}
 }
 
 \subsection{Entropy}
@@ -117,6 +118,7 @@ and:
     \begin{itemize}
         \item $P(X=i)$ is the proportion of examples in $S$ that belong to class $i$
         \item $n$ is the number of classes (the number of possibile values of $X$)
+    \end{itemize}
 }
 
 In other words, Entropy meausers the \textit{degree of uncertainty} of the information. It is maximal when $X$ is uniformly distributed (all classes have the same probability) and minimal (zero) when all examples belong to the same class (pure set)
@@ -266,3 +268,5 @@ and then the useless or harmful branches are pruned.
         \item repeat until no further pruning improves the accuracy
     \end{itemize}
 }
+
+
