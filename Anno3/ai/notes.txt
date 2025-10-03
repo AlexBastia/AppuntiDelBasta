@@ -1,0 +1,29 @@
+Esiste anche il caso con feature continue, ma non la consideriamo
+
+DObbiamo selezionare l'insieme delle possibili soluzioni che mappano dall'input all'output (Dominio)
+Un modo concreto per calcolare la funzione modello:
+- Ci sono modelli possibili? E' unico? 
+
+Es. Tennis
+Proviamo a modellare ogni possibile funzione X->Y con un albero di decisione che usa le quattro feat. per dare un output (funzione a 4 parametri -> il fatto che usa un albero di decisione la rende partioclare?) -> mi sto chiedendo l'espressivita'
+
+Espressivita' di una decision tree: congiunzione, disgiunzione e negazione possiamo implementarli -> abbiamo tutti i connettivi boleani -> possiamo trovare un albero per qualsiasi funzione boleana -> non e' unico, il preferito e' l'albero piu' basso/bilanciato
+
+Piu' un modello e' espressivo, piu' si adatta facilmente ai dati.
+
+Se la legge di separazione dei dati e' randomica, e' impossibile che il modello trovato generalizzi -> modelli espressivi sono proni a overfitting (trovare una legge che in realta' nonn esiste)
+
+Strategia generale per costruire l'albero:
+- Top down: ogni volta cerco di selezionare l'attributo migliore (la A perche' i suoi figli sono sbilanciati) e per tutti i suoi valori gli do' un nodo figlio
+
+Quindi e' meglio bilanciato o sbilanciato??
+
+Entropia 
+E' maggiore quando una variabile aleatoria e' equidistribuita (-log(1/n)=log(n))
+L'immagine fa vedere il valore di entropia di una VA boleana al variare della sua distribuzione
+
+Informazione
+Considero qualcosa informativo se e' "sorprendente", se e' sempre lo stesso valore non mi dice niente, mentre se puo' avere molti valori diversi e' molto informativo sapere qual'e' il valore effettivo -> per questo uso il log (spiegazione sulle slide)
+
+L'entropia e' quindi la somma pesata (dalla probabilita' che effettivamente abbia quel valore) dell'informazione data da un VA se assume ongi valore
+Una cosa figa e' che ci dice il numero medio di bit necessari per codificare 
