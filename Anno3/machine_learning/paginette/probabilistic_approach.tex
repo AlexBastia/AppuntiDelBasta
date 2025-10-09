@@ -301,3 +301,180 @@ where:
 \]
 
 The term ``marginal'' means we've \textbf{marginalized} (integrated/summed) over $Y$.
+
+\section{The Joint Distribution}
+
+\dfn{Joint Distribution}{
+    Let $X_1, X_2,\dots, X_n$ be discrete random variables. The \textit{joint probability distribution} (or \textit{joint distribution}) of these variables is the function:
+    \begin{center}
+        \begin{math}
+            P(X_1 = x_1, X_2 = x_2, \dots, X_n = x_n)
+        \end{math}
+    \end{center}
+
+    which assigns to every possible combination of values \( (x_1, x_2, \dots, x_n) \) the probability that the random variables simultaneously take those values.
+
+    Formally, for discrete variables, the joint distribution satisfies:
+    \begin{itemize}
+        \item \( 0 \leq P(x_1, x_2, \dots, x_n) \leq 1 \) for all \( (x_1, \dots, x_n) \)
+        \item \( \sum_{x_1} \sum_{x_2} \cdots \sum_{x_n} P(x_1, x_2, \dots, x_n) = 1 \)
+    \end{itemize}
+}
+
+Let's see an example
+\ex{Joint distribution}{
+    \begin{itemize}
+        \item build a table with all possible combinations of values of random variables (features)
+        \item compute the probability for any different combination of values
+    \end{itemize}
+
+    \begin{center}
+        \includegraphics[width=6cm]{jd_img.png} % the table of the document
+    \end{center}
+
+    This table is the "Joint distribution"!
+
+    Having that we may compute the probability of any event expressible as a logical combination of the features, with this formula
+    \[
+        P(E) = \sum_{row\in E} (row)
+    \]
+    in words for calculating an event we must add each row that is contained by the event. Let's provide an example (of an example)
+
+        Let us compute the probability $P(M, poor)$
+        \begin{center}
+            \includegraphics[width=6c]{jd_ex.png}
+        \end{center}
+    
+
+    we have: $P(M, poor) = 0.33 + 0.13 = 0.46$
+}
+
+\subsection{Inference with the Joint distribution}
+Here are with the inference:
+\dfn{Contintional probability}{
+    Let \( E_1 \) and \( E_2 \) be two events defined as logical conditions over subsets of the random variables (e.g., \( E_1: X_i = a, X_j = b \); \( E_2: Y = y \))
+
+    Then, \textit{conditional probability} of \( E_1 \) given \( E_2 \) is:
+    \[
+        P(E_1 \mid E_2) = \frac{P(E_1 \land E_2)}{P(E_2)} = 
+        \frac{\displaystyle\sum_{{row} \in (E_1 \land E_2)} P({row})}
+        {\displaystyle\sum_{{row} \in (E_2)} P({row})}
+    \]
+}
+
+for instance:
+\ex{Conditional probability}{
+    Let's compute $P(M|poor ) =\frac{P(M \land poor)}{P(poor)}$. We know that $P(M, poor ) = 0.46$. Let us compute $P(poor )$:
+    \begin{center}
+        \includegraphics[width=6cm]{joint_inf.png}
+    \end{center}
+    Easy! $P(poor) = .75 \land P(M|poor) = 0.46/0.75 = 0.61$
+}
+
+\subsection{Complexity issues}
+Let us build the joint table relative to
+\[
+    P(Y = wealth|X_1 = gender , X_2 = orelav.)
+\]
+
+\begin{center}
+    \includegraphics[width=6cm]{comp_issue.png}
+\end{center}
+To fill the table we need to compute $4=2^2$ parameters
+
+If we have $n$ random variable $X = X_1 \times X_2 ,\dots, X_n$ where each $X_i$ is
+boolean, we need to compute $2^n$ parameters. These parameters are \textit{probabilities}: to get reasonable value we would need a huge amount of data.
+
+In particular the The Joint Distribution Requires \textit{Exponential parameters}
+\ex{features and params}{
+    \begin{itemize}
+        \item With just 10 binary features, you need $2^{11}-1=2047$ parameters
+        \item With 20 features: over 1 million parameters
+        \item With 100 features: $2^{101}$ a number larger than the estimated atoms in the observable universe.
+    \end{itemize}
+}
+This is computationally and statistically infeasible.
+\subsubsection{USing Bayes}
+for reducing complexity, we can rewrite the formula with the Bayes' rule:
+\[
+    P(Y=y_i\mid X=x_j) = \frac{P(Y=y_i)\cdot P(X = x_j\mid Y = y_i)}{\sum_i P(Y=y_i)\cdot P(X=x_j \mid Y=y_i)}
+\]
+generalising:
+\[
+    P(Y \mid X_1, X_2, \dots, X_n) = \frac{P(Y) \cdot P(X_1, X_2, \dots, X_n \mid Y)}{P(X_1, X_2, \dots, X_n)}
+\]
+
+But... there is a problem, it's required to know 
+\[
+    P(X_1, X_2, \dots, X_n \mid Y)
+\]
+
+that is the joint distribution of the features given $Y$, that requires, another time, $2^n$ params
+
+\subsection{Naive Bayes}
+For atteniung the complexity, it's possible assume an indipendencies conditional hypotesis, called "Naïve Bayes":
+\[
+    P(X_1,X_2,\dots,X_n|Y)=\prod_{i}P(X_i |Y)
+\]
+So given $Y$, $X_i$ and $X_j$ are independent from each other. In other therms:
+\[
+    P(X_i|X_j,Y)=P(X_i|Y)
+\]
+\nt{
+    This means: onece we know $Y$, the feature $X_i \forall i$ are independents between each others
+}
+\ex{example 1}{
+    A box contains two coins: a regular coin and a fake two-headed coin ($P(H) = 1$).Choose a coin at random, toss it twice and consider the following events:
+
+    \begin{itemize}
+        \item $A =$ First coin toss is H
+        \item $B =$ Second coin toss is H
+        \item $C =$ First coin is regular
+    \end{itemize}
+}
+\ex{example 2}{
+    For individuals, height and vocabulary are not independent, but they are if age is given.
+}
+
+\subsubsection{Giga formula with naive bayes}
+\thm{Bayes rule}{
+    \[
+       P(Y = y_i \mid X_1, \dots, X_n) = \frac{P(Y = y_i) \cdot P(X_1, \dots, X_n \mid Y = y_i)}{P(X_1, \dots, X_n)}
+    \]
+}
+\pf{Proof}{
+    Left to mesco as exercice
+}
+
+\thm{Naïve Bayes}{
+    \[
+    P(Y = y_i \mid X_1, \dots, X_n) = \frac{P(Y = y_i) \cdot \prod_j P(X_j \mid Y = y_i)}{P(X_1, \dots, X_n)}
+    \]
+}
+\pf{Proof}{
+    Left to Bonzo as exercice
+}
+
+\thm{Classification of a new sample $x^{\text{new}} = \langle x_1, \dots, x_n \rangle$}{
+    \label{thm:cne}
+    Given a new instance represented by the feature vector $x^{\text{new}} = (x_1, x_2, \dots, x_n)$, 
+    the predicted class is obtained as:
+    \[
+        Y^{\text{new}} = \arg\max_{y_i} \, P(Y = y_i) \cdot \prod_{j} P(X_j = x_j \mid Y = y_i)
+    \]
+}
+
+\pf{Proof}{
+    Left to Bastiality as an exercise.
+}
+
+\nt{
+    Theorem~\ref{thm:cne} expresses the decision rule of the Naïve Bayes classifier.
+    Given a new vector of features $x^{\text{new}} = (x_1, x_2, \dots, x_n)$, 
+    we estimate the most probable class $y_i$ by maximizing the posterior probability 
+    $P(Y = y_i \mid X_1 = x_1, \dots, X_n = x_n)$, 
+    which—under the conditional independence assumption—reduces to the product of the prior $P(Y = y_i)$ 
+    and the individual likelihoods $P(X_j = x_j \mid Y = y_i)$.
+}
+
+

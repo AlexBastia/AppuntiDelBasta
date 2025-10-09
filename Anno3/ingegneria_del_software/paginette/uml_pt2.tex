@@ -3,7 +3,7 @@
     Object Oriented Design is the phase of software development that follow Object-Oriented Analysis (OOA), where the abstract models of the system are refined and elaborated into detailed specifications that can be directly implemented in an object-oriented programming language
 }
 \begin{center}
-    \includegraphics{piramid_design.png}
+    \includegraphics[width=10cm]{piramid_design.png}
 \end{center}
 
 In other words the OOD transform the "what" of OOA into the "how", adding technical details necessary for construction while preserving system correctness and maintainability
@@ -41,7 +41,7 @@ what distinguishes OOD from OOA is:
     \begin{itemize}
         \item Names are fixed
         \item Fixed signatures for messages
-        \item Multiplicity & its realization
+        \item Multiplicity \& its realization
         \item Visibility
         \item Algorithms for methods
         \item More detailed sequence/collaboration diagrams
@@ -119,7 +119,7 @@ Interaction diagrams provide two different perspectives on the same interaction:
 
 Here we can see timelines:
 \begin{center}
-    \includegraphics[options]{seq_diagram.png}
+    \includegraphics{seq_diagram.png}
 \end{center}
 
 \ex{detailed example}{
@@ -141,20 +141,20 @@ Lifelines:
 \begin{itemize}
     \item \textbf{Sysnc msgs}:
     \begin{itemize}
-        \item Full arrowhead: ─────────>
+        \item Full arrowhead: $ \longrightarrow $
         \item Caller wait for completion
         \item blocking operation
         \item most common in obj-oriented system
     \end{itemize}
     \item \textbf{Async msgs (signals)}:
     \begin{itemize}
-        \item Half arrowhead (stick arrow): ────────>
+        \item Half arrowhead (stick arrow): $ \rightarrow $
         \item Sender doesn't wait for completion
         \item Non-blocking operation
         \item Used for concurrent operations
     \end{itemize}
     \item \textbf{Return Messages}:
-    \item \begin{itemize}
-        \item 
+    \begin{itemize}
+        \item Typically shown as a dashed arrow: $ \dashrightarrow $
     \end{itemize}
 \end{itemize}
