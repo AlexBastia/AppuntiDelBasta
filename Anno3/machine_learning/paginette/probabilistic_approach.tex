@@ -329,7 +329,7 @@ Let's see an example
     \end{itemize}
 
     \begin{center}
-        \includegraphics[width=6cm]{jd_img.png} % the table of the document
+        \includegraphics[width=6pt]{jd_img.png} % the table of the document
     \end{center}
 
     This table is the "Joint distribution"!
@@ -342,7 +342,7 @@ Let's see an example
 
         Let us compute the probability $P(M, poor)$
         \begin{center}
-            \includegraphics[width=6c]{jd_ex.png}
+            \includegraphics[width=6cm]{jd_ex.png}
         \end{center}
     
 
@@ -482,11 +482,158 @@ Given discrete Random Variables $X_i, Y$, there are two phases
 \begin{itemize}
     \item \textbf{Training}: in this phases the maching learn from the data of training set, estimating two types of probs:
     \begin{itemize}
-        \item \textbf{Prior}: (prob of the classes)
+        \item \textbf{Prior} (prob of the classes). For any possible value $y_k$ of $Y$ , estimate
         \[
             \pi_k = P(Y = y_k)
         \]
-        \item \textbf{Likelihoods}:(contained)
+        example: if 9 out of 14 matches are "Play = Yes", then $\pi_{yes}= \frac{9}{14},\quad \pi_{no}= \frac{5}{14} $
+
+        \item \textbf{Likelihoods}:(conditional probabilities of features). for any possible value $x_{ij}$ of $X_i$ estimate:
+        \[
+            \theta_{ijk} = P(X_i = x_{ij}\mid Y = y_k)
+        \]
+        It's the probability that a certain feature $X_i$ assumes the value $X_{ij}$, given $y_k$.
+
+        example: $P(Outlook=Sunny\mid Play=Yes)=\frac{2}{9}$
+    \end{itemize}
+    \item \textbf{Classification of $a^{new} = \langle a_1 , \dots a_n \rangle$} (a vector with $n$ observed values (one for each feature)). We want to establish which class it belong to
+    
+    decision-making formula:
+    \[
+    \begin{aligned}
+    Y^{\text{new}} &= \arg \max_{y_k} P(Y = y_{k}) \cdot \prod_{i} P(X_{i} = a_{i} \mid Y = y_{k}) \\
+    &= \arg \max_{k} \pi_{k} \prod_{j} \theta_{ijk}
+    \end{aligned}
+    \]
+
+    where:
+    \begin{itemize}
+        \item $P(Y=y_k)$: prior
+        \item $P(X_i=a_i\mid Y=y_k)$: likelihood for each features
+        \item the prod $\prod_{i}$ is given by Naive assumption
     \end{itemize}
 \end{itemize}
+
+\ex{a good day to play tennis?}{
+    we wanna build a model that, given certain weather conditions, predict whether it is a good day to play tennis or not 
+    
+    Our class variable is:
+    \[
+        Y=Play\in\{Yes,No\}
+    \]
+    and the features observed are:
+    \[
+        X_1 = Outlook \quad X_2 = Temp \quad X_3=Humidity \quad X_4=Wind
+    \]
+
+    Here we have the dataset:
+    \begin{table}[H]
+\centering
+\caption{Dataset for the \textit{Play Tennis} classification problem}
+\label{tab:play_dataset}
+\begin{tabular}{ccccc}
+\toprule
+Outlook & Temp & Humidity & Wind & Play \\
+\midrule
+Sunny & Hot & High & Weak & No \\
+Sunny & Hot & High & Strong & No \\
+Overcast & Hot & High & Weak & Yes \\
+Rain & Mild & High & Weak & Yes \\
+Rain & Cool & Normal & Strong & No \\
+Overcast & Cool & Normal & Strong & Yes \\
+Sunny & Mild & High & Weak & No \\
+Sunny & Cool & Normal & Weak & Yes \\
+Rain & Mild & Normal & Weak & Yes \\
+Sunny & Mild & Normal & Strong & Yes \\
+Overcast & Mild & High & Strong & Yes \\
+Overcast & Hot & Normal & Weak & Yes \\
+Rain & Mild & High & Strong & No \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+TODO: TABELLA FATTA FARE DA UN LLM NON È VENUTA BENISSIMO
+
+    \textbf{Calculating the prior}
+
+    From the dataset we can compute the prior probabilities of the class variable $Y$:
+
+    \[
+    P(Y = \text{Yes}) = \frac{9}{14}, \qquad
+    P(Y = \text{No}) = \frac{5}{14}.
+    \]
+
+    These represent the empirical frequencies of the two possible outcomes of $Y$.
+
+    \medskip
+    \textbf{Calculating the likelihoods}
+
+    For each feature $X_i$ and each class $Y = y_k$, we estimate the conditional probabilities
+    \[
+    P(X_i = x_{ij} \mid Y = y_k),
+    \]
+    that is, the probability of observing a certain feature value $x_{ij}$ given that the class is $y_k$.
+
+    For example:
+
+    \[
+    P(\text{Outlook} = \text{Sunny} \mid Y = \text{Yes}) = \frac{2}{9}, \qquad
+    P(\text{Outlook} = \text{Sunny} \mid Y = \text{No}) = \frac{3}{5}.
+    \]
+
+    These values are computed as the relative frequencies in the dataset.
+
+    \medskip
+    \textbf{Classification of a new instance}
+
+    Suppose we want to classify the new day
+    \[
+    x^{\text{new}} = (\text{Outlook} = \text{Sunny},\ 
+    \text{Temp} = \text{Cool},\ 
+    \text{Humidity} = \text{High},\ 
+    \text{Wind} = \text{Strong}).
+    \]
+
+    We apply the Naïve Bayes decision rule:
+    \[
+    Y^{\text{new}} = 
+    \arg\max_{y_i} P(Y = y_i) 
+    \cdot 
+    \prod_j P(X_j = x_j \mid Y = y_i).
+    \]
+
+    \medskip
+    For $Y = \text{Yes}$:
+    \[
+    P(\text{Yes}) \cdot P(\text{Sunny}|\text{Yes}) \cdot P(\text{Cool}|\text{Yes}) 
+    \cdot P(\text{High}|\text{Yes}) \cdot P(\text{Strong}|\text{Yes})
+    = \frac{9}{14} \cdot \frac{2}{9} \cdot \frac{3}{9} \cdot \frac{3}{9} \cdot \frac{3}{9} 
+    \approx 0.0053
+    \]
+
+    For $Y = \text{No}$:
+    \[
+    P(\text{No}) \cdot P(\text{Sunny}|\text{No}) \cdot P(\text{Cool}|\text{No}) 
+    \cdot P(\text{High}|\text{No}) \cdot P(\text{Strong}|\text{No})
+    = \frac{5}{14} \cdot \frac{3}{5} \cdot \frac{1}{5} \cdot \frac{4}{5} \cdot \frac{3}{5} 
+    \approx 0.0205
+    \]
+
+    \medskip
+    \textbf{Decision:}
+
+    Since
+    \[
+    P(Y = \text{No} \mid x^{\text{new}}) > P(Y = \text{Yes} \mid x^{\text{new}}),
+    \]
+    the predicted class is
+    \[
+    Y^{\text{new}} = \text{No}.
+    \]
+
+    \medskip
+    Therefore, according to the Naïve Bayes model, it is \textbf{not a good day to play tennis}.
+
+
+}
 
