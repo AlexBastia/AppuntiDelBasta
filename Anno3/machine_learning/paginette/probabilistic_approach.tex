@@ -633,7 +633,128 @@ TODO: TABELLA FATTA FARE DA UN LLM NON È VENUTA BENISSIMO
 
     \medskip
     Therefore, according to the Naïve Bayes model, it is \textbf{not a good day to play tennis}.
-
-
 }
+
+\section{Generative techniques}
+When we want to classify data (determine which category Y something belongs to given its features X), there is a fundamentally philosophical approaches, the \textbf{Generative Approach} that "learn how each class generates data", here is a sketch:
+\begin{itemize}
+    \item Ask: "How does each class produce its characteristic data?"
+    \item Model: $P(X|Y)$ (probability of features given category)
+    \item Then use Bayes' Rule to reverse it and get $P(Y|X)$
+\end{itemize}
+
+The term "Generative" come from the fact we're modeling the data generation process. We're essentially saying: "if I knew the category $Y$, I could generate/simulate typical data $X$ from that category"
+
+\subsection{Big example: the visual intuition}
+We want to calssify images into categories $\{0,1,\dots,9\}$ The generative approach says: "for each digit, learn waht imgs form that category typically look like. Then given a new img, see which category would most naturally produce such an img"
+
+\begin{center}
+    \includegraphics[width=6cm]{digit_distribution.png}
+\end{center}
+
+Okay, now we want to classify a new img:
+\begin{center}
+    \includegraphics[width=6cm]{digit_seven.png}
+\end{center}
+\textbf{Which of these distributions would most likely have generated this image?}
+
+Mathematically, for each category k:
+\[
+    \begin{aligned}
+        \text{Score for category k} &= P(Y = k) \cdot P(X = \text{image} | Y = k)\\
+                     &= \text{Prior} \cdot \text{Likelihood}
+    \end{aligned}
+\]
+
+You pick the category with the highest score. You're asking which generative mode (which category's distribution) best explains the observed data
+
+\nt{
+    The "score" is just the numerator of byes rule:
+    \[
+        P(Y = k | X=\text{image}) = [P(Y = k) \cdot P(X=\text{image} | Y = k)] / P(X=\text{image})
+    \]
+}
+
+\subsubsection{Joint Distribution vs. Naïve Bayes}
+Ideally we'd want to model the Complete joint distribution:
+\[
+    P(X_1, X_2, \dots, X_n | Y = y_i)
+\]
+For MNIST, this would be the distribution of all $784$ pixels ($28\times 28$ image) for images of each digit. This distribution would capture all the correlations between pixels - how pixel 1 relates to pixel 2, how groups of pixels form edges and curves, etc. Howver, modeling the full joint distribution for $784$ dimensions is impossibly complex. We'd need:
+\begin{itemize}
+    \item $2^{784}$ parameters just for binary pixels (more than atoms in the universe!)
+    \item An astronomical amount of training data
+\end{itemize}
+
+So we play the card "Naïve Bayes" with 2500 atk and 1000 def:
+\[
+    P(X_1,\dots, X_n \mid y=y_i) \approx \prod_{j} P(X_j\mid Y=y_i)
+\]
+
+The assumption (effect) is: Given the category $Y$, all pixels are \textit{independent}. This means we model each pixel separately:
+\[
+    \begin{aligned}
+        &P(X_1 | Y = 0), P(X_2 | Y = 0), ..., P(X_{784} | Y = 0)  \\
+        &P(X_1 | Y = 1), P(X_2 | Y = 1), ..., P(X_{784} | Y = 1)  
+    \end{aligned}
+\]
+This is computationally feasible, but we've lost all information about how pixels relate to each other!
+\subsection{Caution 1: The Zero Probability Problem}
+
+From a previous example if we have $P(Play = No|Outlook = Overcast)$ the result is $\theta_Overcast,No = 0$, This happened because in our training data, we never observed a "No" (don't play tennis) when the outlook was overcast
+
+\nt{
+    Remember the classification formula:
+    \[
+        \text{Score} = \pi_k \cdot \prod_{i} \theta_{ijk}
+    \]
+    If any single $\theta_{ijk}= 0$, the entire product becomes zero. So A single feature value you've never seen in training can completely eliminate a category from consideration, even if all other features strongly support it!
+}
+
+\subsection{Caution 2: The Independence Assumption}
+Naïve Bayes assumes events are independent from each other (given Y). What if this is not the case?
+
+\subsubsection{The XOR Problem: A Fatal Limitation}
+
+Consider random binary images where pixels are either 0 or 1. We classify based on two pixels: $p_1$ and $p_2$.
+
+\textbf{Classification rule:}
+\begin{itemize}
+    \item \textbf{Category A:} if $p_1 = p_2$ (both same) — Images: $\{(0,0), (1,1)\}$
+    \item \textbf{Category B:} if $p_1 \neq p_2$ (different) — Images: $\{(0,1), (1,0)\}$
+\end{itemize}
+
+This is an \textbf{XOR (exclusive OR)} relationship — a simple logical rule.
+
+\textbf{What Naïve Bayes learns:}
+
+For Category A (training: $(0,0)$ and $(1,1)$):
+\begin{align*}
+P(p_1 = 1 \mid A) &= \frac{1}{2} \quad \text{[one out of two has } p_1=1\text{]} \\
+P(p_2 = 1 \mid A) &= \frac{1}{2} \quad \text{[one out of two has } p_2=1\text{]}
+\end{align*}
+
+For Category B (training: $(0,1)$ and $(1,0)$):
+\begin{align*}
+P(p_1 = 1 \mid B) &= \frac{1}{2} \quad \text{[one out of two has } p_1=1\text{]} \\
+P(p_2 = 1 \mid B) &= \frac{1}{2} \quad \text{[one out of two has } p_2=1\text{]}
+\end{align*}
+
+\textbf{Result:} All probabilities are identical! For any test image $(a,b)$:
+\begin{align*}
+\text{Score}_A &= P(A) \cdot P(p_1=a \mid A) \cdot P(p_2=b \mid A) = 0.5 \cdot 0.5 \cdot 0.5 = 0.125 \\
+\text{Score}_B &= P(B) \cdot P(p_1=a \mid B) \cdot P(p_2=b \mid B) = 0.5 \cdot 0.5 \cdot 0.5 = 0.125
+\end{align*}
+
+\textbf{Naïve Bayes cannot distinguish the categories!} It achieves only 50\% accuracy (random guessing) despite the trivially simple classification rule.
+
+\textbf{Why?} The features $p_1$ and $p_2$ are \textbf{not independent} given the category — they're perfectly correlated:
+\begin{itemize}
+    \item In Category A: if $p_1 = 0$ then $p_2 = 0$ (with certainty)
+    \item In Category B: if $p_1 = 0$ then $p_2 = 1$ (with certainty)
+    \item $P(p_2 = 1 \mid p_1 = 1, A) = 1 \neq P(p_2 = 1 \mid A) = 0.5$ — violates independence!
+\end{itemize}
+
+\textbf{General lesson:} Naïve Bayes cannot learn relationships between features. It only learns how common each individual feature value is within each class, not how features combine, interact, or correlate.
+
 
