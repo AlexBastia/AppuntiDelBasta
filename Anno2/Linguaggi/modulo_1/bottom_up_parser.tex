@@ -119,7 +119,7 @@ Possono essere di diversi tipi
     
     Le cui proprietà sono:
     \begin{center}
-        \item Costruzione dell'albero di derivazione \texttt{bottom-up}    
+        \item Costruzione dell'albero di derivazione \textit{bottom-up}    
         \item Derivazione canonica a destra a rovescio
         \item forte non-determinismo:
         \begin{itemize}
@@ -429,7 +429,7 @@ Data $G=(NT, T, S, R)$ libera, l'NFA dei prefissi variabili di $G$ si costruisce
                      edge[bend left] node {$S$} (q5)
                      edge[bend left] node {$\epsilon$} (q2)
                 (q6) edge node {$)$} (q8)
-                (q5) edge node {$)$} (q9)
+        (q5) edge node {$)$} (q9);
         \end{tikzpicture}
     \end{center}
 }
@@ -474,9 +474,6 @@ Si può notare come aggiungo ad $I$  tutti gli item che sarebbero stati raggiung
     }
     \Return $clos(j)$ \tcp*{restituisce la closure del $j$ appena creato}
 \end{algorithm}
-
-ciao
-
 
 \subsubsection{algoritmo per il lacolo del DFA LR(0)}
 Date queste due funzioni adesso possiamo costruire l’automa DFA direttamente:
@@ -695,8 +692,8 @@ introdurre questo simbolo di look-ahead è fondamentale, così che si può decid
     %! ERRORE GRAFICO, CHE CAZZ È? 
     \[
         \begin{array}{l}
-            [S \to V \cdot E, \, \$] \\
-            [S \to V \cdot, \, \$]
+            \lbrack S \to V \cdot E, \, \$\rbrack \\
+            \lbrack S \to V \cdot, \, \$\rbrack
         \end{array}
     \]
     In questo caso se leggo il simbolo "=" si avrà uno shift per poi andare in un altro stato grazie al primo item, mentre se si legge $\$$ input avremo un reduce $E\to V$ proprio grazie al simbolo $\$$ di look-ahead
@@ -1003,8 +1000,8 @@ Si noti il seguente schema:
     Si può notare che
     \begin{center}
         \begin{tikzpicture}
-            \node[state, initial] (q) {$q_0$}
-            \node[state, right of=q] (q1) {$q_1$}
+            \node[state, initial] (q) {$q_0$};
+            \node[state, right of=q] (q1) {$q_1$};
             
             \path[->] 
                     (q_0) edge [loop above] node {$a, X/aX$} ()
