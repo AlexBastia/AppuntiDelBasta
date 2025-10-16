@@ -835,14 +835,17 @@ The MLE is obtained by maximizing this likelihood (or equivalently its logarithm
         \hat{\theta}_{MLE} &= \frac{\alpha_0}{\alpha_0 + \alpha_1} = \frac{\alpha_0}{n}
     \end{align*}
     
-    Therefore, the MLE is simply the observed frequency of successes.
+    To verify this is a maximum, check the second derivative:
+    \[
+        \frac{d^2\ell}{d\theta^2} = -\frac{\alpha_0}{\theta^2} - \frac{\alpha_1}{(1-\theta)^2} < 0
+    \]
+    Since the second derivative is negative for $\theta \in (0,1)$, this confirms a maximum
 }
 
 \subsection{Multivalued case}
 Now I presented the formula just for two possible cases using the Bernoulli distribution, and for multivalued cases? WE HAVE THE \textit{multinomial distribution}
-\nt{Multinomial distribution is $P(X^n = a_i\mid \theta) = c_{a_i} \sum_{i}\theta_{i}^{\alpha_i}$. where $\alpha_i$ is the number of i in the sequence and $ c_{a_i}$ is a
-combinatorial constant not depending on $\theta$
 
+\nt{Multinomial distribution is $P(X^n = \alpha_i\mid \theta) = c_{\alpha_i} \prod_{i}\theta_{i}^{\alpha_i}$. where $\alpha_i$ is the number of i in the sequence and $ c_{a_i}$ is a combinatorial constant not depending on $\theta$
 }
 
 \thm{MLE for Discrete Distributions}{
@@ -852,6 +855,9 @@ combinatorial constant not depending on $\theta$
     \[
         \hat{\theta}_i = \frac{\alpha_i}{n}
     \]
+}
+\pf{Proof}{
+    Basta exercice
 }
 
 \cor{MLE for Naïve Bayes Parameters}{
@@ -869,3 +875,58 @@ combinatorial constant not depending on $\theta$
         \]
     \end{enumerate}
 }
+\section{Document classification with Bag of Words (BoW) approach}
+The Bag-of-Words ($BoW$) model is a technique for document classification, which involves assigning a document to a predefined category (like Sport, politics, Tech, ect...). The core idea is to treat a doc not like a sorted sequence of phrases but like a simple Bag where words have no order or grammar, in this technique the primary focus is on capturing the occurrence frequency of each word within the document.
+
+\subsection{Training and classification}
+Event $X_i=$ i-th word in the document: a discrete random variable assuming as many values as words in the language
+\[
+    \theta_{i,\text{\texttt{word}},\ell} = P(X_i = \text{\texttt{word}} \mid Y = \ell)
+\]
+In words: "the probability that in a document of the category $\ell$ the word
+\texttt{word} appears at position $i$", but for the BoW technique we assume that we have a distribution independent from the position and that all event are independents so 
+\[
+     \theta_{i,\text{\texttt{word}},\ell} =  \theta_{j,\text{\texttt{word}},\ell}= \theta_{\text{\texttt{word}},\ell}
+\]
+
+Then with discrete random variables $X_i$, $Y$ let's defining the training and classification:
+\begin{itemize}
+    \item \textbf{Training}: 
+    \begin{itemize}
+        \item for any possible value $y_k$ of $Y$, estimate
+        \[
+            \pi_k=P(Y=y_k)
+        \]
+        \item for any possible value $x_ij$ of the attribute $X_i$ estimate
+        \[
+            \theta_{ijk} = P(X_i = x_{ij} \mid Y = y_k )
+        \]
+        (the condition prob that a certain word $x_{ij}$ appears in a doc, knowing that that doc belongs to category $y_k$)
+    \end{itemize}
+    \item \textbf{Classification of} $a^{\texttt{new}} = \langle a_1,\dots,a_n \rangle$ (new sequence of words):
+    \[
+    \begin{align*}
+        Y^{\texttt{new}} &=\arg\max_{y_k} P(Y = y_k) \cdot \prod_{i} P(X_i = a_i | Y = y_k)\\
+        & = \arg\max_{k}\pi_k\cdot \prod_{i}\theta_{ijk}
+    \end{align*}
+    \]
+    where $x_{ij} = a_i$
+\end{itemize} 
+
+The probabilities needed for the classifier are estimated from the dataset using Maximum Likelihood Estimates (MLE's):
+\begin{itemize}
+    \item The MLE for the prior probability of a class, $\pi_k$, is the fraction of the documents in the training set that belong to category $y_k$
+    \item The MLE for the conditional probability of a word, $\theta_{\text{\texttt{word}},k}$, is the frequency of that word within all documents belonging to category $y_k$
+\end{itemize}
+
+The classification formula involves multiplying many small probabilities, which can lead to numerical instability (underflow). To solve this, we can maximize the logarithm of the likelihood instead, since the logarithm is a monotonically increasing function and will not change the location of the maximum.
+
+The classification rule becomes:
+\[
+    Y^{\texttt{new}} = \arg\max_{y_k} \left( \log(\pi_k) + \sum_i \log(\theta_{ijk}) \right)
+\]
+This can be further simplified by grouping identical words. If $n_j$ is the number of occurrences of the unique word $w_j$ in the new document, the sum becomes a weighted sum:
+\[
+    \sum_i \log(\theta_{ijk}) = \sum_j n_j \cdot \log(\theta_{jk})
+\]
+This final expression can be elegantly interpreted as a dot product in a high-dimensional vector space where each word of the vocabulary is a dimension
