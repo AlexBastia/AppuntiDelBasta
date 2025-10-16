@@ -757,4 +757,115 @@ P(p_2 = 1 \mid B) &= \frac{1}{2} \quad \text{[one out of two has } p_2=1\text{]}
 
 \textbf{General lesson:} Naïve Bayes cannot learn relationships between features. It only learns how common each individual feature value is within each class, not how features combine, interact, or correlate.
 
+\section{About Maximum Likelihood Estimation (MLE)}
 
+\subsection{Problem definition}
+In words, the Maximum Likelihood Estimation (MLE) is the parameter value that maximizes the probability of observing the given data. For instance, if we have a model where all possible outcomes are $0$ or $1$, the parameter to estimate is computed using the \textit{Bernoulli distribution}\footnote{If you don't know this, please read the \textit{Basta - Giolapalma notes for probability}} $P(w) = \theta^w (1-\theta)^{(1-w)}$ where $w\in\{0,1\}$ represents all possible outcomes. However, normally we have a dataset (in this case a sequence of observations $D = \{w_1, w_2, \ldots, w_n\}$) and we don't know $\theta$. The goal is to find the value of $\theta$ that makes our observed sequence most probable.
+
+For independent observations, the likelihood is:
+\[
+    L(\theta|D) = P(D|\theta) = \prod_{i=1}^n P(w_i|\theta) = \prod_{i=1}^n \theta^{w_i}(1-\theta)^{1-w_i}
+\]
+
+Let $\alpha_0 = \sum_{i=1}^n w_i$ be the number of times we observed $1$ (successes), and $\alpha_1 = n - \alpha_0$ be the number of times we observed $0$ (failures). Then:
+\[
+    L(\theta|D) = \theta^{\alpha_0}(1-\theta)^{\alpha_1}
+\]
+
+The MLE is obtained by maximizing this likelihood (or equivalently its logarithm) with respect to $\theta$.
+
+\dfn{MLE}{
+    Given:
+    \begin{itemize}
+        \item A parametric probability model with parameter(s) $\theta$
+        \item Observed data $D=\{x_1, \dots, x_n\}$
+        \item A likelihood function $L(\theta|D) = P(D|\theta)$ (probability of data given parameters)
+    \end{itemize}
+
+    The \textit{Maximum Likelihood Estimator} is defined as:
+    \begin{center}
+        \begin{math}
+           \hat{\theta}_{MLE} = \arg\max_\theta{L(\theta\mid D)} = \arg \max_\theta P(D|\theta)
+        \end{math}
+    \end{center}
+
+    In words: $\hat{\theta}_{MLE}$ is the parameter value that maximizes the probability of observing the given data.
+}
+
+\subsection{Results for Bernoulli}
+
+
+
+\thm{MLE for Bernoulli}{
+    Given a set of $n$ i.i.d. (independent and identically distributed) observations $D = \{w_1, \ldots, w_n\}$ from a Bernoulli distribution with parameter $\theta$. The Maximum Likelihood Estimate (MLE) for $\theta$ is the sample frequency of successes.
+    
+    If $\alpha_0$ is the number of successes (observations equal to 1), then the estimate is given by:
+    \[
+        \hat{\theta}_{MLE} = \frac{\alpha_0}{n}
+    \]
+}
+
+
+\pf{Derivation for Bernoulli}{
+    For independent Bernoulli trials with outcomes $w_i \in \{0,1\}$, the likelihood is:
+    \[
+        L(\theta|D) = \prod_{i=1}^n P(w_i|\theta) = \prod_{i=1}^n \theta^{w_i}(1-\theta)^{1-w_i}
+    \]
+    
+    Let $\alpha_0 = \sum_{i=1}^n w_i$ (number of $1$'s) and $\alpha_1 = n - \alpha_0$ (number of $0$'s). Then:
+    \[
+        L(\theta|D) = \theta^{\alpha_0}(1-\theta)^{\alpha_1}
+    \]
+    
+    Taking the logarithm (which preserves the maximum since $\log$ is monotonically increasing):
+    \[
+        \ell(\theta) = \log L(\theta|D) = \alpha_0 \log(\theta) + \alpha_1 \log(1-\theta)
+    \]
+    
+    To find the maximum, take the derivative and set to zero:
+    \[
+        \frac{d\ell}{d\theta} = \frac{\alpha_0}{\theta} - \frac{\alpha_1}{1-\theta} = 0
+    \]
+    
+    Solving:
+    \begin{align*}
+        \frac{\alpha_0}{\theta} &= \frac{\alpha_1}{1-\theta} \\
+        \alpha_0(1-\theta) &= \alpha_1\theta \\
+        \alpha_0 &= \theta(\alpha_0 + \alpha_1) \\
+        \hat{\theta}_{MLE} &= \frac{\alpha_0}{\alpha_0 + \alpha_1} = \frac{\alpha_0}{n}
+    \end{align*}
+    
+    Therefore, the MLE is simply the observed frequency of successes.
+}
+
+\subsection{Multivalued case}
+Now I presented the formula just for two possible cases using the Bernoulli distribution, and for multivalued cases? WE HAVE THE \textit{multinomial distribution}
+\nt{Multinomial distribution is $P(X^n = a_i\mid \theta) = c_{a_i} \sum_{i}\theta_{i}^{\alpha_i}$. where $\alpha_i$ is the number of i in the sequence and $ c_{a_i}$ is a
+combinatorial constant not depending on $\theta$
+
+}
+
+\thm{MLE for Discrete Distributions}{
+    The Maximum Likelihood Estimate (MLE) for the probability $\theta_i$ of each outcome is its observed sample frequency.
+
+    If $\alpha_i$ is the number of times the i-th outcome has been observed in the $n$ trials, then the estimate for its probability is:
+    \[
+        \hat{\theta}_i = \frac{\alpha_i}{n}
+    \]
+}
+
+\cor{MLE for Naïve Bayes Parameters}{
+    As a direct consequence of the main theorem, the Maximum Likelihood Estimates for the parameters of a Naïve Bayes classifier are also given by their sample frequencies:
+
+    \begin{enumerate}
+        \item ($\pi_k$) The MLE for the prior probability of a class $y_k$ is its relative frequency in the dataset. 
+        \[
+            \hat{\pi}_k = P(Y = y_k) = \frac{\#\mathcal{D}\{Y = y_k\}}{|\mathcal{D}|}
+        \]
+
+        \item ($\theta_{ijk}$) The MLE for the conditional probability of a feature $X_i$ taking the value $x_{ij}$ given a class $y_k$, is the relative frequency of that feature value within the subset of data belonging to class $y_k$.
+        \[
+            \hat{\theta}_{ijk} = P(X_i = x_{ij} | Y = y_k) = \frac{\#\mathcal{D}\{X_i = x_{ij} \land Y = y_k\}}{\#\mathcal{D}\{Y = y_k\}}
+        \]
+    \end{enumerate}
+}
