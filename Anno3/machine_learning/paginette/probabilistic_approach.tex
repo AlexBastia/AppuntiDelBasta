@@ -1240,3 +1240,15 @@ Since $P(Y=0|x,w) = 1 - P(Y=1|x,w)$, we can write:
 \subsubsection{Log-Likelihood}
 
 Instead of maximizing the product directly, we \textbf{maximize the logarithm} of this probability (which is equivalent since log is monotonic):
+\[
+\ell(w) = \sum_\ell \log P(y^\ell | x^\ell, w) = \sum_\ell \left( y^\ell \cdot \log P(Y=1|x^\ell, w) + (1-y^\ell) \cdot \log P(Y=0|x^\ell, w) \right)
+\]
+
+\subsubsection{Gradient}
+
+Unfortunately, there is no analytic solution for the previous
+optimization problem.
+so, we use iterative optimization methods, like the gradient
+technique:
+
+GRADIENTE IN CADUTA LIBERAq
