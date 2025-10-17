@@ -918,7 +918,6 @@ The probabilities needed for the classifier are estimated from the dataset using
     \item The MLE for the prior probability of a class, $\pi_k$, is the fraction of the documents in the training set that belong to category $y_k$
     \item The MLE for the conditional probability of a word, $\theta_{\text{\texttt{word}},k}$, is the frequency of that word within all documents belonging to category $y_k$
 \end{itemize}
-
 The classification formula involves multiplying many small probabilities, which can lead to numerical instability (underflow). To solve this, we can maximize the logarithm of the likelihood instead, since the logarithm is a monotonically increasing function and will not change the location of the maximum.
 
 The classification rule becomes:
@@ -930,3 +929,314 @@ This can be further simplified by grouping identical words. If $n_j$ is the numb
     \sum_i \log(\theta_{ijk}) = \sum_j n_j \cdot \log(\theta_{jk})
 \]
 This final expression can be elegantly interpreted as a dot product in a high-dimensional vector space where each word of the vocabulary is a dimension
+
+\subsection{Dot product, correlation, Cosine similarity}
+the core idea is manipulating texts in numerical vectors. For doing this, you can create a vectorial space at $n-$dimension where each dimension correspond to a word to one unique word of vocabulary. HEre is the training and classification:
+\begin{itemize}
+    \item \textbf{Training}
+    For any category $k$ build a “spectral” vector
+    \begin{center}
+        \begin{align*}
+            s_k =\langle  \log_{(\theta_{jk})} \rangle
+        \end{align*}
+    \end{center}
+
+    $\theta_{jk}=$ frequency of the word j in documents of the category k
+
+    For each category (ex. "Sport") we'll create a spectral vector where each componet of this vector is the log of the probs ($\log{(\theta_{jk})}$) of a specific category. This vector represent the "profile" or carateristic direction of that category in the space of words
+
+    
+    \item \textbf{classification}
+    Given a new doc, compute a vector
+    \[
+        d = \langle n_j \rangle_{j\in \texttt{words}}
+    \]
+    and classify the doc as
+    \[
+        \arg \max_k d\cdot s_k =\sum_{j}d_j\cdot s_{jk}
+    \]
+\end{itemize}
+
+\subsubsection{geometrically and analytically}
+\dfn{Dot product - Geometric def}{
+    We define \text{dot product} 
+    \begin{center}
+        \begin{math}
+            \textbf{a}\cdot \textbf{b} = |\textbf{a}|\cdot| \textbf{b}|\cos(\theta)
+        \end{math}
+    \end{center}
+}
+
+\dfn{Dot product - Analytic definition}{
+    given $\vectdef{a}, \vectdef{b}$
+    \[
+           \textbf{a}\cdot\textbf{b} = \sum_{i=1}^{n}a_ib_i
+    \]
+}
+
+
+The dot product can be influenced by the length of docs (a longer doc can have high frequencies). The cosine similarity resolve this problem normalizing the dot procd respect to the lenght of two vectors
+\[
+    S_c (\textbf{a}, \textbf{b}) = \cos(\theta) = \frac{\textbf{a}\cdot\textbf{b}}{\|\textbf{a}\|\cdot\|\textbf{b}\|}
+\]
+
+the results is a value $\in[-1,1]$ that measures the "similarity of direction" ignoring the length. A value of 1 means that the vectors points in the same direction
+
+
+
+\thm{Equivalence of Dot Product Definitions}{
+    The geometric definition of the dot product, $\vec{a} \cdot \vec{b} = |\vec{a}||\vec{b}|\cos(\theta)$, is equivalent to the analytic definition, $\vec{a} \cdot \vec{b} = \sum_{i=1}^n a_i b_i$.
+}
+\pf{Proof}{
+
+
+The proof begins with the \textit{Carnot's theorem}, which generalizes the Pythagorean theorem. Consider the triangle formed by the vectors $\vec{a}$, $\vec{b}$, and their difference, $\vec{a} - \vec{b}$.
+
+The Law of Cosines states:
+\[
+|\vec{a} - \vec{b}|^2 = |\vec{a}|^2 + |\vec{b}|^2 - 2|\vec{a}||\vec{b}|\cos(\theta)
+\]
+Here, the term $|\vec{a}||\vec{b}|\cos(\theta)$ corresponds to the geometric definition of the dot product, $\vec{a} \cdot \vec{b}$. By rearranging the formula algebraically, we can express the dot product in terms of vector magnitudes:
+\[
+\vec{a} \cdot \vec{b} = \frac{|\vec{a}|^2 + |\vec{b}|^2 - |\vec{a} - \vec{b}|^2}{2}
+\]
+
+Next, we substitute the analytic definition of the squared magnitude of a vector. For simplicity, let's consider the two-dimensional case where $\vec{a} = [a_1, a_2]$ and $\vec{b} = [b_1, b_2]$. We have:
+\[
+\begin{align*}
+|\vec{a}|^2 &= a_1^2 + a_2^2, \\
+|\vec{b}|^2 &= b_1^2 + b_2^2, \\
+|\vec{a} - \vec{b}|^2 &= (a_1 - b_1)^2 + (a_2 - b_2)^2.
+\end{align*}
+\]
+
+Substituting these into the dot product expression yields:
+\[
+\vec{a} \cdot \vec{b} = \frac{(a_1^2 + a_2^2) + (b_1^2 + b_2^2) - \left( (a_1 - b_1)^2 + (a_2 - b_2)^2 \right)}{2}.
+\]
+
+Expanding the squared terms in the numerator:
+\[
+\vec{a} \cdot \vec{b} = \frac{a_1^2 + a_2^2 + b_1^2 + b_2^2 - (a_1^2 - 2a_1b_1 + b_1^2 + a_2^2 - 2a_2b_2 + b_2^2)}{2}.
+\]
+
+Simplifying by canceling out the squared terms:
+\[
+\vec{a} \cdot \vec{b} = \frac{2a_1b_1 + 2a_2b_2}{2}.
+\]
+
+This simplifies to the final result:
+\[
+\vec{a} \cdot \vec{b} = a_1b_1 + a_2b_2.
+\]
+
+This is the analytic definition of the dot product for the two-dimensional case. The proof can be generalized to $n$ dimensions, demonstrating the equivalence of the geometric and analytic definitions of the dot product.
+
+}
+
+\section{The linear nature of Naive Bayes (boolean case)}
+
+\thm{Linarity of classifier Naive bayes for boolean feature}{
+
+}
+
+Given $X_i, Y$ booleans, the classification of a new $\vec{x} = \langle x_1,\dots, x_n\rangle$ happens comparing the probs that $x$ belong to class $1$ and $0$:
+\[
+    \frac{P(Y=1 \mid X_1 \dots X_n = \vec{x})}{P(Y=0 \mid X_1 \dots X_n = \vec{x})} = \frac{P(Y=1)\prod_{i}P(X_i = x_i\mid Y=1)}{P(Y=10\prod_{i}P(X_i = x_i\mid Y=0} \geq 1
+\] 
+if the results is $\geq 1$ we choose the class one.
+
+Passing to logarithms we have:
+\[
+    \log{\frac{P(Y=1)}{P(Y=0)} + \sum_i\frac{X_i=x_i\mid Y=1}{X_i=x_i\mid Y=0}}\geq 0
+\]
+if the results is $\geq 0$ we choose the class one. 
+
+Now define the conditional probs loke $\theta_{ik} = P(X_i = 1\mid  Y=k)$. Of consequence, $P(X_i = 0 \mid Y=k)=1-\theta_{ik}$. The generic therm of the sum, $\log{\frac{P(X_i =x_i\mid Y=1)}{P(X_i =x_i\mid Y=0)}}$, using the fact that for a boolean function $f(x)=xf(1)+(1-x)f(0)$ we have:
+$$
+    \sum_i \left( x_i \cdot \log\frac{P(X_i=1|Y=1)}{P(X_i=1|Y=0)} + (1-x_i) \cdot \log\frac{P(X_i=0|Y=1)}{P(X_i=0|Y=0)} \right)
+$$
+    with $\theta$, the expression becomes:
+$$
+    \log\frac{P(Y=1)}{P(Y=0)} + \sum_i \left( x_i \cdot \log\frac{\theta_{i1}}{\theta_{i0}} + (1-x_i) \cdot \log\frac{1-\theta_{i1}}{1-\theta_{i0}} \right) \ge 0
+$$
+that is a linear expression in the set of features $x_i$ in the form
+\[
+    w_0 + \sum_i w_i x_i \geq 0
+\]
+Classification algorithms based on a linear combination of the
+features values.
+Every feature is evaluated independently from the others and
+contributes to the result in a linear way, with a suitable weight
+(that is a parameter of the model, to be estimated).
+For instance, if the features are pixels of some image, we may use
+linear methods only up some normalization (in position and
+dimension) of the object to be recognized
+
+\section{Gaussian Naive Bayes}
+The standard Naïve Bayes algorithm is designed for discrete features. However, in many real-world scenarios, features can be continuous, such as the height of an individual, the temperature, or the color intensity of a pixel. For continuous variables, the probability of observing a specific value is infinitesimally small, making the pointwise probability $P(X_i | Y)$ effectively null.
+
+To address this challenge, Gaussian Naïve Bayes extends the classifier by making a crucial assumption: that the data for each continuous feature, conditioned on a specific class, follows a \textbf{Gaussian (or Normal) distribution}. Instead of estimating a probability for each value, we estimate the parameters of this distribution (the mean and variance) from the training data.
+
+\dfn{Gaussian Distribution}{
+    The \textit{Gaussian Distribution} is a continuous probability distribution characterized by its mean $\mu$ and variance $\sigma^2$. Its probability density function (PDF) is given by:
+    \[
+        p(x | \mu, \sigma) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}
+    \]
+    where:
+    \begin{itemize}
+        \item The mean $E[X] = \mu$ defines the center of the distribution.
+        \item The variance $\text{Var}[X] = \sigma^2$ defines the spread of the distribution.
+    \end{itemize}
+}
+
+\subsection{Accuracy, Precision and Recall}
+\dfn{Accuracy}{
+    \[
+        \texttt{Accuracy} = \frac{TP+TN}{ALL}
+    \]
+    number of correctly classified samples
+}
+\dfn{Precision}{
+    \[
+        \texttt{Precision} = \frac{TP}{TP+FP}
+    \]
+    percentage of true prositives over predicted ones
+}
+\dfn{Recall}{
+    \[
+        \texttt{Recall} = \frac{TP}{TP+FN}
+    \]
+    percentage of true positives over all positives
+}
+\dfn{}{
+    \[
+        F1 = 2\frac{Precision \cdot Recall}{Precision + Recall}
+    \]
+    harmonic mean of precision and recall
+}
+\subsection{Descriptive parameters of the model}
+We assume (inductive bias) that for every value $y_k$ of $Y$ the
+random variable $P(X_i |Y = y_k )$ has a Gaussian distribution
+\[
+    \mathcal{N}(x\mid \mu_{ik} \sigma-{ik}) = \frac{1}{\sigma_{ik}\sqrt{2\pi}}e^{-\frac{(x-u_{ik})^2}{2\sigma^2_{ik}}}
+\]
+\begin{itemize}
+    \item \textbf{Learning}: estimate the values of the parameters µik , $\sigma_{i_k}$ and $π_k = P(Y = y_k )$
+    \item \textbf{Classification} of $x^{new} = \langle a_1,\dots, a_n\rangle$
+    \[
+        \begin{align*}
+            Y^{\texttt{new}} &= \arg \max_{y_k} P(Y= y_k ) \cdot \prod_{i} P(X_i = a_i \mid Y = y_k )\\
+            & = \arg \max_{k}\pi_k\cdot \prod_{i}\mathcal{N}(a_i\mid \mu_{ik},\sigma_{ik})
+        \end{align*}
+    \]
+\end{itemize}
+
+\subsection{MLE for Gaussian Parameters}
+Given a set of training data, the Maximum Likelihood Estimates (MLE) for the parameters of the Gaussian distribution for each feature $X_i$ and class $y_k$ are the sample mean and sample variance, calculated from the subset of data belonging to class $y_k$.
+    
+    \begin{itemize}
+        \item \textbf{Mean Estimate ($\mu_{ik}$):} The mean value of $X_i$ for samples with label $Y=y_k$. Formally:
+        \[
+            \mu_{ik} = \frac{\sum_j X_i^j \delta(Y^j = y_k)}{\sum_j \delta(Y^j = y_k)}
+        \]
+        \item \textbf{Variance Estimate ($\sigma_{ik}^2$):} The variance of $X_i$ for samples with label $Y=y_k$. Formally:
+        \[
+            \sigma^2_{ik} = \frac{\sum_j (X_i^j - \mu_{ik})^2 \delta(Y^j = y_k)}{\sum_j \delta(Y^j = y_k)}
+        \]
+    \end{itemize}
+    where $j$ ranges over all samples in the training set, and $\delta(Y^j = y_k)$ is the indicator function:
+    \[
+        \delta(Y^j = y_k) = \begin{cases} 
+            1 & \text{if } Y^j = y_k \\ 
+            0 & \text{otherwise} 
+        \end{cases}
+    \]
+
+\section{Logistic Regression}
+Logistic regression is a discriminative machine learning method used primarily for classification problems
+
+\subsection{Core idea}
+\begin{itemize}
+    \item Naive Bayes allows us to compute $P(Y |X )$ after having learned $P(Y)$ and $P(X |Y)$
+    \item Why not directly learn $P(Y |X )$?
+\end{itemize}
+
+\thm{The shape of $P(Y\mid X)$}{
+    hypotesis:
+    \begin{itemize}
+        \item $Y$ boolean random variable
+        \item $X_i$ continuous random variable
+        \item $X_i$ independent from each other $Y$
+        \item $P(X_i \mid Y = k)$ have Gaussian distributions $N(\mu_{i_k} ,\sigma_i)$(Warning not $\sigma_ik$ !)
+        \item $Y$ has a Bernoulli distribution $(\pi)$
+    \end{itemize}
+    then
+    \begin{equation}
+        P(Y=1\mid X =\langle x_1 \dots x_n\rangle) =\frac{1}{1+\exp{(w_0+\sum_iw_ix_i)}}
+    \end{equation}
+}
+\pf{Proof}{
+    By hypothesis, the conditional probability of a feature $X_i$ is given by a Gaussian PDF:
+    \[
+        P(X_i | Y=k) = \mathcal{N}(x_i; \mu_{ik}, \sigma_i) = \frac{1}{\sigma_i\sqrt{2\pi}}e^{-\frac{(x_i-\mu_{ik})^2}{2\sigma_i^2}}
+    \]
+    We want to find the shape of $P(Y=1|\vec{x})$. Using the definition of conditional probability and the law of total probability, we have:
+    \begin{align*}
+        P(Y=1|\vec{x}) &= \frac{P(Y=1)P(\vec{x}|Y=1)}{P(\vec{x})} \\
+        &= \frac{P(Y=1)P(\vec{x}|Y=1)}{P(Y=1)P(\vec{x}|Y=1) + P(Y=0)P(\vec{x}|Y=0)}
+    \end{align*}
+    Dividing the numerator and denominator by $P(Y=1)P(\vec{x}|Y=1)$ gives:
+    \begin{align*}
+        P(Y=1|\vec{x}) &= \frac{1}{1 + \frac{P(Y=0)P(\vec{x}|Y=0)}{P(Y=1)P(\vec{x}|Y=1)}} \\
+        &= \frac{1}{1 + \exp\left(\ln\left(\frac{P(Y=0)P(\vec{x}|Y=0)}{P(Y=1)P(\vec{x}|Y=1)}\right)\right)}
+    \end{align*}
+    Using the Naïve Bayes assumption of conditional independence $P(\vec{x}|Y) = \prod_i P(x_i|Y)$ and substituting $P(Y=1)=\pi$, we get:
+    \[
+        P(Y=1|\vec{x}) = \frac{1}{1 + \exp\left(\ln\frac{1-\pi}{\pi} + \sum_i \ln\frac{P(x_i|Y=0)}{P(x_i|Y=1)}\right)}
+    \]
+    Substituting the Gaussian PDF and simplifying the term inside the summation leads to a linear function of $x_i$:
+    \[
+        P(Y=1|\vec{x}) = \frac{1}{1 + \exp\left(\ln\frac{1-\pi}{\pi} + \sum_i \left(\frac{\mu_{i0}-\mu_{i1}}{\sigma_i^2}x_i + \frac{\mu_{i1}^2 - \mu_{i0}^2}{2\sigma_i^2}\right)\right)}
+    \]
+    This expression has the form $\frac{1}{1 + \exp(z)}$, where $z$ is a linear combination of the features $x_i$. By defining $w_0$ and $w_i$ as the appropriate combinations of the Gaussian parameters ($\mu, \sigma, \pi$), we obtain the logistic form:
+    \[
+        P(Y=1|\vec{x}) = \frac{1}{1 + \exp(w_0 + \sum_i w_i x_i)}
+    \]
+}
+\subsection{Training for logistic regression}
+So, logistic regression assumes
+\[
+ P(Y=1\mid X =\langle x_1 \dots x_n\rangle) =\frac{1}{1+\exp{(w_0+\sum_iw_ix_i)}}
+\]
+and directly tries to estimate the parameters $w_i$ (the change in sign
+is ininfluent).
+
+\dfn{Logistic function}{
+    It's a very important funcition and it's called logistic function:
+    \[
+        \sigma(x) = \frac{1}{1+e^{-x}}
+    \]
+}
+
+With this def we know that $P(Y=1\mid x, w) = \sigma (w_0 + \sum_{i}x_iw_i)$
+
+\subsubsection{Training via Maximum Likelihood Estimation}
+
+Given independent training samples $\langle x^\ell, y^\ell \rangle$, we want to find the parameters $w$ that \textbf{maximize} the probability of observing our training data.
+
+The probability of all samples is:
+\[
+\prod_\ell P(y^\ell | x^\ell, w) = \prod_\ell P(y^\ell = 1|x^\ell, w)^{y^\ell} \cdot P(y^\ell = 0|x^\ell, w)^{(1-y^\ell)}
+\]
+
+\nt{This formula works because when $y^\ell = 1$, only the first term contributes (the second becomes 1), and vice versa when $y^\ell = 0$.
+
+Since $P(Y=0|x,w) = 1 - P(Y=1|x,w)$, we can write:
+\[
+\prod_\ell P(y^\ell | x^\ell, w) = \prod_\ell \sigma(w_0 + \sum_i w_i x_i^\ell)^{y^\ell} \cdot (1-\sigma(w_0 + \sum_i w_i x_i^\ell))^{(1-y^\ell)}
+\]}
+
+\subsubsection{Log-Likelihood}
+
+Instead of maximizing the product directly, we \textbf{maximize the logarithm} of this probability (which is equivalent since log is monotonic):
