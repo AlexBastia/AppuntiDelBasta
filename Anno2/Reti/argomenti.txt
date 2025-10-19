@@ -1,0 +1,33 @@
+Reti
+- Reti di calcolatori (definizione, classificazione per dimensione, prestazioni) ok
+- Collegamenti e infrastrutture (Topologia, mezzo fisico di trasmissione, scheda di rete, canali di comunicazione, commutazione cammino/pacchetto, servizi orientati alla connessione e non) ok
+- Protocolli di rete (Motivazioni e funzionamento, ISO/OSI, Internet)
+
+Livello fisico e mac
+- Livello fisico e mac/llc (codifica dati, capacita' di trasmissione, tecnologie schede rete, segmenti di rete, affidabilita', comporre segmenti) ok
+  - Es: dimensione frame con requisiti e matrice di parita'
+
+- Wireless (Proprieta' e parametri, propagazione, misura/monitoraggio potenza, antenne)
+- Wireless 2 (Spettro e Larghezza di banda, copertura, drawbacks, multiplex, modulazione, BPSK/QPSK, spreading/hopping/ofdm)
+- Livello mac con wireless (aloha, csma, maca e altra roba che skippo)
+  - Es: distanza massima data link budget, FOM, antenne con guadagno
+        calcolare EIRP di IR dati guadagno e potenza dati all'antenna
+
+Livello rete
+- Livello rete (Semantica, IPv4, sottoreti, forwarding, routing, ICMP, ARP/RARP, DHCP, IPv6 e Tunneling) ok
+  - Es: classi di reti, sottoreti, maschere di rete -> progettazione di rete
+        trace route
+
+- Data Plane (Funzionamento fisco router, formato datagram, frammentazione, openFlow)
+- Controll Plane (per ora skippato, comunuqe non c'e' molto da sapere)
+  - Es: limite massimo di dimensione media di pacchetti in entrata di un router dato link di uscita e flussi in entrata, con buffer
+
+Livello trasporto e applicazione
+- Livello trasporto (TCP, UDP, controllo flusso e congestione, finestra scorrevole) ok
+- Livello applicazione (Client/Server e P2P, neccessita', protocolli comuni, CDN, socket, NAT) ok
+
+Sicurezza
+- Sicurezza (Crittografia, Integrita' e autenticazione, Email sicura, SSL, IPsec, LAN wireless, firewall e IDS)
+  - Es: mandare messaggi con certe garanzie (non replay, privacy, non ripudiabilita', integrita')
+
+

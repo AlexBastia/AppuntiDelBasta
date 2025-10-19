@@ -6,7 +6,7 @@ Si consideri il seguente sistema:
 Dove $A\in \mathbb{R}^{m\times n},b\in \mathbb{R}^m, x\in \mathbb{R}^n$ e $m > n$. È facile verificare che risulta indeterminato, dato che il numero di equazioni è superiore al numero di incognite, non ammettendo, quindi, alcuna soluzione. 
 
 Consci di questo fatto alquanto deprecabile e accettata la sua inalterabilità, si vuole però cercare la $x$ tale che l'espressione $Ax-b$ non sia $0$ ma "quasi", ovvero il più piccolo valore possibile. Si è così giunti al concetto di problema ai minimi quadrati:
-\definizione{
+\dfn{}{
     Si definisce il \textbf{problema ai minimi quadrati (LSQ)}, che consiste nel determinare il vettore $x \in R$ n che minimizzi il vettore dei residui $r = Ax - b$:
     \[
         \min_{x \in \mathbb{R}^n} \|Ax - b\|_2^2 = \min_{x \in \mathbb{R}^n} \|r\|_2^2
@@ -29,16 +29,14 @@ Si giunge così al seguente teorema:
 }
 \section{Equazioni  normali}
 Come si fa, quindi, a minimizzare questo di residuo? Bhe bisogna trovare un "punto di minimo" che ovviamente va trovato con le derivate (nel nostro caso dato che siamo in $\mathbb{R}^n$ il gradiente). Intanto sappiamo che:
-\begin{center}
-    \begin{math}
+\begin{align}
         \|Ax - b\|_2^2 = (Ax - b)^T (Ax - b) \\
         = \left( -b^T + x^T A^T \right) (Ax - b) \\
         = -b^T A x + b^T b + x^T A^T A x \\
         \text{(sommando i termini simili)} \\
         b^T A x = x^T A^T b \\
         = x^T A^T A x - 2 x^T A b + b^T b
-    \end{math}
-\end{center}
+\end{align}
 
 Si pone:
 \[
@@ -116,7 +114,7 @@ Allora in corrispondenza di tale soluzione, la norma del residuo è:
 \]
 \section{Matrice pseudoinversa}
 Qui viene riportata la definizione di una matrice con proprietà molto utili:
-\definizione{
+\dfn{}{
     Sia $A\in \mathbb{R}^{m\times n}$, con $rg(A) = k \leq n$ e sia $A = U\Sigma V^T$ la sua decomposizione in valori singolari. Si definisce \textbf{pseudoinversa} la matrice:
     \[
         A^+ = V\Sigma^+ U^T    
