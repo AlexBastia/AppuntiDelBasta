@@ -1,0 +1,34 @@
+% \begin{document}
+  \chapter{Exercises}
+  \section{Algebra and Calculi}
+  \subsection{17}
+  Trova pizzerie frequentate sia da femmine che da maschi, poi toglile dalle pizzerie totali
+  \begin{align*}
+    Frequents - \sigma_{\text{Gender}=F}PERSON 
+  \end{align*}
+  \subsection{18}
+  Find names of magazines that have published at least one magazine on motorcycling, and subtract it from all magazines
+  \begin{align*}
+    \pi_{Name}MAGAZINE - \pi_{Name}(\sigma_{\text{Topic}=\text{Motorcycling}}ARTICLE \Join MAGAZINE)
+  \end{align*}
+  \subsection{19}
+  \begin{align*}
+    A \coloneq \pi_{\text{Id}, \text{Name}}SAILOR\\
+    \Join_{\text{Id}=\text{Sailor}}\\
+  \text{BOOKING}\\
+    \Join_{\text{Id}=\text{Boat}}\\
+  \pi_{\text{Color}, \text{Id}}BOAT\\
+    \\
+    \pi_{Name}(\sigma_{\text{Color}=\text{red}}A) \cap \pi_{\text{Name}}(\sigma_{\text{Color}=\text{blue}}A)
+  \end{align*}
+  \subsection{20}
+  \begin{align*}
+    A \coloneq \pi_{\text{Id}, \text{Range}}PLANE\\
+    \Join_{\text{Id}=\text{Pid}}\\
+  \text{CERTIFICATE}\\
+    \Join_{\text{Id}=\text{Eid}}\\
+  \pi_{\text{Name}, \text{Id}}EMPLOYE\\
+    \\
+  \sigma_{\text{Range} > 5000}A
+  \end{align*}
+% \end{document}

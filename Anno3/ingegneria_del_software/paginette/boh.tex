@@ -1,0 +1,27 @@
+% \begin{document}
+\chapter{Boh}
+
+\begin{itemize}
+\item Subsystem
+\item Module
+\end{itemize}
+
+\section{Abstraction}
+Abstraction or informaiton hiding is a concept that should be defined very carefully. The single modules have to distinguish the "what" (interface) from the "how" (implementation), so that when using the module only the interface is used and the actual function implementations can be used to further understand what the module does. This is the essence of abstraction.  
+
+\subsection{Coupling and Cohesion}
+Coupling is the interdependance between different modules and should be minimized. Dependance is necessary (the functions need to be called)
+
+Sub-classes aren't a solution -> too complicated after 4th level
+
+Cohesion -> everything inside a class is made to solve a specific problem
+
+Only write necessary code, don't design for reuse!! This makes the codebase grow and become unmanageable. 
+To fix this issue, refactor the code to make it simpler: 
+\begin{itemize}
+\item Make functions as small as possible
+  \item 
+    \item Avoid modules that act as interfaces/middlemen for other modules
+    \item Minimize duplicated code
+\end{itemize}
+% \end{document}

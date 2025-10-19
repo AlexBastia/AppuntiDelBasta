@@ -1,3 +1,4 @@
+% \begin{document}
 \chapter{Probabilistic approach}
 \section{core idea}
 we have two main points of views:
@@ -465,7 +466,15 @@ So given $Y$, $X_i$ and $X_j$ are independent from each other. In other therms:
 }
 
 \pf{Proof}{
-    Left to Bastiality as an exercise.
+  Seen as, using Bayes' formula, $ \forall i $ the denominator used to calculate $ P(Y = y_i | X_1, ..., X_n) $ remains the same,if we're only interested in maximizing the probability it's possible to only consider the numerator.
+
+  Given $ P(X_1, ..., X_n) = C $, 
+  \begin{align*}
+    P(Y = y_i)\cdot \prod_{j}P(X_j | Y = y_i) &= C\cdot \frac{P(Y = y_i)\cdot \prod_{j}P(X_j | Y = y_i)}{C} \\
+    &= C \cdot P(Y=y_i | X_1,...,X_n) \\
+  \end{align*}
+
+  Because $ C $ is a positive constant for each $ y_i $, $ arg max_{y_i} P(Y=y_i | X_1,...,X_n) = arg max_{y_i} C \cdot P(Y=y_i | X_1,...,X_n) $.
 }
 
 \nt{
@@ -637,3 +646,56 @@ TODO: TABELLA FATTA FARE DA UN LLM NON È VENUTA BENISSIMO
 
 }
 
+\section{Document classification}
+The "bag of words" approach to document classification uses the frequency of each word in a document to estimate the type of document (from the categories given during training).
+
+It's an approach based on Naive Bayes that uses the preconception that documents of different categories use different words (this is a very surface level method that doesn't consider things like sarcasm and negation).
+
+So we assume that:
+\begin{itemize}
+\item words are the elementary value of events ($ X_i $ is the i-th word in the document): $ \theta_{i, word, l} = P(X_i = word | Y = l) $
+\item events are independent (given the category): $ \forall i,j,w,m,l. i \neq j.\  P(X_i = w | X_j = m, Y = l) = \theta_{i,w,l} $
+  \item distribution is independent from the position: $ \forall i,j,w,l. \ \theta_{iwl} = \theta_{jwl} $
+\end{itemize}
+
+\subsection{Training}
+For each category $ y_k $, estimate the prior $ \pi_k = P(Y = y_k) $, and for all different words in each document estimate the likelyhood $ \theta_{ijk} = \theta_{jk} = P(X = j | Y = y_k) $ (because distribution is independend from the position, all we need to do is calculate the frequency of words in a category).
+
+\subsection{Classification}
+To simplify the usual naive bayesian classification formula we calculate the max of the \textbf{logarithm} of the likelyhood:
+\[
+  Y^{new} = arg max_{y_k} log(\pi_k) + \sum_{j} n_j \cdot log(\theta_{jk})
+\]
+where $ n_j $ is the frequency/number of occurences of a word in the document $ a $ we want to classify.
+
+\nt{
+  The prior $ \pi_k $ can sometimes be misleading, as the training distribution of document types isn't necessarily indicative ofthe wider picture.
+}
+
+We can rewrite this formula as a dot product between two vectors $ d = (n_j)_{j \in words} $ and $ s_k = (log(\theta_{jk}))_{j \in words} $:
+\[
+arg max_k d \cdot s_k
+\]
+also known as the \textbf{correlation} between the two vectors.
+
+\subsubsection{Geometric interpretation}
+Because $ a \cdot b = |a||b|cos(\theta) $, the correlation between two vectors is dictated by the cosine of the angle between them, aka the \textbf{cosine similarity}.
+
+Prova a fare un esempio figo in 3 dimensioni.
+
+Ma perche' non prendiamo i logaritmi per il vettore delle parole?? Vediamo con la cross-entropy (prodotto di frequenze (probabilita') per logaritmi di probabilita')
+
+
+\section{Linerita' del Naive Bayes}
+Se ipotizziamo che $ X_i $ e $ Y $ sono VA booleane, possiamo trasformare la formula di Naive Bayes usando una caratteristica delle funzioni booleane ottenendo una funzione lineare nelle features $ x_i $.
+
+\section{Naive Bayes Gaussian}
+Caso continuo, ci permette di parlare di altre cose. E' importante focussarci sulla distribuzione gaussiana.
+
+Ipotizziamo che le $ X_i $ siano continue e che $ P(X_i | Y) $ abbia distribuzione Gaussiana. Questa distribuzione e' importante perche' un sacco di fenomeni naturali tendono ad avere questa distribuzione, e il TLC (riguarda TLC) dice che quando sommiamo componenti di tipo randomico il risultato e' tipicamente questo
+
+Fare programma che controlla la somma di VA e che fa vedere la distribuzione.
+
+La gaussiana e' la distribuzione con entropia massima fissata media e std. dev., ovvero e' l'assunzione piu' debole possibile, che quindi sparge in modo piu' equo possibile le probabilita' sui risultati possibili
+
+% \end{document}

@@ -1,0 +1,68 @@
+% \begin{document}
+\chapter{Multiple Systems}
+\section{Classical states}
+Suppose we have just two systems:
+\begin{itemize}
+\item $ X $ is a system with classical state set $ \Sigma $
+\item $ Y $ is a system with classical state set $ \Gamma $
+\end{itemize}
+
+we can place them side-by-side to obtain a single classical system.
+
+\dfn{Compound classical system (pair)}{
+  The system created by joining two classical states $ X, Y $:
+  \[
+  XY
+  \]
+}
+
+\qs{}{
+  What are the classical states of $ (X,Y) $?
+}
+
+The classical state set of $ (X,Y) $ is the \textit{Cartesian product} of the two sets:
+\[
+  \Sigma \times \Gamma = \{(a,b): a \in \Sigma and b \in \Gamma \}
+\]
+
+\nt{
+  We're making the assumption that we know witch system is witch, and there's no confusion between them.
+}
+
+This generalizes well for $ n $ systems:
+\dfn{Compound classical system}{
+  Given $ n $ classical systems $ X_1,...,X_n $, the \textbf{compound system} formed by them is written as an $ n $-tuple:
+  \[
+    (X_1,...,X_n)
+  \]
+  or as a string:
+  \[
+  X_1...X_n
+  \]
+}
+\mprop{}{
+  The classical state set of $ X_1...X_n $ with states $ \Sigma_1,...,\Sigma_n $ is the set:
+  \[
+  \Sigma_1 \times ... \times \Sigma_n
+  \]
+}
+
+\nt{
+  As per convention, cartesian products of states are ordered \textit{lexicographically}, and significance decreases from left to right.
+}
+
+\section{Probabilistic states}
+A probability is associated to each Cartesian product of the classical state sets of the individual systems.
+
+\dfn{Statistical independence}{
+  Given a probabilistic state of $ (X,Y) $, we say that $ X $ and $ Y $ are independent if, $ \forall a \in \Sigma, \forall b \in \Gamma $:
+  \[
+    Pr((X,Y) = (a,b)) = Pr(X=a)Pr(Y=b)
+  \]
+}
+By expressing the state of $ (X,Y) $ as a vector:
+\[
+  |\pi\rangle = \sum_{(a,b)\in \Sigma \times \Gamma} p_{ab}|ab\rangle
+\]
+
+% \end{document}
