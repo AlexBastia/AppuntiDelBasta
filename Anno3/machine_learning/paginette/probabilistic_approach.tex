@@ -642,60 +642,641 @@ TODO: TABELLA FATTA FARE DA UN LLM NON È VENUTA BENISSIMO
 
     \medskip
     Therefore, according to the Naïve Bayes model, it is \textbf{not a good day to play tennis}.
-
-
 }
 
-\section{Document classification}
-The "bag of words" approach to document classification uses the frequency of each word in a document to estimate the type of document (from the categories given during training).
+\section{Generative techniques}
+When we want to classify data (determine which category Y something belongs to given its features X), there is a fundamentally philosophical approaches, the \textbf{Generative Approach} that "learn how each class generates data", here is a sketch:
+\begin{itemize}
+    \item Ask: "How does each class produce its characteristic data?"
+    \item Model: $P(X|Y)$ (probability of features given category)
+    \item Then use Bayes' Rule to reverse it and get $P(Y|X)$
+\end{itemize}
 
-It's an approach based on Naive Bayes that uses the preconception that documents of different categories use different words (this is a very surface level method that doesn't consider things like sarcasm and negation).
+The term "Generative" come from the fact we're modeling the data generation process. We're essentially saying: "if I knew the category $Y$, I could generate/simulate typical data $X$ from that category"
+
+\subsection{Big example: the visual intuition}
+We want to calssify images into categories $\{0,1,\dots,9\}$ The generative approach says: "for each digit, learn waht imgs form that category typically look like. Then given a new img, see which category would most naturally produce such an img"
+
+\begin{center}
+    \includegraphics[width=6cm]{digit_distribution.png}
+\end{center}
+
+Okay, now we want to classify a new img:
+\begin{center}
+    \includegraphics[width=6cm]{digit_seven.png}
+\end{center}
+\textbf{Which of these distributions would most likely have generated this image?}
+
+Mathematically, for each category k:
+\[
+    \begin{aligned}
+        \text{Score for category k} &= P(Y = k) \cdot P(X = \text{image} | Y = k)\\
+                     &= \text{Prior} \cdot \text{Likelihood}
+    \end{aligned}
+\]
+
+You pick the category with the highest score. You're asking which generative mode (which category's distribution) best explains the observed data
+
+\nt{
+    The "score" is just the numerator of byes rule:
+    \[
+        P(Y = k | X=\text{image}) = [P(Y = k) \cdot P(X=\text{image} | Y = k)] / P(X=\text{image})
+    \]
+}
+
+\subsubsection{Joint Distribution vs. Naïve Bayes}
+Ideally we'd want to model the Complete joint distribution:
+\[
+    P(X_1, X_2, \dots, X_n | Y = y_i)
+\]
+For MNIST, this would be the distribution of all $784$ pixels ($28\times 28$ image) for images of each digit. This distribution would capture all the correlations between pixels - how pixel 1 relates to pixel 2, how groups of pixels form edges and curves, etc. Howver, modeling the full joint distribution for $784$ dimensions is impossibly complex. We'd need:
+\begin{itemize}
+    \item $2^{784}$ parameters just for binary pixels (more than atoms in the universe!)
+    \item An astronomical amount of training data
+\end{itemize}
+
+So we play the card "Naïve Bayes" with 2500 atk and 1000 def:
+\[
+    P(X_1,\dots, X_n \mid y=y_i) \approx \prod_{j} P(X_j\mid Y=y_i)
+\]
+
+The assumption (effect) is: Given the category $Y$, all pixels are \textit{independent}. This means we model each pixel separately:
+\[
+    \begin{aligned}
+        &P(X_1 | Y = 0), P(X_2 | Y = 0), ..., P(X_{784} | Y = 0)  \\
+        &P(X_1 | Y = 1), P(X_2 | Y = 1), ..., P(X_{784} | Y = 1)  
+    \end{aligned}
+\]
+This is computationally feasible, but we've lost all information about how pixels relate to each other!
+\subsection{Caution 1: The Zero Probability Problem}
+
+From a previous example if we have $P(Play = No|Outlook = Overcast)$ the result is $\theta_Overcast,No = 0$, This happened because in our training data, we never observed a "No" (don't play tennis) when the outlook was overcast
+
+\nt{
+    Remember the classification formula:
+    \[
+        \text{Score} = \pi_k \cdot \prod_{i} \theta_{ijk}
+    \]
+    If any single $\theta_{ijk}= 0$, the entire product becomes zero. So A single feature value you've never seen in training can completely eliminate a category from consideration, even if all other features strongly support it!
+}
+
+\subsection{Caution 2: The Independence Assumption}
+Naïve Bayes assumes events are independent from each other (given Y). What if this is not the case?
+
+\subsubsection{The XOR Problem: A Fatal Limitation}
+
+Consider random binary images where pixels are either 0 or 1. We classify based on two pixels: $p_1$ and $p_2$.
+
+\textbf{Classification rule:}
+\begin{itemize}
+    \item \textbf{Category A:} if $p_1 = p_2$ (both same) — Images: $\{(0,0), (1,1)\}$
+    \item \textbf{Category B:} if $p_1 \neq p_2$ (different) — Images: $\{(0,1), (1,0)\}$
+\end{itemize}
+
+This is an \textbf{XOR (exclusive OR)} relationship — a simple logical rule.
+
+\textbf{What Naïve Bayes learns:}
+
+For Category A (training: $(0,0)$ and $(1,1)$):
+\begin{align*}
+P(p_1 = 1 \mid A) &= \frac{1}{2} \quad \text{[one out of two has } p_1=1\text{]} \\
+P(p_2 = 1 \mid A) &= \frac{1}{2} \quad \text{[one out of two has } p_2=1\text{]}
+\end{align*}
+
+For Category B (training: $(0,1)$ and $(1,0)$):
+\begin{align*}
+P(p_1 = 1 \mid B) &= \frac{1}{2} \quad \text{[one out of two has } p_1=1\text{]} \\
+P(p_2 = 1 \mid B) &= \frac{1}{2} \quad \text{[one out of two has } p_2=1\text{]}
+\end{align*}
+
+\textbf{Result:} All probabilities are identical! For any test image $(a,b)$:
+\begin{align*}
+\text{Score}_A &= P(A) \cdot P(p_1=a \mid A) \cdot P(p_2=b \mid A) = 0.5 \cdot 0.5 \cdot 0.5 = 0.125 \\
+\text{Score}_B &= P(B) \cdot P(p_1=a \mid B) \cdot P(p_2=b \mid B) = 0.5 \cdot 0.5 \cdot 0.5 = 0.125
+\end{align*}
+
+\textbf{Naïve Bayes cannot distinguish the categories!} It achieves only 50\% accuracy (random guessing) despite the trivially simple classification rule.
+
+\textbf{Why?} The features $p_1$ and $p_2$ are \textbf{not independent} given the category — they're perfectly correlated:
+\begin{itemize}
+    \item In Category A: if $p_1 = 0$ then $p_2 = 0$ (with certainty)
+    \item In Category B: if $p_1 = 0$ then $p_2 = 1$ (with certainty)
+    \item $P(p_2 = 1 \mid p_1 = 1, A) = 1 \neq P(p_2 = 1 \mid A) = 0.5$ — violates independence!
+\end{itemize}
+
+\textbf{General lesson:} Naïve Bayes cannot learn relationships between features. It only learns how common each individual feature value is within each class, not how features combine, interact, or correlate.
+
+\section{About Maximum Likelihood Estimation (MLE)}
+
+\subsection{Problem definition}
+In words, the Maximum Likelihood Estimation (MLE) is the parameter value that maximizes the probability of observing the given data. For instance, if we have a model where all possible outcomes are $0$ or $1$, the parameter to estimate is computed using the \textit{Bernoulli distribution}\footnote{If you don't know this, please read the \textit{Basta - Giolapalma notes for probability}} $P(w) = \theta^w (1-\theta)^{(1-w)}$ where $w\in\{0,1\}$ represents all possible outcomes. However, normally we have a dataset (in this case a sequence of observations $D = \{w_1, w_2, \ldots, w_n\}$) and we don't know $\theta$. The goal is to find the value of $\theta$ that makes our observed sequence most probable.
+
+For independent observations, the likelihood is:
+\[
+    L(\theta|D) = P(D|\theta) = \prod_{i=1}^n P(w_i|\theta) = \prod_{i=1}^n \theta^{w_i}(1-\theta)^{1-w_i}
+\]
+
+Let $\alpha_0 = \sum_{i=1}^n w_i$ be the number of times we observed $1$ (successes), and $\alpha_1 = n - \alpha_0$ be the number of times we observed $0$ (failures). Then:
+\[
+    L(\theta|D) = \theta^{\alpha_0}(1-\theta)^{\alpha_1}
+\]
+
+The MLE is obtained by maximizing this likelihood (or equivalently its logarithm) with respect to $\theta$.
+
+\dfn{MLE}{
+    Given:
+    \begin{itemize}
+        \item A parametric probability model with parameter(s) $\theta$
+        \item Observed data $D=\{x_1, \dots, x_n\}$
+        \item A likelihood function $L(\theta|D) = P(D|\theta)$ (probability of data given parameters)
+    \end{itemize}
+
+    The \textit{Maximum Likelihood Estimator} is defined as:
+    \begin{center}
+        \begin{math}
+           \hat{\theta}_{MLE} = \arg\max_\theta{L(\theta\mid D)} = \arg \max_\theta P(D|\theta)
+        \end{math}
+    \end{center}
+
+    In words: $\hat{\theta}_{MLE}$ is the parameter value that maximizes the probability of observing the given data.
+}
+
+\subsection{Results for Bernoulli}
+
+
+
+\thm{MLE for Bernoulli}{
+    Given a set of $n$ i.i.d. (independent and identically distributed) observations $D = \{w_1, \ldots, w_n\}$ from a Bernoulli distribution with parameter $\theta$. The Maximum Likelihood Estimate (MLE) for $\theta$ is the sample frequency of successes.
+    
+    If $\alpha_0$ is the number of successes (observations equal to 1), then the estimate is given by:
+    \[
+        \hat{\theta}_{MLE} = \frac{\alpha_0}{n}
+    \]
+}
+
+
+\pf{Derivation for Bernoulli}{
+    For independent Bernoulli trials with outcomes $w_i \in \{0,1\}$, the likelihood is:
+    \[
+        L(\theta|D) = \prod_{i=1}^n P(w_i|\theta) = \prod_{i=1}^n \theta^{w_i}(1-\theta)^{1-w_i}
+    \]
+    
+    Let $\alpha_0 = \sum_{i=1}^n w_i$ (number of $1$'s) and $\alpha_1 = n - \alpha_0$ (number of $0$'s). Then:
+    \[
+        L(\theta|D) = \theta^{\alpha_0}(1-\theta)^{\alpha_1}
+    \]
+    
+    Taking the logarithm (which preserves the maximum since $\log$ is monotonically increasing):
+    \[
+        \ell(\theta) = \log L(\theta|D) = \alpha_0 \log(\theta) + \alpha_1 \log(1-\theta)
+    \]
+    
+    To find the maximum, take the derivative and set to zero:
+    \[
+        \frac{d\ell}{d\theta} = \frac{\alpha_0}{\theta} - \frac{\alpha_1}{1-\theta} = 0
+    \]
+    
+    Solving:
+    \begin{align*}
+        \frac{\alpha_0}{\theta} &= \frac{\alpha_1}{1-\theta} \\
+        \alpha_0(1-\theta) &= \alpha_1\theta \\
+        \alpha_0 &= \theta(\alpha_0 + \alpha_1) \\
+        \hat{\theta}_{MLE} &= \frac{\alpha_0}{\alpha_0 + \alpha_1} = \frac{\alpha_0}{n}
+    \end{align*}
+    
+    To verify this is a maximum, check the second derivative:
+    \[
+        \frac{d^2\ell}{d\theta^2} = -\frac{\alpha_0}{\theta^2} - \frac{\alpha_1}{(1-\theta)^2} < 0
+    \]
+    Since the second derivative is negative for $\theta \in (0,1)$, this confirms a maximum
+}
+
+\subsection{Multivalued case}
+Now I presented the formula just for two possible cases using the Bernoulli distribution, and for multivalued cases? WE HAVE THE \textit{multinomial distribution}
+
+\nt{Multinomial distribution is $P(X^n = \alpha_i\mid \theta) = c_{\alpha_i} \prod_{i}\theta_{i}^{\alpha_i}$. where $\alpha_i$ is the number of i in the sequence and $ c_{a_i}$ is a combinatorial constant not depending on $\theta$
+}
+
+\thm{MLE for Discrete Distributions}{
+    The Maximum Likelihood Estimate (MLE) for the probability $\theta_i$ of each outcome is its observed sample frequency.
+
+    If $\alpha_i$ is the number of times the i-th outcome has been observed in the $n$ trials, then the estimate for its probability is:
+    \[
+        \hat{\theta}_i = \frac{\alpha_i}{n}
+    \]
+}
+\pf{Proof}{
+    Basta exercice
+}
+
+\cor{MLE for Naïve Bayes Parameters}{
+    As a direct consequence of the main theorem, the Maximum Likelihood Estimates for the parameters of a Naïve Bayes classifier are also given by their sample frequencies:
+
+    \begin{enumerate}
+        \item ($\pi_k$) The MLE for the prior probability of a class $y_k$ is its relative frequency in the dataset. 
+        \[
+            \hat{\pi}_k = P(Y = y_k) = \frac{\#\mathcal{D}\{Y = y_k\}}{|\mathcal{D}|}
+        \]
+
+        \item ($\theta_{ijk}$) The MLE for the conditional probability of a feature $X_i$ taking the value $x_{ij}$ given a class $y_k$, is the relative frequency of that feature value within the subset of data belonging to class $y_k$.
+        \[
+            \hat{\theta}_{ijk} = P(X_i = x_{ij} | Y = y_k) = \frac{\#\mathcal{D}\{X_i = x_{ij} \land Y = y_k\}}{\#\mathcal{D}\{Y = y_k\}}
+        \]
+    \end{enumerate}
+}
+\section{Document classification with Bag of Words (BoW) approach}
+The Bag-of-Words ($BoW$) model is a technique for document classification, which involves assigning a document to a predefined category (like Sport, politics, Tech, ect...). The core idea is to treat a doc not like a sorted sequence of phrases but like a simple Bag where words have no order or grammar, in this technique the primary focus is on capturing the occurrence frequency of each word within the document (this is a very surface level method that doesn't consider things like sarcasm and negation).
 
 So we assume that:
 \begin{itemize}
-\item words are the elementary value of events ($ X_i $ is the i-th word in the document): $ \theta_{i, word, l} = P(X_i = word | Y = l) $
-\item events are independent (given the category): $ \forall i,j,w,m,l. i \neq j.\  P(X_i = w | X_j = m, Y = l) = \theta_{i,w,l} $
-  \item distribution is independent from the position: $ \forall i,j,w,l. \ \theta_{iwl} = \theta_{jwl} $
+  \item words are the elementary value of events ($ X_i $ is the i-th word in the document): $ \theta_{i, j, k} = P(X_i = x_j | Y = y_k) $, where $ x_j $ is the $ j $-th distinct word contained somewhere in the document and $ y_k $ is the $ k $-th category\footnote{Words and categories aren't ordered in any particular way.}.
+\item events are independent (given the category
+  \footnote{Obviously, knowing a word in the document will give information regarding the type of the document (this is the notion that the model relies on), thus changing the distribution for all the other positions. For this reason we say that events are independent \textit{only} if the category is considered known.}
+  ): $ \forall i,j,m,n,k. i \neq m.\  P(X_i = x_j | X_m = x_n, Y = y_k) = \theta_{i,j,k} $
+  \item distribution is independent from the position: $ \forall i,m,j,k. \ \theta_{ijk} = \theta_{mjk} $
 \end{itemize}
 
-\subsection{Training}
-For each category $ y_k $, estimate the prior $ \pi_k = P(Y = y_k) $, and for all different words in each document estimate the likelyhood $ \theta_{ijk} = \theta_{jk} = P(X = j | Y = y_k) $ (because distribution is independend from the position, all we need to do is calculate the frequency of words in a category).
 
-\subsection{Classification}
-To simplify the usual naive bayesian classification formula we calculate the max of the \textbf{logarithm} of the likelyhood:
+\subsection{Training and classification}
+Event $X_i=$ i-th word in the document: a discrete random variable assuming as many values as words in the language
 \[
-  Y^{new} = arg max_{y_k} log(\pi_k) + \sum_{j} n_j \cdot log(\theta_{jk})
+    \theta_{i,j,k} = P(X_i = x_j \mid Y = y_k)
 \]
-where $ n_j $ is the frequency/number of occurences of a word in the document $ a $ we want to classify.
+In words: "the probability that in a document of the category $y_k$ the word
+$ x_j $ appears at position $i$", but for the BoW technique we assume that we have a distribution independent from the position and that all event are independents so 
+\[
+  \theta_{i,j,k} =  \theta_{m,j,k}= \theta_{j,k}
+\]
+For this reason, we can just consider the stochastic variable $ X = \text{"word randomly extracted from document"} $, with $ \theta_{j, k} = P(X = x_j | Y = y_k) $.
+Then with discrete random variables $X$, $Y$ let's define the training and classification:
+\begin{itemize}
+    \item \textbf{Training}: 
+    \begin{itemize}
+      \item for any possible value $y_k$ of $Y$, estimate the prior
+        \[
+            \pi_k=P(Y=y_k)
+        \]
+      \item for each distinct word in the document $ x_j $, estimate the likelyhood:
+        \[
+            \theta_{jk} = P(X = x_j \mid Y = y_k )
+        \]
+        (the condition prob that a certain word $x_j$ appears in a doc, knowing that that doc belongs to category $y_k$)
+    \end{itemize}
+    \item \textbf{Classification of} $a^{\texttt{new}} = \langle a_1,\dots,a_n \rangle$ (new sequence of words):
+    \begin{align*}
+        Y^{\texttt{new}} &=\arg\max_{y_k} P(Y = y_k) \cdot \prod_{i=1}^n P(X = a_i | Y = y_k)\\
+        &= \arg\max_{k}\pi_k\cdot \prod_{i=1}^{n}\theta_{j(i),k}
+    \end{align*}
+    where $j(i)$ is such that $ x_{j(i)} = a_i $.
+\end{itemize} 
 
-\nt{
-  The prior $ \pi_k $ can sometimes be misleading, as the training distribution of document types isn't necessarily indicative ofthe wider picture.
+The probabilities needed for the classifier are estimated from the dataset using Maximum Likelihood Estimates (MLE's):
+\begin{itemize}
+    \item The MLE for the prior probability of a class, $\pi_k$, is the fraction of the documents in the training set that belong to category $y_k$
+    \item The MLE for the conditional probability of a word, $\theta_{\text{\texttt{word}},k}$, is the frequency of that word within all documents belonging to category $y_k$
+\end{itemize}
+The classification formula involves multiplying many small probabilities, which can lead to numerical instability (underflow). To solve this, we can maximize the logarithm of the likelihood instead, since the logarithm is a monotonically increasing function and will not change the location of the maximum.
+
+The classification rule becomes:
+\[
+  Y^{\texttt{new}} = \arg\max_{y_k} \left( \log(\pi_k) + \sum_i \log(\theta_{j(i)k}) \right)
+\]
+This can be further simplified by grouping identical words (values of $ i $ with the same $ j(i) $). If $n_j$ is the number of occurrences of the unique word $x_j$ in the new document, the sum becomes a weighted sum:
+\[
+  \sum_i \log(\theta_{j(i)k}) = \sum_j n_j \cdot \log(\theta_{jk})
+\]
+This final expression can be elegantly interpreted as a dot product in a high-dimensional vector space where each word of the vocabulary is a dimension
+
+\subsection{Dot product, correlation, Cosine similarity}
+the core idea is manipulating texts in numerical vectors. For doing this, you can create a vectorial space at $n-$dimension where each dimension correspond to a word to one unique word of vocabulary. HEre is the training and classification:
+\begin{itemize}
+    \item \textbf{Training}
+    For any category $k$ build a “spectral” vector
+    \begin{center}
+        \begin{align*}
+            s_k =\langle  \log_{(\theta_{jk})} \rangle
+        \end{align*}
+    \end{center}
+
+    $\theta_{jk}=$ frequency of the word j in documents of the category k
+
+    For each category (ex. "Sport") we'll create a spectral vector where each componet of this vector is the log of the probs ($\log{(\theta_{jk})}$) of a specific category. This vector represent the "profile" or carateristic direction of that category in the space of words
+
+    
+    \item \textbf{classification}
+    Given a new doc, compute a vector
+    \[
+        d = \langle n_j \rangle_{j\in \texttt{words}}
+    \]
+    and classify the doc as
+    \[
+        \arg \max_k d\cdot s_k =\sum_{j}d_j\cdot s_{jk}
+    \]
+    so we're searching for the value of $ k $ that leads to the highest \textit{correlation} between the two vectors.
+\end{itemize}
+
+\subsubsection{geometrically and analytically}
+\dfn{Dot product - Geometric def}{
+    We define \text{dot product} 
+    \begin{center}
+        \begin{math}
+            \textbf{a}\cdot \textbf{b} = |\textbf{a}|\cdot| \textbf{b}|\cos(\theta)
+        \end{math}
+    \end{center}
 }
 
-We can rewrite this formula as a dot product between two vectors $ d = (n_j)_{j \in words} $ and $ s_k = (log(\theta_{jk}))_{j \in words} $:
+\dfn{Dot product - Analytic definition}{
+    given $\vectdef{a}, \vectdef{b}$
+    \[
+           \textbf{a}\cdot\textbf{b} = \sum_{i=1}^{n}a_ib_i
+    \]
+}
+
+
+The dot product can be influenced by the length of docs (a longer doc can have high frequencies). The cosine similarity resolve this problem normalizing the dot procd respect to the lenght of two vectors
 \[
-arg max_k d \cdot s_k
+    S_c (\textbf{a}, \textbf{b}) = \cos(\theta) = \frac{\textbf{a}\cdot\textbf{b}}{\|\textbf{a}\|\cdot\|\textbf{b}\|}
 \]
-also known as the \textbf{correlation} between the two vectors.
 
-\subsubsection{Geometric interpretation}
-Because $ a \cdot b = |a||b|cos(\theta) $, the correlation between two vectors is dictated by the cosine of the angle between them, aka the \textbf{cosine similarity}.
+the results is a value $\in[-1,1]$ that measures the "similarity of direction" ignoring the length. A value of 1 means that the vectors points in the same direction
 
-Prova a fare un esempio figo in 3 dimensioni.
+\ex{Vector correlation maximization}{
+ \begin{center}
+   \includegraphics[width=0.5\textwidth]{img/2025-10-19-17-23-00.png}
+ \end{center} 
 
-Ma perche' non prendiamo i logaritmi per il vettore delle parole?? Vediamo con la cross-entropy (prodotto di frequenze (probabilita') per logaritmi di probabilita')
+ This is an example in 3 dimensions showing how the BoW approach can be seen as minimizing the angle between vectors (or maximizing their correlation)
+}
+
+\thm{Equivalence of Dot Product Definitions}{
+    The geometric definition of the dot product, $\vec{a} \cdot \vec{b} = |\vec{a}||\vec{b}|\cos(\theta)$, is equivalent to the analytic definition, $\vec{a} \cdot \vec{b} = \sum_{i=1}^n a_i b_i$.
+}
+\pf{Proof}{
 
 
-\section{Linerita' del Naive Bayes}
-Se ipotizziamo che $ X_i $ e $ Y $ sono VA booleane, possiamo trasformare la formula di Naive Bayes usando una caratteristica delle funzioni booleane ottenendo una funzione lineare nelle features $ x_i $.
+The proof begins with the \textit{Carnot's theorem}, which generalizes the Pythagorean theorem. Consider the triangle formed by the vectors $\vec{a}$, $\vec{b}$, and their difference, $\vec{a} - \vec{b}$.
 
-\section{Naive Bayes Gaussian}
-Caso continuo, ci permette di parlare di altre cose. E' importante focussarci sulla distribuzione gaussiana.
+The Law of Cosines states:
+\[
+|\vec{a} - \vec{b}|^2 = |\vec{a}|^2 + |\vec{b}|^2 - 2|\vec{a}||\vec{b}|\cos(\theta)
+\]
+Here, the term $|\vec{a}||\vec{b}|\cos(\theta)$ corresponds to the geometric definition of the dot product, $\vec{a} \cdot \vec{b}$. By rearranging the formula algebraically, we can express the dot product in terms of vector magnitudes:
+\[
+\vec{a} \cdot \vec{b} = \frac{|\vec{a}|^2 + |\vec{b}|^2 - |\vec{a} - \vec{b}|^2}{2}
+\]
 
-Ipotizziamo che le $ X_i $ siano continue e che $ P(X_i | Y) $ abbia distribuzione Gaussiana. Questa distribuzione e' importante perche' un sacco di fenomeni naturali tendono ad avere questa distribuzione, e il TLC (riguarda TLC) dice che quando sommiamo componenti di tipo randomico il risultato e' tipicamente questo
+Next, we substitute the analytic definition of the squared magnitude of a vector. For simplicity, let's consider the two-dimensional case where $\vec{a} = [a_1, a_2]$ and $\vec{b} = [b_1, b_2]$. We have:
+\begin{align*}
+|\vec{a}|^2 &= a_1^2 + a_2^2, \\
+|\vec{b}|^2 &= b_1^2 + b_2^2, \\
+|\vec{a} - \vec{b}|^2 &= (a_1 - b_1)^2 + (a_2 - b_2)^2.
+\end{align*}
 
-Fare programma che controlla la somma di VA e che fa vedere la distribuzione.
+Substituting these into the dot product expression yields:
+\[
+\vec{a} \cdot \vec{b} = \frac{(a_1^2 + a_2^2) + (b_1^2 + b_2^2) - \left( (a_1 - b_1)^2 + (a_2 - b_2)^2 \right)}{2}.
+\]
 
-La gaussiana e' la distribuzione con entropia massima fissata media e std. dev., ovvero e' l'assunzione piu' debole possibile, che quindi sparge in modo piu' equo possibile le probabilita' sui risultati possibili
+Expanding the squared terms in the numerator:
+\[
+\vec{a} \cdot \vec{b} = \frac{a_1^2 + a_2^2 + b_1^2 + b_2^2 - (a_1^2 - 2a_1b_1 + b_1^2 + a_2^2 - 2a_2b_2 + b_2^2)}{2}.
+\]
+
+Simplifying by canceling out the squared terms:
+\[
+\vec{a} \cdot \vec{b} = \frac{2a_1b_1 + 2a_2b_2}{2}.
+\]
+
+This simplifies to the final result:
+\[
+\vec{a} \cdot \vec{b} = a_1b_1 + a_2b_2.
+\]
+
+This is the analytic definition of the dot product for the two-dimensional case. The proof can be generalized to $n$ dimensions, demonstrating the equivalence of the geometric and analytic definitions of the dot product.
+
+}
+
+\section{The linear nature of Naive Bayes (boolean case)}
+
+If both $ X_i $ and $ Y $ are boolean variables, it's possible to transform the Naive Bayes formula using certain properties of boolean functions to obtain a \textit{linear} expression.
+
+\thm{Linarity of classifier Naive bayes for boolean feature}{
+
+}
+
+Given $X_i, Y$ booleans, the classification of a new $\vec{x} = \langle x_1,\dots, x_n\rangle$ happens comparing the probs that $x$ belong to class $1$ and $0$:
+\[
+    \frac{P(Y=1 \mid X_1 \dots X_n = \vec{x})}{P(Y=0 \mid X_1 \dots X_n = \vec{x})} = \frac{P(Y=1)\prod_{i}P(X_i = x_i\mid Y=1)}{P(Y=10\prod_{i}P(X_i = x_i\mid Y=0} \geq 1
+\] 
+if the results is $\geq 1$ we choose the class one.
+
+Passing to logarithms we have:
+\[
+    \log{\frac{P(Y=1)}{P(Y=0)} + \sum_i\frac{X_i=x_i\mid Y=1}{X_i=x_i\mid Y=0}}\geq 0
+\]
+if the results is $\geq 0$ we choose the class one. 
+
+Now define the conditional probs loke $\theta_{ik} = P(X_i = 1\mid  Y=k)$. Of consequence, $P(X_i = 0 \mid Y=k)=1-\theta_{ik}$. The generic therm of the sum, $\log{\frac{P(X_i =x_i\mid Y=1)}{P(X_i =x_i\mid Y=0)}}$, using the fact that for a boolean function $f(x)=xf(1)+(1-x)f(0)$ we have:
+$$
+    \sum_i \left( x_i \cdot \log\frac{P(X_i=1|Y=1)}{P(X_i=1|Y=0)} + (1-x_i) \cdot \log\frac{P(X_i=0|Y=1)}{P(X_i=0|Y=0)} \right)
+$$
+    with $\theta$, the expression becomes:
+$$
+    \log\frac{P(Y=1)}{P(Y=0)} + \sum_i \left( x_i \cdot \log\frac{\theta_{i1}}{\theta_{i0}} + (1-x_i) \cdot \log\frac{1-\theta_{i1}}{1-\theta_{i0}} \right) \ge 0
+$$
+that is a linear expression in the set of features $x_i$ in the form
+\[
+    w_0 + \sum_i w_i x_i \geq 0
+\]
+Classification algorithms based on a linear combination of the
+features values.
+Every feature is evaluated independently from the others and
+contributes to the result in a linear way, with a suitable weight
+(that is a parameter of the model, to be estimated).
+For instance, if the features are pixels of some image, we may use
+linear methods only up some normalization (in position and
+dimension) of the object to be recognized
+
+\section{Gaussian Naive Bayes}
+The standard Naïve Bayes algorithm is designed for discrete features. However, in many real-world scenarios, features can be continuous, such as the height of an individual, the temperature, or the color intensity of a pixel. For continuous variables, the probability of observing a specific value is infinitesimally small, making the pointwise probability $P(X_i | Y)$ effectively null.
+
+To address this challenge, Gaussian Naïve Bayes extends the classifier by making a crucial assumption: that the data for each continuous feature, conditioned on a specific class, follows a \textbf{Gaussian (or Normal) distribution}
+\footnote{
+ The reason we make this assumption is because, given a mean and a variance, the Gaussian is the distribution with the highest entropy. This means that it makes the weakest assumptions, distributing the probability in the most even way possible for all possible results.
+}. 
+Instead of estimating a probability for each value, we estimate the parameters of this distribution (the mean and variance) from the training data.
+
+\dfn{Gaussian Distribution}{
+    The \textit{Gaussian Distribution} is a continuous probability distribution characterized by its mean $\mu$ and variance $\sigma^2$. Its probability density function (PDF) is given by:
+    \[
+        p(x | \mu, \sigma) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}
+    \]
+    where:
+    \begin{itemize}
+        \item The mean $E[X] = \mu$ defines the center of the distribution.
+        \item The variance $\text{Var}[X] = \sigma^2$ defines the spread of the distribution.
+    \end{itemize}
+}
+
+\subsection{Accuracy, Precision and Recall}
+\dfn{Accuracy}{
+    \[
+        \texttt{Accuracy} = \frac{TP+TN}{ALL}
+    \]
+    number of correctly classified samples
+}
+\dfn{Precision}{
+    \[
+        \texttt{Precision} = \frac{TP}{TP+FP}
+    \]
+    percentage of true prositives over predicted ones
+}
+\dfn{Recall}{
+    \[
+        \texttt{Recall} = \frac{TP}{TP+FN}
+    \]
+    percentage of true positives over all positives
+}
+\dfn{}{
+    \[
+        F1 = 2\frac{Precision \cdot Recall}{Precision + Recall}
+    \]
+    harmonic mean of precision and recall
+}
+\subsection{Descriptive parameters of the model}
+We assume (inductive bias) that for every value $y_k$ of $Y$ the
+random variable $P(X_i |Y = y_k )$ has a Gaussian distribution
+\[
+    \mathcal{N}(x\mid \mu_{ik} \sigma-{ik}) = \frac{1}{\sigma_{ik}\sqrt{2\pi}}e^{-\frac{(x-u_{ik})^2}{2\sigma^2_{ik}}}
+\]
+\begin{itemize}
+    \item \textbf{Learning}: estimate the values of the parameters $ \mu i k $, $\sigma_{i_k}$ and $\pi_k = P(Y = y_k )$
+    \item \textbf{Classification} of $x^{new} = \langle a_1,\dots, a_n\rangle$
+        \begin{align*}
+            Y^{\texttt{new}} &= \arg \max_{y_k} P(Y= y_k ) \cdot \prod_{i} P(X_i = a_i \mid Y = y_k )\\
+            &= \arg \max_{k}\pi_k\cdot \prod_{i}\mathcal{N}(a_i\mid \mu_{ik},\sigma_{ik})
+        \end{align*}
+\end{itemize}
+
+\subsection{MLE for Gaussian Parameters}
+Given a set of training data, the Maximum Likelihood Estimates (MLE) for the parameters of the Gaussian distribution for each feature $X_i$ and class $y_k$ are the sample mean and sample variance, calculated from the subset of data belonging to class $y_k$.
+    
+    \begin{itemize}
+        \item \textbf{Mean Estimate ($\mu_{ik}$):} The mean value of $X_i$ for samples with label $Y=y_k$. Formally:
+        \[
+            \mu_{ik} = \frac{\sum_j X_i^j \delta(Y^j = y_k)}{\sum_j \delta(Y^j = y_k)}
+        \]
+        \item \textbf{Variance Estimate ($\sigma_{ik}^2$):} The variance of $X_i$ for samples with label $Y=y_k$. Formally:
+        \[
+            \sigma^2_{ik} = \frac{\sum_j (X_i^j - \mu_{ik})^2 \delta(Y^j = y_k)}{\sum_j \delta(Y^j = y_k)}
+        \]
+    \end{itemize}
+    where $j$ ranges over all samples in the training set, and $\delta(Y^j = y_k)$ is the indicator function:
+    \[
+        \delta(Y^j = y_k) = \begin{cases} 
+            1 & \text{if } Y^j = y_k \\ 
+            0 & \text{otherwise} 
+        \end{cases}
+    \]
+
+\section{Logistic Regression}
+Logistic regression is a discriminative machine learning method used primarily for classification problems
+
+\subsection{Core idea}
+\begin{itemize}
+    \item Naive Bayes allows us to compute $P(Y |X )$ after having learned $P(Y)$ and $P(X |Y)$
+    \item Why not directly learn $P(Y |X )$?
+\end{itemize}
+
+\thm{The shape of $P(Y\mid X)$}{
+    hypotesis:
+    \begin{itemize}
+        \item $Y$ boolean random variable
+        \item $X_i$ continuous random variable
+        \item $X_i$ independent from each other $Y$
+        \item $P(X_i \mid Y = k)$ have Gaussian distributions $N(\mu_{i_k} ,\sigma_i)$(Warning not $\sigma_ik$ !)
+        \item $Y$ has a Bernoulli distribution $(\pi)$
+    \end{itemize}
+    then
+    \begin{equation}
+        P(Y=1\mid X =\langle x_1 \dots x_n\rangle) =\frac{1}{1+\exp{(w_0+\sum_iw_ix_i)}}
+    \end{equation}
+}
+\pf{Proof}{
+    By hypothesis, the conditional probability of a feature $X_i$ is given by a Gaussian PDF:
+    \[
+        P(X_i | Y=k) = \mathcal{N}(x_i; \mu_{ik}, \sigma_i) = \frac{1}{\sigma_i\sqrt{2\pi}}e^{-\frac{(x_i-\mu_{ik})^2}{2\sigma_i^2}}
+    \]
+    We want to find the shape of $P(Y=1|\vec{x})$. Using the definition of conditional probability and the law of total probability, we have:
+    \begin{align*}
+        P(Y=1|\vec{x}) &= \frac{P(Y=1)P(\vec{x}|Y=1)}{P(\vec{x})} \\
+        &= \frac{P(Y=1)P(\vec{x}|Y=1)}{P(Y=1)P(\vec{x}|Y=1) + P(Y=0)P(\vec{x}|Y=0)}
+    \end{align*}
+    Dividing the numerator and denominator by $P(Y=1)P(\vec{x}|Y=1)$ gives:
+    \begin{align*}
+        P(Y=1|\vec{x}) &= \frac{1}{1 + \frac{P(Y=0)P(\vec{x}|Y=0)}{P(Y=1)P(\vec{x}|Y=1)}} \\
+        &= \frac{1}{1 + \exp\left(\ln\left(\frac{P(Y=0)P(\vec{x}|Y=0)}{P(Y=1)P(\vec{x}|Y=1)}\right)\right)}
+    \end{align*}
+    Using the Naïve Bayes assumption of conditional independence $P(\vec{x}|Y) = \prod_i P(x_i|Y)$ and substituting $P(Y=1)=\pi$, we get:
+    \[
+        P(Y=1|\vec{x}) = \frac{1}{1 + \exp\left(\ln\frac{1-\pi}{\pi} + \sum_i \ln\frac{P(x_i|Y=0)}{P(x_i|Y=1)}\right)}
+    \]
+    Substituting the Gaussian PDF and simplifying the term inside the summation leads to a linear function of $x_i$:
+    \[
+        P(Y=1|\vec{x}) = \frac{1}{1 + \exp\left(\ln\frac{1-\pi}{\pi} + \sum_i \left(\frac{\mu_{i0}-\mu_{i1}}{\sigma_i^2}x_i + \frac{\mu_{i1}^2 - \mu_{i0}^2}{2\sigma_i^2}\right)\right)}
+    \]
+    This expression has the form $\frac{1}{1 + \exp(z)}$, where $z$ is a linear combination of the features $x_i$. By defining $w_0$ and $w_i$ as the appropriate combinations of the Gaussian parameters ($\mu, \sigma, \pi$), we obtain the logistic form:
+    \[
+        P(Y=1|\vec{x}) = \frac{1}{1 + \exp(w_0 + \sum_i w_i x_i)}
+    \]
+}
+\subsection{Training for logistic regression}
+So, logistic regression assumes
+\[
+ P(Y=1\mid X =\langle x_1 \dots x_n\rangle) =\frac{1}{1+\exp{(w_0+\sum_iw_ix_i)}}
+\]
+and directly tries to estimate the parameters $w_i$ (the change in sign
+is ininfluent).
+
+\dfn{Logistic function}{
+    It's a very important funcition and it's called logistic function:
+    \[
+        \sigma(x) = \frac{1}{1+e^{-x}}
+    \]
+}
+
+With this def we know that $P(Y=1\mid x, w) = \sigma (w_0 + \sum_{i}x_iw_i)$
+
+\subsubsection{Training via Maximum Likelihood Estimation}
+
+Given independent training samples $\langle x^\ell, y^\ell \rangle$, we want to find the parameters $w$ that \textbf{maximize} the probability of observing our training data.
+
+The probability of all samples is:
+\[
+\prod_\ell P(y^\ell | x^\ell, w) = \prod_\ell P(y^\ell = 1|x^\ell, w)^{y^\ell} \cdot P(y^\ell = 0|x^\ell, w)^{(1-y^\ell)}
+\]
+
+\nt{This formula works because when $y^\ell = 1$, only the first term contributes (the second becomes 1), and vice versa when $y^\ell = 0$.
+
+Since $P(Y=0|x,w) = 1 - P(Y=1|x,w)$, we can write:
+\[
+\prod_\ell P(y^\ell | x^\ell, w) = \prod_\ell \sigma(w_0 + \sum_i w_i x_i^\ell)^{y^\ell} \cdot (1-\sigma(w_0 + \sum_i w_i x_i^\ell))^{(1-y^\ell)}
+\]}
+
+\subsubsection{Log-Likelihood}
+
+Instead of maximizing the product directly, we \textbf{maximize the logarithm} of this probability (which is equivalent since log is monotonic):
+\[
+\ell(w) = \sum_\ell \log P(y^\ell | x^\ell, w) = \sum_\ell \left( y^\ell \cdot \log P(Y=1|x^\ell, w) + (1-y^\ell) \cdot \log P(Y=0|x^\ell, w) \right)
+\]
+
+\subsubsection{Gradient}
+
+Unfortunately, there is no analytic solution for the previous
+optimization problem.
+so, we use iterative optimization methods, like the gradient
+technique:
+
+GRADIENTE IN CADUTA LIBERA
 
 % \end{document}

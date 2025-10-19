@@ -85,10 +85,153 @@ In OOD I have class ddiagrams,but they are refined to match the design
     \item \textbf{interaction diagrams}: show how obj interact
 \end{itemize}
 
-\subsubsection{Object state}
+\subsubsection{Statechart diagrams}
+First of all we'll start with a def:
 \dfn{Object state}{
-    We define an \textit{Object state} the set of value that describe an obj at a specific moment. State is determinated based on the attribute values
+    We define an \textit{Object state} as the set of values that describe an object at a specific moment.  
+    The state is determined based on the attribute values.
 }
+
+\begin{center}
+    \includegraphics[width=6cm]{state.png}
+\end{center}
+
+A state can change because of an event (like the reception of a message) or can remain the same.
+
+\begin{center}
+    \includegraphics[width=6cm]{change_of_state.png}
+\end{center}
+
+\ex{Hockey game}{
+    \begin{center}
+        \includegraphics[width=10cm]{hockey.png}
+    \end{center}
+}
+
+State diagrams are represented through rectangles with rounded borders.  
+Inside them are the state variables that uniquely describe the state, and they have associated \textit{activities} or \textit{actions}.  
+An activity can be long and allows interruptions, while an action happens quickly.
+
+\begin{itemize}
+    \item \textbf{entry}: an action carried out at the beginning of the state
+    \item an ongoing activity carried out while in the state (e.g., showing a window)
+    \item an action carried out as a response to a specific event
+    \item an action carried out at the end of the state
+\end{itemize}
+
+\begin{center}
+    \includegraphics[width=6cm]{State-event.png}
+\end{center}
+
+Based on an event, you can decide to move from one state to another.  
+The state transition is described by an arrow.
+
+\begin{itemize}
+    \item \textbf{event}: message to send
+    \item \textbf{Guard condition}: the transition happens only when the guard is true.  
+          The guards for the exit transitions from a state are mutually exclusive.
+    \item \textbf{Action}: a process that happens rapidly and cannot be interrupted.
+\end{itemize}  
+
+\begin{center}
+    \includegraphics[width=6cm]{start-state-to-end-state.png}
+\end{center}
+
+\ex{Order Management}{
+    \begin{center}
+        \includegraphics[width=10cm]{order_mng.png}
+    \end{center}
+
+    Now we wanna delete an order in any moment. you have two solutions:
+    \begin{itemize}
+        \item transitions from each state through a state "canceled"
+        \item a super state and single transitions
+    \end{itemize}
+
+    Transition through "cancelled"
+    \begin{center}
+        \includegraphics[width=10cm]{cancelled.png}
+    \end{center}
+
+    Super-state and sub-states
+    \begin{center}
+        \includegraphics[width=10cm]{super-state.png}
+    \end{center}
+}
+
+Statechart diagrams don't necessarily have to reference classes or objects, they can do that too refer to subsystems... In practice this is the most common way to use diagrams anyway statechart
+
+\subsection{Activity diagrams}
+
+\dfn{Activity Diagrams}{
+    An \textit{Activity Diagram} is a behavioral diagram in UML that describes the workflow of a system, showing the flow of control from activity to activity, including support for parallel processing and decision points
+}
+
+\subsubsection{Purpose}
+\begin{itemize}
+    \item Model business processes
+    \item Describe algorithmic workflows
+    \item Show concurrent/parallel activities
+    \item Document complex procedural logic
+    \item Visualize use case implementations
+\end{itemize}
+\subsubsection{Key Characteristics}
+What activity represent? Two level of abstraction:
+\begin{itemize}
+    \item \textbf{conceptual level}:
+    \begin{itemize}
+        \item Task to be done
+        \item Business process step
+        \item High-level action
+    \end{itemize}
+    \item \textbf{Specification/Implementation Level}:
+    \begin{itemize}
+        \item Method on a class
+        \item Function execution
+        \item Code block
+    \end{itemize}
+\end{itemize}
+
+\ex{The coffie pot}{
+    \begin{center}
+        \includegraphics[width=6cm]{the_coffie_pot_basics.png}
+    \end{center}
+}
+\subsubsection{Sync bars}
+    Activities can be carried out in parallel, in any order (fork). Arrived at a bar
+with multiple incoming arrows, all previous activities must be completed to continue (join).
+An activity diagram shows a partial order of activities.
+    \begin{itemize}
+        \item \textbf{Fork (Parallel Split)} it is used for splitting into multiple concurrent flows that execute in parallel. Key points:
+        \begin{itemize}
+            \item One incoming edge
+            \item Multiple outgoing edges
+            \item All outgoing flows start simultaneously
+            \item Activities execute concurrently (any order)
+            \item Synchronization bar (thick line)
+        \end{itemize}
+        \item \textbf{Join (Parallel Merge)}, it is used for waiting all incoming parallel flows to complete before continuing. Key points:
+        \begin{itemize}
+            \item Multiple incoming edges
+            \item One outgoing edge
+            \item Synchronization point
+            \item Flow continues only when ALL incoming flows complete
+            \item Synchronization bar (thick line)
+        \end{itemize}
+    \end{itemize}
+
+\subsubsection{conditions}
+In activity diagrams we can also define "conditions": two alternative parts that you can't execute in parallel
+\begin{center}
+    \includegraphics[width=6cm]{condition_act.png}
+\end{center}
+
+Structure:
+\begin{center}
+    \includegraphics[width=10cm]{condition_structure.png}
+\end{center}
+
+
 
 \subsection{Interaction Diagrams}
 \dfn{
@@ -99,16 +242,15 @@ In OOD I have class ddiagrams,but they are refined to match the design
 \subsubsection{Key charateristic}
 \begin{itemize}
     \item Focus on "real" entities (Obj, not classes)
-    \item Show msg passing
+    \item Show msg e    
     \item Can represent both sync and async Communication
     \item Bridge the gap between requirements and implmentation
 \end{itemize}
 
-\subsubsection{Two types of implemantion}
 
 Interaction diagrams provide two different perspectives on the same interaction:
 
-\paragraph{Sequence diagrams}
+\subsubsection{sequence diagrams}
 \begin{itemize}
     \item emphasize \textit{when} messagge are sent
     \item Shows object interactions arranged in time sequence
@@ -119,12 +261,12 @@ Interaction diagrams provide two different perspectives on the same interaction:
 
 Here we can see timelines:
 \begin{center}
-    \includegraphics{seq_diagram.png}
+    \includegraphics[width=6cm]{seq_diagram.png}
 \end{center}
 
 \ex{detailed example}{
     \begin{center}
-        \includegraphics{seq_diag_ex.png}
+        \includegraphics[width=10cm]{seq_diag_ex.png}
     \end{center}
 }
 \subsubsection{Content of sequence diagrams}
@@ -137,6 +279,7 @@ Lifelines:
     \item represent the obj existence time
     \item contines 'till obj is destroyed
 \end{itemize}
+
 \paragraph{Messages} There are two types of msgs:
 \begin{itemize}
     \item \textbf{Sysnc msgs}:
@@ -153,8 +296,18 @@ Lifelines:
         \item Non-blocking operation
         \item Used for concurrent operations
     \end{itemize}
+    they can do three functions:
+    \begin{itemize}
+        \item making a new thread
+        \item making a new obj
+        \item communicate with a thread already in execution
+    \end{itemize}
     \item \textbf{Return Messages}:
     \begin{itemize}
         \item Typically shown as a dashed arrow: $ \dashrightarrow $
     \end{itemize}
 \end{itemize}
+
+\begin{center}
+    \includegraphics[width=10cm]{complete_example_of_seqdiagram.png}
+\end{center}
