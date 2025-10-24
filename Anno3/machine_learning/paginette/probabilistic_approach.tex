@@ -1272,11 +1272,201 @@ Instead of maximizing the product directly, we \textbf{maximize the logarithm} o
 
 \subsubsection{Gradient}
 
-Unfortunately, there is no analytic solution for the previous
-optimization problem.
-so, we use iterative optimization methods, like the gradient
-technique:
+\dfn{Gradient}{
+    The \textit{gradient} of the log-likelihood function $\ell(w)$ (which the slide denotes as $E[w]$) is a vector composed of the partial derivatives of $\ell(w)$ with respect to each parameter $w_i$. It points in the direction of the steepest ascent on the likelihood surface.
+    \[
+        \nabla_w [\ell] = \left[ \frac{\partial \ell}{\partial w_0}, \frac{\partial \ell}{\partial w_1}, \dots, \frac{\partial \ell}{\partial w_n} \right]
+    \]
+}
 
-GRADIENTE IN CADUTA LIBERA
+\thm{Training Rule (Gradient Ascent)}{
+    To find the parameters $w$ that maximize $\ell(w)$, we use \textit{Gradient Ascent}. We start with an initial guess for $w$ and iteratively update the parameters by taking small steps in the direction of the gradient. The update rule for a single weight $w_i$ is:
+    \[
+        \Delta w_i = \eta \cdot \frac{\partial \ell}{\partial w_i}
+    \]
+    \[
+        w_i = w_i + \Delta w_i
+    \]
+    where $\eta$ (denoted $\mu$ in the slide) is the \textit{learning rate}, a small constant that controls the size of each step. This process is repeated until the parameters converge.
+}
 
-% \end{document}
+The concept is conceptually simple. We can visualize the model's error function, $E(w)$, as a topographical map. On this map, the altitude represents the error (the vertical axis), and the goal is to find the lowest point (the minimum error).
+
+To achieve this, at iteration 0, we start from a random point. We then calculate the gradient $(\nabla E(w))$ at that position. The gradient, by definition, points in the direction of steepest ascent (the "maximum climb"). Therefore, to descend ('go down') and minimize the error, we must move in the opposite direction of the gradient
+\begin{center}
+    \includegraphics[width=6cm]{gradiente_in_caduta_libera.png}
+\end{center}
+
+In ideal case, the error surface is \text{convex}, this is fundamentally 'cause it means that there is just a single global minimum. Fortunately we have THAT:
+\thm{Convexity of the Error Surface for Logistic Regression}{
+    Let $E(w) = -\ell(w)$ be the error function for a logistic regression model, defined as the \textit{negative log-likelihood} of the training data.
+    
+    This error function $E(w)$ is a \textit{convex function} with respect to the parameter vector $w$.
+
+    }
+\nt{
+        This is a critical property of the logistic regression model. Because the error surface is convex, it possesses a single global minimum and no local minima. This guarantees that iterative optimization methods, such as Gradient Descent, will converge to the unique optimal solution, regardless of the initial parameter values.
+}
+
+How many points to use for measuring error and gradient? there are two ways:
+\begin{itemize}
+    \item \textbf{Full Batch}: all the features in training set are used for calculating the gradient
+    \item \textcolor{red}{Online}: one sample at a time. Gradient zig-zags around the direction of the steepest descent.
+    \item \textit{mini-batch}: random subset of training samples, a good compromise 
+\end{itemize}
+
+\begin{center}
+    \includegraphics[width=6cm]{online_vs_batch.png}
+\end{center}
+
+\subsubsection{calculating the Gradient for logistic regression}
+First a small review of the other formulas:
+
+\dfn{probability that sample \ell is in category $Y = 1$}{
+    \begin{equation}
+        P(Y = 1|x^ell , w ) = \sigma ( w_0+\sum_i x_ix_^ell_i) = \alpha_l
+    \end{equation}
+}
+then:
+\dfn{
+    Likelihood Log-likelihood$l(w)$
+}{
+    \begin{equation}
+        \ell(w) = \sum_\ell \log P(Y = y^\ell | x^\ell, w) = \sum_\ell \left( y^\ell \log(\alpha^\ell) + (1-y^\ell)\log(1-\alpha^\ell) \right)
+    \end{equation}
+}
+
+\thm{Gradient of the Log-Likelihood for Logistic Regression}{
+    The partial derivative of the log-likelihood function $l(w)$ with respect to a single weight $w_i$ is given by the sum over all samples:
+    \begin{center}
+        
+        \begin{equation}
+            
+            \frac{\partial l(w)}{\partial w_i} = \sum_\ell x_i^\ell \cdot (y^\ell - \alpha^\ell)
+        \end{equation}
+    \end{center}
+}
+\pf{Proof}{
+We want to compute the partial derivative $\frac{\partial l(w)}{\partial w_i}$ of the log-likelihood function $l(w)$.
+    First, let's define the components, where $\alpha^\ell = \sigma(z)$ and $z = w_0 + \sum_i w_i x_i^\ell$.
+
+    \textit{Step 1: Derivative of $\log(\alpha^\ell)$ w.r.t. $z$}
+    \[
+        \frac{\partial \log(\alpha^\ell)}{\partial z} = \frac{1}{\alpha^\ell} \frac{\partial \alpha^\ell}{\partial z}
+    \]
+    Using the property $\frac{\partial \sigma(z)}{\partial z} = \sigma(z)(1-\sigma(z))$, which is equivalent to $\alpha^\ell(1-\alpha^\ell)$, we get:
+    \[
+        \frac{\partial \log(\alpha^\ell)}{\partial z} = \frac{1}{\alpha^\ell} (\alpha^\ell (1-\alpha^\ell)) = 1 - \alpha^\ell
+    \]
+    (Note: The slide shows an intermediate step $\frac{\exp(-z)}{1+\exp(-z)}$ which simplifies to $1 - \alpha^\ell$).
+
+    \textit{Step 2: Derivative of $\log(1-\alpha^\ell)$ w.r.t. $z$}
+    First, we simplify $\log(1-\alpha^\ell)$:
+    \[
+        \log(1 - \alpha^\ell) = \log\left(1 - \frac{1}{1 + \exp(-z)}\right) = \log\left(\frac{\exp(-z)}{1 + \exp(-z)}\right)
+    \]
+    \[
+        = \log(\exp(-z)) - \log(1 + \exp(-z)) = -z + \log(\alpha^\ell)
+    \]
+    Now, we differentiate this expression with respect to $z$, using the result from step 1:
+    \[
+        \frac{\partial \log(1 - \alpha^\ell)}{\partial z} = \frac{\partial}{\partial z}(-z + \log(\alpha^\ell)) = -1 + (1 - \alpha^\ell) = -\alpha^\ell
+    \]
+   
+
+    \textit{Step 3: Final Gradient Calculation (using Chain Rule)}
+    We recall the log-likelihood function:
+    \[
+        l(w) = \sum_\ell \left( y^\ell \log(\alpha^\ell) + (1-y^\ell)\log(1-\alpha^\ell) \right)
+    \]
+    We apply the chain rule: $\frac{\partial l(w)}{\partial w_i} = \frac{\partial l(w)}{\partial z} \frac{\partial z}{\partial w_i}$.
+    
+    First, $\frac{\partial z}{\partial w_i} = x_i^\ell$.
+    
+    Second, we find $\frac{\partial l(w)}{\partial z}$ by differentiating the sum:
+    \[
+        \frac{\partial l(w)}{\partial z} = \sum_\ell \left( y^\ell \frac{\partial \log(\alpha^\ell)}{\partial z} + (1-y^\ell) \frac{\partial \log(1-\alpha^\ell)}{\partial z} \right)
+    \]
+    Substituting the results from steps 1 and 2:
+    \[
+        \frac{\partial l(w)}{\partial z} = \sum_\ell \left( y^\ell (1 - \alpha^\ell) + (1-y^\ell) (-\alpha^\ell) \right)
+    \]
+    \[
+        = \sum_\ell ( y^\ell - y^\ell\alpha^\ell - \alpha^\ell + y^\ell\alpha^\ell ) = \sum_\ell (y^\ell - \alpha^\ell)
+    \]
+    Finally, combining the parts with the chain rule:
+    \[
+        \frac{\partial l(w)}{\partial w_i} = \frac{\partial l(w)}{\partial z} \frac{\partial z}{\partial w_i} = \left( \sum_\ell (y^\ell - \alpha^\ell) \right) x_i^\ell
+    \]
+    (Note: The slide applies the chain rule slightly differently by summing at the end, leading to the same result presented):
+    \[
+        \frac{\partial l(w)}{\partial w_i} = \sum_\ell \left( \frac{\partial l^\ell(w)}{\partial z} \frac{\partial z}{\partial w_i} \right) = \sum_\ell \left( (y^\ell(1-\alpha^\ell) - (1-y^\ell)\alpha^\ell) x_i^\ell \right)
+    \]
+    \[
+        = \sum_\ell ( (y^\ell - y^\ell\alpha^\ell - \alpha^\ell + y^\ell\alpha^\ell) x_i^\ell ) = \sum_\ell (y^\ell - \alpha^\ell) x_i^\ell
+    \]
+    Thus, we arrive at the final formula:
+    \[
+        \frac{\partial l(w)}{\partial w_i} = \sum_\ell x_i^\ell \cdot (y^\ell - \alpha^\ell)
+    \]
+}
+
+\nt{
+    previsuly we proved that:
+    \[
+        \frac{\partial \log{\alpha^{\ell}}}{\partial z} =\frac{\partial\sigma(z)}{\partial z} = \frac{1}{\sigma(z)}\frac{\partial \sigma(z)}{\partial z} = 1- \sigma(z)
+    \]
+    hence:
+    \[
+        \frac{\partial \sigma(z)}{\partial z} = \sigma(z)(1 - \sigma(z))  
+    \]
+    the slope (derivative) of the sigmoid at a point $z$ can be calculated simply using the value of the sigmoid itself at that point. But let's see the graph
+    \begin{center}
+        \includegraphics[width=6cm]{sigmoid_vs_derivate.png}
+    \end{center}
+
+    we can see the the derivate of the logistic function is very flat! When the input $z$ is big (negatively of positively) the line of sigmoid is flat this lead the derivative to be  almost zero. 
+
+    If the derivative is zero, the weight updates become zero ($w_i = w_i + 0$), and the model stops learning. This phenomenon, in which the gradients become very small, is known as the \textit{Vanishing Gradient}
+}
+\subsubsection{The learning process}
+
+The learning process for logistic regression is iterative. Since we cannot find an analytical solution that maximizes the log-likelihood $l(w)$, we must find the optimal parameters $w$ using an iterative method like Gradient Ascent.
+
+The process involves starting with an initial guess for the weights (e.g., all zeros) and repeatedly applying an \textit{update operation}. Each iteration, or step, moves the weights in the direction of the gradient, thereby increasing the log-likelihood.
+
+\dfn{Update Rule (Gradient Ascent)}{
+    The update rule for a single weight $w_i$ at each iteration is given by:
+    \[
+        w_i \leftarrow w_i + \mu \sum_\ell x_i^\ell \cdot (y^\ell - P(Y = y^\ell|x_i;w_i))
+    \]
+   
+    Where:
+    \begin{itemize}
+        \item $w_i$ is the weight for the $i$-th feature.
+        \item $\mu$ is the \textit{learning rate}, a small constant that controls the size of each step.
+        \item $\sum_\ell (\dots)$ is the gradient component $\frac{\partial l(w)}{\partial w_i}$, summed over all training samples $\ell$.
+        \item $(y^\ell - P(\dots))$ is the \textit{error} for sample $\ell$: the difference between the true label and the model's prediction.
+    \end{itemize}
+    This operation is iterated until the model converges, which can be defined as the point where the accuracy on a held-out testing dataset is satisfactory, or when the magnitude of the update (the increment) falls below a small threshold $\epsilon$.
+}
+
+\subsubsection{Regularization}
+To improve the model's ability to generalize to new data and prevent overfitting, a \textit{regularizer} (also known as a prior) is frequently added to the update rule. This acts as a penalty on large weights.
+
+\dfn{Update Rule with Regularization}{
+    The modified update rule includes a decay term:
+    \[
+        w_i \leftarrow w_i - \mu\lambda|w_i| + \mu \sum_\ell x_i^\ell \cdot (P(Y = y^\ell|x_i;w_i) - y^\ell)
+    \]
+   
+    \nt{Note: The slide shows a sign flip in the gradient term, which implies a switch from maximizing log-likelihood (Gradient Ascent) to minimizing a negative log-likelihood (Gradient Descent). The logic remains the same: the regularizer always pushes the weight towards zero.}
+    
+    The new term $-\mu\lambda|w_i|$ is a penalty proportional to the magnitude of the weight $w_i$, controlled by a new hyperparameter $\lambda$.
+    
+    This regularization has two main benefits:
+    \begin{itemize}
+        \item It helps to keep the parameter values $w_i$ small, or close to 0.
+        \item By penalizing complex models (those with large weights), it tends to reduce overfitting and improve the model's performance on unseen data.
+    \end{itemize}
+}
