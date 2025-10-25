@@ -1,0 +1,34 @@
+\begin{document}
+\chapter{Neural Networks}
+Only known way to implement deep learning. 
+
+An artificial neuron has a set of inputs that are summed with a bias, and the output is calculated using an ctivation function. invented in the '50 with the name 'perceptron', the activation function was discrete (0 or 1). This method is obsolete because it doesn't permit training. The function musn't be linear, because we want to sequencially compose neurons and the composition of linear functions is just another linear function and deosn't add any complexity (could be calculated with just one neuron). 
+
+There are different activation functions (threshol, logistic, hyperbolic, rectified linear (newest used in AlexNet, big jump)). 
+
+The name neuron comes from the biological counterpart (obviously) which works in a similar way:
+\begin{itemize}
+  \item Dendritic tree: connections with other neurons (synapses)
+    \item In the body the inputs are summed and passed through the axon hilock, which performs a sort of thresholding before being passed to other neurons
+\end{itemize}
+
+Comparing artificial neural networks to our brains, the number of neurons can be similar ($ 2\cdot 10^{10} $for the biggest models), but the sheer size doesn't necessarily correlate to a more intelligent system (other animals have bigger brains), we actually don't really know what else there is. The switching time for real neurons is actually slower than artificial ones, seen as it's a chemical reaction and not electrical. Each neuron is connected to meny other neurons in the brain ($ 10^{4-5} $), reaching reaction times $ < 100 $, so the brain isn't very deep (number of intermediate nodes) and it's very parallelised.
+
+\section{Topologies}
+\dfn{Feed-forward}{
+  Acyclic networks with unidirectional data flux.
+}
+\nt{
+  Our brains are cyclic networks.
+}
+
+\subsection{Layers}
+The network is built by sets of structured neurons that are combined to build the whole.
+
+For each dense layer, each neuron has an input, weights, a constant bias from which an output is calculated. This operation can be parallelised using the whole layer with a matrix of weights and a vector of biases, using the same inputs over all the neurons. The input is a vector in multiple dimensions (tensor), and after algebraic manupulations a new tensor is returned. 
+
+\section{Features and deep features}
+
+
+
+\end{document}

@@ -1272,11 +1272,26 @@ Instead of maximizing the product directly, we \textbf{maximize the logarithm} o
 
 \subsubsection{Gradient}
 
-Unfortunately, there is no analytic solution for the previous
-optimization problem.
-so, we use iterative optimization methods, like the gradient
-technique:
+The training set is fixed, so the loss function depends on the parameters of the model
+Unfortunately, there is no analytic solution for the previous optimization problem.
+So, we use iterative optimization methods, like the gradient technique:
+(the image is a simple model with 2 parameters)
 
-GRADIENTE IN CADUTA LIBERA
+This is a \textit{general} technique (applicable to any nice function) to find a direction that lowers the loss function (the direction of greatest descent) and to subsequently perform a "step" (determined by the learning rate) in that direction. 
+
+The correct direction is calculated using - you guessed it - the gradient (although tecnicaly in the opposite direction). Repeating these stepps.
+
+\nt{
+  This is a \textit{local} technique: it's not given that the minimum we find is global, because it could just be a local one. For logistic regression, we can be certain it's global, but for more complicated models this isn't always true.
+  For the latter, it's possible to balance out these fake minimals by having lots of parameters, because this way it's possible to simply ignore the outliers and trust the value found by the most parameters.
+}
+
+Per la regressione logistica
+E' possibile calcolare il gradiente (proporzionale alla distanza dal valore corretto e all'intensita' del parametro relativo)2
+
+SGD (Stochastic Gradient Descent): the direction calculated by the Mini-Batch isn't necessarily the best, but the hope is that the sum of the errors for all the considered parameters rounds out.
+
+\section{Modelli Generativi vs Discriminativi}
+A generative approach needs us to find how to find the probability of X given Y, wheras to discriminate it's the other way round. The latter is a lot easier than the former, seen as X is more complex and vaired and Y is smaller. We use Bayes to connect these two things. 
 
 % \end{document}
