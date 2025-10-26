@@ -105,7 +105,7 @@ and:
     \end{itemize}
 }
 
-\subsection{Entropy}
+\section{Entropy}
 
 \dfn{
     Entropy
@@ -123,14 +123,10 @@ and:
 
 In other words, Entropy meausers the \textit{degree of uncertainty} of the information. It is maximal when $X$ is uniformly distributed (all classes have the same probability) and minimal (zero) when all examples belong to the same class (pure set)
 \begin{center}
-    \IfFileExists{imgs/entropy.png}{%
-        \includegraphics[width=0.6\textwidth]{imgs/entropy.png}%
-    }{%
-        \fbox{\parbox{0.6\textwidth}{\centering Missing image: imgs/entropy.png}}%
-    }
+        \includegraphics[width=0.6\textwidth]{entropy.png}
 \end{center}
 
-\subsubsection{Information Theory (Shannon 1948)}
+\subsection{Information Theory (Shannon 1948)}
 The entropy is the average amount of information produced by a stochastic source of data. The \textit{information} is associated to the \textit{probability} of each datum (the surprise element):
 \begin{itemize}
     \item An event with probability 1 (certain event) provides no information (no surprise): \(I(1)=0\).
@@ -144,7 +140,7 @@ So is natoral defining
 \[
     I(p) = -\log_2(p)
 \]
-\subsubsection{Code Theory (Shannon-Fano 1949, Huffman 1952)}
+\subsection{Code Theory (Shannon-Fano 1949, Huffman 1952)}
 The entropy is also related to the avarage number of bits required to transmit outcomes produces by a stochastic source process $x$.
 
 Let suppose to have $n$ events with same probability \(p_i = \frac{1}{n}\). Home many bits do we need to encode these events? The answer is \(\log_2(n)\) bits. For instance, if we have 4 events, we need 2 bits to encode them:.
@@ -154,7 +150,7 @@ In this case:
     H(X) = -\sum_{i=1}^{n} P(X=i)\log_2 P(X=i) = - \sum_{i=1}^{n} \frac{1}{n} \log_2 \frac{1}{n} = \log_2(n)
 \]
 
-\subsection{Information Gain}
+\section{Information Gain}
 
 In a decision tree, the goal is to maximize the information gain during the execution of the algorithm. 
 In other words, the final split should result in the minimum possible impurity. 
@@ -268,5 +264,3 @@ and then the useless or harmful branches are pruned.
         \item repeat until no further pruning improves the accuracy
     \end{itemize}
 }
-
-
