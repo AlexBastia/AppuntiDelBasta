@@ -29,6 +29,290 @@ For each dense layer, each neuron has an input, weights, a constant bias from wh
 
 \section{Features and deep features}
 
+TODO: @bastini plz finiscie te, che altrimenti questi mi diventano ApuntiDelGiolaBambas
 
 
-% \end{document}
+\section{Expressiness}
+This part begins with an important question: \textit{Can we compute any function by means of a Neural Network?}. But before that, we must first ask: \textit{Can we compute any function with a single neuron?}
+
+These questions are related to the \textbf{Expressiveness} of Neural Networks, that is the capacity of a Neural Network to approximate any function
+\subsection{Perceptron, the single layer case}
+A single neuron is called a \textbf{Perceptron}. It is the simplest form of a Neural Network.
+
+\dfn{Perceptron with binary threshold}{
+  \label{dfn:perceptron}
+  
+  \begin{center}
+    \includegraphics{./paginette/imgs/perceptron.png}
+  \end{center}
+  A perceptron is a function $ f: \mathbb{R}^n \rightarrow \{0, 1\} $ defined as:
+  \[
+    f(x) = \begin{cases}
+      1 & \text{if } \sum_{i=1}^n w_i \cdot x_i + b \geq 0 \\
+      0 & \text{otherwise}
+    \end{cases}
+  \]
+  where $ x \in \mathbb{R}^n $ is the input vector, $ w \in \mathbb{R}^n $ is the weight vector and $ b \in \mathbb{R} $ is the bias.
+}
+
+\nt{
+  It's easy to notice the the the bias $b$ set the position of threshold
+}
+\subsubsection{Hyperplanes}
+For major information about hyperplanes see the notes of "Ottimizzazione combinatoria di Alex Basta e Qua Qua dancer"
+
+\dfn{Hyperplane}{
+  We can define a hyperplane in $ \mathbb{R}^n $ as the set of points $ x \in \mathbb{R}^n $ that satisfy the equation:
+  \[ \sum_{i=1}^n w_i \cdot x_i + b = 0 \]
+  where $ w \in \mathbb{R}^n $ is the normal vector to the hyperplane and $ b \in \mathbb{R} $ is the bias
+}
+
+\ex{Hyperplane in two dimensions}{
+  We can consider this equation in $ \mathbb{R}^2 $:
+  \[
+    -\frac{1}{2}x_1 + x_2 + 1 = 0
+  \]
+  The graph is a line in the plane with normal vector $ w = \left(-\frac{1}{2}, 1\right) $ and bias $ b = 1 $.
+
+  \begin{center}
+    \includegraphics{./paginette/imgs/hyperplan_in_r2.png}
+  \end{center}
+}
+As we can see from the example, a general property of hyperplanes in $ \mathbb{R}^n $, the hyperplans divedes the space in two half-spaces. By the definition of perceptron \ref{dfn:perceptron} ($\sum_i x_ix_i+b=0 $) this gives value $1$ to all the points in one half-space and value $0$ to all the points in the other half-space.
+
+\nt{
+  "above" and "below" can be inverted by just inverting the parameters:
+  \[
+    \sum_{i=1}^n w_i \cdot x_i + b \geq 0 \iff \sum_{i=1}^n -w_i \cdot x_i + (-b) \leq 0 
+  \]
+}
+\subsubsection{Computing logical connectives}
+For investingating the expressiveness of a single perceptron, a logical way is to see if it can compute logical connectives.
+
+\paragraph{NAND case}
+Ramarking NAND:
+\begin{center}
+  \begin{table}
+    \begin{tabular}{c|c|c}
+      $ x_1 $ & $ x_2 $ & $ \text{NAND}(x_1, x_2) $ \\
+      \hline
+      0 & 0 & 1 \\
+      0 & 1 & 1 \\
+      1 & 0 & 1 \\
+      1 & 1 & 0 \\
+    \end{tabular}
+  \end{table}
+\end{center}
+  
+For computing NAND with a perceptron, we need to find weights $ w_1, w_2 $ and bias $ b $ such that:
+\[
+  \text{\texttt{nand}}(x_1, x_2) = \begin{cases}
+    1 & \text{if } w_1 \cdot x_1 + w_2 \cdot x_2 + b \geq 0 \\
+    0 & \text{otherwise}
+  \end{cases}
+\]
+
+\nt{
+  This is same as asking if we can a straight line to separate green and red points
+  \begin{center}
+    \includegraphics{./paginette/imgs/separate_gerrn_and_red.png}
+  \end{center}
+  Remember: doing that means putting one to one side of the line all the green points and on the other side all the red points
+
+  Well, the answare is yes! We can choose for example:
+  % 1.5 − x1 − x2 = 0 or 3 − 2x1 − 2x2 = 0
+  \[
+    w_1 = -2, \quad w_2 = -2, \quad b = 3 \Rightarrow 3 - 2x_1 - 2x_2 = 0
+  \]
+  \begin{center}
+    \includegraphics[width=6cm]{./paginette/imgs/nand_solution.png}
+  \end{center}
+}
+
+Watching the notes what we have is the NAND-perceptron:
+\begin{center}
+  \includegraphics[width=6cm]{./paginette/imgs/nand_perceptron.png}
+\end{center}
+
+\[
+  \text{\texttt{nand}}(x_1, x_2) = \begin{cases}
+    1 & \text{if } -2 \cdot x_1 - 2 \cdot x_2 + 3 \geq 0 \\
+    0 & \text{otherwise}
+  \end{cases}
+\]
+
+\paragraph{XOR case}
+XOR is defined as:
+\begin{center}
+  \begin{table}
+    \begin{tabular}{c|c|c}
+      $ x_1 $ & $ x_2 $ & $ \text{XOR}(x_1, x_2) $ \\
+      \hline
+      0 & 0 & 0 \\
+      0 & 1 & 1 \\
+      1 & 0 & 1 \\
+      1 & 1 & 0 \\
+    \end{tabular}
+  \end{table}
+\end{center}
+
+\nt{Same as asking: Can we draw a straight line separating red and green points?
+  \begin{center}
+    \includegraphics[width=6cm]{./paginette/imgs/XOR_green_and_red.png}
+  \end{center}
+  Solution? No solution :(
+}
+The XOR function is not linearly separable, so it cannot be computed by a single perceptron
+
+\paragraph{Multi-layer perceptrons}
+A perpteptron, as it is demonstrated before, can compute NAND and it is known that NAND is functionally complete, meaning that any logical function can be computed by a combination of NAND functions.
+So why it is not possible to compute XOR or others with a single perceptron? why why perceptrons are not \textit{complete}? The answer is that a single perceptron can only compute \textit{linearly separable functions} and they need to be combined in order to compute more complex functions
+
+\ex{Multi-layer perceptron for XOR}{
+  \begin{center}
+    \includegraphics[width=8cm]{./paginette/imgs/multi_layer_perceptron_for_XOR.png}
+  \end{center}
+  The multi-layer perceptron above computes XOR using 3 perceptrons that compute NAND, OR and AND respectively.
+}
+
+A significant theoretical result, known as the universal approximation theorem,
+states that even \textbf{shallow networks} (those with a single hidden layer)
+are \textbf{already complete}.
+This means that a shallow network can, in principle, approximate any continuous function
+to an arbitrary degree of accuracy, given a sufficient number of neurons in its hidden layer.
+
+This naturally raises a critical architectural question: Why go for deep networks?
+If a shallow architecture is theoretically sufficient, what is the practical advantage of stacking multiple layers?
+
+The answer lies not in \textit{capability} but in \textit{efficiency}. Research has demonstrated that with deep nets, the same function may be computed with less neural units Deep networks build a hierarchical representation of features---where each layer learns progressively more complex abstractions based on the previous---which is a far more parameter-efficient way to represent complex functions compared to the "brute force" approach of a single, massive hidden layer.
+
+
+It is crucial to understand that this expressive power---whether in shallow or deep networks--- originates from a single source. \textbf{Activation functions play an essential role},
+as they are the \textbf{only source of nonlinearity} in the model.
+
+A neural layer is composed of a linear transformation (the weighted sum and bias) followed
+by a non-linear activation. If this non-linear step were removed, the network would collapse.
+\textbf{Composing linear layers not separated by nonlinear activations makes no sense},
+as the composition of any number of linear functions is, itself, just a single
+linear function.
+Therefore, it is the activation function that enables the network to warp and fold the
+input space, allowing it to learn the complex, non-linear relationships required to
+solve problems like the XOR example.
+
+\section{Training}
+Training a neural network involves adjusting its weights and biases to minimize the difference between its predicted outputs and the actual target values. The training process can be described in three main steps:
+
+\begin{itemize}
+  \item \textbf{Forward Pass}: Suppose to have a neural network with some configurations of the parameters $\theta$ (weights and biases)
+  \begin{center}
+    \includegraphics[width=6cm]{paginette/imgs/pass_trough.png}
+  \end{center}
+  The foreard pass is defined as the process of passing the input data $x$ through the network to obtain the output predictions then calculating the current loss relative to $\theta$
+  \item \textbf{Backward Pass}: The backward pass is the process of computing the gradients of the loss function with respect to each weight and bias in the network (next chapter will cover this in detail)
+  \begin{center}
+    \includegraphics[width=6cm]{paginette/imgs/backprop.png}
+  \end{center}
+  The algorithm for computing parameters updates is known as \textit{backpropagation algorithm}
+  \item \textbf{Parameters Update}: For decreasing the loss, the params need to be adjustent in different ways. The tool that allows us to establish in which way parameters should be updated is the gradient calculated during the backward pass
+  \begin{center}
+    \includegraphics[width=6cm]{paginette/imgs/params_upd.png}
+  \end{center}
+\end{itemize}
+
+\subsection{The Backpropagation algorithm}
+
+For calculating this so called gradient (a vector of partial derivatives of the loss function with respect to each parameter in the network) it good remember that a neural network is a complex function resulting from the composition of many simpler functions (the layers). So a mathematical tool that is useful for calculating derivatives of composed functions is the \textbf{chain rule}
+
+\subsubsection{Chain roule}
+
+\dfn{Chain Roule}{
+  Given two functions $ f: \mathbb{R} \rightarrow \mathbb{R} $ and $ g: \mathbb{R} \rightarrow \mathbb{R} $, the derivative of their composition $ h(x) = f(g(x)) $ is given by:
+  \[
+    h'(x) = f'(g(x)) \cdot g'(x)
+  \]
+  Eqyivalently, letting $ y = g(x) $, we have:
+  \[ h'(x) = f'(y) \cdot g'(x)\]
+}
+
+The derivative of a composition of a sequence of functions is the \textbf{product of the derivatives of the individual functions}
+
+\subsubsection{The Network as a Composite Function}
+Before applying we must formally define the function computed by the neural network.
+
+\dfn{Activation Vector at layer $l$}{
+  \label{dfn:compositefunction}
+  The activation vector at layer $l$ is defined as the following function computed by the layer $l$:
+  \[ a^l = \sigma(b^l + w^l \cdot x^l) \]
+  where:
+  \begin{itemize}
+    \item $\sigma$ is the activation function
+    \item $z^l = b^l + w^l \cdot x^l$ is the weighted input at layer $l$
+    \item $x^{l+1}=a^l, x^=x$ (in fact the output of layer $l$ is the input of layer $l+1$)
+  \end{itemize} 
+}
+
+So by the definition \ref{dfn:compositefunction} the neural network with $L$ layers computes the following function:
+\[
+  \sigma(b^L + w^L \cdot \sigma(b^{L-1} + w^{L-1} \cdot \sigma( \dots \sigma(b^1 + w^1 \cdot x^1) ))
+\]
+
+\nt{
+  The dimension of $w^l$ and $b^l$ depend on the number of neurons at layer $l$ (and $l-1$)
+}
+
+\nt{
+All of them are \textit{parameters} of the models
+}
+\subsubsection{Backpropagation Rules in Vectorial Notation}
+The Backpropagation algorithm applies the chain rule to this composite function to efficiently compute the gradient of an error function $E$ (e.g., Euclidean distance) with respect to all parameters. But first of all it's useful to define the \textbf{error at layer $l$} defined as the vector of partial derivatives of the error $E$ with respect to the weighted input $z^l$. Formally:
+
+\dfn{
+  Error derivative at layer $l$
+}{
+  The error derivative at layer $l$ is defined as:
+  \[
+    \delta^l = \frac{\partial E}{\partial z^l}
+  \]
+  where $ z^l = b^l + w^l \cdot x^l $ is the weighted input at layer $l$
+}
+
+This $\delta$ term represents the error signal at that layer. The algorithm is then defined by the following four equations:
+
+\begin{enumerate}
+  \item \textbf{Error for the output layer (L):}
+  \[ \delta^L = \nabla_{a^L} E \odot \sigma'(z^L) \]
+  This calculates the initial error signal by combining the gradient of the loss function ($\nabla_{a^L} E$) with the derivative of the final activation function ($\sigma'(z^L)$)
+
+  \item \textbf{Error backpropagation:}
+  \[ \delta^l = ((W^{l+1})^T \delta^{l+1}) \odot \sigma'(z^l) \]
+    This is the core rule that \textit{propagates} the error backward. The error from
+    the next layer ($\delta^{l+1}$) is passed back through the weights ($W^{l+1}$)
+    and combined with the derivative of the current layer's activation function
+  \item \textbf{Gradient for the bias:}
+    \[ \frac{\partial E}{\partial b_j^l} = \delta_j^l \]
+    The gradient for any bias is simply the error signal $\delta$ at that
+    neuron.
+
+  \item \textbf{Gradient for the weight:}
+    \[ \frac{\partial E}{\partial w_{jk}^l} = a_k^{l-1} \delta_j^l \]
+    The gradient for any weight is the activation from the source neuron ($a_k^{l-1}$)
+    multiplied by the error signal at the destination neuron ($\delta_j^l$)
+\end{enumerate}
+
+\subsubsection{The vanishing gradient problem}
+By the chain rule, the derivative is a long sequence of factor,where these factors are, alternately
+\begin{itemize}
+  \item Derivatives of activation functions
+  \item Derivate of linear functions (the weights)
+\end{itemize}
+
+Backpropagation alghorithm uses the chain rule to compute gradients efficiently, so the gradient used for an initial state is the result of a lot of factors. These factors include the activateion functions. For many years the activation function used was the sigmoid, whose derivative is always less than 1. 
+
+\begin{center}
+  \includegraphics[width=6cm]{paginette/imgs/sigmoid_actfun.png}
+  \caption{Blu line is logistic function (sigmoid), green line is its derivative}
+\end{center}
+
+This graph is crucial for understanding the vanishing gradient problem. As we can see from the graph, the derivative of the sigmoid is always not greater than 0.25 and it's flat. The backpropagation multiplies a lot of these very small factors together, so the result is that the gradient becomes very small (ex. $gradiente = (\dots \times 0.25 \times 0.23 \times 0.25 \times 0.21 \times \dots)$) as it propagates backward through the layers. This means that the weights in the earlier layers receive very small updates during training, making it difficult for the network to learn effectively. If the gradient is close to zero, learning is impossible.
+
+
