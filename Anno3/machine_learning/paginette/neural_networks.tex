@@ -308,10 +308,12 @@ By the chain rule, the derivative is a long sequence of factor,where these facto
 
 Backpropagation alghorithm uses the chain rule to compute gradients efficiently, so the gradient used for an initial state is the result of a lot of factors. These factors include the activateion functions. For many years the activation function used was the sigmoid, whose derivative is always less than 1. 
 
-\begin{center}
+\begin{figure}[htbp]
+  \centering
   \includegraphics[width=6cm]{paginette/imgs/sigmoid_actfun.png}
   \caption{Blu line is logistic function (sigmoid), green line is its derivative}
-\end{center}
+  \label{fig:sigmoid_actfun}
+\end{figure}
 
 This graph is crucial for understanding the vanishing gradient problem. As we can see from the graph, the derivative of the sigmoid is always not greater than 0.25 and it's flat. The backpropagation multiplies a lot of these very small factors together, so the result is that the gradient becomes very small (ex. $gradiente = (\dots \times 0.25 \times 0.23 \times 0.25 \times 0.21 \times \dots)$) as it propagates backward through the layers. This means that the weights in the earlier layers receive very small updates during training, making it difficult for the network to learn effectively. If the gradient is close to zero, learning is impossible.
 
