@@ -1,3 +1,4 @@
+% \begin{document}
 \chapter{Montecarlo Simulations}
 1. Simulation  ([[Sampling]])
 2. Integration ([[Expectations]])
@@ -98,3 +99,114 @@ $$P(F^{-1}_X(U) \le x) = P(F_X(F_X^{-1}(U)) \le F_X(x) = P(U \le F_X(x)) = F_X(x
 
 So we can say
 $X = F_X^{-1}(U)$
+
+\section{General Transformation Methods}
+Used when a distribution is easy to construct using other distributions which are easy to simulate. Given $ X_i \sim Exp(1) $ i.i.d, three standard distributions can be derived as:
+\begin{itemize}
+  \item $ Y = 2 \sum_{j=1}^{v}X_j \sim \chi^2_{2v} $ (Chi-squared distribution)
+  \item $ Y = \beta \sum_{j=1}^{a} X_j \sim G(a, \beta) $ (Gamma distribution)
+  \item $ Y = \frac{\sum_{j=1}^{a} X_j}{\sum_{j=1}^{a+b} X_j} \sim Be(a,b) $ (Beta distribution)
+\end{itemize}
+Where $ v, a, b \in \mathbb{N}^* = \{1,2,3,...\} $.
+
+\subsection{Gaussian}
+$ F_X(x) = (x) = P(X \gets x) $ $ X \sim N(\mu, \sigma^2) $, has no closed form solution (no analytical solution), so we can't use PIT (we can't invert it). 
+
+\textbf{Box-Muller algorithm} is a direct transformation method which gives two normals from two uniforms. We don't have to remember the algorithm. It's \textbf{exact}, but not the most efficient.
+
+Why is there $ \pi $ in a Gaussian distr? Looking at the algorithm, we use trigonometric functions, which is weird.
+
+R uses the PIT by using a very close approximation of the cdf which is invertible.
+
+\subsection{Multivariate}
+Multivariate Gaussian instead of having a single variable $ X \sim N(\mu, \sigma^2) $, we have a vector:
+\[
+  () \sim N_p(\mu, \Sigma)
+\]
+Where $ \mu $ is a vector and $ \Sigma $ is a Matrix that indicates the variances (on the diag) and covariances between each pair of RV. It's called a variance and covariance matrix, and it's simmetric and positive definite (all variances are different to 0).
+
+Each individual RV of a multivariate gaussian is a gaussian (gaussian family is closed under ). Note, the opposite is not true.
+
+If $ \Sigma $ is not diagonal, it means at least two RV are dependent.
+
+This pops up for PCA.
+
+Inverse standardisation for multivariate:
+How do we square a matrix? Cholesky! We take the Cholesky decomposition $ \Sigma = A A^T $ (more or less the square root of $ \Sigma $).
+\[
+  Y \sim N_p(0,1) = AY \sim N_p(0, \Sigma)
+\]
+There are R packages that replicate these steps, but it's faster and better to sample from a gaussian and then stretch and squeeze the vector the rebuild the covariance structure. 2
+
+\section{General result for transformation of a random variable}
+GIven $ X \sim f_X(x) $ and $ Z = g(X): X = g^{-1}(Z) $ (g allows an inverse), then:
+\[
+  f_Z(z) = f_X(g^{-1}(z))\cdot |\frac{\delta g^{-1}(z)}{\delta z}|
+\]
+\nt{
+  We don't always have a density.
+}
+
+\ex{Uniform R.V.}{
+  $ U \sim Unif(0,1) \to f_U(u) = \begin{cases}
+    0 & u \not\in [0,1]\\
+    1 & u \in [0,1]
+  \end{cases} $
+
+  $ X = (b-a) \cdot U + a $ (linear transformation of a uniform). What is the distribution of $ X $?
+
+  First we calc the inverse:
+  \begin{align*}
+    X - a = (b-a)\cdot U\\
+    U = \frac{X-a}{b-a} = g^{-1}(\cdot)
+  \end{align*}
+
+  Now the derivative:
+  \begin{align*}
+    \frac{\partial g^{-1}(X)}{\partial x} = \frac{\partial [\frac{X - a}{b-a}]}{\partial x} \\
+    \frac{\partial [\frac{X - a}{b-a} - \frac{a}{b-a}]}{\partial x}\\
+    \frac{\partial [\frac{X}{b-a}]}{\partial x} = \frac{1}{b-a}
+  \end{align*}
+
+  So, applying the general transform:
+  \[
+    f_X(x) = f_U(\frac{x-a}{b-a}) \cdot \frac{1}{b-a} = \begin{cases}
+      0 & f_U = 0 \iff x \not\in [a,b]\\
+    \frac{1}{b-a} & 
+    \end{cases}
+  \]
+  Thus $ X \sim Unif(a,b) $
+}
+
+\ex{Gaussian}{
+  $ X \sim N(\mu, \sigma^2) $ and $ Z = \frac{X-\mu}{\sigma} = g(X) $ (never seen before transformation)
+
+  $ X = Z \cdot \sigma + \mu = g^{-1}(X) $
+
+  So the derivative is simply
+  \[
+    \frac{\partial g^{-1}(Z)}{\partial z} = \sigma
+  \]
+  \begin{align*}
+    f_Z(z) = f_X(g^{-1}(z))\cdot \sigma \\
+    \frac{1}{\sqrt{2\pi}} \cdot \frac{1}{\sigma} \cdot e^{-\frac{(z \sigma + \mu - \mu)^2}{-2\sigma^2}} \cdot \sigma \\
+    \frac{1}{\sqrt{2\pi}} \cdot e^{-\frac{z^2}{2}}
+  \end{align*}
+
+  This is the density of the standard gaussian distribution $ N(0,1) $, and this is why we standardize in this way.
+}
+
+We now look at direct distributions for discrete random variables. After, we'll look at indirect meethods with the accept-reject algorithm.
+
+\section{Discrete Distribution}
+Non-continuous cdf.
+
+We have to store the values of the cdf (we have to be able to compute it). Then sample from a uniform and check where the value falls:
+\[
+X = k \iff p_{k-1} < U < p_k
+\]
+
+\nt{
+  If we have a very large Poisson, we'll have to store many probability values for computation.
+}
+% \end{document}
