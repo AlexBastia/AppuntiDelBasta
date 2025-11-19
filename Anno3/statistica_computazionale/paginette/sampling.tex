@@ -194,5 +194,151 @@ So some of the values in the domain of $ X $ are useless to check, seen as they'
 }
 
 \section{Indirect}
-Accept-reject
+\subsection{Bayes' Theorem}
+Giuro che questo non lo rifaccio
+
+\subsubsection{Continuous}
+Given two cont RV $ X,Y $
+\[
+  f_{X|Y=y}(x)
+\]
+is the distribution of $ X $ given some info ($ Y $)
+\[
+  (X|Y=y) ~ \text{random variable}
+\]
+we're just focusing on a specific cross section of the population (e.g. income at a specific age).
+
+We want to find its density, we can use Bayes
+\[
+  f_{X|Y=y}(x) = \frac{f_{X,Y}}{f_Y(y)} = \frac{f_{Y|X=x}(y) f_X(x)}{f_Y(y)}
+\]
+When you want to move a RV behind the conditioning line, you divide by the marginal.
+
+We can use the marginal distribution for the denominator
+\[
+  \frac{f_{X,Y}(x,y)}{\int_{Y}^{}f_{X,Y}(x, t)dt}
+\]
+by marginalizing out $ Y $ (same idea as the discrete version).
+
+\subsection{Expectation}
+Given $ X $ cont. RV $ X \sim f_X(x) $:
+\[
+  E_X(X) = \int_{D_X}^{}x f_X(x)dx
+\]
+\nt{
+  Always indicate the distribution used as a subscript. This will become important.
+}
+
+\[
+  E_Y(f_{X|Y}(X|Y)) = \int_{D_X}^{}f_Y(y) f_{X|Y}(X|Y)dy
+\]
+This is a product of a conditional times a marginal (moving $ Y $ from the back to the front). So we have the joint
+\[
+  = \int_{D_Y}^{}f_{X,Y}(X,Y)dy = f_X(x)
+\]
+So we can use expectation to marginalize out variables. Why is this important?
+
+If we have values sampled from a conditional distribution, taking the expected values (average) we're reming the influence of $ Y $. This is the building block for the Montecarlo-Markov Chain (most widely used Montecarlo method).
+
+\subsection{Accept-Reject Method}
+We need to know:
+\begin{itemize}
+\item When it works
+\item Main ingredients
+\item No proof!
+\item The actual algorithm
+\end{itemize}
+
+It's the first indirect method for sampling. It works with two distributions:
+\begin{itemize}
+\item A \textbf{candidate} dist.
+\item A \textbf{targe} dist.
+\end{itemize}
+
+Remember the lake? Let's say the area is $ 1 \times 1 = 1km^2 $. We are shooting cannon balls at random, so
+\[
+  X \sim Unif(0,1)
+\]
+For every two random values we get a result
+\[
+  (u_1, u_2) = \text{HIT!}
+\]
+So we generate a uniform for each side.
+
+By changing the shape of the lake, we can get a more interesting result
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2025-11-19-09-50-14.png}
+\end{center}
+
+We're now randomly testing a \textbf{density function} with two uniform RV.
+
+\subsubsection{Ingredients}
+\begin{itemize}
+  \item \textbf{Denisty} $ f $ of interest (only functional form) and be able to compute it.
+  \item \textbf{Candidate} distribution $ g $.
+\end{itemize}
+
+The candidate choice is up to us. Some are smarter than others, but as long as we don't pick functions that don't satisfy a certain condition (we'll see later), it's ok. In the exam we'll be given the candidate.
+
+The candidate generates a value. We need to test
+\[
+  u \leq \frac{f_X(y)}{M g_Y(y)}
+\]
+If it's satisied we accept (it comes from $ f_X $). Otherwise, we reject it and try again (similar to the discrete case).
+
+Proposal density constraints:
+\begin{itemize}
+  \item Target and candidate have to have compatible supports ($ S_X \subseteq S_Y $).
+  \item There is a constant $ M $ with $ f(x)/g(x) \leq M \ \forall x $.
+\end{itemize}
+
+The last requirement is less trivial. It means that the ratio between the distributions has to be bounded.
+
+If these are satisfied, then
+\begin{enumerate}
+  \item Generate $ Y \sim g $ and \textbf{independently} generate from $ U \sim Unif(0,1) $.
+  \item Check if $ U \leq \frac{1}{M} \frac{f(Y)}{g(Y)} $ then set $ X = Y $ (accept)
+  \item If it's not satisfied, discard $ Y $ and $ U $ and start again.
+\end{enumerate}
+
+Note that $ M = sup_x \frac{f(x)}{g(x)} $. The crucial requirement that $ M $ exists means that $ M $ can have many different values.\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2025-11-19-10-26-26.png}
+\end{center}
+
+The best value for $ M $ is the one that reduces the area where the points fall and don't belong to the density, reducing efficiency
+\[
+  P(\text{Accept}) = \frac{1}{M}
+\]
+So in the case of the graph you should choose the blue line.
+
+\subsubsection{Proof}
+Does it work? We need to think from a statistical pov: Are the accepted values coming from $ f_X(x) $?
+
+What is the distr. of the accepted values? What is the CDF?
+
+Let's define the event
+\[
+A = \text{"Accept a value"}
+\]
+Where $ A $ is basically
+\[
+  Y | U \leq \frac{1}{M} \frac{f(Y)}{g(Y)}
+\]
+so a distribution conditional to a test where $ U \sim Unif(0,1) $ and $ Y \sim g(y) $. Lets look at the CDF
+
+\begin{align*}
+  P(Y \leq x | U \leq \frac{1}{M} \frac{f(Y)}{g(Y)}) &= \frac{P(C,D)}{P(D)} \\
+  &= \frac{P(Y \leq x, U \leq \frac{1}{M}\frac{f(Y)}{g(Y)})}{P(U\leq \frac{1}{M}\frac{f(Y)}{g(Y)})}\\
+  &= \frac{\int_{-\infty}^{x}\[\int_{-\infty}^{\frac{1}{M}\frac{f(Y)}{g(Y)}}1 du\] \cdot g_Y(y)dy}{\int_{-\infty}^{+\infty}\[\int_{-\infty}^{\frac{1}{M}\frac{f(Y)}{g(Y)}}1 du\] \cdot g_Y(y)dy} \\
+  &= \frac{\int_{-\infty}^{x}\frac{1}{M}\frac{f(Y)}{g(Y)} g_Y(y)dy}{\int_{-\infty}^{+\infty}\frac{1}{M}\frac{f(Y)}{g(Y)}g_Y(y)dy} \\
+  &= \frac{\int_{-\infty}^{x}f(Y)dy}{\int_{-\infty}^{+\infty}f(Y)dy} \\
+  &= \frac{P(X \leq x)}{1} = F_X(x) \\
+\end{align*}
+
+So the accepted values have the same cdf as $ X $!
+
+\nt{
+  $ g $ and $ M $ are arbitrary and don't matter for the correctness of the algorithm.
+}
+
 % \end{document}
