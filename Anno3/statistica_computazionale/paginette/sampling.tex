@@ -326,12 +326,12 @@ Where $ A $ is basically
 \]
 so a distribution conditional to a test where $ U \sim Unif(0,1) $ and $ Y \sim g(y) $. Lets look at the CDF
 
-\begin{align*}
+  \begin{align*}
   P(Y \leq x | U \leq \frac{1}{M} \frac{f(Y)}{g(Y)}) &= \frac{P(C,D)}{P(D)} \\
   &= \frac{P(Y \leq x, U \leq \frac{1}{M}\frac{f(Y)}{g(Y)})}{P(U\leq \frac{1}{M}\frac{f(Y)}{g(Y)})}\\
-  &= \frac{\int_{-\infty}^{x}\[\int_{-\infty}^{\frac{1}{M}\frac{f(Y)}{g(Y)}}1 du\] \cdot g_Y(y)dy}{\int_{-\infty}^{+\infty}\[\int_{-\infty}^{\frac{1}{M}\frac{f(Y)}{g(Y)}}1 du\] \cdot g_Y(y)dy} \\
-  &= \frac{\int_{-\infty}^{x}\frac{1}{M}\frac{f(Y)}{g(Y)} g_Y(y)dy}{\int_{-\infty}^{+\infty}\frac{1}{M}\frac{f(Y)}{g(Y)}g_Y(y)dy} \\
-  &= \frac{\int_{-\infty}^{x}f(Y)dy}{\int_{-\infty}^{+\infty}f(Y)dy} \\
+  &= \frac{\int_{-\infty}^{x}\left(\int_{-\infty}^{\frac{1}{M}\frac{f(Y)}{g(Y)}} 1 \,du\right) \cdot g_Y(y)\,dy}{\int_{-\infty}^{+\infty}\left(\int_{-\infty}^{\frac{1}{M}\frac{f(Y)}{g(Y)}} 1 \,du\right) \cdot g_Y(y)\,dy} \\
+  &= \frac{\int_{-\infty}^{x}\frac{1}{M}\frac{f(Y)}{g(Y)} g_Y(y)\,dy}{\int_{-\infty}^{+\infty}\frac{1}{M}\frac{f(Y)}{g(Y)}g_Y(y)\,dy} \\
+  &= \frac{\int_{-\infty}^{x}f(Y)\,dy}{\int_{-\infty}^{+\infty}f(Y)\,dy} \\
   &= \frac{P(X \leq x)}{1} = F_X(x) \\
 \end{align*}
 
@@ -342,3 +342,223 @@ So the accepted values have the same cdf as $ X $!
 }
 
 % \end{document}
+
+\section{Accept - Reject algorithm}
+
+TODO
+
+\ex{AC- algh}{
+  We aim to simulate a random variable $X$ from the Standard Normal distribution using the Accept-Reject method with a Laplace (Double Exponential) candidate distribution.
+
+  \begin{itemize}
+    \item Target density ($f$): The Standard Normal distribution $(\mathcal{N}(0,1)$:
+    \[
+      f(x) = \frac{1}{\sqrt{2\pi}}\exp{(-\frac{x^2}{2})}\quad x\in \mathbb{R}
+    \]
+
+    \item Candidate Density ($g$): The Laplace distribution ($Laplace(1)$):
+    \[g(y) = \frac{1}{2} \exp(-|y|), \quad y \in \mathbb{R}\]
+
+    We need to find a constant $M$ such that $f(x) \le M g(x)$ for all $x$. This is equivalent to finding the maximum of the ratio $f(x)/g(x)$:
+    \[\frac{f(x)}{g(x)} = \frac{\frac{1}{\sqrt{2\pi}} e^{-x^2/2}}{\frac{1}{2} e^{-|x|}} = \sqrt{\frac{2}{\pi}} \exp\left(-\frac{x^2}{2} + |x|\right)\]
+    
+    To maximize this ratio, we maximize the expression $h(x) = \sqrt{\frac{2}{\pi}} \exp\left(-\frac{x^2}{2} + |x|\right)$, for doing that we have to set the derivate to 0:
+    \[
+      h'(x) = \sqrt{\frac{2}{\pi}} \exp\left(-\frac{x^2}{2} + |x|\right) (-x + \frac{x}{\abs{x}}) = 0
+    \]
+    Solving this, we find that the maximum occurs at $x = 1$ and $x = -1$. Evaluating $h(x)$ at these points gives:
+    \[M = h(1) = h(-1) = \sqrt{\frac{2}{\pi}} e^{-1/2 + 1} = \sqrt{\frac{2e}{\pi}}\]
+
+    So we have 
+    \[
+      U \leq \frac{1}{M} \frac{f(Y)}{g(Y)} = \frac{1}{\sqrt{\frac{2e}{\pi}}} \cdot \sqrt{\frac{2}{\pi}} \exp\left(-\frac{Y^2}{2} + |Y|\right) = e^{-1/2} \exp\left(-\frac{Y^2}{2} + |Y|\right)
+    \]
+  \end{itemize}
+} 
+
+% code in R
+\begin{verbatim}
+  dlaplace <- function(x) 0.5 * exp(-abs(x)) # this is the Laplace density
+  curve(dlaplace(x), 6,6) # BE CAREFUL, if you dont specify the range curve will assume [0,1]
+  plaplace <- function(x) ifelse(x < 0, 0.5 * exp(x), 1 - 0.5 * exp(-x)) # Laplace CDF
+  qlaplace <- function(u) ifelse(u < 0.5, log(2 * u), -log(2 * (1 - u))) # Laplace Quantile function -> INVERSE OF CDF
+  rlaplace <- function(n) qlaplace(runif(n)) # n random variables from Laplace distribution, using PIT
+
+  # Accept-Reject algorithm to sample from N(0,1) using Laplace(1) as candidate
+  rnorm_ar <- function(n, g, rg, M, report = true){ # g is the density of candidate, rg is the random generator
+    x<- rep(0,n) # vector to store accepted values
+    ntry <- 0 # number of tries
+    for (i in 1:n){
+      done <- false
+      while (!done){
+        # FOUR STEPS OF AR ALGHORITHM
+        ntry <- ntry + 1
+        y <- rg(1) # sample from the Proposal
+        u<- M * runif(1) # sample from Uniform
+        if (u < (dnorm(y)/g(y))) done <- true # accept
+        # PAY ATTENTION: dnorm is the density of the target distribution SO IT MUST BE CHANGED IF THE TARGET IS DIFFERENT
+    }
+    x[i] <- y # store accepted value 
+  }  
+    if (report){
+      cat("Acceptance Rate:", n / ntry, "\n")
+    }
+    retrun (x)
+}
+
+Nsim <- 10^4
+M <- sqrt(2*exp(1)/pi)
+x<- rnorm_ar (Nsim, dlaplace, rlaplace, M)
+\end{verbatim}
+
+An other algh in R:
+\begin{verbatim}
+  # GEnereting beta from uniform
+  a = 2.7
+  b = 6.3
+  curve (dbeta(x,a,b), col="red")
+
+  # f is already our ratio cause g(y)=1 (uniform density)
+  f<-function(x) dbeta(x,a,b)
+  M <- optimize (f, interval = c(0,1), maximum=T)$objective # 
+
+  rbeta <- function (n,a,b.M,report = TRUE){
+    x<- rep(0,n)
+    ntry <- 0
+    for(i in 1:n){
+      done = FALSE
+      while(!done){
+        ntry<- ntry +1
+        y=runif(1)
+        u=M*runif(1)
+        if (u<dbeta(y,a,b)/dunif(y)) done = TRUE
+      }
+      x[i]<- y
+    }
+    if (report) cat("I needed ", ntry, "trials to get", n, retrun(x))
+  }
+  Nsim <- 10^4
+  set.seed(10) 
+  x - rbeta2(Nsim, a, b, M)
+
+  par(mfrow = c(1,2))
+  hist(x, freq= FALSE)
+  curve(dbeta(x,a,b), col = "red", add= TRUE)
+\end{verbatim}
+
+Alternative for ar IF YOU HAVE REDUCED COMPUTATIONAL RESOURCE
+\begin{verbatim}
+### Generating betas from betas
+# -----------------------------------------------------------
+# OBIETTIVO: Simulare da una Beta(2.7, 6.3) usando una Beta(2, 6)
+# come densità strumentale (Proposal g).
+# -----------------------------------------------------------
+
+# 1. Definizione dei parametri della distribuzione Target f(x)
+a = 2.7
+b = 6.3
+
+# 2. Definizione della funzione rapporto r(x) = f(x) / g(x)
+# f(x) = dbeta(x, a, b)  [Target]
+# g(x) = dbeta(x, 2, 6)  [Proposal]
+f <- function(x) dbeta(x, a, b) / dbeta(x, 2, 6)
+
+# 3. Calcolo della costante M
+# M deve essere tale che f(x) <= M * g(x) per ogni x.
+# Troviamo il massimo del rapporto f(x)/g(x) usando 'optimize'.
+# $objective estrae il valore numerico del massimo.
+M <- optimize(f, maximum=T, interval=c(0,1))$objective
+
+# 4. Definizione della funzione di generazione (Algoritmo AR)
+rbeta3 <- function(n, a, b, M, report=TRUE){
+    
+    # Inizializzazione del vettore che conterrà i campioni accettati
+    x <- rep(0, n)
+    
+    # Contatore per monitorare l'efficienza (totale tentativi fatti)
+    ntry <- 0
+    
+    # Ciclo per generare n valori accettati
+    for (i in 1:n){
+        done <- FALSE
+        
+        # Ciclo while: continua a provare finché non accetta un candidato
+        while (!done){
+            ntry <- ntry + 1
+            
+            # A. Generazione del Candidato Y dalla Proposal g ~ Beta(2, 6)
+            y <- rbeta(1, 2, 6)
+            
+            # B. Generazione della variabile ausiliaria U
+            # Qui si usa u scala M: u = M * Uniform(0,1)
+            u <- M * runif(1)
+            
+            # C. Test di Accettazione
+            # La condizione teorica è: U_raw <= f(y) / (M * g(y))
+            # Moltiplicando per M, diventa: u <= f(y) / g(y)
+            if (u < dbeta(y, a, b) / dbeta(y, 2, 6)) done <- TRUE
+        }
+        # Se la condizione è vera, salviamo il candidato y nel vettore x
+        x[i] <- y
+    }
+    
+    # Report sull'efficienza dell'algoritmo (tasso di accettazione)
+    if (report) cat("I needed ", ntry, " trials to get ", n, " samples.\n")
+    
+    return(x)
+}
+
+# 5. Esecuzione della simulazione
+Nsim = 10^4
+# Esempio di chiamata (nota: la riga è tagliata nell'immagine)
+# campioni <- rbeta3(Nsim, a, b, M)
+\end{verbatim}
+
+\ex{Penso esercizio}{
+  So we have $f(x) \alpha \exp{\left(-\frac{x^2}{2}\right)} [\sin{(6x)}^2+3\cos{(x)}^2\cdot \sin{(4x)}^2+1 ]$
+  \begin{enumerate}
+    \item Plot $f(x)$ to show $M \cdot g(x)$ bounds it where $g_Y$ is the density of a Std. GAUSSIAN $g_Y(y) = \frac{1}{\sqrt{2\pi}} \cdot \exp\{-\frac{y^2}{2}\}$ and find $M$.
+    \item Generate 2500 numbers from $f_X$.
+    \item Deduce from the acceptance rate of the AR algorithm, an approximation of the normalizing constant.
+\end{enumerate}
+
+\begin{verbatim}
+
+#UNNORMALIZED (you have proportional to in the text of the exer)
+fx <- function(x){
+  exp(-x^2/2)*(sin(6*x)^2 + 3*(cos(x)^2)*(sin(4*x)^2)+1)
+}
+
+fx.over.g <- function(x){
+  fx(x)/dnorm(x) # if we have a differente propoasal dnorm is gonna change
+}
+
+m <- optimize(fx.over.g, interval=c(-6,6), maximum = T)$objective
+curve(fx, -9,9, ylim=c(-1,7)) # this is the density
+curve(m*dnorm(x), -5,5, col="red", add=T)
+curve(15*dnorm(x), -6,6, col="blue", add=T)
+
+# B
+AR.sampling <- function(n, f, g, rg, m, report=TRUE){
+  x <- rep(0,n)
+  tries <- 0
+  for(i in 1:n){
+    done <- FALSE
+    while(!done){
+      
+      y <- rg(1)
+      u <- runif(1)*m
+      if (u <= f(y) / (g(y))) {
+        
+        done <- TRUE
+      }
+      tries <- tries + 1
+    }
+    x[i] <- y
+  }
+  if(report) cat("Total tries:", tries, "\n")
+  return(list(x=x, tries = tries))
+}
+\end{verbatim}
+
+}
