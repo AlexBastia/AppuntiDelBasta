@@ -329,7 +329,7 @@ so a distribution conditional to a test where $ U \sim Unif(0,1) $ and $ Y \sim 
 \begin{align*}
   P(Y \leq x | U \leq \frac{1}{M} \frac{f(Y)}{g(Y)}) &= \frac{P(C,D)}{P(D)} \\
   &= \frac{P(Y \leq x, U \leq \frac{1}{M}\frac{f(Y)}{g(Y)})}{P(U\leq \frac{1}{M}\frac{f(Y)}{g(Y)})}\\
-  &= \frac{\int_{-\infty}^{x}\[\int_{-\infty}^{\frac{1}{M}\frac{f(Y)}{g(Y)}}1 du\] \cdot g_Y(y)dy}{\int_{-\infty}^{+\infty}\[\int_{-\infty}^{\frac{1}{M}\frac{f(Y)}{g(Y)}}1 du\] \cdot g_Y(y)dy} \\
+  &= \frac{\int_{-\infty}^{x}\left[\int_{-\infty}^{\frac{1}{M}\frac{f(Y)}{g(Y)}}1 du\right] \cdot g_Y(y)dy}{\int_{-\infty}^{+\infty}\left[\int_{-\infty}^{\frac{1}{M}\frac{f(Y)}{g(Y)}}1 du\right] \cdot g_Y(y)dy} \\
   &= \frac{\int_{-\infty}^{x}\frac{1}{M}\frac{f(Y)}{g(Y)} g_Y(y)dy}{\int_{-\infty}^{+\infty}\frac{1}{M}\frac{f(Y)}{g(Y)}g_Y(y)dy} \\
   &= \frac{\int_{-\infty}^{x}f(Y)dy}{\int_{-\infty}^{+\infty}f(Y)dy} \\
   &= \frac{P(X \leq x)}{1} = F_X(x) \\
@@ -340,5 +340,35 @@ So the accepted values have the same cdf as $ X $!
 \nt{
   $ g $ and $ M $ are arbitrary and don't matter for the correctness of the algorithm.
 }
+
+\subsubsection{Recap}
+The \textbf{goal} is to sample from the density of a RV $ X $ $ f_X(x) $ (target). To do this we need $ f_X(x) $ and it needs to be computable, while knowing the support of $ X $ $ S_X $. 
+\begin{itemize}
+\item assume $ \exists M $ and is a constant $ > 0 $ such that
+  \[
+    \frac{f_X(x)}{g_Y(x)} \leq M
+  \]
+\item $ g_Y(y) $ is a candidate/proposal distribution with compatible support with $ f $ $ S(Y) \subseteq S(X) $, and should be easy to sample from.
+  \item It works for continuous RV
+\end{itemize}
+
+Steps:
+\begin{enumerate}
+  \item Sample $ y $ from $ g_Y(y) $
+  \item Ind. sample $ u $ from $ U(0,1) $
+  \item check if $ u \leq \frac{1}{M} \frac{f_X(y)}{g_Y(y)} $
+  \item If true, accept. Else, reject.
+\end{enumerate}
+
+We can check if $ u M \leq \frac{f_X(y)}{g_Y(y)} $, which is like sayinng $ u' \sim Unif(0, M) $.
+
+% TODO: ha parlato di intuizioni per capire l'algoritmo e al suo legame con distribuzioni non normalizzate
+% TODO: poi ha fatto deli es in R
+
+To find the optimal value of M, we can use the optimize function in R. If one or both of the distributions is not normalized, M doesn't represent the true prob of acceptance. We can get the normalising constant from the AR as a byproduct.
+
+Note: the distribution we get is normalised even if the original one wasn't. So the histogram won't match! We can correctly plot the target function by multiplying/dividing by the constant.
+
+
 
 % \end{document}

@@ -1,0 +1,106 @@
+%\begin{document}
+\chapter{Maths for Quantum Mechanics}
+\section{Why linear algebra?}
+\subsection{Classical Physics}
+Physical quantities:
+\begin{itemize}
+\item \textbf{Single-valued}
+\item \textbf{Continuous}
+\end{itemize}
+
+So they can be mapped as a \textbf{continuous function}.
+
+\subsection{Quantum}
+In the quantum world, physical values can also be:
+\begin{itemize}
+\item \textbf{Probabilistic}
+\item \textbf{Discrete}
+\end{itemize}
+
+So we can't use a continuous function.
+
+\subsubsection{Probabilisticness}
+We can represent each possible outcome of our value with a mathematical object $ M_i $, and we need to combine these giving each a specific probability.
+
+\[
+a_1M_1 \cdot a_2M_2 \cdot ... \cdot a_nM_n
+\]
+where $ a_i $ encodes the likelyhood of its associated value to occur, and $ '\cdot' $ is an operation that combines the values. Informally, we can see how this structure is similar to a \textbf{linear equation}, we'll come back to that. 
+
+\subsubsection{Discreteness}
+What mathematical object can we use to extract discrete values? Following our linear combination lead, we can think of representing physical quantities as \textbf{matrices} (linear operators), from which we can think to extract the possible discrete values.
+
+\section{Kets and Wavefunctions}
+\dfn{Vector Space}{
+  A set of objects (called vectors) that satisfy the following conditions $ \forall u,v,w $ vectors and $ \forall a,b \in \mathbb{C} $:
+  \begin{itemize}
+  \item $ u+v $ is a vector
+  \item $ au $ is a vector
+  \item $ -u $ is a vector
+  \item 0 vector exists
+  \item $ 1u = u $
+  \item $ u + (v + w) = (u + v) + w $
+  \item $ u + v = v + u $
+  \item $ a(bu) = (ab)u $
+  \item $ a(u + v) = au + av $
+  \item $ (a + b)u = au + bu $
+  \end{itemize}
+}
+\nt{
+  This definition doesn't mention arrows or lists of numbers or arrows, we can use any tipe of object that follows the structure.
+}
+
+Let's try to represent our particle as a vector in a vector space, a \textbf{quantum state} $ \psi $:
+\dfn{Quantum State}{
+  Vector that holds all the physical properties of a particle, which should all be extractable at any moment in time, as well as all the associated probabilities. Usually represented in bra-ket notation as:
+  \[
+    \ket{\psi}
+  \]
+}
+
+We want our state to represent a linear combination of all possible outcomes of a measurement:
+\[
+  \ket{\psi} = a_1\ket{E_1} + ... + a_n\ket{E_n}
+\]
+Where $ E_1,...,E_n $ are all the possible values of the particle's energy, and the coefficients have something to do with the probability of the outcome. This is called a \textbf{superposition}.
+
+But the state shoud hold values for \textbf{all} physical properties, so--looking at angular momentum as an example--we must also have that:
+\[
+\ket{\psi} = b_1\ket{L_1} + ... + b_n\ket{L_n}
+\]
+So the same state also encodes a different linear combination.
+
+\subsubsection{Infinite sets}
+It's possible for the set of discrete values of a property to be infinite.
+Take for example the energy: we can theoretically keep adding more and more without a limit, making the set of all possible values still discrete, but infinite:
+
+\[
+  \ket{\psi} = \sum_{i = 1}^{\infty} a_iE_i
+\]
+
+\nt{
+  There are still some problems that can arise by allowing infinity without proper constraints, as we'll explore in the next chapter.
+}
+
+Furthermore, some properties like position, have continuous values. These can't be represented with a normal linear sum.
+
+Let's say that a particle's position can be in any point on the continuous line between $ a $ and $ b $. In this case we need a continuous sum, which can be performed with an integral:
+\[
+  \ket{\psi} = \int_{a}^{b} c(x)\ket{x} dx
+\]
+Note that instead of a list of coefficients for each value we now have a function $ c(x) $ that encodes probability for each continuous value. This function is called a \textbf{wavefunction}.
+
+\section{Hilbert Space}
+\section{Inner products}
+\section{Dirac deltas and Wavefunction inner products}
+\section{Bra-ket notation}
+\section{Observables as operators}
+\section{Calculating Probabilities}
+\section{Hermitian operators}
+\section{Commutator and the Uncertainty principle}
+\section{Unitary operators}
+\section{Classical Generators}
+\section{Shrodinger equation}
+\section{Momentum operator}
+
+%\end{document}
