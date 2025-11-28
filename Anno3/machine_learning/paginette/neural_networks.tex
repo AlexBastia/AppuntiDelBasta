@@ -359,3 +359,97 @@ We don't really need to know all the formulas, just the main concept.
 Each filter creates a different feature map. To manage these, the easiest way is to concatenate thembegin
 
 % \end{document}
+
+\section{Filter and convolution}
+
+The convulution is an operation between two functions that produces a third function that expresses how the shape of one is modified by the other. In image processing, the convolution is used to apply filters to images, such as blurring, sharpening, edge detection, and more. In machine learning, convolutional neural networks (CNNs) use convolutional layers to automatically learn and extract features from images preserving spatial relationships. Mathematically
+
+\dfn{convulution operation}{
+  Fir a bidimensional input image $ I $ and a filter (or kernel) $ K^{m\times n} $, the convolution operation is defined as:
+  \[
+    S(i,j) = (I * K)(i,j) = \sum_{m} \sum_{n} I(i-m, j-n) K(m,n)
+  \]
+}
+
+\begin{center}
+  \includegraphics[width=8cm]{paginette/imgs/convolution.png}
+\end{center}
+
+\ex{}{
+ \begin{center}
+  \includegraphics[width=4cm]{paginette/imgs/conv/conv_1.png} \\
+  \includegraphics[width=4cm]{paginette/imgs/conv/conv_2.png} \\
+  \includegraphics[width=4cm]{paginette/imgs/conv/conv_3.png} \\
+  \includegraphics[width=4cm]{paginette/imgs/conv/conv_4.png} \\
+  \includegraphics[width=4cm]{paginette/imgs/conv/conv_5.png} \\
+  \includegraphics[width=4cm]{paginette/imgs/conv/conv_6.png}
+\end{center}
+}
+
+\nt{
+  In a convolutional layer, each neuron produces a single value of the output feature map, which appears as one “pixel" in the resulting matrix.
+}
+
+in the neural networks, each neruon is linked to the first hidden layer. If we had a $1000 \times 1000$ pixel image ($1M$ inputs) and a hidden layer of $1000$ neurons, we would need one billion weights ($10^9$ connections)— impossible to manage computationally. One of the main carateristics of convutional laters is the \textit{local connectivity}, each neuron is connected only to a small region of the input image, called the receptive field. This drastically reduces the number of parameters and computations required, making it feasible to process high-dimensional inputs like images. 
+Another important characteristic is \textit{weight sharing}, where the same set of weights (the filter or kernel) is used across different spatial locations of the input. This means that the same feature can be detected regardless of its position in the image, enhancing the model's ability to generalize and reducing the number of unique parameters that need to be learned.
+
+with a cascade of convolutional filters and pooling layers, the network can learn hierarchical features, from low-level edges and textures in the early layers to high-level object parts and entire objects in the deeper layers. This hierarchical feature learning is crucial for tasks like image classification, object detection, and segmentation.
+
+\subsection{About the relevance of convolutions for image processing}
+An image is coded as a numerical matrix (array) grayscale (0-255) or rgb (triple 0-255)
+
+\begin{center}
+  \includegraphics[width=8cm]{paginette/imgs/model.png}
+\end{center}
+
+\subsubsection{Img as surfaces}
+We can see an image as a surface in 3D space, where the $x$ and $y$ coordinates represent the pixel positions, and the $z$ coordinate represents the intensity (brightness) of the pixel. In grayscale images, this intensity ranges from 0 (black) to 255 (white). In color images, each pixel has three intensity values corresponding to the red, green, and blue channels.
+
+\begin{center}
+  \includegraphics[width=8cm]{paginette/imgs/img_as_surface.png}
+\end{center}
+
+\nt{
+  Edges, angles, ...: points where there is a discontinuity, i.e. a fast variation of the intensity
+  \begin{center}
+    \includegraphics[width=8cm]{paginette/imgs/conv_img_2.png}
+  \end{center}
+  More generally, are interested to identify \textit{patterns} inside the image. The key idea is that the kernel of the convolution expresses the pattern we are looking for.
+}
+
+\ex{Finite Derivate}{
+  Suppose we want to find the positions inside the image where there is a sudden horizontal passage from a dark region to a bright one. The pattern we are looking has that kernel:
+  \[
+    \begin{bmatrix}
+      -1 & -1
+    \end{bmatrix}
+  \]
+  or, varying the distance between pixels:
+  \[
+    \begin{bmatrix}
+      -1 & 0 & 1
+    \end{bmatrix}
+  \]
+  \begin{center}
+    \includegraphics[width=8cm]{paginette/imgs/kernel.png}
+  \end{center}
+}
+
+\subsection{Discovering patterns}
+
+instead of using human designed pre-defined patterns, let the net learn them. This is particularly useful in deep networks:
+\begin{itemize}
+  \item stacking kernels we can learn more complex patterns 
+  \item adding non-linear activations we synthesize complex, non-linear kernels
+\end{itemize}
+
+\subsubsection{Receptive field}
+\dfn{receptive field}{
+  The receptive field of a neuron in a convolutional layer is the specific region of the input image that influences the neuron's output. It defines the spatial extent of the input data that the neuron "sees" and processes.
+}
+It is equal to the dimension of an input image producing (without padding) an output with dimension 1
+
+\nt{
+  A neuron cannot see anything outside its receptive field
+}
+
