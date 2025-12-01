@@ -2,22 +2,94 @@
 \chapter{Montecarlo Integration}
 
 \section{Theory}
-\thm{Law of Large Numbers}{
-  Given an infinite sequence of iid RVs $X_1, ..., X_n, ...$ (independent condition can be relaxed) with finite expectation $E[X_1] = ... = E[X_n] = ... = \mu $:
-  \[
-    \overline{X}_n \xrightarrow{n \to +\infty} \mu
-  \]
-  Where:
-  \begin{itemize}
-    \item $\overline{X}_n = \frac{S_n}{n}$ is the mean
-    \item $S_n = X_1 + ... + X_n = \sum_{i=1}^n X_i$ is the partial sum
-  \end{itemize}
+\subsection{Introduction}
 
-  In addition, if $Var(X_i) = \sigma^2$ is finite, then:
+The goal is computing an integral of the from
+\[
+  I = \sin_{\mathcal{X}}h(x) f(x) dx
+\]
+
+where:
+\begin{itemize}
+  \item $\mathcal{X} \subseteq \mathbb{R}^n$ is the domain of integration
+  \item $f(x)$ is a density function (can be unnormalized)  
+  \item $h(x)$ is the function we want to integrate 
+\end{itemize}
+
+the core of montecarlo integration is in a interpretation of the integral as an expectation value of a RV. If we consider a RV $X$ with density $f(x)$, then we can write
+\[
+  I = E_f[h(X)] = \sin_{\mathcal{X}} h(x) f(x) dx
+\]
+
+this identity is crucial because it allows us to use the properties of RVs to compute integrals.
+
+\nt{
+  although an integral it is not usual to appear in this form (for instance $\int_a^bg(x)dx$), we can always rewrite it in this form by choosing a suitable density $f(x)$. For example, if we want to compute $\int_a^bg(x)dx$, we can choose $f(x)$ as the uniform density in $[a,b]$:
   \[
-    Var(\overline{X}_n) = \frac{\sigma^2}{n}  
+    f(x) = \begin{cases}
+      \frac{1}{b-a} & x \in [a,b] \\
+      0 & otherwise
+    \end{cases}
+  \]
+  so that
+  \[
+    \int_a^bg(x)dx = \int_a^bg(x) \cdot \frac{1}{b-a} \cdot (b-a) dx = (b-a) \int_a^bg(x)f(x)dx
   \]
 }
+
+once we have established this identity the method for approximating $I$ is straightforward:
+\begin{itemize}
+  \item Generation: generate $n$ samples (i.i.d.) from the density $f(x)$: $X_1, X_2, \dots, X_n \sim f(x)$
+  \item Estimation: compute the sample mean of $h(X)$:
+  \[
+    \hat{I}_n = \frac{1}{n} \sum_{i=1}^{n} h(X_i)
+  \]
+\end{itemize}
+the value $\hat{I}_n$ is our estimate of the integral $I$. 
+
+Okay, gg for this introduction. Now let us to a concept that explain that:
+
+
+\subsection{The low of Large Numbers and low of Central limit}
+
+Consider an infinite sequence of independent and identically distributed (i.i.d.) random variables $X_1, X_2, \dots$ defined on a probability space $(\Omega, \mathcal{F}, P)$. Let these variables have a finite expectation $\mathbb{E}[X_1] = \mu$.
+
+\dfn{Sample mean}{
+  it's defined the \textit{sample mean} of the first $n$ variables as:
+  \[
+  \overline{X}_n = \frac{1}{n} S_n = \frac{1}{n} \sum_{i=1}^n X_i
+  \]
+}
+
+The Law of Large Numbers (LLN) describes the convergence of $\overline{X}_n$ to the true parameter $\mu$ as the sample size $n$ approaches infinity. There are two versions of this law, distinguished by the type of convergence.
+
+\thm{Weak Law of Large Numbers (WLLN) - Convergence in Probability}{
+  The sample mean $\overline{X}_n$ converges to $\mu$ in \textit{probability}. That is, for any margin of error $\epsilon > 0$, the probability that the absolute difference between the sample mean and the true mean exceeds $\epsilon$ tends to zero as $n \to \infty$:
+  \[
+    \lim_{n \to \infty} P\left( |\overline{X}_n - \mu| > \epsilon \right) = 0
+  \]
+  Often denoted as: $\overline{X}_n \xrightarrow{P} \mu$.
+}
+
+\thm{Strong Law of Large Numbers (SLLN) - Convergence Almost Surely}{
+  The sample mean $\overline{X}_n$ converges to $\mu$ \textit{almost surely} (a.s.). That is, the event that the limit of the sequence $\overline{X}_n$ equals $\mu$ occurs with probability 1:
+  \[
+    P\left( \lim_{n \to \infty} \overline{X}_n = \mu \right) = 1
+  \]
+  Often denoted as: $\overline{X}_n \xrightarrow{a.s.} \mu$.
+}
+
+ \nt{
+  If the random variables also have a finite variance $Var(X_i) = \sigma^2 < \infty$, then the variance of the sample mean decreases linearly with $n$:
+  \[
+    Var(\overline{X}_n) = Var\left(\frac{1}{n}\sum_{i=1}^n X_i\right) = \frac{1}{n^2}\sum_{i=1}^n Var(X_i) = \frac{n\sigma^2}{n^2} = \frac{\sigma^2}{n}
+  \]
+  }
+
+  \ex{Code in R() for SLLN}{
+
+  \lstinputlisting[language=R]{code/Examples/MC_Int/slln.r}
+  }
 
 So we have convergence in:
 \begin{itemize}
@@ -26,13 +98,37 @@ So we have convergence in:
 \end{itemize}
 TODO: understand this
 
-\thm{Central Limit Theorem}{
-\[
-  \sqrt{n}(\overline{X}_n - \mu) \xrightarrow{n \to +\infty} N(0, \sigma^2)  
-\]
+While the Law of Large Numbers guarantees that the sample mean converges to the true expectation, the Central Limit Theorem (CLT) describes the \textit{distribution} of the error for large sample sizes. This allows us to quantify the uncertainty of our Monte Carlo estimates.
+
+\thm{Central Limit Theorem (CLT)}{
+  Let $X_1, X_2, \dots$ be a sequence of independent and identically distributed (i.i.d.) random variables with:
+  \begin{itemize}
+    \item Finite expectation: $\mathbb{E}[X_i] = \mu$
+    \item Finite variance: $Var(X_i) = \sigma^2 < \infty$
+  \end{itemize}
+
+  Then, the random variable $\sqrt{n}(\overline{X}_n - \mu)$ converges in \textit{distribution} to a Normal random variable with mean 0 and variance $\sigma^2$ as $n \to \infty$:
+  \[
+    \sqrt{n}(\overline{X}_n - \mu) \xrightarrow{d} \mathcal{N}(0, \sigma^2)
+  \]
+  Equivalently, the standardized sample mean converges to a Standard Normal distribution:
+  \[
+    \frac{\overline{X}_n - \mu}{\sigma / \sqrt{n}} \xrightarrow{d} \mathcal{N}(0, 1)
+  \]
+ 
 }
 
-The left side is still a RV, as it's a linear transform of a RV.
+For a sufficiently large sample size $n$ (simulation runs), the estimation error $(\overline{X}_n - \mu)$ is approximately Normally distributed:
+\[
+  (\overline{X}_n - \mu) \approx \mathcal{N}\left(0, \frac{\sigma^2}{n}\right)
+\]
+This approximation justifies the construction of asymptotic confidence intervals. For instance, a 95\% confidence interval for $\mu$ is given by:
+\[
+  \left[ \overline{X}_n - 1.96 \frac{\sigma}{\sqrt{n}}, \quad \overline{X}_n + 1.96 \frac{\sigma}{\sqrt{n}} \right]
+\]
+In practice, since the true variance $\sigma^2$ is unknown, it is replaced by the sample variance estimator $S_n^2$.
+
+
 
 We can now say something about the uncertainty of the result by using the gaussian.
 
@@ -40,11 +136,24 @@ We can now say something about the uncertainty of the result by using the gaussi
 Most of the time, this works and should be prefered. In R they are implemented as the functions \textit{area} (can't use infty) and \textit{integrate}. They don't work with multiple dimensions and we need some information about the funciton to integrate.
 
 \section{Montecarlo Method}
-We will focus on integrals that can be written as
-\[
-  \int_{D}^{} h(x)f(x)dx
-\]
-Where $ f $ is a density (even unnormalized). We can almost always insert a density into the integrand without changing the result. Things like expectation, variance and marginals are all in this form.
+Okay, let's formalize the montecarlo method for integration.
+
+As said before, we want this identity:
+\dfn{Monte Carlo Integral Representation}{
+  Let $X$ be a random variable with probability density function $f(x)$ defined on a domain $\mathcal{X} \subseteq \mathbb{R}^d$. We define the target integral $I$ as the expected value of the function $h(X)$:
+  \[
+    I = \mathbb{E}_f[h(X)] = \int_{\mathcal{X}} h(x) f(x) \, dx
+  \]
+  assuming that the expectation exists and is finite, i.e., $\mathbb{E}_f[|h(X)|] < \infty$.
+}
+Then it's time for exstimator of montecarlo:
+\dfn{Monte Carlo Estimator for Integration}{
+  Given $n$ independent and identically distributed (i.i.d.) samples $X_1, X_2, \dots, X_n$ drawn from the probability density function $f(x)$, the Monte Carlo estimator $\overline{h}_n$ for the integral $I$ is defined as:
+  \[
+    \overline{h}_n = \frac{1}{n} \sum_{i=1}^{n} h(X_i)
+  \]
+  where each $X_i$ is a sample from the distribution defined by $f(x)$.
+}
 
 \ex{3.1}{
   use integrate() to compute
@@ -90,4 +199,3 @@ Here integrate works correctly.
   
   In this case, integrate doesn't work (as the mean of the distribution isn't defined). Area works, but we need to know where to integrate so it's kinda useless.
 }
-% \end{document}
