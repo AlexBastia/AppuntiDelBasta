@@ -1,0 +1,93 @@
+% \begin{document}
+\chapter{Montecarlo Integration}
+
+\section{Theory}
+\thm{Law of Large Numbers}{
+  Given an infinite sequence of iid RVs $X_1, ..., X_n, ...$ (independent condition can be relaxed) with finite expectation $E[X_1] = ... = E[X_n] = ... = \mu $:
+  \[
+    \overline{X}_n \xrightarrow{n \to +\infty} \mu
+  \]
+  Where:
+  \begin{itemize}
+    \item $\overline{X}_n = \frac{S_n}{n}$ is the mean
+    \item $S_n = X_1 + ... + X_n = \sum_{i=1}^n X_i$ is the partial sum
+  \end{itemize}
+
+  In addition, if $Var(X_i) = \sigma^2$ is finite, then:
+  \[
+    Var(\overline{X}_n) = \frac{\sigma^2}{n}  
+  \]
+}
+
+So we have convergence in:
+\begin{itemize}
+  \item Probability (weak)
+  \item A.S. (?) (strong)
+\end{itemize}
+TODO: understand this
+
+\thm{Central Limit Theorem}{
+\[
+  \sqrt{n}(\overline{X}_n - \mu) \xrightarrow{n \to +\infty} N(0, \sigma^2)  
+\]
+}
+
+The left side is still a RV, as it's a linear transform of a RV.
+
+We can now say something about the uncertainty of the result by using the gaussian.
+
+\section{Numerical Deterministic Aproach}
+Most of the time, this works and should be prefered. In R they are implemented as the functions \textit{area} (can't use infty) and \textit{integrate}. They don't work with multiple dimensions and we need some information about the funciton to integrate.
+
+\section{Montecarlo Method}
+We will focus on integrals that can be written as
+\[
+  \int_{D}^{} h(x)f(x)dx
+\]
+Where $ f $ is a density (even unnormalized). We can almost always insert a density into the integrand without changing the result. Things like expectation, variance and marginals are all in this form.
+
+\ex{3.1}{
+  use integrate() to compute
+  \[
+    \Gamma(\lambda) = \int_{0}^{+\infty} x^{\lambda - 1} exp(-x) dx \ \ D = [0, +\infty[
+  \]
+  which is the gamma distribution.
+
+\lstinputlisting[language=R]{code/Examples/MC_Int/Ex3_1.R}
+
+Here integrate works correctly.
+}
+
+\ex{3.2}{
+  Consider a sample of $ n = 10 $ RVs from a Cauchy distribution with location parameter $ \theta = 350 $
+  \[
+    X_1, X_2, ..., X_{10} \sim Cauchy(\theta = 350)
+  \]
+  We want to calculate the marginal probability of the data we have conditional to the parameter theta
+  \[
+    P(X_1,...,X_n) = \int_{\Theta}^{} P(X_1,...,X_n | \theta)P(\theta)d\theta
+  \]
+  We can reconcile the Bayesian representation with the usual frequentist approach by stating that $ P(\theta) \alpha 1 $ (flat prior) so that no value of $ \theta $ is favoured, so we can say
+  \[
+    = \int_{-\infty}^{+\infty} P(X_1,...,X_n | \theta)d\theta
+  \]
+  Assuming iid data, we can simplify as such
+  \[
+    = \int_{-\infty}^{+\infty} \prod_{i=1}^{n} P(X_i | \theta) d\theta
+  \]
+  But the Cauchy is a continuous distribution, so we can only use the distribution
+  \[
+    = \int_{-\infty}^{+\infty}\prod_{i=1}^{n} \frac{1}{\pi(1+(x_i - \theta)^2)} d\theta
+  \]
+
+  \textbf{Numerical Approach}
+  \begin{itemize}
+    \item integrate()
+    \item area()
+  \end{itemize}
+
+  \lstinputlisting[language=R]{code/Examples/MC_Int/Ex3_2.R}
+  
+  In this case, integrate doesn't work (as the mean of the distribution isn't defined). Area works, but we need to know where to integrate so it's kinda useless.
+}
+% \end{document}
