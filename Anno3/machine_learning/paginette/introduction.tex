@@ -1,0 +1,88 @@
+\chapter{Introduction}
+Machine learning is used for problems that are difficult to solve with deterministic algorithms:
+\begin{itemize}
+  \item Classification problems
+  \item Image/Audio recognition
+  \item Anomaly detection
+  \item Generative AI
+  \item ...
+\end{itemize}
+
+\section{Approach}
+The general approach to solving problems with machine learning includes:
+\begin{itemize}
+  \item Define a \textbf{model} specific to the problem to be solved that depends on the values of its \textbf{parameters}
+  \item Define an \textbf{error} measure to evaluate the model
+  \item Tune the model's parameters in order to minimize the error on the \textbf{training set} 
+\end{itemize}
+
+\ex{Regression}{
+  You have some points on a plane, the goal si to fit a line through them. Let's follow the steps defined above:
+  \begin{itemize}
+    \item First of all, we need to define the model. In this case, the model is the general equation of the line we want to create. For instance,
+    if we choose a linear model the equation would be $y = ax + b$, where $a, b$ are the parameters.
+    \item To decide if a line is better than another, we need a loss function like the mean square error.
+    \item Now we need to tune our model (line) by using the training data (points) and setting the parameters to minimize the error.
+  \end{itemize}
+  This way, if our model choice was correct and we had enough useful training data, we could be fairly sure that even other points not included in the training data will follow the line created by the model. 
+}
+
+So Machine Learning is basically an \textbf{optimization problem}, where the solution isn't given in analytical form but aproximated by using iterative techniques.
+
+\section{Differences}
+
+There are different types of learning aproaches
+\begin{itemize}
+\item \textbf{Supervised}: needs inputs and associated outputs (labels) - classification, regression
+\item \textbf{Unsupervised}: only needs inputs - clustering, component analysis, autoencoding
+\item \textbf{Reinforcement}: works with actions and rewards - long term gains, model-free planning
+\end{itemize}
+
+There are also different types of ways to define models
+\begin{itemize}
+  \item Decison trees
+  \item Linear models
+  \item Neural networks
+  \item ...
+\end{itemize}
+
+And different types of error (loss) functions
+\begin{itemize}
+  \item Mean Squared Errors
+  \item Logistic
+  \item Cross entropy
+  \item ...
+\end{itemize}
+
+\section{Features}
+\dfn{Feature}{
+  Any information relative to a datum that describes one of its relevant properties. They're the input to the learning process.
+}
+
+The coice of good features is extremely important for the learning process, and requires good domain knowledge.
+
+\ex{Choosing features}{
+  \textbf{Medical diagnosis}: symptoms, patient conditions, medical records, exam results
+
+  \textbf{User profiling}: demographic data, personal interests, social communities, life style
+
+  \textbf{Weather forcasting}: temperature, humidity, pressure, rain, wind
+}
+
+\section{Deep learning}
+It's the modern approach. Raw data is supplied to the model, whose job it is to find good features itself.
+
+Deep learning is implemented through \textbf{Neural Networks}, which are called \textit{deep} when consisting of multiple hidden layers, each computing 
+new features.
+
+\section{Overview of different types of AI}
+
+\begin{center}
+  \includegraphics[width=0.4\textwidth]{img/relations.png}
+\end{center}
+
+\begin{itemize}
+  \item \textbf{Knowledge-based systems}: take an expert, ask him how he solves a problem and try to mimic his approach by means of logical rules
+  \item \textbf{Traditional Machine Learning}: the expert only tells us the important features, the machine learns the mapping
+  \item \textbf{Deep Learning}: no more expert :(
+\end{itemize}
