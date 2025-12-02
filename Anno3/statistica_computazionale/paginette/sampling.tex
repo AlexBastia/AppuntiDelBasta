@@ -341,33 +341,11 @@ So the accepted values have the same cdf as $ X $!
   $ g $ and $ M $ are arbitrary and don't matter for the correctness of the algorithm.
 }
 
-\subsubsection{Recap}
-The \textbf{goal} is to sample from the density of a RV $ X $ $ f_X(x) $ (target). To do this we need $ f_X(x) $ and it needs to be computable, while knowing the support of $ X $ $ S_X $. 
-\begin{itemize}
-\item assume $ \exists M $ and is a constant $ > 0 $ such that
-  \[
-    \frac{f_X(x)}{g_Y(x)} \leq M
-  \]
-\item $ g_Y(y) $ is a candidate/proposal distribution with compatible support with $ f $ $ S(Y) \subseteq S(X) $, and should be easy to sample from.
-  \item It works for continuous RV
-\end{itemize}
+% \end{document}
 
-Steps:
-\begin{enumerate}
-  \item Sample $ y $ from $ g_Y(y) $
-  \item Ind. sample $ u $ from $ U(0,1) $
-  \item check if $ u \leq \frac{1}{M} \frac{f_X(y)}{g_Y(y)} $
-  \item If true, accept. Else, reject.
-\end{enumerate}
+\section{Accept - Reject algorithm}
 
-We can check if $ u M \leq \frac{f_X(y)}{g_Y(y)} $, which is like sayinng $ u' \sim Unif(0, M) $.
-
-% TODO: ha parlato di intuizioni per capire l'algoritmo e al suo legame con distribuzioni non normalizzate
-% TODO: poi ha fatto deli es in R
-
-To find the optimal value of M, we can use the optimize function in R. If one or both of the distributions is not normalized, M doesn't represent the true prob of acceptance. We can get the normalising constant from the AR as a byproduct.
-
-Note: the distribution we get is normalised even if the original one wasn't. So the histogram won't match! We can correctly plot the target function by multiplying/dividing by the constant.
+TODO
 
 \ex{AC- algh}{
   We aim to simulate a random variable $X$ from the Standard Normal distribution using the Accept-Reject method with a Laplace (Double Exponential) candidate distribution.
@@ -537,29 +515,29 @@ Nsim = 10^4
 \end{verbatim}
 
 \ex{Penso esercizio}{
-  So we have $f(x) \alpha \exp{\left(-\frac{x^2}{2}\right)} \left[\sin{(6x)}^2+3\cos{(x)}^2\cdot \sin{(4x)}^2+1\right]$
+  So we have $f(x) \alpha \exp{\left(-\frac{x^2}{2}\right)} [\sin{(6x)}^2+3\cos{(x)}^2\cdot \sin{(4x)}^2+1 ]$
   \begin{enumerate}
     \item Plot $f(x)$ to show $M \cdot g(x)$ bounds it where $g_Y$ is the density of a Std. GAUSSIAN $g_Y(y) = \frac{1}{\sqrt{2\pi}} \cdot \exp\{-\frac{y^2}{2}\}$ and find $M$.
     \item Generate 2500 numbers from $f_X$.
     \item Deduce from the acceptance rate of the AR algorithm, an approximation of the normalizing constant.
   \end{enumerate}
 }
-% Sto verbatim dentro al blocco esercizio mi da errore per qualche motivo
+
 \begin{verbatim}
 #UNNORMALIZED (you have proportional to in the text of the exer)
 fx <- function(x){
   exp(-x^2/2)*(sin(6*x)^2 + 3*(cos(x)^2)*(sin(4*x)^2)+1)
 }
-%
+
 fx.over.g <- function(x){
   fx(x)/dnorm(x) # if we have a differente propoasal dnorm is gonna change
 }
-%
+
 m <- optimize(fx.over.g, interval=c(-6,6), maximum = T)$objective
 curve(fx, -9,9, ylim=c(-1,7)) # this is the density
 curve(m*dnorm(x), -5,5, col="red", add=T)
 curve(15*dnorm(x), -6,6, col="blue", add=T)
-%
+
 # B
 AR.sampling <- function(n, f, g, rg, m, report=TRUE){
   x <- rep(0,n)
@@ -567,11 +545,10 @@ AR.sampling <- function(n, f, g, rg, m, report=TRUE){
   for(i in 1:n){
     done <- FALSE
     while(!done){
-     
+      
       y <- rg(1)
       u <- runif(1)*m
       if (u <= f(y) / (g(y))) {
-       
         done <- TRUE
       }
       tries <- tries + 1
@@ -582,4 +559,3 @@ AR.sampling <- function(n, f, g, rg, m, report=TRUE){
   return(list(x=x, tries = tries))
 }
 \end{verbatim}
-% \end{document}
