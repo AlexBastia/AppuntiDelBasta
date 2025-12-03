@@ -70,7 +70,7 @@ But the state shoud hold values for \textbf{all} physical properties, so--lookin
 \]
 So the same state also encodes a different linear combination.
 
-\subsubsection{Infinite sets}
+\subsection{Infinite sets}
 It's possible for the set of discrete values of a property to be infinite.
 Take for example the energy: we can theoretically keep adding more and more without a limit, making the set of all possible values still discrete, but infinite:
 
@@ -91,7 +91,180 @@ Let's say that a particle's position can be in any point on the continuous line 
 Note that instead of a list of coefficients for each value we now have a function $ c(x) $ that encodes probability for each continuous value. This function is called a \textbf{wavefunction}.
 
 \section{Hilbert Space}
+So the state of our particle can be expressed as a vector in a vector space, and this vector can be in an infinite (even continuous) linear combination of outcomes. We will later prove that this list of outcomes actually forms a basis for the vector space.
+
+So, seen as the dimension of a vector space is equal to the size of the basis, our quantum state has to live in an \textit{infinite-dimensional space}.
+
+\ex{Polinomials}{
+  An example for an infinite vector space is the polimonials over the real numbers. It's straight forward to check that polinomials fit the definition of a vector space. A basis for such a space can be
+  \[
+  \{x^0, x^1, x^2, x^3, ...\}
+  \]
+  seen as all polinomials are by definition a linear combination of these powers.
+
+  Now let's see what happens when we let our space become infinite-dimensional.
+\[
+  p_{\text{vector}}(x) = 1x^0 + 1x^1 + \frac{1}{2}x^2 + \frac{1}{6}x^3 + \frac{1}{24}x^4 + \frac{1}{120}x^5 + ...
+\]
+  As we all remember from our lessons with Morbidelli, this is the Taylor serier for $ e^x $:
+  \[
+  e^x = \lim_{n\to+\infty}\sum_{i=0}^{n} \frac{1}{n!}x^nd
+  \]
+  But $ e^x $ is definetly not a polinomial, so what happened? How did we leave our vector space?
+}
+
+The core problem that causes the unexpected behaviour in the example is that infinity is a \textit{concept}, not a number. This means that when we let the number of terms approach the idea of infinity, we actually end just outside our set of valid elements.
+
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2025-12-03-16-52-27.png}
+\end{center}
+
+This is the reason why introducing infinity to a vector space is risky. 
+
+Going back to our quantum states, we need infinite dimensions but we also want to avoid leaving our vector space. How can we solve this? Easy, we just add a rule:
+\[
+ \sum_{i}^{\infty} \ket{E_i} \to \ket{\psi}
+\]
+meaning all convergent sums of vectors must converge to an element inside the vector space. This is basically the definition of a \textbf{Hilbert space}:
+
+\dfn{Hilbert Space}{
+  A vector space equipped with an \textbf{inner product} that is \textbf{Cauchy complete}.
+}
+
+Let's break this down:
+\begin{itemize}
+  \item An inner product is just a generalized dot product (we'll explore this later)
+  \item Cauchy complete means that every convergent sequence of vectors converges to an element inside the vector space.
+\end{itemize}
+
+So basically we can say that a vector space is "complete" when it includes its "edges"
+
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2025-12-03-17-01-37.png}
+\end{center}
+
 \section{Inner products}
+In the definition of a Hilbert space, we mentioned the \textit{inner product} and we described it as a generalization of the dot product.
+
+Let's first understand what the dot product is used for.
+
+\subsection{Dot product}
+Why is the dot product usefull for vector spaces:
+\begin{itemize}
+\item It allows us to define a notion of \textbf{angle} and \textbf{orthogonality}:
+  \[
+    \vec{v} \cdot \vec{w} = \left|\vec{v}\right|\left|\vec{w}\right|cos\theta
+  \]
+  and
+    \[
+      \vec{v} \perp \vec{w} \iff \vec{v} \cdot \vec{w} = 0
+    \]
+  \item It helps us define the \textbf{lenght} of an abstract vector:
+    \[
+      \left|\vec{v}\right| = \sqrt{\vec{v} \cdot \vec{v}}
+    \]
+\end{itemize}
+We would like to use these properties in our quantum space, so we need to find a way to abstract the dot product for it to work on vectors other than lines and number columns.
+
+\subsection{Definition}
+We want a function that takes in two vectors and outputs a number (that can be complex)
+\[
+  \text{InProd}(\ket{\psi}, \ket{\phi}) = c
+\]
+This notation isn't very clean, so in bra-ket notation we use
+\[
+  \braket{\psi | \phi}
+\]
+
+It should also be linear, but for now let's only consider the right side
+\begin{align*}
+  \braket{\psi | \phi + \zeta} &= \braket{\psi | \phi} + \braket{\psi | \zeta}\\
+  \braket{\psi | a \phi} &= a\braket{\psi | \phi}
+\end{align*}
+
+We would assume that the inner product should also be commutative, allowing us to "flip" the operands and thus also being linear on the left side. But sadly a problem arrises, as we'll now prove:
+\pf{Proof}{
+  Let's assume that inner product is commutative and prove it's absurd. Consider a vector $ \phi $ such that
+  \[
+    \braket{\phi | \phi} = 1
+  \]
+  Let's now look at the inner product
+  \[
+    \braket{i \phi | i \phi}
+  \]
+  By using right side linearity and the commutative property, we get
+  \[
+    -1\braket{\phi | \phi} = -1
+  \]
+  But this means that the lenght of the vector $ i\phi $ is $ \sqrt{-1} = i $, which is impossible because a lenghth has to be a real number.
+}
+
+To fix this issue, we need to add a condition: each time we "flip" the vectors of an inner product, we must add a complex conjugate
+
+\ex{Correcting the previous case}{
+  \[
+  \braket{i\phi | i\phi} = i\braket{i\phi | \phi} = i\braket{\phi|i\phi}^* = ii^*\braket{\phi | \phi}^* = ii^*\braket{\phi | \phi} = ii^* = 1
+  \]
+}
+
+Lastly, to ensure that the magnitude of a vector makes sense, we need to state this rather obvious rule
+\[
+  \left|\psi\right| = \braket{\psi | \psi} \neq 0 \iff \ket{\psi} \neq 0 
+\]
+We can now finally define the inner product.
+
+\dfn{Inner Product}{
+  An inner product $ \braket{\psi | \phi} $ is a map from vectors to scalars that satisfies the following:
+  \begin{itemize}
+  \item Right-side linear
+  \item Complex conjugate commutation
+  \item Only zero vector has lenght 0
+  \end{itemize}
+}
+So basically just the dot product with extra rules to make sure we can still define lenghth.
+
+With these rules, when can also derive that the inner product is \textit{antilinear} on the left
+\[
+  \braket{a\psi + b\zeta|\phi} = a^*\braket{\psi | \phi} + b^*\braket{\zeta|\phi}
+\]
+
+Like with the dot product, we say that
+\begin{itemize}
+  \item The \textbf{magnitude} of a vector $ \psi $ is $ \sqrt{\braket{\psi | \psi}} $
+  \item If $ \braket{\psi | \phi} = 0 $ then the two vectors are \textbf{orthogonal}
+\end{itemize}
+
+\subsection{Finding Coefficients}
+Let's say we have an \textbf{orthonormal} basis $ \{\ket{E_i}\} $
+\[
+  \braket{E_i | E_j} = \delta_{ij}
+\]
+where $ \delta_{ij} $ is the \textit{Kronecker} delta.
+
+We would now like to know how to get a particular coefficient $ c_k $ of a state $ \ket{\psi} = \sum_{i}c_i\ket{E_i} $. Well, we can use the inner product
+\begin{align*}
+  \braket{E_k | \psi} &= \ket{E_k}\left(\sum_{i}c_i\ket{E_i}\right)\\
+  &= \sum_{i}c_i\braket{E_k|E_i} \\
+  &= \sum_{i}c_i \delta_{ki} = c_k \\   
+\end{align*}
+
+So, if we have an orthonormal base, to get a coefficient we just need to calculate the inner product between the associated basis vector and the state vector.
+
+\subsection{Calculating the inner product}
+Given two states $ \ket{\psi} = \sum_{i} \ket{a_iE_i}, \ket{\phi} = \sum_{j} \ket{b_jE_j} $ where $ \ket{E_i} $ is an orthonormal basis of the vector space, we can calculate the value of the inner product
+\begin{align*}
+  \braket{\psi | \phi} &= \left(\sum_{i}\bra{a_iE_i}\right)\left(\sum_{j} \ket{b_jE_j}\right)\\
+  &= \sum_{j}b_j\left(\sum_{i}\bra{a_iE_i}\right)\ket{E_j} \\
+  &= \sum_{i}\sum_{j} a_i^*b_j \braket{E_i | E_j} \\
+  &= \sum_{i} a_i^*b_i \\
+\end{align*}
+
+If we assume that all coefficients are real, we get the definition of the dot product
+\[
+  \braket{\psi | \phi} = \sum_{i} a_ib_i
+\]
+This is very cool because we made no mention of the dot product when defining the inner product, we just copied some of its properties.
+
 \section{Dirac deltas and Wavefunction inner products}
 \section{Bra-ket notation}
 \section{Observables as operators}
