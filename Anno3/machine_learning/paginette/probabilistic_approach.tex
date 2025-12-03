@@ -1153,7 +1153,7 @@ random variable $P(X_i |Y = y_k )$ has a Gaussian distribution
     \item \textbf{Learning}: estimate the values of the parameters $ \mu_{ik} $, $\sigma_{ik}$ and $\pi_k = P(Y = y_k )$
     \item \textbf{Classification} of $x^{new} = \langle a_1,\dots, a_n\rangle$
         \begin{align*}
-            Y^{\texttt{new}} &= \arg \max_{y_k} P(Y= y_k ) \cdot \prod_{i} P(X_i = a_i \mid Y = y_k )\\
+            Y^{\texttt{new}} &= \arg \max_{y_k} P(Y= y_k ) \cdot \prod_{i} p(X_i = a_i \mid Y = y_k )\\
             &= \arg \max_{k}\pi_k\cdot \prod_{i}\mathcal{N}(a_i\mid \mu_{ik},\sigma_{ik})
         \end{align*}
 \end{itemize}
@@ -1193,8 +1193,11 @@ Logistic regression is a discriminative machine learning method used primarily f
     \begin{itemize}
         \item $Y$ boolean random variable
         \item $X_i$ continuous random variable
-        \item $X_i$ independent from each other $Y$
-        \item $P(X_i \mid Y = k)$ have Gaussian distributions $N(\mu_{i_k} ,\sigma_i)$(Warning not $\sigma_ik$ !)
+        \item $X_i$ independent from each other given $Y$
+        \item $P(X_i \mid Y = k)$ have Gaussian distributions $N(\mu_{i_k} ,\sigma_i)$ (Warning not $\sigma_ik$!)
+          \footnote{
+            So we assume that features have the same gaussian "shape" for both values of $ Y $, but they can be centered in different positions.
+          }
         \item $Y$ has a Bernoulli distribution $(\pi)$
     \end{itemize}
     then
@@ -1229,6 +1232,11 @@ Logistic regression is a discriminative machine learning method used primarily f
     \[
         P(Y=1|\vec{x}) = \frac{1}{1 + \exp(w_0 + \sum_i w_i x_i)}
     \]
+    In particular, we have:
+    \begin{itemize}
+    \item $ w_i = \frac{\mu_{i1} - \mu_{i0}}{\sigma_i^2} $
+    \item $ w_0 = ln(\left\frac{1-\pi}{\pi}\right) + \sum_{i}\frac{\mu_{i1}^2 - \mu_{i0}^2}{2\sigma_i^2} $
+    \end{itemize}
 }
 \subsection{Training for logistic regression}
 So, logistic regression assumes
@@ -1281,16 +1289,20 @@ So, we use iterative optimization methods, like the \textbf{gradient technique}:
 \end{center}
 simple model with 2 parameters
 
-\dfn{Gradient}{
-    The \textit{gradient} of the log-likelihood function $\ell(w)$ (which the slide denotes as $E[w]$) is a vector composed of the partial derivatives of $\ell(w)$ with respect to each parameter $w_i$. It points in the direction of the steepest ascent on the likelihood surface.
+\dfn{Gradient of an error function for logistic regression}{
+  The \textit{gradient} of an error function for logistic regression $ E(w_0, ..., w_n) $ (denoted as $ E[w] $ on the slide), that can be the negative log-likelihood function $\ell(w)$ as we'll see later, is a vector composed of the partial derivatives of $E[w]$ with respect to each parameter $w_i$. It points in the direction of the steepest ascent on the error function's surface.
     \[
-        \nabla_w [\ell] = \left[ \frac{\partial \ell}{\partial w_0}, \frac{\partial \ell}{\partial w_1}, \dots, \frac{\partial \ell}{\partial w_n} \right]
+        \nabla_w [\ell] = \left[ \frac{\partial E}{\partial w_0}, \frac{\partial E}{\partial w_1}, \dots, \frac{\partial E}{\partial w_n} \right]
     \]
+}
+
+\nt{
+  The usual definition of gradient can be used to apply this method to any function (not only logistic regression error functions).
 }
 
 This is a \textit{general} technique (applicable to any differentiable function) to find a direction that lowers the loss function (the direction of greatest descent) and to subsequently perform a "step" (determined by the learning rate) in that direction. 
 \nt{
-  This is a \textit{local} technique: it's not given that the minimum we find is global, because it could just be a local one. For logistic regression, we can be certain it's global, but for more complicated models this isn't always true.
+  This is a \textit{local} technique: it's not given that the minimum we find is global, because it could just be a local one. For logistic regression, we can be certain it's global (as we'll see later), but for more complicated models this isn't always true.
   For the latter, it's possible to balance out these fake minimals by having lots of parameters, because this way it's possible to simply ignore the outliers and trust the value found by the most parameters.
 }
 
@@ -1307,7 +1319,7 @@ The correct direction is calculated using - you guessed it - the gradient (altho
     where $\eta$ (denoted $\mu$ in the slide) is the \textit{learning rate}, a small constant that controls the size of each step. This process is repeated until the parameters converge.
 }
 
-The concept is conceptually simple. We can visualize the model's error function, $E(w)$, as a topographical map. On this map, the altitude represents the error (the vertical axis), and the goal is to find the lowest point (the minimum error).
+The concept is simple. We can visualize the model's error function, $E(w)$, as a topographical map. On this map, the altitude represents the error (the vertical axis), and the goal is to find the lowest point (the minimum error).
 
 To achieve this, at iteration 0, we start from a random point. We then calculate the gradient $(\nabla E(w))$ at that position. The gradient, by definition, points in the direction of steepest ascent (the "maximum climb"). Therefore, to descend ('go down') and minimize the error, we must move in the opposite direction of the gradient
 \begin{center}
