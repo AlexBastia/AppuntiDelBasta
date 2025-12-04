@@ -828,12 +828,12 @@ The MLE is obtained by maximizing this likelihood (or equivalently its logarithm
     
     Taking the logarithm (which preserves the maximum since $\log$ is monotonically increasing):
     \[
-        \ell(\theta) = \log L(\theta|D) = \alpha_0 \log(\theta) + \alpha_1 \log(1-\theta)
+        l(\theta) = \log L(\theta|D) = \alpha_0 \log(\theta) + \alpha_1 \log(1-\theta)
     \]
     
     To find the maximum, take the derivative and set to zero:
     \[
-        \frac{d\ell}{d\theta} = \frac{\alpha_0}{\theta} - \frac{\alpha_1}{1-\theta} = 0
+        \frac{dl}{d\theta} = \frac{\alpha_0}{\theta} - \frac{\alpha_1}{1-\theta} = 0
     \]
     
     Solving:
@@ -1285,7 +1285,16 @@ Since $P(Y=0|x,w) = 1 - P(Y=1|x,w)$, we can write:
 
 Instead of maximizing the product directly, we \textbf{maximize the logarithm} of this probability (which is equivalent since log is monotonic):
 \[
-\ell(w) = \sum_\ell \log P(y^\ell | x^\ell, w) = \sum_\ell \left( y^\ell \cdot \log P(Y=1|x^\ell, w) + (1-y^\ell) \cdot \log P(Y=0|x^\ell, w) \right)
+l(w) = \sum_\ell \log P(y^\ell | x^\ell, w) = \sum_\ell \left( y^\ell \cdot \log P(Y=1|x^\ell, w) + (1-y^\ell) \cdot \log P(Y=0|x^\ell, w) \right)
+\]
+
+Using the logistic function, we can set
+\[
+  \alpha^\ell = \sigma\left(w_0 + \sum_{i}w_ix_i^\ell\right)
+\]
+and rewrite the log-likelihood as
+\[
+  l(w) = \sum_{\ell} y^\ell \log (\alpha^\ell) + (1 - y^\ell) \log(1 - \alpha^\ell)
 \]
 
 \section{The Gradient Technique}
@@ -1299,29 +1308,27 @@ So, we use iterative optimization methods, like the \textbf{gradient technique}:
 \end{center}
 simple model with 2 parameters
 
-\dfn{Gradient of an error function for logistic regression}{
-  The \textit{gradient} of an error function for logistic regression $ E(w_0, ..., w_n) $ (denoted as $ E[w] $ on the slide), that can be the negative log-likelihood function $\ell(w)$ as we'll see later, is a vector composed of the partial derivatives of $E[w]$ with respect to each parameter $w_i$. It points in the direction of the steepest ascent on the error function's surface.
+\dfn{Gradient}{
+  The \textit{gradient} of a function $ f(w_0, ..., w_n) $  is a vector composed of the partial derivatives of $f$ with respect to each parameter $w_i$. It points in the direction of the steepest ascent on the function's surface.
     \[
-        \nabla_w [\ell] = \left[ \frac{\partial E}{\partial w_0}, \frac{\partial E}{\partial w_1}, \dots, \frac{\partial E}{\partial w_n} \right]
+        \nabla_w [f] = \left[ \frac{\partial f}{\partial w_0}, \frac{\partial f}{\partial w_1}, \dots, \frac{\partial f}{\partial w_n} \right]
     \]
 }
 
-\nt{
-  The usual definition of gradient can be used to apply this method to any function (not only logistic regression error functions).
-}
+We can use the definition of the gradient in order to find the direction that lowers the loss function $ E(w) $ the most (the direction of greatest descent) and to subsequently perform a "step" (determined by the learning rate) in that direction.
+This is a \textit{general} technique that can be applied to any differentiable function.
 
-This is a \textit{general} technique (applicable to any differentiable function) to find a direction that lowers the loss function (the direction of greatest descent) and to subsequently perform a "step" (determined by the learning rate) in that direction. 
 \nt{
-  This is a \textit{local} technique: it's not given that the minimum we find is global, because it could just be a local one. For logistic regression, we can be certain it's global (as we'll see later), but for more complicated models this isn't always true.
+  This is also a \textit{local} technique: it's not given that the minimum we find is global, because it could just be a local one. For logistic regression, we can be certain it's global (as we'll see later), but for more complicated models this isn't always true.
   For the latter, it's possible to balance out these fake minimals by having lots of parameters, because this way it's possible to simply ignore the outliers and trust the value found by the most parameters.
 }
 
-The correct direction is calculated using - you guessed it - the gradient (although tecnicaly in the opposite direction). Repeating these stepps:
+So the correct direction is calculated using the gradient (although tecnicaly in the opposite direction), and the parameters are updated by repeating these stepps:
 
-\thm{Training Rule (Gradient Ascent)}{
-    To find the parameters $w$ that maximize $\ell(w)$, we use \textit{Gradient Ascent}. We start with an initial guess for $w$ and iteratively update the parameters by taking small steps in the direction of the gradient. The update rule for a single weight $w_i$ is:
+\thm{Training Rule (Gradient Descent)}{
+    To find the parameters $w$ that minimize $E(w)$, we use \textit{Gradient Descent}. We start with an initial guess for $w$ and iteratively update the parameters by taking small steps in the opposite direction of the gradient. The update rule for a single weight $w_i$ is:
     \[
-        \Delta w_i = \eta \cdot \frac{\partial \ell}{\partial w_i}
+        \Delta w_i = \eta \cdot \frac{\partial E}{\partial w_i}
     \]
     \[
         w_i = w_i + \Delta w_i
@@ -1336,9 +1343,10 @@ To achieve this, at iteration 0, we start from a random point. We then calculate
     \includegraphics[width=6cm]{gradiente_in_caduta_libera.png}
 \end{center}
 
+\subsection{Error function for Logistic Regression}
 In ideal case, the error surface is \text{convex}, this is fundamentally 'cause it means that there is just a single global minimum. Fortunately we have THAT:
 \thm{Convexity of the Error Surface for Logistic Regression}{
-    Let $E(w) = -\ell(w)$ be the error function for a logistic regression model, defined as the \textit{negative log-likelihood} of the training data.
+    Let $E(w) = -l(w)$ be the error function for a logistic regression model, defined as the \textit{negative log-likelihood} of the training data.
     
     This error function $E(w)$ is a \textit{convex function} with respect to the parameter vector $w$.
 
@@ -1347,6 +1355,7 @@ In ideal case, the error surface is \text{convex}, this is fundamentally 'cause 
         This is a critical property of the logistic regression model. Because the error surface is convex, it possesses a single global minimum and no local minima. This guarantees that iterative optimization methods, such as Gradient Descent, will converge to the unique optimal solution, regardless of the initial parameter values.
 }
 
+\subsection{Different learning methods}
 How many points to use for measuring error and gradient? there are two ways:
 \begin{itemize}
     \item \textbf{Full Batch}: all the features in training set are used for calculating the gradient
@@ -1364,15 +1373,15 @@ SGD (Stochastic Gradient Descent): the direction calculated by the Mini-Batch is
 \subsection{Calculating the Gradient for logistic regression}
 First a small review of the other formulas:
 
-\dfn{probability that sample $\ell$ is in category $Y = 1$}{
+\dfn{Probability that sample $\ell$ is in category $Y = 1$}{
     \begin{equation*}
-        P(Y = 1|x^\ell , w ) = \sigma ( w_0+\sum_i x_i x^\ell_i) = \alpha_l
+        P(Y = 1|x^\ell , w ) = \sigma ( w_0+\sum_i w_i x^\ell_i) = \alpha^\ell
     \end{equation*}
 }
 then:
-\dfn{Likelihood Log-likelihood$l(w)$}{
+\dfn{Log-likelihood}{
     \begin{equation}
-        \ell(w) = \sum_\ell \log P(Y = y^\ell | x^\ell, w) = \sum_\ell \left( y^\ell \log(\alpha^\ell) + (1-y^\ell)\log(1-\alpha^\ell) \right)
+        l(w) = \sum_\ell \log P(Y = y^\ell | x^\ell, w) = \sum_\ell \left( y^\ell \log(\alpha^\ell) + (1-y^\ell)\log(1-\alpha^\ell) \right)
     \end{equation}
 }
 
@@ -1386,29 +1395,29 @@ then:
 }
 \pf{Proof}{
 We want to compute the partial derivative $\frac{\partial l(w)}{\partial w_i}$ of the log-likelihood function $l(w)$.
-    First, let's define the components, where $\alpha^\ell = \sigma(z)$ and $z = w_0 + \sum_i w_i x_i^\ell$.
+    First, let's define the components, where $\alpha^\ell = \sigma(z^\ell)$ and $z^\ell = w_0 + \sum_i w_i x_i^\ell$.
 
-    \textit{Step 1: Derivative of $\log(\alpha^\ell)$ w.r.t. $z$}
+    \textit{Step 1: Derivative of $\log(\alpha^\ell)$ w.r.t. $z^\ell$}
     \[
-        \frac{\partial \log(\alpha^\ell)}{\partial z} = \frac{1}{\alpha^\ell} \frac{\partial \alpha^\ell}{\partial z}
+        \frac{\partial \log(\alpha^\ell)}{\partial z^\ell} = \frac{1}{\alpha^\ell} \frac{\partial \alpha^\ell}{\partial z^\ell}
     \]
-    Using the property $\frac{\partial \sigma(z)}{\partial z} = \sigma(z)(1-\sigma(z))$, which is equivalent to $\alpha^\ell(1-\alpha^\ell)$, we get:
+    Using the property $\frac{\partial \sigma(z^\ell)}{\partial z^\ell} = \sigma(z^\ell)(1-\sigma(z^\ell))$, which is equivalent to $\alpha^\ell(1-\alpha^\ell)$, we get:
     \[
-        \frac{\partial \log(\alpha^\ell)}{\partial z} = \frac{1}{\alpha^\ell} (\alpha^\ell (1-\alpha^\ell)) = 1 - \alpha^\ell
+        \frac{\partial \log(\alpha^\ell)}{\partial z^\ell} = \frac{1}{\alpha^\ell} (\alpha^\ell (1-\alpha^\ell)) = 1 - \alpha^\ell
     \]
-    (Note: The slide shows an intermediate step $\frac{\exp(-z)}{1+\exp(-z)}$ which simplifies to $1 - \alpha^\ell$).
+    (Note: The slide shows an intermediate step $\frac{\exp(-z^\ell)}{1+\exp(-z^\ell)}$ which simplifies to $1 - \alpha^\ell$).
 
-    \textit{Step 2: Derivative of $\log(1-\alpha^\ell)$ w.r.t. $z$}
+    \textit{Step 2: Derivative of $\log(1-\alpha^\ell)$ w.r.t. $z^\ell$}
     First, we simplify $\log(1-\alpha^\ell)$:
     \[
-        \log(1 - \alpha^\ell) = \log\left(1 - \frac{1}{1 + \exp(-z)}\right) = \log\left(\frac{\exp(-z)}{1 + \exp(-z)}\right)
+        \log(1 - \alpha^\ell) = \log\left(1 - \frac{1}{1 + \exp(-z^\ell)}\right) = \log\left(\frac{\exp(-z^\ell)}{1 + \exp(-z^\ell)}\right)
     \]
     \[
-        = \log(\exp(-z)) - \log(1 + \exp(-z)) = -z + \log(\alpha^\ell)
+        = \log(\exp(-z^\ell)) - \log(1 + \exp(-z^\ell)) = -z^\ell + \log(\alpha^\ell)
     \]
-    Now, we differentiate this expression with respect to $z$, using the result from step 1:
+    Now, we differentiate this expression with respect to $z^\ell$, using the result from step 1:
     \[
-        \frac{\partial \log(1 - \alpha^\ell)}{\partial z} = \frac{\partial}{\partial z}(-z + \log(\alpha^\ell)) = -1 + (1 - \alpha^\ell) = -\alpha^\ell
+        \frac{\partial \log(1 - \alpha^\ell)}{\partial z^\ell} = \frac{\partial}{\partial z^\ell}(-z^\ell + \log(\alpha^\ell)) = -1 + (1 - \alpha^\ell) = -\alpha^\ell
     \]
    
 
@@ -1417,55 +1426,45 @@ We want to compute the partial derivative $\frac{\partial l(w)}{\partial w_i}$ o
     \[
         l(w) = \sum_\ell \left( y^\ell \log(\alpha^\ell) + (1-y^\ell)\log(1-\alpha^\ell) \right)
     \]
-    We apply the chain rule: $\frac{\partial l(w)}{\partial w_i} = \frac{\partial l(w)}{\partial z} \frac{\partial z}{\partial w_i}$.
+    Using the derivative's properties, we can write:
+    \[
+      \frac{\partial l(w)}{\partial w_i} = \sum_{\ell} \frac{\partial l^\ell(w)}{\partial w_i}
+    \]
+    Where $ l^\ell(w) = y^\ell \log(\alpha^\ell) + (1-y^\ell)\log(1-\alpha^\ell) $ is the log-likelihood for a single sample.
+
+    We can now apply the chain rule: $\frac{\partial l^\ell(w)}{\partial w_i} = \frac{\partial l^\ell(w)}{\partial z^\ell} \frac{\partial z^\ell}{\partial w_i}$.
     
-    First, $\frac{\partial z}{\partial w_i} = x_i^\ell$.
+    First, $\frac{\partial z^\ell}{\partial w_i} = x_i^\ell$.
     
-    Second, we find $\frac{\partial l(w)}{\partial z}$ by differentiating the sum:
-    \[
-        \frac{\partial l(w)}{\partial z} = \sum_\ell \left( y^\ell \frac{\partial \log(\alpha^\ell)}{\partial z} + (1-y^\ell) \frac{\partial \log(1-\alpha^\ell)}{\partial z} \right)
-    \]
-    Substituting the results from steps 1 and 2:
-    \[
-        \frac{\partial l(w)}{\partial z} = \sum_\ell \left( y^\ell (1 - \alpha^\ell) + (1-y^\ell) (-\alpha^\ell) \right)
-    \]
-    \[
-        = \sum_\ell ( y^\ell - y^\ell\alpha^\ell - \alpha^\ell + y^\ell\alpha^\ell ) = \sum_\ell (y^\ell - \alpha^\ell)
-    \]
+    Second, we find $\frac{\partial l^\ell(w)}{\partial z^\ell}$ by substituting the results from steps 1 and 2:
+    \begin{align*} 
+      \frac{\partial l(w)}{\partial z} &= \sum_\ell \left( y^\ell (1 - \alpha^\ell) + (1-y^\ell) (-\alpha^\ell) \right)\\
+      &= \sum_\ell ( y^\ell - y^\ell\alpha^\ell - \alpha^\ell + y^\ell\alpha^\ell )\\
+      &= \sum_\ell (y^\ell - \alpha^\ell)
+    \end{align*}
     Finally, combining the parts with the chain rule:
     \[
-        \frac{\partial l(w)}{\partial w_i} = \frac{\partial l(w)}{\partial z} \frac{\partial z}{\partial w_i} = \left( \sum_\ell (y^\ell - \alpha^\ell) \right) x_i^\ell
+      \frac{\partial l(w)}{\partial w_i} = \sum_{\ell} \frac{\partial l^\ell(w)}{\partial z^\ell} \frac{\partial z^\ell}{\partial w_i} = \sum_\ell \left( (y^\ell - \alpha^\ell)x_i^\ell \right) 
     \]
-    (Note: The slide applies the chain rule slightly differently by summing at the end, leading to the same result presented):
-    \[
-        \frac{\partial l(w)}{\partial w_i} = \sum_\ell \left( \frac{\partial l^\ell(w)}{\partial z} \frac{\partial z}{\partial w_i} \right) = \sum_\ell \left( (y^\ell(1-\alpha^\ell) - (1-y^\ell)\alpha^\ell) x_i^\ell \right)
-    \]
-    \[
-        = \sum_\ell ( (y^\ell - y^\ell\alpha^\ell - \alpha^\ell + y^\ell\alpha^\ell) x_i^\ell ) = \sum_\ell (y^\ell - \alpha^\ell) x_i^\ell
-    \]
-    Thus, we arrive at the final formula:
-    \[
-        \frac{\partial l(w)}{\partial w_i} = \sum_\ell x_i^\ell \cdot (y^\ell - \alpha^\ell)
-    \]
+
+    \textbf{Note:} on the slide the prof makes the mistake of not parameterizing $ z $ over $ \ell $, leading to a result that doesn't make any sense (What is $ x_i^\ell $ outside of the sum? We don't have a value for $ \ell $!). We can fix this by applying the chain rule inside the sum, leading to a valid value for $ z^\ell $.
 }
-Per la regressione logistica
-E' possibile calcolare il gradiente (proporzionale alla distanza dal valore corretto e all'intensita' del parametro relativo)2
 
 \nt{
     previsuly we proved that:
     \[
-        \frac{\partial \log{\alpha^{\ell}}}{\partial z} =\frac{\partial\sigma(z)}{\partial z} = \frac{1}{\sigma(z)}\frac{\partial \sigma(z)}{\partial z} = 1- \sigma(z)
+      \frac{\partial \log{\alpha^{\ell}}}{\partial z^\ell} =\frac{1}{\sigma(z^\ell)}\frac{\partial\sigma(z^\ell)}{\partial z^\ell} = 1- \sigma(z^\ell)
     \]
     hence:
     \[
-        \frac{\partial \sigma(z)}{\partial z} = \sigma(z)(1 - \sigma(z))  
+        \frac{\partial \sigma(z^\ell)}{\partial z^\ell} = \sigma(z^\ell)(1 - \sigma(z^\ell))  
     \]
-    the slope (derivative) of the sigmoid at a point $z$ can be calculated simply using the value of the sigmoid itself at that point. But let's see the graph
+    the slope (derivative) of the sigmoid at a point $z^\ell$ can be calculated simply using the value of the sigmoid itself at that point. But let's see the graph
     \begin{center}
         \includegraphics[width=6cm]{sigmoid_vs_derivate.png}
     \end{center}
 
-    we can see the the derivate of the logistic function is very flat! When the input $z$ is big (negatively of positively) the line of sigmoid is flat this lead the derivative to be  almost zero. 
+    we can see the the derivate of the logistic function is very flat! When the input $z^\ell$ is big (negatively or positively) the line of sigmoid is flat this, leading the derivative to be almost zero. 
 
     If the derivative is zero, the weight updates become zero ($w_i = w_i + 0$), and the model stops learning. This phenomenon, in which the gradients become very small, is known as the \textit{Vanishing Gradient}
 }
@@ -1500,7 +1499,7 @@ To improve the model's ability to generalize to new data and prevent overfitting
         w_i \leftarrow w_i - \mu\lambda|w_i| + \mu \sum_\ell x_i^\ell \cdot (P(Y = y^\ell|x_i;w_i) - y^\ell)
     \]
    
-    \nt{Note: The slide shows a sign flip in the gradient term, which implies a switch from maximizing log-likelihood (Gradient Ascent) to minimizing a negative log-likelihood (Gradient Descent). The logic remains the same: the regularizer always pushes the weight towards zero.}
+    \nt{The slide shows a sign flip in the gradient term, which implies a switch from maximizing log-likelihood (Gradient Ascent) to minimizing a negative log-likelihood (Gradient Descent). The logic remains the same: the regularizer always pushes the weight towards zero.}
     
     The new term $-\mu\lambda|w_i|$ is a penalty proportional to the magnitude of the weight $w_i$, controlled by a new hyperparameter $\lambda$.
     
@@ -1510,3 +1509,38 @@ To improve the model's ability to generalize to new data and prevent overfitting
         \item By penalizing complex models (those with large weights), it tends to reduce overfitting and improve the model's performance on unseen data.
     \end{itemize}
 }
+
+\section{Generative vs Discriminative models}
+In short, the differences between the two machine learning models are as follows:
+\begin{itemize}
+  \item \textbf{Discriminative}: used to learn the \textbf{decision boundary} that separates different classes in the data.
+\item \textbf{Generative}: used to model the \textbf{underlying data distribution}.
+\end{itemize}
+
+Both of these models can be used for data classification (estimating $ f:X \to Y $ or $ P(Y|X) $), but only generative models are used to generate new data or for data augmentation.
+
+\ex{Generative vs Discriminative classifiers}{
+  \textbf{Discriminative} (e.g. Logistic regression)
+  \begin{itemize}
+    \item Assume a distribution for $ P(Y|X) $ or a shape for the discrimination function
+    \item Estimate the parameters for $ P(Y|X) $ (or for the discrimination function) from training data
+  \end{itemize}
+
+  \textbf{Generative} (e.g. Naive Bayes)
+  \begin{itemize}
+    \item Assume a distribution for $ P(X|Y) $ and $ P(X) $
+    \item Estimate parameters for $ P(X|Y) $ and $ P(X) $ from training data
+    \item Use Bayes' rule to infer $ P(Y|X) $
+  \end{itemize}
+}
+
+\subsection{Linear models}
+Both generative and discriminative models can be \textit{linear}, meaning that features are considered independently from one another.
+
+These models become usefull when the training data has a large number of (independent) features, seen as training points in high dimensional space presumably have a very sparse distribution, making it plausible to discriminate classes using hyperplanes.
+
+Said models are usually faster to train relative to more complex non-linear ones. Linear models we've studied so far include:
+\begin{itemize}
+\item Logistic regression: although the function $ \sigma $ is not linear, the way its input varies given the features is.
+\item Naive Bayes: as a classifier, it's linear when considering multinomial or bernullian distributions and in some cases with Gaussian distribution.
+\end{itemize}
