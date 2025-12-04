@@ -24,7 +24,7 @@ the core of montecarlo integration is in a interpretation of the integral as an 
 this identity is crucial because it allows us to use the properties of RVs to compute integrals.
 
 \nt{
-  although an integral it is not usual to appear in this form (for instance $\int_a^bg(x)dx$), we can always rewrite it in this form by choosing a suitable density $f(x)$. For example, if we want to compute $\int_a^bg(x)dx$, we can choose $f(x)$ as the uniform density in $[a,b]$:
+  although an integral it is not usual to appear in this form (for instance $\int_a^bg(x)dx$), we can usually rewrite it in this form by choosing a suitable density $f(x)$. For example, if we want to compute $\int_a^bg(x)dx$, we can choose $f(x)$ as the uniform density in $[a,b]$:
   \[
     f(x) = \begin{cases}
       \frac{1}{b-a} & x \in [a,b] \\
@@ -50,15 +50,17 @@ the value $\hat{I}_n$ is our estimate of the integral $I$.
 Okay, gg for this introduction. Now let us to a concept that explain that:
 
 
-\subsection{The low of Large Numbers and low of Central limit}
+\subsection{The Law of Large Numbers and the Central Limit Theorem}
 
-Consider an infinite sequence of independent and identically distributed (i.i.d.) random variables $X_1, X_2, \dots$ defined on a probability space $(\Omega, \mathcal{F}, P)$. Let these variables have a finite expectation $\mathbb{E}[X_1] = \mu$.
+Consider an infinite sequence of independent and identically distributed (i.i.d.) random variables $X_1, X_2, \dots$ (the independent condition can be relaxed) defined on a probability space $(\Omega, \mathcal{F}, P)$. Let these variables have a finite expectation $\mathbb{E}[X_1] = \mathbb{E}[X_2] = ... = \mu$.
 
 \dfn{Sample mean}{
   it's defined the \textit{sample mean} of the first $n$ variables as:
   \[
   \overline{X}_n = \frac{1}{n} S_n = \frac{1}{n} \sum_{i=1}^n X_i
   \]
+
+  Where $S_n$ is the \textit{partial sum} of the first $n$ values.
 }
 
 The Law of Large Numbers (LLN) describes the convergence of $\overline{X}_n$ to the true parameter $\mu$ as the sample size $n$ approaches infinity. There are two versions of this law, distinguished by the type of convergence.
@@ -80,23 +82,15 @@ The Law of Large Numbers (LLN) describes the convergence of $\overline{X}_n$ to 
 }
 
  \nt{
-  If the random variables also have a finite variance $Var(X_i) = \sigma^2 < \infty$, then the variance of the sample mean decreases linearly with $n$:
+  If the random variables also have a finite variance (they have to also be independent) $Var(X_i) = \sigma^2 < \infty$, then the variance of the sample mean decreases linearly with $n$:
   \[
     Var(\overline{X}_n) = Var\left(\frac{1}{n}\sum_{i=1}^n X_i\right) = \frac{1}{n^2}\sum_{i=1}^n Var(X_i) = \frac{n\sigma^2}{n^2} = \frac{\sigma^2}{n}
   \]
   }
 
   \ex{Code in R() for SLLN}{
-
-  \lstinputlisting[language=R]{code/Examples/MC_Int/slln.r}
+    \lstinputlisting[language=R]{code/Examples/MC_Int/slln.r}
   }
-
-So we have convergence in:
-\begin{itemize}
-  \item Probability (weak)
-  \item A.S. (?) (strong)
-\end{itemize}
-TODO: understand this
 
 While the Law of Large Numbers guarantees that the sample mean converges to the true expectation, the Central Limit Theorem (CLT) describes the \textit{distribution} of the error for large sample sizes. This allows us to quantify the uncertainty of our Monte Carlo estimates.
 
@@ -107,7 +101,7 @@ While the Law of Large Numbers guarantees that the sample mean converges to the 
     \item Finite variance: $Var(X_i) = \sigma^2 < \infty$
   \end{itemize}
 
-  Then, the random variable $\sqrt{n}(\overline{X}_n - \mu)$ converges in \textit{distribution} to a Normal random variable with mean 0 and variance $\sigma^2$ as $n \to \infty$:
+  Then, the random variable $\sqrt{n}(\overline{X}_n - \mu)$ (it's a linear transformation of a RV, so still a RV) converges in \textit{distribution} to a Normal random variable with mean 0 and variance $\sigma^2$ as $n \to \infty$:
   \[
     \sqrt{n}(\overline{X}_n - \mu) \xrightarrow{d} \mathcal{N}(0, \sigma^2)
   \]
@@ -128,12 +122,16 @@ This approximation justifies the construction of asymptotic confidence intervals
 \]
 In practice, since the true variance $\sigma^2$ is unknown, it is replaced by the sample variance estimator $S_n^2$.
 
-
-
 We can now say something about the uncertainty of the result by using the gaussian.
 
 \section{Numerical Deterministic Aproach}
-Most of the time, this works and should be prefered. In R they are implemented as the functions \textit{area} (can't use infty) and \textit{integrate}. They don't work with multiple dimensions and we need some information about the funciton to integrate.
+Most of the time, this works and should be prefered. In R they are implemented as the functions
+\begin{itemize}
+  \item \textit{Integrate}: can be unstable (integrand needs to be "well behaved")
+  \item \textit{Area}: needs bounded domain (can't use infinity), so additional information about function to integrate. In package MASS
+\end{itemize}
+ 
+These only work for one-dimensional funcitons, whereas Montecarlo works for multiple parameters.
 
 \section{Montecarlo Method}
 Okay, let's formalize the montecarlo method for integration.
@@ -199,3 +197,20 @@ Here integrate works correctly.
   
   In this case, integrate doesn't work (as the mean of the distribution isn't defined). Area works, but we need to know where to integrate so it's kinda useless.
 }
+
+\subsection{Calculating expectation and variance}
+This method is very usefull for approximating the expected value and the variance of a distribution. This can be done by setting $h(x)$ to specific values:
+
+\begin{itemize}
+  \item $h(X) = X$: by setting the function as a constant, we just get the formula for the expectation of $f$
+  \[
+    \overline{X}_n \rightsquigarrow \int_{D} x f(x) dx
+  \]
+  Which is expected seen as the sample mean is an \textit{unbiased estimator} of the expected value in a population.
+
+  \item $h(X) = (X - E_f\left[X\right])^2$: in this case we get the formula for the variance of $X$:
+  \[
+    \int_D (x - E\[X\])^2 f(x) dx
+  \]
+\end{itemize}
+
