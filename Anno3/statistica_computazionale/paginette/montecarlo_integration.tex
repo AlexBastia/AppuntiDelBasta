@@ -210,7 +210,7 @@ This method is very usefull for approximating the expected value and the varianc
 
   \item $h(X) = (X - E_f\left[X\right])^2$: in this case we get the formula for the variance of $X$:
   \[
-    \int_D (x - E\[X\])^2 f(x) dx
+    \int_D (x - E[X])^2 f(x) dx
   \]
 \end{itemize}
 
@@ -230,7 +230,7 @@ It's possible to assert this visually by looking at the purple lines: if they do
   \]
   We can set $ h(X) = 1_{X \leq t} $ (indicator function), as it works for all values of $ t $ and doesn't change the value.
 
-  \lstinputlisting[language=R]{code/Examples/MC_Int/Ex_3_4.R}
+  \lstinputlisting[language=R]{code/Examples/MC_Int/Ex3_4.R}
 
   If we want a precision of four decimals, we need to set
   \[
