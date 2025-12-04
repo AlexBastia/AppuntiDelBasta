@@ -207,7 +207,33 @@ It measures the average impurity that remains in $X$ after splitting the data us
     \]
 }
 
-% TODO: LA PARTE DELLA CONITINUITÀ
+\section{Pros and Cons}
+Positive aspects:
+\begin{itemize}
+    \item Explainable: decision trees can be easy to understand and can be visualized
+    \item Inexpensive: low data preprocessing and low prediction constructed
+    \item Both discrete and continuous
+\end{itemize}
+
+Negative aspects:
+\begin{itemize}
+    \item Too descriptive: high risk of overfitting to training data
+    \item Unbalanced: disproportionate training data (eg. medical diagnosis for rare disease) can be a problem
+\end{itemize}
+
+Let's see how we can fix some of these issues.
+
+\section{Random Forests}
+We use an \textbf{ensamble} of decision trees. This usually gives better results than a single component on its own.
+
+The various tree components have to be sufficiently uncorrelated, we can achieve this in various ways:
+\begin{itemize}
+    \item \textbf{Bagging}: components are trained on different random subsets of the training data
+    \item \textbf{Feature Randomness}: different components are built starting from a random subset of features
+\end{itemize}
+
+These techniques help reduce overfitting and improve the overall stability of the model.
+
 \chapter{Overfitting}
 Let us consider the error of the hypothesis $h$
 \begin{itemize}

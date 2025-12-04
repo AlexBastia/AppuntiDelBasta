@@ -201,7 +201,7 @@ P(A) &= P((A \cap B) \cup (A \cap \neg B)) \\
     Events $A$ and $B$ are independent when:
     \begin{center}
         \begin{math}
-            P(A\mid  B) = P(B)
+            P(A\mid  B) = P(A)
         \end{math}
     \end{center}
 }
@@ -851,10 +851,15 @@ The MLE is obtained by maximizing this likelihood (or equivalently its logarithm
     Since the second derivative is negative for $\theta \in (0,1)$, this confirms a maximum
 }
 
+\nt{
+    This result can also be obtained by using the \textbf{binomial} distribution instead of the dataset likelyhood (which is basically the same thing without the constant factor).
+    This is the approach seen in class, where we maximized $P(X^n = a_0 | \theta)$ (where $X^n$ is the number of 0 in $D$) as opposed to $L(\theta | D)$.
+}
+
 \subsection{Multivalued case}
 Now I presented the formula just for two possible cases using the Bernoulli distribution, and for multivalued cases? WE HAVE THE \textit{multinomial distribution}
 
-\nt{Multinomial distribution is $P(X^n = \alpha_i\mid \theta) = c_{\alpha_i} \prod_{i}\theta_{i}^{\alpha_i}$. where $\alpha_i$ is the number of i in the sequence and $ c_{a_i}$ is a combinatorial constant not depending on $\theta$
+\nt{Multinomial distribution is $P(X^1 = \alpha_1, X^2 = \alpha_2, ..., X^n = \alpha_n \mid \theta) = c \prod_{i}\theta_{i}^{\alpha_i}$. where $\alpha_i$ is the number of 'i' outcomes in the sequence and $ c $ is a combinatorial constant not depending on $\theta$.
 }
 
 \thm{MLE for Discrete Distributions}{
@@ -866,7 +871,12 @@ Now I presented the formula just for two possible cases using the Bernoulli dist
     \]
 }
 \pf{Proof}{
-    Basta exercice
+    We want to maximize $P(X^n = \alpha | \theta) = c \prod_i \theta_i^{\alpha_i}$ with respect to $\theta$. We can ignore $c$ as it's a positive factor and take the logarithm as before.
+    So we end up with:
+    \[
+        \theta_{\text{MLE}} = arg max_{\theta} \alpha_1 log(\theta_1) + \alpha_2 log(\theta_2) + ... + \alpha_n log(\theta_n)
+    \]
+    Solving this seems kinda crazy, so I think the best approach is to consider $\theta_2 + ... + \theta_n = 1 - \theta_1$ and use the single variable case to prove for each $\theta_i$.
 }
 
 \cor{MLE for Naïve Bayes Parameters}{
