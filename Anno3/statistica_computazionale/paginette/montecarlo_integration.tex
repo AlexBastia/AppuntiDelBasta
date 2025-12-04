@@ -214,3 +214,63 @@ This method is very usefull for approximating the expected value and the varianc
   \]
 \end{itemize}
 
+
+\nt{
+  It's possible to sample a long sequence and reuse it for different integrals with the same density, seen as integration is not a random operation. Meanwhile, we can't do the same for sampling as it's inherintly random.
+}
+
+\subsection{Considerations}
+Monte Carlo error $ v_n $ is a bonus, and it's not always a proper estimate (when the function is not square-integrable).
+It's possible to assert this visually by looking at the purple lines: if they don't converge or converge too slowly, the error isn't computable.
+
+\ex{Rare Classical Monte Carlo L}{
+  Consider the CDF of a normal distribution:
+  \[
+    \Phi(t) = \int_{-\infty}^{t} \frac{1}{\sqrt{2\pi}} e^{-y^2/2} dy
+  \]
+  We can set $ h(X) = 1_{X \leq t} $ (indicator function), as it works for all values of $ t $ and doesn't change the value.
+
+  \lstinputlisting[language=R]{code/Examples/MC_Int/Ex_3_4.R}
+
+  If we want a precision of four decimals, we need to set
+  \[
+    2 \sqrt{\frac{1}{4n}} \leq 10^{-4}
+  \]
+  Which gives $ n = 10^8 $ needed samples from the distribution, crazy. This is even more problematic as we move from the center towards lower values.
+
+  This is a problem inherent to the formulation of the integral itself.
+}
+
+\section{Importance Sampling}
+This is still a method to compute integrals (name is counter-intuitive). It still uses the LLN, it's just a chep trick.
+\[
+  E_f[h(X)] = \int_{D}^{}h(x)f(x) dx = \int_{D}^{}h(x)\frac{f(x)}{g(x)}g(x) dx
+\]
+where $ g(x) $ is the \textbf{proposal distribution} (like in AR alg). We can now take the first part of the integrand and set it as a new function
+\[
+  \int_{D}^{}h'(x)g(x)dx = E_g\left[\frac{h(X)f(X)}{g(X)}\right]
+\]
+The difference is that now we're not sampling from $ f $, but from our proposal $ g $ that we chose.
+
+\subsection{Conditions}
+\begin{itemize}
+  \item Support of $ (h \times f) $ is contained in the support of $ g $
+  \item $ Var(h(X)f(X)/g(X)) < \infty$, which basically means that the tails of $ g $ have to be heavier
+\end{itemize}
+
+\subsection{Algorithm}
+\begin{enumerate}
+  \item Sample from $ g(x) $
+  \item Transform as $ \frac{f(x)h(x)}{g(x)} = w h(x) $, where $ w $ is the \textit{importance weight} (so we compute the weighted avg. of $ h(x) $)
+\end{enumerate}
+
+\ex{3.4}{
+  $ E_f[h(X)] $ when $ f $ is a normal pdf (standard gaussian), $ h(x) = exp \{- \frac{(x-3)^2}{2}\} + exp \{-\frac{(x-6)^2}{2}\} $
+  \begin{enumerate}
+    \item Show that the expectation can be computed in closed form (not needed)
+    \item Build a classical MC approx of the expectation using a sample from $ N(0,1) $ of size $ 10^3 $ and also produce an error evaluation $ v_n $
+    \item
+  \end{enumerate}
+
+
+}
