@@ -2,35 +2,74 @@
 \chapter{Neural Networks}
 Only known way to implement deep learning. 
 
-An artificial neuron has a set of inputs that are summed with a bias, and the output is calculated using an ctivation function. invented in the '50 with the name 'perceptron', the activation function was discrete (0 or 1). This method is obsolete because it doesn't permit training. The function musn't be linear, because we want to sequencially compose neurons and the composition of linear functions is just another linear function and deosn't add any complexity (could be calculated with just one neuron). 
+\section{The Artificial Neuron}
+A \textit{Neural Network} is a structure that closly mimics the brain, as it's composed by interconnected layers of \textit{artificial neurons} that work together to create an output.
 
-There are different activation functions (threshol, logistic, hyperbolic, rectified linear (newest used in AlexNet, big jump)). 
+An artificial neuron has a set of inputs that are summed with a bias, and the output is calculated using an activation function. The function mustn't be linear, because we want to sequencially compose neurons and the composition of linear functions is just another linear function and doesn't add any complexity (could be calculated with just one neuron). 
+
+There are different activation functions (threshold, logistic, hyperbolic, rectified linear (newest used in AlexNet, big jump)). 
 
 The name neuron comes from the biological counterpart (obviously) which works in a similar way:
+
+\begin{center}
+  \includegraphics[width=0.4\textwidth]{cortical-neuron.png}
+\end{center}
+
 \begin{itemize}
   \item Dendritic tree: connections with other neurons (synapses)
     \item In the body the inputs are summed and passed through the axon hilock, which performs a sort of thresholding before being passed to other neurons
 \end{itemize}
 
-Comparing artificial neural networks to our brains, the number of neurons can be similar ($ 2\cdot 10^{10} $for the biggest models), but the sheer size doesn't necessarily correlate to a more intelligent system (other animals have bigger brains), we actually don't really know what else there is. The switching time for real neurons is actually slower than artificial ones, seen as it's a chemical reaction and not electrical. Each neuron is connected to meny other neurons in the brain ($ 10^{4-5} $), reaching reaction times $ < 100 $, so the brain isn't very deep (number of intermediate nodes) and it's very parallelised.
+Comparing artificial neural networks to our brains, the number of neurons can be similar ($ 2\cdot 10^{10} $for the biggest models), but the sheer size doesn't necessarily correlate to a more intelligent system (other animals have bigger brains), we actually don't really know what else there is. The switching time for real neurons is actually slower than artificial ones, seen as it's a chemical reaction and not electrical. Each neuron is connected to many other neurons in the brain ($ 10^{4-5} $), reaching reaction times $ < 100 $, so the brain isn't very deep (number of intermediate nodes) and it's very parallelised.
 
 \section{Topologies}
 \dfn{Feed-forward}{
   Acyclic networks with unidirectional data flux.
 }
 \nt{
-  Our brains are cyclic networks.
+  Our brains are cyclic networks (also called \textit{recurrent}), but we won't be studying this case.
 }
 
 \subsection{Layers}
 The network is built by sets of structured neurons that are combined to build the whole.
 
-For each dense layer, each neuron has an input, weights, a constant bias from which an output is calculated. This operation can be parallelised using the whole layer with a matrix of weights and a vector of biases, using the same inputs over all the neurons. The input is a vector in multiple dimensions (tensor), and after algebraic manupulations a new tensor is returned. 
+\begin{center}
+  \includegraphics[width=0.4\textwidth]{img/layers}
+\end{center}
+
+Based on the number of layers, we have that a NN is:
+\begin{itemize}
+  \item \textbf{Shallow}: if there is only one hidden layer.
+  \item \textbf{Deep}: if there are multiple hidden layers.
+\end{itemize}
+
+\subsubsection{Dense layers}
+\dfn{Dense layer}{
+  A layer in a NN is called \textbf{dense} when neurons in adjacent layers are all interconnected.
+}
+
+For each dense layer, each neuron has an input $I^n$, weights $W^n$ and a constant bias $B^1$ from which an output $O^1$ is calculated.
+\[
+    I^n \cdot W^n + B^1 = O^1
+\]
+This operation can be parallelised using the whole layer with a matrix of weights $W^{n \times m}$ (one array of weights for each neuron) and a vector of biases, using the same inputs over all the neurons. The input is a vector in multiple dimensions (tensor), and after algebraic manupulations a new tensor is returned. 
+
+\nt{
+  Dense layers usually work on \textit{flat} (unstructured) inputs, where the order of the elements is irrelevant.
+}
 
 \section{Features and deep features}
 
-TODO: manca una lezione intera
+TODO: manca sta parte qua che fa jumpscare alla fine della lezione del 24 ottobre ma che il 6 novembre non la fa
+TODO: boh ma sta roba qua non so dove sta, forse non l'ha fatta
 TODO: @bastini plz finiscie te, che altrimenti questi mi diventano ApuntiDelGiolaBambas
+Re: Yes yes ora mi sta mettendo a fare
+
+\section{Successful Applications}
+TODO: queste slide non ce le abbiamo, guardero la videolezione dove non si sente niente
+\subsection{Image Processing}
+\subsection{Natural Language Processing}
+\subsection{Generative Modeling}
 
 \section{Expressiness}
 This part begins with an important question: \textit{Can we compute any function by means of a Neural Network?}.
@@ -271,7 +310,7 @@ Before applying we must formally define the function computed by the neural netw
 
 So by the definition \ref{dfn:compositefunction} the neural network with $L$ layers computes the following function:
 \[
-  \sigma(b^L + w^L \cdot \sigma(b^{L-1} + w^{L-1} \cdot \sigma( \dots \sigma(b^1 + w^1 \cdot x^1) ))
+  \sigma(b^L + w^L) \cdot \sigma(b^{L-1} + w^{L-1} \cdot \sigma( \dots \sigma(b^1 + w^1 \cdot x^1) ))
 \]
 
 \nt{
@@ -354,11 +393,6 @@ We have to traverse the dense part. The parameters we're interested in are the p
 We can calculate all partial derivatives with respect to $ z $, but we don't want this, we want $ b $. But in reality we just need to multiply by the derivative with respect to $ b $ of $ z = ... $, which is one. So the two values are the same. We can do the same for $ w $, which has derivative $ x^l $, which is the last layer's output ??.
 
 We don't really need to know all the formulas, just the main concept.
-
-\section{Convolutions}
-Each filter creates a different feature map. To manage these, the easiest way is to concatenate thembegin
-
-% \end{document}
 
 \section{Filter and convolution}
 
@@ -453,3 +487,17 @@ It is equal to the dimension of an input image producing (without padding) an ou
   A neuron cannot see anything outside its receptive field
 }
 
+\section{CNNs and Transfer Learning}
+TODO: 21 Nov (non registrata) - slides 5 (ma non so se sono giuste / cosa ha davvero fatto)
+
+\section{How to fool a Neural Network}
+TODO: 28 Nov - slides6
+\subsection{Adversarial attacks}
+\subsection{Data Manifolds}
+\subsection{Autoencoders}
+
+\section{Generative Models}
+TODO: 4 Dic - slides7
+
+\section{Generative Adversarial Networks}
+TODO: 5 Dic - slides8
