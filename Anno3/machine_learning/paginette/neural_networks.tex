@@ -65,11 +65,157 @@ TODO: boh ma sta roba qua non so dove sta, forse non l'ha fatta
 TODO: @bastini plz finiscie te, che altrimenti questi mi diventano ApuntiDelGiolaBambas
 Re: Yes yes ora mi sta mettendo a fare
 
-\section{Successful Applications}
-TODO: queste slide non ce le abbiamo, guardero la videolezione dove non si sente niente
+\section{Successful Applications} % slides2 - 6 Nov
 \subsection{Image Processing}
-\subsection{Natural Language Processing}
+
+\subsubsection{ImageNet}
+High resolution labeled image dataset covering 22k object classes.
+
+A competition is held each year to classify given images.
+\\
+\textbf{Relevance}
+
+Classfication models are typically composed of two parts:
+\begin{itemize}
+\item \textbf{Front-end}: extracts features from the input image and convers them into a vector
+\item \textbf{Back-end}: uses the extracted features for classification
+\end{itemize}
+ImageNet is still importand because a front-end, \textbf{pre-trained over ImageNet}, can be reused for a lot of different applications (\textit{transfer learning}).
+
+\subsubsection{Object Detection}
+YOLO (You Only Look Once) is a real-time object detection system. It's a smilar problem to image classification, but has the extra functionality of localizing the object using a bounding box (smallest possible rectangle containing the object) inside the image.
+
+The model actually returns many thousands of possible bounding boxes from an image, each with its own weight. It's up to another piece of software to select which ones to keep.
+
+\subsubsection{Image Segmentation}
+Segmentation adds even more detail to object detection by classifying each pixel (so basically object detection but with the bounding box being the actual outline of the object).
+
+\subsubsection{Key-points detection}
+Finds specific areas of an object to track (e.g. eyes, joints, ecc. to analyse human position/movement).
+
+\subsubsection{Applications}
+\begin{itemize}
+\item Medical imaging
+  \item Autonomous driving
+  \item Pose estimation
+  \item Activity recognition
+  \item Video surveillance
+  \item ...
+\end{itemize}
+
 \subsection{Generative Modeling}
+The objective of generative modeling is to learn the \textbf{distribution} $ P(X) $ of training data - that is how points are distributed inside the feature space thay inhabit.
+
+Typically, we aim to build a \textbf{generator} able to \textbf{sample} points according to the learned distribution.
+
+But NN are \textbf{deterministic systems}, so how can we simulate a stochastic sampling procedure?
+
+\subsubsection{The generator}
+We know how to build \textbf{pseudo-random generators} for simple, known distributions (e.g. Gaussian).
+
+So the problem reduces to learn a \textbf{transformation} mapping the known distribution to the actual distribution $ P(X) $.
+
+Morally, the generator learns $ P(X|z) $, where $ z $ is the "\textbf{latent}" rapresentation of $ X $.
+
+\subsubsection{Ancestral sampling}
+Generation is thus a two stage process:
+\begin{itemize}
+\item Sample $ z $ according to a known prior distribution
+\item Pass $ z $ as input to the generator, and process it to get a significant output.
+\end{itemize}
+
+Generative models (GANs, VAEs, Diffusion, ...) differ in the way the generatoris trained.
+
+\subsubsection{The latent space}
+The source space is the so called latent space.
+
+Each latent point $ z $ contains \textbf{all information} needed to generate a complete sample, hence it can be seen as an \textbf{internal encoding} (latent representation) of the given sample.
+
+Latent values must be disseminated with a \textbf{known, regular distribution} in their space (the so called prior distribution).
+
+Important things to keep in mind:
+\begin{itemize}
+\item \textbf{Any} face is somewhere in the latent space
+\item Generation is a \textbf{continuous} process: small modifications of the encoding produce small modifications of the output
+\end{itemize}
+
+\nt{
+  Latent space points are also often compressed versions of the explicit representation, meaning they take up less phisical space.
+}
+
+\subsubsection{Conditional generation}
+The generator tries to model $ P(X|z,c) $ where $ c $ is a condition integrating the latent encoding $ z $. This condition can be:
+\begin{itemize}
+\item A label
+\item A segmentation
+\item A text prompt
+\item Another image
+\item A sequence of frames
+\item ...
+\end{itemize}
+
+\subsection{Natural Language Processing}
+Main subfields in NLP
+\begin{itemize}
+\item \textbf{Natural language Understanding}: focus on interpreting and extracting meaning rom human language, includes
+  \begin{itemize}
+  \item sentiment analysis
+  \item named entity recognition (NER)
+  \item question answering
+  \end{itemize}
+\item \textbf{Natural Language Modeling}: focus on producing human-like text, includes
+  \begin{itemize}
+  \item text summarization
+  \item dialogue generation
+  \item story writing
+  \item retrieval augmented generation
+  \end{itemize}
+\end{itemize}
+\textbf{Speech recognition/generation} is an additional topic bridging text and audio.
+
+\subsubsection{Embeddings}
+NLU instruct models to understand context, ambiguity and nuances in language.
+
+All previous tasks require a meaningful representation of words, provided by \textbf{embeddings}.
+
+\dfn{Embeddings}{
+  Mappings of words/sentences into a high-dimensional vector space. They help models understand relationships beween words, such as similarity, analogy and context.
+}
+
+These embeddings form the latent space of text representation, where the same transformations (e.g. going from singular to plural) have the same transformation vector.
+
+\subsubsection{Bridging text and images}
+CLIP (Contrastive Language-Image Pretraining) is a recent technology that allows the joint analysis of text and images.
+
+It's trained on a dataset of text-image pairs, both mapped to a shared latent space where similar pairs have closer embeddings.
+
+\subsubsection{Language modeling}
+Images involve spatial relationships, often modeled \textbf{holistically} or in parallel.
+
+NLP operates on \textbf{sequences} of tokens (words or subwords) where order is critical.
+
+Given a sequence $ x $ of tokens $ x_1x_2...x_n $, we are interested in modeling the mechanisms underlying their concatenation.
+
+Generative models estimate the joint probability of a text sequence
+\[
+  P(x_1x_2...x_n)
+\]
+This can be broken into \textbf{conditional probabilities} using the \textbf{chain rule}
+\[
+  P(x_1)P(x_2|x_1)P(x_3|x_1x_2)...P(x_n|x_1...x_{n-1})
+\]
+In practice, you can train the model to guess the next token completing the given sequence, enabling \textbf{sequential generation}(each token depends on its predecessor.
+
+Different possible approaches are:
+\begin{itemize}
+  \item \textbf{N-grams}: estimate probabilities based on fixed window size (ex. Bigram model uses $ P(x_n|x_{n-1}) $). The main limitation is that it can't capture long-range dependencies.
+  \item \textbf{Deep NN}:
+    \begin{itemize}
+    \item \textbf{Recursive NN}: introduce sequence processing but strugle with long term dependencies
+    \item \textbf{Transformers}: with \textbf{self-attention} they can handle long-range context efficiently and are the foundation for modern NLP
+    \end{itemize}
+\end{itemize}
+
 
 \section{Expressiness}
 This part begins with an important question: \textit{Can we compute any function by means of a Neural Network?}.
@@ -287,7 +433,7 @@ In order to calculate the gradients needed for the gradient descent algorithm, w
   \[ h'(x) = f'(y) \cdot g'(x)\]
 }
 
-The derivative of a composition of a sequence of functions is the \textbf{product of the derivatives of the individual functions}. This function is iterable, so for each layer we multiply its derivative by its forward input (which is why we need to memorise it).
+The derivative of a composition of a sequence of functions is the \textbf{product of the derivatives of the individual functions}. This function is iterable, so for each layer we multiply its derivative by the derivative of its forward input (which is why we need to memorise it).
 
 \nt{
 Binary thresholding has null derivative everywhere (its a step function), so it would ruin the chain.
@@ -304,13 +450,13 @@ Before applying we must formally define the function computed by the neural netw
   \begin{itemize}
     \item $\sigma$ is the activation function
     \item $z^l = b^l + w^l \cdot x^l$ is the weighted input at layer $l$
-    \item $x^{l+1}=a^l, x^=x$ (in fact the output of layer $l$ is the input of layer $l+1$)
+    \item $x^{l+1}=a^l, x^1=x$ (in fact the output of layer $l$ is the input of layer $l+1$)
   \end{itemize} 
 }
 
 So by the definition \ref{dfn:compositefunction} the neural network with $L$ layers computes the following function:
 \[
-  \sigma(b^L + w^L) \cdot \sigma(b^{L-1} + w^{L-1} \cdot \sigma( \dots \sigma(b^1 + w^1 \cdot x^1) ))
+  \sigma(b^L + w^L \cdot \sigma(b^{L-1} + w^{L-1} \cdot \sigma( \dots \sigma(b^1 + w^1 \cdot x^1) )))
 \]
 
 \nt{
@@ -376,23 +522,6 @@ This graph is crucial for understanding the vanishing gradient problem. As we ca
 
 In contrast, the Relu function doesn't have this problem as its derivative is either 0 or 1.
 
-\section{Roba che devo ancora controllare}
-\begin{itemize}
-\item $ a^l $ is the \textbf{activation vector}
-\item $ z^l $ is the \textbf{weighted input}
-\item $ x^{l+1} = a^l, x^1 = x $
-\end{itemize}
-
-Partial derivative
-\[
-\delta^l = \frac{\delta E}{\delta z^l}
-\]
-
-We have to traverse the dense part. The parameters we're interested in are the parameters of the linear transformation. We transpose the matrix to calculate the layer at level $ l+1 $. 
-
-We can calculate all partial derivatives with respect to $ z $, but we don't want this, we want $ b $. But in reality we just need to multiply by the derivative with respect to $ b $ of $ z = ... $, which is one. So the two values are the same. We can do the same for $ w $, which has derivative $ x^l $, which is the last layer's output ??.
-
-We don't really need to know all the formulas, just the main concept.
 
 \section{Filter and convolution}
 
@@ -424,10 +553,10 @@ The convulution is an operation between two functions that produces a third func
   In a convolutional layer, each neuron produces a single value of the output feature map, which appears as one “pixel" in the resulting matrix.
 }
 
-in the neural networks, each neruon is linked to the first hidden layer. If we had a $1000 \times 1000$ pixel image ($1M$ inputs) and a hidden layer of $1000$ neurons, we would need one billion weights ($10^9$ connections)— impossible to manage computationally. One of the main carateristics of convutional laters is the \textit{local connectivity}, each neuron is connected only to a small region of the input image, called the receptive field. This drastically reduces the number of parameters and computations required, making it feasible to process high-dimensional inputs like images. 
+In the neural networks, each neruon is linked to the first hidden layer. If we had a $1000 \times 1000$ pixel image ($1M$ inputs) and a hidden layer of $1000$ neurons, we would need one billion weights ($10^9$ connections)— impossible to manage computationally. One of the main carateristics of convutional layers is the \textit{local connectivity}, each neuron is connected only to a small region of the input image, called the receptive field. This drastically reduces the number of parameters and computations required, making it feasible to process high-dimensional inputs like images. 
 Another important characteristic is \textit{weight sharing}, where the same set of weights (the filter or kernel) is used across different spatial locations of the input. This means that the same feature can be detected regardless of its position in the image, enhancing the model's ability to generalize and reducing the number of unique parameters that need to be learned.
 
-with a cascade of convolutional filters and pooling layers, the network can learn hierarchical features, from low-level edges and textures in the early layers to high-level object parts and entire objects in the deeper layers. This hierarchical feature learning is crucial for tasks like image classification, object detection, and segmentation.
+With a cascade of convolutional filters and pooling layers, the network can learn hierarchical features, from low-level edges and textures in the early layers to high-level object parts and entire objects in the deeper layers. This hierarchical feature learning is crucial for tasks like image classification, object detection, and segmentation.
 
 \subsection{About the relevance of convolutions for image processing}
 An image is coded as a numerical matrix (array) grayscale (0-255) or rgb (triple 0-255)
@@ -489,6 +618,7 @@ It is equal to the dimension of an input image producing (without padding) an ou
 
 \section{CNNs and Transfer Learning}
 TODO: 21 Nov (non registrata) - slides 5 (ma non so se sono giuste / cosa ha davvero fatto)
+TODO: Potrebbe anche aver finito le slide 4, chi lo sa
 
 \section{How to fool a Neural Network}
 TODO: 28 Nov - slides6
