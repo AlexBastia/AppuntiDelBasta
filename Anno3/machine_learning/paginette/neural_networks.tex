@@ -217,7 +217,7 @@ Different possible approaches are:
 \end{itemize}
 
 
-\section{Expressiness}
+\section{Expressiveness}
 This part begins with an important question: \textit{Can we compute any function by means of a Neural Network?}.
 If so, every function must have a corresponding set of weights that, when applied to a Neural Network, induce the calculation of said function.
 But before that, we must first ask: \textit{Can we compute any function with a single neuron?}
@@ -620,14 +620,133 @@ It is equal to the dimension of an input image producing (without padding) an ou
 TODO: 21 Nov (non registrata) - slides 5 (ma non so se sono giuste / cosa ha davvero fatto)
 TODO: Potrebbe anche aver finito le slide 4, chi lo sa
 
-\section{How to fool a Neural Network}
-TODO: 28 Nov - slides6
-\subsection{Adversarial attacks}
-\subsection{Data Manifolds}
-\subsection{Autoencoders}
+\section{Autoencoders}
+An \textbf{autoencoder} is a network trained to reconstruct input data out of a learned internal representation.
 
-\section{Generative Models}
-TODO: 4 Dic - slides7
+Usually, the internal representation has lower dimensionality w.r.t. the input data. This compression is made possible by exploiting \textbf{regularities} (correlatins) in the features describing the input data.
 
-\section{Generative Adversarial Networks}
-TODO: 5 Dic - slides8
+\nt{
+  The higher the \textbf{entropy} of the structure of the input data, the lower the amount of possible compression is.
+}
+
+The type of compression is:
+\begin{itemize}
+\item \textbf{Data-specific}: only works well on data with strong correlations.
+\item \textbf{Lossy}: the output is degraded w.r.t. the input.
+\item \textbf{Directly trained}: on unlabeled data samples (\textbf{self-supervised} training).
+\end{itemize}
+
+Because of its lossy nature, autoencoders aren't great for compression. But they can be used for:
+\begin{itemize}
+\item Data denoising
+\item Anomaly detection
+\item Feature extraction
+\item Generative models
+\end{itemize}
+
+\section{Generative Models} % 4 Dic - slides7
+\dfn{Generative Model}{
+  A model that tries to learn the actual distribution $ p_{\text{data}} $ of real data from available samples (training set).
+}
+
+We can either try to
+\begin{itemize}
+\item explicitly estimate the distribution
+\item build a generator able to sample according to $ p_{\text{model}} $
+\end{itemize}
+The second approach is used the most.
+
+\subsection{Latent-variable Models}
+The generative process is modelled as
+\[
+  P(X) = \int_{}^{}P(X|z)P(z)dz
+\]
+where
+\begin{itemize}
+  \item $ P(z) $ is the \textbf{prior distribution} over latent variables (typically Gaussian)
+  \item $ P(X|z) $ is the likelyhood function approximated by the deteministic generator $ G(z) $.
+\end{itemize}
+
+Generators decode points in the latent space to produce output. Seen as they're continuous, we can identify \textbf{trajectories} for editing and manipulating the latent representation of the data directly.
+
+\subsection{Training Generators}
+We need to model $ P(X|z) $, which associates an image $ X $ with a latent variable $ z $. The problem is that we don't have labled data pairs $ (z, X) $:
+\begin{itemize}
+\item If we start with a real image, we need to determine its corresponding latent encoding in some way.
+\item If we start with an encoding, we must decide what image to generate and identify the factors that could drive this generation.
+\end{itemize}
+
+There are three main classes of generators based on training method:
+\begin{itemize}
+  \item \textbf{Variational Autoencoders} (VAEs)
+  \item \textbf{Generative Adversarial Networks} (GANs)
+  \item \textbf{Diffusion Models}
+\end{itemize}
+
+\subsection{Variational Autoencoders}
+The generator is coupled with an \textbf{encoder} producing a latent encoding $ z  $ given $ X $ distributed according to an inference distribution $ Q(z|X) $.
+
+The loss function aims to:
+\begin{itemize}
+  \item minimize the reconstruction error between $ X $ and $ \hat{X} $
+  \item bring the marginal inference distribution $ Q(z) $ close to the prior $ P(z) $
+\end{itemize}
+
+It's approach is reminiscent of the autoencoder idea.
+
+
+\subsection{Generative Adversarial Networks} % slides 8 - 5 Dic
+The generator is coupled with a \textbf{discriminator} trying to tell apart \textbf{real} data from \textbf{fake} data produced by the generator.
+
+The detector and generator are trained together, the loss function aims to:
+\begin{itemize}
+\item instruct the detector to spot the generator
+\item instruct the generator to fool the detector
+\end{itemize}
+
+This behaviour can be formalized as a \textbf{Min-Max game}, where the detector wants to maximize the amount of correct guesses and the generator wants to minimize this amount
+\[
+  Min_GMax_DV(D,G)
+\]
+Where
+\[
+  V(D,G) = E_{x\sim p_{\text{data}}(x)}[\log D(x)] + E_{z\sim p_{z}(z)}[\log(1-D(G(z)))]
+\]
+The two terms represent:
+\begin{itemize}
+\item The negative cross-entropy of the discriminator w.r.t. the true data distribution $ p_{\text{data}} $
+\item The negative corss-entropy of the "false" discriminator w.r.t. the fake generator (where $ z $ is a random sample in the latent space)
+\end{itemize}
+
+\subsubsection{Training}
+
+In practice it's better to train $ G $ to maximize
+\[
+  \log(D(G(Z)))
+\]
+It's also possible to first train the discriminator (freezing the generator) and vice-versa
+
+\begin{algorithm}[H]
+    \SetAlgoNlRelativeSize{-1}
+    \SetNlSty{textbf}{}{}
+    \caption{Training}
+    repeat\;
+      // Train the discriminator D
+      freeze Generator's weights $ \Theta_G $\;
+      sample a batch of real data $ x \sim P_{\text{data}} $\;
+      sample a batch of noise $ z \sim N(0,1) $\;
+      update the Discriminator's weights $ \Theta_D $ by stochastic ascent on:
+      \[
+        \nabla_{\Theta_D}[V(D,G)] 
+      \]
+      // Train the generator G
+      freeze Discriminator's weights $ \Theta_D $\;
+      sample a batch of noise $ z \sim N(0,1) $\;
+      update the Generator's weights $ \Theta_G $ by stochastic ascent on:
+      \[
+        \nabla_{\Theta_G}[E_{z\sim N(0,1)}\log D(G(z))]
+      \]
+      until converged
+    \end{algorithm}
+
+
