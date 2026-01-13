@@ -1,48 +1,268 @@
 % \begin{document}
+\newcommand{\Xnn}{(X_n)_n}
 \chapter{Catene di Markov !WIP!}
-Lavoriamo ancora con successioni di VA - ovvero un processo stocastico (che puo' esere a tempo discreto o continuo, dato che l'interpretazione tipica e' che gli esperimenti vengono fatti in successione nel tempo) 
+Introduriamo una generalizzazione del concetto di variabile aleatoria, definita processo stocastico (o processo aleatorio). L'obiettivo è descrivere matematicamente una quantità numerica incerta la cui evoluzione dipende da un parametro interpretato come ``tempo''[cite: 7, 9].
 
-$ (X_n)_{n \in \mathbb{N}} $ sono VA discrete:
-\begin{itemize}
-\item $ X_1 \to S_{X_1} $
-\item $ X_1 \to S_{X_1} $
-\item $ X_1 \to S_{X_1} $
-\item $ X_1 \to S_{X_1} $
-\end{itemize}
-
-Dove tutti i supporti sono finiti o infiniti numerabili tali per cui $ \exists S  $ supporto finito o infinito numerabile che:
-\[
-S_{X_1} \subseteq S, ..., S_{X_i} \subseteq S
-\]
-\dfn{}{
-  $ (X_n)_{n \in \mathbb{N}} $ di VA discrete e' detta \textit{catena di Markov} (a tempo discreto) se:
+\dfn{Processo stocastico}{
+  Sia $(\Omega, \mathbb{P})$ uno spazio di probabilità fissato.
   \begin{itemize}
-  \item $ \exists S  $ finito o inf. numerabile che contiene tutti i supporti
-  \item Vale la proprieta' di Markov:
-    \[
-    \forall i, j, i
-    \]
+    \item Si definisce \textit{processo stocastico a tempo discreto} una successione di variabili aleatorie $(X_n)_{n \in \mathbb{N}}$, tutte definite su $\Omega$[cite: 20].
+    \item Si definisce \textit{processo stocastico a tempo continuo} una famiglia di variabili aleatorie $(X_t)_{t \in [0, +\infty)}$, con $t \in [0, +\infty)$, tutte definite su $\Omega$.
   \end{itemize}
-
-  la i e' il valore presente mentre la j e' il valore futuro, in pratica il valore del prossimo stato e' condizionato solo dall'ultimo valore e non da quelli prima
 }
 
-in realta noi lavoreremo nel caso di $ S  $ finito, questa e' un'ipotesi innocua perche' e' facile passare alla versione infinita
+Intuitivamente, un processo stocastico è una famiglia di variabili aleatorie indicizzate da un parametro temporale. Nel seguito, concentreremo la nostra analisi sui processi a tempo discreto $(X_n)_{n \in \mathbb{N}}$, dove le variabili aleatorie $X_1, \dots, X_n, \dots$ sono discrete[cite: 24].
 
-la seconda non e' innocua, ci dice che ci sara' solo una matrice di transizione e il tempo non gioca nessun ruolo, quindi sapendo il valore attuale sappiamo le probabilita' di trovarci nelgi altri stati possibili il prossimo tempo
+In questo contesto, assumiamo che i supporti delle singole variabili aleatorie siano contenuti in un unico insieme comune, discreto (finito o numerabile), detto \textit{Spazio degli stati}.
 
-la somma delle righe della matrice deve fare 1 dato che sono tutte le possibilita'
 
-ci possiamo porre la domanda: ora mi trovo in un punto, qual'e' la probabilita' che fra x passi mi trovi in un altro specifico punto
+\section{Catene di Makrov a tempo discreto}
 
-abbiamo visto poi un paio di esempi con grafi
+Tra i processi stocastici più utili vi sono le cosidette catene di Makrov a tempo discreto  dove il termine “catene” fa proprio riferimento alla particolare struttura di dipendenza tra le variabili aleatorie del processo
 
-che cosa si aspetta di vedere negli esercizi d'esame: formule! non numeri a caso. Sulle catene di Markov possiamo lavorare sul grafo (anche per determinare le classi di comunicazione) ma bisogna che sul grafo ci sia un segno che fa vedere il ragionamento (e' cosi in generale per tutto il compito)
+\dfn{Catena di Markov}{
+  Sia $(X_n)_{n \in \mathbb{N}}$ un processo stocastico a tempo discreto con spazio degli stati $S$ discreto. Si dice che il processo è una \textit{catena di Markov} se soddisfa la \textbf{proprietà di Markov}:
+  \[
+  \mathbb{P}(X_{n+1} = j \mid X_n = i, X_{n-1} = i_{n-1}, \dots, X_0 = i_0) = \mathbb{P}(X_{n+1} = j \mid X_n = i)
+  \]
+  per ogni $n \in \mathbb{N}$ e per ogni sequenza di stati $i_0, i_{1}, \dots, i, j \in S$ tali che la probabilità dell'evento condizionante sia strettamente positiva.
+}
 
-classifichiamo gli stati in base al livello di accessibilita'. 
+\dfn{Probabilità di transizione dallo all'istante $n$ dallo stato $i$ allo stato $j$}{
+La si definisce \textit{
+  probabilità di transizione dallo stato $i$ allo stato $j$ all'istante $n$
+} la quantità
+\[\pi_{ij}(n) = \P(X_{n+1} = j \mid X_n = i)\]
+}
 
-Legge delle VA data la matrice delle probabilita' di transizione
+\nt{
+  La proprietà di Makrov non afferma che le variabili aleatorie $X_1, \dots, X_n$ siano necessariamente indipendenti tuttavia la struttura di dipendenza è abbastanza semplice
+}
+In pratica si sta dicendo che il passato è irrilevante ed il presente è tutta l'informazione utile per conoscere il futuro. Sinteticamente è:
+\[
+  \P(\text{il valore futuro di $X$ è $j$}\mid \text{ valore presente è $i$ e i valori passati sono $i_1,\dots ,i_{n-1}$ }) = \P(\text{il valore futuro di $X$ è $j$}\mid \text{ valore presente è $i$ })
+\]
 
-queste dipendono dal tempo e dalla distribuzione dello stato di partenza, anche se in realta' non deve essere per forza il primo stato, basta uno qualunque perche' tanto ci interessa solo dello stato finale. Quindi se viene dato il penultimo stato ci basta guardare un solo passaggio (e' meglio!)
+\subsection{Catene di Makrov omogenee a stati finiti}
+Questo è un po' un finite state automata, Gorieri style
+\dfn{
+  Catena di Makrov omogenea
+}{
+  Sia $(X_n)_n$ una catena di Markov, si dice che $(X_n)_n$ è una \textit{catena di Makrov omogenea} se la probabilità di  non dipende da $n$. In tal caso, si scrive $\pi_{ij}$ e si chiama \textit{probabilità
+di transizione dallo stato $i$ allo stato $j$}
+}
 
-% \end{document}
+Poi si ha
+\dfn{Catena di Makrov a stati finiti}{
+  Si dice $(X_n)_n$ una \textit{catena di Makrov a stati finiti} se $S$ è finito. In tal caso si indica $N$ la cardinalità di $S$. Spesso si supporrà che $S = \{1, 2, \dots\} , N$  oppure $S = \{0, 1, \dots, N - 1\}$
+}
+
+Asesso si introduce uno strumento molto utile per descrivere completamente una catena di Makrov omogenea a stati finiti
+\dfn{Matrice di transizione}{
+  Sia $\Xnn$ una catena di Markov omogenea e a stati finiti. Si chiama matrice di transizione la matrice $N\times N$, denotata con $\Pi$ le cui componenti sono le probabilità di transizione:
+  \[
+    \pi_{ij} = \P(X_{n+1} = j\mid X_n=i) \quad \forall i,j \in S
+  \]
+}
+
+\nt{
+  La riga $i$ di $\Pi$ corrisponde quindi alla  “densità discreta di $X_n+1$ sapendo che $X_n = i$”. Quindi ogni elemento di $\Pi$ deve essere contenuto nell'intervallo $[0,1]$ e la somma di ogni riga deve essere uguale a 1
+}
+
+Si noti quindi il seguente teorema
+
+\thm{Proprietà della matrice di transizione}{
+  Sia $\Pi$ una matrice di transizione di una catena di Makrov $\Xnn$, allora $\Pi$ è tale che:
+  \begin{enumerate}
+    \item $0\leq \pi_{ij}\leq 1\quad \forall i,j$
+    \item $\sum_{j=1}^N \pi_{ij}=1 \quad \forall i$
+  \end{enumerate}
+}
+\pf{Dimostrazione}{
+  \begin{itemize}
+    \item il punto 1 si dimostra con la definizione di $\pi_{ij}$, in quanto ciascun $\pi_{ij}$ è una probabilità (condizionata)
+    \item il punto 2 si dimostra con la formula delle probabilità totali. Infatti, sia $i$ una riga. Poniamo
+    \[
+      A =\{X_n=i\}, \quad B_j = \{X_{n+1}=j\}, \quad \forall j\in S=\{1,\dots, N\}
+    \]
+    Gli eventi $B_j$ sono mutuamente esclusi e coprono l'insieme $\Omega$. Quindi, per la formula delle probabilità totali, otteniamo
+    \[
+      \P(A) = \sum_{j=1}^N \P(A \cap B_j) = \sum_{j=1}^N \P(B_j)
+    \]
+    Che si riscrive come
+    \[
+      \P(X_n=i) = \sum_{j=1}^N \P(X_{n+1}=j\mid X_n=i) = \sum_{j=1}^N \pi_{ij} 
+    \]
+    Si ha, quindi
+    \begin{align*}
+      \sum_{j=1}^N \pi_{ij} = &\sum_{j=1}^N \frac{\P(X_{n+1}=j,X_n=i)}{\P(X_n=i)}\\
+      = &\frac{1}{\P(X_n=i)}\sum_{j=1}^N \P(X_{n+1}=j,X_n=i)\\
+      = & \frac{\P(X_n=i)}{\P(X_n=i)} = 1 \quad \text{(per l'uguaglianza scritta sopra)}
+    \end{align*}
+  \end{itemize}
+}
+
+\subsection{Passeggiate aleatorie}
+La giga catena di makrov si può giga scrivere come un automa a stati finiti (\textit{Grafo orientato}), si noti la definizione
+\dfn{Passeggiata aleatoria}{
+  Sia $G=(V,E)$ un grafo orientato e sia $(X_n)_{n\in\mathbb{N}}$ una catena di Makrov omogenea a stati finiti con matrice di transizione $\Pi$, si dice che $G$ è una \textit{passeggiata aleatoria} se
+  \begin{itemize}
+    \item ogni stato $i\in S$ è un nodo
+    \item ogni probabilità di transizione $\pi_{ij}$ è un arco orientato da $i$ a $j$ con etichetta $\pi_{ij}$  (non si disegnano invece le frecce corrispondenti a probabilità di transizione nulle)
+  \end{itemize}
+}
+
+\ex{}{
+  Si consideri la catena di Makrov omogenea $X_n$ con $S=\{0,1,2\}$ e matrice di transizione
+  \[
+    \Pi = \begin{pmatrix}
+      0.5 & 0.5 & 0\\
+      0 & 0.5 & 0.5\\
+      0 & 0 & 1
+    \end{pmatrix} 
+  \]
+  La passeggiata aleatoria corrispondente è
+  \begin{tikzpicture}[->, >=stealth, auto, node distance=2.5cm, semithick]
+    \node[state] (0) {0};
+    \node[state] (1) [right of=0] {1};
+    \node[state] (2) [right of=1] {2};
+
+    \path (0) edge [loop above] node {0.5} (0)
+          (0) edge [above]      node {0.5} (1)
+          (1) edge [loop above] node {0.5} (1)
+          (1) edge [above]      node {0.5} (2)
+          (2) edge [loop above] node {1}   (2);
+  \end{tikzpicture}
+}
+
+\subsection{Probabilità di transizione in più passi}
+
+\dfn{Probabilità di transizione in più passi}{
+  Sia $\Xnn$ una catena di Makrov omogenea a stati finiti e $i,j\in S$. Per ogni intero $m\geq 0$ si chiama 
+  \[
+    \pi_{ij}^{(m)} = \P(X_{n+m}=j\mid X_n=i) \quad \forall i,j\in S
+  \]
+  $\pi_{ij}^{(m)}$ si chiama \textit{probabilità di transizione in $m$ passi dallo stato $i$ allo stato $j$}
+}
+Quando $m = 0$ oppure $m = 1$, la probabilità di transizione ha un'espressione particolare, come descritto nella seguente proposizione
+
+\mprop{Sull'intero uguale a 0 o 1}{
+  Sia $\Xnn$ una catena di Makrov omogenea a stati finiti e $i,j\in S$. Si ha:
+  \begin{itemize}
+    \item Per $m=0$, $\pi_{ij}^{(0)}$ è data da:
+    \[
+      \pi_{ij}^{(0)} = \begin{cases}
+        1 & \text{se } i=j\\
+        0 & \text{altrimenti}
+      \end{cases}
+    \]
+    In questo caso la matrice di componenti $\pi_{ij}^{(0)}$ è la matrice di identità $I_N$
+    \item Per $m=1$, $\pi_{ij}^{(1)}$ è data da:
+    \[
+      \pi_{ij}^{(1)} = \pi_{ij}
+    \]
+    In questo caso la matrice di componenti $\pi_{ij}^{(1)}$ è la matrice di transizione $\Pi$
+  \end{itemize}
+}
+\pf{Dimostrazione}{
+\begin{itemize}
+  \item sia $m=0$. Allora 
+  
+  \[
+    \pi^{(0)}_{ij} = \mathbb{P}(X_n = j \mid X_n = i),
+  \]
+
+  dove $n$ è un istante qualsiasi, dato che la catena di Markov è omogenea. Per definizione di probabilità condizionata, abbiamo che
+
+  \[
+      \mathbb{P}(X_n = j \mid X_n = i)= \frac{\mathbb{P}(\{X_n = j\} \cap \{X_n = i\})}{\mathbb{P}(X_n = i)}.
+  \]
+
+  Si noti che
+
+  \[
+    \{X_n = j\} \cap \{X_n = i\} =
+    \begin{cases}
+    \{X_n = i\}, & \text{se } i = j, \\
+    \emptyset, & \text{se } i \neq j.
+    \end{cases}
+  \]
+
+  Quindi
+
+  \[
+    \frac{\mathbb{P}(\{X_n = j\} \cap \{X_n = i\})}{\mathbb{P}(X_n = i)}
+    =
+    \begin{cases}
+    \dfrac{\mathbb{P}(X_n = i)}{\mathbb{P}(X_n = i)}, & \text{se } i = j, \\
+    \dfrac{\mathbb{P}(\emptyset)}{\mathbb{P}(X_n = i)}, & \text{se } i \neq j,
+    \end{cases}
+    =
+    \begin{cases}
+    1, & \text{se } i = j, \\
+    0, & \text{se } i \neq j.
+    \end{cases}
+  \]
+
+    \item se $m=1$, ovvio
+\end{itemize} 
+}
+\thm{Matrice di transizione in più passi}{
+  Sia $\Xnn$ una catena di Makrov omogenea a stati finiti e $i,j\in S$. Per ogni intero $m\geq 0$ la matrice di componenti $\pi_{ij}^{(m)}$ è data da:
+  \[
+    \Pi^m = \Pi \dots \Pi
+  \]
+}
+
+\pf{Dimostrazione}{
+  Sia data come esercizio a dario è svenuto
+}
+
+\subsection{Classi comunicanti}
+\dfn{connettività}{
+  Sia $\Xnn$ una catena di Makrov omogenea a stati finiti e $i,j\in S$. Si dice che $i$ è \textit{connesso} con il nodo $j$ se 
+  \[
+    \exists m\geq 0: \pi_{ij}^{(m)} > 0
+  \] 
+  E viene denotato con
+  \[
+    i \rightsquigarrow j
+  \]
+}
+
+\nt{
+  Per definizione $\pi^{(0)}_{ii} =1$ allora $i \rightsquigarrow i$ per ogni $i\in S$
+}
+
+Nel caso $i\neq j$ si noti il seguente teorema
+\thm{Teorema Bonzo-Morbidelli}{
+  Le due affermazioni sono equivalenti:
+  \begin{itemize}
+    \item $i \rightsquigarrow j$
+    \item Esiste $m\geq 1$ ed esiste un cammino $i_1 \to i_2 \to \dots \to i_{m+1}$ in $m$ passi tale che $i_1 = i$ e $i_{m+1} = j$ e $\pi_{i_1i_2}\pi_{i_2i_3}\dots\pi_{i_mi_{m+1}} > 0$
+  \end{itemize}
+}
+
+\pf{Dimostrazione nel caso $m=2$}{
+  Sia $i\neq j$, si deve domostrare che le seguenti affermazioni sono equivalenti:
+  \begin{itemize}
+    \item $i \rightsquigarrow j$
+    \item Esiste $m\geq 1$ ed esiste un cammino $i_1 \to i_2 \to \dots \to i_{m+1}$ in $m$ passi tale che $i_1 = i$ e $i_{m+1} = j$ e $\pi_{i_1i_2}\pi_{i_2i_3}\dots\pi_{i_mi_{m+1}} > 0$
+  \end{itemize}
+
+  Da teorema precedente si ha che $\pi_{ij}^{(2)} = \sum_{k\in S} \pi_{ik}\pi_{kj}$
+
+  ...
+}
+
+\dfn{Stati comunicanti}{
+  Sia $\Xnn$ una catena di Makrov omogenea a stati finiti e $i,j\in S$. Si dice che $i$ e $j$ sono \textit{stati comunicanti} se $i \rightsquigarrow j$ e $j \rightsquigarrow i$. Denotato con
+  \[
+    i \leftrightsquigarrow j
+  \]
+}
+
+\dfn{Classe comunicante}{
+  Sia $\Xnn$ una catena di Makrov omogenea a stati finiti. Si definisce \textit{Classe comunicanti} un sottoinsieme $C\subset S$ costituito da tutti gli stati che sono comunicanti tra loro 
+}
+
