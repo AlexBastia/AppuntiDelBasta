@@ -6,7 +6,7 @@
 
 The goal is computing an integral of the from
 \[
-  I = \sin_{\mathcal{X}}h(x) f(x) dx
+  I = \int_{\mathcal{X}}h(x) f(x) dx
 \]
 
 where:
@@ -18,7 +18,7 @@ where:
 
 the core of montecarlo integration is in a interpretation of the integral as an expectation value of a RV. If we consider a RV $X$ with density $f(x)$, then we can write
 \[
-  I = E_f[h(X)] = \sin_{\mathcal{X}} h(x) f(x) dx
+  I = E_f[h(X)] = \int_{\mathcal{X}} h(x) f(x) dx
 \]
 
 this identity is crucial because it allows us to use the properties of RVs to compute integrals.
@@ -255,7 +255,7 @@ The difference is that now we're not sampling from $ f $, but from our proposal 
 \subsection{Conditions}
 \begin{itemize}
   \item Support of $ (h \times f) $ is contained in the support of $ g $
-  \item $ Var(h(X)f(X)/g(X)) < \infty$, which basically means that the tails of $ g $ have to be heavier
+  \item $ Var(h(X)f(X)/g(X)) < \infty$, which basically means that the tails of $ g $ have to be heavier (like accept-reject)
 \end{itemize}
 
 \subsection{Algorithm}
@@ -269,8 +269,30 @@ The difference is that now we're not sampling from $ f $, but from our proposal 
   \begin{enumerate}
     \item Show that the expectation can be computed in closed form (not needed)
     \item Build a classical MC approx of the expectation using a sample from $ N(0,1) $ of size $ 10^3 $ and also produce an error evaluation $ v_n $
-    \item
+    \item Try importance sampling with an importance function $ g(x) = Unif(-8, -1) $ with a sample size of $ n = 10^3 $.
   \end{enumerate}
 
+  The importance sampling is surely wrong because the supports aren't contained. The other condition is the harder one to actually check. Note that the weights aren't probabilities. 
+}
+
+\ex{Tail Probabilities}{
+  We can use importance sampling. Seen as it's very rare to sample a value over 4.5, we can calculate the inverse. We use an exponential distribution which is truncated at $ a $ (starts from a different point). This is usefull as it resembles the tails of distributions. So our domain is $ [a,+\infty[ $, we need to be sure it interates to 1:
+  \[
+    g(y|y>a) = \frac{g(y, y>a)}{g(y>a)} = \frac{g(y)}{g(y>a)} = \frac{e^{-y}}{1-F(a)}
+  \]
+  Seen as we have a closed form solution for the CDF of an exponential, we can calculate the value
+  \[
+    e^{-(y-4.5)}
+  \]
+  $ h(x) $ is an indicator function.
+}
+
+The choice of $ g $ isn't trivial. We want the ratio to be stable and not diverge (to have finite variance). In practice we can compute the weights and check the variance that way (not formal but good aprox).
+
+\ex{3.8}{
 
 }
+
+
+
+

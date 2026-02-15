@@ -1,0 +1,41 @@
+{
+    "sqltools.useNodeRuntime": true,
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "Exams",
+            "database": "${workspaceFolder:SQL}/Exams.db"
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "Train",
+            "database": "${workspaceFolder:SQL}/train.db"
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "Region",
+            "database": "${workspaceFolder:SQL}/region.db"
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "Film",
+            "database": "${workspaceFolder:SQL}/Film.db"
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "Song",
+            "database": "${workspaceFolder:SQL}/Song.db"
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "Film2",
+            "database": "${workspaceFolder:SQL}/Film2.db"
+        }
+    ]
+}

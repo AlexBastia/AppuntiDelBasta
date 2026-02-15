@@ -1,0 +1,5 @@
+SELECT R.Name
+FROM REGION AS R, RESIDENCE AS S
+WHERE R.Name = S.Region
+GROUP BY R.Name
+HAVING R.Population > COUNT(*)

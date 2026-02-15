@@ -616,9 +616,55 @@ It is equal to the dimension of an input image producing (without padding) an ou
   A neuron cannot see anything outside its receptive field
 }
 
+\subsection{Tensors and Dimensions}
+Multidimensional array of floats. The typical tensor for a 2D image has 4 dimensions:
+\[
+\text{batchsize} \times \text{width} \times \text{height} \times \text{channels}
+\]
+\subsubsection{Dense processing}
+Unless stated differently, a filter operates on all channels in parallel. So, given an input layer of depth $ D $, the size of a kernel $ N \times M $ will be:
+\[
+N\times M \times D
+\]
+The kernel is tasked with simultaniously mapping cross-chanel correlations and spatial correlations.
+
+\subsubsection{Feature Maps}
+Each kernel produces a single feature map, which is stacked along the chanel dimension (the number of kernels is equal to che channel-depth of the next layer).
+
+The spatial dimensions of the feature maps depends on:
+\begin{itemize}
+\item \textbf{Padding}: extra space added around the input
+\item \textbf{Stride}: how the kernel moves over the input
+\end{itemize}
+
+The dimension of the output is given by the following formula
+\[
+\frac{W_{\text{in}}+2P-K}{S} + 1 = W_{\text{out}}
+\]
+Where
+\begin{itemize}
+\item W is the spatial dimension of the I/O
+\item P is the padding
+\item K is the kernel size
+\item S is the stride
+\end{itemize}
+By reverting this formula (without padding) we can find the receptive field
+\[
+  W_{\text{in}} = K + S\cdot(W_{\text{out}} - 1)
+\]
+
+\subsection{Pooling}
+Another way to reduce the spacial dimension of the input/increase the receptive range of neurons is to use pooling layers.
+
+These layers simply take the max/avg of the values in a kernel region (with the default stride being the dimension of the kernel). Pooling layers have the advantages that:
+\begin{itemize}
+\item they reduce spatial dimensions
+\item they provide some tollerance to translations
+\end{itemize}
+
+
 \section{CNNs and Transfer Learning}
-TODO: 21 Nov (non registrata) - slides 5 (ma non so se sono giuste / cosa ha davvero fatto)
-TODO: Potrebbe anche aver finito le slide 4, chi lo sa
+Transfer learning consists of using pretrained models as "feature-extractors" and modifying only the classifier or some of the higher layers (fine tuning).
 
 \section{Autoencoders}
 An \textbf{autoencoder} is a network trained to reconstruct input data out of a learned internal representation.
@@ -747,6 +793,73 @@ It's also possible to first train the discriminator (freezing the generator) and
         \nabla_{\Theta_G}[E_{z\sim N(0,1)}\log D(G(z))]
       \]
       until converged
-    \end{algorithm}
+\end{algorithm}
 
+\section{Diffusion}
+Diffusion (or denoising) models work by using two basic processes:
+\begin{itemize}
+\item From left-to-right we have \textbf{forward diffuson}, where data is progressivly corrupted by adding noise at each step.
+\item From right-to-left we have \textbf{backward diffusion}, where the model learns to denoise the corrputed immage.
+\end{itemize}
 
+Each backward step involves two operations:
+\begin{itemize}
+\item \textbf{Denoising}: try to remove all the noise in the image.
+\item \textbf{Noise reinjection}: add back a small amount of noise
+\end{itemize}
+
+\subsection{Denoising}
+It's the main and only trainable component of the model. It's used to predict the noise contained in an image.
+
+It's unique for each step $ t $, seen as there's a fixed amount of noise the image should have at each step (the signal rate).
+
+So the network takes in an input:
+\begin{itemize}
+\item A noisy image $ x_t $
+\item A signal rate $ \alpha_t $ that expresses the amount of the original signal left in the data
+\end{itemize}
+
+And tries to predict the noise:
+\[
+  \epsilon_{\theta}(x_t, \alpha_t)
+\]
+The predicted image is thus
+\[
+  \hat{x}_0^t = (x_t - \sqrt{1-\alpha_t}\epsilon_{\theta}(x_t, \alpha_t))/\sqrt{\alpha_t}
+\]
+
+\subsection{Noise reinjection}
+Can be \textbf{deterministc} (DDIM) or \textbf{probabilistic} (DDPM):
+\begin{itemize}
+\item DDPM reinjects a random amount of noise each time
+\item DDIM reinjects the same noise that was removed but at a lesser intensity, so it's deterministic given the starting noise.
+\end{itemize}
+
+\subsection{Training}
+Consists of running these steps until converged:
+\begin{itemize}
+  \item Take a sample (clean image)
+  \item Randomly select a timestamp $ t \in [1,...,T] $
+  \item Create random Guassian noise $ \epsilon $
+  \item Corrupt the sample with the signal rate $ \alpha_t $ and the gaussian noise
+  \item Predict the error $ \alpha_{\theta} $
+  \item Use backpropagation to better the prediction
+\end{itemize}
+
+\subsection{Sampling}
+To create a new image from a trained diffusion model:
+\begin{itemize}
+\item Generate random Gaussian noise
+\item Starting from timestamp $ t = T $, compute the noise at the current level
+\item Denoise the image completely
+\item Reinject noise at rate $ \alpha_{t-1} $
+\item Repeat untill $ t = 1 $
+\end{itemize}
+
+\subsection{Differences}
+Diffusion models operate in the full visible space, so it can generate complex textures without blurring or loosing randomness.
+
+But, it's slow and memory intensive.
+
+\subsection{Stable Diffusion}
+Move the diffusion to a lower-dimensional latent-space using a pre-trained VAE

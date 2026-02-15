@@ -1,0 +1,11 @@
+-- SELECT DISTINCT L.Surname
+-- FROM LECTURER AS L JOIN STUDENT AS S ON
+-- L.Surname = S.Surname
+
+SELECT L.Surname
+FROM LECTURER AS L
+WHERE L.Id = (SELECT DISTINCT C.Lecturer
+    FROM EDITION AS C, EXAM AS E
+    WHERE C.Course = E.Course AND C.Year = E.Year
+    GROUP BY C.Course, C.Year
+    HAVING COUNT(*) > 10)
