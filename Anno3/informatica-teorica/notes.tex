@@ -1,0 +1,46 @@
+\documentclass{report}
+
+\input{../LatexTemp/preamble.tex}
+\input{../LatexTemp/macros}
+\input{../LatexTemp/letterfonts}
+
+\usepackage[utf8]{inputenc}
+\usepackage{fontawesome}
+
+\newcommand{\dperp}{\mathrel{\bot\!\!\!\bot}}
+\renewcommand{\P}{\mathbb{P}}
+\newcommand{\p}{p_{(X,Y)}(x,y)}
+\renewcommand{\ss}{\mathcal{S}_X\times\mathcal{S}_Y}
+\newcommand{\xy}{(X,Y)}
+
+
+\usetikzlibrary{arrows.meta, positioning, automata}
+
+
+\setlength{\parindent}{0pt}
+
+\title{\Huge{Informatica Teorica}\\Appunti}
+\author{\huge{Giovanni "Qua' Qua' dancer" Palma} 
+\\e\\\huge{Alex "Morbidelli WhatsApp" Basta}}
+\date{}
+\pagenumbering{gobble}
+
+\begin{document}
+
+\maketitle
+\newpage% or \cleardoublepage
+% \pdfbookmark[<level>]{<title>}{<dest>}
+\pdfbookmark[section]{\contentsname}{toc}
+\tableofcontents
+
+\pagebreak
+
+\include{paginette/introduzione-indecidibilita}
+\include{paginette/macchina-di-turing}
+\include{paginette/riduzioni}
+\include{paginette/rice}
+\include{paginette/complessita-strutturale}
+\include{paginette/complessita-spaziale}
+\include{paginette/oracoli}
+
+\end{document}

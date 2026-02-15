@@ -1,0 +1,44 @@
+\documentclass{report}
+
+\input{../LatexTemp/preamble.tex}
+\input{../LatexTemp/macros}
+\input{../LatexTemp/letterfonts}
+
+\usepackage[utf8]{inputenc}
+\usepackage{fontawesome}
+
+\newcommand{\dperp}{\mathrel{\bot\!\!\!\bot}}
+\renewcommand{\P}{\mathbb{P}}
+\newcommand{\p}{p_{(X,Y)}(x,y)}
+\renewcommand{\ss}{\mathcal{S}_X\times\mathcal{S}_Y}
+\newcommand{\xy}{(X,Y)}
+
+
+\usetikzlibrary{arrows.meta, positioning, automata}
+
+
+\setlength{\parindent}{0pt}
+
+\title{\Huge{Combinatoria Algebrica}\\Appunti}
+\author{\huge{Alex "Morbidelli WhatsApp" Basta}}
+\date{}
+\pagenumbering{gobble}
+
+\begin{document}
+
+\maketitle
+\newpage% or \cleardoublepage
+% \pdfbookmark[<level>]{<title>}{<dest>}
+\pdfbookmark[section]{\contentsname}{toc}
+\tableofcontents
+
+\pagebreak
+
+\include{paginette/fondamenti-rappr}
+\include{paginette/teoria-caratteri}
+\include{paginette/strutture-gruppo-induzione}
+\include{paginette/combinatoria-gruppo-sym}
+\include{paginette/funzioni-sym-isomorfismi}
+\include{paginette/teoria-grafi-metodi-spettrali}
+
+\end{document}
