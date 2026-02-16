@@ -1,3 +1,36 @@
 % \begin{document}
 \chapter{Introduzione a problemi e indecidibilita}
+
+Studieremo due arie:
+\begin{itemize}
+  \item Calcolabilita: ci chiediamo se per quel problema esistera mai un algoritmo in grado di risolverlo (decidibilita' del problema). Non li incontriamo spesso irl dato che siamo piu' spinti a fare robe che sappiamo gestire. Bisogna studiare la struttura del problema per decidere se esiste o meno un algoritmo che lo risolve.
+  \item Complessita: vogliamo determinare se un problema decidibile e' "facile" o "difficile", ovvero qual'e' la sua complessita' (diverso dalla complessita' degli algoritmi)
+\end{itemize}
+
+Quando diciamo "facile" intendiamo risolvibile in tempo polinomiale.
+
+\dfn{Problema}{
+  Relazione fra stringhe
+}
+
+\ex{Somma}{
+  Dati $ x $ e $ y $ calcola $ x + y \to z $. E' una relazione binaria fra stringhe:
+  \begin{itemize}
+    \item $ <(2,3), 5> $
+    \item $ <(4,3), 7> $
+    \vdots
+  \end{itemize}
+  Dove la prima stringa e' l'input e la seconda e' l'output. Dato che elencare tutte le tuple e' impossibile, le descriviamo a parole ma stando attenti ad essere precisi. Ci servono tre elementi:
+  \begin{itemize}
+  \item What is input?
+  \item What is output?
+  \item Che relazione c'e' fra out e in?
+  \end{itemize}
+}
+
+\ex{Halting}{
+  Dati un programma e un input al programma, dare in output 'yes' se termina.
+  Problema indecidibile come sappiamo bene. Si usa dimostrazione per diagonalizzazione.
+}
+
 % \end{document}
