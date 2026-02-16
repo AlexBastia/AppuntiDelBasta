@@ -1,3 +1,76 @@
 % \begin{document}
 \chapter{Key Exchange}
+
+\section{Introduction to Cryptography}
+
+\dfn{Cryptography}{
+  Art and science of using mathematics to obscure the meaning of data by applying transformations to the data thta are impractical or impossible to reverse without the knowledge of some key
+}
+
+\dfn{Cryptoanalysis}{
+  Art/science of breaking encryption without knowing the key
+}
+
+Used for:
+\begin{itemize}
+\item \textbf{Communication}: web traffic, wireless, vpn
+  \item \textbf{Files on disk}
+  \item \textbf{User authentication}
+\end{itemize}
+
+For secure communication, we also want to ensure no eavesdropping or tampering. Possible approaches are:
+\begin{itemize}
+\item \textbf{Steganography}: we 'hide' the existance of the message
+\item \textbf{Cryptography}: we instead hide the meaning of the message
+\end{itemize}
+
+\subsection{Encryption Terminology}
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2026-02-16-11-15-55.png}
+\end{center}
+
+\subsection{Goals and Protocols}
+The basic goals are:
+\begin{itemize}
+\item \textbf{Privacy}
+\item \textbf{Authenticity}
+\item \textbf{Integrity}
+\item \textbf{Non-repudiation}: no disclaming of authorship (guarantees Authenticity and Integrity)
+\end{itemize}
+
+The \textit{protocols} need to guarantee these goals by understanding:
+\begin{itemize}
+\item The parties and the context
+  \item The goals
+    \item The \textbf{trusted computing base}
+    \item The capabilities of the ... (\textbf{Threat Model})
+\end{itemize}
+
+\subsection{Kerchoff's Principle and the Threat Model}
+Important rule regarding the safety of cyber systems
+
+\thm{}{
+  The security of a protocol shouldn't assume that the underlying methods/algorithms of the encryption are secret, as only the secrecy of the keys can be guaranteed.
+
+  \textbf{Security by obscurity does not work.}
+}
+
+So the encryption functions need to remain secure even with the attacker knowing how the function works.
+
+The attacker threat model consists of:
+\begin{itemize}
+  \item Knowledge about the cipher (Kerchoff)
+\item Interaction with the messages and the protocol
+\item Interaction with the encryption algorithm
+  \begin{itemize}
+  \item \textbf{Ciphertext-only}
+  \item \textbf{Chosen-plaintext attack (CPA)}
+  \item \textbf{Chosen-ciphertext attack (CCA)}
+  \item CPA and CCA may be \textit{adaptive} (previous requests may change choices)
+  \end{itemize}
+\item Available resources (storage/computation)
+\end{itemize}
+
+\subsection{Symmetric Encryption}
+Per oggi ci fermiamo :)
 % \end{document}
