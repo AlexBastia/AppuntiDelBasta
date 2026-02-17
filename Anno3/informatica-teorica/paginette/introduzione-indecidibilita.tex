@@ -28,9 +28,90 @@ Quando diciamo "facile" intendiamo risolvibile in tempo polinomiale.
   \end{itemize}
 }
 
-\ex{Halting}{
-  Dati un programma e un input al programma, dare in output 'yes' se termina.
-  Problema indecidibile come sappiamo bene. Si usa dimostrazione per diagonalizzazione.
-}
+\section{Halting Problem}
+Definiamo prima per bene il problema:
+\begin{itemize}
+\item Input: Una stringa $ P $ che rapresenta il codice sorgente di un programma
+\item Output: Un booleano
+\item Relazione: Se $ P $ termina ritorna T, altrimenti F
+\end{itemize}
+
+Sembra un problema semplice, ma vedremo che in realta' e' indecidibile. Per confermare cio' dobbiamo formulare una dimostrazione formale, usando quel che viene chiamato "metodo diagonale".
+
+Il prof non va cosi' in dettaglio per il metodo usato nella dimostrazione (dato che e' solo un esempio introduttivo), ma secondo me e' interessante e fornisce un bell'esempio per l'utilita' della Teoria delle Categorie.
+
+\subsection{Il Metodo Diagonale}
+Il \textit{metodo diagonale} e' uno schema utile per la dimostrazione di certi teoremi. E' stato ideato per la prima volta da Cantor per dimostrare, per esempio, che $ \mathbb{R} $ non e' numerabile, dove viene usata la \textit{diagonale} di una tabella per dimostrare un assurdo. Questo metodo e' stato successivamente usato per dimostrare altre proposizioni molto importanti, come il teorema di Cantor (quello sugli insiemi potenza), il paradosso di Russel e i teoremi dell'incompletezza di Godel.
+
+La struttura della dimostrazione generale e' la seguente:
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2026-02-17-11-46-41.png}
+\end{center}
+Lo schema e' molto astratto, e' formato solo da \textit{punti} (i vertici) e \textit{frecce} che possono essere composte per formare altre frecce. I primi possono essere insiemi e le frecce funzioni, come vedremo. Le quattro frecce hanno delle funzioni particolari:
+\begin{itemize}
+  \item La funzione "potente" $ X $: nella Teoria delle Categorie viene definita \textit{morfismo punto-suriettivo}(?). E' la freccia che assumiamo esista per poi dimostrare l'assurdo.
+  \item La funzione diagonale $ D $: dato un elemento $ x $ ritorna la coppia $ (x,x) $. Raccoglie l'essenza del metodo diagonale in quanto e' la componente che causa l'\textit{auto-referenzialita'} che sta al cuore della dimostrazione.
+  \item La funzione che inverte $ I $: dato l'output di $ X $ lo \textit{inverte} in modo da causare l'assurdita'.
+  \item La funzione "speciale" $ S  $: composizione delle tre frecce sopra, insieme all'assunzione iniziale permette di dimostrare l'assurdo.
+\end{itemize}
+
+\nt{ Lowkey non l'ho spiegato benissimo dato che non ho studiato abbastanza le sue applicazioni e so solo le basi della Teoria delle Categorie quindi non e' rigoroso per niente. Forse nel futuro ci ritornero', boh.}
+
+Finita la costruzione, i prossimi passi sono:
+\begin{enumerate}
+\item Codifica $ S  $ con una \textit{COSA}, $ k $.
+\item Cosa succede se passo $ k $ a $ S  $?
+\end{enumerate}
+
+\nt{In verita' non sono sicurissimo se questi passi fanno parte del metodo generale o solo dell'halting}
+
+\subsection{Dimostrazione Halting Problem}
+Andiamo ora a vedere come puo' essere dimostrato che l'halting problem e' indecidibile.
+
+Per prima cosa dobbiamo definire la controparte concreta delle frecce e punti dello schema:
+\begin{itemize}
+\item I punti \textit{COSE} sono insiemi di tutti i programmi o dati possibili. Sfruttando la \textbf{Numerazione di Godel} possiamo attribuire a ognuno di questi un numero naturale. Quindi \textit{COSE} diventa $ \mathbb{N} $.
+\item I punti \textit{VALORI} sono tutti i possibili output di un programma, quindi dei dati. Quindi \textit{VALORI} diventa $ \mathbb{N} $.
+\item La freccia $ X $ diventa il programma \textit{HALT}, ovvero la funzione totale che prende un \textit{Programma} $ P $ e un \textit{Dato} $ D $ (entrambe $ \in \mathbb{N} $) tale che:
+  \[
+    X(P,D) = \begin{cases}
+    \text{"termina"} & P \text{ termina su } D\\
+    \text{"diverge"} & P \text{ non termina su } D
+    \end{cases}
+  \]
+  Per ora assumiamo l'esistenza di questo programma.
+\item La freccia $ D $ e' il programma che implementa la funzione totale $ \mathbb{N} \to \mathbb{N} \times \mathbb{N} $
+  \[
+    D(x) = (x,x)
+  \]
+  che e' facile da costruire e quindi esiste.
+\end{itemize}
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2026-02-17-23-12-59.png}
+\end{center}
+Non e' chiaro come dobbiamo definire $ I $ in modo da dimostrare l'assurdo, quindi lavoriamo top-down.
+
+Dato che una composizione di programmi e' un programma, anche $ S  $ e' sicuramente un programma, quindi una funzione parziale che puo' terminare o divergere dato un input.
+
+Essendo $ S  $ un programma, e' possibile rappresentarlo con un numero $ k \in \mathbb{N} $. Analizziamo $ S(k) $:
+\begin{itemize}
+  \item $ S(k) $ termina: in questo caso $ X(k,k) = \text{"termina"} $, quindi $ S(k) = I(\text{"termina"}) $. Per rimanere coerente $ I $ deve terminare sull'input "termina".
+  \item $ S(k) $ non termina: in questo caso $ X(k,k) = \text{"diverge"} $, quindi $ S(k) = I("diverge") $. Per rimanere coerente $ I $ deve divergere sull'input "diverge".
+\end{itemize}
+
+Ma noi non vogliamo la coerenza, vogliamo costruire $ S  $ in modo da dimostrare l'assurdo. Quindi definiamo $ I $ come la funzione parziale che:
+\begin{itemize}
+\item Diverge sull'input "termina"
+\item Termina sull'input "diverge"
+\end{itemize}
+
+Abbiamo quindi che:
+
+\begin{itemize}
+  \item Se $ X(k,k) = \text{"termina"} $, allora $ S(k) $ diverge
+  \item Se $ X(k,k) = "diverge" $, allora $ S(k) $ termina
+\end{itemize}
+
+Queste due implicazioni sono in opposizione alla definizione del programma \textit{HALT}, che quindi non puo' esistere.
 
 % \end{document}
