@@ -114,4 +114,164 @@ Abbiamo quindi che:
 
 Queste due implicazioni sono in opposizione alla definizione del programma \textit{HALT}, che quindi non puo' esistere.
 
+\section{Tipi di problemi}
+
+Ci sono due categorie:
+\begin{itemize}
+\item \textbf{Ricerca}: vogliamo calcolare un risultato arbitrario, ovvero \textit{ricercano} un output vario.
+\item \textbf{Decisione}: l'output e' \textit{booleano}.
+\end{itemize}
+
+Queste due tipologie non sono completamente sganciate, esiste una relazione.
+
+Dato un problema di ricerca, possiamo ricavare la versione "decisionale" che e' piu' facile da calcolare.
+
+\ex{Somma}{
+  Ricerca: dati $ a,b $ calcolare la somma $ c = a + b $.
+
+  Decisione: dati $ a,b,c $ determinare se $ c = a + b $
+}
+
+Per questo motivo parleremo quasi totalmente solo di problemi di decisione.
+
+\nt{
+  E' da qui che deriva il termine "decidibile".
+}
+
+\subsection{Problemi di decisione}
+\thm{}{
+  Tutti i problemi di decisione possono essere ridotti al riconoscimento di uno specifico linguaggio.
+}
+
+\ex{}{
+  PATH $ <G,s,t> $: vogliamo stabilire se esiste un percorso da $ s  $ a $ t $.
+
+  Mostriamo di poter trasformare questo problema decisionale in un problema che chiede se una "parola" appartiene a uno specifico linguaggio.
+
+  \[
+  L_{\text{PATH}} = \{<G,s,t> | G \text{e' un Graf} \land s,t \text{sono nodi del grafo} G \land \exists \text{ un percorso da } s \to t\}
+  \]
+
+  Ci riduciamo quindi a decidere se una data tripla appartiene a $ L_{\text{PATH}} $ o meno.
+}
+
+Quindi, mentre studiamo decidibilita' dei problemi guarderemo linguaggi e i loro \textit{automi}.
+
+\section{Linguaggi}
+
+\subsection{Definizioni}
+
+\dfn{Alfabeto}{
+
+$ \Sigma = \{a,b,c,...\} $ e' l'\textit{alfabeto}
+
+
+E' un insieme di simboli.
+}
+
+\dfn{Parola}{
+$ w $ e' una parola o striga su $ \Sigma $ e' un concatenamento di 0 o piu' simboli di $ \Sigma $.
+}
+
+\dfn{Kleene}{
+  def
+}
+
+\dfn{Linguaggio}{
+  Sottoinsieme delle parole che si possono costruire su un determinato alfabeto $ \Sigma $:
+  \[
+  L \subseteq \Sigma^*
+  \]
+}
+
+\dfn{}{
+Dato un linguaggio $ L $ \textbf{fissato} per una stringa $ w $, decidere se:
+\[
+w \in L
+\]
+}
+
+Il problema di appartenenza a un linguaggio $ L $ (\textbf{fissato!}) e' definito come:
+
+dato il linguaggio $ L $, prendere in input una parola $ w $ e decidere se $ w \in L $.
+
+input: stringa
+output: booleano
+
+Perche' vogliamo usare automi? : e' un formalismo piu' basico e piu' semplice da studiare rispetto a un arbitrario linguaggio di prorammazione.
+
+\subsection{Automi}
+Vabbe' introduce gli automi, il Guerriero ci ha gia preparato adeguatamente.
+
+Alright whatsapp.
+
+\subsection{Macchia di Turing}
+Automa piu' potente che Turing si invento per studiare i problemi importanti da chiudere, fra cui l'automatizzazione dei teoremi.
+
+E' nato per formalizzare il calcolo automatico in un tempo in cui non esistevano i computer, era la versione "automatizzata" di lui che scriveva su carta.
+
+Iniziamo con una spiegazione informale:
+
+E' una macchina caratterizzata da un nastro con delle cellette
+
+In ognuna cella c'e' un simbolo, ed e' infinito in entrambe le direzioni
+
+Ha una testina posizionata su una cella da cui puo' leggere il simbolo
+
+La testina puo' spostarsi a dx o sx, e a differenza degli automi visti puo' benissio tornare indietro e cambiare la decisione presa prima (backtracking)
+
+La testina puo' anche scrivere su una cella, perdendo cio' che c'era prima (una seconda differenza)
+
+Per noi sta roba e' un algoritmo, dato che la macchina di Turing, in quanto automa, ha vari stati di funzionamento
+\begin{itemize}
+\item Legge simbolo cella
+\item In base allo stato, sovrascrive qualcosa
+\item Sposto la testina avanti o indietro
+\item Cambio lo stato
+\end{itemize}
+
+\ex{}{
+  Progetta una MdT che riconosca il linguaggio
+  \[
+  L = \{a^mb^m | m \geq 0\}
+  \]
+  La stringa da decidere si trova sul nastro da sx a dx e la testina si trova sopra il primo simbolo.
+
+  Un algoritmo e' un filmato di quello che succede nella nostra testa per risolvere un problema.
+
+  \begin{itemize}
+    \item Leggi cella, se e' vuota fine (ok)
+    \item altrimenti se e' $ b $ fine (no)
+    \item se e' $ a $, cancella
+    \item spostati a dx finche' la cella e' bianca
+    \item vai a sx di uno e leggi
+    \item se e' a, fine (no)
+    \item se e' $ b $, cancella e vai a sx finche e' bianca
+    \item muoviti di uno a dx
+  \end{itemize}
+
+  TODO: disegna automa
+}
+
+\subsubsection{Definizioni formali}
+\dfn{Macchina di Turing}{
+  E' la settupla
+  \[
+  M = \{Q, q_0, F, \Sigma, \Gamma, b/, \delta \}
+  \]
+  Dove:
+  \begin{itemize}
+  \item $ Q $ e' l'insieme di stati
+  \item $ q_0 $ e' lo stato iniziale
+  \item $ F $ e' l'insieme degli stati finali
+  \item $ \Sigma $ e' l'insime dei simboli in input
+  \item $ \Gamma $ e' l'insieme dei simboli che la macchina puo' scrivere $ \Sigma \subset \Gamma $
+  \item $ b/ $ e' il simbolo di cella vuota ("blank") $ b/ \in \Gamma $
+  \item $ \delta $ e' la funzione
+    \[
+    Q \times \Gamma \to Q \times \Gamma \times \{\gets, \to\}
+    \]
+  \end{itemize}
+}
+
 % \end{document}
