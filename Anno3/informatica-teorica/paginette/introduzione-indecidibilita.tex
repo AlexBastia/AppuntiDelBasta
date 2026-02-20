@@ -3,14 +3,16 @@
 
 Studieremo due arie:
 \begin{itemize}
-  \item Calcolabilita: ci chiediamo se per quel problema esistera mai un algoritmo in grado di risolverlo (decidibilita' del problema). Non li incontriamo spesso irl dato che siamo piu' spinti a fare robe che sappiamo gestire. Bisogna studiare la struttura del problema per decidere se esiste o meno un algoritmo che lo risolve.
-  \item Complessita: vogliamo determinare se un problema decidibile e' "facile" o "difficile", ovvero qual'e' la sua complessita' (diverso dalla complessita' degli algoritmi)
+  \item \textbf{Calcolabilita}: ci chiediamo se per quel problema esistera mai un algoritmo in grado di risolverlo (decidibilita' del problema). Non li incontriamo spesso irl dato che siamo piu' spinti a fare robe che sappiamo gestire. Bisogna studiare la struttura del problema per decidere se esiste o meno un algoritmo che lo risolve.
+  \item \textbf{Complessita}: vogliamo determinare se un problema decidibile e' "facile" o "difficile", ovvero qual'e' la sua complessita' (diverso dalla complessita' degli algoritmi)
 \end{itemize}
 
-Quando diciamo "facile" intendiamo risolvibile in tempo polinomiale.
+\nt{
+  Il professore usa in modo informale i termini "facile" e "difficile" perche' si tratta solo di un'introduzione. Piu' avanti definiremo meglio questi concetti in base a se la complessita' e' \textit{polinomiale} o meno.
+}
 
 \dfn{Problema}{
-  Relazione fra stringhe
+  Relazione fra stringhe.
 }
 
 \ex{Somma}{
@@ -18,7 +20,7 @@ Quando diciamo "facile" intendiamo risolvibile in tempo polinomiale.
   \begin{itemize}
     \item $ <(2,3), 5> $
     \item $ <(4,3), 7> $
-    \vdots
+    \\ \vdots
   \end{itemize}
   Dove la prima stringa e' l'input e la seconda e' l'output. Dato che elencare tutte le tuple e' impossibile, le descriviamo a parole ma stando attenti ad essere precisi. Ci servono tre elementi:
   \begin{itemize}
@@ -129,7 +131,7 @@ Dato un problema di ricerca, possiamo ricavare la versione "decisionale" che e' 
 \ex{Somma}{
   Ricerca: dati $ a,b $ calcolare la somma $ c = a + b $.
 
-  Decisione: dati $ a,b,c $ determinare se $ c = a + b $
+  Decisione: dati $ a,b,c $ determinare se $ c = a + b $ (vero o falso).
 }
 
 Per questo motivo parleremo quasi totalmente solo di problemi di decisione.
@@ -149,7 +151,7 @@ Per questo motivo parleremo quasi totalmente solo di problemi di decisione.
   Mostriamo di poter trasformare questo problema decisionale in un problema che chiede se una "parola" appartiene a uno specifico linguaggio.
 
   \[
-  L_{\text{PATH}} = \{<G,s,t> | G \text{e' un Graf} \land s,t \text{sono nodi del grafo} G \land \exists \text{ un percorso da } s \to t\}
+  L_{\text{PATH}} = \{<G,s,t> | G \text{ e' un Grafo } \land s,t \text{ sono nodi del grafo } G \land \exists \text{ un percorso da } s \to t\}
   \]
 
   Ci riduciamo quindi a decidere se una data tripla appartiene a $ L_{\text{PATH}} $ o meno.
@@ -274,4 +276,121 @@ Per noi sta roba e' un algoritmo, dato che la macchina di Turing, in quanto auto
   \end{itemize}
 }
 
+La macchina di turing ha stati finiti (come gli altri automi) e il suo programma e' fissato (non cambia). Quindi come fa a eseguire qualunque computazione? Vedremo.
+
+  $ \delta $ codifica le funzioni di transizioni (gli archi dell'automa)
+
+\dfn{Configurazione}{
+  E' una "fotografia" dello stato corrente di computazione della macchina:
+  \begin{itemize}
+  \item Stato macchina
+  \item Posizione testina
+  \item Cosa c'e' sul nastro
+  \end{itemize}
+}
+\ex{}{
+  \[
+  aq_1abb
+  \]
+  dove $ q_1 $ e' lo stato della macchina e la testina legge il carattere a dx dello stato.
+  \[
+  aabq_3b/
+  \]
+  sta leggendo la prima cella bianca a dx
+
+  Nota: i caratteri bianchi ci permettono di precisare la posizione della testina, ma non ne dobbiamo mettere infiniti obv
+}
+Partendo dalla configurazione, usando la funzione di transizione siamo in grado di calcolare il passo che eseguira'
+
+\dfn{Configurazione Accettante}{
+  Quando al suo interno si trova uno stato accettante
+}
+
+
+\dfn{Legal Successor}{
+  Data una MdT $ M $ e sia $ c_1 $ una sua configurazione, $ c_2 $ si dice \textit{legal successor} di $ c_1 $ sse:
+  \[
+  c_1 \vdash_M c_2
+  \]
+}
+\dfn{Configurazione Finale}{
+  Configurazione che non ha legal successor
+}
+
+\dfn{Computazione Parziale}{
+  Data una MdT $ M $, una \textit{computazione parziale} per $ M $ e' una sequenza:
+  \[
+  c_1,c_2,...c_n
+  \]
+  dove
+  \[
+  c_1 \vdash_M c_2 \vdash_M ... \vdash_M c_n
+  \]
+}
+\nt{
+  Non e' detto che $ c_1 $ sia il punto di partenza e $ c_n $ sia l'ultima configurazione della configurazione, per questo e' parziale.
+}
+
+\dfn{Computazione}{
+  Data una MdT $ M $ e una stringa $ w = w_1w_2...w_l $, una \textit{computazione} per $ M $ e' una computazione parziale per $ M $ dove
+  \[
+    c_1 = q_0w_1w_2...w_l 
+  \]
+  e $ c_n $ e' una configurazione finale
+}
+
+Possiamo ora definire quando una MdT accetta un input
+\dfn{Accettazione}{
+  Una MdT accetta $ w $ se si arresta su uno stato accettante, e rifuita $ w $ se non e' vero che si arresti in uno stato accettante.
+}
+\nt{
+  Da questa definizione, se una MdT non si arresta allora l'input non e' accettato.
+  Quindi per non accettare puo' anche divergere. Questa roba qua per noi e' un po' cringe.
+}
+
+\dfn{Linguaggio di una MdT}{
+  Linguaggio 
+  \[
+    \mathcal{L}(M) = \{w | M(w) = 1\}
+  \]
+
+}
+
+\dfn{Decide}{
+  Sia $ L $ un linguaggio, $ M $ \textit{decide} $ L $ se $ \forall w \in \Sigma^* $
+  \[
+    w \in L \implies M \text{ accetta } w 
+  \]
+  \[ 
+    w \notin L \implies M \text{ \textit{si arresta} e dice di "no" } w 
+  \]
+}
+
+\dfn{Riconosce}{
+  Sia $ L $ un linguaggio, $ M $ \textit{riconosce} $ L $ se $ \forall w \in \Sigma^* $
+  \[
+    w \in L \implies M \text{ accetta } w 
+  \]
+  \[ 
+    w \notin L \implies M \text{ non accetta } w 
+  \]
+}
+
+\subsubsection{Esercizi}
+\ex{}{
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2026-02-20-16-21-46.png}
+  \end{center}
+}
+
+\ex{}{
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2026-02-20-16-42-06.png}
+  \end{center}
+}
+\ex{}{
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2026-02-20-16-57-21.png}
+\end{center}
+}
 % \end{document}
