@@ -72,5 +72,46 @@ The attacker threat model consists of:
 \end{itemize}
 
 \subsection{Symmetric Encryption}
-Per oggi ci fermiamo :)
+Lowkey l'abbiamo fatta gia' due volte, aggiungo solo roba che dice in piu' (sta letteralmente leggendo le slide come il guerriero)
+
+\begin{itemize}
+\item \textbf{Single-use key}: the key is regenerated for each transmitted file
+\item \textbf{Multi-use key}: the key is used with a "nonce" in order to be used for multiple transmissions
+\end{itemize}
+
+\subsection{Asymmetric Encryption}
+Private and public key. La pubblica e' salvata in una \textbf{public repo} gestita da un'autorita' trusted
+
+\subsection{Secure Communication}
+
+Una volta SSL ora TLS, poi RCS per end-to-end security (sono la stessa cosa??)
+
+\subsection{Boh}
+
+Criptography is a rigorus science that follows three main steps:
+
+\begin{itemize}
+\item Specify Threat Model
+\item Propose a construction
+\item ...
+\end{itemize}
+
+un po di storia, va veloce (manca la post-quantum criptology)
+
+vabbe' sto scrivendo tutot in italiano facciamolo in italiano
+
+la brodez sta davvero ripetendo il cifrario di Cesare....
+e' ez da battere provando tutte le chiavi (non ce ne stanno molti) -> bruteforce/exhaustive-search criptanalysis
+
+\subsubsection{Monoalphabetic cipher}
+Come chiave prende una permutazione dell'alfabeto -> sono 2^88 non possiamo fare brute force
+possiamo fare criptanalysis con metodi statistici, ovvero usando la frequenza di ogni lettera
+
+\subsubsection{Affine cipher}
+Caso specifico del sub-cipher1
+
+\ex{2 di un esame 17 gen 25}{
+  
+}
+
 % \end{document}
