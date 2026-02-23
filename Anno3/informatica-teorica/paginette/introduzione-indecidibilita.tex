@@ -281,13 +281,21 @@ La macchina di turing ha stati finiti (come gli altri automi) e il suo programma
   $ \delta $ codifica le funzioni di transizioni (gli archi dell'automa)
 
 \dfn{Configurazione}{
-  E' una "fotografia" dello stato corrente di computazione della macchina:
+  Sia $ M = \{Q, q_0, F, \Sigma, \Gamma, \blank, \delta \} $ una MdT. Si definisce \textit{configurazione} una stringa $ \alpha q \beta $ dove
+  \begin{itemize}
+    \item $ q \in Q $ è lo stato corrente della macchina.
+    \item $ \alpha, \beta \in \Gamma^* $ sono le stringhe di simboli che si trovano a sinistra e a destra della testina.
+  \end{itemize}
+}
+\nt{
+  Si può esprimere informalmente come una "fotografia" dello stato corrente di computazione della macchina:
   \begin{itemize}
   \item Stato macchina
   \item Posizione testina
   \item Cosa c'e' sul nastro
   \end{itemize}
 }
+
 \ex{}{
   \[
   aq_1abb
@@ -306,15 +314,24 @@ Partendo dalla configurazione, usando la funzione di transizione siamo in grado 
   Quando al suo interno si trova uno stato accettante
 }
 
-
 \dfn{Legal Successor}{
-  Data una MdT $ M $ e sia $ c_1 $ una sua configurazione, $ c_2 $ si dice \textit{legal successor} di $ c_1 $ sse:
+  Data una MdT $ M $ e sia $ c_1 $ una sua configurazione, $ c_2 $ si dice \textit{legal successor} di $ c_1 $ rispetto a $M$ se $c_2$ si ottiene da $c_1$ in esattamente un passo di computazione mediante l'applicazione di una transizione definita nella funzione di transizione $ \delta $.
+
+  E lo si denota con:
+
   \[
   c_1 \vdash_M c_2
   \]
 }
+\ex{Legal successor}{
+  Sia $ M $ una MdT e sia $ c_1 = a q_1 b $ una sua configurazione. Se $ \delta(q_1,b) = (q_2,a,\to) $, allora $ c_2 = aa q_2 b $ e' legal successor di $ c_1 $ rispetto a $ M $
+}
+\dfn{Configurazione iniziale}{
+  si definisce configurazione iniziale di una MdT $ M $ e di una stringa $ w \in \Sigma^* $ la configurazione $ c_1 = q_0 w $
+}
+
 \dfn{Configurazione Finale}{
-  Configurazione che non ha legal successor
+  Configurazione che non ammette legal successor secondo $ M $
 }
 
 \dfn{Computazione Parziale}{
