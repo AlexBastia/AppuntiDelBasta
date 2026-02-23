@@ -1,4 +1,4 @@
-\documentclass{report}
+\documentclass{article}
 
 \input{../LatexTemp/preamble.tex}
 \input{../LatexTemp/macros}
@@ -41,4 +41,130 @@
 \include{paginette/funzioni-sym-isomorfismi}
 \include{paginette/teoria-grafi-metodi-spettrali}
 
-\end{document}
+\chapter{Introduzione}
+Cosa vuol dire combinatoria algebrica?
+
+Vuol dire studiare strutture algebriche (gruppi, anelli, campi, etc.) attraverso la combinatoria.
+
+\section{Struttura algebrica}
+\dfn{Struttura algebrica}{
+    Si definisce struttura algebrica una coppia $(G, *)$ dove $G$ è un insieme e $*$ è una operazione binaria su $G$
+}
+
+\ex{Strutture algebriche}{
+    \begin{itemize}
+    \item  \textbf{Gruppo}: $(G, *)$ con $*$ binaria e associativa, $G$ con elemento neutro e ogni elemento ha un inverso
+    \item \textbf{Anello}: $(G, +, \cdot)$ con $+$ e $\cdot$ binarie e associative, $G$ con elemento neutro per $+$ e ogni elemento ha un inverso per $+$
+    \item \textbf{Campo}: $(G, +, \cdot)$ con $+$ e $\cdot$ binarie e associative, $G$ con elemento neutro per $+$ e ogni elemento ha un inverso per $+$
+}
+
+Per "astratta", dal latino, "tirata fuori", si intende estrapolata dal suo contesto originale. La combinatoria quindi, vuole studiare le struttura algebriche e darne una rappresentazione più concreta.
+
+
+\dfn{
+    
+}{
+        Sia $G$ un gruppo, $K$ un campo e $V$ uno spazio vettoriale su $K$. si definisce una rappresentazione di $G$ su $V$ è un omomorfismo $\rho: G \to GL(V)$ tale che $\rho(g) \rho(h) = \rho(gh)$ per ogni $g, h \in G$.
+}
+
+\nt{
+    In altre parole è un'azione (omomorfismo è un $G \to $ ) di $G$ su $V$ con immagine $GL(V)$ tramite isomorfismi 
+}
+
+\dfn{}{
+    Diciamo che la rappresentazione è fedele se $\rho$ è iniettivo, ovvero se $\rho(g) = \rho(h) \implies g = h$
+}
+
+\dfn{}{
+    Sia $(V, \rho)$ una rappresentazione di $G$ su $V$, diciamo che un sottospazio vettoriale $U\subseteq V$ è una sottorappresentazione di $\rho$ se $\rho(g)U\subseteq U$ per ogni $g\in G$
+}
+\nt{
+    In altre parole $(U, \rho_{|U})$ è una rappresentazione di $G$ su $U$, dove $\rho_{|U}: G \to GL(U)$ è l'omomorfismo che mappa $g \to \rho(g)_{|U}$
+}
+
+\ex{}{
+    \[
+        G = \langle r | r^4 = i \rangle
+    \]
+    Può essere rappresentato tramite rotazione di $V = R^2$. Ovvero $\rho(r) = \begin{pmatrix} \cos(\frac{\pi}{2}) & -\sin(\frac{\pi}{2}) \\ \sin(\frac{\pi}{2}) & \cos(\frac{\pi}{2}) \end{pmatrix}$ ha sottorappresentazioni proprie? 
+    
+}
+
+\dfn{R}{
+    Una rappresenrazione è riducibile se ammette una sottorappresentazione propria (ovvero $U \neq \{0\}$ e $U \neq V$)
+}
+
+\ex{}{
+    Sia $G$ il gruppo simmetrico $G=S_3, V=K^3$ rappresentazione matriciale. $\sigma \in S_3, (x_1, x_2, x_3) \in K^3$ 
+    \[
+        \rho(\sigma)(x_1, x_2, x_3) = (x_{\sigma(1)}, x_{\sigma(2)}, x_{\sigma(3)})
+    \]
+    Ad esempio 
+    \[
+        \rho((123))(7, -4, 5/2)= (-4, 5/2, 7)
+    \]
+}
+
+
+\ex{Esercizio}{ Consideriamo i sottospazi $U=\{(t,t,t), t \in K\}$ e $W=\{(x_1, x_2, x_3),\in V | x_1 + x_2 + x_3 = 0\}$, mostrare che $U$ e $W$ sono sottorappresentazioni riducibili di $\rho$
+}
+\pf{Sol}{
+    $V = U \oplus W$
+}
+
+\dfn{}{
+    Una rappresentazione si dice indecomponibile se, ogni volta che $V = U \oplus W$ allora $U$ e $W$ sono sottorappresentazioni, abbiamo $U= V$ e $W=    \{0\}$ o viceversa
+}
+
+\mprop{}{
+    Chiaramente irriducibile $\implies$ indecomponibile
+}
+
+
+\nt{
+        vale il viceversa?   in generale n perché potrebbe esserci un completamentare
+}
+
+\ex{}{
+    $V = C^2$
+    $(Z, +)$
+
+    \[
+        \rho(n) = \begin{pmatrix} 1 & n \\ 0 & 1 \end{pmatrix}
+    \]
+
+    è un omomorfismo perché 
+    \[
+        \rho(n) \rho(m) = \begin{pmatrix} 1 & n \\ 0 & 1 \end{pmatrix} \begin{pmatrix} 1 & m \\ 0 & 1 \end{pmatrix} = \begin{pmatrix} 1 & n+m \\ 0 & 1 \end{pmatrix} = \rho(n+m)
+    \]
+} 
+
+\nt{
+    \[
+        e_i = \binom{1}{0}, e_2 = \binom{0}{1} \quad       
+    \]
+}
+
+\mlenma{}{
+    Sia $G$ un gruppo finito. E sia $V$ una sottorappresentazione (su $C$) allora ogni sottorappresentazione $U \subseteq V$ ammette un complementare $W \subseteq V$ tale che $V = U \oplus W$ e $W$ è una sottorappresentazione. Quindi indecomponibile $\implies$ irriducibile
+}
+
+\pf{Dimostrazione}{
+    Data una sottorappresentazione $U \subseteq V$ consideriamo $U^\perp = \{ v \in V | \langle v, u \rangle = 0 \forall u \in U \}$, dove $\langle \cdot, \cdot \rangle$ è un prodotto scalare hermitiano su $V$ (quello G inviariante), chiaramente $V = U \oplus U^\perp$ e $U^\perp$ è una sottorappresentazione perché $\forall v \in U^\perp, \forall g \in G, \forall u \in U$ abbiamo $\langle \rho(g)v, u \rangle = \langle v, \rho(g^{-1})u \rangle = 0$ perché $u \in U$ e $\rho(g^{-1})u \in U$
+}
+
+\dfn{}{
+    $A$ anello con $1_A, (V, +)$ gruppo abeliano, è un A-modulo sinistro se $A\times V \to V$ tale che
+    :
+    \begin{itemize}
+        \item $(a+b)v = av + bv$
+        \item $a(v+w) = av + aw$
+        \item $a(bv) = (ab)v$
+        \item $1_A v = v$
+    \end{itemize}
+}
+
+\dfn{$K[G]$}{Combinazioni linerari formali di elementi di $G$ con coefficienti in $K$ = $\left\{ \sum_{g \in G} a_g e_g | a_g \in K, supp(a_g) < \infty \right\}$
+
+con prodotto $a_g, e_g$
+}
