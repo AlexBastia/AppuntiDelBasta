@@ -13,10 +13,11 @@ Vediamo le strutture algebriche principali e i morfismi utilizzati nel corso. No
   Che soddsfa gli assiomi:
   \begin{itemize}
   \item Associativita'
-  \item Esistenza dell'elemento \textit{neutro}
-  \item Esistenza dell'\textit{inverso} per ogni $ a \in G $
+  \item Esistenza dell'elemento \textit{neutro} $e$
+  \item Esistenza dell'\textit{inverso} $a^{-1}$ per ogni $ a \in G $
   \end{itemize}
 }
+
 Alcune delle proprieta' piu' importanti dei gruppi sono:
 \begin{itemize}
 \item \textbf{Unicita'} dell'elemento inverso e neutro
@@ -106,12 +107,16 @@ Questo ci permette di creare il \textbf{Gruppo Quoziente} $G/N$, una struttura f
 
 
 \subsection{Gruppi Simmetrici e Gruppi Lineari Generali}
-\dfn{Il Gruppo Simmetrico $Sym(V)$}{
-Sia $V$ uno spazio vettoriale (considerato qui come un semplice insieme di punti). Il \textbf{Gruppo Simmetrico} di $V$, denotato con $Sym(V)$ o $\text{Perm}(V)$, è l'insieme di tutte le funzioni biunivoche (permutazioni) $f: V \to V$. 
-Sotto l'operazione di composizione di funzioni, $Sym(V)$ forma un gruppo.
+\dfn{Il Gruppo Simmetrico}{
+Sia $X$ un insieme. Il \textbf{Gruppo Simmetrico} di $X$, denotato con $Sym(X)$ o $\text{Perm}(X)$, è l'insieme di tutte le funzioni biunivoche (permutazioni) $f: X \to X$. 
+Sotto l'operazione di composizione di funzioni, $Sym(X)$ forma un gruppo.
 }
 
-\dfn{Il Gruppo Lineare Generale}{
+\nt{
+    Si puo' dimostrare che gruppi simmetrici di insiemi aventi la stessa cardinalita' $n$ sono isomorfi, quindi si tende a considerare il gruppo simmetrico costituito dalle permutazioni degli interi $1,2,\dots,n$ denotato $S_n$.
+}
+
+\dfn{Il Gruppo Lineare Generale di uno Spazio Vettoriale}{
 Sia $V$ uno spazio vettoriale su un campo $K$. Il \textbf{Gruppo Lineare Generale} di $V$, denotato con $GL(V)$ o $\text{Aut}(V)$, è l'insieme di tutti gli \textbf{automorfismi lineari} dello spazio $V$ (ovvero, tutte le applicazioni lineari biunivoche $f: V \to V$).
 
 La struttura $(GL(V), \circ)$ forma un gruppo dove l'operazione interna è la \textbf{composizione di funzioni}:
@@ -133,7 +138,7 @@ La struttura $(GL(V), \circ)$ forma un gruppo dove l'operazione interna è la \t
 }
 
 \subsubsection{Rappresentazione Matriciale $GL(n, K)$}
-Se lo spazio vettoriale $V$ ha dimensione finita $n$, fissata una base di $V$, ogni isomorfismo lineare può essere rappresentato univocamente da una matrice quadrata di ordine $n$. Di conseguenza, $GL(V)$ è isomorfo al gruppo delle matrici invertibili a coefficienti in $K$:
+Se lo spazio vettoriale $V$ ha dimensione finita $n$, fissata una base di $V$, ogni isomorfismo lineare può essere rappresentato univocamente da una matrice quadrata di ordine $n$. Di conseguenza, $GL(V)$ è isomorfo al gruppo delle matrici invertibili a coefficienti nel campo $K$:
 $$ GL(n, K) = \{ A \in M_{n}(K) \mid \det(A) \neq 0 \} $$
 In questa veste, l'operazione del gruppo diventa la \textbf{moltiplicazione riga per colonna} tra matrici e l'elemento neutro è la matrice identità $I_n$.
 
@@ -155,6 +160,21 @@ Un gruppo $(G, \cdot)$ si dice \textbf{ciclico} se esiste un elemento $g \in G$,
 $$G = \langle g \rangle = \{g^k \mid k \in \mathbb{Z}\}$$
 }
 
+\subsubsection*{Classificazione e Struttura}
+I gruppi ciclici sono classificati in base al loro ordine $|G|$:
+\begin{itemize}
+    \item Se $|G| = \infty$, allora $G \cong (\mathbb{Z}, +)$.
+    \item Se $|G| = n < \infty$, allora $G \cong (\mathbb{Z}/n\mathbb{Z}, +)$, ovvero il gruppo delle classi di resto modulo $n$.
+\end{itemize}
+
+\subsubsection*{Proprietà Fondamentali}
+\begin{enumerate}
+    \item \textbf{Abelianità:} Ogni gruppo ciclico è abeliano. Infatti, $g^a \cdot g^b = g^{a+b} = g^{b+a} = g^b \cdot g^a$.
+    \item \textbf{Sottogruppi:} Ogni sottogruppo di un gruppo ciclico è a sua volta ciclico.
+    \item \textbf{Teorema dei Divisori:} Se $G$ è un gruppo ciclico di ordine $n$, allora per ogni divisore $d$ di $n$ esiste un unico sottogruppo $H \le G$ tale che $|H| = d$.
+    \item \textbf{Generatori:} Un elemento $g^k$ di un gruppo ciclico d'ordine $n$ è un generatore di $G$ se e solo se $\gcd(k, n) = 1$. Il numero di tali generatori è dato dalla funzione $\varphi(n)$ di Eulero.
+\end{enumerate}
+
 \dfn{Classi di Coniugio di Gruppi Simmetrici}{
 Dato un gruppo simmetrico $S_n$, due permutazioni $\sigma, \tau \in S_n$ appartengono alla stessa \textbf{classe di coniugio} se e solo se hanno la stessa \textbf{struttura ciclica}, ovvero se presentano lo stesso numero di cicli della stessa lunghezza nella loro scomposizione in cicli disgiunti.
 }
@@ -174,21 +194,6 @@ Dato un gruppo simmetrico $S_n$, due permutazioni $\sigma, \tau \in S_n$ apparte
     \item \textbf{Diagrammi di Young:} Le rappresentazioni irriducibili di $S_n$ vengono classificate e costruite tramite i \textbf{Diagrammi di Young}, che sono la rappresentazione grafica delle partizioni di $n$.
 \end{itemize}
 }
-
-\subsubsection*{Classificazione e Struttura}
-I gruppi ciclici sono classificati in base al loro ordine $|G|$:
-\begin{itemize}
-    \item Se $|G| = \infty$, allora $G \cong (\mathbb{Z}, +)$.
-    \item Se $|G| = n < \infty$, allora $G \cong (\mathbb{Z}/n\mathbb{Z}, +)$, ovvero il gruppo delle classi di resto modulo $n$.
-\end{itemize}
-
-\subsubsection*{Proprietà Fondamentali}
-\begin{enumerate}
-    \item \textbf{Abelianità:} Ogni gruppo ciclico è abeliano. Infatti, $g^a \cdot g^b = g^{a+b} = g^{b+a} = g^b \cdot g^a$.
-    \item \textbf{Sottogruppi:} Ogni sottogruppo di un gruppo ciclico è a sua volta ciclico.
-    \item \textbf{Teorema dei Divisori:} Se $G$ è un gruppo ciclico di ordine $n$, allora per ogni divisore $d$ di $n$ esiste un unico sottogruppo $H \le G$ tale che $|H| = d$.
-    \item \textbf{Generatori:} Un elemento $g^k$ di un gruppo ciclico d'ordine $n$ è un generatore di $G$ se e solo se $\gcd(k, n) = 1$. Il numero di tali generatori è dato dalla funzione $\varphi(n)$ di Eulero.
-\end{enumerate}
 
 \subsection{Azioni}
 \dfn{Azione di un Gruppo}{
@@ -280,16 +285,21 @@ Nel contesto dello studio delle rappresentazioni $\rho: G \to GL(V)$, le proprie
     \item \textbf{Dimensione Relativa:} La dimensione di uno spazio vettoriale dipende strettamente da $K$. Ad esempio, l'insieme dei numeri complessi $\mathbb{C}$ ha dimensione $1$ se inteso come $\mathbb{C}$-spazio vettoriale, ma possiede dimensione $2$ se lo strutturiamo come $\mathbb{R}$-spazio vettoriale (con base $\{1, i\}$).
 \end{itemize}
 
-\section{Omomorfismi, Isomorfismi e Automorfismi}
+\section{Morfismi di Strutture Algebriche}
+In algebra astratta, un morfismo fra due strutture $A, B$ e' una funzione che trasforma l'insieme di sostegno di $A$ nell'insieme di sostegno di $B$ (o in una sua parte) conservando determinate caratteristiche strutturali, in base alle quali si distinguono diversi morfismi.
 
-\subsection*{1. Omomorfismo di Gruppi}
-Siano $(G, \cdot)$ e $(H, *)$ due gruppi. Una funzione $\phi: G \to H$ si dice \textbf{omomorfismo} se preserva l'operazione di gruppo, ovvero se:
+TODO: sto generalizzando tutto dato che possono essere applicati ad altre strutture oltre che i gruppi
+\subsection{Omomorfismi}
+E' un'applicazione fra strutture dello stesso tipo (Gruppi, Anelli, Campi, ecc...) che conserva le operazioni in esse definite
+\dfn{Omomorfismo}{
+Siano $A$ e $B$ due strutture algebriche dello stesso tipo. Una funzione $\phi: A \to B$ si dice \textbf{omomorfismo} se:
 $$ \phi(x \cdot y) = \phi(x) * \phi(y) \quad \forall x, y \in G $$
 Da questa definizione derivano due proprietà strutturali fondamentali:
 \begin{itemize}
     \item $\phi(e_G) = e_H$ (l'elemento neutro viene mappato nell'elemento neutro).
     \item $\phi(x^{-1}) = [\phi(x)]^{-1}$ (l'inverso viene mappato nell'inverso).
 \end{itemize}
+}
 
 \textbf{Strutture associate a un omomorfismo:}
 \begin{itemize}
@@ -297,21 +307,21 @@ Da questa definizione derivano due proprietà strutturali fondamentali:
     \item \textbf{Immagine:} $\text{Im}(\phi) = \{\phi(x) \mid x \in G\}$. L'immagine rappresenta la porzione del codominio effettivamente raggiunta ed è sempre un sottogruppo di $H$ ($\text{Im}(\phi) \le H$).
 \end{itemize}
 
-\subsection*{2. Isomorfismo}
+\subsection{Isomorfismi}
 Un omomorfismo $\phi: G \to H$ si dice \textbf{isomorfismo} se la funzione $\phi$ è biunivoca (cioè iniettiva e suriettiva).
 \begin{itemize}
     \item \textbf{Criterio di iniettività:} Un omomorfismo $\phi$ è iniettivo se e solo se $\ker(\phi) = \{e_G\}$.
     \item Se esiste un isomorfismo tra $G$ e $H$, i due gruppi si dicono isomorfi e si scrive $G \cong H$. Strutturalmente, sono indistinguibili dal punto di vista algebrico.
 \end{itemize}
 
-\subsection*{3. Automorfismo}
+\subsection{Automorfismi}
 Un \textbf{automorfismo} è un isomorfismo di un gruppo in sé stesso, ovvero una mappa biunivoca $\phi: G \to G$ che preserva le operazioni.
 \begin{itemize}
     \item L'insieme di tutti gli automorfismi di un gruppo $G$, dotato dell'operazione di composizione di funzioni, forma un gruppo a sua volta, denotato con $\text{Aut}(G)$.
     \item \textbf{Automorfismi interni:} Fissato un elemento $g \in G$, la mappa di coniugio $\gamma_g(x) = gxg^{-1}$ è sempre un automorfismo di $G$. L'insieme di questi automorfismi forma un sottogruppo denotato con $\text{Inn}(G) \trianglelefteq \text{Aut}(G)$.
 \end{itemize}
 
-\section*{L'Omomorfismo Determinante}
+\section{L'Omomorfismo Determinante}
 
 \subsection*{Definizione}
 Sia $K$ un campo e $K^\times = K \setminus \{0\}$ il suo gruppo moltiplicativo (formato da tutti gli elementi non nulli di $K$ con l'operazione di prodotto).
