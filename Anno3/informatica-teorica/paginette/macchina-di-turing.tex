@@ -1,3 +1,248 @@
 % \begin{document}
 \chapter{Macchine di Turing e Linguaggi}
+\section{Linguaggi}
+
+\subsection{Definizioni}
+
+\dfn{Alfabeto}{
+
+$ \Sigma = \{a,b,c,...\} $ e' l'\textit{alfabeto}
+
+
+E' un insieme di simboli.
+}
+
+\dfn{Parola}{
+$ w $ e' una parola o striga su $ \Sigma $ e' un concatenamento di 0 o piu' simboli di $ \Sigma $.
+}
+
+\dfn{Kleene}{
+  def
+}
+
+\dfn{Linguaggio}{
+  Sottoinsieme delle parole che si possono costruire su un determinato alfabeto $ \Sigma $:
+  \[
+  L \subseteq \Sigma^*
+  \]
+}
+
+\dfn{}{
+Dato un linguaggio $ L $ \textbf{fissato} per una stringa $ w $, decidere se:
+\[
+w \in L
+\]
+}
+
+Il problema di appartenenza a un linguaggio $ L $ (\textbf{fissato!}) e' definito come:
+
+dato il linguaggio $ L $, prendere in input una parola $ w $ e decidere se $ w \in L $.
+
+input: stringa
+output: booleano
+
+Perche' vogliamo usare automi? : e' un formalismo piu' basico e piu' semplice da studiare rispetto a un arbitrario linguaggio di prorammazione.
+
+\subsection{Automi}
+Vabbe' introduce gli automi, il Guerriero ci ha gia preparato adeguatamente.
+
+Alright whatsapp.
+
+\section{Macchia di Turing}
+Automa piu' potente che Turing si invento per studiare i problemi importanti da chiudere, fra cui l'automatizzazione dei teoremi.
+
+E' nato per formalizzare il calcolo automatico in un tempo in cui non esistevano i computer, era la versione "automatizzata" di lui che scriveva su carta.
+
+Iniziamo con una spiegazione informale:
+
+E' una macchina caratterizzata da un nastro con delle cellette
+
+In ognuna cella c'e' un simbolo, ed e' infinito in entrambe le direzioni
+
+Ha una testina posizionata su una cella da cui puo' leggere il simbolo
+
+La testina puo' spostarsi a dx o sx, e a differenza degli automi visti puo' benissio tornare indietro e cambiare la decisione presa prima (backtracking)
+
+La testina puo' anche scrivere su una cella, perdendo cio' che c'era prima (una seconda differenza)
+
+Per noi sta roba e' un algoritmo, dato che la macchina di Turing, in quanto automa, ha vari stati di funzionamento
+\begin{itemize}
+\item Legge simbolo cella
+\item In base allo stato, sovrascrive qualcosa
+\item Sposto la testina avanti o indietro
+\item Cambio lo stato
+\end{itemize}
+
+\ex{}{
+  Progetta una MdT che riconosca il linguaggio
+  \[
+  L = \{a^mb^m | m \geq 0\}
+  \]
+  La stringa da decidere si trova sul nastro da sx a dx e la testina si trova sopra il primo simbolo.
+
+  Un algoritmo e' un filmato di quello che succede nella nostra testa per risolvere un problema.
+
+  \begin{itemize}
+    \item Leggi cella, se e' vuota fine (ok)
+    \item altrimenti se e' $ b $ fine (no)
+    \item se e' $ a $, cancella
+    \item spostati a dx finche' la cella e' bianca
+    \item vai a sx di uno e leggi
+    \item se e' a, fine (no)
+    \item se e' $ b $, cancella e vai a sx finche e' bianca
+    \item muoviti di uno a dx
+  \end{itemize}
+
+  TODO: disegna automa
+}
+
+\subsection{Definizioni formali}
+\dfn{Macchina di Turing}{
+  E' la settupla
+  \[
+  M = \{Q, q_0, F, \Sigma, \Gamma, b/, \delta \}
+  \]
+  Dove:
+  \begin{itemize}
+  \item $ Q $ e' l'insieme di stati
+  \item $ q_0 $ e' lo stato iniziale
+  \item $ F $ e' l'insieme degli stati finali
+  \item $ \Sigma $ e' l'insime dei simboli in input
+  \item $ \Gamma $ e' l'insieme dei simboli che la macchina puo' scrivere $ \Sigma \subset \Gamma $
+  \item $ b/ $ e' il simbolo di cella vuota ("blank") $ b/ \in \Gamma $
+  \item $ \delta $ e' la funzione
+    \[
+    Q \times \Gamma \to Q \times \Gamma \times \{\gets, \to\}
+    \]
+  \end{itemize}
+}
+
+La macchina di turing ha stati finiti (come gli altri automi) e il suo programma e' fissato (non cambia). Quindi come fa a eseguire qualunque computazione? Vedremo.
+
+  $ \delta $ codifica le funzioni di transizioni (gli archi dell'automa)
+
+\dfn{Configurazione}{
+  E' una "fotografia" dello stato corrente di computazione della macchina:
+  \begin{itemize}
+  \item Stato macchina
+  \item Posizione testina
+  \item Cosa c'e' sul nastro
+  \end{itemize}
+}
+\ex{}{
+  \[
+  aq_1abb
+  \]
+  dove $ q_1 $ e' lo stato della macchina e la testina legge il carattere a dx dello stato.
+  \[
+  aabq_3b/
+  \]
+  sta leggendo la prima cella bianca a dx
+
+  Nota: i caratteri bianchi ci permettono di precisare la posizione della testina, ma non ne dobbiamo mettere infiniti obv
+}
+Partendo dalla configurazione, usando la funzione di transizione siamo in grado di calcolare il passo che eseguira'
+
+\dfn{Configurazione Accettante}{
+  Quando al suo interno si trova uno stato accettante
+}
+
+
+\dfn{Legal Successor}{
+  Data una MdT $ M $ e sia $ c_1 $ una sua configurazione, $ c_2 $ si dice \textit{legal successor} di $ c_1 $ sse:
+  \[
+  c_1 \vdash_M c_2
+  \]
+}
+\dfn{Configurazione Finale}{
+  Configurazione che non ha legal successor
+}
+
+\dfn{Computazione Parziale}{
+  Data una MdT $ M $, una \textit{computazione parziale} per $ M $ e' una sequenza:
+  \[
+  c_1,c_2,...c_n
+  \]
+  dove
+  \[
+  c_1 \vdash_M c_2 \vdash_M ... \vdash_M c_n
+  \]
+}
+\nt{
+  Non e' detto che $ c_1 $ sia il punto di partenza e $ c_n $ sia l'ultima configurazione della configurazione, per questo e' parziale.
+}
+
+\dfn{Computazione}{
+  Data una MdT $ M $ e una stringa $ w = w_1w_2...w_l $, una \textit{computazione} per $ M $ e' una computazione parziale per $ M $ dove
+  \[
+    c_1 = q_0w_1w_2...w_l 
+  \]
+  e $ c_n $ e' una configurazione finale
+}
+
+Possiamo ora definire quando una MdT accetta un input
+\dfn{Accettazione}{
+  Una MdT accetta $ w $ se si arresta su uno stato accettante, e rifuita $ w $ se non e' vero che si arresti in uno stato accettante.
+}
+\nt{
+  Da questa definizione, se una MdT non si arresta allora l'input non e' accettato.
+  Quindi per non accettare puo' anche divergere. Questa roba qua per noi e' un po' cringe.
+}
+
+\dfn{Linguaggio di una MdT}{
+  Linguaggio 
+  \[
+    \mathcal{L}(M) = \{w | M(w) = 1\}
+  \]
+
+}
+
+\dfn{Decide}{
+  Sia $ L $ un linguaggio, $ M $ \textit{decide} $ L $ se $ \forall w \in \Sigma^* $
+  \[
+    w \in L \implies M \text{ accetta } w 
+  \]
+  \[ 
+    w \notin L \implies M \text{ \textit{si arresta} e dice di "no" } w 
+  \]
+}
+
+\dfn{Riconosce}{
+  Sia $ L $ un linguaggio, $ M $ \textit{riconosce} $ L $ se $ \forall w \in \Sigma^* $
+  \[
+    w \in L \implies M \text{ accetta } w 
+  \]
+  \[ 
+    w \notin L \implies M \text{ non accetta } w 
+  \]
+}
+
+\subsection{Esercizi}
+TODO: sarebbe figo fare gli automi in latex, se ho sbatti ci provo. Ah e alcune soluzioni sono imprecise le dovrei fixare.
+\ex{}{
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2026-02-20-16-21-46.png}
+  \end{center}
+}
+
+\ex{}{
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2026-02-20-16-42-06.png}
+  \end{center}
+}
+\ex{}{
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2026-02-20-16-57-21.png}
+\end{center}
+}
+\ex{}{
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2026-02-22-11-23-06.png}
+  \end{center}
+}
+\ex{}{
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2026-02-22-11-33-47.png}
+  \end{center}
+}
 % \end{document}
