@@ -110,6 +110,16 @@ possiamo fare criptanalysis con metodi statistici, ovvero usando la frequenza di
 \subsubsection{Affine cipher}
 Caso specifico del sub-cipher1
 
+\subsection{Stream cipher}
+in Un simmetric cipher definito su (K, P, C), con K chiave, plaintext P e ciphertext C, abbiamo che la funzione di encryption è spesso randomizzata ed è definita come E : K x P -> C e invece la 
+funzione di decryption è deterministica e tale per cui D: K x C -> P.
+
+\subsection{One-Time Pad}
+Praticamente si fa lo XOR tra i bit del plaintext e quelli della chiave. In questo caso la lunghezza della key deve essere uguale a quella del plaintext.
+pro: è mega veloce sia in encyption che in decryption brodez
+contro: deve usare chiavi lunghissime perché la key deve essere lunga come il messaggio. ma dato che questa key deve essere mandata da alice a bob in modo sicuro, allora potrebbe 
+usare sto meccanismo sicuro per mandare direttamente il messagio, quindi boh non serve a un cazzo.
+
 \ex{2 di un esame 17 gen 25}{
   
 }
