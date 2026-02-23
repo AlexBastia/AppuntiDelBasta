@@ -115,13 +115,219 @@ in Un simmetric cipher definito su (K, P, C), con K chiave, plaintext P e cipher
 funzione di decryption è deterministica e tale per cui D: K x C -> P.
 
 \subsection{One-Time Pad}
+\dfn{One-Time Pad}{
+  Si definisce \textit{One-Time Pad} il seguente cifrario:
+  \begin{itemize}
+    \item Spazio delle chiavi: ${0,1}^n$ (stringhe di bit di lunghezza n)
+    \item Funzione di encryption: $E_k(m) = m \oplus k$
+    \item Funzione di decryption: $D_k(c) = c \oplus k$
+  \end{itemize}
+  Dove $k$ è la chiave e $m$ è il plaintext e \texttt{len(k) = len(m)}
+}
 Praticamente si fa lo XOR tra i bit del plaintext e quelli della chiave. In questo caso la lunghezza della key deve essere uguale a quella del plaintext.
+
+\mprop{Sulla corrtettezza dell'Otp}{
+  \[
+    D(k, E(k,m)) = k \oplus (k \oplus m) = (k \oplus k) \oplus m = 0 \oplus m = m
+  \]
+}
+
+
 pro: è mega veloce sia in encyption che in decryption brodez
 contro: deve usare chiavi lunghissime perché la key deve essere lunga come il messaggio. ma dato che questa key deve essere mandata da alice a bob in modo sicuro, allora potrebbe 
 usare sto meccanismo sicuro per mandare direttamente il messagio, quindi boh non serve a un cazzo.
 
-\ex{2 di un esame 17 gen 25}{
+\subsubsection{Sicurezza del cifrario OTP}
+PEr supporre che un messaggio sia sicuro, si potrebbero usare due approcci naif:
+\begin{itemize}
+\item \textbf{L'attaccante non riesce a trovare la chiave}: Non basta. Magari non trova la chiave ma riesce a decifrare il messaggio lo stesso
+\item \textbf{L'attaccante non riesce a recuperare l'intero plaintext}: Non basta neanche. Se recupera anche solo un bit del messaggio, per molte applicazioni è già un disastro
+\end{itemize} 
+
+SI RINGRAZIA PROFONDAMENTE IL BUON CLAUDE SHANNON PER LA DEFINIZIONE DI SICUREZZA, OVVERO CHE \textit{ciphertext non deve rivelare assolutamente nessuna informazione sul plaintext}. Zero. Nulla. Neanche quante vocali ci sono, neanche la lunghezza approssimativa. Si noti la la seguente definizione:
+
+\dfn{Sicurezza perfetta secondo Shannon}{
+  Un cifrario $(E, D)$ su $(K, P, C)$ ha \textit{perfect secrecy} se $\forall m_0, m_1 \in P: len(m_0) = len(m_1)$ e $\forall c \in C$ allora:
+  \[
+    Pr[E(k, m_0) = c] = Pr[E(k, m_1) = c]
+  \]
+  Dove $k$ è la chiave
+}
+\nt{
+  In altre parole la probabilità che il chipertext $c$ è idendica qualunque sia il messaggio cifrato. PErtanto non c'è informazione in $c$ su quale sia $m_0$ o $m_1$
+}
+Si noti il seguente teorema:
+\thm{}{Il One-Time Pad ha perfect secrecy}
+
+\pf{Dimostrazione}{
+  Sia $m$ e $c$, vogliamo calcolare $Pr[E(k,m) = c]$ dove $k$ è uniforme su $K$. 
   
+  Tale probabilità è uguale al numero di chiavi $k\in K$ tali che $E(k,m) = c$ diviso al numero di chiavi totali $|K|$, pertanto basta dimostrare che questa probabilità è costante $\forall (m,c)$
+
+  Nell'OTP $E(k,m) = m \oplus k$ implica $k = m \oplus c$. C'è esattamente una chiave per ogni coppia $(m,c)$ che produce quel ciphertext. Il numeratore quindi è sempre 1, indipendemente da $m$ e $c$.
+
+  Pertanto si che 
+  \[
+    Pr[E(k,m) = c] = \frac{1}{|K|} \quad \forall m,c
+  \]
+  La probabilità è la stessa per qualunque messaggio
+ }
+
+ Si ha tuttavia una conseguenza importante
+ \thm{Teorema di Shannon}{
+  La sicurezza perfetta implica che $|K| \geq |P|$
+ }
+\nt{
+ Ovvero un cifrario ha sicurezza perfetta se e solo se la lunghezza della chiave è almeno quella del messaggio}
+
+Se volete sicurezza perfetta, pagate il prezzo di chiavi lunghissime. E questo è impraticabile su larga scala.
+
+La conseguenza pratica è drastica: dobbiamo rinunciare alla sicurezza perfetta e accontentarci di qualcosa di "meno perfetto", la sicurezza computazionale, che è comunque più che sufficiente.
+
+\subsection{Pseudo - Random Generators e Stream Ciphers}
+
+Abbiamo due fatti:
+\begin{itemize}
+  \item Il OTP è perfettamente sicuro ma richiede chiavi lunghe quanto il messaggio
+  \item La sicurezza perfetta è impossibile con chiavi corte.
+\end{itemize}
+La soluzione è è quella di rinunciare alla sicurezza perfetta e sostituiamo la chiave veramente veramente casuale con una sequenza pseudo-casuale generata da una chiave corta. Questo è l'idea degli stream cipher. Formalmente
+
+\dfn{Stram Cipher}{
+  Si definisce \textit{Stream Cipher} un sistema che mira a emulare la sicurezza del One-Time Pad in modo efficiente. A differenza dei cifrari a blocchi che operano su segmenti fissi di dati, lo stream cipher elabora il testo in chiaro bit per bit o byte per byte
+}
+Adesso si noti la seguente definizione
+\dfn{Pseudo-Random Generator (PRG)}{
+  Si definisce \textit{PRG} la seguente funzione:
+  \[
+    G:\{0,1\}^s \to \{0,1\}^n \text{ con }n>>s
+  \]
 }
 
-% \end{document}
+In prarica riceve in input un seed (la chiave breve, s bit) e produce una sequenza molto più lunga (n bit) che sembra casuale. Lo stream cipher usa G così
+\begin{itemize}
+  \item $E(k, m) = G(k) \oplus m$
+  \item $D(k, c) = G(k) \oplus c$
+\end{itemize}
+La chiave $k$ è breve (il seed), la sequenza $G(k)$ è lunga quanto il messaggio.
+
+\subsubsection{Tre Tipi di Generatori}
+Vale la pena distinguere tre concetti
+\dfn{TRNG (True Random Number Generator)}{
+  usa fenomeni fisici genuinamente casuali ex rumore termico, eventi radioattivi, jitter dell'orologio. Produce vera casualità, ma è lento
+}
+\dfn{PRNG (Pseudo-Random Number Generator)}{
+  algoritmo deterministico che a partire da un seed produce una sequenza lunga e statisticamente "casuale"
+}
+\nt{
+  Veloce ma deterministico, da un seed produce sempre la stessa sequenza
+}
+\dfn{PRF (Pseudo-Random Function)}{una funzione che, dato un input, produce un output pseudo-casuale}
+\nt{è una generalizzazione del PRNG}
+
+\subsubsection{Requisiti di un buon PRNG}
+Un PRNG per uso crittografico deve soddisfare due requisiti fondamentali
+\begin{itemize}
+  \item \textbf{Randomness (apparente)}: la sequenza prodotta deve superare tutti i test statistici noti — distribuzione uniforme dei bit, assenza di pattern, correlazioni basse tra bit vicini
+  \item \textbf{Unpredictability (imprevedibilità)}: dato un prefisso della sequenza, non deve esistere nessun algoritmo efficiente (in tempo polinomiale) in grado di predire il bit successivo con probabilità significativamente maggiore di $1/2$ (\textbf{next-bit test})
+\end{itemize}
+
+\subsubsection{PRNG deboli, NON USARE @ALEXBASTA, NON USARLI PERFAVORE}
+Due esempi di PRNG statisticamente accettabili ma crittograficamente insicuri
+
+\begin{itemize}
+  \item \texttt{glibc random()}: Utilizza un generatore a feedback lineare (non-linear additive feedback). conoscendo alcuni output si può calcolare facilmente il seed e predire tutti gli output futuri
+  \item \textbf{Linear Congruential Generator}:
+  Si ottiene attravero questo algoritmo \texttt{r[i] = (a · r[i-1] + b) mod p}. Semplice, veloce, ha buone proprietà statistiche, ma è matematicamente elementare da invertire: dati due output consecutivi, si trovano immediatamente a e b
+\end{itemize}
+
+\subsubsection{Un Buon PRNG: Blum Blum Shub (BBS)}
+Il BBS è un esempio di PRNG crittograficamente sicuro la cui sicurezza è ridotta a un problema matematico difficile
+
+\begin{algorithm}
+\caption{Generatore Blum Blum Shub}
+\begin{algorithmic}[1]
+\State Scegli due grandi numeri primi $p$ e $q$ tali che $p \equiv q \equiv 3 \pmod{4}$
+\State Calcola $n \gets p \cdot q$
+\State Scegli un seed $s$ tale che $\gcd(s,n)=1$
+\State Calcola $X_0 \gets s^2 \bmod n$
+\For{$i = 1$ to $k$}
+    \State $X_i \gets X_{i-1}^2 \bmod n$
+    \State $B_i \gets X_i \bmod 2$
+\EndFor
+\State \Return $\{B_1, B_2, \dots, B_k\}$
+\end{algorithmic}
+\end{algorithm}
+
+\mprop{Sicurezza di BBS}{
+  Predire il bit successivo della sequenza BBS è computazionalmente equivalente a fattorizzare $n = p\cdot q$
+}
+
+\nt{
+  non esiste nessun algoritmo efficiente noto per fattorizzare numeri grandi pertanto BBS è crittograficamente sicuro
+}
+
+Tuttavia è relativamente lento rispetto ad altri PRNG crittografici. Per applicazioni ad alta velocità si usano altri approcci.
+
+\subsubsection{Formalizzare queste note TODO}
+
+Gli Stream Cipher: Struttura Generica
+Uno stream cipher tipico funziona così: a partire dalla chiave K e da un valore di inizializzazione IV, si mantiene uno stato interno sᵢ che evolve a ogni passo. A ogni passo si produce un byte del keystream zᵢ tramite una funzione g(sᵢ), e lo stato avanza con una funzione f(sᵢ).
+Il keystream viene poi XOR-ato byte a byte con il plaintext: cᵢ = pᵢ ⊕ zᵢ.
+L'IV serve a garantire che lo stesso key K produca keystream diversi in sessioni diverse — un meccanismo simile al nonce che vedremo nei cifrari moderni.
+
+Gli Stream Cipher Non Hanno Perfect Secrecy
+Una domanda naturale: uno stream cipher può avere perfect secrecy?
+No, per definizione. La chiave k è corta (il seed), mentre il messaggio è lungo. Per il teorema di Shannon, |K| ≥ |P| è necessario per la perfect secrecy — condizione violata da qualsiasi stream cipher pratico.
+Dobbiamo quindi usare una definizione diversa di sicurezza, la sicurezza computazionale: il sistema è sicuro se non esiste nessun algoritmo efficiente in grado di distinguere il keystream G(k) da una sequenza veramente casuale. La sicurezza dello stream cipher dipende interamente dalla qualità del PRG: un PRG computazionalmente indistinguibile dal random implica uno stream cipher computazionalmente sicuro.
+
+
+\subsubsection{RC4}
+
+Il RC4 (Rivest Cipher 4) è stato lo stream cipher dominante per decenni, usato in SSL/TLS per HTTPS e in WEP/WPA per le reti Wi-Fi. Oggi, tuttavia, è ufficialmente deprecato ed è considerato insicuro per qualsiasi applicazione crittografica. 
+\paragraph{Struttura}: usa un array di stato S di 256 byte (una permutazione dei valori 0-255) e una chiave di lunghezza variabile tra 8 e 2048 bit
+
+\paragraph{Fase 1}:
+\begin{algorithm}
+  \caption{Inizializzazione di S}
+\begin{algorithmic}[1]
+\For{$i = 0$ to 255}
+  \State $S[i] = i$
+  \State $T[i] = K[i mod keylen]$
+\EndFor
+\State $j=0$
+\For{$i = 0$ to 255}
+\State $j = (j+ S[i]) + T[i] mod 256$
+\State $swap(S[i], S[j])$
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+\nt{
+  Inizializza l'array di 256 byte. Prende la tua chiave segreta (che può variare da 40 a 2048 bit) e la utilizza per "mescolare" l'array
+}
+
+\paragraph{Fase 2}:
+% i, j = 0
+% while (true):
+%     i = (i + 1) mod 256
+%     j = (j + S[i]) mod 256
+%     swap(S[i], S[j])
+%     t = (S[i] + S[j]) mod 256
+%     output S[t]  ← questo byte va in XOR col plaintext
+\begin{algorithm}
+  \caption{Generazione del keystream}
+\begin{algorithmic}[1]
+\State $i=0$
+\State $j=0$
+\While{true}
+  \State $i = (i + 1) mod 256$
+  \State $j = (j + S[i]) mod 256$
+  \State $swap(S[i], S[j])$
+  \State $t = (S[i] + S[j]) mod 256$
+  \State $output S[t]$
+\EndWhile
+\end{algorithmic}
+\end{algorithm}
+  
+\nt{A ogni ciclo, continua a scambiare due byte all'interno dell'array ed estrae un valore pseudo-casuale in uscita}
