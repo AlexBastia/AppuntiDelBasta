@@ -76,6 +76,22 @@ Questo ci permette di creare il \textbf{Gruppo Quoziente} $G/N$, una struttura f
 \thm{Lagrange}{
   Se $ G $ e' un gruppo finito e $ H $ un suo sottogruppo, allora la cardinalita' degli elementi di $ G $ divide esattamente 
 }
+
+\dfn{Il Gruppo Simmetrico $Sym(V)$}{
+Sia $V$ uno spazio vettoriale (considerato qui come un semplice insieme di punti). Il \textbf{Gruppo Simmetrico} di $V$, denotato con $Sym(V)$ o $\text{Perm}(V)$, è l'insieme di tutte le funzioni biunivoche (permutazioni) $f: V \to V$. 
+Sotto l'operazione di composizione di funzioni, $Sym(V)$ forma un gruppo.
+}
+
+\nt{
+\textbf{Distinzione tra $Sym(V)$ e $GL(V)$:}
+\begin{itemize}
+    \item \textbf{Natura delle trasformazioni:} Mentre $Sym(V)$ contiene \textit{qualsiasi} funzione biettiva (anche quelle che "rimescolano" i vettori in modo selvaggio e non lineare), il gruppo $GL(V)$ è il sottogruppo di $Sym(V)$ costituito solo dalle trasformazioni che sono anche \textbf{lineari}.
+    \item \textbf{Inclusione:} $GL(V) \le Sym(V)$. In termini di Teoria delle Rappresentazioni, diciamo che una rappresentazione è un'azione di $G$ su $V$ tale che l'immagine dell'omomorfismo non sia semplicemente in $Sym(V)$, ma sia contenuta interamente in $GL(V)$.
+    \item \textbf{Esempio concettuale:} Se $V = \mathbb{R}^2$, una funzione che sposta il vettore $(1,1)$ in $(2,2)$ e il vettore $(2,2)$ in $(5,0)$ può appartenere a $Sym(V)$ (se è biettiva), ma non potrà mai appartenere a $GL(V)$ perché non rispetta la proporzionalità ($\text{linearità}$).
+    \item \textbf{Il "filtro" della Rappresentazione:} Quando scriviamo $\rho: G \to GL(V)$, stiamo imponendo che ogni simmetria del gruppo $G$ agisca sullo spazio $V$ rispettando la sua struttura vettoriale (somma e prodotto per scalare), non solo come un semplice rimescolamento di punti.
+\end{itemize}
+}
+
 \dfn{Azione di un Gruppo}{
 Sia $G$ un gruppo e $X$ un insieme non vuoto. Un' \textbf{azione} (a sinistra) di $G$ su $X$ è una funzione $\cdot: G \times X \to X$ che associa a ogni coppia $(g, x)$ un elemento $g \cdot x \in X$, tale che siano soddisfatti i seguenti assiomi:
 \begin{enumerate}
@@ -352,6 +368,9 @@ Per "astratta", dal latino, "tirata fuori", si intende estrapolata dal suo conte
 %
 \dfn{}{
     Diciamo che la rappresentazione è fedele se $\rho$ è iniettivo, ovvero se $\rho(g) = \rho(h) \implies g = h$
+}
+\nt{
+  Ovvero il nucleo di $ \rho $ contiene solo l'elemento neutro ($ ker(\rho) = \{e\} $)
 }
 %
 \dfn{}{
