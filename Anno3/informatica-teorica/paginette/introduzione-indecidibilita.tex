@@ -281,13 +281,21 @@ La macchina di turing ha stati finiti (come gli altri automi) e il suo programma
   $ \delta $ codifica le funzioni di transizioni (gli archi dell'automa)
 
 \dfn{Configurazione}{
-  E' una "fotografia" dello stato corrente di computazione della macchina:
+  Sia $ M = \{Q, q_0, F, \Sigma, \Gamma, \blank, \delta \} $ una MdT. Si definisce \textit{configurazione} una stringa $ \alpha q \beta $ dove
+  \begin{itemize}
+    \item $ q \in Q $ è lo stato corrente della macchina.
+    \item $ \alpha, \beta \in \Gamma^* $ sono le stringhe di simboli che si trovano a sinistra e a destra della testina.
+  \end{itemize}
+}
+\nt{
+  Si può esprimere informalmente come una "fotografia" dello stato corrente di computazione della macchina:
   \begin{itemize}
   \item Stato macchina
   \item Posizione testina
   \item Cosa c'e' sul nastro
   \end{itemize}
 }
+
 \ex{}{
   \[
   aq_1abb
@@ -306,42 +314,47 @@ Partendo dalla configurazione, usando la funzione di transizione siamo in grado 
   Quando al suo interno si trova uno stato accettante
 }
 
-
 \dfn{Legal Successor}{
-  Data una MdT $ M $ e sia $ c_1 $ una sua configurazione, $ c_2 $ si dice \textit{legal successor} di $ c_1 $ sse:
+  Data una MdT $ M $ e sia $ c_1 $ una sua configurazione, $ c_2 $ si dice \textit{legal successor} di $ c_1 $ rispetto a $M$ se $c_2$ si ottiene da $c_1$ in esattamente un passo di computazione mediante l'applicazione di una transizione definita nella funzione di transizione $ \delta $.
+
+  E lo si denota con:
+
   \[
   c_1 \vdash_M c_2
   \]
 }
+\ex{Legal successor}{
+  Sia $ M $ una MdT e sia $ c_1 = a q_1 b $ una sua configurazione. Se $ \delta(q_1,b) = (q_2,a,\to) $, allora $ c_2 = aa q_2 b $ e' legal successor di $ c_1 $ rispetto a $ M $
+}
+\dfn{Configurazione iniziale}{
+  si definisce configurazione iniziale di una MdT $ M $ e di una stringa $ w \in \Sigma^* $ la configurazione $ c_1 = q_0 w $
+}
+
 \dfn{Configurazione Finale}{
-  Configurazione che non ha legal successor
+  Configurazione che non ammette legal successor secondo $ M $
 }
 
 \dfn{Computazione Parziale}{
   Data una MdT $ M $, una \textit{computazione parziale} per $ M $ e' una sequenza:
   \[
-  c_1,c_2,...c_n
+  c_1,c_2,\dots,c_n
   \]
   dove
   \[
-  c_1 \vdash_M c_2 \vdash_M ... \vdash_M c_n
+  c_1 \vdash_M c_2 \vdash_M \dots \vdash_M c_n
   \]
 }
 \nt{
-  Non e' detto che $ c_1 $ sia il punto di partenza e $ c_n $ sia l'ultima configurazione della configurazione, per questo e' parziale.
+  Non è detto che $ c_1 $ sia il punto di partenza e $ c_n $ sia l'ultima configurazione della computazione, per questo è parziale.
 }
 
 \dfn{Computazione}{
-  Data una MdT $ M $ e una stringa $ w = w_1w_2...w_l $, una \textit{computazione} per $ M $ e' una computazione parziale per $ M $ dove
-  \[
-    c_1 = q_0w_1w_2...w_l 
-  \]
-  e $ c_n $ e' una configurazione finale
+  Data una MdT $ M $ e una stringa $ w \in \Sigma^* $, una \textit{computazione} per $ M $ e' una computazione parziale $ c_1,c_2,\dots,c_n $ per $ M $ dove $ c_1 $ è una configurazione iniziale e $ c_n $ è una configurazione finale
 }
-
+ 
 Possiamo ora definire quando una MdT accetta un input
 \dfn{Accettazione}{
-  Una MdT accetta $ w $ se si arresta su uno stato accettante, e rifuita $ w $ se non e' vero che si arresti in uno stato accettante.
+  Una MdT accetta $ w $ se si arresta su uno stato accettante, e rifuita $ w $ se non si arresta su uno stato accettante.
 }
 \nt{
   Da questa definizione, se una MdT non si arresta allora l'input non e' accettato.
@@ -357,7 +370,7 @@ Possiamo ora definire quando una MdT accetta un input
 }
 
 \dfn{Decide}{
-  Sia $ L $ un linguaggio, $ M $ \textit{decide} $ L $ se $ \forall w \in \Sigma^* $
+  Sia $ L $ un linguaggio, $ M $ \textit{decide} $ L $ sse $ \forall w \in \Sigma^* $
   \[
     w \in L \implies M \text{ accetta } w 
   \]
@@ -367,7 +380,7 @@ Possiamo ora definire quando una MdT accetta un input
 }
 
 \dfn{Riconosce}{
-  Sia $ L $ un linguaggio, $ M $ \textit{riconosce} $ L $ se $ \forall w \in \Sigma^* $
+  Sia $ L $ un linguaggio, $ M $ \textit{riconosce} $ L $ sse $ \forall w \in \Sigma^* $
   \[
     w \in L \implies M \text{ accetta } w 
   \]
