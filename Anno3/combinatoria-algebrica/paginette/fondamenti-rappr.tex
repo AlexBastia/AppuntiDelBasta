@@ -42,49 +42,105 @@ Per "astratta", dal latino, "tirata fuori", si intende estrapolata dal suo conte
     In altre parole $(U, \rho_{|U})$ è una rappresentazione di $G$ su $U$, dove $\rho_{|U}: G \to GL(U)$ è l'omomorfismo che mappa $g \to \rho(g)_{|U}$
 }
 %
-\ex{}{
-    \[
-        G = \langle r | r^4 = i \rangle
-    \]
-    Può essere rappresentato tramite rotazione di $V = R^2$. Ovvero $\rho(r) = \begin{pmatrix} \cos(\frac{\pi}{2}) & -\sin(\frac{\pi}{2}) \\ \sin(\frac{\pi}{2}) & \cos(\frac{\pi}{2}) \end{pmatrix}$ ha sottorappresentazioni proprie? 
-   
+\ex{Rappresentazione di $C_4$ e Dipendenza dal Campo $K$}{
+Si consideri il gruppo ciclico di ordine 4, $G = C_4 = \langle z \mid z^4 = 1 \rangle$, e la sua rappresentazione naturale su $V = \mathbb{R}^2$ definita mandando il generatore $z$ nella matrice di rotazione di $\pi/2$:
+$$ \rho(z) = \begin{pmatrix} 0 & -1 \\ 1 & 0 \end{pmatrix} $$
+L'obiettivo è analizzare la riducibilità di $\rho$ al variare del campo degli scalari $K$.
+
+\textbf{1. Analisi sul campo reale ($K = \mathbb{R}$):}
+Per determinare se esistono sottorappresentazioni proprie, cerchiamo sottospazi stabili di dimensione 1, il che equivale a cercare gli autovalori reali di $\rho(z)$. Il polinomio caratteristico è:
+$$ p(\lambda) = \det(\rho(z) - \lambda I) = \det \begin{pmatrix} -\lambda & -1 \\ 1 & -\lambda \end{pmatrix} = \lambda^2 + 1 $$
+Le radici di $p(\lambda)$ sono $\pm i$, le quali \textbf{non appartengono} a $\mathbb{R}$. Non esistendo autovalori reali, non esistono rette in $\mathbb{R}^2$ stabili sotto l'azione della rotazione.
+\begin{center}
+    \textit{Conclusione:} $\rho$ è \textbf{irriducibile} su $\mathbb{R}$.
+\end{center}
+
+\textbf{2. Analisi sul campo complesso ($K = \mathbb{C}$):}
+Se estendiamo lo spazio vettoriale a $V_{\mathbb{C}} = \mathbb{C}^2$, gli autovalori $\lambda_1 = i$ e $\lambda_2 = -i$ sono ora ammissibili. Ad essi corrispondono i rispettivi autospazi (sottospazi di dimensione 1):
+$$ V_i = \text{span}_{\mathbb{C}} \left\{ \begin{pmatrix} 1 \\ -i \end{pmatrix} \right\}, \quad V_{-i} = \text{span}_{\mathbb{C}} \left\{ \begin{pmatrix} 1 \\ i \end{pmatrix} \right\} $$
+Questi sottospazi sono $G$-invarianti, poiché l'azione di $z$ (e delle sue potenze) si limita a moltiplicare i vettori per uno scalare ($\pm i$). Lo spazio si decompone nella somma diretta:
+$$ V_{\mathbb{C}} = V_i \oplus V_{-i} $$
+\begin{center}
+    \textit{Conclusione:} $\rho$ è \textbf{riducibile} su $\mathbb{C}$.
+\end{center}
 }
 %
-\dfn{R}{
-    Una rappresenrazione è riducibile se ammette una sottorappresentazione propria (ovvero $U \neq \{0\}$ e $U \neq V$)
+\dfn{Rappresentazione Irriducibile}{
+Una rappresentazione $(\rho, V)$ di un gruppo $G$ si dice \textbf{irriducibile} se gli unici sottospazi di $V$ che siano $G$-invarianti (sottorappresentazioni) sono i sottospazi banali $\{0\}$ e $V$ stesso. 
+In caso contrario, ovvero se esiste un sottospazio proprio $0 < U < V$ tale che $\rho(g)u \in U$ per ogni $u \in U$ e $g \in G$, la rappresentazione si dice \textbf{riducibile}.
 }
-%
-\ex{}{
-    Sia $G$ il gruppo simmetrico $G=S_3, V=K^3$ rappresentazione matriciale. $\sigma \in S_3, (x_1, x_2, x_3) \in K^3$ 
-    \[
-        \rho(\sigma)(x_1, x_2, x_3) = (x_{\sigma(1)}, x_{\sigma(2)}, x_{\sigma(3)})
-    \]
-    Ad esempio 
-    \[
-        \rho((123))(7, -4, 5/2)= (-4, 5/2, 7)
-    \]
-}
-%
-%
-\ex{Esercizio}{ Consideriamo i sottospazi $U=\{(t,t,t), t \in K\}$ e $W=\{(x_1, x_2, x_3),\in V | x_1 + x_2 + x_3 = 0\}$, mostrare che $U$ e $W$ sono sottorappresentazioni riducibili di $\rho$
-}
-\pf{Sol}{
-    $V = U \oplus W$
-}
-%
-\dfn{}{
-    Una rappresentazione si dice indecomponibile se, ogni volta che $V = U \oplus W$ allora $U$ e $W$ sono sottorappresentazioni, abbiamo $U= V$ e $W=    \{0\}$ o viceversa
-}
-%
-\mprop{}{
-    Chiaramente irriducibile $\implies$ indecomponibile
-}
-%
-%
+
 \nt{
-        vale il viceversa?   in generale n perché potrebbe esserci un completamentare
+\textbf{Osservazioni sulla Riducibilità:}
+\begin{itemize}
+    \item Una rappresentazione di dimensione 1 è sempre irriducibile per motivi dimensionali (non esistono sottospazi propri non nulli).
+    \item Il concetto di irriducibilità dipende dal campo $K$ (come visto nell'esempio delle rotazioni su $\mathbb{R}$ vs $\mathbb{C}$).
+    \item Scomporre una rappresentazione riducibile in somma diretta di irriducibili è l'obiettivo principale del corso (completabilità garantita dal Teorema di Maschke).
+\end{itemize}
 }
-%
+
+\ex{Rappresentazione Naturale di $S_3$}{
+Sia $G = S_3$ agente su $V = \mathbb{R}^3$ tramite permutazione delle coordinate:
+$$ \sigma \cdot (x_1, x_2, x_3) = (x_{\sigma^{-1}(1)}, x_{\sigma^{-1}(2)}, x_{\sigma^{-1}(3)}) $$
+Questa rappresentazione è \textbf{riducibile} in quanto ammette i seguenti sottospazi $G$-invarianti propri:
+\begin{enumerate}
+    \item $U = \{ (t, t, t) \mid t \in \mathbb{R} \}$, sottospazio di dimensione 1 (retta diagonale). Poiché ogni permutazione scambia coordinate identiche, $U$ è puntualmente fisso.
+    \item $W = \{ (x_1, x_2, x_3) \in \mathbb{R}^3 \mid x_1 + x_2 + x_3 = 0 \}$, sottospazio di dimensione 2 (piano iperortogonale a $U$). Poiché la somma è commutativa, permutare gli addendi non cambia il risultato zero.
+\end{enumerate}
+Si verifica facilmente che $U \cap W = \{0\}$, pertanto lo spazio si decompone nella somma diretta:
+$$ V = U \oplus W $$
+Dove $U$ è la rappresentazione banale e $W$ è la \textbf{rappresentazione standard} di $S_3$. Entrambe sono irriducibili.
+}
+
+\dfn{Prodotto Hermitiano $G$-invariante}{
+Sia $(\rho, V)$ una rappresentazione di un gruppo finito $G$ su uno spazio vettoriale complesso $V$. Dato un prodotto hermitiano arbitrario $\langle \cdot, \cdot \rangle$ su $V$, definiamo il \textbf{prodotto hermitiano $G$-mediato} (o $G$-invariante) come:
+$$ \langle v, u \rangle_G := \frac{1}{|G|} \sum_{g \in G} \langle \rho(g)v, \rho(g)u \rangle $$
+per ogni $v, u \in V$. Tale prodotto soddisfa la condizione di invarianza:
+$$ \langle \rho(h)v, \rho(h)u \rangle_G = \langle v, u \rangle_G \quad \forall h \in G $$
+}
+
+\mprop{Esistenza di un Prodotto Hermitiano $G$-invariante}{
+Sia $(\rho, V)$ una rappresentazione di un gruppo finito $G$ su uno spazio vettoriale complesso $V$. Esiste sempre su $V$ un prodotto hermitiano $\langle \cdot, \cdot \rangle_G$ che sia $G$-invariante, ovvero tale che:
+$$ \langle \rho(g)v, \rho(g)u \rangle_G = \langle v, u \rangle_G \quad \forall g \in G, \forall v, u \in V $$
+}
+
+\pf{Dimostrazione}{
+Sia $H(v, u)$ un prodotto hermitiano arbitrario su $V$ (la cui esistenza è garantita dalla struttura di spazio vettoriale complesso). Definiamo il nuovo prodotto facendo la media sui trasformati degli elementi tramite il gruppo:
+$$ \langle v, u \rangle_G := \frac{1}{|G|} \sum_{x \in G} H(\rho(x)v, \rho(x)u) $$
+Per verificare l'invarianza, applichiamo un elemento generico $h \in G$:
+$$ \langle \rho(h)v, \rho(h)u \rangle_G = \frac{1}{|G|} \sum_{x \in G} H(\rho(x)\rho(h)v, \rho(x)\rho(h)u) $$
+Poiché $\rho$ è un omomorfismo, $\rho(x)\rho(h) = \rho(xh)$. Sostituendo:
+$$ \langle \rho(h)v, \rho(h)u \rangle_G = \frac{1}{|G|} \sum_{x \in G} H(\rho(xh)v, \rho(xh)u) $$
+Al variare di $x$ in $G$, l'elemento $xh$ percorre tutti gli elementi del gruppo esattamente una volta (la traslazione a destra è una permutazione di $G$). Possiamo quindi effettuare il cambio di variabile $k = xh$, ottenendo:
+$$ \langle \rho(h)v, \rho(h)u \rangle_G = \frac{1}{|G|} \sum_{k \in G} H(\rho(k)v, \rho(k)u) = \langle v, u \rangle_G $$
+Questo dimostra che il prodotto è $G$-invariante. Le proprietà di linearità, simmetria hermitiana e positività di $\langle \cdot, \cdot \rangle_G$ discendono direttamente dalle proprietà di $H$.
+}
+
+
+
+\dfn{Rappresentazione Indecomponibile}{
+Una rappresentazione $(\rho, V)$ si dice \textbf{indecomponibile} se non può essere scritta come somma diretta di due sottorappresentazioni proprie non banali. Ovvero, se $V = U \oplus W$ con $U, W$ sottorappresentazioni, allora necessariamente $U=0$ oppure $W=0$.
+}
+
+\nt{
+\textbf{Irriducibile vs Indecomponibile:}
+\begin{itemize}
+    \item Ogni rappresentazione \textbf{irriducibile} è banalmente \textbf{indecomponibile} (se non ha sottospazi stabili, a maggior ragione non può essere somma diretta di sottospazi stabili).
+    \item Il viceversa non è sempre vero: esistono rappresentazioni che possiedono sottospazi stabili (sono riducibili) ma che non ammettono un complemento stabile (sono indecomponibili).
+    \item \textbf{Nel Modulo 2:} Grazie al Teorema di Maschke, lavorando su un campo di caratteristica 0 (come $\mathbb{C}$) e con gruppi finiti, ogni sottorappresentazione ammette un complemento stabile. Di conseguenza, in questo contesto i concetti di irriducibile e indecomponibile \textbf{coincidono}.
+\end{itemize}
+}
+
+\mprop{Teorema di Maschke (Versione Sintetica)}{
+Sia $G$ un gruppo finito e $(\rho, V)$ una rappresentazione di $G$ su un campo $K$ (con $\text{char}(K) \nmid |G|$). Allora ogni sottorappresentazione $U \subseteq V$ ammette un complemento $G$-invariante $W$, tale che $V = U \oplus W$.
+}
+
+\pf{Dimostrazione}{
+L'esistenza di $W$ è garantita dalla costruzione di un proiettore $G$-equivariante ottenuto tramite il \textbf{trucco della media}. Sia $\pi: V \to U$ una proiezione lineare arbitraria. Definiamo:
+$$ \tilde{\pi} = \frac{1}{|G|} \sum_{g \in G} \rho(g) \pi \rho(g)^{-1} $$
+Si dimostra che $\tilde{\pi}$ è un morfismo di rappresentazioni e che $\ker(\tilde{\pi})$ è il complemento stabile $W$ cercato.
+}
+
 \ex{}{
     $V = C^2$
     $(Z, +)$
