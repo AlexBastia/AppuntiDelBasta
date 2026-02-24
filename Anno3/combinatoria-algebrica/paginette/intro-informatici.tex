@@ -288,34 +288,55 @@ Nel contesto dello studio delle rappresentazioni $\rho: G \to GL(V)$, le proprie
 \section{Morfismi di Strutture Algebriche}
 In algebra astratta, un morfismo fra due strutture $A, B$ e' una funzione che trasforma l'insieme di sostegno di $A$ nell'insieme di sostegno di $B$ (o in una sua parte) conservando determinate caratteristiche strutturali, in base alle quali si distinguono diversi morfismi.
 
-TODO: sto generalizzando tutto dato che possono essere applicati ad altre strutture oltre che i gruppi
 \subsection{Omomorfismi}
 E' un'applicazione fra strutture dello stesso tipo (Gruppi, Anelli, Campi, ecc...) che conserva le operazioni in esse definite
 \dfn{Omomorfismo}{
 Siano $A$ e $B$ due strutture algebriche dello stesso tipo. Una funzione $\phi: A \to B$ si dice \textbf{omomorfismo} se:
-$$ \phi(x \cdot y) = \phi(x) * \phi(y) \quad \forall x, y \in G $$
-Da questa definizione derivano due proprietà strutturali fondamentali:
-\begin{itemize}
-    \item $\phi(e_G) = e_H$ (l'elemento neutro viene mappato nell'elemento neutro).
-    \item $\phi(x^{-1}) = [\phi(x)]^{-1}$ (l'inverso viene mappato nell'inverso).
-\end{itemize}
+\[
+  \forall f \text{ delle strutture}, \forall x_1,...,x_n. \phi(f_A(x_1,...,x_n) = f_B(\phi(x_1),...,\phi(x_n))
+\]
+Dove $ f_A, f_B $ rappresentano la funzione $ f $ nelle strutture $ A $ e $ B $ rispettivamente.
+
+Se la struttura ha elementi particolari (unita', zeri, ...), questi vanno considerati come funzioni costanti con zero parametri. Ad esempio, siano $ e_A, e_B $ gli elementi neutri delle singole strutture, allora:
+\[
+  \phi(e_A) = e_B
+\]
 }
 
-\textbf{Strutture associate a un omomorfismo:}
+\subsubsection{Omomorfismi di gruppi}
+Nei gruppi, gli omomorfismi sono "compatibili" con la struttura di gruppo. Ovvero, preserva sia gli elementi neutri che inversi:
+\[
+  \phi(a^{-1}) = [\phi(a)]^{-1}
+\]
+Inoltre, valgono le seguenti proprieta':
 \begin{itemize}
     \item \textbf{Nucleo (Kernel):} $\ker(\phi) = \{x \in G \mid \phi(x) = e_H\}$. Il nucleo misura quanto l'omomorfismo "collassa" il gruppo di partenza ed è sempre un \textit{sottogruppo normale} di $G$ ($\ker(\phi) \trianglelefteq G$).
     \item \textbf{Immagine:} $\text{Im}(\phi) = \{\phi(x) \mid x \in G\}$. L'immagine rappresenta la porzione del codominio effettivamente raggiunta ed è sempre un sottogruppo di $H$ ($\text{Im}(\phi) \le H$).
 \end{itemize}
 
+Nel contesto del nostro corso, una \textbf{rappresentazione lineare} di un gruppo finito $G$ su uno spazio vettoriale $V$ (su un campo $K$) non è altro che un omomorfismo di gruppi:
+$$ \rho: G \to GL(V) $$
+dove $GL(V)$ è il gruppo degli automorfismi lineari (matrici quadrate invertibili) dello spazio $V$. Se $\ker(\rho) = \{e_G\}$, la rappresentazione non "perde" informazioni sul gruppo e si dice \textbf{fedele}.
+
 \subsection{Isomorfismi}
-Un omomorfismo $\phi: G \to H$ si dice \textbf{isomorfismo} se la funzione $\phi$ è biunivoca (cioè iniettiva e suriettiva).
+\dfn{Isomorfismo}{
+Un omomorfismo $\phi: A \to B$ si dice \textbf{isomorfismo} se la funzione $\phi$ è biunivoca (cioè iniettiva e suriettiva).
+}
+
+\subsubsection{Isomorfismi di gruppi}
+Se $ A $ e $ B $ sono due gruppi, allora:
 \begin{itemize}
     \item \textbf{Criterio di iniettività:} Un omomorfismo $\phi$ è iniettivo se e solo se $\ker(\phi) = \{e_G\}$.
     \item Se esiste un isomorfismo tra $G$ e $H$, i due gruppi si dicono isomorfi e si scrive $G \cong H$. Strutturalmente, sono indistinguibili dal punto di vista algebrico.
 \end{itemize}
 
 \subsection{Automorfismi}
-Un \textbf{automorfismo} è un isomorfismo di un gruppo in sé stesso, ovvero una mappa biunivoca $\phi: G \to G$ che preserva le operazioni.
+\dfn{Automorfismo}{
+Un \textbf{automorfismo} è un isomorfismo di una struttura in sé stessa, ovvero una mappa biunivoca $\phi: A \to A$ che preserva le operazioni.
+}
+
+\subsubsection{Automorfismi di gruppi}
+Nel caso in cui la struttura di $ A $ e' di gruppo:
 \begin{itemize}
     \item L'insieme di tutti gli automorfismi di un gruppo $G$, dotato dell'operazione di composizione di funzioni, forma un gruppo a sua volta, denotato con $\text{Aut}(G)$.
     \item \textbf{Automorfismi interni:} Fissato un elemento $g \in G$, la mappa di coniugio $\gamma_g(x) = gxg^{-1}$ è sempre un automorfismo di $G$. L'insieme di questi automorfismi forma un sottogruppo denotato con $\text{Inn}(G) \trianglelefteq \text{Aut}(G)$.
@@ -323,13 +344,14 @@ Un \textbf{automorfismo} è un isomorfismo di un gruppo in sé stesso, ovvero un
 
 \section{L'Omomorfismo Determinante}
 
-\subsection*{Definizione}
+E' possibile definire la funzione del \textbf{determinante} come un omomorfismo di gruppi, vediamo come:
+\dfn{Determinante}{
 Sia $K$ un campo e $K^\times = K \setminus \{0\}$ il suo gruppo moltiplicativo (formato da tutti gli elementi non nulli di $K$ con l'operazione di prodotto).
 L'applicazione \textbf{determinante} è una mappa:
 $$ \det: GL(n, K) \to K^\times $$
 che associa a ogni matrice invertibile $A$ il suo determinante $\det(A)$ (che è uno scalare in $K$). Poiché la matrice è invertibile, $\det(A) \neq 0$, quindi il codominio $K^\times$ è corretto.
+}
 
-\subsection*{La Proprietà di Omomorfismo}
 Questa mappa è un omomorfismo di gruppi grazie al celebre \textbf{Teorema di Binet}, il quale garantisce che il determinante del prodotto di due matrici è uguale al prodotto dei loro determinanti:
 $$ \det(A \cdot B) = \det(A) \cdot \det(B) \quad \forall A, B \in GL(n, K) $$
 In altre parole, la mappa $\det$ preserva (e trasporta) l'operazione di moltiplicazione dal "complicato" gruppo delle matrici al "semplice" gruppo degli scalari.
@@ -353,9 +375,4 @@ $$ \frac{GL(n, K)}{SL(n, K)} \cong K^\times $$
 Se possediamo una rappresentazione di un gruppo $G$, ovvero un omomorfismo $\rho: G \to GL(n, \mathbb{C})$, possiamo comporla con l'omomorfismo determinante per creare una nuova mappa:
 $$ \det \circ \rho: G \to \mathbb{C}^\times $$
 Poiché la composizione di due omomorfismi è ancora un omomorfismo, questa nuova mappa è a tutti gli effetti una \textbf{rappresentazione di grado 1} del gruppo $G$!
-
-\subsection*{Collegamento con la Teoria delle Rappresentazioni}
-Nel contesto del nostro corso, una \textbf{rappresentazione lineare} di un gruppo finito $G$ su uno spazio vettoriale $V$ (su un campo $K$) non è altro che un omomorfismo di gruppi:
-$$ \rho: G \to GL(V) $$
-dove $GL(V)$ è il gruppo degli automorfismi lineari (matrici quadrate invertibili) dello spazio $V$. Se $\ker(\rho) = \{e_G\}$, la rappresentazione non "perde" informazioni sul gruppo e si dice \textbf{fedele}.
 % \end{document}
