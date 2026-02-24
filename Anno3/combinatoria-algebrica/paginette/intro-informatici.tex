@@ -276,7 +276,7 @@ Sia $K$ un campo (i cui elementi sono detti \textit{scalari}). Un insieme $V$ (i
 \end{enumerate}
 }
 
-\subsection*{L'Importanza del Campo $K$ in Teoria delle Rappresentazioni}
+\subsection{L'Importanza del Campo $K$ in Teoria delle Rappresentazioni}
 Nel contesto dello studio delle rappresentazioni $\rho: G \to GL(V)$, le proprietà algebriche del campo $K$ determinano la validità dei teoremi fondamentali:
 
 \begin{itemize}
@@ -285,6 +285,68 @@ Nel contesto dello studio delle rappresentazioni $\rho: G \to GL(V)$, le proprie
     \item \textbf{Dimensione Relativa:} La dimensione di uno spazio vettoriale dipende strettamente da $K$. Ad esempio, l'insieme dei numeri complessi $\mathbb{C}$ ha dimensione $1$ se inteso come $\mathbb{C}$-spazio vettoriale, ma possiede dimensione $2$ se lo strutturiamo come $\mathbb{R}$-spazio vettoriale (con base $\{1, i\}$).
 \end{itemize}
 
+\subsection{Prodotto Hermitiano}
+\dfn{Coniugato di un Numero Complesso}{
+Sia $z = a + ib$ un numero complesso, con $a, b \in \mathbb{R}$. Si definisce \textbf{coniugato} di $z$, e si indica con $\overline{z}$ (o talvolta $z^*$), il numero complesso:
+$$ \overline{z} = a - ib $$
+In termini geometrici, $\overline{z}$ è il simmetrico di $z$ rispetto all'asse delle ascisse nel piano di Argand-Gauss.
+}
+
+\nt{
+\textbf{Proprietà Fondamentali:}
+\begin{itemize}
+    \item \textbf{Prodotto con il coniugato:} Il prodotto di un numero per il suo coniugato è sempre un reale non negativo, pari al quadrato del modulo: $z \cdot \overline{z} = a^2 + b^2 = |z|^2$.
+    \item \textbf{Linearità:} Il coniugato della somma è la somma dei coniugati: $\overline{z + w} = \overline{z} + \overline{w}$.
+    \item \textbf{Moltiplicatività:} Il coniugato del prodotto è il prodotto dei coniugati: $\overline{z \cdot w} = \overline{z} \cdot \overline{w}$.
+    \item \textbf{Involuzione:} Coniugare due volte riporta al numero originale: $\overline{\overline{z}} = z$.
+    \item \textbf{Caratterizzazione dei Reali:} Un numero è reale se e solo se coincide con il suo coniugato: $z = \overline{z} \iff z \in \mathbb{R}$.
+\end{itemize}
+
+\textbf{Ruolo nei Caratteri:}
+Nella teoria delle rappresentazioni, quando calcoliamo il prodotto scalare tra due caratteri $\chi_1$ e $\chi_2$, usiamo il coniugato:
+$$ \langle \chi_1, \chi_2 \rangle = \frac{1}{|G|} \sum_{g \in G} \chi_1(g) \overline{\chi_2(g)} $$
+Questo garantisce che la "distanza" tra due rappresentazioni sia un valore sensato nel campo complesso.
+}
+\dfn{Prodotto Hermitiano}{
+Sia $V$ uno spazio vettoriale su $\mathbb{C}$. Un \textbf{prodotto hermitiano} è una funzione $\langle \cdot, \cdot \rangle: V \times V \to \mathbb{C}$ che associa a ogni coppia di vettori $u, v$ uno scalare complesso, soddisfacendo le seguenti proprietà:
+\begin{enumerate}
+    \item \textbf{Linearità nel primo argomento:} $\langle a u + b w, v \rangle = a \langle u, v \rangle + b \langle w, v \rangle$.
+    \item \textbf{Simmetria Hermitiana (Antisimmetria):} $\langle u, v \rangle = \overline{\langle v, u \rangle}$ (dove la barra indica il coniugato complesso).
+    \item \textbf{Positività definita:} $\langle v, v \rangle \in \mathbb{R}$, $\langle v, v \rangle \ge 0$ e $\langle v, v \rangle = 0$ se e solo se $v = 0$.
+\end{enumerate}
+}
+
+\nt{
+\textbf{Perché è diverso dal prodotto scalare reale?}
+\begin{itemize}
+    \item \textbf{Il problema del coniugato:} Se usassimo la formula reale $\sum x_i y_i$ con i numeri complessi, potremmo avere un vettore non nullo con "lunghezza" zero (es. $v=(1, i) \to 1^2 + i^2 = 1 - 1 = 0$). Il coniugato nella proprietà (2) serve a garantire che la norma $\|v\|^2 = \langle v, v \rangle$ sia sempre un numero reale positivo.
+    \item \textbf{Semi-linearità:} Nota che a causa della simmetria hermitiana, se tiri fuori uno scalare dal \textit{secondo} argomento, questo esce coniugato: $\langle u, \alpha v \rangle = \overline{\alpha} \langle u, v \rangle$.
+    \item \textbf{Uso nel Modulo 2:} Lo usiamo per definire le \textbf{rappresentazioni unitarie}. Una matrice è unitaria se preserva questo prodotto. Grazie al ``trucco della media'', abbiamo dimostrato che ogni gruppo finito può essere rappresentato con matrici unitarie.
+\end{itemize}
+}
+\ex{Esempio 1: Il Prodotto Hermitiano Standard in $\mathbb{C}^n$}{
+Siano $u = (z_1, z_2, \dots, z_n)$ e $v = (w_1, w_2, \dots, w_n)$ due vettori in $\mathbb{C}^n$. Il prodotto hermitiano standard è definito come:
+$$ \langle u, v \rangle = \sum_{i=1}^{n} z_i \overline{w_i} = z_1\overline{w_1} + z_2\overline{w_2} + \dots + z_n\overline{w_n} $$
+Se prendiamo ad esempio $u = (1, i)$ e $v = (i, 1+i)$ in $\mathbb{C}^2$:
+$$ \langle u, v \rangle = 1 \cdot (\overline{i}) + i \cdot (\overline{1+i}) = 1(-i) + i(1-i) = -i + i - i^2 = -i + i + 1 = 1 $$
+Nota come, grazie al coniugato, il risultato finale è un numero che "tiene conto" della fase complessa.
+}
+
+\ex{Esempio 2: Prodotto di Frobenius su Matrici $M_n(\mathbb{C})$}{
+Lo spazio delle matrici quadrate $n \times n$ può essere visto come uno spazio vettoriale. Il prodotto hermitiano tra due matrici $A$ e $B$ è definito tramite la \textbf{traccia}:
+$$ \langle A, B \rangle = \text{Tr}(A B^*) = \text{Tr}(A \overline{B}^T) $$
+Questo prodotto è fondamentale per dimostrare le relazioni di ortogonalità tra le entrate delle matrici delle rappresentazioni irriducibili.
+}
+
+\ex{Esempio 3: Prodotto tra Caratteri (Il più importante per te)}{
+Sia $G$ un gruppo finito e siano $\chi_1, \chi_2: G \to \mathbb{C}$ i caratteri di due rappresentazioni. Lo spazio delle funzioni di classe possiede un prodotto hermitiano naturale definito "mediando" sul gruppo:
+$$ \langle \chi_1, \chi_2 \rangle_G = \frac{1}{|G|} \sum_{g \in G} \chi_1(g) \overline{\chi_2(g)} $$
+\textbf{Perché è fondamentale?} 
+\begin{itemize}
+    \item Se $\chi_1$ è irriducibile, allora $\langle \chi_1, \chi_1 \rangle = 1$ (norma unitaria).
+    \item Se $\chi_1$ e $\chi_2$ sono irriducibili e non isomorfe, allora $\langle \chi_1, \chi_2 \rangle = 0$ (ortogonalità).
+\end{itemize}
+}
 \section{Morfismi di Strutture Algebriche}
 In algebra astratta, un morfismo fra due strutture $A, B$ e' una funzione che trasforma l'insieme di sostegno di $A$ nell'insieme di sostegno di $B$ (o in una sua parte) conservando determinate caratteristiche strutturali, in base alle quali si distinguono diversi morfismi.
 
