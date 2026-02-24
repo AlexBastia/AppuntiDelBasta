@@ -1,9 +1,11 @@
 % \begin{document}
 \chapter{Fondamenti della Teoria delle Rappresentazioni}
-\section{Struttura algebrica}
-Cosa vuol dire combinatoria algebrica?
+Questo corso si colloca all'intersezione tra \textbf{Algebra} (gruppi, anelli, campi, spazi vettoriali) e \textbf{Combinatoria} (conteggio). Lo scopo è rendere gli oggetti algebrici \textit{astratti} più \textit{concreti}, studiandoli attraverso le loro azioni lineari su spazi vettoriali.
 
-Vuol dire studiare strutture algebriche (gruppi, anelli, campi, etc.) attraverso la combinatoria.
+L'idea di fondo è semplice: invece di studiare un gruppo astratto $G$ direttamente, lo "rappresentiamo" tramite matrici invertibili, che sono oggetti molto più maneggevoli.
+
+\section{Rappresentazioni e Sottorappresentazioni}
+Una \textbf{struttura algebrica astratta} — ad esempio un gruppo — è definita da un insieme e da operazioni che soddisfano degli assiomi.
 \dfn{Struttura algebrica}{
     Si definisce struttura algebrica una coppia $(G, *)$ dove $G$ è un insieme e $*$ è una operazione binaria su $G$
 }
@@ -16,14 +18,23 @@ Vuol dire studiare strutture algebriche (gruppi, anelli, campi, etc.) attraverso
 }
 %
 Per "astratta", dal latino, "tirata fuori", si intende estrapolata dal suo contesto originale. La combinatoria quindi, vuole studiare le struttura algebriche e darne una rappresentazione più concreta.
-%
-%
+
+Questa struttura, infatti, può sembrare "sospesa nel vuoto", decontestualizzata. L'idea delle rappresentazioni è di portarla *dentro* uno spazio concreto, dove possiamo agire con strumenti dell'algebra lineare.
+
+Ad esempio, un gruppo può agire su uno spazio vettoriale tramite trasformazioni lineari. Questo lo "rappresenta" come un gruppo di matrici.
 \dfn{
   Rappresentazione di un gruppo 
 }{
-        Sia $G$ un gruppo, $K$ un campo e $V$ uno spazio vettoriale su $K$. si definisce una rappresentazione di $G$ su $V$ è un omomorfismo $\rho: G \to GL(V)$ tale che $\rho(g) \rho(h) = \rho(gh)$ per ogni $g, h \in G$.
+        Sia $G$ un gruppo, $K$ un campo e $V$ uno spazio vettoriale su $K$. si definisce una rappresentazione di $G$ su $V$ è un omomorfismo 
+        $$\rho: G \to GL(V)$$ 
 }
-%
+\nt{
+  La rappresentazione e' un omomorfismo, quindi:
+  \[ 
+   \forall g, h \in G.\ \rho(g) \rho(h) = \rho(gh)
+  \]
+}
+Ricordiamo che $\mathrm{GL}(V)$ è il gruppo degli isomorfismi lineari di $V$ in sé (automorfismi lineari, o equivalentemente matrici invertibili se $V = K^n$).
 \nt{
     In altre parole è un'azione (omomorfismo è un $G \to $ ) di $G$ su $V$ con immagine $GL(V)$ tramite isomorfismi 
 }

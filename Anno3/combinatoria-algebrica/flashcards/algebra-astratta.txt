@@ -1,0 +1,139 @@
+Cos'è un Gruppo (G, ·)?;Una coppia dove G è un insieme non vuoto e · è un'operazione chiusa G×G→G che soddisfa: Associatività, Esistenza dell'elemento neutro e, Esistenza dell'inverso a⁻¹ per ogni a∈G.
+
+Cos'è un gruppo Abeliano?;Un gruppo che soddisfa anche la proprietà commutativa: a·b = b·a per ogni a,b∈G.
+
+Cosa afferma il Teorema di Lagrange?;Se G è un gruppo finito e H un suo sottogruppo, allora la cardinalità di H divide la cardinalità di G.
+
+Cos'è un sottogruppo B di G?;Un sottoinsieme B⊂G tale che (B, ·) sia a sua volta un gruppo con la stessa operazione di G.
+
+Cos'è il Centro Z(G) di un gruppo G?;L'insieme di tutti gli elementi che commutano con ogni elemento del gruppo: Z(G) = { z∈G | z·g = g·z, ∀g∈G }.
+
+Z(G) è un sottogruppo normale?;Sì. Poiché ogni z∈Z(G) commuta con tutti, la coniugazione lo lascia invariato: gzg⁻¹ = z∈Z(G), quindi Z(G) ⊴ G.
+
+Cosa succede a Z(G) se G è abeliano?;Z(G) = G, cioè il centro coincide con tutto il gruppo.
+
+Cos'è l'operazione di Coniugio?;Dato g∈G, il coniugato di x tramite g è: x^g = gxg⁻¹. Due elementi sono coniugati se esiste g tale che y = gxg⁻¹.
+
+Il coniugio è una relazione di equivalenza?;Sì, e partiziona il gruppo in classi di coniugio.
+
+Cos'è un automorfismo interno γ_g?;La mappa γ_g: G→G definita da γ_g(x) = gxg⁻¹. È un automorfismo del gruppo, quindi conserva l'ordine degli elementi.
+
+Cosa si intende per "i caratteri sono funzioni di classe"?;Che χ(x) = χ(gxg⁻¹): il carattere assume lo stesso valore su tutti gli elementi di una stessa classe di coniugio.
+
+Cos'è un Sottogruppo Normale N ⊴ G?;Un sottogruppo N≤G invariante per coniugio: gng⁻¹∈N per ogni n∈N e g∈G.
+
+Dai due criteri equivalenti per N ⊴ G.;1) gNg⁻¹ = N per ogni g∈G. 2) I laterali sinistri e destri coincidono: gN = Ng per ogni g∈G.
+
+Il nucleo di un omomorfismo φ: G→H è normale?;Sì, ker(φ) ⊴ G sempre.
+
+Perché la normalità è necessaria per il gruppo quoziente?;Solo se N⊴G il prodotto di laterali (aN)·(bN) = (ab)N è ben definito, permettendo di costruire G/N.
+
+Cos'è il Gruppo Simmetrico Sym(X)?;L'insieme di tutte le funzioni biunivoche f: X→X (permutazioni), con operazione di composizione.
+
+Cosa indica Sₙ?;Il gruppo simmetrico delle permutazioni degli interi {1,2,...,n}. Tutti i Sym di insiemi di cardinalità n sono isomorfi a Sₙ.
+
+Cos'è GL(V)?;Il Gruppo Lineare Generale di V: l'insieme di tutti gli automorfismi lineari (applicazioni lineari biunivoche) f: V→V, con la composizione come operazione.
+
+Qual è la differenza fondamentale tra Sym(V) e GL(V)?;Sym(V) contiene qualsiasi biiezione (anche non lineare). GL(V) è il sottogruppo di Sym(V) con solo le trasformazioni lineari. GL(V) ≤ Sym(V).
+
+Come si scrive GL(n,K) in termini matriciali?;GL(n,K) = { A∈Mₙ(K) | det(A) ≠ 0 }, cioè le matrici quadrate invertibili n×n su K.
+
+Qual è il centro di GL(V)?;Z(GL(V)) = { λIₙ | λ∈K× }, cioè le matrici scalari non nulle. Questo è il motore del Lemma di Schur.
+
+Cos'è una rappresentazione lineare di G?;Un omomorfismo di gruppi ρ: G→GL(V). "Traduce" la struttura di G in operazioni tra matrici invertibili.
+
+Quando una rappresentazione si dice fedele?;Quando ker(ρ) = {e_G}, cioè non si perde informazione sul gruppo.
+
+Cos'è un Gruppo Ciclico?;Un gruppo (G,·) che ammette un generatore g tale che G = ⟨g⟩ = { g^k | k∈ℤ }.
+
+Come sono classificati i gruppi ciclici?;Se |G|=∞ allora G≅(ℤ,+). Se |G|=n<∞ allora G≅(ℤ/nℤ,+).
+
+I gruppi ciclici sono abeliani?;Sì sempre, perché g^a·g^b = g^(a+b) = g^b·g^a.
+
+Quando g^k genera un gruppo ciclico di ordine n?;Se e solo se MCD(k,n) = 1. Il numero di generatori è φ(n) (funzione di Eulero).
+
+Cosa caratterizza le classi di coniugio di Sₙ?;Due permutazioni sono coniugate ⟺ hanno la stessa struttura ciclica (stesso numero di cicli della stessa lunghezza).
+
+Quante rappresentazioni irriducibili ha Sₙ?;Un numero pari al numero di partizioni p(n) di n, poiché le classi di coniugio di Sₙ corrispondono biunivocamente alle partizioni di n.
+
+Quali sono le due rappresentazioni di grado 1 sempre presenti in Sₙ?;La banale (χ(g)=1 per ogni g) e la segnatura (χ(g)=sgn(g)).
+
+Cos'è un'azione di G su X?;Una funzione ·: G×X→X tale che: e·x=x (identità) e (gh)·x=g·(h·x) (compatibilità).
+
+Cosa è l'orbita di x∈X?;G·x = { g·x | g∈G }. Le orbite formano una partizione di X.
+
+Cos'è lo stabilizzatore di x∈X?;G_x = { g∈G | g·x = x }. È un sottogruppo di G.
+
+Cosa afferma il Teorema Orbita-Stabilizzatore?;|G·x| = |G| / |G_x|, cioè la cardinalità dell'orbita è l'indice dello stabilizzatore.
+
+Come si lega un'azione a una rappresentazione?;Un'azione è equivalente a un omomorfismo φ: G→Sym(X). Se X=V è uno spazio vettoriale e l'azione è lineare, è esattamente una rappresentazione.
+
+Cos'è un Campo K?;Una struttura algebrica con somma e prodotto tali che: (K,+) è gruppo abeliano (neutro 0), (K\{0},·) è gruppo abeliano (neutro 1), vale la distributività.
+
+Cos'è la Caratteristica di un campo char(K)?;Il più piccolo intero positivo p tale che 1+1+...+1 (p volte) = 0. Se non esiste, char(K)=0 (es. ℝ, ℚ, ℂ).
+
+Cos'è un campo algebricamente chiuso?;Un campo K dove ogni polinomio non costante a coefficienti in K ha almeno una radice in K. ℂ è algebricamente chiuso, ℝ no (es. x²+1=0).
+
+Perché char(K) è importante per il Teorema di Maschke?;Maschke richiede che char(K) non divida |G|, affinché |G|·1_K sia invertibile in K e si possa fare la "media sul gruppo".
+
+Cos'è un Anello (R,+,·)?;Una terna dove (R,+) è gruppo abeliano, (R,·) è monoide (associativo con unità 1), e vale la distributività (sx e dx).
+
+Differenza tra Anello e Campo?;Nell'anello il prodotto non è necessariamente commutativo e non ogni elemento non nullo ha inverso moltiplicativo.
+
+Cos'è un ideale I di un anello R?;Un sottoinsieme I⊆R che è sottogruppo additivo e "assorbe" il prodotto: r·x∈I per ogni r∈R, x∈I. Permette di costruire l'anello quoziente R/I.
+
+Cos'è un omomorfismo φ: A→B?;Una funzione tra strutture dello stesso tipo che preserva tutte le operazioni: φ(f_A(x₁,...,xₙ)) = f_B(φ(x₁),...,φ(xₙ)).
+
+Cosa preserva un omomorfismo di gruppi?;L'operazione di gruppo, l'elemento neutro (φ(e_A)=e_B) e gli inversi: φ(a⁻¹) = [φ(a)]⁻¹.
+
+Cos'è il nucleo (kernel) di un omomorfismo φ: G→H?;ker(φ) = { x∈G | φ(x)=e_H }. È sempre un sottogruppo normale di G.
+
+Cos'è l'immagine di un omomorfismo φ: G→H?;Im(φ) = { φ(x) | x∈G }. È sempre un sottogruppo di H.
+
+Cos'è un Isomorfismo?;Un omomorfismo φ: A→B che è anche biunivoco (iniettivo e suriettivo). Se esiste, A≅B.
+
+Criterio di iniettività per omomorfismi di gruppi?;φ è iniettivo ⟺ ker(φ) = {e_G}.
+
+Cos'è un Automorfismo?;Un isomorfismo di una struttura in sé stessa: φ: A→A biunivoca che preserva le operazioni.
+
+Cos'è Aut(G)?;L'insieme di tutti gli automorfismi di G, con la composizione. Forma un gruppo.
+
+Cos'è Inn(G)?;Il sottogruppo degli automorfismi interni di G: Inn(G) = { γ_g | g∈G } dove γ_g(x)=gxg⁻¹. Vale Inn(G) ⊴ Aut(G).
+
+Come si definisce l'omomorfismo determinante?;det: GL(n,K)→K×, che associa a ogni matrice invertibile A il suo det(A). È un omomorfismo grazie al Teorema di Binet: det(A·B)=det(A)·det(B).
+
+Cos'è SL(n,K)?;Il Gruppo Speciale Lineare: ker(det) = { A∈GL(n,K) | det(A)=1 }. È un sottogruppo normale di GL(n,K).
+
+Cosa dice il Primo Teorema di Omomorfismo applicato a det?;GL(n,K)/SL(n,K) ≅ K×.
+
+Come si costruisce una rappresentazione di grado 1 da ρ: G→GL(n,ℂ)?;Componendo con il determinante: det∘ρ: G→ℂ×. La composizione di due omomorfismi è ancora un omomorfismo, quindi è una rappresentazione di grado 1.
+
+Cos'è il coniugato complesso z̄ di z=a+ib?;z̄ = a-ib. È il simmetrico di z rispetto all'asse reale nel piano di Argand-Gauss.
+
+Proprietà fondamentali del coniugato complesso?;z·z̄ = |z|², z̄+w̄ = z+w con barra, z̄·w̄ = z·w con barra, z̄̄ = z, z∈ℝ ⟺ z=z̄.
+
+Cos'è il Prodotto Hermitiano su V (spazio su ℂ)?;Una funzione ⟨·,·⟩: V×V→ℂ con: linearità nel 1° arg, simmetria hermitiana ⟨u,v⟩=⟨v,u⟩ con barra, positività definita ⟨v,v⟩≥0 e =0 ⟺ v=0.
+
+Perché si usa il coniugato nel prodotto hermitiano?;Con la formula reale Σxᵢyᵢ un vettore non nullo potrebbe avere norma zero (es. v=(1,i): 1²+i²=0). Il coniugato garantisce ‖v‖²=⟨v,v⟩>0.
+
+Come è definito il prodotto hermitiano standard in ℂⁿ?;⟨u,v⟩ = Σᵢ zᵢw̄ᵢ dove u=(z₁,...,zₙ) e v=(w₁,...,wₙ).
+
+Come è definito il prodotto hermitiano tra caratteri?;⟨χ₁,χ₂⟩_G = (1/|G|) Σ_{g∈G} χ₁(g)·χ̄₂(g).
+
+Cosa implica ⟨χ₁,χ₂⟩_G per rappresentazioni irriducibili?;Se χ₁=χ₂ irriducibile: ⟨χ₁,χ₁⟩=1. Se χ₁≠χ₂ entrambe irriducibili non isomorfe: ⟨χ₁,χ₂⟩=0 (ortogonalità).
+
+Cos'è il prodotto di Frobenius tra matrici A,B∈Mₙ(ℂ)?;⟨A,B⟩ = Tr(AB*) = Tr(A·B̄ᵀ). Usato per dimostrare le relazioni di ortogonalità tra le entrate delle matrici irriducibili.
+
+Cos'è uno Spazio Vettoriale V su K?;Un insieme V con somma interna (V,+) gruppo abeliano e prodotto esterno K×V→V che soddisfa: distributività rispetto a somma vettoriale e scalare, compatibilità del prodotto, azione dell'identità scalare 1_K·v=v.
+
+Perché ℂ può avere dimensione 1 o 2 a seconda del campo?;Come ℂ-spazio vettoriale ha dimensione 1. Come ℝ-spazio vettoriale ha dimensione 2 (base {1,i}).
+
+Cosa sono i Diagrammi di Young?;La rappresentazione grafica delle partizioni di n. Sono usati per classificare e costruire le rappresentazioni irriducibili di Sₙ.
+
+Cosa afferma il Gruppo di Klein V₄ riguardo ai sottogruppi normali?;V₄ è abeliano, quindi ogni suo sottogruppo è automaticamente normale.
+
+Qual è l'elemento neutro di GL(V)?;L'applicazione identica id_V tale che id_V(v)=v per ogni v∈V.
+
+Cos'è un elemento invertibile (unità) in un anello R?;Un elemento a∈R che possiede un inverso moltiplicativo. L'insieme di tutti gli invertibili R× forma un gruppo rispetto al prodotto.
+
+Cosa sono i divisori dello zero in un anello?;Elementi a≠0 tali che esiste b≠0 con a·b=0. Nei campi non esistono mai.
