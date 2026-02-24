@@ -36,23 +36,51 @@ Ad esempio, un gruppo può agire su uno spazio vettoriale tramite trasformazioni
 }
 Ricordiamo che $\mathrm{GL}(V)$ è il gruppo degli isomorfismi lineari di $V$ in sé (automorfismi lineari, o equivalentemente matrici invertibili se $V = K^n$).
 \nt{
-    In altre parole è un'azione (omomorfismo è un $G \to $ ) di $G$ su $V$ con immagine $GL(V)$ tramite isomorfismi 
+  In altre parole, $\rho$ è un'azione di $G$ su $V$ che non è solo per biiezioni (come in $\mathrm{Sym}(V)$), ma per \textbf{trasformazioni lineari invertibili}.
 }
-%
-\dfn{}{
-    Diciamo che la rappresentazione è fedele se $\rho$ è iniettivo, ovvero se $\rho(g) = \rho(h) \implies g = h$
+
+\dfn{Rappresentazione fedele}{
+    Diciamo che la rappresentazione è fedele se $\rho$ è iniettiva, ovvero se $\rho(g) = \rho(h) \implies g = h$. 
 }
 \nt{
-  Ovvero il nucleo di $ \rho $ contiene solo l'elemento neutro ($ ker(\rho) = \{e\} $)
+  Ovvero il nucleo di $ \rho $ contiene solo l'elemento neutro ($ ker(\rho) = \{e\} $) e $G$ si immerge come sottogruppo di $\mathrm{GL}(V)$.
 }
-%
-\dfn{}{
-    Sia $(V, \rho)$ una rappresentazione di $G$ su $V$, diciamo che un sottospazio vettoriale $U\subseteq V$ è una sottorappresentazione di $\rho$ se $\rho(g)U\subseteq U$ per ogni $g\in G$
+
+\ex{Gruppo di Klein}{
+  Consideriamo il gruppo di Klein $G = \{a, b, c, d\}$ con tavola di Cayley:
+
+$$\begin{array}{c|cccc}
+* & a & b & c & d \\
+\hline
+a & c & d & a & b \\
+b & d & c & b & a \\
+c & a & b & c & d \\
+d & b & a & d & c
+\end{array}$$
+
+L'elemento neutro è $c$ (la riga $c$ è l'identità). Si tratta di $\mathbb{Z}/2\mathbb{Z} \times \mathbb{Z}/2\mathbb{Z}$, ogni elemento ha ordine 2.
+
+Una rappresentazione su $V = \mathbb{R}^2$ è data da:
+
+$$\rho(c) = \begin{pmatrix}1 & 0 \\ 0 & 1\end{pmatrix}, \quad \rho(a) = \begin{pmatrix}-1 & 0 \\ 0 & 1\end{pmatrix}, \quad \rho(b) = \begin{pmatrix}1 & 0 \\ 0 & -1\end{pmatrix}, \quad \rho(d) = \begin{pmatrix}-1 & 0 \\ 0 & -1\end{pmatrix}$$
+
+Si può verificare che è un omomorfismo (ad es. $\rho(a)\rho(b) = \rho(d)$, che corrisponde a $a * b = d$ nella tavola).
+
+Rispetto alla decomposizione $V = \langle e_1 \rangle \oplus \langle e_2 \rangle$, le due rette coordinate sono \textbf{stabili} sotto l'azione di $G$: $\rho(g) \cdot e_i$ è sempre nella direzione di $e_i$. Al contrario, la decomposizione $V = \langle(1,1)\rangle \oplus \langle(1,-1)\rangle$ \textbf{non è stabile}, perché le basi non vengono mandate in sé stesse dagli elementi del gruppo.
+}
+
+\dfn{Sottorappresentazione}{
+  Sia $(V, \rho)$ una rappresentazione di $G$ su $V$, diciamo che un sottospazio vettoriale $U\subseteq V$ è una sottorappresentazione di $\rho$ se $\rho(g)U\subseteq U$ per ogni $g\in G$.
 }
 \nt{
     In altre parole $(U, \rho_{|U})$ è una rappresentazione di $G$ su $U$, dove $\rho_{|U}: G \to GL(U)$ è l'omomorfismo che mappa $g \to \rho(g)_{|U}$
 }
-%
+
+\dfn{Rappresentazione Irriducibile}{
+Una rappresentazione $(\rho, V)$ di un gruppo $G$ si dice \textbf{irriducibile} se gli unici sottospazi di $V$ che siano $G$-invarianti (sottorappresentazioni) sono i sottospazi banali $\{0\}$ e $V$ stesso. 
+In caso contrario, ovvero se esiste un sottospazio proprio $0 < U < V$ tale che $\rho(g)u \in U$ per ogni $u \in U$ e $g \in G$, la rappresentazione si dice \textbf{riducibile}.
+}
+
 \ex{Rappresentazione di $C_4$ e Dipendenza dal Campo $K$}{
 Si consideri il gruppo ciclico di ordine 4, $G = C_4 = \langle z \mid z^4 = 1 \rangle$, e la sua rappresentazione naturale su $V = \mathbb{R}^2$ definita mandando il generatore $z$ nella matrice di rotazione di $\pi/2$:
 $$ \rho(z) = \begin{pmatrix} 0 & -1 \\ 1 & 0 \end{pmatrix} $$
@@ -74,11 +102,6 @@ $$ V_{\mathbb{C}} = V_i \oplus V_{-i} $$
 \begin{center}
     \textit{Conclusione:} $\rho$ è \textbf{riducibile} su $\mathbb{C}$.
 \end{center}
-}
-%
-\dfn{Rappresentazione Irriducibile}{
-Una rappresentazione $(\rho, V)$ di un gruppo $G$ si dice \textbf{irriducibile} se gli unici sottospazi di $V$ che siano $G$-invarianti (sottorappresentazioni) sono i sottospazi banali $\{0\}$ e $V$ stesso. 
-In caso contrario, ovvero se esiste un sottospazio proprio $0 < U < V$ tale che $\rho(g)u \in U$ per ogni $u \in U$ e $g \in G$, la rappresentazione si dice \textbf{riducibile}.
 }
 
 \nt{
@@ -103,32 +126,6 @@ $$ V = U \oplus W $$
 Dove $U$ è la rappresentazione banale e $W$ è la \textbf{rappresentazione standard} di $S_3$. Entrambe sono irriducibili.
 }
 
-\dfn{Prodotto Hermitiano $G$-invariante}{
-Sia $(\rho, V)$ una rappresentazione di un gruppo finito $G$ su uno spazio vettoriale complesso $V$. Dato un prodotto hermitiano arbitrario $\langle \cdot, \cdot \rangle$ su $V$, definiamo il \textbf{prodotto hermitiano $G$-mediato} (o $G$-invariante) come:
-$$ \langle v, u \rangle_G := \frac{1}{|G|} \sum_{g \in G} \langle \rho(g)v, \rho(g)u \rangle $$
-per ogni $v, u \in V$. Tale prodotto soddisfa la condizione di invarianza:
-$$ \langle \rho(h)v, \rho(h)u \rangle_G = \langle v, u \rangle_G \quad \forall h \in G $$
-}
-
-\mprop{Esistenza di un Prodotto Hermitiano $G$-invariante}{
-Sia $(\rho, V)$ una rappresentazione di un gruppo finito $G$ su uno spazio vettoriale complesso $V$. Esiste sempre su $V$ un prodotto hermitiano $\langle \cdot, \cdot \rangle_G$ che sia $G$-invariante, ovvero tale che:
-$$ \langle \rho(g)v, \rho(g)u \rangle_G = \langle v, u \rangle_G \quad \forall g \in G, \forall v, u \in V $$
-}
-
-\pf{Dimostrazione}{
-Sia $H(v, u)$ un prodotto hermitiano arbitrario su $V$ (la cui esistenza è garantita dalla struttura di spazio vettoriale complesso). Definiamo il nuovo prodotto facendo la media sui trasformati degli elementi tramite il gruppo:
-$$ \langle v, u \rangle_G := \frac{1}{|G|} \sum_{x \in G} H(\rho(x)v, \rho(x)u) $$
-Per verificare l'invarianza, applichiamo un elemento generico $h \in G$:
-$$ \langle \rho(h)v, \rho(h)u \rangle_G = \frac{1}{|G|} \sum_{x \in G} H(\rho(x)\rho(h)v, \rho(x)\rho(h)u) $$
-Poiché $\rho$ è un omomorfismo, $\rho(x)\rho(h) = \rho(xh)$. Sostituendo:
-$$ \langle \rho(h)v, \rho(h)u \rangle_G = \frac{1}{|G|} \sum_{x \in G} H(\rho(xh)v, \rho(xh)u) $$
-Al variare di $x$ in $G$, l'elemento $xh$ percorre tutti gli elementi del gruppo esattamente una volta (la traslazione a destra è una permutazione di $G$). Possiamo quindi effettuare il cambio di variabile $k = xh$, ottenendo:
-$$ \langle \rho(h)v, \rho(h)u \rangle_G = \frac{1}{|G|} \sum_{k \in G} H(\rho(k)v, \rho(k)u) = \langle v, u \rangle_G $$
-Questo dimostra che il prodotto è $G$-invariante. Le proprietà di linearità, simmetria hermitiana e positività di $\langle \cdot, \cdot \rangle_G$ discendono direttamente dalle proprietà di $H$.
-}
-
-
-
 \dfn{Rappresentazione Indecomponibile}{
 Una rappresentazione $(\rho, V)$ si dice \textbf{indecomponibile} se non può essere scritta come somma diretta di due sottorappresentazioni proprie non banali. Ovvero, se $V = U \oplus W$ con $U, W$ sottorappresentazioni, allora necessariamente $U=0$ oppure $W=0$.
 }
@@ -142,59 +139,108 @@ Una rappresentazione $(\rho, V)$ si dice \textbf{indecomponibile} se non può es
 \end{itemize}
 }
 
-\mprop{Teorema di Maschke (Versione Sintetica)}{
-Sia $G$ un gruppo finito e $(\rho, V)$ una rappresentazione di $G$ su un campo $K$ (con $\text{char}(K) \nmid |G|$). Allora ogni sottorappresentazione $U \subseteq V$ ammette un complemento $G$-invariante $W$, tale che $V = U \oplus W$.
+\ex{Blocco di Jordan}{
+  Sia $G = (\mathbb{Z}, +)$, $V = \mathbb{C}^2$, e definiamo
+
+$$\rho : \mathbb{Z} \longrightarrow \mathrm{GL}(\mathbb{C}^2), \qquad n \longmapsto \begin{pmatrix}1 & n \\ 0 & 1\end{pmatrix}.$$
+
+Questo è un omomorfismo perché $\begin{pmatrix}1&n\\0&1\end{pmatrix}\begin{pmatrix}1&m\\0&1\end{pmatrix} = \begin{pmatrix}1&n+m\\0&1\end{pmatrix}$.
+
+Il sottospazio $U = \langle e_1 \rangle = \langle(1,0)\rangle$ è una sottorappresentazione propria (poiché $\rho(n) e_1 = e_1 \in U$ per ogni $n$), quindi $V$ **non è irriducibile**.
+
+Tuttavia, notiamo che per ogni $(x, y)$ con $y \neq 0$:
+
+$$\rho(n)\begin{pmatrix}x\\y\end{pmatrix} = \begin{pmatrix}x + ny \\ y\end{pmatrix}$$
+
+  che è linearmente indipendente da $(x,y)$ per $n$ generico. Quindi \textbf{non esiste} alcun $W \subseteq V$ con $V = U \oplus W$ stabile, e la rappresentazione è \textbf{indecomponibile}.
+
+Questo è il tipico blocco di Jordan di dimensione 2. La situazione si verifica perché $G = \mathbb{Z}$ è un gruppo infinito. Vedremo che per gruppi \textbf{finiti} con $\mathrm{char}(K) = 0$ la situazione è radicalmente diversa.
+}
+
+\section{Teorema di Maschke}
+Per procedere serve costruire un prodotto scalare $ G $-invariante:
+\\
+\textbf{Costruzione}: Sia $(\rho, V)$ una rappresentazione di un gruppo finito $G$ su uno spazio vettoriale complesso $V$. Dato un prodotto hermitiano arbitrario $( \cdot, \cdot )$ su $V$, definiamo:
+$$ \langle v, u \rangle_G := \frac{1}{|G|} \sum_{g \in G} \langle \rho(g)v, \rho(g)u \rangle $$
+per ogni $v, u \in V$.
+\\
+Si tratta della media sui trasformati di $(v,u)$ lungo tutto il gruppo. Il fatto che $G$ sia finito e $\mathrm{char}(K) = 0$ (quindi $|G| \neq 0$ in $K$) garantisce che la divisione abbia senso.
+
+\mprop{Esistenza di un Prodotto Hermitiano $G$-invariante}{
+Sia $(\rho, V)$ una rappresentazione di un gruppo finito $G$ su uno spazio vettoriale complesso $V$. Esiste sempre su $V$ un prodotto hermitiano $\langle \cdot, \cdot \rangle_G$ che sia $G$-invariante, ovvero tale che:
+$$ \langle \rho(g)v, \rho(g)u \rangle_G = \langle v, u \rangle_G \quad \forall g \in G, \forall v, u \in V $$
 }
 
 \pf{Dimostrazione}{
-L'esistenza di $W$ è garantita dalla costruzione di un proiettore $G$-equivariante ottenuto tramite il \textbf{trucco della media}. Sia $\pi: V \to U$ una proiezione lineare arbitraria. Definiamo:
-$$ \tilde{\pi} = \frac{1}{|G|} \sum_{g \in G} \rho(g) \pi \rho(g)^{-1} $$
-Si dimostra che $\tilde{\pi}$ è un morfismo di rappresentazioni e che $\ker(\tilde{\pi})$ è il complemento stabile $W$ cercato.
+Sia $H(v, u)$ un prodotto hermitiano arbitrario su $V$ (la cui esistenza è garantita dalla struttura di spazio vettoriale complesso). Consideriamo il prodotto scalare definito prima:
+$$ \langle v, u \rangle_G := \frac{1}{|G|} \sum_{x \in G} H(\rho(x)v, \rho(x)u) $$
+Per verificare l'invarianza, applichiamo un elemento generico $h \in G$:
+$$ \langle \rho(h)v, \rho(h)u \rangle_G = \frac{1}{|G|} \sum_{x \in G} H(\rho(x)\rho(h)v, \rho(x)\rho(h)u) $$
+Poiché $\rho$ è un omomorfismo, $\rho(x)\rho(h) = \rho(xh)$. Sostituendo:
+$$ \langle \rho(h)v, \rho(h)u \rangle_G = \frac{1}{|G|} \sum_{x \in G} H(\rho(xh)v, \rho(xh)u) $$
+Al variare di $x$ in $G$, l'elemento $xh$ percorre tutti gli elementi del gruppo esattamente una volta (la traslazione a destra è una permutazione di $G$). Possiamo quindi effettuare il cambio di variabile $k = xh$, ottenendo:
+$$ \langle \rho(h)v, \rho(h)u \rangle_G = \frac{1}{|G|} \sum_{k \in G} H(\rho(k)v, \rho(k)u) = \langle v, u \rangle_G $$
+Questo dimostra che il prodotto è $G$-invariante. Le proprietà di linearità, simmetria hermitiana e positività di $\langle \cdot, \cdot \rangle_G$ discendono direttamente dalle proprietà di $H$.
 }
 
-\ex{}{
-    $V = C^2$
-    $(Z, +)$
-%
-    \[
-        \rho(n) = \begin{pmatrix} 1 & n \\ 0 & 1 \end{pmatrix}
-    \]
-%
-    è un omomorfismo perché 
-    \[
-        \rho(n) \rho(m) = \begin{pmatrix} 1 & n \\ 0 & 1 \end{pmatrix} \begin{pmatrix} 1 & m \\ 0 & 1 \end{pmatrix} = \begin{pmatrix} 1 & n+m \\ 0 & 1 \end{pmatrix} = \rho(n+m)
-    \]
-} 
-%
-\nt{
-    \[
-        e_i = \binom{1}{0}, e_2 = \binom{0}{1} \quad       
-    \]
+\thm{Teorema di Maschke (Versione Sintetica)}{
+Sia $G$ un gruppo finito e $(\rho, V)$ una rappresentazione di $G$ su un campo $K$ (con $\text{char}(K) \nmid |G|$). Allora ogni sottorappresentazione $U \subseteq V$ ammette un complemento $G$-invariante $W$, tale che 
+$$V = U \oplus W$$
 }
-%
-\mlenma{}{
-    Sia $G$ un gruppo finito. E sia $V$ una sottorappresentazione (su $C$) allora ogni sottorappresentazione $U \subseteq V$ ammette un complementare $W \subseteq V$ tale che $V = U \oplus W$ e $W$ è una sottorappresentazione. Quindi indecomponibile $\implies$ irriducibile
+
+\cor{}{
+Per $G$ finito e $\mathrm{char}(K) = 0$: indecomponibile $\Longleftrightarrow$ irriducibile.
 }
-%
+
 \pf{Dimostrazione}{
-    Data una sottorappresentazione $U \subseteq V$ consideriamo $U^\perp = \{ v \in V | \langle v, u \rangle = 0 \forall u \in U \}$, dove $\langle \cdot, \cdot \rangle$ è un prodotto scalare hermitiano su $V$ (quello G inviariante), chiaramente $V = U \oplus U^\perp$ e $U^\perp$ è una sottorappresentazione perché $\forall v \in U^\perp, \forall g \in G, \forall u \in U$ abbiamo $\langle \rho(g)v, u \rangle = \langle v, \rho(g^{-1})u \rangle = 0$ perché $u \in U$ e $\rho(g^{-1})u \in U$
+Data una sottorappresentazione $U \subseteq V$, prendiamo il complemento ortogonale rispetto al prodotto $G$-invariante costruito prima:
+
+$$U^\perp = \{v \in V \mid \langle v, u \rangle = 0 \;\forall\, u \in U\}.$$
+
+Allora $V = U \oplus U^\perp$ come spazi vettoriali (proprietà standard dei prodotti hermitiani). È sufficiente mostrare che $U^\perp$ è $G$-stabile. Siano $v \in U^\perp$ e $u \in U$:
+
+$$\langle \rho(g)v,\, u \rangle = \langle \rho(g^{-1})\rho(g)v,\, \rho(g^{-1})u \rangle = \langle v,\, \rho(g^{-1})u \rangle = 0$$
+
+dove l'ultimo passaggio usa che $\rho(g^{-1})u \in U$ (perché $U$ è $G$-stabile) e $v \in U^\perp$.
 }
-%
-\dfn{}{
-    $A$ anello con $1_A, (V, +)$ gruppo abeliano, è un A-modulo sinistro se $A\times V \to V$ tale che
-    :
-    \begin{itemize}
-        \item $(a+b)v = av + bv$
-        \item $a(v+w) = av + aw$
-        \item $a(bv) = (ab)v$
-        \item $1_A v = v$
-    \end{itemize}
+
+\section{Algebra di Gruppo}
+Vogliamo ora riformulare tutta la teoria in un linguaggio più algebrico: guardare gli elementi di $G$ come "scalari che agiscono su $V$".
+
+\dfn{A-modulo sinistro)}{
+ Sia $A$ un anello con unità $1_A$ e $(V, +)$ un gruppo abeliano. $V$ è un $A$-modulo sinistro se esiste un'operazione $A \times V \to V$ tale che:
+ \begin{itemize}
+ \item $a(v + u) = av + au$ 
+ \item $(a + b)v = av + bv$
+ \item $(ab)v = a(bv)$
+ \item $1_A \cdot v = v$
+ \end{itemize}
 }
-%
-\dfn{$K[G]$}{Combinazioni linerari formali di elementi di $G$ con coefficienti in $K$ = $\left\{ \sum_{g \in G} a_g e_g | a_g \in K, supp(a_g) < \infty \right\}$
-%
-con prodotto $a_g, e_g$
+Questa è esattamente la definizione di spazio vettoriale, ma con $A$ anello al posto di campo.
+
+\dfn{Algebra di gruppo}{
+  L'\textbf{algebra di gruppo} $K[G]$ è l'insieme delle combinazioni lineari formali degli elementi di $G$ a coefficienti in $K$:
+
+$$K[G] = \left\{\sum_{g \in G} a_g \cdot g \;\bigg|\; a_g \in K\right\}.$$
+
+Gli elementi di $G$ formano una $K$-base di $K[G]$. Il prodotto in $K[G]$ è definito estendendo per bilinearità il prodotto in $G$:
+
+$$(a_{g_1} \cdot g_1)(a_{g_2} \cdot g_2) := (a_{g_1} \cdot a_{g_2}) \cdot (g_1 g_2)$$
+
+dove il primo prodotto è in $K$ e il secondo è in $G$. Questo rende $K[G]$ un \textbf{anello} (non commutativo in generale).
 }
-%
-%
+\textbf{Osservazione fondamentale}. Le seguenti condizioni sono equivalenti:
+1. $V$ è una rappresentazione di $G$ (cioè esiste $\rho: G \to \mathrm{GL}(V)$).
+2. $V$ è un $K[G]$-modulo sinistro.
+
+
+\pf{Dimostrazione}{
+$(2) \Rightarrow (1)$: l'inclusione $G \hookrightarrow K[G]$ (ogni $g$ è un elemento di base) restringe l'azione di $K[G]$ su $V$ a un'azione di $G$ per isomorfismi lineari, cioè fornisce $\rho: G \to \mathrm{GL}(V)$.
+
+$(1) \Rightarrow (2)$: si estende l'azione per $K$-linearità:
+
+$$\left(\sum_{g \in G} a_g \cdot g\right) \cdot v := \sum_{g \in G} a_g \cdot \rho(g)(v)$$
+
+e si verifica che questo soddisfa gli assiomi di modulo.
+}
 % \end{document}
