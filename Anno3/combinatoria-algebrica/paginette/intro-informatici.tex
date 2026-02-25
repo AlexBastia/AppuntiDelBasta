@@ -368,6 +368,41 @@ Sia $G$ un gruppo e $X$ un insieme non vuoto. Un' \textbf{azione} (a sinistra) d
 \end{itemize}
 }
 
+\ex{}{
+  Un esempio classico ed estremamente intuitivo \`e l'azione del gruppo diedrale $D_4$ (il gruppo delle simmetrie del quadrato) sull'insieme dei suoi vertici.
+
+\subsubsection*{Definizione del Gruppo e dell'Insieme}
+
+\begin{itemize}
+    \item \textbf{L'insieme $X$:} Consideriamo i quattro vertici di un quadrato numerati in senso antiorario: 
+    \[
+    X = \{1, 2, 3, 4\}
+    \]
+    \item \textbf{Il gruppo $G$:} Consideriamo $D_4$, che contiene 8 elementi: 4 rotazioni (di $0^\circ, 90^\circ, 180^\circ, 270^\circ$) e 4 riflessioni (rispetto agli assi verticale, orizzontale e alle due diagonali).
+\end{itemize}
+
+\subsubsection*{Come agisce il gruppo sull'insieme}
+
+L'azione consiste nell'applicare la trasformazione geometrica al quadrato e osservare dove finisce ciascun vertice. 
+
+Prendiamo come esempio l'elemento $r \in D_4$, che rappresenta la \textbf{rotazione di $90^\circ$ in senso antiorario}. La sua azione sui vertici sar\`a:
+\begin{itemize}
+    \item $r \cdot 1 = 2$ (il vertice 1 si sposta nella posizione del vertice 2)
+    \item $r \cdot 2 = 3$
+    \item $r \cdot 3 = 4$
+    \item $r \cdot 4 = 1$
+\end{itemize}
+
+Prendiamo invece l'elemento $s \in D_4$, che rappresenta la \textbf{riflessione rispetto all'asse verticale}. Supponendo che i vertici 1 e 4 siano a destra e 2 e 3 a sinistra, la sua azione sar\`a:
+\begin{itemize}
+    \item $s \cdot 1 = 2$ e $s \cdot 2 = 1$ (i vertici in alto si scambiano)
+    \item $s \cdot 3 = 4$ e $s \cdot 4 = 3$ (i vertici in basso si scambiano)
+\end{itemize}
+
+\noindent
+\textbf{Verifica degli assiomi:} Questa operazione soddisfa i due assiomi fondamentali delle azioni di gruppo. L'elemento neutro (la rotazione di $0^\circ$) lascia ogni vertice al suo posto ($e \cdot x = x$), e combinare due simmetrie (ad esempio ruotare e poi riflettere) equivale ad applicare direttamente la simmetria risultante dalla loro composizione geometrica: $g \cdot (h \cdot x) = (gh) \cdot x$.
+}
+
 \section{Campo}
 \dfn{Campo}{
 Un \textbf{campo} $ K $ e' una struttura algebrica dotata di due operazioni:

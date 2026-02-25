@@ -19,7 +19,7 @@ Una \textbf{struttura algebrica astratta} — ad esempio un gruppo — è defini
 %
 Per "astratta", dal latino, "tirata fuori", si intende estrapolata dal suo contesto originale. La combinatoria quindi, vuole studiare le struttura algebriche e darne una rappresentazione più concreta.
 
-Questa struttura, infatti, può sembrare "sospesa nel vuoto", decontestualizzata. L'idea delle rappresentazioni è di portarla *dentro* uno spazio concreto, dove possiamo agire con strumenti dell'algebra lineare.
+Questa struttura, infatti, può sembrare "sospesa nel vuoto", decontestualizzata. L'idea delle rappresentazioni è di portarla \textbf{dentro} uno spazio concreto, dove possiamo agire con strumenti dell'algebra lineare.
 
 Ad esempio, un gruppo può agire su uno spazio vettoriale tramite trasformazioni lineari. Questo lo "rappresenta" come un gruppo di matrici.
 \dfn{
@@ -69,6 +69,7 @@ Si può verificare che è un omomorfismo (ad es. $\rho(a)\rho(b) = \rho(d)$, che
 Rispetto alla decomposizione $V = \langle e_1 \rangle \oplus \langle e_2 \rangle$, le due rette coordinate sono \textbf{stabili} sotto l'azione di $G$: $\rho(g) \cdot e_i$ è sempre nella direzione di $e_i$. Al contrario, la decomposizione $V = \langle(1,1)\rangle \oplus \langle(1,-1)\rangle$ \textbf{non è stabile}, perché le basi non vengono mandate in sé stesse dagli elementi del gruppo.
 }
 
+
 \dfn{Sottorappresentazione}{
   Sia $(V, \rho)$ una rappresentazione di $G$ su $V$, diciamo che un sottospazio vettoriale $U\subseteq V$ è una sottorappresentazione di $\rho$ se $\rho(g)U\subseteq U$ per ogni $g\in G$.
 }
@@ -76,9 +77,10 @@ Rispetto alla decomposizione $V = \langle e_1 \rangle \oplus \langle e_2 \rangle
     In altre parole $(U, \rho_{|U})$ è una rappresentazione di $G$ su $U$, dove $\rho_{|U}: G \to GL(U)$ è l'omomorfismo che mappa $g \to \rho(g)_{|U}$
 }
 
+\subsection{Rappresentazioni Riducibili e Decomponibili}
 \dfn{Rappresentazione Irriducibile}{
 Una rappresentazione $(\rho, V)$ di un gruppo $G$ si dice \textbf{irriducibile} se gli unici sottospazi di $V$ che siano $G$-invarianti (sottorappresentazioni) sono i sottospazi banali $\{0\}$ e $V$ stesso. 
-In caso contrario, ovvero se esiste un sottospazio proprio $0 < U < V$ tale che $\rho(g)u \in U$ per ogni $u \in U$ e $g \in G$, la rappresentazione si dice \textbf{riducibile}.
+In caso contrario, ovvero se esiste un sottospazio proprio $0 < U < V$ che e' una sottorappresentazione di $ \rho $, la rappresentazione si dice \textbf{riducibile}.
 }
 
 \ex{Rappresentazione di $C_4$ e Dipendenza dal Campo $K$}{
@@ -115,7 +117,7 @@ $$ V_{\mathbb{C}} = V_i \oplus V_{-i} $$
 
 \ex{Rappresentazione Naturale di $S_3$}{
 Sia $G = S_3$ agente su $V = \mathbb{R}^3$ tramite permutazione delle coordinate:
-$$ \sigma \cdot (x_1, x_2, x_3) = (x_{\sigma^{-1}(1)}, x_{\sigma^{-1}(2)}, x_{\sigma^{-1}(3)}) $$
+$$ \sigma \cdot (x_1, x_2, x_3) = (x_{\sigma(1)}, x_{\sigma(2)}, x_{\sigma(3)}) $$
 Questa rappresentazione è \textbf{riducibile} in quanto ammette i seguenti sottospazi $G$-invarianti propri:
 \begin{enumerate}
     \item $U = \{ (t, t, t) \mid t \in \mathbb{R} \}$, sottospazio di dimensione 1 (retta diagonale). Poiché ogni permutazione scambia coordinate identiche, $U$ è puntualmente fisso.
@@ -146,7 +148,7 @@ $$\rho : \mathbb{Z} \longrightarrow \mathrm{GL}(\mathbb{C}^2), \qquad n \longmap
 
 Questo è un omomorfismo perché $\begin{pmatrix}1&n\\0&1\end{pmatrix}\begin{pmatrix}1&m\\0&1\end{pmatrix} = \begin{pmatrix}1&n+m\\0&1\end{pmatrix}$.
 
-Il sottospazio $U = \langle e_1 \rangle = \langle(1,0)\rangle$ è una sottorappresentazione propria (poiché $\rho(n) e_1 = e_1 \in U$ per ogni $n$), quindi $V$ **non è irriducibile**.
+  Il sottospazio $U = \langle e_1 \rangle = \langle(1,0)\rangle$ è una sottorappresentazione propria (poiché $\rho(n) e_1 = e_1 \in U$ per ogni $n$), quindi $V$ \textit{non è irriducibile}.
 
 Tuttavia, notiamo che per ogni $(x, y)$ con $y \neq 0$:
 
@@ -157,11 +159,11 @@ $$\rho(n)\begin{pmatrix}x\\y\end{pmatrix} = \begin{pmatrix}x + ny \\ y\end{pmatr
 Questo è il tipico blocco di Jordan di dimensione 2. La situazione si verifica perché $G = \mathbb{Z}$ è un gruppo infinito. Vedremo che per gruppi \textbf{finiti} con $\mathrm{char}(K) = 0$ la situazione è radicalmente diversa.
 }
 
-\section{Teorema di Maschke}
+\subsection{Teorema di Maschke}
 Per procedere serve costruire un prodotto scalare $ G $-invariante:
 \\
-\textbf{Costruzione}: Sia $(\rho, V)$ una rappresentazione di un gruppo finito $G$ su uno spazio vettoriale complesso $V$. Dato un prodotto hermitiano arbitrario $( \cdot, \cdot )$ su $V$, definiamo:
-$$ \langle v, u \rangle_G := \frac{1}{|G|} \sum_{g \in G} \langle \rho(g)v, \rho(g)u \rangle $$
+\textbf{Costruzione}: Sia $(\rho, V)$ una rappresentazione di un gruppo finito $G$ su uno spazio vettoriale complesso $V$ ($ K = \mathbb{C} $). Dato un prodotto hermitiano arbitrario $( \cdot, \cdot )$ su $V$, definiamo:
+$$ \langle v, u \rangle_G := \frac{1}{|G|} \sum_{g \in G} (\rho(g)v, \rho(g)u) $$
 per ogni $v, u \in V$.
 \\
 Si tratta della media sui trasformati di $(v,u)$ lungo tutto il gruppo. Il fatto che $G$ sia finito e $\mathrm{char}(K) = 0$ (quindi $|G| \neq 0$ in $K$) garantisce che la divisione abbia senso.
@@ -173,14 +175,14 @@ $$ \langle \rho(g)v, \rho(g)u \rangle_G = \langle v, u \rangle_G \quad \forall g
 
 \pf{Dimostrazione}{
 Sia $H(v, u)$ un prodotto hermitiano arbitrario su $V$ (la cui esistenza è garantita dalla struttura di spazio vettoriale complesso). Consideriamo il prodotto scalare definito prima:
-$$ \langle v, u \rangle_G := \frac{1}{|G|} \sum_{x \in G} H(\rho(x)v, \rho(x)u) $$
+$$ \langle v, u \rangle_G := \frac{1}{|G|} \sum_{x \in G} (\rho(x)v, \rho(x)u) $$
 Per verificare l'invarianza, applichiamo un elemento generico $h \in G$:
-$$ \langle \rho(h)v, \rho(h)u \rangle_G = \frac{1}{|G|} \sum_{x \in G} H(\rho(x)\rho(h)v, \rho(x)\rho(h)u) $$
+$$ \langle \rho(h)v, \rho(h)u \rangle_G = \frac{1}{|G|} \sum_{x \in G} (\rho(x)\rho(h)v, \rho(x)\rho(h)u) $$
 Poiché $\rho$ è un omomorfismo, $\rho(x)\rho(h) = \rho(xh)$. Sostituendo:
-$$ \langle \rho(h)v, \rho(h)u \rangle_G = \frac{1}{|G|} \sum_{x \in G} H(\rho(xh)v, \rho(xh)u) $$
+$$ \langle \rho(h)v, \rho(h)u \rangle_G = \frac{1}{|G|} \sum_{x \in G} (\rho(xh)v, \rho(xh)u) $$
 Al variare di $x$ in $G$, l'elemento $xh$ percorre tutti gli elementi del gruppo esattamente una volta (la traslazione a destra è una permutazione di $G$). Possiamo quindi effettuare il cambio di variabile $k = xh$, ottenendo:
-$$ \langle \rho(h)v, \rho(h)u \rangle_G = \frac{1}{|G|} \sum_{k \in G} H(\rho(k)v, \rho(k)u) = \langle v, u \rangle_G $$
-Questo dimostra che il prodotto è $G$-invariante. Le proprietà di linearità, simmetria hermitiana e positività di $\langle \cdot, \cdot \rangle_G$ discendono direttamente dalle proprietà di $H$.
+$$ \langle \rho(h)v, \rho(h)u \rangle_G = \frac{1}{|G|} \sum_{k \in G} (\rho(k)v, \rho(k)u) = \langle v, u \rangle_G $$
+Questo dimostra che il prodotto è $G$-invariante. Le proprietà di linearità, simmetria hermitiana e positività di $\langle \cdot, \cdot \rangle_G$ discendono direttamente dalle proprietà del prodotto hermitiano costruito prima.
 }
 
 \thm{Teorema di Maschke (Versione Sintetica)}{
