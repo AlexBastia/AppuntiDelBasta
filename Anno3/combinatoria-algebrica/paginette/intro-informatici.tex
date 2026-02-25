@@ -30,6 +30,37 @@ Alcune delle proprieta' piu' importanti dei gruppi sono:
     Se vale anche la proprieta' \textit{commutativa}, allora il gruppo si dice \textit{abeliano}.
 }
 
+\ex{Gruppo di addizione sugli interi}{
+  Un esempio classico e intuitivo \`e l'insieme dei numeri interi $\mathbb{Z}$ associato all'operazione di addizione $+$:
+  \[
+    (\mathbb{Z}, +)
+  \]
+  E' facile dimostrare che l'addizione sugli interi rispetta tutti gli assimi per essere un gruppo:
+  \begin{enumerate}
+    \item \textbf{Chiusura:} La somma di due numeri interi restituisce sempre un numero intero.
+    \[ 
+    \forall a, b \in \mathbb{Z}, \quad (a + b) \in \mathbb{Z} 
+    \]
+    
+    \item \textbf{Associativit\`a:} L'ordine di raggruppamento delle addizioni non influisce sul risultato.
+    \[ 
+    \forall a, b, c \in \mathbb{Z}, \quad (a + b) + c = a + (b + c) 
+    \]
+    
+    \item \textbf{Esistenza dell'Elemento Neutro:} Esiste un elemento, lo $0$, che addizionato a qualsiasi altro intero lo lascia inalterato.
+    \[ 
+    \exists 0 \in \mathbb{Z} \text{ tale che } \forall a \in \mathbb{Z}, \quad a + 0 = 0 + a = a 
+    \]
+    
+    \item \textbf{Esistenza dell'Elemento Inverso:} Per ogni intero $a$, esiste il suo inverso additivo (l'opposto) $-a$, tale che la loro somma dia l'elemento neutro.
+    \[ 
+    \forall a \in \mathbb{Z}, \exists (-a) \in \mathbb{Z} \text{ tale che } a + (-a) = (-a) + a = 0 
+    \]
+\end{enumerate}
+
+Inoltre, l'addizione gode anche della proprieta' commutativa, quindi possiamo dire che $ (\mathbb{Z},+) $ e' anche un gruppo \textit{abeliano}.
+}
+
 Vediamo ora cosa sono i sottogruppi:
 \dfn{Sottogruppo}{
   Dato un gruppo $ (G, \cdot) $, si dice che $ B $ e' un suo sottogruppo se:
@@ -37,6 +68,37 @@ Vediamo ora cosa sono i sottogruppi:
     \item $ B \subset G $
     \item $ (B, \cdot) $ e' un gruppo 
   \end{itemize}
+}
+
+\ex{Sottogruppo somma con interi pari}{
+  Un esempio classico, partendo dal gruppo degli interi $(\mathbb{Z}, +)$, \`e l'insieme dei numeri interi pari, indicato con $2\mathbb{Z}$:
+\[
+2\mathbb{Z} = \{ 2k \mid k \in \mathbb{Z} \} = \{ \dots, -4, -2, 0, 2, 4, \dots \}
+\]
+Invece di riverificare tutti gli assiomi, per dimostrare che $(2\mathbb{Z}, +)$ \`e un sottogruppo di $(\mathbb{Z}, +)$, \`e sufficiente applicare il Criterio del Sottogruppo e verificare le seguenti tre condizioni:
+
+\begin{enumerate}
+    \item \textbf{Non vuotezza (Elemento neutro):} L'elemento neutro del gruppo principale, lo $0$, deve appartenere al sottoinsieme. 
+    \[ 
+    0 = 2 \cdot 0 \implies 0 \in 2\mathbb{Z} 
+    \]
+    Questo ci assicura anche che l'insieme non sia vuoto.
+    
+    \item \textbf{Chiusura rispetto all'operazione:} La somma di due numeri pari \`e ancora un numero pari. Siano $a, b \in 2\mathbb{Z}$; allora esistono due interi $m, n \in \mathbb{Z}$ tali che $a = 2m$ e $b = 2n$.
+    \[ 
+    a + b = 2m + 2n = 2(m + n) 
+    \]
+    Poich\'e $(m + n) \in \mathbb{Z}$, deduciamo che la somma $(a + b)$ appartiene ancora a $2\mathbb{Z}$.
+    
+    \item \textbf{Chiusura rispetto all'inverso:} L'opposto di un numero pari \`e a sua volta pari. Sia $a = 2m \in 2\mathbb{Z}$. Il suo inverso additivo \`e:
+    \[ 
+    -a = -(2m) = 2(-m) 
+    \]
+    Poich\'e $-m \in \mathbb{Z}$, allora anche l'inverso additivo $-a$ appartiene a $2\mathbb{Z}$.
+\end{enumerate}
+
+\noindent
+\textbf{Conclusione:} Poich\'e le condizioni sono soddisfatte, $(2\mathbb{Z}, +)$ \`e a tutti gli effetti un sottogruppo di $(\mathbb{Z}, +)$. In notazione algebrica, questo si indica spesso come $2\mathbb{Z} \leq \mathbb{Z}$.
 }
 
 Un importante teorema per i sottogruppi: TODO finisci
@@ -60,6 +122,26 @@ $$ Z(G) = \{ z \in G \mid z \cdot g = g \cdot z, \forall g \in G \} $$
 \end{itemize}
 }
 
+\ex{Centro del gruppo dei quaternioni}{
+  Consideriamo il gruppo dei quaternioni $Q_8$, un noto gruppo non abeliano di ordine 8, i cui elementi sono:
+\[
+Q_8 = \{ 1, -1, i, -i, j, -j, k, -k \}
+\]
+Le operazioni in questo gruppo seguono le regole di moltiplicazione $i^2 = j^2 = k^2 = -1$ e $ij = k$, $ji = -k$ (eccetera).
+
+Vogliamo determinare il centro del gruppo, indicato con $Z(Q_8)$. Analizziamo gli elementi:
+
+\begin{itemize}
+    \item Gli elementi $1$ e $-1$ commutano con qualsiasi altro elemento all'interno di $Q_8$. Ad esempio, $1 \cdot i = i \cdot 1$ e $(-1) \cdot j = j \cdot (-1)$.
+    \item Gli elementi $\pm i, \pm j, \pm k$ \textbf{non} commutano con tutti gli elementi del gruppo. Come si evince dalle regole di moltiplicazione, l'ordine dei fattori conta: $ij = k$, ma $ji = -k$, perci\`o $ij \neq ji$.
+\end{itemize}
+
+Di conseguenza, gli unici elementi che commutano con tutto $Q_8$ sono $1$ e $-1$. Il centro del gruppo dei quaternioni \`e quindi il sottogruppo:
+\[
+Z(Q_8) = \{ 1, -1 \}
+\]
+}
+
 \subsection{Sottogruppi Normali}
 Dobbiamo prima definire un'operazione che ci servira'
 \dfn{Operazione di Coniugio}{
@@ -74,7 +156,6 @@ Due elementi $x, y \in G$ si dicono \textbf{coniugati} se esiste un elemento $g 
     \item \textbf{Automorfismo Interno:} Per ogni $g \in G$, la mappa $\gamma_g: G \to G$ definita da $\gamma_g(x) = gxg^{-1}$ è un automorfismo del gruppo (chiamato automorfismo interno). Questo significa che il coniugio preserva tutte le proprietà algebriche dell'elemento (ad esempio, $x$ e $gxg^{-1}$ hanno sempre lo stesso ordine).
     \item \textbf{Nei Gruppi Abeliani:} Se $G$ è commutativo, il coniugio è banale: $gxg^{-1} = xgg^{-1} = x$. In questo caso, ogni elemento forma una classe di coniugio a sé stante.
     \item \textbf{Invarianza dei Caratteri:} Questa è la proprietà più importante per il Modulo 2. I caratteri di una rappresentazione sono \textbf{funzioni di classe}, ovvero assumono lo stesso valore su tutti gli elementi di una stessa classe di coniugio: $\chi(x) = \chi(gxg^{-1})$.
-    \item \textbf{Legame con la Normalità:} Un sottogruppo $N$ è normale ($N \trianglelefteq G$) se e solo se è un'unione di classi di coniugio, ovvero se è "chiuso" rispetto all'operazione di coniugio.
 \end{itemize}
 }
 
@@ -106,15 +187,80 @@ Questo ci permette di creare il \textbf{Gruppo Quoziente} $G/N$, una struttura f
 }
 
 
-\subsection{Gruppi Simmetrici e Gruppi Lineari Generali}
+\subsection{Gruppi Simmetrici}
 \dfn{Il Gruppo Simmetrico}{
 Sia $X$ un insieme. Il \textbf{Gruppo Simmetrico} di $X$, denotato con $Sym(X)$ o $\text{Perm}(X)$, è l'insieme di tutte le funzioni biunivoche (permutazioni) $f: X \to X$. 
 Sotto l'operazione di composizione di funzioni, $Sym(X)$ forma un gruppo.
 }
 
-\nt{
+\mprop{Isomorfismo fra gruppi simmetrici}{
     Si puo' dimostrare che gruppi simmetrici di insiemi aventi la stessa cardinalita' $n$ sono isomorfi, quindi si tende a considerare il gruppo simmetrico costituito dalle permutazioni degli interi $1,2,\dots,n$ denotato $S_n$.
 }
+
+\thm{Classi di Coniugio del gruppo simmetrico}{
+Dato un gruppo simmetrico $S_n$, due permutazioni $\sigma, \tau \in S_n$ appartengono alla stessa \textbf{classe di coniugio} se e solo se hanno la stessa \textbf{struttura ciclica}, ovvero se presentano lo stesso numero di cicli della stessa lunghezza nella loro scomposizione in cicli disgiunti.
+}
+
+Un \textbf{ciclo} (o permutazione ciclica) è un tipo speciale, e molto semplice, di permutazione.
+
+Intuitivamente, un ciclo prende un sottoinsieme di elementi e li ``fa ruotare'' di una posizione, lasciando tutti gli altri elementi dell'insieme perfettamente immobili al loro posto.
+
+\dfn{Permutazione ciclica e Punto fisso}{
+Sia $X$ un insieme. Un ciclo di lunghezza $k$ (chiamato anche \textit{$k$-ciclo}) è una permutazione $\sigma$ tale per cui esistono $k$ elementi distinti $x_1, x_2, \dots, x_k$ in $X$ per i quali vale:
+\begin{itemize}
+    \item $\sigma(x_1) = x_2$
+    \item $\sigma(x_2) = x_3$
+    \item $\dots$
+    \item $\sigma(x_{k-1}) = x_k$
+    \item $\sigma(x_k) = x_1$
+\end{itemize}
+Per ogni altro elemento $y \in X$ che non fa parte di questo sottoinsieme, il ciclo non ha alcun effetto, ovvero $\sigma(y) = y$. In questo caso si dice che $y$ è un punto fisso della permutazione.
+}
+
+\nt{
+Invece di scrivere la funzione o la matrice per esteso, in algebra si usa una notazione molto compatta. Il ciclo appena descritto si scrive semplicemente racchiudendo gli elementi interessati tra parentesi tonde, separati da spazi:
+\[
+    \sigma = (x_1\ x_2\ \dots\ x_k)
+\]
+Questa scrittura si legge tipicamente da sinistra a destra: ogni elemento viene mandato in quello alla sua destra, e l'ultimo elemento chiude il cerchio venendo rimandato al primo.
+}
+
+\ex{Cicli di $ S_5 $}{
+Consideriamo il gruppo simmetrico $S_5$, ovvero l'insieme delle permutazioni sull'insieme $X = \{1, 2, 3, 4, 5\}$. 
+Definiamo il ciclo $\pi = (1\ 3\ 5)$.
+
+Ecco cosa fa esattamente questa permutazione quando viene applicata agli elementi di $X$:
+\begin{itemize}
+    \item Manda $1$ in $3$: $\pi(1) = 3$
+    \item Manda $3$ in $5$: $\pi(3) = 5$
+    \item Manda $5$ in $1$: $\pi(5) = 1$
+\end{itemize}
+E gli elementi $2$ e $4$? Poiché non compaiono esplicitamente tra le parentesi del ciclo, la regola stabilisce che essi restino fissi:
+\begin{itemize}
+    \item $\pi(2) = 2$
+    \item $\pi(4) = 4$
+\end{itemize}
+
+\textbf{Nota bene:} Il ciclo $(1\ 3\ 5)$ rappresenta esattamente la stessa funzione dei cicli $(3\ 5\ 1)$ e $(5\ 1\ 3)$. Poiché si tratta di un ``girotondo'', non importa da quale elemento si inizia a scrivere, purché si rispetti l'ordine sequenziale delle trasformazioni!
+}
+
+\nt{
+\textbf{Proprietà e Relazione con le Partizioni:}
+\begin{itemize}
+    \item \textbf{Corrispondenza biunivoca:} Le classi di coniugio di $S_n$ sono in corrispondenza biunivoca con le \textbf{partizioni} dell'intero $n$. Una partizione $\lambda = (\lambda_1, \lambda_2, \dots, \lambda_k)$ tale che $\sum \lambda_i = n$ definisce univocamente una classe di coniugio.
+    \item \textbf{Numero di Rappresentazioni:} In virtù della teoria generale, il numero di rappresentazioni irriducibili distinte di $S_n$ su $\mathbb{C}$ è esattamente uguale al numero di partizioni $p(n)$.
+    \item \textbf{Esempio $S_3$ ($n=3$):} Le partizioni di 3 sono:
+    \begin{itemize}
+        \item $(1,1,1) \to$ Identità (cicli di lunghezza 1).
+        \item $(2,1) \to$ Trasposizioni $\{(12), (13), (23)\}$.
+        \item $(3) \to$ 3-cicli $\{(123), (132)\}$.
+    \end{itemize}
+    \item \textbf{Rappresentazioni Notevoli:} Ogni $S_n$ possiede sempre almeno due rappresentazioni di grado 1: la \textit{banale} ($\chi(g)=1$ per ogni $g$) e la \textit{segnatura} ($\chi(g)=\text{sgn}(g)$).
+    \item \textbf{Diagrammi di Young:} Le rappresentazioni irriducibili di $S_n$ vengono classificate e costruite tramite i \textbf{Diagrammi di Young}, che sono la rappresentazione grafica delle partizioni di $n$.
+\end{itemize}
+}
+
+\subsection{Gruppi Lineari Generali}
 
 \dfn{Il Gruppo Lineare Generale di uno Spazio Vettoriale}{
 Sia $V$ uno spazio vettoriale su un campo $K$. Il \textbf{Gruppo Lineare Generale} di $V$, denotato con $GL(V)$ o $\text{Aut}(V)$, è l'insieme di tutti gli \textbf{automorfismi lineari} dello spazio $V$ (ovvero, tutte le applicazioni lineari biunivoche $f: V \to V$).
@@ -175,24 +321,31 @@ I gruppi ciclici sono classificati in base al loro ordine $|G|$:
     \item \textbf{Generatori:} Un elemento $g^k$ di un gruppo ciclico d'ordine $n$ è un generatore di $G$ se e solo se $\gcd(k, n) = 1$. Il numero di tali generatori è dato dalla funzione $\varphi(n)$ di Eulero.
 \end{enumerate}
 
-\dfn{Classi di Coniugio di Gruppi Simmetrici}{
-Dato un gruppo simmetrico $S_n$, due permutazioni $\sigma, \tau \in S_n$ appartengono alla stessa \textbf{classe di coniugio} se e solo se hanno la stessa \textbf{struttura ciclica}, ovvero se presentano lo stesso numero di cicli della stessa lunghezza nella loro scomposizione in cicli disgiunti.
-}
+\ex{Gruppo Ciclico $ \mathbb{Z}_6 $}{
+  Consideriamo il gruppo degli interi modulo 6 rispetto all'addizione, indicato con $\mathbb{Z}_6$. I suoi elementi sono le classi di resto modulo 6:
+\[
+\mathbb{Z}_6 = \{ \overline{0}, \overline{1}, \overline{2}, \overline{3}, \overline{4}, \overline{5} \}
+\]
+\subsubsection*{Verifica del Generatore}
 
-\nt{
-\textbf{Proprietà e Relazione con le Partizioni:}
+Verifichiamo se l'elemento $\overline{1}$ \`e un generatore di $\mathbb{Z}_6$. Calcoliamo i suoi multipli (poich\'e l'operazione \`e l'addizione, sommiamo l'elemento a se stesso):
+
 \begin{itemize}
-    \item \textbf{Corrispondenza biunivoca:} Le classi di coniugio di $S_n$ sono in corrispondenza biunivoca con le \textbf{partizioni} dell'intero $n$. Una partizione $\lambda = (\lambda_1, \lambda_2, \dots, \lambda_k)$ tale che $\sum \lambda_i = n$ definisce univocamente una classe di coniugio.
-    \item \textbf{Numero di Rappresentazioni:} In virtù della teoria generale, il numero di rappresentazioni irriducibili distinte di $S_n$ su $\mathbb{C}$ è esattamente uguale al numero di partizioni $p(n)$.
-    \item \textbf{Esempio $S_3$ ($n=3$):} Le partizioni di 3 sono:
-    \begin{itemize}
-        \item $(1,1,1) \to$ Identità (cicli di lunghezza 1).
-        \item $(2,1) \to$ Trasposizioni $\{(12), (13), (23)\}$.
-        \item $(3) \to$ 3-cicli $\{(123), (132)\}$.
-    \end{itemize}
-    \item \textbf{Rappresentazioni Notevoli:} Ogni $S_n$ possiede sempre almeno due rappresentazioni di grado 1: la \textit{banale} ($\chi(g)=1$ per ogni $g$) e la \textit{segnatura} ($\chi(g)=\text{sgn}(g)$).
-    \item \textbf{Diagrammi di Young:} Le rappresentazioni irriducibili di $S_n$ vengono classificate e costruite tramite i \textbf{Diagrammi di Young}, che sono la rappresentazione grafica delle partizioni di $n$.
+    \item $1 \cdot \overline{1} = \overline{1}$
+    \item $2 \cdot \overline{1} = \overline{1} + \overline{1} = \overline{2}$
+    \item $3 \cdot \overline{1} = \overline{1} + \overline{1} + \overline{1} = \overline{3}$
+    \item $4 \cdot \overline{1} = \overline{4}$
+    \item $5 \cdot \overline{1} = \overline{5}$
+    \item $6 \cdot \overline{1} = \overline{6} \equiv \overline{0} \pmod{6}$
 \end{itemize}
+
+Poich\'e partendo da $\overline{1}$ siamo riusciti a ottenere l'intero insieme $\mathbb{Z}_6$, possiamo affermare che $\mathbb{Z}_6$ \`e un gruppo ciclico generato da $\overline{1}$. In notazione algebrica, scriviamo:
+\[
+\mathbb{Z}_6 = \langle \overline{1} \rangle
+\]
+
+\noindent
+\textbf{Nota:} In un gruppo ciclico possono esserci pi\`u generatori. Nel caso di $\mathbb{Z}_6$, anche $\overline{5}$ \`e un generatore ($\langle \overline{5} \rangle = \mathbb{Z}_6$), mentre elementi come $\overline{2}$ generano solo sottogruppi (nello specifico, il sottogruppo $\{ \overline{0}, \overline{2}, \overline{4} \}$).
 }
 
 \subsection{Azioni}
@@ -227,6 +380,26 @@ Un \textbf{campo} $ K $ e' una struttura algebrica dotata di due operazioni:
 
 Come conseguenza diretta, si ha che l'elemento neutro della somma diventa \textbf{elemento assorbente} ($ \forall a \in K. a \cdot 0 = 0 $). Infatti, se un prodotto e' 0 allora e' sicuro che almeno uno degli operandi e' 0.
 
+\ex{Campo $(\mathbb{Z}_5, +, \cdot)$}{
+  Un ottimo esempio di campo finito \`e l'insieme delle classi di resto modulo 5, indicato con $\mathbb{Z}_5 = \{\overline{0}, \overline{1}, \overline{2}, \overline{3}, \overline{4}\}$, equipaggiato con le consuete operazioni di addizione e moltiplicazione modulo 5.
+
+Poich\'e 5 \`e un numero primo, la struttura $(\mathbb{Z}_5, +, \cdot)$ \`e un campo. La caratteristica chiave che lo distingue da altre strutture (come l'anello $\mathbb{Z}_6$) \`e che \textbf{ogni elemento diverso da zero possiede un inverso moltiplicativo}.
+
+\subsubsection*{Verifica degli inversi moltiplicativi in $\mathbb{Z}_5$}
+
+Per ogni elemento $a \in \mathbb{Z}_5 \setminus \{\overline{0}\}$, esiste un elemento $b$ tale che $a \cdot b = \overline{1}$:
+
+\begin{itemize}
+    \item L'inverso di $\overline{1}$ \`e $\overline{1}$, poich\'e $\overline{1} \cdot \overline{1} = \overline{1}$.
+    \item L'inverso di $\overline{2}$ \`e $\overline{3}$, poich\'e $\overline{2} \cdot \overline{3} = \overline{6} \equiv \overline{1} \pmod{5}$.
+    \item L'inverso di $\overline{3}$ \`e $\overline{2}$, essendo la moltiplicazione commutativa ($\overline{3} \cdot \overline{2} = \overline{1}$).
+    \item L'inverso di $\overline{4}$ \`e $\overline{4}$, poich\'e $\overline{4} \cdot \overline{4} = \overline{16} \equiv \overline{1} \pmod{5}$.
+\end{itemize}
+
+\noindent
+\textbf{Campi infiniti:} Gli esempi pi\`u classici e utilizzati di campi con infiniti elementi sono il campo dei numeri razionali $(\mathbb{Q}, +, \cdot)$, il campo dei numeri reali $(\mathbb{R}, +, \cdot)$ e il campo dei numeri complessi $(\mathbb{C}, +, \cdot)$.
+}
+
 \subsection{Proprieta' Fondamentali}
 \textbf{Caratteristica del Campo} $ (char(K)) $: E' il piu' piccol intero positivo $ p $ tale che sommando l'elemento identita' 1 a se' stesso $ p $ volte si ottiene 0 (l'elemento neutro) (cioe' $ 1 + ... + 1 $ = 0). Se non esiste un valore $ p $ (non si ritorna mai all'elemento neutro) allora $ char(K) = 0 $.
 
@@ -252,6 +425,26 @@ Come conseguenza diretta, si ha che l'elemento neutro della somma diventa \textb
 A differenza dei campi, in un anello generale non si richiede che il prodotto sia commutativo ($ a \cdot b $ può essere diverso da $ b \cdot a $), e non si richiede che ogni elemento non nullo abbia un inverso moltiplicativo (cioè non si può sempre "dividere").
 }
 
+\ex{Anello $ (\mathbb{Z}_6, +, \cdot) $}{
+  Un ottimo esempio per comprendere la differenza tra un anello e un campo \`e l'insieme delle classi di resto modulo 6: 
+\[
+\mathbb{Z}_6 = \{\overline{0}, \overline{1}, \overline{2}, \overline{3}, \overline{4}, \overline{5}\}
+\]
+
+\subsubsection*{I Divisori dello Zero in $\mathbb{Z}_6$}
+
+A differenza del campo $\mathbb{Z}_5$ analizzato in precedenza, in $\mathbb{Z}_6$ \textbf{non} tutti gli elementi non nulli possiedono un inverso moltiplicativo. Questo accade perch\'e 6 \`e un numero composto, il che porta alla comparsa dei cosiddetti \emph{divisori dello zero}.
+
+Un divisore dello zero \`e un elemento non nullo che, moltiplicato per un altro elemento non nullo, restituisce zero. In $\mathbb{Z}_6$, se consideriamo gli elementi $\overline{2}$ e $\overline{3}$, osserviamo che:
+\[
+\overline{2} \cdot \overline{3} = \overline{6} \equiv \overline{0} \pmod{6}
+\]
+Sia $\overline{2}$ che $\overline{3}$ sono diversi da $\overline{0}$, ma il loro prodotto \`e $\overline{0}$. A causa di questa propriet\`a, \`e matematicamente impossibile che $\overline{2}$ o $\overline{3}$ ammettano un inverso moltiplicativo (nessun numero moltiplicato per $\overline{2}$ potr\`a mai dare $\overline{1}$).
+
+\noindent
+\textbf{Conclusione:} Poich\'e possiede divisori dello zero, la struttura $(\mathbb{Z}_6, +, \cdot)$ \`e un \textbf{anello commutativo}, ma non pu\`o essere un campo. Altri esempi classici di anelli includono l'anello dei polinomi o l'anello delle matrici quadrate $n \times n$ (che \`e un esempio di anello non commutativo).
+}
+
 \subsection{Proprieta' fondamentali}
 Per manipolare gli anelli, definiamo alcune categorie di elementi e strutture interne fondamentali:
 
@@ -274,6 +467,31 @@ Sia $K$ un campo (i cui elementi sono detti \textit{scalari}). Un insieme $V$ (i
         \item \textbf{Azione dell'identità scalare:} $1_K \cdot v = v$ (dove $1_K$ è l'elemento neutro moltiplicativo del campo $K$).
     \end{itemize}
 \end{enumerate}
+}
+
+\ex{Piano Euclideo}{
+  L'esempio pi\`u classico e geometricamente intuitivo \`e il piano euclideo, ovvero l'insieme delle coppie ordinate di numeri reali $\mathbb{R}^2$, considerato sul campo dei numeri reali $\mathbb{R}$.
+\[
+\mathbb{R}^2 = \{ (x, y) \mid x, y \in \mathbb{R} \}
+\]
+
+\subsubsection*{Le due operazioni fondamentali in $\mathbb{R}^2$}
+
+Siano $\mathbf{u} = (x_1, y_1)$ e $\mathbf{v} = (x_2, y_2)$ due vettori in $\mathbb{R}^2$, e sia $c \in \mathbb{R}$ uno scalare. Le operazioni che rendono $\mathbb{R}^2$ uno spazio vettoriale sono definite componente per componente:
+
+\begin{enumerate}
+    \item \textbf{Addizione vettoriale:} La somma di due vettori produce un nuovo vettore in $\mathbb{R}^2$.
+    \[
+    \mathbf{u} + \mathbf{v} = (x_1 + x_2, y_1 + y_2)
+    \]
+    \item \textbf{Moltiplicazione per uno scalare:} Il prodotto di un vettore per un numero reale "scala" (allunga, accorcia o inverte) il vettore, producendo un risultato che resta in $\mathbb{R}^2$.
+    \[
+    c\mathbf{u} = c(x_1, y_1) = (cx_1, cy_1)
+    \]
+\end{enumerate}
+
+\noindent
+\textbf{Nota sugli Assiomi:} Queste due operazioni in $\mathbb{R}^2$ soddisfano rigorosamente tutti gli otto assiomi richiesti per gli spazi vettoriali (tra cui commutativit\`a e associativit\`a dell'addizione, esistenza del vettore nullo $\mathbf{0} = (0,0)$, esistenza del vettore opposto, e le varie propriet\`a distributive). Altri esempi molto utilizzati in algebra lineare includono lo spazio dei polinomi di grado $\le n$ o lo spazio delle matrici di dimensione $m \times n$.
 }
 
 \subsection{L'Importanza del Campo $K$ in Teoria delle Rappresentazioni}
