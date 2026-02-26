@@ -247,6 +247,42 @@ TODO: sarebbe figo fare gli automi in latex, se ho sbatti ci provo. Ah e alcune 
   \end{center}
 }
 
+\section{}
+Le macchine che abbiamo visto finora sono molto tediose.
+
+Per esempio, per riconoscere il linguaggio $ L = \{ww^R | w \in (0|1)^*\} $ e' stato necessario costruire due rami (uno per lo 0 e uno per l'1). Sarebbe comodo poter usare un solo ramo che in qualche modo codifica entrambe i rami, vediamo come possiamo fare:
+\dfn{Memoria nello stato}{
+  Data una MdT, si dice che questa ha \textbf{memoria} (nello stato) se ad ogni stato e' associata una memoria di uno o piu' simboli:
+  \[
+  \langle q_1, -, ..., - \rangle
+  \]
+  Il numero di simboli in memoria e' fissato, ovvero non puo' cambiare durante l'esecuzione.
+}
+\ex{}{
+  Vogliamo riconoscere $ L = 10^*|01^* $
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2026-02-26-12-17-39.png}
+  \end{center}
+
+  Notiamo che la macchina con memoria sopra non e' altro che una rappresentazione piu' compatta di una normale MdT con due rami al posto di uno. 
+}
+\mprop{Equipotenza macchine con memoria e senza}{
+  Data una MdT con memoria nello stato, e' sempre possibile costruire una MdT senza memoria che riconosce lo stesso linguaggio.
+}
+\pf{Dimostrazione}{
+  Boh in verita' non dimostra sto risultato, dice solo che alla fine le macchine con memoria sono un prodotto cartesiano di stati con simboli.
+}
+
+\dfn{Macchine Multitraccia}{
+  Multiple tracce lette in sincrono, la testina si muove tutta insieme ma possiamo leggere e scrivere singolarmente sulle tracce.
+}
+\ex{}{
+  Vogliamo riconoscere $ L = \{w#w | w \in (a|b)^+\} $:
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2026-02-26-12-38-51.png}
+  \end{center}
+}
+
 \section{Macchine di Turing Multinastro}
 \subsection{Esercizi}
 \ex{}{
