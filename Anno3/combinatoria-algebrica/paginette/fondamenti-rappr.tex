@@ -201,15 +201,15 @@ $$U^\perp = \{v \in V \mid \langle v, u \rangle = 0 \;\forall\, u \in U\}.$$
 
 Allora $V = U \oplus U^\perp$ come spazi vettoriali (proprietà standard dei prodotti hermitiani). È sufficiente mostrare che $U^\perp$ è $G$-stabile. Siano $v \in U^\perp$ e $u \in U$:
 
-$$\langle \rho(g)v,\, u \rangle = \langle \rho(g^{-1})\rho(g)v,\, \rho(g^{-1})u \rangle = \langle v,\, \rho(g^{-1})u \rangle = 0$$
+$$\langle \rho(g)v,\, u \rangle = \langle \rho(g)^{-1}\rho(g)v,\, \rho(g)^{-1}u \rangle = \langle v,\, \rho(g)^{-1}u \rangle = 0$$
 
-dove l'ultimo passaggio usa che $\rho(g^{-1})u \in U$ (perché $U$ è $G$-stabile) e $v \in U^\perp$.
+dove l'ultimo passaggio usa che $\rho(g)^{-1}u \in U$ (perché $U$ è $G$-stabile) e $v \in U^\perp$.
 }
 
 \section{Algebra di Gruppo}
 Vogliamo ora riformulare tutta la teoria in un linguaggio più algebrico: guardare gli elementi di $G$ come "scalari che agiscono su $V$".
 
-\dfn{A-modulo sinistro)}{
+\dfn{A-modulo sinistro}{
  Sia $A$ un anello con unità $1_A$ e $(V, +)$ un gruppo abeliano. $V$ è un $A$-modulo sinistro se esiste un'operazione $A \times V \to V$ tale che:
  \begin{itemize}
  \item $a(v + u) = av + au$ 
@@ -231,10 +231,14 @@ $$(a_{g_1} \cdot g_1)(a_{g_2} \cdot g_2) := (a_{g_1} \cdot a_{g_2}) \cdot (g_1 g
 
 dove il primo prodotto è in $K$ e il secondo è in $G$. Questo rende $K[G]$ un \textbf{anello} (non commutativo in generale).
 }
-\textbf{Osservazione fondamentale}. Le seguenti condizioni sono equivalenti:
-1. $V$ è una rappresentazione di $G$ (cioè esiste $\rho: G \to \mathrm{GL}(V)$).
-2. $V$ è un $K[G]$-modulo sinistro.
 
+\mprop{$ K[G] $-modulo sinistro come rappresentazione di G}{
+Le seguenti condizioni sono equivalenti:
+\begin{enumerate}
+\item $V$ è una rappresentazione di $G$ (cioè esiste $\rho: G \to \mathrm{GL}(V)$).
+\item $V$ è un $K[G]$-modulo sinistro.
+\end{enumerate}
+}
 
 \pf{Dimostrazione}{
 $(2) \Rightarrow (1)$: l'inclusione $G \hookrightarrow K[G]$ (ogni $g$ è un elemento di base) restringe l'azione di $K[G]$ su $V$ a un'azione di $G$ per isomorfismi lineari, cioè fornisce $\rho: G \to \mathrm{GL}(V)$.
