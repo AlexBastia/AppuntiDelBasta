@@ -247,6 +247,85 @@ TODO: sarebbe figo fare gli automi in latex, se ho sbatti ci provo. Ah e alcune 
   \end{center}
 }
 
+\section{}
+Le macchine che abbiamo visto finora sono molto tediose.
+
+Per esempio, per riconoscere il linguaggio $ L = \{ww^R | w \in (0|1)^*\} $ e' stato necessario costruire due rami (uno per lo 0 e uno per l'1). Sarebbe comodo poter usare un solo ramo che in qualche modo codifica entrambe i rami, vediamo come possiamo fare:
+\dfn{Memoria nello stato}{
+  Data una MdT, si dice che questa ha \textbf{memoria} (nello stato) se ad ogni stato e' associata una memoria di uno o piu' simboli:
+  \[
+  \langle q_1, -, ..., - \rangle
+  \]
+  Il numero di simboli in memoria e' fissato, ovvero non puo' cambiare durante l'esecuzione.
+}
+\ex{}{
+  Vogliamo riconoscere $ L = 10^*|01^* $
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2026-02-26-12-17-39.png}
+  \end{center}
+
+  Notiamo che la macchina con memoria sopra non e' altro che una rappresentazione piu' compatta di una normale MdT con due rami al posto di uno. 
+}
+\mprop{Equipotenza macchine con memoria}{
+  Data una MdT con memoria nello stato, e' sempre possibile costruire una MdT senza memoria che riconosce lo stesso linguaggio.
+}
+\pf{Dimostrazione}{
+  Boh in verita' non dimostra sto risultato, dice solo che alla fine le macchine con memoria sono un prodotto cartesiano di stati con simboli.
+}
+
+\dfn{Macchine Multitraccia}{
+  Multiple tracce lette in sincrono, la testina si muove tutta insieme ma possiamo leggere e scrivere singolarmente sulle tracce.
+}
+\ex{}{
+  Vogliamo riconoscere $ L = \{w\#w | w \in (a|b)^+\} $:
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2026-02-26-12-38-51.png}
+  \end{center}
+}
+\mprop{Equipotenza macchine multitraccia}{
+Data una macchina multitraccia, e' sempre possibile costruire una MdT classica che riconosce lo stesso linguaggio.
+}
+\pf{Dimostrazione}{
+  Data una macchina multitraccia di $ n $ tracce con alfabeti $ \Gamma_i $ per ogni traccia $ i $, possiamo costruire una MdT con $ \Gamma = \Gamma_1 \times ... \times \Gamma_n $ che si comporta esattamente come la macchina multitraccia.
+}
+
+\dfn{Macchine Multinastro}{
+  MdT che ha piu' nastri con testine indipendenti. Il numero dei nastri e' fissato a costruzione. E' possibile che una testina rimanga ferma.
+}
+\ex{}{
+  Costruiamo la macchina multinastro che riconosce $ L = \{w | w \in (a|b|c)^* \land \text{ il numero delle a, b e c sono uguali}\} $. Vediamo l'idea:
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2026-02-26-18-38-01.png}
+  \end{center}
+  Ora costruiamo l'automa:
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2026-02-26-18-38-34.png}
+  \end{center}
+}
+\mprop{Equipotenza di macchine multinastro}{
+  Data una macchina multinastro, e' sempre possibile costruire una MdT classica che riconosce lo stesso linguaggio.
+}
+\pf{Dimostrazione}{
+  Data una macchina multinastro e' possibile costruire una multitraccia equivalente con $ 2n $ tracce (dove $ n $ e' il numero dei nastri) semplicemente usando le tracce dispari come "puntatori" che indicano l'ipotetica posizione della testina, come se fosse multinastro.
+
+  Ad ogni passo, collochiamo inizialmente la testina sul primo puntatore a sx per poi scansionare tutto fino all'ultimo puntatore. I simboli sotto ogni puntatore vengono salvati nella memoria, e la testina ritorna indietro cambiando in modo adeguato i simboli puntati e la posizione dei puntatori.
+}
+E' il modello di calcolo piu' flessibile che abbiamo a disposizione. Ma abbiamo visto che per simulare il suo comportamento con una macchina multitraccia impieghiamo piu' transizioni, ma quante di piu'?
+
+\pf{Dimostrazione}{
+  Analizziamo il caso peggiore dopo $ m $ passi. Questo avviene quando una testina della macchina si sposta a sx ad ogni passo e una si sposta a dx ad ogni passo, in modo che distino $ 2m $ celle. 
+
+  Quindi una macchina multinastro avra' bisogno di percorrere due volte la distanza (passaggio in avanti e indietro) e deve poi aggiornare ogni puntatore (uno per ogni nastro), che nel caso peggiore comporta altre due transizioni.
+
+  Alla fine abbiamo che un solo passo di una macchina multinastro ($ k $ nastri) richiede nel caso peggiore $ 4m + 2k $ passi di una macchina multitraccia.
+
+  Possiamo quindi dire che una computazione che richiede $ n $ passi ad una macchina multinastro richiedera'
+  \[
+    \sum_{i=1}^{n} 4i + 2k \leq \sum_{i=1}^{n} 4n + 2k \leq n (4n + 2k)
+  \]
+  Quindi e' $ O(n^2) $.
+}
+
 \section{Macchine di Turing Multinastro}
 \subsection{Esercizi}
 \ex{}{
