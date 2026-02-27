@@ -331,3 +331,42 @@ Il RC4 (Rivest Cipher 4) è stato lo stream cipher dominante per decenni, usato 
 \end{algorithm}
   
 \nt{A ogni ciclo, continua a scambiare due byte all'interno dell'array ed estrae un valore pseudo-casuale in uscita}
+
+\section{Block Ciphers}
+Lavora su blocchi di lunghezza fissa, puo' generare un po' di delay. I principali sono:
+\begin{itemize}
+  \item \textbf{DES}: $ n = 64 $ bits, $ k = 56 $ bits (ma possiamo anche dire $ 64 $, vedremo perche')
+\item \textbf{3DES}: $ n = 64 $ bits, $ k = 3 \cdot 56 = 168 $ bits
+\item \textbf{AES}: $ n = 128 $ bits, $ k = 56 $ bits
+\end{itemize}
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2026-02-27-11-34-33.png}
+\end{center}
+
+Il block cipher e' costruito per iterazioni:
+\begin{enumerate}
+  \item Key expansion: partendo da chiave lunga, genero $ l $ sottochiavi $ k_i $ (dove $ l $ e' il numero di iterazioni)
+  \item Applico la \textbf{round function} a $ m_i $ e la sottochiave $ k_i $ per generare $ m_{i+1} $ (dove $ m_1 $ e' il plain text) 
+\end{enumerate}
+
+Il problema e' che e' molto lento rispetto agli altri cifrari, cosa che AES migliora abbastanza rispetto a DES.
+
+\subsection{DES}
+L'idea core e' il \textit{Feistel Network}:
+
+Given functions $ f_1,...,f_{\text{d}}: \{0,1\}^n \to \{0,1\}^n $ (non per forza invertibili) dobbiamo costruire una funzione \textbf{invertibile} $ F: \{0,1\}^{2n} \to \{0,1\}^{2n} $
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2026-02-27-11-49-48.png}
+\end{center}
+Come possiamo calcolare $ R_i = L_{i-1} + f_i(R_{i-1}) $ e $ L_{i} = R_{i-1} $, allora:
+\mprop{}{
+  Per ogni $ f_1,...,f_d $, il Feistel network is \textbf{invertible}.
+}
+\pf{Dimostrazione per Costruzione}{
+  Boh lo dimostra, guarda il libr onon ssi capisce niente.
+}
+
+Per fare la decription, basta applicare lo stesso circuito in ordine opposto, WOW!
+
+La lunghezza della chiave di DES in verita' e' composta da 8 byte, ma l'ottavo bit di ognuno viene usato come parity-check
+%\end{document}
