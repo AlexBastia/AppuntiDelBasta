@@ -240,14 +240,50 @@ Le seguenti condizioni sono equivalenti:
 \end{enumerate}
 }
 
-\pf{Dimostrazione TODO: DIMOSTRARE OERPER BENE PERCHÉ IL PROF L'HA FATTA MALE ZIO PERA }{
-$(2) \Rightarrow (1)$: l'inclusione $G \hookrightarrow K[G]$ (ogni $g$ è un elemento di base) restringe l'azione di $K[G]$ su $V$ a un'azione di $G$ per isomorfismi lineari, cioè fornisce $\rho: G \to \mathrm{GL}(V)$.
+\pf{Dimostrazione}{
+$(2) \Rightarrow (1)$: 
+Sia $ V $ un $ K[G] $-modulo sinistro. Abbiamo quindi l'operazione:
+\[
+  \cdot: K[G] \times V \to V
+\]
+che rispetta certe proprieta'. Dato che $\forall g \in G. g \in K[G]$, possiamo definire per ogni elemento di $ G $ una funzione
+\begin{align*}
+  T_g: V &\to V\\
+  v &\to g \cdot v 
+\end{align*}
+che quindi utilizza l'operazione definita sopra. Possiamo dimostrare che $ \forall g. T_g $ e' un'\textit{applicazione lineare invertibile}:
+\begin{itemize}
+\item $ K $-Linearita': usando le proprieta' dell'operazione del modulo possiamo dimostrare che
+  \begin{itemize}
+  \item $ \forall g \in G, \forall v,u \in V $ 
+    \begin{align*}
+      T_g(v+u) &= g \cdot (v+u)\\
+      &= g\cdot v + g \cdot u \\
+      &= T_g(v) + T_g(u)
+    \end{align*}
+  \item $ \forall g \in G, \forall v \in V, \forall k \in K $
+    \begin{align*}
+      T_g(kv) &= g \cdot ((ke) \cdot v) \\
+      &= (g(ke)) \cdot v \\
+      &= (kg) \cdot v \\
+      &= k(g \cdot v) \\
+      &= kT_g(v)
+    \end{align*}
+      dove $ e $ e' l'unita' di $ K[G] $
+  \end{itemize}
+\item Invertibilita': dimostriamo che $ \forall g \in G. T_g^{-1} $ e' l'applicazione lineare inversa di $ T_g $:
+  \begin{align*}
+    T_{g^{-1}}(T_g(u)) &= g^{-1} \cdot (g \cdot u) \\
+    &= (g^{-1}g) \cdot u \\
+    &= e \cdot u = u\\
+  \end{align*}
+\end{itemize}
 
-$(1) \Rightarrow (2)$: si estende l'azione per $K$-linearità:
-
-$$\left(\sum_{g \in G} a_g \cdot g\right) \cdot v := \sum_{g \in G} a_g \cdot \rho(g)(v)$$
-
-e si verifica che questo soddisfa gli assiomi di modulo.
+$(1) \Rightarrow (2)$: Sia $ V $ una rappresentazione di $ G $, allora $ \exists \rho: G \to GL(V) $ omomorfismo. Vogliamo mostrare che $ V $ ha anche struttura di $ K[G] $-modulo sx, ovvero che $ \exists \cdot: K[G] \times V \to V $ con le proprieta' giuste. Possiamo definire questo prodotto come:
+\[
+  \left(\sum_{g \in G}a_g g\right) \cdot v \coloneq \sum_{g \in G} a_g \rho(g)(v)
+\]
+Si puo' dimostrare che l'operazione cosi' definita soddisfa tutti gli assiomi di modulo (lo puo' dimostrare la Marta Matrici se ne ha voglia), quindi $ V $ e' un $ K[G] $-modulo.
 }
 
 \nt{
@@ -316,8 +352,6 @@ L'algebra di gruppo $K[G]$ non è solo l'ambiente in cui vivono gli "scalari" de
     La rappresentazione regolare ha dimensione pari all'ordine del gruppo, $\dim(K[G]) = |G|$. In termini matriciali, ogni $\rho_{reg}(g)$ è rappresentato da una matrice di permutazione di taglia $|G| \times |G|$. Come vedremo, questa rappresentazione è fondamentale perché contiene ogni rappresentazione irriducibile di $G$ con molteplicità pari alla sua dimensione.
 }
 
-TODO: Rappresentazioni come K[G]-Moduli
-
 \section{Secondo approccio al Lemma del Complemento}
 
 \subsection{Morfismi di Rappresentazioni}
@@ -335,13 +369,12 @@ Si guardi tale definizione
   Si noti il seguente diagrmmino di Luca Doci:
   \[
   \begin{array}{ccc}
-V_1 & \xrightarrow{;f;} & V_2 \
-\rho_1(g)\downarrow & & \downarrow \rho_2(g) \
-V_1 & \xrightarrow{;f;} & V_2
-\end{array}\]
-
+    V_1 & \xrightarrow{f} & V_2 \\
+    \rho_1(g)\downarrow & & \downarrow \rho_2(g) \\
+    V_1 & \xrightarrow{f} & V_2 
+  \end{array}
+\]
 il seguente il seguente diagramma commuta per ogni $g \in G$
-
 }
 
 Un morfismo biettivo di rappresentazioni si chiama isomorfismo di rappresentazioni
