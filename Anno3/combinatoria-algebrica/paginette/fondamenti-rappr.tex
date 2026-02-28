@@ -249,4 +249,63 @@ $$\left(\sum_{g \in G} a_g \cdot g\right) \cdot v := \sum_{g \in G} a_g \cdot \r
 
 e si verifica che questo soddisfa gli assiomi di modulo.
 }
-% \end{document}
+
+\nt{
+  Una notazione un po' crazy che ha usato il prof è anche questa:
+  \[
+    K[G] = \left\{\sum_{g \in G} a_g \cdot e_g \;\bigg|\; a_g \in K\right\} 
+  \]
+  Dove $\{e_g\}_{g \in G}$ è la base formale indicizzata dagli elementi di $G$, ovvero $e_g = (0,\ldots,1,\ldots,0)$ con $1$ in posizione $g$. In questo caso $K[G]$ è un uno spazio vettoriale su $K$ con dimensione $|G|$, ed è anello esresso per bilinearità della moltiplicazione in $G$:
+  \[
+    e_g \cdot e_h =  e_{gh} \quad \forall g,h \in G
+  \]
+}
+
+\ex{}{
+  Sia $G= S_3$. Sia $v = 5e_{(12)}$ e $u=2e_{id}-3e_{(23)}$ in $K[S_3]$. Si ha:
+  \[
+    v \cdot u = (5e_{(12)}) \cdot (2e_{id}-3e_{(23)}) = 10e_{(12)\cdot id}-15e_{(12)\cdot (23)}= 12e_{(12)}-15e_{(132)}
+  \]
+}
+
+\subsection{Rappresentazione Regolare}
+\subsection{Rappresentazione Regolare}
+
+L'algebra di gruppo $K[G]$ non è solo l'ambiente in cui vivono gli "scalari" della teoria, ma può essere essa stessa vista come uno spazio vettoriale su cui il gruppo agisce.
+
+\dfn{Azione regolare a sinistra}{
+    Si definisce \textbf{azione regolare a sinistra} di $G$ su $K[G]$ l'applicazione che associa a ogni coppia $(h, e_g)$ l'elemento della base corrispondente al prodotto nel gruppo:
+    $$ \cdot : G \times K[G] \longrightarrow K[G] $$
+    $$ h \cdot e_g \coloneqq e_{hg} \quad \forall h, g \in G $$
+    Per estensione lineare, l'azione di un elemento $h \in G$ su un generico elemento $x = \sum_{g \in G} a_g e_g \in K[G]$ è definita come:
+    $$ h \cdot \left( \sum_{g \in G} a_g e_g \right) \coloneqq \sum_{g \in G} a_g e_{hg} $$
+}
+
+\thm{Esistenza della rappresentazione regolare}{
+    L'azione regolare a sinistra definisce una rappresentazione lineare di $G$ sullo spazio vettoriale $V = K[G]$. Esiste cioè un omomorfismo di gruppi:
+    $$ \rho_{reg} : G \longrightarrow \mathrm{GL}(K[G]) $$
+    che associa a ogni $g \in G$ un operatore lineare invertibile $\rho_{reg}(g)$. Tale rappresentazione è detta \textbf{rappresentazione regolare} di $G$.
+}
+
+\pf{Dimostrazione}{
+    Dobbiamo verificare che $\rho_{reg}$ soddisfi le condizioni di omomorfismo verso il gruppo degli operatori lineari invertibili:
+
+    \begin{enumerate}
+        \item \textbf{Linearità ed Invertibilità}: Per ogni $g \in G$, l'operatore $\rho_{reg}(g)$ permuta gli elementi della base $\{e_h\}_{h \in G}$ (poiché la moltiplicazione per $g$ a sinistra è una biiezione del gruppo in sé). Un operatore che permuta una base si estende univocamente a un isomorfismo lineare, dunque $\rho_{reg}(g) \in \mathrm{GL}(K[G])$.
+        
+        \item \textbf{Conservazione dell'identità}: Sia $1_G$ l'elemento neutro di $G$. Per ogni generatore $e_g$:
+        $$ \rho_{reg}(1_G) e_g = e_{1_G \cdot g} = e_g $$
+        Poiché l'operatore coincide con l'identità su tutti i vettori della base, si ha $\rho_{reg}(1_G) = \mathrm{id}_{K[G]}$.
+
+        \item \textbf{Proprietà di omomorfismo}: Siano $h_1, h_2 \in G$. Verifichiamo che $\rho_{reg}(h_1 h_2) = \rho_{reg}(h_1) \circ \rho_{reg}(h_2)$ applicandoli a un generico $e_g$:
+        \begin{itemize}
+            \item Applicazione composta: $\rho_{reg}(h_1) \left( \rho_{reg}(h_2) e_g \right) = \rho_{reg}(h_1) e_{h_2 g} = e_{h_1(h_2 g)}$
+            \item Applicazione diretta: $\rho_{reg}(h_1 h_2) e_g = e_{(h_1 h_2)g}$
+        \end{itemize}
+        Per l'associatività della legge di gruppo in $G$, si ha $h_1(h_2 g) = (h_1 h_2)g$, da cui l'uguaglianza dei vettori immagine. Per linearità, l'uguaglianza si estende a tutto lo spazio.
+    \end{enumerate}
+}
+
+\nt{
+    La rappresentazione regolare ha dimensione pari all'ordine del gruppo, $\dim(K[G]) = |G|$. In termini matriciali, ogni $\rho_{reg}(g)$ è rappresentato da una matrice di permutazione di taglia $|G| \times |G|$. Come vedremo, questa rappresentazione è fondamentale perché contiene ogni rappresentazione irriducibile di $G$ con molteplicità pari alla sua dimensione.
+}
