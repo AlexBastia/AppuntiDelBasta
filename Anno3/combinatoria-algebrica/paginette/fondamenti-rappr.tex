@@ -240,7 +240,7 @@ Le seguenti condizioni sono equivalenti:
 \end{enumerate}
 }
 
-\pf{Dimostrazione}{
+\pf{Dimostrazione TODO: DIMOSTRARE OERPER BENE PERCHÉ IL PROF L'HA FATTA MALE ZIO PERA }{
 $(2) \Rightarrow (1)$: l'inclusione $G \hookrightarrow K[G]$ (ogni $g$ è un elemento di base) restringe l'azione di $K[G]$ su $V$ a un'azione di $G$ per isomorfismi lineari, cioè fornisce $\rho: G \to \mathrm{GL}(V)$.
 
 $(1) \Rightarrow (2)$: si estende l'azione per $K$-linearità:
@@ -314,4 +314,99 @@ L'algebra di gruppo $K[G]$ non è solo l'ambiente in cui vivono gli "scalari" de
 
 \nt{
     La rappresentazione regolare ha dimensione pari all'ordine del gruppo, $\dim(K[G]) = |G|$. In termini matriciali, ogni $\rho_{reg}(g)$ è rappresentato da una matrice di permutazione di taglia $|G| \times |G|$. Come vedremo, questa rappresentazione è fondamentale perché contiene ogni rappresentazione irriducibile di $G$ con molteplicità pari alla sua dimensione.
+}
+
+TODO: Rappresentazioni come K[G]-Moduli
+
+\section{Secondo approccio al Lemma del Complemento}
+
+\subsection{Morfismi di Rappresentazioni}
+
+Si guardi tale definizione
+
+\dfn{Morifsmo di rappresentazioni}{
+  Siano $(V_1,\rho_1)$ e $(V_2,\rho_2)$ due rappresentazioni di $G$ su $K$. Un \textit{morifsmo di rappresentazioni} (o \textit{morfismo di $K[G]$-moduli}) è una applicazione $f: V_1 \to V_2$ tale che:
+  \[
+    f(\rho_1(g)v) = \rho_2(g)f(v) \quad \forall g \in G, \forall v \in V_1
+  \]
+}
+
+\nt{
+  Si noti il seguente diagrmmino di Luca Doci:
+  \[
+  \begin{array}{ccc}
+V_1 & \xrightarrow{;f;} & V_2 \
+\rho_1(g)\downarrow & & \downarrow \rho_2(g) \
+V_1 & \xrightarrow{;f;} & V_2
+\end{array}\]
+
+il seguente il seguente diagramma commuta per ogni $g \in G$
+
+}
+
+Un morfismo biettivo di rappresentazioni si chiama isomorfismo di rappresentazioni
+
+\mprop{Esercizio 3 -Nucleo e Immagine di un Morfismo sono Sottorappresentazioni}{
+  Sia $f: V_1 \to V_2$ un morfismo di rappresentazioni di $G$. Allora:
+  \begin{enumerate}
+    \item $\ker(f)$ è una sottorappresentazione di $V_1$
+    \item $\mathrm{im}(f)$ è una sottorappresentazione di $V_2$
+  \end{enumerate}
+}
+\pf{Dimostrazione lasciata al giolapalma}{
+  \begin{enumerate}
+    \item Occorre mostrare che $\ker(f)$ è $G-stabile$, ovvero che per ogni $g \in G$ e $v \in \ker(f)$, si ha $\rho_1(g)v \in \ker(f)$.
+    
+    Sia quindi $v\in \ker(f)$, ovvero $f(v)=0$. Allora per ogni $g \in G$ si ha:
+    \[
+      f(\rho_1(g)v) = \rho_2(g)f(v) = \rho_2(g)0 = 0
+    \]
+    Quindi $ \rho_1(g)v \in \ker(f) $ 
+    
+    \item Occorre mostrare che $ \mathrm{im}(f) $ e' $ G-stabile $, ovvero che per ogni $ g \in G $ e $ v \in \mathrm{im}(f) $, si ha $ \rho_2(g)v \in \mathrm{im}(f) $.
+    
+    Sia quindi $ v \in \mathrm{im}(f) $, ovvero $ v = f(u) $ per qualche $ u \in V_1 $. Allora per ogni $ g \in G $ si ha:
+    \[
+      \rho_2(g)v = \rho_2(g)f(u) = f(\rho_1(g)u) \in \mathrm{im}(f)
+    \]
+  \end{enumerate}
+  Luca moci skills
+}
+\subsection{Lemma del Complemento con i proiettori}
+\dfn{Proiettore su un sottospazio}{
+  Sia $V$ uno spazio vettoriale e $U \subseteq V$ un sottospazio. Un operatore $p \in \mathrm{End}(V)$ si dice \textit{proiettore su $U$} se:
+  \begin{enumerate}
+    \item $p \circ p = p$ (idempotenza)
+    \item $\mathrm{im}(p) = U$ (l'immagine coincide con il sottospazio)
+    \item $p|_U = id_U$, ovvero $p(u) = u$ per ogni $u \in U$
+  \end{enumerate}
+}
+
+Adesso andremo a definire un proiettore $G$-invariante con il trucco della media vista in precedenza
+\dfn{Proiettore $G$-invariante $P^G$}{
+  Sia $V$ una rappresentazione di $G$ e $U \subseteq V$ una sottorappresentazione. Si dice \textit{proeittore $G$-invariante} la seguente funzione:
+  \[
+    p^G:V \to U \quad p^G(v) = \frac{1}{|G|} \sum_{g \in G} \rho(g)\circ p \circ \rho(g)^{-1}(v)
+  \]
+  dove $p$ e' un proiettore su $U$.
+}
+
+\mprop{Verifica del proiettore $G$-invariante}{
+  Il proiettore $p^G$ appena definito è ben definito
+}
+\pf{Dimostrazione}{
+  \begin{itemize}
+    \item Verifica che $p^G$ è ancora un proiettore su $U$ TODO
+    \item Verifica che $p^G$ è $G$-invariante. TODO
+  \end{itemize}
+}
+
+Adesso si viene al lemma vero e proprio
+
+\mlenma{Secondo approccio al Lemma di Maschke}{
+Sia $(V, \rho)$ una rappresentazione di un gruppo finito $G$ su un campo $K$ tale che $\mathrm{char}(K) \nmid |G|$. Sia $U \subseteq V$ una sottorappresentazione e sia $p^G$ l'operatore di proiezione $G$-invariante definito prima. Allora:
+\begin{enumerate}
+    \item $\ker(p^G)$ è una sottorappresentazione di $V$;
+    \item $V = U \oplus \ker(p^G)$.
+\end{enumerate}
 }
