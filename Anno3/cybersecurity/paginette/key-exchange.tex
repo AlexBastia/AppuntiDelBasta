@@ -104,7 +104,7 @@ la brodez sta davvero ripetendo il cifrario di Cesare....
 e' ez da battere provando tutte le chiavi (non ce ne stanno molti) -> bruteforce/exhaustive-search criptanalysis
 
 \subsubsection{Monoalphabetic cipher}
-Come chiave prende una permutazione dell'alfabeto sono $ 2^88 $ non possiamo fare brute force
+Come chiave prende una permutazione dell'alfabeto sono $ 2^{88} $ non possiamo fare brute force
 possiamo fare criptanalysis con metodi statistici, ovvero usando la frequenza di ogni lettera
 
 \subsubsection{Affine cipher}
@@ -246,17 +246,15 @@ Il BBS è un esempio di PRNG crittograficamente sicuro la cui sicurezza è ridot
 
 \begin{algorithm}
 \caption{Generatore Blum Blum Shub}
-\begin{algorithmic}[1]
-\State Scegli due grandi numeri primi $p$ e $q$ tali che $p \equiv q \equiv 3 \pmod{4}$
-\State Calcola $n \gets p \cdot q$
-\State Scegli un seed $s$ tale che $\gcd(s,n)=1$
-\State Calcola $X_0 \gets s^2 \bmod n$
-\For{$i = 1$ to $k$}
-    \State $X_i \gets X_{i-1}^2 \bmod n$
-    \State $B_i \gets X_i \bmod 2$
-\EndFor
-\State \Return $\{B_1, B_2, \dots, B_k\}$
-\end{algorithmic}
+Scegli due grandi numeri primi $p$ e $q$ tali che $p \equiv q \equiv 3 \pmod{4}$\;
+Calcola $n \gets p \cdot q$\;
+Scegli un seed $s$ tale che $\gcd(s,n)=1$\;
+Calcola $X_0 \gets s^2 \bmod n$\;
+\For{$i = 1$ \KwTo $k$}{
+    $X_i \gets X_{i-1}^2 \bmod n$\;
+    $B_i \gets X_i \bmod 2$\;
+}
+\KwRet $\{B_1, B_2, \dots, B_k\}$\;
 \end{algorithm}
 
 \mprop{Sicurezza di BBS}{
@@ -272,13 +270,13 @@ Tuttavia è relativamente lento rispetto ad altri PRNG crittografici. Per applic
 \subsubsection{Formalizzare queste note TODO}
 
 Gli Stream Cipher: Struttura Generica
-Uno stream cipher tipico funziona così: a partire dalla chiave K e da un valore di inizializzazione IV, si mantiene uno stato interno sᵢ che evolve a ogni passo. A ogni passo si produce un byte del keystream zᵢ tramite una funzione g(sᵢ), e lo stato avanza con una funzione f(sᵢ).
-Il keystream viene poi XOR-ato byte a byte con il plaintext: cᵢ = pᵢ ⊕ zᵢ.
+Uno stream cipher tipico funziona così: a partire dalla chiave K e da un valore di inizializzazione IV, si mantiene uno stato interno $ s_i $ che evolve a ogni passo. A ogni passo si produce un byte del keystream $ z_i $ tramite una funzione $g(s_i)$, e lo stato avanza con una funzione $ f(s_i) $.
+Il keystream viene poi XOR-ato byte a byte con il plaintext: $ c_i = p_i \oplus z_i $.
 L'IV serve a garantire che lo stesso key K produca keystream diversi in sessioni diverse — un meccanismo simile al nonce che vedremo nei cifrari moderni.
 
 Gli Stream Cipher Non Hanno Perfect Secrecy
 Una domanda naturale: uno stream cipher può avere perfect secrecy?
-No, per definizione. La chiave k è corta (il seed), mentre il messaggio è lungo. Per il teorema di Shannon, |K| ≥ |P| è necessario per la perfect secrecy — condizione violata da qualsiasi stream cipher pratico.
+No, per definizione. La chiave k è corta (il seed), mentre il messaggio è lungo. Per il teorema di Shannon, $ |K| \geq |P| $ è necessario per la perfect secrecy — condizione violata da qualsiasi stream cipher pratico.
 Dobbiamo quindi usare una definizione diversa di sicurezza, la sicurezza computazionale: il sistema è sicuro se non esiste nessun algoritmo efficiente in grado di distinguere il keystream G(k) da una sequenza veramente casuale. La sicurezza dello stream cipher dipende interamente dalla qualità del PRG: un PRG computazionalmente indistinguibile dal random implica uno stream cipher computazionalmente sicuro.
 
 
@@ -289,18 +287,16 @@ Il RC4 (Rivest Cipher 4) è stato lo stream cipher dominante per decenni, usato 
 
 \paragraph{Fase 1}:
 \begin{algorithm}
-  \caption{Inizializzazione di S}
-\begin{algorithmic}[1]
-\For{$i = 0$ to 255}
-  \State $S[i] = i$
-  \State $T[i] = K[i mod keylen]$
-\EndFor
-\State $j=0$
-\For{$i = 0$ to 255}
-\State $j = (j+ S[i]) + T[i] mod 256$
-\State $swap(S[i], S[j])$
-\EndFor
-\end{algorithmic}
+\caption{Inizializzazione di S}
+\For{$i = 0$ \KwTo $255$}{
+    $S[i] = i$\;
+    $T[i] = K[i \bmod \text{keylen}]$\;
+}
+$j = 0$\;
+\For{$i = 0$ \KwTo $255$}{
+    $j = (j + S[i] + T[i]) \bmod 256$\;
+    $\text{swap}(S[i], S[j])$\;
+}
 \end{algorithm}
 
 \nt{
@@ -316,18 +312,16 @@ Il RC4 (Rivest Cipher 4) è stato lo stream cipher dominante per decenni, usato 
 %     t = (S[i] + S[j]) mod 256
 %     output S[t]  ← questo byte va in XOR col plaintext
 \begin{algorithm}
-  \caption{Generazione del keystream}
-\begin{algorithmic}[1]
-\State $i=0$
-\State $j=0$
-\While{true}
-  \State $i = (i + 1) mod 256$
-  \State $j = (j + S[i]) mod 256$
-  \State $swap(S[i], S[j])$
-  \State $t = (S[i] + S[j]) mod 256$
-  \State $output S[t]$
-\EndWhile
-\end{algorithmic}
+\caption{Generazione del keystream}
+$i = 0$\;
+$j = 0$\;
+\While{true}{
+    $i = (i + 1) \bmod 256$\;
+    $j = (j + S[i]) \bmod 256$\;
+    $\text{swap}(S[i], S[j])$\;
+    $t = (S[i] + S[j]) \bmod 256$\;
+    \textbf{output} $S[t]$\;
+}
 \end{algorithm}
   
 \nt{A ogni ciclo, continua a scambiare due byte all'interno dell'array ed estrae un valore pseudo-casuale in uscita}
