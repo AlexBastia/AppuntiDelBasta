@@ -373,6 +373,46 @@ L'algebra di gruppo $K[G]$ non è solo l'ambiente in cui vivono gli "scalari" de
     \]
   \item Usando il Teorema Cinese del Resto, decomporre per $ K = \mathbb{R} $ e $ K = \mathbb{C} $
   \end{enumerate}
+
+  Sia $G = \langle z \mid z^4 = 1 \rangle = \{1, z, z^2, z^3\}$ il gruppo ciclico di ordine 4.\\
+
+\textbf{1. Isomorfismo $K[G] \cong K[X]/(x^4 - 1)$}
+
+Per dimostrare l'isomorfismo richiesto, utilizziamo il \textbf{Teorema Fondamentale degli Omomorfismi di Anelli}.
+
+Definiamo l'applicazione $\phi: K[X] \to K[G]$ come l'unico omomorfismo di $K$-algebre che estende la mappa $X \mapsto z$. In termini espliciti, per ogni polinomio $P(X) = \sum_{i=0}^n a_i X^i \in K[X]$:
+\[ \phi(P(X)) = \sum_{i=0}^n a_i z^i \]
+Verifichiamo le proprietà necessarie:
+\begin{itemize}
+    \item \textbf{Suriettività}: Per definizione di anello di gruppo, ogni elemento di $K[G]$ è una combinazione lineare finita di elementi di $G$. Poiché $G = \{1, z, z^2, z^3\}$, un generico elemento di $K[G]$ è della forma $a_0 + a_1 z + a_2 z^2 + a_3 z^3$, che è esattamente l'immagine del polinomio $P(X) = a_0 + a_1 X + a_2 X^2 + a_3 X^3$. Quindi $\text{im}(\phi) = K[G]$.
+    \item \textbf{Nucleo}: Un polinomio $P(X)$ appartiene a $\ker(\phi)$ se e solo se $P(z) = 0$. Sappiamo che $z^4 = 1$ nel gruppo $G$, quindi $z^4 - 1 = 0$ in $K[G]$. Ciò implica che il polinomio $x^4 - 1$ appartiene al nucleo, ovvero $(x^4 - 1) \subseteq \ker(\phi)$. 
+    Poiché gli elementi $\{1, z, z^2, z^3\}$ sono linearmente indipendenti su $K$ (formano una base di $K[G]$), nessun polinomio di grado inferiore a 4 può annullarsi in $z$ (se non il polinomio nullo). Pertanto, il nucleo è esattamente l'ideale generato dal polinomio minimo di $z$, ovvero $\ker(\phi) = (x^4 - 1)$.
+\end{itemize}
+Per il Teorema Fondamentale degli Omomorfismi:
+\[ K[X] / \ker(\phi) \cong \text{im}(\phi) \implies K[X] / (x^4 - 1) \cong K[G] \]
+
+\textbf{2. Decomposizione tramite il Teorema Cinese del Resto}
+
+Sfruttando l'isomorfismo precedente, studiamo la decomposizione di $K[X]/(x^4 - 1)$ per i casi $K = \mathbb{R}$ e $K = \mathbb{C}$. Il polinomio $x^4 - 1$ si scompone come $(x^2 - 1)(x^2 + 1) = (x - 1)(x + 1)(x^2 + 1)$.\\
+
+\textbf{Caso $K = \mathbb{C}$}\\
+In $\mathbb{C}[X]$, il polinomio $x^2 + 1$ è ulteriormente scomponibile in $(x - i)(x + i)$. Quindi:
+\[ x^4 - 1 = (x - 1)(x + 1)(x - i)(x + i) \]
+I fattori sono polinomi di primo grado distinti, quindi sono a due a due coprimi. Per il Teorema Cinese del Resto:
+\begin{align*}
+\mathbb{C}[G] \cong \frac{\mathbb{C}[X]}{(x - 1) \cdot (x + 1) \cdot (x - i) \cdot (x + i)} &\cong \frac{\mathbb{C}[X]}{(x - 1)} \times \frac{\mathbb{C}[X]}{(x + 1)} \times \frac{\mathbb{C}[X]}{(x - i)} \times \frac{\mathbb{C}[X]}{(x + i)} \\
+&\cong \mathbb{C} \times \mathbb{C} \times \mathbb{C} \times \mathbb{C} \cong \mathbb{C}^4
+\end{align*}\\
+
+\textbf{Caso $K = \mathbb{R}$}\\
+In $\mathbb{R}[X]$, il polinomio $x^2 + 1$ è irriducibile. La scomposizione in fattori coprimi è:
+\[ x^4 - 1 = (x - 1)(x + 1)(x^2 + 1) \]
+Applicando il Teorema Cinese del Resto:
+\begin{align*}
+\mathbb{R}[G] \cong \frac{\mathbb{R}[X]}{(x - 1) \cdot (x + 1) \cdot (x^2 + 1)} &\cong \frac{\mathbb{R}[X]}{(x - 1)} \times \frac{\mathbb{R}[X]}{(x + 1)} \times \frac{\mathbb{R}[X]}{(x^2 + 1)} \\
+&\cong \mathbb{R} \times \mathbb{R} \times \mathbb{C}
+\end{align*}
+Dove abbiamo usato il fatto che $\mathbb{R}[X]/(x^2 + 1) \cong \mathbb{C}$.
 }
 
 \section{Secondo approccio al Lemma del Complemento}
