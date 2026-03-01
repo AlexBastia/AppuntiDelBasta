@@ -326,7 +326,6 @@ E' il modello di calcolo piu' flessibile che abbiamo a disposizione. Ma abbiamo 
   Quindi e' $ O(n^2) $.
 }
 
-\section{Macchine di Turing Multinastro}
 \subsection{Esercizi}
 \ex{}{
 \begin{center}
@@ -348,4 +347,87 @@ E' il modello di calcolo piu' flessibile che abbiamo a disposizione. Ma abbiamo 
   \includegraphics[width=0.5\textwidth]{img/2026-02-25-15-41-37.png}
 \end{center}
 }
+
+\subsection{Macchine Non Deterministiche}
+In verita' adesso introduciamo un altro tipo di macchina crazy che ci servira', vediamo un esempio:
+\ex{}{
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2026-02-27-15-17-51.png}
+  \end{center}
+  Notiamo che e' una macchina particolare perche' la sua funzione di transizione specifica un insieme di possibili passi data una configurazione.
+}
+
+\dfn{Macchina Non-deterministica}{
+  $ N $ e' una macchina non-deterministica se e':
+  \[
+  N = \langle \Sigma, \Gamma, b\, Q, q_0, F, \delta \rangle
+  \]
+  dove $ \delta $ cambia rispetto alla classica macchina:
+  \[
+    \delta: Q \times \Gamma \to 2^{Q\times\Gamma\times \{\gets, \to\}}
+  \]
+}
+\nt{
+  Le macchine deterministiche sono un sottoinsieme degenere delle macchine non deterministiche dove l'immagine e' formata solo da insiemi di cardinalita' 1.
+}
+
+\ex{}{
+  Supponiamo di voler vedere come funziona la macchina di prima su un input $ 01 $:
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2026-02-27-15-37-02.png}
+  \end{center}
+  Ma accetta o rifuita?
+}
+Supponiamo di avere una bella MdT non-deterministica, cosa darebbe in output? Questa e' una domanda a trabocchetto perche' in verita' non potrebbe esistere (le macchine quantistiche sono meno potenti). Come vogliamo definire se una stringa e' accettata quindi?
+
+Ci possiamo studiare l'\textit{albero di computazione}, che usa le configurazioni (che hanno significato analogo a quelle deterministiche) con le stesse definizioni di stato iniziale, finale e accettante, pero' cambiano i legal succesors.
+
+Quindi i nodi sono tutte le configurazioni che una macchina non deterministica puo' provare processando la stringa $ w $.
+La radice e' la config iniziale, e abbiamo un arco fra configurazioni $ a \to b $ se la config $ b $ e' legal successor della config $ a $.
+Quindi la computazione e' un albero e non una lista.
+
+La stringa $ w $ in input viene accettata quando nell'albero di computazione esiste almeno un percorso dalla radice a uno stato accettante.
+
+Ma sta roba e' capace di riconoscere linguaggi che le macchine deterministiche non sono in grado di descrivere? 
+
+\mprop{}{
+  Una macchina di turing non deterministica ha lo stesso potere espressivo di quelle deterministiche.
+}
+\pf{}{
+  La macchina non determinista $ N $ puo' essere ricondotta a una determinista $ M $
+  \[
+    N \longrightarrow M\ \mathcal{L}(N) = \mathcal{L}(M)
+  \]
+
+  Immaginiamo che $ N $ sia mononastro e $ M $ binastro.
+
+
+  Stiamo esplorando l'albero in BFS dato che, se ci fosse una computazione infinita nell'albero e lo esploriamo in DFS, e' possibile che la macchina deterministica si "blocchi" a esplorare il ramo infinito quando forse puo' esserci un'altro ramo che in realta' e' accettante.
+  
+}
+
+Ma questa simulazione quanto costa? 
+
+Supponiamo che il numero massimo di figli nell'albero di computazione abbia al massimo $ c $ figli, allora in numero di nodi totali di un albero di altezza $ m $ e'
+\[
+  O(e^m)
+\]
+Quindi anche il costo per simulare la BFS di questo albero sara' esponenziale. Ma in realta' non siamo sicuri che questo sia il limite, e non siamo neanche stati in grado di dimostrare che questa cosa non e' possibile. P vs NP e' incentrata proprio su questa questione 
+
+Ipotesi di Church-Turing:
+
+Tutto cio' che e' calcolabile e' calcolabile da una macchina di Turing
+
+E' self referential, non abbiamo una definizione di calcolabile, semplicemente non abbiamo sviluppato altri formalismi di calcolo con potere espressivo piu' alto. Quindi appunto non e' un teorema
+
+Introduciamo le prime due classi di calcolabilita':
+\begin{itemize}
+  \item \textbf{RE}: ci sono tutti i linguaggi semi-decidibili, ovvero per i quali esiste una MdT che accetta (non decide) il linguaggio (potrebbe non terminare).
+\item \textbf{R}: inclusa in RE, classe dei problemi di decisione ricorsivi (linguaggi ricorsivi), ovvero per i quali esiste una MdT  che quindi da' garanzia di risposta. Sono quindi linguaggi decidibili.
+\end{itemize}
+
+\dfn{Classe}{
+  Semplicemente un insieme di linguaggi.
+}
+
 % \end{document}
