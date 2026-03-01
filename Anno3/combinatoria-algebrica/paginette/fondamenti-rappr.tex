@@ -241,12 +241,447 @@ Le seguenti condizioni sono equivalenti:
 }
 
 \pf{Dimostrazione}{
-$(2) \Rightarrow (1)$: l'inclusione $G \hookrightarrow K[G]$ (ogni $g$ è un elemento di base) restringe l'azione di $K[G]$ su $V$ a un'azione di $G$ per isomorfismi lineari, cioè fornisce $\rho: G \to \mathrm{GL}(V)$.
+$(2) \Rightarrow (1)$: 
+Sia $ V $ un $ K[G] $-modulo sinistro. Abbiamo quindi l'operazione:
+\[
+  \cdot: K[G] \times V \to V
+\]
+che rispetta certe proprieta'. Dato che $\forall g \in G. g \in K[G]$, possiamo definire per ogni elemento di $ G $ una funzione
+\begin{align*}
+  T_g: V &\to V\\
+  v &\to g \cdot v 
+\end{align*}
+che quindi utilizza l'operazione definita sopra. Possiamo dimostrare che $ \forall g. T_g $ e' un'\textit{applicazione lineare invertibile}:
+\begin{itemize}
+\item $ K $-Linearita': usando le proprieta' dell'operazione del modulo possiamo dimostrare che
+  \begin{itemize}
+  \item $ \forall g \in G, \forall v,u \in V $ 
+    \begin{align*}
+      T_g(v+u) &= g \cdot (v+u)\\
+      &= g\cdot v + g \cdot u \\
+      &= T_g(v) + T_g(u)
+    \end{align*}
+  \item $ \forall g \in G, \forall v \in V, \forall k \in K $
+    \begin{align*}
+      T_g(kv) &= g \cdot ((ke) \cdot v) \\
+      &= (g(ke)) \cdot v \\
+      &= (kg) \cdot v \\
+      &= k(g \cdot v) \\
+      &= kT_g(v)
+    \end{align*}
+      dove $ e $ e' l'unita' di $ K[G] $
+  \end{itemize}
+\item Invertibilita': dimostriamo che $ \forall g \in G. T_g^{-1} $ e' l'applicazione lineare inversa di $ T_g $:
+  \begin{align*}
+    T_{g^{-1}}(T_g(u)) &= g^{-1} \cdot (g \cdot u) \\
+    &= (g^{-1}g) \cdot u \\
+    &= e \cdot u = u\\
+  \end{align*}
+\end{itemize}
 
-$(1) \Rightarrow (2)$: si estende l'azione per $K$-linearità:
-
-$$\left(\sum_{g \in G} a_g \cdot g\right) \cdot v := \sum_{g \in G} a_g \cdot \rho(g)(v)$$
-
-e si verifica che questo soddisfa gli assiomi di modulo.
+$(1) \Rightarrow (2)$: Sia $ V $ una rappresentazione di $ G $, allora $ \exists \rho: G \to GL(V) $ omomorfismo. Vogliamo mostrare che $ V $ ha anche struttura di $ K[G] $-modulo sx, ovvero che $ \exists \cdot: K[G] \times V \to V $ con le proprieta' giuste. Possiamo definire questo prodotto come:
+\[
+  \left(\sum_{g \in G}a_g g\right) \cdot v \coloneq \sum_{g \in G} a_g \rho(g)(v)
+\]
+Si puo' dimostrare che l'operazione cosi' definita soddisfa tutti gli assiomi di modulo (lo puo' dimostrare la Marta Matrici se ne ha voglia), quindi $ V $ e' un $ K[G] $-modulo.
 }
+
+\nt{
+  Una notazione un po' crazy che ha usato il prof è anche questa:
+  \[
+    K[G] = \left\{\sum_{g \in G} a_g \cdot e_g \;\bigg|\; a_g \in K\right\} 
+  \]
+  Dove $\{e_g\}_{g \in G}$ è la base formale indicizzata dagli elementi di $G$, ovvero $e_g = (0,\ldots,1,\ldots,0)$ con $1$ in posizione $g$. In questo caso $K[G]$ è un uno spazio vettoriale su $K$ con dimensione $|G|$, ed è anello esresso per bilinearità della moltiplicazione in $G$:
+  \[
+    e_g \cdot e_h =  e_{gh} \quad \forall g,h \in G
+  \]
+}
+
+\ex{}{
+  Sia $G= S_3$. Sia $v = 5e_{(12)}$ e $u=2e_{id}-3e_{(23)}$ in $K[S_3]$. Si ha:
+  \[
+    v \cdot u = (5e_{(12)}) \cdot (2e_{id}-3e_{(23)}) = 10e_{(12)\cdot id}-15e_{(12)\cdot (23)}= 12e_{(12)}-15e_{(132)}
+  \]
+}
+
+\subsection{Rappresentazione Regolare}
+
+L'algebra di gruppo $K[G]$ non è solo l'ambiente in cui vivono gli "scalari" della teoria, ma può essere essa stessa vista come uno spazio vettoriale su cui il gruppo agisce.
+
+\dfn{Azione regolare a sinistra}{
+    Si definisce \textbf{azione regolare a sinistra} di $G$ su $K[G]$ l'applicazione che associa a ogni coppia $(h, e_g)$ l'elemento della base corrispondente al prodotto nel gruppo:
+    $$ \cdot : G \times K[G] \longrightarrow K[G] $$
+    $$ h \cdot e_g \coloneqq e_{hg} \quad \forall h, g \in G $$
+    Per estensione lineare, l'azione di un elemento $h \in G$ su un generico elemento $x = \sum_{g \in G} a_g e_g \in K[G]$ è definita come:
+    $$ h \cdot \left( \sum_{g \in G} a_g e_g \right) \coloneqq \sum_{g \in G} a_g e_{hg} $$
+}
+
+\thm{Esistenza della rappresentazione regolare}{
+    L'azione regolare a sinistra definisce una rappresentazione lineare di $G$ sullo spazio vettoriale $V = K[G]$. Esiste cioè un omomorfismo di gruppi:
+    $$ \rho_{reg} : G \longrightarrow \mathrm{GL}(K[G]) $$
+    che associa a ogni $g \in G$ un operatore lineare invertibile $\rho_{reg}(g)$. Tale rappresentazione è detta \textbf{rappresentazione regolare} di $G$.
+}
+
+\nt{
+  A quanto pare si è deciso in via del tutto arbitraria che
+  \[
+    \rho_{reg}(g)h = e_{gh}
+  \]
+  Secondo me intendeva:
+  \[
+    \rho_{reg}(g)e_h = e_{gh}
+  \]
+  che ha piu' senso, in quanto la rappresentazione $ \rho_{reg} $ e' l'applicazione parziale dell'azione regolare a sinistra definita sopra:
+  \[
+    \rho_{reg}(g) \coloneq g \cdot \alpha
+  \]
+  dove $ \alpha $ e' un elemento fissato di $ K[G] $ (in teoria penso che esista un $ \rho_{reg} $ per ogni elemento $ \alpha \in K[G] $).
+  \\
+
+  Alla fine usiamo in modo interscambiabile $ h $ e $ e_h $ per rappresentare una base di $ K[G] $ quindi ha senso.
+}
+
+\pf{Dimostrazione}{
+    Dobbiamo verificare che $\rho_{reg}$ soddisfi le condizioni di omomorfismo verso il gruppo degli operatori lineari invertibili:
+
+    \begin{enumerate}
+        \item \textbf{Linearità ed Invertibilità}: Per ogni $g \in G$, l'operatore $\rho_{reg}(g)$ permuta gli elementi della base $\{e_h\}_{h \in G}$ (poiché la moltiplicazione per $g$ a sinistra è una biiezione del gruppo in sé). Un operatore che permuta una base si estende univocamente a un isomorfismo lineare, dunque $\rho_{reg}(g) \in \mathrm{GL}(K[G])$.
+        
+        \item \textbf{Conservazione dell'identità}: Sia $1_G$ l'elemento neutro di $G$. Per ogni generatore $e_g$:
+        $$ \rho_{reg}(1_G) e_g = e_{1_G \cdot g} = e_g $$
+        Poiché l'operatore coincide con l'identità su tutti i vettori della base, si ha $\rho_{reg}(1_G) = \mathrm{id}_{K[G]}$.
+
+        \item \textbf{Proprietà di omomorfismo}: Siano $h_1, h_2 \in G$. Verifichiamo che $\rho_{reg}(h_1 h_2) = \rho_{reg}(h_1) \circ \rho_{reg}(h_2)$ applicandoli a un generico $e_g$:
+        \begin{itemize}
+            \item Applicazione composta: $\rho_{reg}(h_1) \left( \rho_{reg}(h_2) e_g \right) = \rho_{reg}(h_1) e_{h_2 g} = e_{h_1(h_2 g)}$
+            \item Applicazione diretta: $\rho_{reg}(h_1 h_2) e_g = e_{(h_1 h_2)g}$
+        \end{itemize}
+        Per l'associatività della legge di gruppo in $G$, si ha $h_1(h_2 g) = (h_1 h_2)g$, da cui l'uguaglianza dei vettori immagine. Per linearità, l'uguaglianza si estende a tutto lo spazio.
+    \end{enumerate}
+}
+
+\nt{
+    La rappresentazione regolare ha dimensione pari all'ordine del gruppo, $\dim(K[G]) = |G|$. In termini matriciali, ogni $\rho_{reg}(g)$ è rappresentato da una matrice di permutazione di taglia $|G| \times |G|$. Come vedremo, questa rappresentazione è fondamentale perché contiene ogni rappresentazione irriducibile di $G$ con molteplicità pari alla sua dimensione.
+}
+
+\ex{}{
+  Sia $ G $ il gruppo ciclico di ordine 4 $ \langle z | z^4 = 1 \rangle $:
+  \begin{enumerate}
+  \item Usando il Teorema Fondamentale degli Omomorfismi di Anelli, dimostrare che
+    \[
+      K[G] \cong K[X]/(x^4 - 1)
+    \]
+  \item Usando il Teorema Cinese del Resto, decomporre per $ K = \mathbb{R} $ e $ K = \mathbb{C} $
+  \end{enumerate}
+
+  Sia $G = \langle z \mid z^4 = 1 \rangle = \{1, z, z^2, z^3\}$ il gruppo ciclico di ordine 4.\\
+
+\textbf{1. Isomorfismo $K[G] \cong K[X]/(x^4 - 1)$}
+
+Per dimostrare l'isomorfismo richiesto, utilizziamo il \textbf{Teorema Fondamentale degli Omomorfismi di Anelli}.
+
+Definiamo l'applicazione $\phi: K[X] \to K[G]$ come l'unico omomorfismo di $K$-algebre che estende la mappa $X \mapsto z$. In termini espliciti, per ogni polinomio $P(X) = \sum_{i=0}^n a_i X^i \in K[X]$:
+\[ \phi(P(X)) = \sum_{i=0}^n a_i z^i \]
+Verifichiamo le proprietà necessarie:
+\begin{itemize}
+    \item \textbf{Suriettività}: Per definizione di anello di gruppo, ogni elemento di $K[G]$ è una combinazione lineare finita di elementi di $G$. Poiché $G = \{1, z, z^2, z^3\}$, un generico elemento di $K[G]$ è della forma $a_0 + a_1 z + a_2 z^2 + a_3 z^3$, che è esattamente l'immagine del polinomio $P(X) = a_0 + a_1 X + a_2 X^2 + a_3 X^3$. Quindi $\text{im}(\phi) = K[G]$.
+    \item \textbf{Nucleo}: Un polinomio $P(X)$ appartiene a $\ker(\phi)$ se e solo se $P(z) = 0$. Sappiamo che $z^4 = 1$ nel gruppo $G$, quindi $z^4 - 1 = 0$ in $K[G]$. Ciò implica che il polinomio $x^4 - 1$ appartiene al nucleo, ovvero $(x^4 - 1) \subseteq \ker(\phi)$. 
+    Poiché gli elementi $\{1, z, z^2, z^3\}$ sono linearmente indipendenti su $K$ (formano una base di $K[G]$), nessun polinomio di grado inferiore a 4 può annullarsi in $z$ (se non il polinomio nullo). Pertanto, il nucleo è esattamente l'ideale generato dal polinomio minimo di $z$, ovvero $\ker(\phi) = (x^4 - 1)$.
+\end{itemize}
+Per il Teorema Fondamentale degli Omomorfismi:
+\[ K[X] / \ker(\phi) \cong \text{im}(\phi) \implies K[X] / (x^4 - 1) \cong K[G] \]
+
+\textbf{2. Decomposizione tramite il Teorema Cinese del Resto}
+
+Sfruttando l'isomorfismo precedente, studiamo la decomposizione di $K[X]/(x^4 - 1)$ per i casi $K = \mathbb{R}$ e $K = \mathbb{C}$. Il polinomio $x^4 - 1$ si scompone come $(x^2 - 1)(x^2 + 1) = (x - 1)(x + 1)(x^2 + 1)$.\\
+
+\textbf{Caso $K = \mathbb{C}$}\\
+In $\mathbb{C}[X]$, il polinomio $x^2 + 1$ è ulteriormente scomponibile in $(x - i)(x + i)$. Quindi:
+\[ x^4 - 1 = (x - 1)(x + 1)(x - i)(x + i) \]
+I fattori sono polinomi di primo grado distinti, quindi sono a due a due coprimi. Per il Teorema Cinese del Resto:
+\begin{align*}
+\mathbb{C}[G] \cong \frac{\mathbb{C}[X]}{(x - 1) \cdot (x + 1) \cdot (x - i) \cdot (x + i)} &\cong \frac{\mathbb{C}[X]}{(x - 1)} \times \frac{\mathbb{C}[X]}{(x + 1)} \times \frac{\mathbb{C}[X]}{(x - i)} \times \frac{\mathbb{C}[X]}{(x + i)} \\
+&\cong \mathbb{C} \times \mathbb{C} \times \mathbb{C} \times \mathbb{C} \cong \mathbb{C}^4
+\end{align*}\\
+
+\textbf{Caso $K = \mathbb{R}$}\\
+In $\mathbb{R}[X]$, il polinomio $x^2 + 1$ è irriducibile. La scomposizione in fattori coprimi è:
+\[ x^4 - 1 = (x - 1)(x + 1)(x^2 + 1) \]
+Applicando il Teorema Cinese del Resto:
+\begin{align*}
+\mathbb{R}[G] \cong \frac{\mathbb{R}[X]}{(x - 1) \cdot (x + 1) \cdot (x^2 + 1)} &\cong \frac{\mathbb{R}[X]}{(x - 1)} \times \frac{\mathbb{R}[X]}{(x + 1)} \times \frac{\mathbb{R}[X]}{(x^2 + 1)} \\
+&\cong \mathbb{R} \times \mathbb{R} \times \mathbb{C}
+\end{align*}
+Dove abbiamo usato il fatto che $\mathbb{R}[X]/(x^2 + 1) \cong \mathbb{C}$.
+}
+
+\section{Secondo approccio al Lemma del Complemento}
+
+\subsection{Morfismi di Rappresentazioni}
+
+Si guardi tale definizione
+
+\dfn{Morifsmo di rappresentazioni}{
+  Siano $(V_1,\rho_1)$ e $(V_2,\rho_2)$ due rappresentazioni di $G$ su $K$. Un \textit{morifsmo di rappresentazioni} (o \textit{morfismo di $K[G]$-moduli}) è una applicazione $f: V_1 \to V_2$ tale che:
+  \[
+    f(\rho_1(g)v) = \rho_2(g)f(v) \quad \forall g \in G, \forall v \in V_1
+  \]
+}
+
+\nt{
+  Questa condizione equivale a dire
+  \[
+    f \circ \rho_1(g) = \rho_2(g) \circ f
+  \]
+  che possiamo riscrivere come
+  \[
+    f = \rho_2(g) \circ f \circ \rho_1(g)^{-1}
+  \]
+  componendo a dx $ \rho_1(g)^{-1} $. Quindi, nel caso in cui $ V_1 = V_2 = V $ (come nel Lemma di Maschke), $ f $ e' un morfismo di rappresentazioni sse e' $ G $-invariante.
+}
+
+\nt{
+  Si noti il seguente diagrmmino di Luca Doci:
+  \[
+  \begin{array}{ccc}
+    V_1 & \xrightarrow{f} & V_2 \\
+    \rho_1(g)\downarrow & & \downarrow \rho_2(g) \\
+    V_1 & \xrightarrow{f} & V_2 
+  \end{array}
+\]
+il seguente il seguente diagramma commuta per ogni $g \in G$
+}
+
+Un morfismo biettivo di rappresentazioni si chiama isomorfismo di rappresentazioni
+
+\mprop{Esercizio 3 -Nucleo e Immagine di un Morfismo sono Sottorappresentazioni}{
+  Sia $f: V_1 \to V_2$ un morfismo di rappresentazioni di $G$. Allora:
+  \begin{enumerate}
+    \item $\ker(f)$ è una sottorappresentazione di $V_1$
+    \item $\mathrm{im}(f)$ è una sottorappresentazione di $V_2$
+  \end{enumerate}
+}
+\pf{Dimostrazione lasciata al giolapalma}{
+  \begin{enumerate}
+    \item Occorre mostrare che $\ker(f)$ è $G-stabile$, ovvero che per ogni $g \in G$ e $v \in \ker(f)$, si ha $\rho_1(g)v \in \ker(f)$.
+    
+    Sia quindi $v\in \ker(f)$, ovvero $f(v)=0$. Allora per ogni $g \in G$ si ha:
+    \[
+      f(\rho_1(g)v) = \rho_2(g)f(v) = \rho_2(g)0 = 0
+    \]
+    Quindi $ \rho_1(g)v \in \ker(f) $ 
+    
+    \item Occorre mostrare che $ \mathrm{im}(f) $ e' $ G-stabile $, ovvero che per ogni $ g \in G $ e $ v \in \mathrm{im}(f) $, si ha $ \rho_2(g)v \in \mathrm{im}(f) $.
+    
+    Sia quindi $ v \in \mathrm{im}(f) $, ovvero $ v = f(u) $ per qualche $ u \in V_1 $. Allora per ogni $ g \in G $ si ha:
+    \[
+      \rho_2(g)v = \rho_2(g)f(u) = f(\rho_1(g)u) \in \mathrm{im}(f)
+    \]
+  \end{enumerate}
+  Luca moci skills
+}
+\subsection{Lemma del Complemento con i proiettori}
+\dfn{Proiettore su un sottospazio}{
+  Sia $V$ uno spazio vettoriale e $U \subseteq V$ un sottospazio. Un operatore $p \in \mathrm{End}(V)$ si dice \textit{proiettore su $U$} se:
+  \begin{enumerate}
+    \item $p \circ p = p$ (idempotenza)
+    \item $\mathrm{im}(p) = U$ (l'immagine coincide con il sottospazio)
+    \item $p|_U = id_U$, ovvero $p(u) = u$ per ogni $u \in U$
+  \end{enumerate}
+}
+
+Adesso andremo a definire un proiettore $G$-invariante con il trucco della media vista in precedenza
+TODO: ma vogliamo un proiettore G-invariante o un morfismo di rappresentazioni? O sono la stessa cosa?
+\dfn{Proiettore $G$-invariante $P^G$}{
+  Sia $V$ una rappresentazione di $G$ e $U \subseteq V$ una sottorappresentazione. Si dice \textit{proeittore $G$-invariante} la seguente funzione:
+  \[
+    p^G:V \to U \quad p^G(v) = \frac{1}{|G|} \sum_{g \in G} \rho(g)\circ p \circ \rho(g)^{-1}(v)
+  \]
+  dove $p$ e' un proiettore su $U$.
+}
+
+\mprop{Verifica del proiettore $G$-invariante}{
+  Il proiettore $p^G$ appena definito è ben definito
+}
+\pf{Dimostrazione}{
+  Dobbiamo verificare che $ p^G $ e' effettivamente un proiettore e che sia davvero $ G $-invariante:
+  \begin{itemize}
+    \item Verifica che $p^G$ è ancora un proiettore su $U$: dobbiamo verificare le tre condizioni per essere un proiettore:
+      \begin{enumerate}
+      \item Immagine: Poiché $U$ è $G$-stabile e $\mathrm{Im}(p) = U$, ogni termine $\rho(g) \circ p \circ \rho(g)^{-1}$ manda $V$ in $U$. Quindi $\mathrm{Im}(p^G) \subseteq U$. 
+      \item Restrizione su $ U $: Se $u \in U$ si ha che $\forall g \in G.\ \rho(g)^{-1}u \in U$ ($U$ è stabile), quindi $p(\rho(g)^{-1}u) = \rho(g)^{-1}u$, e quindi $\rho(g)\,p\,\rho(g)^{-1} u = \rho(g)\rho(g)^{-1}u = u$. Facendo la media: $p^G(u) = u$.
+      \end{enumerate}
+    \item Verifica che $p^G$ è $G$-invariante: Dobbiamo mostrare che per ogni $h \in G$:
+
+$$\rho(h) \circ p^G = p^G \circ \rho(h)$$
+
+ovvero equivalentemente $\rho(h) \circ p^G \circ \rho(h)^{-1} = p^G$. Calcoliamo:
+
+$$\rho(h) \circ p^G \circ \rho(h)^{-1} = \frac{1}{|G|} \sum_{g \in G} \rho(h) \circ \rho(g) \circ p \circ \rho(g)^{-1} \circ \rho(h)^{-1} = \frac{1}{|G|} \sum_{g \in G} \rho(hg) \circ p \circ \rho(hg)^{-1}.$$
+
+      dove possiamo portare all'interno della sommatoria $ \rho(h) $ grazie alla linearita' della composizione (distributiva), e per la proprieta' degli omomorfismi $ \rho(hg)^{-1}=\rho(g^{-1}h^{-1})=\rho(g)^{-1} \circ \rho(h)^{-1} $ (gli operatori si scambiano).\\
+
+Poiché $g \mapsto hg$ è una biiezione di $G$, la somma sull'indice $hg$ è uguale alla somma sull'indice $g$, e si ottiene esattamente $p^G$.
+  \end{itemize}
+}
+
+Adesso si viene al lemma vero e proprio
+
+\mlenma{Secondo approccio al Lemma di Maschke}{
+Sia $(V, \rho)$ una rappresentazione di un gruppo finito $G$ su un campo $K$ tale che $\mathrm{char}(K) \nmid |G|$. Sia $U \subseteq V$ una sottorappresentazione e sia $p^G$ l'operatore di proiezione $G$-invariante definito prima. Allora:
+\begin{enumerate}
+    \item $\ker(p^G)$ è una sottorappresentazione di $V$;
+    \item $V = U \oplus \ker(p^G)$.
+\end{enumerate}
+}
+\pf{Dimostrazione}{
+  Consideriamo la proiezione $ G $-invariante $ p^G: V \to U $.
+  \begin{enumerate}
+  \item Poiché $p^G$ è un morfismo di rappresentazioni (per i calcoli definiti nella nota), per la proposizione di prima $\ker(p^G)$ è una sottorappresentazione di $V$.
+  \item Poiché $p^G$ è un proiettore con $\mathrm{Im}(p^G) = U$, grazie alle proprieta' dei proiettori si ha la decomposizione:
+    $$V = U \oplus \ker(p^G)$$
+    e $W := \ker(p^G)$ è il complemento $G$-stabile cercato.
+  \end{enumerate}
+}
+
+Detto cio' possiamo tirare fuori un corollario molto utile
+\cor{}{
+  Sia $G$ un gruppo finito, $K$ un campo con $\mathrm{char}(K) = 0$ (o più in generale $\mathrm{char}(K) \nmid |G|$). Allora ogni rappresentazione $V$ di $G$ di dimensione finita è somma diretta di rappresentazioni irriducibili:
+
+$$V \cong V_1 \oplus V_2 \oplus \cdots \oplus V_k$$
+
+con ciascun $V_i$ irriducibile.
+}
+\pf{Dimostrazione}{
+  Per induzione su $n = \dim V$:
+  \begin{itemize}
+    \item \textbf{Caso base}: $n = 0$. La rappresentazione è ${0}$, somma diretta vuota.
+    \item \textbf{Passo induttivo}: Sia $n \geq 1$ e supponiamo il risultato vero per tutte le rappresentazioni di dimensione $< n$.
+      \begin{itemize}
+      \item Se $V$ è irriducibile, allora $V$ è già la decomposizione cercata (con un solo addendo).
+        \item Se $V$ è riducibile, allora esiste una sottorappresentazione propria $U \subsetneq V$ con $U \neq {0}$. Per il Lemma di Maschke (nella versione con il proiettore $G$-equivariante), esiste una sottorappresentazione $W \subsetneq V$ tale che
+          $$V = U \oplus W, \quad \dim(U) < n, \quad \dim(W) < n.$$
+          Per ipotesi induttiva, sia $U$ che $W$ si decompongono in somma diretta di irriducibili. Concatenando le decomposizioni:
+          $$V = U \oplus W = (U_1 \oplus \cdots \oplus U_r) \oplus (W_1 \oplus \cdots \oplus W_s).$$
+      \end{itemize}
+  \end{itemize}
+}
+
+\section{Lemma di Shur}
+Questo è uno dei risultati più potenti e usati di tutta la teoria delle rappresentazioni. Dice che tra rappresentazioni irriducibili, i morfismi sono pochissimi e molto rigidi.
+\mlenma{Shur}{
+  Sia $G$ un gruppo finito, $K = \mathbb{C}$ (campo algebricamente chiuso con $\mathrm{char}(K) = 0$). Siano $(V_1, \rho_1)$ e $(V_2, \rho_2)$ rappresentazioni irriducibili di $G$, e sia $f: V_1 \to V_2$ un morfismo di rappresentazioni. Allora:
+\begin{itemize}
+\item Se $V_1 \not\cong V_2$ (non sono isomorfe), allora $f = 0$ (l'applicazione nulla).
+  \item Se $V_1 = V_2 =: V$ (stesso spazio), allora $\exists, \lambda \in \mathbb{C}$ tale che $f = \lambda, \mathrm{Id}_V$ (omotetia).
+\end{itemize}
+
+In breve: tra irriducibili non isomorfe c'è solo il morfismo nullo; su una irriducibile ogni endomorfismo è uno scalare.
+}
+
+\pf{Dimostrazione}{
+  \textbf{Parte 1}. Supponiamo $f \neq 0$.
+
+Poiché $\ker f$ è una sottorappresentazione di $V_1$ (l'abbiamo dimostrato nella lezione precedente) e $V_1$ è irriducibile, $\ker f$ è o ${0}$ o $V_1$.
+
+Se $\ker f = V_1$ allora $f = 0$, contraddizione. Quindi $\ker f = {0}$, cioè $f$ è iniettiva.
+
+Analogamente, $\mathrm{Im} f$ è una sottorappresentazione di $V_2$, e $V_2$ è irriducibile, quindi $\mathrm{Im} f = {0}$ o $\mathrm{Im} f = V_2$.
+
+Ma $f \neq 0$ implica $\mathrm{Im} f \neq {0}$, quindi $\mathrm{Im} f = V_2$, cioè $f$ è suriettiva.
+
+Dunque $f$ è biettiva, ovvero è un isomorfismo di rappresentazioni, e $V_1 \cong V_2$. Contrappositivamente: se $V_1 \not\cong V_2$ allora $f = 0$.\\
+
+\textbf{Parte 2}. Sia $f: V \to V$ un endomorfismo di rappresentazioni con $V$ irriducibile.
+
+Siamo su $K = \mathbb{C}$, quindi $f$ ammette almeno un autovalore $\lambda \in \mathbb{C}$ (il polinomio caratteristico ha sempre radici complesse).
+
+Consideriamo $f - \lambda, \mathrm{Id}_V : V \to V$. Questo è anch'esso un morfismo di rappresentazioni (differenza di morfismi è un morfismo), e per costruzione $\ker(f - \lambda, \mathrm{Id}_V) \neq {0}$ (contiene gli autovettori di $\lambda$).
+
+Poiché $\ker(f - \lambda, \mathrm{Id}_V)$ è una sottorappresentazione di $V$ e $V$ è irriducibile, deve essere $\ker(f - \lambda, \mathrm{Id}_V) = V$, cioè $f - \lambda, \mathrm{Id}_V = 0$, ovvero:
+
+$$f = \lambda, \mathrm{Id}_V.$$
+
+Perché ci serve $K$ algebricamente chiuso? Per garantire l'esistenza dell'autovalore $\lambda$. Su $\mathbb{R}$ questo non è garantito: il polinomio caratteristico potrebbe non avere radici reali, e la parte 2 fallirebbe.
+}
+
+Da cui possiamo ricavare un corollario importante
+\cor{}{
+  Se $G$ è abeliano e $K = \mathbb{C}$, allora ogni rappresentazione irriducibile di $G$ ha dimensione 1.
+}
+\pf{Dimostrazione}{
+  Dimostrazione. Per ogni $h \in G$, la mappa $\rho(h): V \to V$ è un morfismo di rappresentazioni (perché $G$ è abeliano: $\rho(h)\rho(g) = \rho(hg) = \rho(gh) = \rho(g)\rho(h)$). Per Schur, $\rho(h) = \lambda_h, \mathrm{Id}_V$ per qualche $\lambda_h \in \mathbb{C}$. Quindi ogni sottospazio di $V$ è stabile sotto $G$. Ma $V$ è irriducibile, quindi non ha sottospazi propri, il che forza $\dim V = 1$.
+}
+
+\section{Caratteri}
+
+Abbiamo ora uno strumento potentissimo per \textbf{classificare} le rappresentazioni senza lavorare esplicitamente con le matrici: i \textbf{caratteri}.
+
+\dfn{Traccia}{
+Sia $V$ uno spazio vettoriale di dimensione finita e $f: V \to V$ un'applicazione lineare. In qualunque base di $V$, la matrice di $f$ è $A = (a_{ij})$. La traccia di $f$ è:
+
+$$\mathrm{tr}(f) := \sum_i a_{ii}$$
+
+cioè la somma degli elementi diagonali.
+}
+
+Le \textbf{proprieta' fondamentali} della traccia sono:
+\begin{enumerate}
+\item $\mathrm{tr}(\mathrm{Id}_V) = \dim V$ — è uno dei coefficienti del polinomio caratteristico.
+\item \textbf{Non dipende dalla base}: se $A$ e $B = P^{-1}AP$ sono la stessa mappa in basi diverse, allora $\mathrm{tr}(B) = \mathrm{tr}(P^{-1}AP) = \mathrm{tr}(A)$ (per ogni $A$ invertibile, $\mathrm{tr}(PQ) = \mathrm{tr}(QP)$).
+\item $\mathrm{tr}(f) = \sum_i \lambda_i$ dove $\lambda_i$ sono gli autovalori di $f$ contati con molteplicità (radici del polinomio caratteristico).
+\end{enumerate}
+La proprietà 2 è cruciale: la traccia è un \textbf{invariante} dell'operatore, indipendente dalla scelta della base.
+
+\dfn{Carattere}{
+  Sia $(V, \rho)$ una rappresentazione di $G$ su $\mathbb{C}$. Il carattere di $\rho$ è la funzione:
+
+$$\chi_\rho : G \longrightarrow \mathbb{C}, \qquad g \longmapsto \mathrm{tr}(\rho(g))$$
+}
+\subsection{Proprieta' dei Caratteri}
+Le proprieta' piu' interessanti dei caratteri sono:
+\begin{enumerate}
+\item $\chi_\rho(e) = \dim V$.
+\item $\chi_\rho$ è costante sulle classi di coniugio di $G$:
+  $$g' = hgh^{-1} \implies \chi_\rho(g') = \chi_\rho(g).$$
+    Una funzione costante sulle classi di coniugio si chiama funzione di classe. I caratteri sono dunque funzioni di classe — questo è fondamentale: non dobbiamo calcolare $\chi$ su tutti gli elementi del gruppo, basta una volta per ogni classe di coniugio.
+\item $\chi_\rho(g^{-1}) = \overline{\chi_\rho(g)}$ (il complesso coniugato), per $G$ finito.
+\end{enumerate}
+
+\nt{
+  Gli autovalori di $\rho(g)$ sono radici dell'unità (perché $g^n = e$ per qualche $n$, quindi $\rho(g)^n = I$), quindi hanno modulo 1, e gli autovalori di $\rho(g^{-1}) = \rho(g)^{-1}$ sono i loro inversi, che coincidono con i coniugati.
+}
+
+\pf{Dimostrazione delle proprieta'}{
+  Dimostriamo in ordine:
+  \begin{enumerate}
+  \item $\rho(e) = \mathrm{Id}_V$, e $\mathrm{tr}(\mathrm{Id}_V) = \dim V$.
+    \item $\chi_\rho(hgh^{-1}) = \mathrm{tr}(\rho(h)\rho(g)\rho(h)^{-1}) = \mathrm{tr}(\rho(g)) = \chi_\rho(g)$, usando ciclicità della traccia.
+  \end{enumerate}
+}
+
+\ex{Azione naturale di $ S_3 $ su $ \mathbb{C}^3 $}{
+  Sia $G = S_3$ con la rappresentazione naturale su $V = \mathbb{C}^3$ con base ${e_1, e_2, e_3}$:
+
+$$g \cdot (x_1, x_2, x_3) = (x_{g(1)}, x_{g(2)}, x_{g(3)})$$
+
+Le classi di coniugio di $S_3$ sono tre: ${e}$, le trasposizioni ${(12),(13),(23)}$, i 3-cicli ${(123),(132)}$.\\
+
+Calcolo di $\chi$ per ciascuna classe:
+\begin{itemize}
+\item $g = \mathrm{id}$: $\rho(e) = I_3$, quindi: $$\chi(e) = \mathrm{tr}(I_3) = 3$$
+  \item $g = (12)$: la matrice permuta le prime due coordinate, fissa la terza: $$\rho((12)) = \begin{pmatrix}0&1&0\\1&0&0\\0&0&1\end{pmatrix}, \qquad \chi((12)) = 0+0+1 = 1$$
+
+Lo stesso vale per tutte le trasposizioni: ciascuna fissa esattamente un indice, quindi la traccia è sempre 1.
+\item $g = (123)$: la ciclica $1\mapsto 2\mapsto 3\mapsto 1$, nessun punto fisso: $$\rho((123)) = \begin{pmatrix}0&0&1\\1&0&0\\0&1&0\end{pmatrix}, \qquad \chi((123)) = 0+0+0 = 0$$
+
+Lo stesso per $(132)$: nessun punto fisso, traccia 0.
+\end{itemize}
+\textbf{Regola generale}: per la rappresentazione di permutazione, $\chi(g) = $ numero di punti fissi di $g$.
+
+TODO: fai tavola
+
+I valori sono interi — non è un caso: vedremo che i caratteri di gruppi simmetrici sono sempre interi. I valori $3, 1, 0$ codificano interamente la struttura della rappresentazione. Nella prossima lezione vedremo come usarli per decomporre $V$ in irriducibili tramite le relazioni di ortogonalità tra caratteri.
+}
+
 % \end{document}
