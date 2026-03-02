@@ -400,8 +400,8 @@ In $\mathbb{C}[X]$, il polinomio $x^2 + 1$ è ulteriormente scomponibile in $(x 
 \[ x^4 - 1 = (x - 1)(x + 1)(x - i)(x + i) \]
 I fattori sono polinomi di primo grado distinti, quindi sono a due a due coprimi. Per il Teorema Cinese del Resto:
 \begin{align*}
-\mathbb{C}[G] \cong \frac{\mathbb{C}[X]}{(x - 1) \cdot (x + 1) \cdot (x - i) \cdot (x + i)} &\cong \frac{\mathbb{C}[X]}{(x - 1)} \oplus \frac{\mathbb{C}[X]}{(x + 1)} \oplus \frac{\mathbb{C}[X]}{(x - i)} \oplus \frac{\mathbb{C}[X]}{(x + i)} \\
-&\cong \mathbb{C} \oplus \mathbb{C} \oplus \mathbb{C} \oplus \mathbb{C} \cong \mathbb{C}^4
+\mathbb{C}[G] \cong \frac{\mathbb{C}[X]}{(x - 1) \cdot (x + 1) \cdot (x - i) \cdot (x + i)} &\cong \frac{\mathbb{C}[X]}{(x - 1)} \times \frac{\mathbb{C}[X]}{(x + 1)} \times \frac{\mathbb{C}[X]}{(x - i)} \times \frac{\mathbb{C}[X]}{(x + i)} \\
+&\cong \mathbb{C} \times \mathbb{C} \times \mathbb{C} \times \mathbb{C} \cong \mathbb{C}^4
 \end{align*}\\
 
 \textbf{Caso $K = \mathbb{R}$}\\
@@ -682,6 +682,12 @@ Lo stesso per $(132)$: nessun punto fisso, traccia 0.
 TODO: fai tavola
 
 I valori sono interi — non è un caso: vedremo che i caratteri di gruppi simmetrici sono sempre interi. I valori $3, 1, 0$ codificano interamente la struttura della rappresentazione. Nella prossima lezione vedremo come usarli per decomporre $V$ in irriducibili tramite le relazioni di ortogonalità tra caratteri.
+}
+\section{Richiami di algebra lineare}
+\mprop{}{
+  Dati due spazi vettroiale $U,V$ su \mathbb{K}, sappiamo costruire uno sp. vett. detto $V \oplus U$:
+
+  E $V \times U$ come le operzioni per coordinata. e se $\{v_i, i \in I\}$ e $\{v_j, j\in J\}$ sono le basi per $V, U$, una base di $U\oplus V$ è $\{v_i, \in I\{U\}u_j\}$
 }
 
 % \end{document}
