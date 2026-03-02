@@ -363,4 +363,55 @@ Come possiamo calcolare $ R_i = L_{i-1} + f_i(R_{i-1}) $ e $ L_{i} = R_{i-1} $, 
 Per fare la decription, basta applicare lo stesso circuito in ordine opposto, WOW!
 
 La lunghezza della chiave di DES in verita' e' composta da 8 byte, ma l'ottavo bit di ognuno viene usato come parity-check
+
+\subsection{Double DES}
+Definiamo una funzione $ 2E: K^2 \times M \to M $ come $ 2E(k_1,k_2,m) = E(k_1, E(k_2, m)) $, quindi la lunghezza della chiave viene raddoppiata $ 2*56 = 112 $.
+
+Per la decription applichiamo le chiavi in ordine inverso:
+\[
+  D(k_2, D(k_1, m))
+\]
+
+Ma c'e' un problema: dato $ m $ e $ c $, lo scopo e' di trovare $ (k_1,k_2) $ t.c.:
+\begin{itemize}
+  \item $ E(k_1, E(k_2,m)) $
+  \item $ E(k_2, m) = D(k_1,c) $ 
+\end{itemize}
+Che sono equivalenti. Questo ci da' l'apertura per un attacco a due parti:
+\begin{enumerate}
+  \item Creo una tablella che per ogni riga ha la tupla $ (k_i, E(k_i, m)) $ e la ordino per $ k $
+  \item Per ogni $ k $, testa se $ D(k,c) $ sta nella seconda colonna. Se c'e', allora
+    \[
+      E(k_i, m) = D(k,c) \implies (k_i,k) = (k_2,k_1)
+    \]
+\end{enumerate}
+Il costo computazionale e' di
+\[
+  2^{56}log(2^{56}) + 2^{56}log(2^{56}) < 2^{63} \ll 2^{112}
+\]
+Dato che dobbiamo costruire e ordinare la tabella, poi cercare all'interno della tabella. DA STUDIARE LA METTE SEMPRE STA ROBA IN ESAME!!!!
+
+\subsection{Triple DES}
+Stessa roba del double, abbiamo tre chiavi, pero' e' un po' diverso
+\[
+  3E(k_1,k_2,k_3,m) = E(k_1, D(k_2, E(k_3,m)))
+\]
+E' stra lento (3 operaizoni). Se $ k_1=k_2=k_3 $ ci troviamo nel caso di DES.
+
+Ci sta sempre il meet in the middle attack, quindi il costo e' di $ < 2^{118} $ (comunque non poco).
+
+\subsection{DESX}
+Definiamo
+\[
+  EX(k_1,k_2,k_3,m) = k_1 \oplus E(k_2, m \oplus k_3)
+\]
+Facile da attaccare in tempo $ 2^{120} $
+
+
+\subsection{Attacks on block ciphers}
+Differential e' difficile su DES, ma si puo' usare il linear cryptanalysis dato che e' una cifratura iterativa. o
+
+\subsection{AES}
+DES non e' troppo efficente
+
 %\end{document}
