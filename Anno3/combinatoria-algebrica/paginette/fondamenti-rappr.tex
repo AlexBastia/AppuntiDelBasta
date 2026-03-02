@@ -684,10 +684,139 @@ TODO: fai tavola
 I valori sono interi — non è un caso: vedremo che i caratteri di gruppi simmetrici sono sempre interi. I valori $3, 1, 0$ codificano interamente la struttura della rappresentazione. Nella prossima lezione vedremo come usarli per decomporre $V$ in irriducibili tramite le relazioni di ortogonalità tra caratteri.
 }
 \section{Richiami di algebra lineare}
-\mprop{}{
-  Dati due spazi vettroiale $U,V$ su \mathbb{K}, sappiamo costruire uno sp. vett. detto $V \oplus U$:
 
-  E $V \times U$ come le operzioni per coordinata. e se $\{v_i, i \in I\}$ e $\{v_j, j\in J\}$ sono le basi per $V, U$, una base di $U\oplus V$ è $\{v_i, \in I\{U\}u_j\}$
+Dati due spazi vettoriali $V$ e $U$ su $K$, conosciamo già come costruire la somma diretta $V \oplus U$. Vogliamo ora costruire un altro oggetto fondamentale: il prodotto tensoriale $V \otimes U$.
+
+Ripassino per informatici di somma diretta:
+\dfn{Somma diretta}{
+  Dati due spazi vettoriali $V$ e $U$ su $K$, la somma diretta $V \oplus U$ tale spazio vettoriale:
+  \[
+  V \oplus U := V \times U \text{ con operazioni per coordinate}
+  \]
+  Sia ${v_i}_{i\in I}$ e ${u_j}_{j\in J}$ due base di $V$ e $U$ rispettivamente, allora
+  \[
+  \{(v_i,0)\}_{i\in I}\cup\{(0,u_j)\}_{j\in J} \text{ è una base di } V \oplus U.
+  \]
 }
 
-% \end{document}
+\cor{}{
+  $V \oplus U$ ha dimensione $\dim V + \dim U$.
+}
+
+\subsection{Prodotto tensoriale}
+Nella somma diretta le due componenti "vivono separatamente". Il prodotto tensoriale serve invece a modellare le applicazioni bilineari: oggetti che dipendono linearmente da ciascuno dei due argomenti separatamente, ma non sono lineari nella coppia
+
+Si vuole infatti definire uno spazio $V \otimes U$ tale che dare un'applicazione lineare $V \otimes U \to W$ è equivalente a dare un'applicazione bilineare $V \times U \to W$
+
+\subsubsection{Costruzione}
+
+\dfn{Spazio vettoriale libero}{
+  Dati due spazi vettoriali $V$ e $U$ su $K$, si definisce spazio vettoriale libero $L(V, U)$ come l'insieme di tutte le funzioni $V \to U$ con operazioni per coordinate.
+  \[
+  L(V, U) := \{ f: V \to U \mid f \text{ è una funzione lineare} \}
+  \]
+}
+
+\cor{}{
+  Ogni elemento $\alpha \in L(V, U)$ può essere scritto in modo unico come una combinazione lineare formale finita:
+  $$\alpha = \sum_{i=1}^n c_i (v_i, u_i)$$
+  dove i coefficienti $c_i$ sono scalari e le coppie $(v_i, u_i)$ sono gli elementi della base
+}
+
+Adesso definiamo un sottospazio
+\dfn{}{
+  Sia $B \subseteq L(V, U)$ il sottospazio generato da tutte le relazioni di bilinearità, cioè da tutti gli elementi della forma:
+
+  $$
+  \begin{aligned}
+  &(a_1 v_1 + a_2 v_2,, u) - a_1(v_1, u) - a_2(v_2, u) \\
+  &(v,, b_1 u_1 + b_2 u_2) - b_1(v, u_1) - b_2(v, u_2)
+  \end{aligned}
+  $$
+per ogni $v,v_1,v_2 \in V$ e $u,u_1,u_2 \in U$ e $a_1,a_2,b_1,b_2 \in K$.
+}
+
+Possiamo quindi definire il prosotto tensoriale come:
+
+\dfn{Prodotto tensoriale}{
+  Il prodotto tensoriale di $V$ e $U$ è:
+
+  $$V \otimes U := L(V, U) / B$$
+}
+Si noti questo teorema bellissimo degli insiemi quozienti
+
+\thm{Struttura Vettoriale del Quoziente}{
+  Se $V$ è uno spazio vettoriale e $W$ è un suo sottospazio, la relazione $\xi \sim \zeta \iff \xi - \zeta \in W$ definisce uno spazio vettoriale quoziente $V/W$.
+  Le operazioni di somma e prodotto per scalare sono ben definite dalle relazioni:
+  \[
+  [v] + [u] = [v + u]
+  \]
+  \[
+  \lambda [v] = [\lambda v]
+  \]
+}
+\pf{
+  Sketch della dimostrazione
+}{
+    La dimostrazione della "buona definizione" consiste nel verificare che, se scegliamo rappresentanti diversi per la stessa classe (ovvero $v \sim v'$ e $u \sim u'$), il risultato della somma non cambia. Poiché $(v' + u') - (v + u) = (v' - v) + (u' - u)$, e sapendo che entrambi i termini a destra appartengono a $W$, la loro somma appartiene ancora a $W$. Pertanto $[v' + u'] = [v + u]$.
+}
+
+\subsection{Spazio Hom e Spazio Duale}
+
+\dfn{Sapzio di Hom}{
+  Dati $V, U$ spazi vettoriali su $K$, lo spazio delle applicazioni lineari da $V$ a $U$ è:
+
+  \begin{equation*}
+  \mathrm{Hom}_K(V, U) := \{f : V \to U \mid f \text{ lineare}\} \qquad \mathrm{Hom}_K(V,U):={f:V\to U, f\text{ lineare}}
+  \end{equation*}
+
+  con le ovvie operazioni puntali. $\mathrm{Hom}_K(V, U)$ è uno spazio vettoriale su $K$ di dimensione $\dim V \cdot \dim U$ (corrisponde alle matrici $(\dim U) \times (\dim V)$).
+}
+
+Dai cui discende 
+\dfn{Spazio Duale}{
+  Lo spazio duale di $V$ è:
+  $$V^* := \mathrm{Hom}_K(V, K)$$
+  cioè lo spazio delle forme lineari su $V$ (funzionali lineari a valori in $K$). Si ha $\dim V^* = \dim V$
+}
+
+
+\dfn{Isomorfismo canonico}{
+  Sia $V, U$ spazi vettoriali su $K$. Definiamo:
+  \[
+    \Psi:V^* \otimes U \to \mathrm{Hom}_K(V, U), \quad \varphi \otimes u \mapsto (v \mapsto \varphi(v) \cdot u)
+  \]
+}
+\pf{Dim}{
+  Lasciata al basta
+}
+
+\mprop{
+  Ben definizione dell'isomorfismo canonico
+}{
+  La funzione definita in precedenza e' ben definita quindi:
+  \[
+    V^* \otimes U \cong \mathrm{Hom}_K(V, U)
+  \]
+}
+
+\pf{Dimostrazione}{
+  Non data, boh
+}
+\subsection{Operazioni sulle rappresentazione}
+Si può dimostrare che Se $V$ e $U$ sono rappresentazioni di $G$, anche $V \oplus U$, $V \otimes U$, $V^*$ e $\mathrm{Hom}_K(V, U)$ sono naturalmente rappresentazioni di $G$.
+
+
+Siano $\rho:G\to GL(V)$ e $\pi:G\to GL(U)$ due rappresentazioni
+\subsubsection{Somma diretta di rappresentazioni}
+
+
+
+\subsubsection{Prodotto tensoriale di rappresentazioni}
+
+
+\subsubsection{Spazio duale di una rappresentazione}
+
+
+\subsubsection{Spazio Hom di rappresentazioni}
+
