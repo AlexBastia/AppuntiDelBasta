@@ -412,7 +412,17 @@ Applicando il Teorema Cinese del Resto:
 \mathbb{R}[G] \cong \frac{\mathbb{R}[X]}{(x - 1) \cdot (x + 1) \cdot (x^2 + 1)} &\cong \frac{\mathbb{R}[X]}{(x - 1)} \times \frac{\mathbb{R}[X]}{(x + 1)} \times \frac{\mathbb{R}[X]}{(x^2 + 1)} \\
 &\cong \mathbb{R} \times \mathbb{R} \times \mathbb{C}
 \end{align*}
-Dove abbiamo usato il fatto che $\mathbb{R}[X]/(x^2 + 1) \cong \mathbb{C}$.
+Dove abbiamo usato il fatto che $\mathbb{R}[X]/(x^2 + 1) \cong \mathbb{C}$.\\
+
+Questa decomposizione di \textbf{anelli} è anche una decomposizione di \textbf{rappresentazioni}, dato che i fattori diretti di un anello sono moduli su quell'anello (e quindi sottorappresentazioni).
+}
+
+\nt{
+  Poiché $\rho: G \to \mathrm{GL}(V)$ è un omomorfismo, l'ordine di $\rho(g)$ divide $|G| = 4$ per ogni $g \in G$. Su $K = \mathbb{C}$, se la rappresentazione è irriducibile di dimensione 1, allora $\rho(g) \in \mathbb{C}^*$ è uno scalare il cui ordine divide 4, quindi:
+
+$$\rho(g) \in \{1, -1, +i, -i\}$$
+
+Queste sono esattamente le radici quarte dell'unità, e corrispondono ai quattro fattori $\mathbb{C}[x]/(x-1)$, $\mathbb{C}[x]/(x+1)$, $\mathbb{C}[x]/(x-i)$, $\mathbb{C}[x]/(x+i)$. Dunque su $\mathbb{C}$ esistono esattamente \textbf{4 rappresentazioni irriducibili} di $\mathbb{Z}_4$, tutte di dimensione 1. Su $\mathbb{R}$ invece $x^2+1$ rimane irriducibile, e genera la \textbf{rappresentazione di rotazione} di dimensione 2 vista nella prima lezione.
 }
 
 \section{Secondo approccio al Lemma del Complemento}
@@ -710,6 +720,7 @@ Si vuole infatti definire uno spazio $V \otimes U$ tale che dare un'applicazione
 
 \subsubsection{Costruzione}
 
+TODO: non penso sia giusta questa definizione. Gem sembra confondersi perche' preferisce usare $ F(V \otimes U) $ per indicare lo SV libero, mentre usa $ \mathcal{L}(V,U) $ per indicare gli omomorfismi fra $ V $ e $ U $, ma non e' questo che vogliamo. Comunque lo tengo perche' forse non ho capito io.
 \dfn{Spazio vettoriale libero}{
   Dati due spazi vettoriali $V$ e $U$ su $K$, si definisce spazio vettoriale libero $L(V, U)$ come l'insieme di tutte le funzioni $V \to U$ con operazioni per coordinate.
   \[
@@ -729,11 +740,16 @@ Adesso definiamo un sottospazio
 
   $$
   \begin{aligned}
-  &(a_1 v_1 + a_2 v_2,, u) - a_1(v_1, u) - a_2(v_2, u) \\
-  &(v,, b_1 u_1 + b_2 u_2) - b_1(v, u_1) - b_2(v, u_2)
+    &(a_1 v_1 + a_2 v_2,, u) - (a_1(v_1, u) + a_2(v_2, u)) \\
+    &(v,, b_1 u_1 + b_2 u_2) - (b_1(v, u_1) + b_2(v, u_2))
   \end{aligned}
   $$
 per ogni $v,v_1,v_2 \in V$ e $u,u_1,u_2 \in U$ e $a_1,a_2,b_1,b_2 \in K$.
+}
+\nt{
+  Il sottospazio $ B $ e' quindi la combinazione lineare di tutti i vettori ottenuti prendendo per ogni vettore in $ V $ e in $ U $ la forma lineare (a sx e a dx) e sottraendo il vettore che, \textbf{se valesse la bilinearita'}, sarebbe uguale.\\
+
+  Quindi stiamo essenzialmente creando lo spazio vettoriale contenente tutti i vettori che noi vorremmo fossero nulli.
 }
 
 Possiamo quindi definire il prosotto tensoriale come:
@@ -761,13 +777,29 @@ Si noti questo teorema bellissimo degli insiemi quozienti
     La dimostrazione della "buona definizione" consiste nel verificare che, se scegliamo rappresentanti diversi per la stessa classe (ovvero $v \sim v'$ e $u \sim u'$), il risultato della somma non cambia. Poiché $(v' + u') - (v + u) = (v' - v) + (u' - u)$, e sapendo che entrambi i termini a destra appartengono a $W$, la loro somma appartiene ancora a $W$. Pertanto $[v' + u'] = [v + u]$.
 }
 
+\ex{Polinomi in due variabili}{
+$V = K[x]$, $U = K[y]$ (polinomi in $x$ e in $y$ rispettivamente). Le basi sono $\{1, x, x^2, \ldots\}$ e $\{1, y, y^2, \ldots\}$. Il prodotto tensoriale ha base $\{x^i \otimes y^j\}_{i,j \in \mathbb{N}}$, cioè:
+
+$$K[x] \otimes_K K[y] \cong K[x, y]$$
+
+l'anello dei polinomi in due variabili.
+}
+
+\ex{Algebra del prodotto diretto}{
+  Siano $G, H$ gruppi finiti. Allora:
+
+$$K[G \times H] \cong K[G] \otimes_K K[H]$$
+
+L'algebra di gruppo del prodotto diretto è il prodotto tensoriale delle singole algebre di gruppo.
+}
+
 \subsection{Spazio Hom e Spazio Duale}
 
 \dfn{Sapzio di Hom}{
   Dati $V, U$ spazi vettoriali su $K$, lo spazio delle applicazioni lineari da $V$ a $U$ è:
 
   \begin{equation*}
-  \mathrm{Hom}_K(V, U) := \{f : V \to U \mid f \text{ lineare}\} \qquad \mathrm{Hom}_K(V,U):={f:V\to U, f\text{ lineare}}
+    \mathrm{Hom}_K(V, U) := \{f : V \to U \mid f \text{ lineare}\}
   \end{equation*}
 
   con le ovvie operazioni puntali. $\mathrm{Hom}_K(V, U)$ è uno spazio vettoriale su $K$ di dimensione $\dim V \cdot \dim U$ (corrisponde alle matrici $(\dim U) \times (\dim V)$).
@@ -788,7 +820,9 @@ Dai cui discende
   \]
 }
 \pf{Dim}{
-  Lasciata al basta
+  Lasciata al basta\\
+
+  Ma e' una definizione :cryingemoji: cosa devo dimostrare?
 }
 
 \mprop{
@@ -798,25 +832,150 @@ Dai cui discende
   \[
     V^* \otimes U \cong \mathrm{Hom}_K(V, U)
   \]
+  (se $ V $ e $ U $ sono finiti)
 }
 
 \pf{Dimostrazione}{
-  Non data, boh
+  Dobbiamo dimostrare la bilinearita' di $ \varphi(v)\cdot u $ su $ (\varphi, u) $. Usando le definizioni di somma e prodotto nello spazio duale e le proprieta' di linearita' e del prodotto scalare in $ U $ si puo' dimostrare che
+  \[
+  [(a\varphi_1+b\varphi_2)(v)]\cdot u = a(\varphi_1(v)\cdot u)+b(\varphi_2(v)\cdot u)
+  \]
+  e 
+  \[
+  \varphi(v)\cdot(cu_1+du_2) = c(\varphi(v)\cdot u_1)+d(\varphi(v)\cdot u_2)
+  \]
+  Per la \textbf{proprieta' universale del prodotto tensoriale}, la bilinearita' della definizione di $ \Psi $ su $ V^* \times U $ implica che $ \Psi $ e' un'applicazione lineare (quindi ben definita) da $ V^* \otimes U $, e quindi che rispetta le classi di equivalenza.\\
+
+  Ora dimostriamo l'isomorfismo. Dato che $ dim(V^* \otimes U) = n \cdot m = dim(Hom(V,U)) $, ci basta dimostrare l'iniettivita' per ottenere anche la suriettivita' (o viceversa).
+
+  Dimostrare l'iniettivita' di un'applicazione lineare equivale a dimostrare che
+  \[
+    ker(\Psi) = \{n\}
+  \]
+  dove $ n $ e' il tensore nullo. Questo si puo' fare dimostrando che se 
+  \[
+    \Psi(t) = N
+  \]
+  dove $ N $ e' l'operatore nullo, allora applicando i vettori base $ e_1,...,e_n \in V $ dobbiamo ottenere il vettore nullo in $ U $ (dato che l'operatore e' un omomorfismo):
+  \[
+    \Psi(t)(e_k) = 0
+  \]
+  Si puo' dimostrare che questo e' vero solo se i coefficenti di $ t $ sono tutti zero, ovvero $ t = n $.
 }
-\subsection{Operazioni sulle rappresentazione}
+
+\section{Costruzione di Rappresentazioni complesse e i loro Caratteri}
+
 Si può dimostrare che Se $V$ e $U$ sono rappresentazioni di $G$, anche $V \oplus U$, $V \otimes U$, $V^*$ e $\mathrm{Hom}_K(V, U)$ sono naturalmente rappresentazioni di $G$.
 
 
 Siano $\rho:G\to GL(V)$ e $\pi:G\to GL(U)$ due rappresentazioni
-\subsubsection{Somma diretta di rappresentazioni}
+\subsection{Somma diretta di rappresentazioni}
+Vogliamo dare a $ V \oplus U $ una struttura di rappresentazione, definiamo quindi $ "\rho \oplus \pi": V \oplus U \to V \oplus U $ come:
+\[
+  (\rho \oplus \pi)(g)(v + u) = \rho(g)(v) + \pi(g)(u)
+\]
 
+Si verifica subito che è un omomorfismo.
 
+In termini matriciali: scelta la base $\{v_1, \ldots, v_n\}$ di $V$ e $\{u_1, \ldots, u_m\}$ di $U$, la matrice di $(\rho \oplus \pi)(g)$ nella base unione è \textbf{a blocchi diagonali}:
 
-\subsubsection{Prodotto tensoriale di rappresentazioni}
+$$(\rho \oplus \pi)(g) \longleftrightarrow \begin{pmatrix} A & 0 \\ 0 & B \end{pmatrix}$$
 
+dove $A = \rho(g)$ e $B = \pi(g)$ nelle rispettive basi.
 
-\subsubsection{Spazio duale di una rappresentazione}
+\mprop{Carattere di una somma diretta}{
+  Date due rappresentazioni $ V, U $ con caratteri $ \chi_V, \chi_U $:
+  \[
+    \chi_{V \oplus U}(g) = \chi_V(g) + \chi_U(g) 
+  \]
+}
+\pf{Dimostrazione}{
+  Ovvia data la matrice associata.
+}
 
+\subsection{Prodotto tensoriale di rappresentazioni}
+In modo analogo, definiamo $ "\rho \otimes \pi": G \to GL(V \otimes U) $ come:
 
-\subsubsection{Spazio Hom di rappresentazioni}
+$$(\rho \otimes \pi)(g)(v \otimes u) = (\rho(g)v) \otimes (\pi(g)u)$$
+
+Nella base $\{v_i \otimes u_j\}$, la matrice di $(\rho \otimes \pi)(g)$ è il \textbf{prodotto di Kronecker} delle matrici $\rho(g)$ e $\pi(g)$.
+
+\mprop{Carattere di un prodotto tensoriale}{
+  Date due rappresentazioni $ V, U $ con caratteri $ \chi_V, \chi_U $:
+  \[
+    \chi_{V \otimes U}(g) = \chi_V(g) \cdot \chi_U(g) 
+  \]
+}
+\pf{Dimostrazione}{
+  Nella base $\{v_i \otimes u_j\}$, gli elementi diagonali della matrice di $(\rho \otimes \pi)(g)$ corrispondono agli indici $(i,j) = (i,j)$. Esplicitamente:
+
+$$\mathrm{tr}(\rho \otimes \pi)(g) = \sum_{i=1}^n \sum_{j=1}^m [\rho(g)]_{ii} \cdot [\pi(g)]_{jj} = \left(\sum_i [\rho(g)]_{ii}\right)\left(\sum_j [\pi(g)]_{jj}\right) = \mathrm{tr}(A)\cdot\mathrm{tr}(B).$$
+
+}
+
+\subsection{Spazio duale di una rappresentazione}
+Vogliamo una rappresentazione $\rho^*: G \to \mathrm{GL}(V^*)$ che sia compatibile con la struttura. La condizione naturale è la \textbf{$G$-invarianza} del pairing: vogliamo che
+
+$$\langle \varphi, v \rangle = \langle g \cdot \varphi,\; g \cdot v \rangle = \langle \rho^*(g)(\varphi),\; \rho(g)(v) \rangle$$
+
+cioè il "prodotto scalare naturale" $\langle \varphi, v \rangle := \varphi(v)$ sia invariante. Questo forza:
+
+$$\rho^*(g)(\varphi)(v) = \varphi(\rho(g)^{-1} v)$$
+
+In altre parole: $g$ agisce su $V^*$ tramite \textbf{l'inverso della trasposta} di $\rho(g)$, cioè $\rho^*(g) = (\rho(g)^{-1})^T = (\rho(g^{-1}))^T$.
+
+\mprop{Carattere del duale}{
+  Data una rappresentazione $ V$ con carattere $ \chi_V$:
+  \[
+    \chi_{V^*}(g) = \overline{\chi_V(g)}
+  \]
+}
+\pf{Dimostrazione}{
+  Gli autovalori di $\rho(g)$ sono radici dell'unità $\lambda_1, \ldots, \lambda_n$ (perché $g$ ha ordine finito). L'azione $\rho^*(g) = (\rho(g^{-1}))^T$ ha autovalori $\lambda_1^{-1}, \ldots, \lambda_n^{-1}$. Poiché $|\lambda_i| = 1$, si ha $\lambda_i^{-1} = \bar{\lambda}_i$, quindi:
+
+$$\chi_{V^*}(g) = \sum_i \lambda_i^{-1} = \sum_i \bar{\lambda}_i = \overline{\sum_i \lambda_i} = \overline{\chi_V(g)}.$$
+}
+
+\subsection{Spazio Hom di rappresentazioni}
+Usando l'isomorfismo $\mathrm{Hom}_K(V,U) \cong V^* \otimes U$, l'azione di $G$ su $\mathrm{Hom}_K(V,U)$ si ottiene combinando duale e prodotto tensoriale. Esplicitamente: per $f \in \mathrm{Hom}_K(V,U)$, definiamo $ \xi: G \to GL(Hom_K(V,U)) $ come:
+
+$$\xi (g)(f)(v) = (\pi(g) \circ f \circ \rho(g)^{-1})(v)$$
+
+Cioè: "coniuga $f$ con le rappresentazioni di $g$". Si verifica che questo definisce un omomorfismo.
+
+Abbiamo ottenuto questa definizione usando l'isomorfismo canonico, per cui:
+\[
+  f(v) = \varphi(v)u
+\]
+e' l'omomorfismo corrispondente a $ f $ dati $ \varphi $ e $ u $, ai quali possiamo applicare la rappresentazione di prodotto tensoriale
+\[
+  (\rho^* \otimes \pi)(g)(\varphi \otimes u) = (\rho^*(g)\varphi) \otimes (\pi(g)u)
+\]
+e di spazio duale
+\[
+  (\varphi \circ \rho(g)^{-1}) \otimes (\pi(g)u)
+\]
+per poi trovare l'omomorfismo associato usando $ \Psi $:
+\[
+  \Psi((\varphi \circ \rho(g)^{-1}) \otimes (\pi(g)u))(v) = (\varphi \circ \rho(g)^{-1})(v) \cdot (\pi(g)u)
+\]
+dato che la parte a sx e' uno scalare e $ \pi $ e' lineare, possiamo portarlo dentro
+\[
+  \pi(g)(\varphi \circ \rho(g)^{-1}(v)\cdot u)
+\]
+dove $ \varphi(\rho(g)^{-1}(v)) \cdot u $ puo' essere riscritto come $ f(\rho(g)^{-1}(v)) $
+\[
+  \pi(g) \circ f \circ \rho(g)^{-1}(v)
+\]
+che e' proprio la definizione che abbiamo dato.
+
+\cor{Carattere di $ Hom(V,U) $}{
+  Date due rappresentazioni $ V, U $ con caratteri $ \chi_V, \chi_U $:
+  \[
+    \chi_{Hom(V,U)}(g) = \chi_{V^*\otimes U} = \overline{\chi_V(g)} \cdot \chi_U(g) 
+  \]
+}
+\pf{Dimostrazione}{
+  Ovvia per proposizioni precedenti.
+}
 
