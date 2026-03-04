@@ -500,17 +500,16 @@ Un morfismo biettivo di rappresentazioni si chiama isomorfismo di rappresentazio
   \end{enumerate}
 }
 
-Adesso andremo a definire un proiettore $G$-invariante con il trucco della media vista in precedenza
-TODO: ma vogliamo un proiettore G-invariante o un morfismo di rappresentazioni? O sono la stessa cosa?
-\dfn{Proiettore $G$-invariante $P^G$}{
-  Sia $V$ una rappresentazione di $G$ e $U \subseteq V$ una sottorappresentazione. Si dice \textit{proeittore $G$-invariante} la seguente funzione:
+Adesso andremo a definire un proiettore $G$-equivariante con il trucco della media vista in precedenza
+\dfn{Proiettore $G$-equivariante $P^G$}{
+  Sia $V$ una rappresentazione di $G$ e $U \subseteq V$ una sottorappresentazione. Si dice \textit{proiettore $G$-equivariante} il seguente morfismo di rappresentazioni:
   \[
     p^G:V \to U \quad p^G(v) = \frac{1}{|G|} \sum_{g \in G} \rho(g)\circ p \circ \rho(g)^{-1}(v)
   \]
   dove $p$ e' un proiettore su $U$.
 }
 
-\mprop{Verifica del proiettore $G$-invariante}{
+\mprop{Verifica del proiettore $G$-equivariante}{
   Il proiettore $p^G$ appena definito è ben definito
 }
 \pf{Dimostrazione}{
@@ -725,14 +724,14 @@ TODO: non penso sia giusta questa definizione. Gem sembra confondersi perche' pr
 Va bene buon Basta, cambio la definzione, specificatamente per $U\times V$ (ti amo)
 
 Qui definisco ciò, ma è sonnet la fonte sta volta, se tu hai fonte diversa dimmi pure:
-\dfn{Spazio vettoriale libero}{
-  Sia $S$ un insieme qualsiasi e $K$ un campo. Lo
-spazio vettoriale libero su $S$ su $K$ è:
 
-\[
-L(S):={f:S→K∣f(s)=0 per quasi ogni s∈S}
-\]
-dove "quasi ogni" significa "per tutti tranne un numero finito".
+\dfn{Spazio vettoriale libero}{
+  Sia $S$ un insieme qualsiasi e $K$ un campo. Lo spazio vettoriale libero su $S$ su $K$ è:
+
+  \[
+    L(S):=\left\{f:S\to K\;\middle|\;f(s)=0\text{ per quasi ogni } s\in S\right\}
+  \]
+  dove "quasi ogni" significa "per tutti tranne un numero finito".
 }
 
 \dfn{Impulso di Dirac}{
