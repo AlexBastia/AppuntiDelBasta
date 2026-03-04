@@ -724,6 +724,17 @@ TODO: non penso sia giusta questa definizione. Gem sembra confondersi perche' pr
 
 Va bene buon Basta, cambio la definzione, specificatamente per $U\times V$ (ti amo)
 
+Qui definisco ciò, ma è sonnet la fonte sta volta, se tu hai fonte diversa dimmi pure:
+\dfn{Spazio vettoriale libero}{
+  Sia $S$ un insieme qualsiasi e $K$ un campo. Lo
+spazio vettoriale libero su $S$ su $K$ è:
+
+\[
+L(S):={f:S→K∣f(s)=0 per quasi ogni s∈S}
+\]
+dove "quasi ogni" significa "per tutti tranne un numero finito".
+}
+
 \dfn{Impulso di Dirac}{
   Per ogni $s \in S$ \textit{Impulso di Dirac} la seguente funzione:
   \[
@@ -736,7 +747,8 @@ Si può dimostrare che questa sarà la base di ciò che noi chiameremo spazio ve
 \dfn{Spazio vettoriale libero di $U\times V$}{
   Siano $V$ e $U$ spazi vettoriali su $K$. Prendiamo $S=V\times U$, l'insieme di tutte le coppie $(v,u)$ con $v\in V$ e $u\in U$.
 
-  Allora $L(V\times U) = \left\{ \sum_{\text{finita}} \alpha_{(v,u)} \cdot \delta_{(v,u)} \;\middle|\; \alpha_{(v,u)} \in K \right\}$
+  Allora 
+  $$L(V\times U) = \left\{ \sum_{\text{finita}} \alpha_{(v,u)} \cdot \delta_{(v,u)} \;\middle|\; \alpha_{(v,u)} \in K \right\}$$
   La base è $\{\delta_{(v,u)}\}_{(v,u) \in V \times U}$, una per ogni coppia.
 }
 
@@ -747,7 +759,7 @@ Si può dimostrare che questa sarà la base di ciò che noi chiameremo spazio ve
 \nt{Si noti che l'impulso di Dirac è una base di $L(V\times U)$ come definito prima}
 
 \ex{Esempietto}{
-  Sia $V=U=\mathbb{R}^2$ con basi ${e_1,e_2}$ e ${f_1,f_2}$.
+  Sia $V=U=\mathbb{R}^2$ con basi $\{e_1,e_2\}$ e $\{f_1,f_2\}$.
 
 Alcuni elementi di base di $L(V\times U)$ sono:
 
@@ -817,6 +829,33 @@ Si noti questo teorema bellissimo degli insiemi quozienti
 }{
     La dimostrazione della "buona definizione" consiste nel verificare che, se scegliamo rappresentanti diversi per la stessa classe (ovvero $v \sim v'$ e $u \sim u'$), il risultato della somma non cambia. Poiché $(v' + u') - (v + u) = (v' - v) + (u' - u)$, e sapendo che entrambi i termini a destra appartengono a $W$, la loro somma appartiene ancora a $W$. Pertanto $[v' + u'] = [v + u]$.
 }
+
+Andiamo inoltre a mostrare altre cose dell'insieme quoziente
+\dfn{0 quoziente}{
+In uno spazio quoziente $L/B$, gli elementi sono "classi di equivalenza" (insiemi di vettori). La classe dello zero è definita come:
+
+$$[0]=\{w\in L\mid w-0\in B\}=\{w\in L\mid w\in B\}=B$$
+
+
+Quindi, lo zero del quoziente è il sottospazio $B$ stesso.
+}
+
+\nt{
+  Qualsiasi vettore che in $L(V\times U)$ apparteneva a $B$, una volta passato al quoziente, diventa indistinguibile dallo zero. Ovvero:
+  \[
+  \delta_{(v+v', u)} - \delta_{(v,u)} - \delta_{(v',u)} \in B \implies [\delta_{(v+v', u)}] = [\delta_{(v,u)}] + [\delta_{(v',u)}]
+  \]
+}
+
+Si possono così definire i cosiddetti tensori semplici
+\dfn{Tensori semplici}{
+  Si definisce \textit{Tensore semplice} il seguente elemento:
+  \[
+    v \otimes u := [(v,u)]
+  \]
+}
+
+
 
 \ex{Polinomi in due variabili}{
 $V = K[x]$, $U = K[y]$ (polinomi in $x$ e in $y$ rispettivamente). Le basi sono $\{1, x, x^2, \ldots\}$ e $\{1, y, y^2, \ldots\}$. Il prodotto tensoriale ha base $\{x^i \otimes y^j\}_{i,j \in \mathbb{N}}$, cioè:
