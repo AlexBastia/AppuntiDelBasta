@@ -514,3 +514,159 @@ Per unire più transizioni in un'unica stringa, le istanze $ c_i $ vengono separ
   \]
   La macchina $ M_u $ e' in grado di dirci se $ M $ avrebbe accettato o meno $ w $
 }
+
+\subsubsection{Processo di simulazione}
+
+La macchina $ M_u $ è una macchina a \textbf{quattro nastri}:
+\begin{itemize}
+  \item \textbf{Nastro 1 (input)}: contiene la coppia $ M \texttt{ 111 } w $, dove $ M $ e $ w $ sono separati da tre $ 1 $ consecutivi. Questo separatore è non ambiguo poiché nella codifica di $ M $ non compaiono mai tre $ 1 $ di fila.
+  \item \textbf{Nastro 2 (nastro simulato)}: contiene la ricodifica di $ w $ secondo i simboli simulati.
+  \item \textbf{Nastro 3 (stato simulato)}: tiene traccia dello stato corrente di $ M $ durante la simulazione.
+  \item \textbf{Nastro 4 (lavoro)}: nastro ausiliario per operazioni di copia e spostamento.
+\end{itemize}
+
+La simulazione procede nelle seguenti fasi:
+
+\begin{enumerate}
+  \item \textbf{Inizializzazione}: $ M_u $ ricodifica $ w $ sul nastro 2 secondo lo schema dei simboli simulati. Ad esempio:
+    \[
+      w = \underbrace{0}_{X_1}\underbrace{1}_{X_2}\underbrace{0}_{X_1} \quad \Longrightarrow \quad \texttt{1 0 1 0 1}
+    \]
+    Scrive sul nastro 3 lo stato iniziale $ q_1 = 0 $.
+
+  \item \textbf{Ciclo di simulazione}: ad ogni passo, $ M_u $ conosce lo stato corrente di $ M $ (nastro 3) e il simbolo correntemente letto (nastro 2). Cerca quindi sul nastro 1 la transizione corrispondente $ \delta(q_i, x_j) $ e:
+    \begin{itemize}
+      \item aggiorna il nastro 3 con il nuovo stato $ q_k $
+      \item sovrascrive il simbolo sul nastro 2 con $ x_l $
+      \item sposta la testina sul nastro 2 nella direzione $ D_m $
+      \item usa il nastro 4 come area di lavoro se è necessario ridimensionare il nastro 2
+    \end{itemize}
+
+  \item \textbf{Terminazione}: la simulazione termina quando $ M $ raggiunge una configurazione finale:
+    \[
+      M \text{ accetta } w \implies M_u \text{ accetta}
+    \]
+    \[
+      M \text{ rifiuta } w \implies M_u \text{ rifiuta}
+    \]
+    \[
+      M \text{ non termina su } w \implies M_u \text{ non termina}
+    \]
+\end{enumerate}
+
+\nt{
+  I nostri computer sono esattamente delle $ M_u $. La loro funzione di transizione universale è fissata nell'hardware: è il \textbf{microcodice della CPU}. Questo risponde alla domanda su come mai le MdT classiche non si possono ``programmare'' mentre i computer sì.
+}
+
+\section{Problemi Ricorsivi e Ricorsivamente Enumerabili}
+
+Abbiamo introdotto le classi di calcolabilità $ R $ e $ RE $, e abbiamo detto che i problemi possono stare in $ R $ e in $ RE $. Ma possono esistere problemi che stanno fuori da $ RE $? Sì, e ora li andremo a vedere.
+
+\subsection{Enumerare stringhe e macchine}
+
+Riconsideriamo macchine che processano in input stringhe binarie. Se prendiamo una stringa binaria e ci mettiamo un $ 1 $ davanti, possiamo associarle un numero intero:
+\[
+  1 \circ 00010\ldots
+\]
+In questo modo possiamo enumerare tutte le stringhe binarie:
+\[
+  \underbrace{1 \circ \varepsilon}_{1°} \quad
+  \underbrace{1 \circ 0}_{2°} \quad
+  \underbrace{1 \circ 1}_{3°} \quad
+  \underbrace{1 \circ 01}_{4°} \quad
+  \underbrace{1 \circ 10}_{5°} \quad \cdots
+\]
+Le stringhe con indice più basso sono tendenzialmente più corte; stringhe della stessa lunghezza sono ordinate lessicograficamente. Le stringhe binarie sono \textbf{infinite numerabili}.
+
+Lo stesso ragionamento vale per le MdT: grazie alla codifica binaria introdotta nella sezione precedente, possiamo mettere un $ 1 $ davanti alla codifica di ogni MdT e ottenere un numero intero. Quindi \textbf{possiamo contare le macchine di Turing}, chiamandole $ M_1, M_2, M_3, \ldots$
+
+\subsection{Vettore caratteristico e argomento diagonale}
+
+\dfn{Vettore caratteristico}{
+  Il \textbf{vettore caratteristico} del linguaggio $ \mathcal{L} $ è una stringa binaria infinita $ \chi_\mathcal{L} $ tale che la posizione $ i $-esima vale $ 1 $ se $ w_i \in \mathcal{L} $, e $ 0 $ altrimenti.
+  \[
+    \chi_\mathcal{L} = \{0\ 1\ 1\ 0\ 0\ 1\ \cdots\}
+  \]
+}
+
+Costruiamo ora una tabella infinita: sulle righe le MdT $ M_1, M_2, \ldots $, sulle colonne le stringhe $ w_1, w_2, \ldots $, e nella cella $ (i,j) $ scriviamo $ 1 $ se $ M_i $ accetta $ w_j $, $ 0 $ altrimenti. Ogni riga è quindi il vettore caratteristico del linguaggio accettato da quella macchina.
+
+\begin{center}
+\begin{tabular}{c|cccc c}
+       & $w_1$ & $w_2$ & $w_3$ & $w_4$ & $\cdots$ \\ \hline
+$M_1$  & \textbf{0} & 1 & 0 & 0 & $\cdots$ \\
+$M_2$  & 1 & \textbf{1} & 0 & 1 & $\cdots$ \\
+$M_3$  & 0 & 0 & \textbf{0} & 1 & $\cdots$ \\
+$M_4$  & 1 & 0 & 0 & \textbf{1} & $\cdots$ \\
+$\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ & $\ddots$
+\end{tabular}
+\end{center}
+
+Concentriamoci sulla \textbf{diagonale}: prendiamo il valore $ (i,i) $ per ogni $ i $, ottenendo la stringa $ D = \{0\ 1\ 0\ 1\ \cdots\} $. Definiamo $ \bar{D} $ come il suo complemento bit a bit, $ \bar{D} = \{1\ 0\ 1\ 0\ \cdots\} $.
+
+$ \bar{D} $ è interpretabile come vettore caratteristico di un linguaggio. Chiamiamo $ \mathcal{L}_d $ il linguaggio il cui vettore caratteristico è $ \bar{D} $:
+\[
+  \mathcal{L}_d = \{w_i \mid M_i \not\models w_i\}
+\]
+ovvero $ \mathcal{L}_d $ contiene la $ i $-esima stringa se e solo se la $ i $-esima macchina \textit{non} la accetta.
+
+\mprop{}{
+  $ \mathcal{L}_d \notin RE $
+}
+\pf{Dimostrazione}{
+  Supponiamo per assurdo che esista una MdT $ M_k $ tale che $ \mathcal{L}(M_k) = \mathcal{L}_d $. Chiediamoci se $ M_k $ accetta $ w_k $:
+  \begin{itemize}
+    \item Se $ M_k \models w_k $: allora $ w_k \in \mathcal{L}(M_k) = \mathcal{L}_d $, ma per definizione $ w_k \in \mathcal{L}_d \iff M_k \not\models w_k $. Contraddizione.
+    \item Se $ M_k \not\models w_k $: allora $ w_k \in \mathcal{L}_d $, quindi $ M_k $ dovrebbe accettare $ w_k $. Contraddizione.
+  \end{itemize}
+  In entrambi i casi arriviamo a una contraddizione, quindi $ \nexists $ una MdT che accetti $ \mathcal{L}_d $, ovvero $ \mathcal{L}_d \notin RE $
+}
+
+\nt{
+  Perché esistono linguaggi indecidibili? Le MdT sono enumerabili, quindi sono tante quanti $ \mathbb{N} $. I linguaggi invece sono tutti i possibili sottoinsiemi delle stringhe, quindi la loro cardinalità è quella di $ \mathbb{R} $. Esistono semplicemente \textbf{più linguaggi che algoritmi}.
+}
+
+\subsection{Proprietà sui linguaggi}
+
+\dfn{Complemento di un linguaggio}{
+  Sia $ \mathcal{L} \subseteq \Sigma^* $, il \textbf{complemento} di $ \mathcal{L} $ è:
+  \[
+    \overline{\mathcal{L}} = \Sigma^* \setminus \mathcal{L}
+  \]
+}
+
+\thm{}{
+  Se $ \mathcal{L} \in R \implies \overline{\mathcal{L}} \in R $
+}
+\pf{Dimostrazione}{
+  Siccome $ \mathcal{L} \in R $, esiste $ M_\mathcal{L} $ che decide $ \mathcal{L} $ (risponde sì o no in tempo finito). Costruiamo $ \overline{M} $ che si comporta esattamente come $ M_\mathcal{L} $ ma inverte la risposta:
+  \[
+    w \xrightarrow{\quad} M_\mathcal{L} \xrightarrow{\text{sì} \to \text{no},\ \text{no} \to \text{sì}} \overline{M}
+  \]
+  Poiché $ M_\mathcal{L} $ termina sempre, anche $ \overline{M} $ termina sempre $ \implies \overline{\mathcal{L}} \in R $. 
+}
+
+\thm{}{
+  Se $ \mathcal{L} \in RE \land \overline{\mathcal{L}} \in RE \implies \mathcal{L} \in R $
+}
+\pf{Dimostrazione}{
+  Siano $ M_\mathcal{L} $ e $ M_{\overline{\mathcal{L}}} $ le macchine che accettano rispettivamente $ \mathcal{L} $ e $ \overline{\mathcal{L}} $. Costruiamo $ M' $ che esegue $ M_\mathcal{L} $ e $ M_{\overline{\mathcal{L}}} $ \textbf{in parallelo} su un input $ w $:
+  \begin{itemize}
+    \item Se risponde $ M_\mathcal{L} $: $ w \in \mathcal{L} $, accetta.
+    \item Se risponde $ M_{\overline{\mathcal{L}}} $: $ w \notin \mathcal{L} $, rifiuta.
+  \end{itemize}
+  Poiché ogni stringa sta o in $ \mathcal{L} $ o in $ \overline{\mathcal{L}} $, una delle due macchine risponderà sempre in tempo finito $ \implies M' $ è un decisore $ \implies \mathcal{L} \in R $.
+}
+
+\nt{
+  Questo risultato implica che $ RE $ \textbf{non è chiuso per complemento}: se lo fosse, ogni linguaggio in $ RE $ sarebbe automaticamente in $ R $, e sappiamo che ciò non è vero.
+}
+
+Le classi $ R $ e $ RE $ formano quindi questa gerarchia stretta:
+\begin{center}
+  \begin{tikzpicture}
+    \draw[thick] (0,0) ellipse (3cm and 1.8cm) node[above=1.2cm] {$ RE $};
+    \draw[thick] (0,-0.1) ellipse (1.8cm and 1cm) node {$ R $};
+    \node at (0, 1.2) {$ \mathcal{L}_d \notin RE $};
+  \end{tikzpicture}
+\end{center}s
