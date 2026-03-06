@@ -452,3 +452,65 @@ Introduciamo le prime due classi di calcolabilita':
 }
 Ha spammato degli esercizi, onesto possiamo anche guardarli da virtuale
 % \end{document}
+\subsection{Macchine di turing universali}
+Le macchine di turing presentate finora sono "statiche" ovvero accettano/decidono un solo linguaggio. Sono programmate solo per fare una cosa, dato che la funzione di transizione è fissata.
+
+Tuttavia i computer che usiamo tutti i giorni sono "dinamici" ovvero possono eseguire qualunque programma, ovvero la funzione di transizione è più "ricca" di informazioni, dato che deve codificare anche il programma che deve eseguire.
+
+Quindi ci poniamo il problema: è possibile costruire una macchina di turing che possa eseguire qualunque programma? La risposta è sì, ed è la macchina di turing universale.
+
+\subsubsection{Codifica della macchina di turing}
+
+Consideriamo una MdT il cui alfabeto di input abbia solo due simboli $ \Sigma = \{0, 1\} $, mentre l'alfabeto di nastro può essere $ \Gamma = \{0, 1, \blank, \dots\} $.
+
+La funzione di transizione ha generalmente la forma:
+\[
+  \delta(Q_i, X_j) = (Q_k, X_l, D_m)
+\]
+
+\ex{}{
+  \[
+    \delta(q_3, \blank) = (q_5, 0, \to)
+  \]
+}
+
+Codifichiamo i simboli $ Q_i, X_j, Q_k, X_l, D_m $ partendo dai loro pedici:
+\[
+  Q_i = 0^i, \quad X_j = 0^j, \quad \text{sx} = D_1, \quad \text{dx} = D_2
+\]
+
+\nt{
+  Per convenzione fissiamo:
+  \begin{itemize}
+    \item $ x_1 = 0,\ x_2 = 1,\ x_3 = \blank,\ x_4, \dots $
+    \item $ q_1 $ è sempre lo stato iniziale
+    \item $ q_2 $ è sempre il singolo stato accettante
+  \end{itemize}
+}
+
+Ogni singola transizione $ c_i $ viene quindi codificata come una stringa binaria in cui i vari campi sono separati da $ 1 $. Ad esempio, la transizione $ \delta(q_3, \blank) = (q_5, x_1, D_2) $ viene codificata come:
+
+\[
+  c_1 = \underbrace{000}_{q_3} 1 \underbrace{000}_{X_3} 1 \underbrace{00000}_{q_5} 1 \underbrace{0}_{X_1} 1 \underbrace{00}_{D_2}
+\]
+
+Per unire più transizioni in un'unica stringa, le istanze $ c_i $ vengono separate da $ 11 $:
+\[
+  c_1 11 c_2 11 c_3 11 c_4 \cdots
+\]
+
+\nt{
+  Esistono infiniti modi per codificare una MdT, ma scegliamo questo. L'obiettivo è poter comunicare a una MdT come comportarsi rispetto a un'altra, quindi ogni stringa binaria può essere messa in associazione con una possibile MdT.
+
+  Ci saranno inevitabilmente stringhe binarie che non codificano nessuna MdT valida (perché non rispettano il formato). Per convenzione, assumiamo che tali stringhe corrispondano a una macchina con un unico stato non accettante.
+}
+
+\subsubsection{Definizione formale}
+
+\dfn{Macchina di Trueing universale}{
+  La Macchina di Turing Universale $ M_u $ e' una macchina che riceve in input una stringa binaria che codifica una macchina $ M $ e poi una stringa $ w $
+  \[
+    (M, w)  
+  \]
+  La macchina $ M_u $ e' in grado di dirci se $ M $ avrebbe accettato o meno $ w $
+}
