@@ -500,17 +500,16 @@ Un morfismo biettivo di rappresentazioni si chiama isomorfismo di rappresentazio
   \end{enumerate}
 }
 
-Adesso andremo a definire un proiettore $G$-invariante con il trucco della media vista in precedenza
-TODO: ma vogliamo un proiettore G-invariante o un morfismo di rappresentazioni? O sono la stessa cosa?
-\dfn{Proiettore $G$-invariante $P^G$}{
-  Sia $V$ una rappresentazione di $G$ e $U \subseteq V$ una sottorappresentazione. Si dice \textit{proeittore $G$-invariante} la seguente funzione:
+Adesso andremo a definire un proiettore $G$-equivariante con il trucco della media vista in precedenza
+\dfn{Proiettore $G$-equivariante $P^G$}{
+  Sia $V$ una rappresentazione di $G$ e $U \subseteq V$ una sottorappresentazione. Si dice \textit{proiettore $G$-equivariante} il seguente morfismo di rappresentazioni:
   \[
     p^G:V \to U \quad p^G(v) = \frac{1}{|G|} \sum_{g \in G} \rho(g)\circ p \circ \rho(g)^{-1}(v)
   \]
   dove $p$ e' un proiettore su $U$.
 }
 
-\mprop{Verifica del proiettore $G$-invariante}{
+\mprop{Verifica del proiettore $G$-equivariante}{
   Il proiettore $p^G$ appena definito è ben definito
 }
 \pf{Dimostrazione}{
@@ -720,12 +719,65 @@ Si vuole infatti definire uno spazio $V \otimes U$ tale che dare un'applicazione
 
 \subsubsection{Costruzione}
 
-TODO: non penso sia giusta questa definizione. Gem sembra confondersi perche' preferisce usare $ F(V \otimes U) $ per indicare lo SV libero, mentre usa $ \mathcal{L}(V,U) $ per indicare gli omomorfismi fra $ V $ e $ U $, ma non e' questo che vogliamo. Comunque lo tengo perche' forse non ho capito io.
+TODO: non penso sia giusta questa definizione. Gem sembra confondersi perche' preferisce usare $ F(V \otimes U) $ per indicare lo SV libero, mentre usa $ \mathcal{L}(V,U) $ per indicare gli omomorfismi fra $ V $ e $ U $, ma non e' questo che vogliamo. Comunque lo tengo perche' forse non ho capito io. 
+
+Va bene buon Basta, cambio la definzione, specificatamente per $U\times V$ (ti amo)
+
+Qui definisco ciò, ma è sonnet la fonte sta volta, se tu hai fonte diversa dimmi pure:
+
 \dfn{Spazio vettoriale libero}{
-  Dati due spazi vettoriali $V$ e $U$ su $K$, si definisce spazio vettoriale libero $L(V, U)$ come l'insieme di tutte le funzioni $V \to U$ con operazioni per coordinate.
+  Sia $S$ un insieme qualsiasi e $K$ un campo. Lo spazio vettoriale libero su $S$ su $K$ è:
+
   \[
-  L(V, U) := \{ f: V \to U \mid f \text{ è una funzione lineare} \}
+    L(S):=\left\{f:S\to K\;\middle|\;f(s)=0\text{ per quasi ogni } s\in S\right\}
   \]
+  dove "quasi ogni" significa "per tutti tranne un numero finito".
+}
+
+\dfn{Impulso di Dirac}{
+  Per ogni $s \in S$ \textit{Impulso di Dirac} la seguente funzione:
+  \[
+    \delta_s : S \to \mathbb{N}, \qquad \delta_s(t) = \begin{cases} 1 & \text{se } t = s \\ 0 & \text{se } t \neq s \end{cases}
+  \]
+}
+
+Si può dimostrare che questa sarà la base di ciò che noi chiameremo spazio vettoriale libero di $U\times V$
+
+\dfn{Spazio vettoriale libero di $U\times V$}{
+  Siano $V$ e $U$ spazi vettoriali su $K$. Prendiamo $S=V\times U$, l'insieme di tutte le coppie $(v,u)$ con $v\in V$ e $u\in U$.
+
+  Allora 
+  $$L(V\times U) = \left\{ \sum_{\text{finita}} \alpha_{(v,u)} \cdot \delta_{(v,u)} \;\middle|\; \alpha_{(v,u)} \in K \right\}$$
+  La base è $\{\delta_{(v,u)}\}_{(v,u) \in V \times U}$, una per ogni coppia.
+}
+
+\nt{
+  Si noti che $(v,u)$ è una coppia che rappresenta tutte le possibili coppie tra $V$ e $U$, non le base. PROPRIO LE COPPIE CAZZO 
+}
+
+\nt{Si noti che l'impulso di Dirac è una base di $L(V\times U)$ come definito prima}
+
+\ex{Esempietto}{
+  Sia $V=U=\mathbb{R}^2$ con basi $\{e_1,e_2\}$ e $\{f_1,f_2\}$.
+
+Alcuni elementi di base di $L(V\times U)$ sono:
+
+$$\delta_{(e_1, f_1)}, \quad \delta_{(e_2, f_2)}, \quad \delta_{(e_1 + e_2,\; f_1)}, \quad \delta_{(3e_1,\; 2f_2)}, \quad \delta_{(0,\; f_1)}, \quad \ldots$$
+
+Un elemento generico è:
+$$
+w=5\,\delta_{(e_1, f_1)} - 2\,\delta_{(e_1+e_2,\; f_2)} + 7\,\delta_{(3e_1,\; f_1)}
+$$
+}
+
+\nt{
+  In $L(U\times V)$non vale nessuna relazione algebrica tra le coppie. In particolare queste tre cose sono veri e propri assiomi di $L(V\times U)$:
+
+  $$\delta_{(e_1 + e_2,\; f_1)} \neq \delta_{(e_1, f_1)} + \delta_{(e_2, f_1)}$$
+
+  $$\delta_{(2e_1,\; f_1)} \neq 2\,\delta_{(e_1, f_1)}$$
+
+  $$\delta_{(0,\; f_1)} \neq 0$$
 }
 
 \cor{}{
@@ -776,6 +828,33 @@ Si noti questo teorema bellissimo degli insiemi quozienti
 }{
     La dimostrazione della "buona definizione" consiste nel verificare che, se scegliamo rappresentanti diversi per la stessa classe (ovvero $v \sim v'$ e $u \sim u'$), il risultato della somma non cambia. Poiché $(v' + u') - (v + u) = (v' - v) + (u' - u)$, e sapendo che entrambi i termini a destra appartengono a $W$, la loro somma appartiene ancora a $W$. Pertanto $[v' + u'] = [v + u]$.
 }
+
+Andiamo inoltre a mostrare altre cose dell'insieme quoziente
+\dfn{0 quoziente}{
+In uno spazio quoziente $L/B$, gli elementi sono "classi di equivalenza" (insiemi di vettori). La classe dello zero è definita come:
+
+$$[0]=\{w\in L\mid w-0\in B\}=\{w\in L\mid w\in B\}=B$$
+
+
+Quindi, lo zero del quoziente è il sottospazio $B$ stesso.
+}
+
+\nt{
+  Qualsiasi vettore che in $L(V\times U)$ apparteneva a $B$, una volta passato al quoziente, diventa indistinguibile dallo zero. Ovvero:
+  \[
+  \delta_{(v+v', u)} - \delta_{(v,u)} - \delta_{(v',u)} \in B \implies [\delta_{(v+v', u)}] = [\delta_{(v,u)}] + [\delta_{(v',u)}]
+  \]
+}
+
+Si possono così definire i cosiddetti tensori semplici
+\dfn{Tensori semplici}{
+  Si definisce \textit{Tensore semplice} il seguente elemento:
+  \[
+    v \otimes u := [(v,u)]
+  \]
+}
+
+
 
 \ex{Polinomi in due variabili}{
 $V = K[x]$, $U = K[y]$ (polinomi in $x$ e in $y$ rispettivamente). Le basi sono $\{1, x, x^2, \ldots\}$ e $\{1, y, y^2, \ldots\}$. Il prodotto tensoriale ha base $\{x^i \otimes y^j\}_{i,j \in \mathbb{N}}$, cioè:
