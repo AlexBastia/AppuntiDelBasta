@@ -450,5 +450,128 @@ Introduciamo le prime due classi di calcolabilita':
     \includegraphics[width=0.5\textwidth]{img/2026-03-04-11-05-59.png}
   \end{center}
 }
-Ha spammato degli esercizi, onesto possiamo anche guardarli da virtuale
-% \end{document}
+Ha spammato degli esercizi, onesto possiamo anche guardarli da virtuale.
+
+Abbiamo introdotto le macchine nondeterministiche per affrontare i problemi in modo piu' semplice, ora che siamo forti useremo algoritmi nondeterministici per risolvere problemi in modo da dimostrare la loro decidibilita'.
+
+\section{Macchina Universale}
+Tutte le macchine che abbiamo visto fin'ora sanno riconoscere un solo linguaggio. Ma per noi le macchine sono un modello di calcolo dei computer che usiamo, ma questi sono in grado di essere \textit{programmati} e le MdT no.
+
+Proviamo a collegare queste due cose con le \textbf{macchine universali}:
+
+\subsection{Costruzione della macchina universale}
+Vogliamo una macchina in grado di simulare il comportamento di altre macchine. Una macchina universale $ M_u $ prende in input
+  \[
+    (M, w)
+  \]
+dove $ M $ e' una MdT e $ w $ e' una stringa. $ M_u $ ci deve dire come si comporterebbe $ M $ su $ w $.
+
+\dfn{Linguaggio universale}{
+  Linugaggio che accetta una macchina universale $ M_u $
+  \[
+  L_u = \{\langle M,w \rangle | M |= w\}
+  \]
+}
+
+Vogliamo quindi che $ M_u $ riconosca $ L_u $. Ma come facciamo a dare una macchina come input?
+
+\thm{Potenza di macchine binarie}{
+  Le MdT che hanno solo 1,0 o blank nell'alfabeto, non scrivono black e hanno il nastro \textit{semi-}finito sono totipotenti.
+}
+\pf{}{ok}
+
+Detto cio', la funzione di transizione di transizione di $ M $ e' caratterizzata da
+\[
+  \delta(q_i, x_j) = (q_k, x_l, D_m)
+\]
+che possiamo codificare in mille modi diversi, ma usiamo solo 0 e 1:
+\[
+x_1 = 0\ x_2 = 1\ x_3 = b\
+\]
+e 
+\[
+D_1 = \gets\ D_2 = \to
+\]
+Assumiamo che
+\begin{itemize}
+\item $ q_1 $ e' lo stato iniziale
+\item $ q_2 $ e' lo stato finale accettante
+\end{itemize}
+Nomenclatura finita, facciamo la codifica di $ \delta $:
+\[
+0^i 1 0^j 1 0^k 1 0^l 1 0^m
+\]
+quindi usiamo 1 come separatore e gli zeri per rappresentare numeri. Ma questa e' solo una entry, per rappresentare tutta la funzione di transizione possiamo usare 11 per separare le codifiche di tutte le entry $ e_i $:
+\[
+e_1 11 e_2 11 e_3 11 ...
+\]
+abbiamo praticamente scritto in binario il programma della funzione di transizione di una MdT. Quindi questa stringa binaria la possiamo passare come input a $ M_u $, vediamo ora come funziona.
+
+\subsubsection{Funzionamento $ M_u $}
+Ha 4 nastri
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2026-03-06-16-13-45.png}
+\end{center}
+dove $ M $ e' la codifica della funzione di transizione definita prima e $ w $ e' un input in binario. Dato che 111 non compare mai in questa codifica, allora sappiamo che dopo questo divisore ci sta solo $ w $.
+
+Per prima cosa verifichiamo che la codifica sia sensata, altrimenti simula la macchina che rifiuta tutto.
+
+Poi simula $ M $ su $ w $:
+\begin{enumerate}
+\item $ w $ viene ricopiato sul secondo nastro con una codifica
+  \[
+    C(w_i) = \begin{cases}
+  0 & w_i = 0 \\
+  00 & w_i = 1
+  \end{cases}
+  \]
+    e la codifica completa
+    \[
+      C(w_1) 1 C(w_2) 1 ... C(w_n)
+    \]
+  \item Scrive sul terzo nastro il "nome" dello stato corrente di $ M $
+  \item Controlla sul primo nastro cosa dice di fare la funzione di transizione per quello stato e quel simbolo di input
+  \item Il quarto nastro serve nel caso in qui ci serve piu' spazio per scrivere un carattere, quindi ci facciamo la "brutta copia"
+\end{enumerate}
+I nostri computer sono macchine universali, che eseguono il proprio micro-codice fissato, ovvero il ciclo FDE.
+\dfn{Macchina universale}{
+}
+Non ha fetures strane, semplicemente esegue una funzione di transizione speciale (\textbf{funzione universale}) che li permette di simulare tutte le altre macchine.
+
+\subsection{Linguaggio universale: R o RE?}
+Ogni stringa binaria con un 1 pre-appeso all'inizio identifica in modo univoco un numero naturale. Quindi le stringhe binarie sono enumerabili. Abbiamo visto che anche la codifica della funzione di transizione di una MdT e' una stringa, e quindi interpretabile a un numero naturale, stessa cosa per l'input $ w $.\\
+
+Momento diagonalizzazione:
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2026-03-06-16-31-14.png}
+\end{center}
+Consideriamo la diagonale
+\[
+D = \{0,0,1,0,...\}
+\]
+e complementiamola
+\[
+\overline{D} = \{1,1,0,1,...\}
+\]
+e' un vettore binario, quindi sara' il vettore caratteristico di un linguaggio 
+\[
+L_d = \{w_i | M_i |=\ w_i\}
+\]
+Ma questo linguaggio non e' riconosciuto da nessuna macchina.
+
+\thm{}{
+  Sia $ L $ un linguaggio appartenente a R. Allora $ \overline{L} = \Sigma^* \setminus L $ appartiene a R.
+}
+\pf{Dimostrazione}{
+  Se $ L $ e' un linguaggio decidibile, $ \exists M_L $ che lo decide. Quindi $ M_L $ e' in grado di dire si o no in tempo finito. Costruisco $ M_{\overline{L}} $ dove gli stati accettanti diventano non-accettanti e tutti gli altri stati dove la macchina si bloccherebbe portano a uno stato accettante.
+}
+\thm{}{
+  Se $ L \in $ RE e $ \overline{L} \in $ RE, allora 
+  \[
+  L \in \text{ R}
+  \]
+}
+\pf{}{
+  Se $ L $ e' riconoscibile, allora $ \exists M_L $ che risponde si in tempo finito. Se $ \overline{L} $ e' riconoscibile, allora $ \exists M_{\overline{L}} $ che risponde si in tempo finito. Possiamo quindi creare una macchina $ M $ che fa processare in parallelo $ M_L $ e $ M_{\overline{L}} $ su un input, facendo un prodotto cartesiano degli stati delle due macchine che fanno passi contemporaneamente. Siamo sicuri che o uno o l'altro si fermera' prima o poi, se si ferma $ M_L $ diciamo si, altrimenti diciamo no.
+}
+\]% \end{document}
