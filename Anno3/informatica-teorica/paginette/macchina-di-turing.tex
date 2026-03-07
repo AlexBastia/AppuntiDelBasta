@@ -454,71 +454,81 @@ Ha spammato degli esercizi, onesto possiamo anche guardarli da virtuale.
 
 Abbiamo introdotto le macchine nondeterministiche per affrontare i problemi in modo piu' semplice, ora che siamo forti useremo algoritmi nondeterministici per risolvere problemi in modo da dimostrare la loro decidibilita'.
 
-\section{Macchina Universale}
-Tutte le macchine che abbiamo visto fin'ora sanno riconoscere un solo linguaggio. Ma per noi le macchine sono un modello di calcolo dei computer che usiamo, ma questi sono in grado di essere \textit{programmati} e le MdT no.
+\section{Macchine di turing universali}
+Le macchine di turing presentate finora sono "statiche" ovvero accettano/decidono un solo linguaggio. Sono programmate solo per fare una cosa, dato che la funzione di transizione è fissata.
 
-Proviamo a collegare queste due cose con le \textbf{macchine universali}:
+Tuttavia i computer che usiamo tutti i giorni sono "dinamici" ovvero possono eseguire qualunque programma, ovvero la funzione di transizione è più "ricca" di informazioni, dato che deve codificare anche il programma che deve eseguire.
 
-\subsection{Costruzione della macchina universale}
-Vogliamo una macchina in grado di simulare il comportamento di altre macchine. Una macchina universale $ M_u $ prende in input
+Quindi ci poniamo il problema: è possibile costruire una macchina di turing che possa eseguire qualunque programma? La risposta è sì, ed è la macchina di turing universale.
+
+\subsection{Codifica della macchina di turing}
+
+Consideriamo una MdT il cui alfabeto di input abbia solo due simboli $ \Sigma = \{0, 1\} $, mentre l'alfabeto di nastro può essere $ \Gamma = \{0, 1, \blank, \dots\} $.
+
+La funzione di transizione ha generalmente la forma:
+\[
+  \delta(Q_i, X_j) = (Q_k, X_l, D_m)
+\]
+
+\ex{}{
   \[
-    (M, w)
+    \delta(q_3, \blank) = (q_5, 0, \to)
   \]
-dove $ M $ e' una MdT e $ w $ e' una stringa. $ M_u $ ci deve dire come si comporterebbe $ M $ su $ w $.
+}
 
+Codifichiamo i simboli $ Q_i, X_j, Q_k, X_l, D_m $ partendo dai loro pedici:
+\[
+  Q_i = 0^i, \quad X_j = 0^j, \quad \text{sx} = D_1, \quad \text{dx} = D_2
+\]
+
+\nt{
+  Per convenzione fissiamo:
+  \begin{itemize}
+    \item $ x_1 = 0,\ x_2 = 1,\ x_3 = \blank,\ x_4, \dots $
+    \item $ q_1 $ è sempre lo stato iniziale
+    \item $ q_2 $ è sempre il singolo stato accettante
+  \end{itemize}
+}
+
+Ogni singola transizione $ c_i $ viene quindi codificata come una stringa binaria in cui i vari campi sono separati da $ 1 $. Ad esempio, la transizione $ \delta(q_3, \blank) = (q_5, x_1, D_2) $ viene codificata come:
+
+\[
+  c_1 = \underbrace{000}_{q_3} 1 \underbrace{000}_{X_3} 1 \underbrace{00000}_{q_5} 1 \underbrace{0}_{X_1} 1 \underbrace{00}_{D_2}
+\]
+
+Per unire più transizioni in un'unica stringa, le istanze $ c_i $ vengono separate da $ 11 $:
+\[
+  c_1 11 c_2 11 c_3 11 c_4 \cdots
+\]
+
+\nt{
+  Esistono infiniti modi per codificare una MdT, ma scegliamo questo. L'obiettivo è poter comunicare a una MdT come comportarsi rispetto a un'altra, quindi ogni stringa binaria può essere messa in associazione con una possibile MdT.
+
+  Ci saranno inevitabilmente stringhe binarie che non codificano nessuna MdT valida (perché non rispettano il formato). Per convenzione, assumiamo che tali stringhe corrispondano a una macchina con un unico stato non accettante.
+}
+
+\subsection{Definizione formale}
+
+\dfn{Macchina di Trueing universale}{
+  La Macchina di Turing Universale $ M_u $ e' una macchina che riceve in input una stringa binaria che codifica una macchina $ M $ e poi una stringa $ w $
+  \[
+    (M, w)  
+  \]
+  La macchina $ M_u $ e' in grado di dirci se $ M $ avrebbe accettato o meno $ w $
+}
 \dfn{Linguaggio universale}{
   Linugaggio che accetta una macchina universale $ M_u $
   \[
-  L_u = \{\langle M,w \rangle | M |= w\}
+  L_u = \{\langle M,w \rangle | M \models w\}
   \]
 }
 
-Vogliamo quindi che $ M_u $ riconosca $ L_u $. Ma come facciamo a dare una macchina come input?
+\subsection{Processo di simulazione}
 
-\thm{Potenza di macchine binarie}{
-  Le MdT che hanno solo 1,0 o blank nell'alfabeto, non scrivono black e hanno il nastro \textit{semi-}finito sono totipotenti.
-}
-\pf{}{ok}
-
-Detto cio', la funzione di transizione di transizione di $ M $ e' caratterizzata da
-\[
-  \delta(q_i, x_j) = (q_k, x_l, D_m)
-\]
-che possiamo codificare in mille modi diversi, ma usiamo solo 0 e 1:
-\[
-x_1 = 0\ x_2 = 1\ x_3 = b\
-\]
-e 
-\[
-D_1 = \gets\ D_2 = \to
-\]
-Assumiamo che
+La macchina $ M_u $ è una macchina a \textbf{quattro nastri}:
 \begin{itemize}
-\item $ q_1 $ e' lo stato iniziale
-\item $ q_2 $ e' lo stato finale accettante
-\end{itemize}
-Nomenclatura finita, facciamo la codifica di $ \delta $:
-\[
-0^i 1 0^j 1 0^k 1 0^l 1 0^m
-\]
-quindi usiamo 1 come separatore e gli zeri per rappresentare numeri. Ma questa e' solo una entry, per rappresentare tutta la funzione di transizione possiamo usare 11 per separare le codifiche di tutte le entry $ e_i $:
-\[
-e_1 11 e_2 11 e_3 11 ...
-\]
-abbiamo praticamente scritto in binario il programma della funzione di transizione di una MdT. Quindi questa stringa binaria la possiamo passare come input a $ M_u $, vediamo ora come funziona.
-
-\subsubsection{Funzionamento $ M_u $}
-Ha 4 nastri
-\begin{center}
-  \includegraphics[width=0.5\textwidth]{img/2026-03-06-16-13-45.png}
-\end{center}
-dove $ M $ e' la codifica della funzione di transizione definita prima e $ w $ e' un input in binario. Dato che 111 non compare mai in questa codifica, allora sappiamo che dopo questo divisore ci sta solo $ w $.
-
-Per prima cosa verifichiamo che la codifica sia sensata, altrimenti simula la macchina che rifiuta tutto.
-
-Poi simula $ M $ su $ w $:
-\begin{enumerate}
-\item $ w $ viene ricopiato sul secondo nastro con una codifica
+  \item \textbf{Nastro 1 (input)}: contiene la coppia $ M \texttt{ 111 } w $, dove $ M $ e $ w $ sono separati da tre $ 1 $ consecutivi. Questo separatore è non ambiguo poiché nella codifica di $ M $ non compaiono mai tre $ 1 $ di fila.
+  \item \textbf{Nastro 2 (nastro simulato)}: contiene la ricodifica di $ w $ secondo i simboli simulati.
   \[
     C(w_i) = \begin{cases}
   0 & w_i = 0 \\
@@ -529,49 +539,157 @@ Poi simula $ M $ su $ w $:
     \[
       C(w_1) 1 C(w_2) 1 ... C(w_n)
     \]
-  \item Scrive sul terzo nastro il "nome" dello stato corrente di $ M $
-  \item Controlla sul primo nastro cosa dice di fare la funzione di transizione per quello stato e quel simbolo di input
-  \item Il quarto nastro serve nel caso in qui ci serve piu' spazio per scrivere un carattere, quindi ci facciamo la "brutta copia"
-\end{enumerate}
-I nostri computer sono macchine universali, che eseguono il proprio micro-codice fissato, ovvero il ciclo FDE.
-\dfn{Macchina universale}{
-}
-Non ha fetures strane, semplicemente esegue una funzione di transizione speciale (\textbf{funzione universale}) che li permette di simulare tutte le altre macchine.
+  \item \textbf{Nastro 3 (stato simulato)}: tiene traccia dello stato corrente di $ M $ durante la simulazione.
+  \item \textbf{Nastro 4 (lavoro)}: nastro ausiliario per operazioni di copia e spostamento.
+\end{itemize}
 
-\subsection{Linguaggio universale: R o RE?}
-Ogni stringa binaria con un 1 pre-appeso all'inizio identifica in modo univoco un numero naturale. Quindi le stringhe binarie sono enumerabili. Abbiamo visto che anche la codifica della funzione di transizione di una MdT e' una stringa, e quindi interpretabile a un numero naturale, stessa cosa per l'input $ w $.\\
-
-Momento diagonalizzazione:
 \begin{center}
-  \includegraphics[width=0.5\textwidth]{img/2026-03-06-16-31-14.png}
+  \includegraphics[width=0.4\textwidth]{img/2026-03-06-16-13-45.png}
 \end{center}
-Consideriamo la diagonale
-\[
-D = \{0,0,1,0,...\}
-\]
-e complementiamola
-\[
-\overline{D} = \{1,1,0,1,...\}
-\]
-e' un vettore binario, quindi sara' il vettore caratteristico di un linguaggio 
-\[
-L_d = \{w_i | M_i |=\ w_i\}
-\]
-Ma questo linguaggio non e' riconosciuto da nessuna macchina.
 
-\thm{}{
-  Sia $ L $ un linguaggio appartenente a R. Allora $ \overline{L} = \Sigma^* \setminus L $ appartiene a R.
+Se la codifica in input non e' sensata, allora la macchina universale simula la macchina che rifiuta tutto. Altrimenti la simulazione procede nelle seguenti fasi:
+
+\begin{enumerate}
+  \item \textbf{Inizializzazione}: $ M_u $ ricodifica $ w $ sul nastro 2 secondo lo schema dei simboli simulati. Ad esempio:
+    \[
+      w = \underbrace{0}_{X_1}\underbrace{1}_{X_2}\underbrace{0}_{X_1} \quad \Longrightarrow \quad \texttt{1 0 1 0 1}
+    \]
+    Scrive sul nastro 3 lo stato iniziale $ q_1 = 0 $.
+
+  \item \textbf{Ciclo di simulazione}: ad ogni passo, $ M_u $ conosce lo stato corrente di $ M $ (nastro 3) e il simbolo correntemente letto (nastro 2). Cerca quindi sul nastro 1 la transizione corrispondente $ \delta(q_i, x_j) $ e:
+    \begin{itemize}
+      \item aggiorna il nastro 3 con il nuovo stato $ q_k $
+      \item sovrascrive il simbolo sul nastro 2 con $ x_l $
+      \item sposta la testina sul nastro 2 nella direzione $ D_m $
+      \item usa il nastro 4 come area di lavoro se è necessario ridimensionare il nastro 2
+    \end{itemize}
+
+  \item \textbf{Terminazione}: la simulazione termina quando $ M $ raggiunge una configurazione finale:
+    \[
+      M \text{ accetta } w \implies M_u \text{ accetta}
+    \]
+    \[
+      M \text{ rifiuta } w \implies M_u \text{ rifiuta}
+    \]
+    \[
+      M \text{ non termina su } w \implies M_u \text{ non termina}
+    \]
+\end{enumerate}
+
+\nt{
+  I nostri computer sono esattamente delle $ M_u $. La loro funzione di transizione universale è fissata nell'hardware: è il \textbf{microcodice della CPU}. Questo risponde alla domanda su come mai le MdT classiche non si possono ``programmare'' mentre i computer sì.
 }
-\pf{Dimostrazione}{
-  Se $ L $ e' un linguaggio decidibile, $ \exists M_L $ che lo decide. Quindi $ M_L $ e' in grado di dire si o no in tempo finito. Costruisco $ M_{\overline{L}} $ dove gli stati accettanti diventano non-accettanti e tutti gli altri stati dove la macchina si bloccherebbe portano a uno stato accettante.
-}
-\thm{}{
-  Se $ L \in $ RE e $ \overline{L} \in $ RE, allora 
+
+\section{Problemi Ricorsivi e Ricorsivamente Enumerabili}
+
+Abbiamo introdotto le classi di calcolabilità $ R $ e $ RE $, e abbiamo detto che i problemi possono stare in $ R $ e in $ RE $. Ma possono esistere problemi che stanno fuori da $ RE $? Sì, e ora li andremo a vedere.
+
+\subsection{Enumerare stringhe e macchine}
+
+Riconsideriamo macchine che processano in input stringhe binarie. Se prendiamo una stringa binaria e ci mettiamo un $ 1 $ davanti, possiamo associarle un numero intero:
+\[
+  1 \circ 00010\ldots
+\]
+In questo modo possiamo enumerare tutte le stringhe binarie:
+\[
+  \underbrace{1 \circ \varepsilon}_{1°} \quad
+  \underbrace{1 \circ 0}_{2°} \quad
+  \underbrace{1 \circ 1}_{3°} \quad
+  \underbrace{1 \circ 01}_{4°} \quad
+  \underbrace{1 \circ 10}_{5°} \quad \cdots
+\]
+Le stringhe con indice più basso sono tendenzialmente più corte; stringhe della stessa lunghezza sono ordinate lessicograficamente. Le stringhe binarie sono \textbf{infinite numerabili}.
+
+Lo stesso ragionamento vale per le MdT: grazie alla codifica binaria introdotta nella sezione precedente, possiamo mettere un $ 1 $ davanti alla codifica di ogni MdT e ottenere un numero intero. Quindi \textbf{possiamo contare le macchine di Turing}, chiamandole $ M_1, M_2, M_3, \ldots$
+
+\subsection{Vettore caratteristico e argomento diagonale}
+
+\dfn{Vettore caratteristico}{
+  Il \textbf{vettore caratteristico} del linguaggio $ \mathcal{L} $ è una stringa binaria infinita $ \chi_\mathcal{L} $ tale che la posizione $ i $-esima vale $ 1 $ se $ w_i \in \mathcal{L} $, e $ 0 $ altrimenti.
   \[
-  L \in \text{ R}
+    \chi_\mathcal{L} = \{0\ 1\ 1\ 0\ 0\ 1\ \cdots\}
   \]
 }
-\pf{}{
-  Se $ L $ e' riconoscibile, allora $ \exists M_L $ che risponde si in tempo finito. Se $ \overline{L} $ e' riconoscibile, allora $ \exists M_{\overline{L}} $ che risponde si in tempo finito. Possiamo quindi creare una macchina $ M $ che fa processare in parallelo $ M_L $ e $ M_{\overline{L}} $ su un input, facendo un prodotto cartesiano degli stati delle due macchine che fanno passi contemporaneamente. Siamo sicuri che o uno o l'altro si fermera' prima o poi, se si ferma $ M_L $ diciamo si, altrimenti diciamo no.
+
+Costruiamo ora una tabella infinita: sulle righe le MdT $ M_1, M_2, \ldots $, sulle colonne le stringhe $ w_1, w_2, \ldots $, e nella cella $ (i,j) $ scriviamo $ 1 $ se $ M_i $ accetta $ w_j $, $ 0 $ altrimenti. Ogni riga è quindi il vettore caratteristico del linguaggio accettato da quella macchina.
+
+\begin{center}
+\begin{tabular}{c|cccc c}
+       & $w_1$ & $w_2$ & $w_3$ & $w_4$ & $\cdots$ \\ \hline
+$M_1$  & \textbf{0} & 1 & 0 & 0 & $\cdots$ \\
+$M_2$  & 1 & \textbf{1} & 0 & 1 & $\cdots$ \\
+$M_3$  & 0 & 0 & \textbf{0} & 1 & $\cdots$ \\
+$M_4$  & 1 & 0 & 0 & \textbf{1} & $\cdots$ \\
+$\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ & $\ddots$
+\end{tabular}
+\end{center}
+
+Concentriamoci sulla \textbf{diagonale}: prendiamo il valore $ (i,i) $ per ogni $ i $, ottenendo la stringa $ D = \{0\ 1\ 0\ 1\ \cdots\} $. Definiamo $ \bar{D} $ come il suo complemento bit a bit, $ \bar{D} = \{1\ 0\ 1\ 0\ \cdots\} $.
+
+$ \bar{D} $ è interpretabile come vettore caratteristico di un linguaggio. Chiamiamo $ \mathcal{L}_d $ il linguaggio il cui vettore caratteristico è $ \bar{D} $:
+\[
+  \mathcal{L}_d = \{w_i \mid M_i \not\models w_i\}
+\]
+ovvero $ \mathcal{L}_d $ contiene la $ i $-esima stringa se e solo se la $ i $-esima macchina \textit{non} la accetta.
+
+\mprop{}{
+  $ \mathcal{L}_d \notin RE $
 }
-\]% \end{document}
+\pf{Dimostrazione}{
+  Supponiamo per assurdo che esista una MdT $ M_k $ tale che $ \mathcal{L}(M_k) = \mathcal{L}_d $. Chiediamoci se $ M_k $ accetta $ w_k $:
+  \begin{itemize}
+    \item Se $ M_k \models w_k $: allora $ w_k \in \mathcal{L}(M_k) = \mathcal{L}_d $, ma per definizione $ w_k \in \mathcal{L}_d \iff M_k \not\models w_k $. Contraddizione.
+    \item Se $ M_k \not\models w_k $: allora $ w_k \in \mathcal{L}_d $, quindi $ M_k $ dovrebbe accettare $ w_k $. Contraddizione.
+  \end{itemize}
+  In entrambi i casi arriviamo a una contraddizione, quindi $ \nexists $ una MdT che accetti $ \mathcal{L}_d $, ovvero $ \mathcal{L}_d \notin RE $
+}
+
+\nt{
+  Perché esistono linguaggi indecidibili? Le MdT sono enumerabili, quindi sono tante quanti $ \mathbb{N} $. I linguaggi invece sono tutti i possibili sottoinsiemi delle stringhe, quindi la loro cardinalità è quella di $ \mathbb{R} $. Esistono semplicemente \textbf{più linguaggi che algoritmi}.
+}
+
+\subsection{Proprietà sui linguaggi}
+
+\dfn{Complemento di un linguaggio}{
+  Sia $ \mathcal{L} \subseteq \Sigma^* $, il \textbf{complemento} di $ \mathcal{L} $ è:
+  \[
+    \overline{\mathcal{L}} = \Sigma^* \setminus \mathcal{L}
+  \]
+}
+
+\thm{}{
+  Se $ \mathcal{L} \in R \implies \overline{\mathcal{L}} \in R $
+}
+\pf{Dimostrazione}{
+  Siccome $ \mathcal{L} \in R $, esiste $ M_\mathcal{L} $ che decide $ \mathcal{L} $ (risponde sì o no in tempo finito). Costruiamo $ \overline{M} $ che si comporta esattamente come $ M_\mathcal{L} $ ma inverte la risposta:
+  \[
+    w \xrightarrow{\quad} M_\mathcal{L} \xrightarrow{\text{sì} \to \text{no},\ \text{no} \to \text{sì}} \overline{M}
+  \]
+  Poiché $ M_\mathcal{L} $ termina sempre, anche $ \overline{M} $ termina sempre $ \implies \overline{\mathcal{L}} \in R $. 
+}
+
+\thm{}{
+  Se $ \mathcal{L} \in RE \land \overline{\mathcal{L}} \in RE \implies \mathcal{L} \in R $
+}
+\pf{Dimostrazione}{
+  Siano $ M_\mathcal{L} $ e $ M_{\overline{\mathcal{L}}} $ le macchine che accettano rispettivamente $ \mathcal{L} $ e $ \overline{\mathcal{L}} $. Costruiamo $ M' $ che esegue $ M_\mathcal{L} $ e $ M_{\overline{\mathcal{L}}} $ \textbf{in parallelo} su un input $ w $:
+  \begin{itemize}
+    \item Se risponde $ M_\mathcal{L} $: $ w \in \mathcal{L} $, accetta.
+    \item Se risponde $ M_{\overline{\mathcal{L}}} $: $ w \notin \mathcal{L} $, rifiuta.
+  \end{itemize}
+  Poiché ogni stringa sta o in $ \mathcal{L} $ o in $ \overline{\mathcal{L}} $, una delle due macchine risponderà sempre in tempo finito $ \implies M' $ è un decisore $ \implies \mathcal{L} \in R $.
+}
+
+\nt{
+  Questo risultato implica che $ RE $ \textbf{non è chiuso per complemento}: se lo fosse, ogni linguaggio in $ RE $ sarebbe automaticamente in $ R $, e sappiamo che ciò non è vero.
+}
+
+Le classi $ R $ e $ RE $ formano quindi questa gerarchia stretta:
+\begin{center}
+  \begin{tikzpicture}
+    \draw[thick] (0,0) ellipse (3cm and 1.8cm) node[above=1.2cm] {$ RE $};
+    \draw[thick] (0,-0.1) ellipse (1.8cm and 1cm) node {$ R $};
+    \node at (0, 1.2) {$ \mathcal{L}_d \notin RE $};
+  \end{tikzpicture}
+\end{center}
+%\end{document}

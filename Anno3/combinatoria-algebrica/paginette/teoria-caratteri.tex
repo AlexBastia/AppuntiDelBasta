@@ -518,21 +518,20 @@ $$\langle \chi_U, \chi_W \rangle = \begin{cases} 1 & \text{se } U \cong W \\ 0 &
 \pf{Dimostrazione}{
 Consideriamo la rappresentazione $\mathrm{Hom}_K(U,W) \cong U^* \otimes W$. Il suo carattere è $\chi_{U^* \otimes W} = \overline{\chi_U} \cdot \chi_W$. Quindi:
 $$\langle \chi_U, \chi_W \rangle = \frac{1}{|G|}\sum_{g \in G} \chi_W(g)\,\overline{\chi_U(g)} = \frac{1}{|G|}\sum_{g \in G}\chi_{U^* \otimes W}(g) \overset{\text{Lemma A}}{=} \dim(\mathrm{Hom}_K(U,W))^G$$
-
+%
 Per il Lemma B:
 $$= \dim \mathrm{Hom}_G(U,W)$$
-
+%
 Ora applichiamo il Lemma di Schur:
 \begin{itemize}
 \item Se $U \not\cong W$: ogni morfismo $f: U \to W$ di rappresentazioni è zero, quindi $\mathrm{Hom}_G(U,W) = \{0\}$, dunque $\dim = 0$.
   \item Se $U \cong W$: i morfismi di rappresentazioni $U \to U$ sono solo le omotetie $\lambda \cdot \mathrm{id}$ (spazio 1-dimensionale), quindi $\dim \mathrm{Hom}_G(U,U) = 1$.
 \end{itemize}
-
+%
 Catena logica \textit{limpida}
 \[
 \langle \chi_U, \chi_W \rangle \overset{\text{A}}{=} \dim(\mathrm{Hom}_K(U,W))^G \overset{\text{B}}{=} \dim\mathrm{Hom}_G(U,W) \overset{\text{Schur}}{=} \begin{cases}1 \\ 0\end{cases}
 \]
 }
-
-
+%
 % \end{document}
