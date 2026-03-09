@@ -475,12 +475,12 @@ Possiamo dire quindi che:
 \mlenma{Lemma A}{
   La molteplicità della rappresentazione banale in $V$ è $\dim V^G = \dfrac{1}{|G|}\displaystyle\sum_{g \in G}\chi_V(g)$.
 }
-Quindi il numero delle sottorapresentazioni banali (di dimensione 1) di una rappresentazione e' data dalla somma dei caratteri di tutti gli elementi di $ G $ diviso per il numero di elementi in $ G $.
+Quindi il numero delle sottorapresentazioni banali (di dimensione 1) di una rappresentazione e' data dalla media dei caratteri di tutti gli elementi di $ G $.
 
 \subsubsection{La rappresentazione $ Hom_G(U,W) $}
 Consideriamo il caso in cui $ U $ e $ W $ sono rappresentazioni di $ G $ e $ V = Hom_\mathbb{C}(U,W) $. Per quanto abbiamo visto in precedenza, anche $ V $ costituisce una rappresentazione di $ G $, quindi esiste
 \[
-  V^G = (Hom_\mathbb{C}(U,W))^G = \{f: V \to W \text{ lin. } | g \cdot f = f\ \forall g \in G\}
+  V^G = (Hom_\mathbb{C}(U,W))^G = \{f: U \to W \text{ lin. } | g \cdot f = f\ \forall g \in G\}
 \]
 dove l'azione di $g$ su è la coniugazione $g \cdot f = \pi(g) \circ f \circ \rho(g)^{-1}$ (come definito in precedenza). Ma questa e' la condizione per essere un morfismo di rappresentazioni, quindi $ (Hom_\mathbb{C}(U,W))^G $ e' anche lo spazio dei morfismi di rappresentazioni tra $ U $ e $ W $, indicato con $ Hom_G(U,W) $.
 
@@ -518,20 +518,181 @@ $$\langle \chi_U, \chi_W \rangle = \begin{cases} 1 & \text{se } U \cong W \\ 0 &
 \pf{Dimostrazione}{
 Consideriamo la rappresentazione $\mathrm{Hom}_K(U,W) \cong U^* \otimes W$. Il suo carattere è $\chi_{U^* \otimes W} = \overline{\chi_U} \cdot \chi_W$. Quindi:
 $$\langle \chi_U, \chi_W \rangle = \frac{1}{|G|}\sum_{g \in G} \chi_W(g)\,\overline{\chi_U(g)} = \frac{1}{|G|}\sum_{g \in G}\chi_{U^* \otimes W}(g) \overset{\text{Lemma A}}{=} \dim(\mathrm{Hom}_K(U,W))^G$$
-%
+
 Per il Lemma B:
 $$= \dim \mathrm{Hom}_G(U,W)$$
-%
+
 Ora applichiamo il Lemma di Schur:
 \begin{itemize}
 \item Se $U \not\cong W$: ogni morfismo $f: U \to W$ di rappresentazioni è zero, quindi $\mathrm{Hom}_G(U,W) = \{0\}$, dunque $\dim = 0$.
   \item Se $U \cong W$: i morfismi di rappresentazioni $U \to U$ sono solo le omotetie $\lambda \cdot \mathrm{id}$ (spazio 1-dimensionale), quindi $\dim \mathrm{Hom}_G(U,U) = 1$.
 \end{itemize}
-%
+
 Catena logica \textit{limpida}
 \[
-\langle \chi_U, \chi_W \rangle \overset{\text{A}}{=} \dim(\mathrm{Hom}_K(U,W))^G \overset{\text{B}}{=} \dim\mathrm{Hom}_G(U,W) \overset{\text{Schur}}{=} \begin{cases}1 \\ 0\end{cases}
+  \langle \chi_U, \chi_W \rangle \overset{\text{A}}{=} \dim(\mathrm{Hom}_K(U,W))^G \overset{\text{B}}{=} \dim\mathrm{Hom}_G(U,W) \overset{\text{Schur}}{=} \begin{cases}1 & U \cong W\\ 0 & U \not\cong W \end{cases}
 \]
 }
-%
+
+\ex{Verifica con $ S_3 $}{
+Prendiamo $U =$ rappresentazione banale e $W =$ rappresentazione standard di $S_3$ (dim 2). Le classi di coniugio sono $\{e\}$, $\{(12),(13),(23)\}$, $\{(123),(132)\}$ con $|C_i| = 1, 3, 2$. In un esercizio prima abbiamo calcolato i caratteri di $ U $ e $ W $ per ogni classe e, poiché i caratteri sono reali (per $S_3$), $\overline{\chi_W} = \chi_W$, possiamo calcolare il prodotto hermitiano:
+
+$$\langle \chi_U, \chi_W \rangle = \frac{1}{6}(1\cdot2\cdot1 + 1\cdot0\cdot3 + 1\cdot(-1)\cdot2) = \frac{1}{6}(2+0-2) = 0$$
+
+$$\langle \chi_W, \chi_W \rangle = \frac{1}{6}(4\cdot1 + 0\cdot3 + 1\cdot2) = \frac{1}{6}(4+0+2) = 1$$
+}
+
+\subsection{Conseguenze ortogonalita'}
+Siano $V_1, \ldots, V_r$ tutte le rappresentazioni irriducibili di $G$ (a meno di isomorfismo). Allora sappimao che ogni rappresentazione $V$ di $G$ si decompone in modo unico come:
+
+$$V \cong V_1^{\oplus k_1} \oplus \cdots \oplus V_r^{\oplus k_r}$$
+
+dove $V_i^{\oplus k_i} = \underbrace{V_i \oplus \cdots \oplus V_i}_{k_i}$ si chiama componente isotipica di tipo $V_i$ (raccoglie tutte le copie isomorfe a $V_i$).
+
+In termini di caratteri: $\chi_V = \sum_{i=1}^r k_i \chi_{V_i}$.\\
+
+Detto cio', andiamo a vedere delle conseguenze di questo fatto e dell'ortogonalita' dei caratteri.
+
+\cor{Calcolo Molteplicita'}{
+Le molteplicità $k_i$ sono:
+
+$$k_i = \langle \chi_V, \chi_{V_i} \rangle$$  
+}
+\pf{Dimostrazione}{
+Per linearità del prodotto hermitiano e ortogonalità:
+$$\langle \chi_V, \chi_{V_j}\rangle = \left\langle \sum_i k_i \chi_{V_i}, \chi_{V_j}\right\rangle = \sum_i k_i \langle \chi_{V_i}, \chi_{V_j}\rangle = \sum_i k_i \delta_{ij} = k_j.$$ 
+}
+
+\cor{Criterio di Irriducibilita'}{
+ $V$ è irriducibile se e solo se $\langle \chi_V, \chi_V \rangle = 1$.
+}
+\pf{Dimostrazione}{
+  $\langle \chi_V, \chi_V \rangle = \sum_i k_i^2$ (usando linearita' e corollario sopra). Poiché $k_i \in \mathbb{Z}_{\geq 0}$, si ha $\sum_i k_i^2 = 1 \iff$ esattamente un $k_i = 1$ e tutti gli altri sono 0.
+}
+
+\cor{Il Carattere e' un Invariante Completo}{
+$V \cong W \iff \chi_V = \chi_W$.
+}
+\pf{Dimostrazione}{
+$(\Rightarrow)$ Ovvio. $(\Leftarrow)$ Poiche' i $ \chi_{V_i} $ sono linearmente indipendenti
+\[
+\chi_W = \chi_V = \sum k_i \chi_{V_i}
+\]
+e' l'unico modo per scrivere $ \chi_W $, quindi
+\[
+  W = V_i^{k_1} \oplus ... \oplus V_r^{k_r}
+\]
+}
+
+\thm{Struttura della Rappresentazione Regolare}{
+Ogni irriducibile $V_i$ appare in $\mathbb{C}[G]$ con molteplicità $k_i = \dim V_i$.
+}
+\pf{Dimostrazione}{
+Per il Corollario 1:
+
+$$k_i = \langle \chi_{V_i}, \chi_{\mathbb{C}[G]} \rangle = \frac{1}{|G|}\sum_{g \in G} \chi_{V_i}(g)\,\overline{\chi_{\mathbb{C}[G]}(g)}$$
+
+Il carattere regolare vale $\chi_{\mathbb{C}[G]}(g) = \begin{cases}|G| & g = e \\ 0 & g \neq e\end{cases}$ (TODO: spiega meglio sta cosa), quindi:
+
+$$k_i = \frac{1}{|G|} \cdot \chi_{V_i}(e) \cdot |G| = \chi_{V_i}(e) = \dim V_i$$  
+}
+
+\cor{Identita' di Burnside}{
+Poiché $\dim \mathbb{C}[G] = |G|$:
+
+$$|G| = \sum_{i=1}^r (\dim V_i)^2 = \sum_{i=1}^{r} (k_i)^2 $$  
+}
+
+\section{Caratteri di irriducibili come Base}
+
+Per completare il quadro, introduciamo uno strumento che permette di dimostrare che i caratteri irriducibili formano una base (non solo sistema ortonormale) di $\mathcal{C}(G)$.
+
+\subsection{La funzione $ \varphi_{\alpha, V} $}
+\dfn{}{
+Sia $(V, \rho)$ una rappresentazione di $G$ e $\alpha \in \mathcal{C}(G)$ una funzione centrale. Definiamo:
+
+$$\psi_{\alpha, V} := \sum_{g \in G} \alpha(g)\, \rho(g) \;\;\in\;\; \mathrm{End}_K(V)$$  
+}
+È un operatore su $V$ ottenuto "pesando" le trasformazioni $\rho(g)$ con i valori di $\alpha$.
+
+\mlenma{}{
+ $\psi_{\alpha,V}$ è un morfismo di rappresentazioni, cioè $\psi_{\alpha,V} \in \mathrm{End}_G(V)$.
+}
+\pf{Dimostrazione}{
+Sia $h \in G$. Calcoliamo $\psi_{\alpha,V} \cdot h$:
+
+$$\psi_{\alpha,V} \circ \rho(h) = \sum_{g \in G} \alpha(g)\,\rho(g)\rho(h) = \sum_{g \in G}\alpha(g)\,\rho(gh)$$
+
+Sostituiamo $ g $ con $ hgh^{-1} $
+
+\[
+  = \sum_{hgh^{-1} \in G} \alpha(hgh^{-1})\rho(hgh^{-1}h) = \sum_{g \in G} \alpha(g)\rho(h)\rho(g)
+\]
+dato che $ \alpha \in \mathcal{C}(G) $. Dato che possiamo trattare la rapresentazione di $ h $ come scalare, possiamo riscrivere
+\[
+  = \rho(h) \sum_{g \in G} \alpha(g)\rho(g)
+\]
+}
+
+\subsection{Caratteri base di $ \mathcal{C} $ e conseguenze}
+\thm{}{
+I caratteri $\chi_{V_1}, \ldots, \chi_{V_r}$ delle rappresentazioni irriducibili (a meno di iso.) formano una base ortonormale di $\mathcal{C}(G)$.
+}
+\pf{Dimostrazione}{
+  Sappiamo gia' che i caratteri sono ortogonali (e quindi lin. ind.).
+
+  Dobbiamo provare che generino $\mathcal{C}(G)$: dobbiamo mostrare che se $\alpha \in \mathcal{C}(G)$ soddisfa $\langle \alpha, \chi_{V_i}\rangle = 0$ per ogni $i$, allora $\alpha = 0$.
+
+Per ogni irriducibile $V_i$, possiamo costruire il morfismo di rappresentazioni $ \varphi_{\alpha, V_i}: V_i \to V_i $, che per il Lemma di Shur e' un omotetia
+\[
+\varphi_{\alpha, V_i} = \lambda id
+\]
+Quindi sappiamo che la traccia di $ \varphi_{\alpha, V_i} $ e'
+\[
+  \lambda \cdot dim V_i = \sum_{g\in G} \alpha(g)\chi_{V_i}(g) = |G|\langle \alpha, \chi_{V_i}\rangle
+\]
+Che per ipotesi pero' e' zero. Cio' implica che $ \lambda = 0 $, e quindi che $ \varphi_{\alpha, V_i} = 0 $ per ogni $ V_i $ irriducibile.\\
+
+Ma cio' significa che per qualsiasi rappresentazione $ V $ si ha che
+\[
+\varphi_{\alpha, V} = 0
+\]
+dato che $ \varphi_{\alpha, V \oplus W} = \varphi_{\alpha, V} \oplus \varphi_{\alpha, W} $. In particolare
+\[
+  0 = \varphi_{\alpha, \mathbb{C}[G]}(1_G) = \sum_{g \in G} \alpha(g)\rho_{reg}(g)1_G = \sum_{g \in G} \alpha(g)\rho_{reg}(g)
+\]
+quindi, dato che gli elementi di $ G $ formano una base, per essere 0 allora $ \forall g \in G. \alpha(g) = 0 $, ovvero
+\[
+\alpha = 0
+\]
+}
+
+\cor{Numero di Irriducibili}{
+ Il numero di rappresentazioni irriducibili di $G$ (a meno di isomorfismo) è uguale al numero di classi di coniugio di $G$.
+}
+\pf{Dimostrazione}{
+I caratteri irriducibili formano una base di $\mathcal{C}(G)$, che ha dimensione uguale al numero di classi di coniugio.
+}
+
+\cor{Gruppi Abeliani}{
+$G$ è abeliano $\iff$ tutte le sue rappresentazioni irriducibili hanno dimensione 1.
+}
+\pf{Dimostrazione}{
+$(\Rightarrow)$ Se $G$ è abeliano, ogni elemento ha la propria classe di coniugio $\Rightarrow$ ci sono $|G|$ classi $\Rightarrow$ ci sono $|G|$ irriducibili. Per Burnside: $|G| = \sum_i d_i^2 = |G|$ implica $d_i = 1$ per ogni $i$.
+
+$(\Leftarrow)$ Se tutti i $d_i = 1$, dalla struttura di $\mathbb{C}[G] \cong \mathbb{C}^{|G|}$ si deduce che $\mathbb{C}[G]$ è commutativo, quindi $G$ è abeliano.
+}
+
+\ex{Esercizio completo su $ S_3 $}{
+$S_3$ ha 3 classi di coniugio $\Rightarrow$ esattamente 3 rappresentazioni irriducibili $V_1, V_2, V_3$.
+
+Da Burnside: $d_1^2 + d_2^2 + d_3^2 = |S_3| = 6$, con le dimensioni note $d_1 = 1$ (banale $U$), $d_2 = 2$ (standard $W$), e quindi $d_3^2 = 6 - 1 - 4 = 1$, cioè $d_3 = 1$.
+
+
+La decomposizione della rappresentazione regolare è:
+$$\mathbb{C}[S_3] \cong U^{\oplus 1} \oplus W^{\oplus 2} \oplus X^{\oplus 1}$$
+
+Trova $ X $:
+}
+
 % \end{document}
