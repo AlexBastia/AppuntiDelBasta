@@ -693,3 +693,130 @@ Le classi $ R $ e $ RE $ formano quindi questa gerarchia stretta:
   \end{tikzpicture}
 \end{center}
 %\end{document}
+
+\section{Linguaggio Universale e Problema della Fermata}
+
+\dfn{Linguaggio Universale}{
+  Il linguaggio universale è l'insieme delle coppie macchina-stringa tali che la macchina $ M $ accetta $ w $:
+  \[
+    \mathcal{L}_u = \{(M, w) \mid M \models w\}
+  \]
+}
+
+$ \mathcal{L}_u \in RE $? Sì, perché esiste $ M_u $ che lo accetta: data la coppia $ (M, w) $, simula $ M $ su $ w $ e risponde sì se $ M $ accetta. Se $ M $ non accetta, $ M_u $ non termina, quindi nessuna garanzia sul ``no''.
+
+$ \mathcal{L}_u \in R $? No.
+
+\thm{}{$ \mathcal{L}_u \notin R $}
+\pf{Dimostrazione}{
+  Supponiamo per assurdo che $ \mathcal{L}_u \in R $, ovvero esiste $ \bar{M}_u $ che \textit{decide} $ \mathcal{L}_u $. Costruiamo la macchina $ M' $:
+  \begin{enumerate}
+    \item Riceve $ w_i $ in input
+    \item Copia $ w_i $ per costruire la coppia $ (M_i, w_i) $
+    \item Esegue $ \bar{M}_u $ su $ (M_i, w_i) $ e \textbf{inverte} la risposta
+  \end{enumerate}
+  Analizziamo $ \mathcal{L}(M') $:
+  \begin{itemize}
+    \item $ M' $ risponde \textbf{sì} su $ w_i \iff \bar{M}_u $ risponde no $ \iff M_i \not\models w_i $
+    \item $ M' $ risponde \textbf{no} su $ w_i \iff \bar{M}_u $ risponde sì $ \iff M_i \models w_i $
+  \end{itemize}
+  Quindi $ \mathcal{L}(M') = \{w_i \mid M_i \not\models w_i\} = \mathcal{L}_d $. Ma $ M' $ termina sempre (poiché $ \bar{M}_u $ termina sempre per ipotesi), quindi $ M' $ sarebbe un decisore per $ \mathcal{L}_d $, il che implicherebbe $ \mathcal{L}_d \in R \subseteq RE $. Contraddizione con $ \mathcal{L}_d \notin RE $.
+}
+
+\nt{
+  Vale anche che $ \overline{\mathcal{L}_u} \notin RE $. Se così non fosse, avremmo $ \mathcal{L}_u \in RE $ e $ \overline{\mathcal{L}_u} \in RE $ contemporaneamente, il che implicherebbe $ \mathcal{L}_u \in R $ per il teorema di chiusura — assurdo.
+}
+
+\subsection{Il complemento di $ \mathcal{L}_d $}
+
+Consideriamo il complemento di $ \mathcal{L}_d $:
+\[
+  \bar{\mathcal{L}}_d = \{M_i \mid M_i \models w_i\}
+\]
+
+\thm{}{
+  $ \bar{\mathcal{L}}_d \in RE $
+}
+\pf{Dimostrazione}{
+  Costruiamo la macchina $ M $: dato $ M_i $ in input, costruisce la coppia $ (M_i, w_i) $ e la passa a $ M_u $. Se $ M_u $ accetta, risponde sì. Quindi:
+  \begin{itemize}
+    \item $ M_i \in \bar{\mathcal{L}}_d \Rightarrow M $ risponde sì
+    \item $ M_i \notin \bar{\mathcal{L}}_d \Rightarrow M $ non risponde sì
+  \end{itemize}
+  Quindi $ \bar{\mathcal{L}}_d \in RE $.
+}
+
+\nt{
+  $ \bar{\mathcal{L}}_d \notin R $: se lo fosse, anche $ \mathcal{L}_d \in R $ per chiusura di $ R $ per complemento, da cui $ \mathcal{L}_d \in RE $. Contraddizione.
+}
+
+\subsection{Il Problema della Fermata}
+
+\dfn{Problema della Fermata}{
+  \[
+    HALT = \{(M, w) \mid M \text{ si arresta su } w\}
+  \]
+}
+
+La differenza con $ \mathcal{L}_u $ è sottile: in $ \mathcal{L}_u $ la macchina deve fermarsi \textit{e accettare}; in $ HALT $ basta che si fermi, indipendentemente dal risultato.
+
+\thm{}{
+  $ HALT \in RE $
+}
+\pf{Dimostrazione}{
+  La macchina $ M_h $ accetta $ HALT $: simula $ M $ su $ w $ tramite $ M_u $, risponde sì se $ M $ si arresta. Se $ M $ non si arresta, $ M_h $ non termina. Quindi:
+  \begin{itemize}
+    \item $ (M, w) \in HALT \Rightarrow M_h $ risponde sì
+    \item $ (M, w) \notin HALT \Rightarrow M_h $ non risponde sì
+  \end{itemize}
+}
+
+\thm{}{
+  $ HALT \notin R $
+}
+\pf{Dimostrazione}{
+  Supponiamo per assurdo che $ HALT \in R $, ovvero esiste $ M_h^* $ che decide $ HALT $. Costruiamo $ M' $ su input $ (M, w) $:
+  \begin{enumerate}
+    \item Esegue $ M_h^* $ su $ (M, w) $
+    \item Se $ M_h^* $ risponde \textbf{no}: $ M $ non si ferma su $ w $, quindi $ M' $ risponde no
+    \item Se $ M_h^* $ risponde \textbf{sì}: $ M $ si ferma su $ w $, quindi $ M' $ simula $ M $ su $ w $ tramite $ M_u $ e ne usa la risposta
+  \end{enumerate}
+  In questo modo $ M' $ decide $ \mathcal{L}_u $, poiché $ M_h^* $ garantisce l'arresto anche sul ``no'' (loop $ \to $ no immediato). Quindi $ \mathcal{L}_u \in R $. Contraddizione.
+}
+
+\subsection{La variante $ HALT_\varepsilon $}
+
+\dfn{$ HALT_\varepsilon $}{
+  \[
+    HALT_\varepsilon = \{M \mid M \text{ si arresta su } \varepsilon\}
+  \]
+  Insieme delle MdT che si arrestano quando ricevono la stringa vuota in input.
+}
+
+\thm{}{
+  $ HALT_\varepsilon \in RE $
+}
+\pf{Dimostrazione}{
+  La macchina $ M_{h\varepsilon} $ prende in input $ M $, simula $ M $ su $ \varepsilon $ tramite $ M_u $, e risponde sì se $ M $ si arresta. Quindi:
+  \begin{itemize}
+    \item $ M \in HALT_\varepsilon \Rightarrow M_{h\varepsilon} $ risponde sì
+    \item $ M \notin HALT_\varepsilon \Rightarrow M_{h\varepsilon} $ non risponde sì
+  \end{itemize}
+}
+
+\thm{}{
+  $ HALT_\varepsilon \notin R $
+}
+\pf{Dimostrazione}{
+  Supponiamo per assurdo che esista $ M_{h\varepsilon}^* $ che decide $ HALT_\varepsilon $. Costruiamo $ \tilde{M}_w $: una macchina che ignora il proprio input, scrive $ w $ sul nastro e simula $ M $ su $ w $. Costruiamo quindi $ M' $ su input $ (M, w) $:
+  \begin{enumerate}
+    \item Costruisce $ \tilde{M}_w $ a partire da $ M $ e $ w $
+    \item Esegue $ M_{h\varepsilon}^* $ su $ \tilde{M}_w $
+  \end{enumerate}
+  Poiché $ \tilde{M}_w $ su $ \varepsilon $ si comporta esattamente come $ M $ su $ w $, abbiamo:
+  \begin{itemize}
+    \item $ M' $ risponde sì $ \iff M_{h\varepsilon}^* $ dice sì su $ \tilde{M}_w \iff \tilde{M}_w $ si arresta su $ \varepsilon \iff M $ si arresta su $ w $
+    \item $ M' $ risponde no altrimenti
+  \end{itemize}
+  Quindi $ M' $ decide $ HALT \Rightarrow HALT \in R $. Contraddizione.
+}
