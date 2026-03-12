@@ -592,7 +592,7 @@ Per il Corollario 1:
 
 $$k_i = \langle \chi_{V_i}, \chi_{\mathbb{C}[G]} \rangle = \frac{1}{|G|}\sum_{g \in G} \chi_{V_i}(g)\,\overline{\chi_{\mathbb{C}[G]}(g)}$$
 
-Il carattere regolare vale $\chi_{\mathbb{C}[G]}(g) = \begin{cases}|G| & g = e \\ 0 & g \neq e\end{cases}$ (TODO: spiega meglio sta cosa), quindi:
+Il carattere regolare vale $\chi_{\mathbb{C}[G]}(g) = \begin{cases}|G| & g = e \\ 0 & g \neq e\end{cases}$ (dato che la matrice della rappresentazione di $ e $ e' $ I $ e per $ h \neq e $ si ha che $ h \cdot g \neq g $ quindi non avendo punti fissi la matrice associata ha traccia 0), quindi:
 
 $$k_i = \frac{1}{|G|} \cdot \chi_{V_i}(e) \cdot |G| = \chi_{V_i}(e) = \dim V_i$$  
 }
@@ -607,7 +607,7 @@ $$|G| = \sum_{i=1}^r (\dim V_i)^2 = \sum_{i=1}^{r} (k_i)^2 $$
 
 Per completare il quadro, introduciamo uno strumento che permette di dimostrare che i caratteri irriducibili formano una base (non solo sistema ortonormale) di $\mathcal{C}(G)$.
 
-\subsection{La funzione $ \varphi_{\alpha, V} $}
+\subsection{La funzione $ \psi_{\alpha, V} $}
 \dfn{}{
 Sia $(V, \rho)$ una rappresentazione di $G$ e $\alpha \in \mathcal{C}(G)$ una funzione centrale. Definiamo:
 
@@ -643,23 +643,23 @@ I caratteri $\chi_{V_1}, \ldots, \chi_{V_r}$ delle rappresentazioni irriducibili
 
   Dobbiamo provare che generino $\mathcal{C}(G)$: dobbiamo mostrare che se $\alpha \in \mathcal{C}(G)$ soddisfa $\langle \alpha, \chi_{V_i}\rangle = 0$ per ogni $i$, allora $\alpha = 0$.
 
-Per ogni irriducibile $V_i$, possiamo costruire il morfismo di rappresentazioni $ \varphi_{\alpha, V_i}: V_i \to V_i $, che per il Lemma di Shur e' un omotetia
+Per ogni irriducibile $V_i$, possiamo costruire il morfismo di rappresentazioni $ \psi_{\alpha, V_i}: V_i \to V_i $, che per il Lemma di Shur e' un omotetia
 \[
-\varphi_{\alpha, V_i} = \lambda id
+\psi_{\alpha, V_i} = \lambda id
 \]
-Quindi sappiamo che la traccia di $ \varphi_{\alpha, V_i} $ e'
+Quindi sappiamo che la traccia di $ \psi_{\alpha, V_i} $ e'
 \[
   \lambda \cdot dim V_i = \sum_{g\in G} \alpha(g)\chi_{V_i}(g) = |G|\langle \alpha, \chi_{V_i}\rangle
 \]
-Che per ipotesi pero' e' zero. Cio' implica che $ \lambda = 0 $, e quindi che $ \varphi_{\alpha, V_i} = 0 $ per ogni $ V_i $ irriducibile.\\
+Che per ipotesi pero' e' zero. Cio' implica che $ \lambda = 0 $, e quindi che $ \psi_{\alpha, V_i} = 0 $ per ogni $ V_i $ irriducibile.\\
 
 Ma cio' significa che per qualsiasi rappresentazione $ V $ si ha che
 \[
-\varphi_{\alpha, V} = 0
+\psi_{\alpha, V} = 0
 \]
-dato che $ \varphi_{\alpha, V \oplus W} = \varphi_{\alpha, V} \oplus \varphi_{\alpha, W} $. In particolare
+dato che $ \psi_{\alpha, V \oplus W} = \psi_{\alpha, V} \oplus \psi_{\alpha, W} $. In particolare
 \[
-  0 = \varphi_{\alpha, \mathbb{C}[G]}(1_G) = \sum_{g \in G} \alpha(g)\rho_{reg}(g)1_G = \sum_{g \in G} \alpha(g)\rho_{reg}(g)
+  0 = \psi_{\alpha, \mathbb{C}[G]}(1_G) = \sum_{g \in G} \alpha(g)\rho_{reg}(g)1_G = \sum_{g \in G} \alpha(g)\rho_{reg}(g)
 \]
 quindi, dato che gli elementi di $ G $ formano una base, per essere 0 allora $ \forall g \in G. \alpha(g) = 0 $, ovvero
 \[
