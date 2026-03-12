@@ -695,4 +695,327 @@ $$\mathbb{C}[S_3] \cong U^{\oplus 1} \oplus W^{\oplus 2} \oplus X^{\oplus 1}$$
 Trova $ X $:
 }
 
-% \end{document}
+\nt{
+  Osserviamo un fatto generale, poicheé una rappr di $G$ su $V$ è omomorfismo $\rho: G\to GL(V)$ se $H$ è un gruppo e $f:H\to G$ è un omomorfismodi gruppi si ha:
+  \[
+    \rho \circ f : H \to^{f} G \to^{\rho} GL(V)
+  \]
+  è una rappresentazione di $H$ su $V$. In particolare, se $H$ è un sottogruppo di $G$, allora la restrizione di $\rho$ a $H$ è una rappresentazione di $H$ su $V$.
+}
+
+\nt{
+  \textbf{Caso particolare}:
+
+  Se $N \triangleleft G $ e $p: G\to G\backslash N$ è la proiezione canonica, allora per ogni rappresentazione $ (V,\rho) $ di $G\backslash N$ da una raprresentazione $(V, \rho \circ p)$ di $G$. Cioè i $G\backslash N$-moduli sono in corrispondenza biunivoca con i $G$-moduli $V$ tali che $N \subseteq \ker \rho$.
+}
+
+Quindi posso iniziare a cercare le reappresentazioni irriducibili gi $G$ tra quelle dei suoi quozienti.
+\ex{}{
+  Prendiamo il gruppo di Klein $ G = \{a,b \mid a^2 = e, b^2 = e, ab = ba\} \cong \mathbb{Z}_2 \times \mathbb{Z}_2 $
+
+  Intanto è evidente che è abeliano, quindi ha tante rappresentazioni quanto gli elementi di $ G $, cioè 4. 
+
+  Tavola degli irriducibili:
+  \begin{center}
+    \begin{tabular}{|c|c|c|c|c|}
+      \hline
+      $ \chi $ & $ e $ & $ a $ & $ b $ & $ ab $\\
+      \hline
+      $ \chi_1 $ & $ 1 $ & $ 1 $ & $ 1 $ & $ 1 $\\
+      $ \chi_2 $ & $ 1 $ & $ -1 $ & $ 1 $ & $ -1 $\\
+      $ \chi_3 $ & $ 1 $ & $ 1 $ & $ -1 $ & $ -1 $\\
+      $ \chi_4 $ & $ 1 $ & $ -1 $ & $ -1 $ & $ 1 $\\
+      \hline
+    \end{tabular}
+  \end{center}
+}
+
+% ============================================================
+% CONTINUAZIONE — incolla dopo l'esempio del gruppo di Klein
+% ============================================================
+
+\ex{Gruppo Diedrale $ D_4 $}{
+  Il gruppo diedrale $ D_4 = \{e, r, r^2, r^3, s, sr, sr^2, sr^3\} $ ha $ |D_4| = 8 $.
+
+  Le classi di coniugio di $ D_4 $ sono 5:
+  \[
+    \{e\},\quad \{r, r^3\},\quad \{r^2\},\quad \{s, sr^2\},\quad \{sr, sr^3\}
+  \]
+  Quindi ha esattamente \textbf{5 rappresentazioni irriducibili} $ V_1, \ldots, V_5 $ con dimensioni $ d_1, \ldots, d_5 $. Da Burnside: $ \sum d_i^2 = 8 $, e l'unica soluzione con interi positivi è $ 1^2 + 1^2 + 1^2 + 1^2 + 2^2 = 8 $.
+
+  Il centro di $ D_4 $ è $ Z(D_4) = \{e, r^2\} $, e si verifica che
+  \[
+    D_4 / Z(D_4) \cong \mathbb{Z}_2 \times \mathbb{Z}_2
+  \]
+  cioè il gruppo di Klein. Le 4 rappresentazioni di dimensione 1 si ottengono da quelle del quoziente:
+  \begin{itemize}
+    \item $ V_1 $: banale. $ r \cdot x = x $, $ s \cdot x = x $.
+    \item $ V_2 $: $ r \cdot x = x $, $ s \cdot x = -x $.
+    \item $ V_3 $: $ r \cdot x = -x $, $ s \cdot x = x $.
+    \item $ V_4 $: $ r \cdot x = -x $, $ s \cdot x = -x $.
+  \end{itemize}
+  La quinta rappresentazione $ V_5 $ ha dimensione 2 ed è la \textbf{rappresentazione naturale su $ \mathbb{R}^2 $}, estesa a $ \mathbb{C}^2 $:
+  \[
+    r \mapsto \begin{pmatrix}0&-1\\1&0\end{pmatrix}, \qquad
+    s \mapsto \begin{pmatrix}-1&0\\0&1\end{pmatrix}, \qquad
+    r^2 \mapsto \begin{pmatrix}-1&0\\0&-1\end{pmatrix}
+  \]
+  Il suo carattere si può ricavare come
+  \[
+    \chi_{V_5} = \frac{1}{2}\left(\chi_{\mathbb{C}[D_4]} - \chi_{V_1} - \chi_{V_2} - \chi_{V_3} - \chi_{V_4}\right)
+  \]
+  La tavola dei caratteri completa è:
+
+  \begin{center}
+    \begin{tabular}{|c|c|c|c|c|c|}
+      \hline
+      $ \chi $ & $ e $ & $ r, r^3 $ & $ r^2 $ & $ s, sr^2 $ & $ sr, sr^3 $ \\
+      \hline
+      $ \chi_{V_1} $ & $ 1 $ & $ 1 $ & $ 1 $ & $ 1 $ & $ 1 $ \\
+      $ \chi_{V_2} $ & $ 1 $ & $ 1 $ & $ 1 $ & $ -1 $ & $ -1 $ \\
+      $ \chi_{V_3} $ & $ 1 $ & $ -1 $ & $ 1 $ & $ 1 $ & $ -1 $ \\
+      $ \chi_{V_4} $ & $ 1 $ & $ -1 $ & $ 1 $ & $ -1 $ & $ 1 $ \\
+      $ \chi_{V_5} $ & $ 2 $ & $ 0 $ & $ -2 $ & $ 0 $ & $ 0 $ \\
+      \hline
+    \end{tabular}
+  \end{center}
+
+  Verifica di Burnside: $ 1^2 + 1^2 + 1^2 + 1^2 + 2^2 = 8 = |D_4| $. \checkmark
+
+  Verifica con le matrici: $ \mathrm{tr}(r) = 0 $, $ \mathrm{tr}(r^2) = -2 $, $ \mathrm{tr}(s) = 0 $. \checkmark
+}
+
+% ============================================================
+\section{Un altro po' di Algebra Lineare: Potenze di Spazi Vettoriali}
+% ============================================================
+
+Sia $ V $ uno spazio vettoriale su $ K $ di dimensione finita $ n $, con $ k \geq 1 $.
+
+\subsection{Potenza Tensoriale}
+
+\dfn{Potenza Tensoriale}{
+  La $ k $-esima potenza tensoriale di $ V $ è:
+  \[
+    T^k(V) := \underbrace{V \otimes \cdots \otimes V}_{k \text{ volte}}
+  \]
+}
+
+Il gruppo simmetrico $ S_k $ agisce su $ T^k(V) $ permutando i fattori:
+\[
+  \sigma \cdot (v_1 \otimes \cdots \otimes v_k) := v_{\sigma^{-1}(1)} \otimes \cdots \otimes v_{\sigma^{-1}(k)}
+\]
+
+\nt{
+  Se $ \dim V = n $ allora $ \dim T^k(V) = n^k $, poiché la base è $ \{e_{i_1} \otimes \cdots \otimes e_{i_k}\} $ con $ i_j \in \{1, \ldots, n\} $.
+}
+
+\subsection{Potenza Simmetrica}
+
+\dfn{Potenza Simmetrica}{
+  La $ k $-esima potenza simmetrica di $ V $ è il quoziente:
+  \[
+    S^k(V) := T^k(V)\,/\,W
+  \]
+  dove $ W $ è il sottospazio generato da tutti i vettori della forma
+  \[
+    v_1 \otimes \cdots \otimes v_i \otimes \cdots \otimes v_j \otimes \cdots \otimes v_k
+    \;-\;
+    v_1 \otimes \cdots \otimes v_j \otimes \cdots \otimes v_i \otimes \cdots \otimes v_k
+  \]
+  cioè i tensori che differiscono per uno scambio delle posizioni $ i $ e $ j $. Nel quoziente l'ordine dei fattori \textbf{non conta}: si scrive $ v_1 \cdot v_2 \cdots v_k $ la classe di $ v_1 \otimes \cdots \otimes v_k $.
+}
+
+\nt{
+  $ \dim S^k(V) = \binom{n+k-1}{k} $, che conta i monomio di grado $ k $ in $ n $ variabili.
+}
+
+\subsection{Potenza Esterna (Alternante)}
+
+\dfn{Potenza Esterna}{
+  La $ k $-esima potenza esterna di $ V $ è il quoziente:
+  \[
+    \Lambda^k(V) := T^k(V)\,/\,W'
+  \]
+  dove $ W' $ è il sottospazio generato da tutti i vettori della forma
+  \[
+    v_1 \otimes \cdots \otimes v_i \otimes \cdots \otimes v_j \otimes \cdots \otimes v_k
+    \;+\;
+    v_1 \otimes \cdots \otimes v_j \otimes \cdots \otimes v_i \otimes \cdots \otimes v_k
+  \]
+  cioè la somma di un tensore con quello ottenuto scambiando due posizioni. Si scrive $ v_1 \wedge \cdots \wedge v_k $ la classe di $ v_1 \otimes \cdots \otimes v_k $.
+}
+
+Quozientare per $ W' $ \textbf{impone} che scambiare due fattori cambi il segno:
+\[
+  v_1 \wedge \cdots \wedge v_i \wedge \cdots \wedge v_j \wedge \cdots \wedge v_k
+  = -\,v_1 \wedge \cdots \wedge v_j \wedge \cdots \wedge v_i \wedge \cdots \wedge v_k
+\]
+
+\cor{}{
+  Se due fattori sono uguali, $ v_1 \wedge \cdots \wedge v_k = 0 $. Infatti scambiare le posizioni uguali non cambia il tensore, ma per la regola del segno dovrebbe cambiarlo in meno se stesso: l'unico numero con questa proprietà è $ 0 $.
+}
+
+La base di $ \Lambda^k(V) $ è:
+\[
+  \{e_{i_1} \wedge e_{i_2} \wedge \cdots \wedge e_{i_k} \mid i_1 < i_2 < \cdots < i_k\}
+\]
+cioè solo le scelte di $ k $ elementi \textbf{distinti} e in ordine crescente dalla base di $ V $. Quindi:
+\[
+  \dim \Lambda^k(V) = \binom{n}{k}
+\]
+
+\subsection{Osservazioni sulle Dimensioni}
+
+Se $ \dim V = n $, si ha:
+\[
+  \dim T^k(V) = n^k, \qquad
+  \dim \Lambda^k(V) = \binom{n}{k}, \qquad
+  \dim S^k(V) = \binom{n+k-1}{k}
+\]
+
+\nt{
+  In particolare $ \dim \Lambda^n(V) = \binom{n}{n} = 1 $: esiste, a meno di costanti, \textbf{un'unica} forma $ n $-lineare alternante su $ V $. Normalizzando con $ f(e_1, \ldots, e_n) = 1 $, si ottiene esattamente il \textbf{determinante}. Il fatto che il determinante cambi segno scambiando due colonne è proprio la proprietà alternante.
+}
+
+\nt{
+  Sommando tutte le potenze esterne: $ \dim \Lambda^\bullet(V) = \sum_{k=0}^n \binom{n}{k} = 2^n $.
+}
+
+\subsection{Algebre Graduate}
+
+Si possono sommare tutte le potenze ottenendo algebre graduate:
+\[
+  T^\bullet(V) = \bigoplus_{k \in \mathbb{N}} T^k(V) \quad\text{(algebra tensoriale)}
+\]
+\[
+  S^\bullet(V) = \bigoplus_{k \in \mathbb{N}} S^k(V) \quad\text{(algebra simmetrica)}
+\]
+\[
+  \Lambda^\bullet(V) = \bigoplus_{k \in \mathbb{N}} \Lambda^k(V) \quad\text{(algebra esterna)}
+\]
+
+\nt{
+  Se $ \{e_1, \ldots, e_n\} $ è una base di $ V $ e $ \{x_1, \ldots, x_n\} $ la base duale di $ V^* $, allora:
+  \[
+    S^\bullet(V^*) \cong K[x_1, \ldots, x_n]
+  \]
+  cioè l'algebra simmetrica di $ V^* $ è l'algebra dei polinomi in $ n $ variabili.
+}
+
+\subsection{Rappresentazioni e Potenze}
+
+Se $ V $ è una rappresentazione di $ G $, anche $ T^k(V) $, $ S^k(V) $ e $ \Lambda^k(V) $ lo sono: $ G $ agisce su ciascun fattore e l'azione commuta con il quoziente.
+
+\mprop{Caratteri di $ \Lambda^2(V) $ e $ S^2(V) $}{
+  Data una rappresentazione $ V $ con carattere $ \chi_V $:
+  \[
+    \chi_{\Lambda^2(V)}(g) = \frac{\chi_V(g)^2 - \chi_V(g^2)}{2}
+  \]
+  \[
+    \chi_{S^2(V)}(g) = \frac{\chi_V(g)^2 + \chi_V(g^2)}{2}
+  \]
+}
+\pf{Dimostrazione}{
+  Sia $ \{v_1, \ldots, v_n\} $ una base di autovettori di $ \rho(g) $ con autovalori $ \lambda_1, \ldots, \lambda_n $. La base di $ \Lambda^2(V) $ è $ \{v_i \wedge v_j \mid i < j\} $, e ogni $ v_i \wedge v_j $ è un autovettore di autovalore $ \lambda_i \lambda_j $. Quindi:
+  \[
+    \chi_{\Lambda^2(V)}(g) = \sum_{i < j} \lambda_i \lambda_j = \frac{\left(\sum_i \lambda_i\right)^2 - \sum_i \lambda_i^2}{2} = \frac{\chi_V(g)^2 - \chi_V(g^2)}{2}
+  \]
+  dove si usa che $ \sum_i \lambda_i^2 = \chi_V(g^2) $ (gli autovalori di $ \rho(g)^2 = \rho(g^2) $ sono i quadrati degli autovalori di $ \rho(g) $).
+
+  Per $ S^2(V) $ si usa $ T^2(V) = \Lambda^2(V) \oplus S^2(V) $, quindi:
+  \[
+    \chi_{S^2(V)} = \chi_{T^2(V)} - \chi_{\Lambda^2(V)} = \chi_V(g)^2 - \frac{\chi_V(g)^2 - \chi_V(g^2)}{2} = \frac{\chi_V(g)^2 + \chi_V(g^2)}{2}
+  \]
+}
+
+\ex{Esempio con $ k = 2 $, $ V^* $ duale di $ V $}{
+  \begin{itemize}
+    \item $ T^2(V^*) = \{\text{forme bilineari su } V\} $
+    \item $ S^2(V^*) = \{\text{forme bilineari simmetriche su } V\} $
+    \item $ \Lambda^2(V^*) = \{\text{forme bilineari antisimmetriche su } V\} $
+  \end{itemize}
+  Analogamente per $ k > 2 $.
+}
+
+% ============================================================
+\section{Rappresentazione Indotta}
+% ============================================================
+
+\subsection{Costruzione}
+
+\dfn{Stabilizzatore di un Sottospazio}{
+  Sia $ (V, \rho) $ una rappresentazione di $ G $ e $ W \subseteq V $ un sottospazio vettoriale. Lo \textit{stabilizzatore} di $ W $ è:
+  \[
+    H := \{g \in G \mid \rho(g)W \subseteq W\}
+  \]
+  Si verifica che $ H \leq G $ è un sottogruppo, e $ W $ è una rappresentazione di $ H $.
+}
+
+Costruiamo ora la \textbf{rappresentazione indotta} da $ W $.
+
+Consideriamo la somma di tutti i traslati di $ W $ tramite $ G $:
+\[
+  U := \sum_{g \in G} \rho(g)W
+\]
+
+\nt{
+  \textbf{Osservazione chiave}: $ \rho(g)W $ dipende solo dalla classe laterale $ gH $ di $ g $. Infatti se $ g' \in gH $, allora $ g' = gh $ per qualche $ h \in H $, e:
+  \[
+    \rho(g')W = \rho(gh)W = \rho(g)\rho(h)W = \rho(g)W
+  \]
+  perché $ \rho(h)W = W $ per definizione di $ H $. Quindi elementi dello stesso laterale danno lo stesso sottospazio, e la somma si può riscrivere sui laterali. Poiché laterali distinti danno sottospazi che si intersecano solo in $ \{0\} $, la somma è \textbf{diretta}:
+  \[
+    U = \bigoplus_{[g] \in G/H} \rho(g)W
+  \]
+}
+
+\dfn{Rappresentazione Indotta}{
+  $ U = \bigoplus_{[g] \in G/H} \rho(g)W $ si chiama \textbf{rappresentazione indotta} da $ W $, e si scrive:
+  \[
+    U = \mathrm{Ind}_H^G\, W
+  \]
+}
+
+Si verifica che $ U $ è $ G $-stabile: per qualsiasi $ h \in G $ e qualsiasi addendo $ \rho(g)W $, si ha $ \rho(h)\cdot\rho(g)W = \rho(hg)W $, che è ancora un addendo della somma (quello corrispondente al laterale $ [hg] $).
+
+\nt{
+  La dimensione della rappresentazione indotta è:
+  \[
+    \dim U = |G/H| \cdot \dim W = \frac{|G|}{|H|} \cdot \dim W
+  \]
+}
+
+\subsection{Applicazione: Bound sulla Dimensione delle Irriducibili}
+
+\thm{Bound sulla Dimensione}{
+  Se $ G $ è un gruppo finito e $ A \leq G $ è un sottogruppo abeliano, allora ogni rappresentazione irriducibile $ V $ di $ G $ soddisfa:
+  \[
+    \dim V \leq \frac{|G|}{|A|}
+  \]
+}
+
+\pf{Dimostrazione}{
+  \textbf{Passo 1.} Restringiamo l'azione a $ A $: $ V $ diventa una rappresentazione di $ A $.
+
+  \textbf{Passo 2.} Per Maschke, $ V $ si decompone in irriducibili di $ A $. Poiché $ A $ è abeliano, per il Corollario di Schur ogni irriducibile di $ A $ ha dimensione 1 (ogni $ \rho(a) $ è un'omotetia, quindi ogni sottospazio 1-dimensionale è stabile). Quindi esiste $ W \leq V $ con $ \dim W = 1 $ che è un sotto-$ A $-modulo.
+
+  \textbf{Passo 3.} Costruiamo la rappresentazione indotta:
+  \[
+    U = \bigoplus_{[g] \in G/A} \rho(g)W \subseteq V
+  \]
+  La somma è indicizzata da $ G/A $ perché elementi dello stesso laterale $ gA $ danno lo stesso sottospazio ($ \rho(a)W = W $ per ogni $ a \in A $). Quindi:
+  \[
+    \dim U = |G/A| \cdot \dim W = \frac{|G|}{|A|}
+  \]
+
+  \textbf{Passo 4.} $ U $ è un sotto-$ G $-modulo non nullo di $ V $. Poiché $ V $ è irriducibile, $ V = U $. Quindi:
+  \[
+    \dim V = \dim U = \frac{|G|}{|A|} \qquad\square
+  \]
+}
+
+\cor{}{
+  Ogni rappresentazione irriducibile di $ D_n $ ha dimensione $ \leq 2 $. \\
+  }
+\pf{Dimostrazione}{ $ D_n $ contiene il sottogruppo ciclico $ C_n $ di indice $ [D_n : C_n] = 2 $, quindi $ \dim V \leq |D_n|/|C_n| = 2 $
+}
