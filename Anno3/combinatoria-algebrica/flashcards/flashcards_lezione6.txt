@@ -1,0 +1,73 @@
+Come si ottiene una rappresentazione di H da una di G, dato un omomorfismo f: H→G?;Si compone: ρ∘f: H→GL(V). Se H≤G, è la restrizione di ρ a H.
+
+Sia N⊴G e π: G→G/N la proiezione. Come si ottiene una rappresentazione di G da una di G/N?;Componendo: (V, ρ∘π) è una rappresentazione di G per ogni (V,ρ) rappresentazione di G/N.
+
+Se V è irriducibile come G/N-modulo, lo è anche come G-modulo?;Sì. Ogni sottospazio G-stabile è anche G/N-stabile (l'azione di G passa per G/N), quindi la G/N-irriducibilità implica la G-irriducibilità.
+
+Come si ottiene la rappresentazione banale di G tramite un quoziente?;Da G/G={e}: la proiezione π: G→{e} composta con l'unica rappresentazione di {e} dà ρ(g)=id per ogni g.
+
+Come si ottiene la rappresentazione segno di Sₙ tramite un quoziente?;Sₙ/Aₙ≅ℤ₂. La rappresentazione non banale di ℤ₂ (pari↦1, dispari↦-1) composta con la proiezione dà ρ(σ)=sgn(σ).
+
+Quante rappresentazioni irriducibili ha il gruppo di Klein V₄ e perché?;4, una per ogni elemento. V₄≅ℤ₂×ℤ₂ è abeliano, quindi ha tante irriducibili quante le classi di coniugio, che per un gruppo abeliano sono |G|=4.
+
+Quali sono le dimensioni delle irriducibili di D₄ e come si trovano?;1,1,1,1,2. D₄ ha 5 classi di coniugio → 5 irriducibili. Burnside: d₁²+...+d₅²=8, unica soluzione con interi positivi è 1+1+1+1+4=8.
+
+Cos'è Z(D₄) e a cosa è isomorfo D₄/Z(D₄)?;Z(D₄)={e,r²}. D₄/Z(D₄)≅ℤ₂×ℤ₂ (gruppo di Klein).
+
+Da dove vengono le 4 rappresentazioni di dimensione 1 di D₄?;Dal quoziente D₄/Z(D₄)≅Klein. Le 4 irriducibili del gruppo di Klein, composte con la proiezione π: D₄→D₄/Z(D₄), danno 4 rappresentazioni 1-dimensionali di D₄.
+
+Cos'è V₅ per D₄ e come si verifica?;È la rappresentazione naturale su ℝ² (estesa a ℂ²): r↦(0,-1;1,0), s↦(-1,0;0,1). Verifica: tr(r)=0, tr(r²)=-2, tr(s)=0, coerenti con χ_{V₅}=(2,0,-2,0,0).
+
+Come si calcola χ_{V₅} di D₄ dalla tavola?;χ_{V₅} = (1/2)(χ_{ℂ[D₄]} - χ_{V₁} - χ_{V₂} - χ_{V₃} - χ_{V₄}). Il carattere regolare vale |G|=8 su e e 0 altrove.
+
+Cos'è T^k(V)?;La k-esima potenza tensoriale: T^k(V)=V⊗...⊗V (k volte). Se dim V=n allora dim T^k(V)=nᵏ.
+
+Come agisce Sₖ su T^k(V)?;Permutando i fattori: σ·(v₁⊗...⊗vₖ) = v_{σ⁻¹(1)}⊗...⊗v_{σ⁻¹(k)}.
+
+Cos'è S^k(V) e come si costruisce?;La potenza simmetrica: quoziente di T^k(V) per il sottospazio W generato da (v₁⊗...⊗vᵢ⊗...⊗vⱼ⊗...⊗vₖ) - (con i e j scambiati). Nel quoziente l'ordine non conta. dim S^k(V)=C(n+k-1,k).
+
+Cos'è Λ^k(V) e come si costruisce?;La potenza esterna: quoziente di T^k(V) per il sottospazio W' generato da (v₁⊗...⊗vᵢ⊗...⊗vⱼ⊗...⊗vₖ) + (con i e j scambiati). Nel quoziente scambiare due fattori cambia il segno. dim Λ^k(V)=C(n,k).
+
+Qual è la differenza tra il sottospazio quozientato in S^k(V) e in Λ^k(V)?;In S^k: si quozienta per (tensore - tensore con due fattori scambiati), forzando simmetria. In Λ^k: si quozienta per (tensore + tensore con due fattori scambiati), forzando antisimmetria.
+
+Perché v₁∧...∧vₖ=0 se due fattori sono uguali?;Scambiare i due fattori uguali non cambia il tensore, ma la regola del segno impone che cambi in meno se stesso. L'unico numero uguale al suo opposto è 0.
+
+Qual è la base di Λ^k(V)?;{e_{i₁}∧...∧e_{iₖ} | i₁ < i₂ < ... < iₖ}, cioè le scelte di k indici distinti in ordine crescente. Sono C(n,k) elementi.
+
+Perché dim Λⁿ(V)=1 e cosa implica?;C(n,n)=1: c'è un unico elemento di base, e₁∧...∧eₙ. Implica che esiste, a meno di costanti, un'unica forma n-lineare alternante su V — il determinante.
+
+Come si collegano S•(V*) e i polinomi?;S•(V*)≅K[x₁,...,xₙ] dove {x₁,...,xₙ} è la base duale di V*. L'algebra simmetrica del duale è l'algebra dei polinomi in n variabili.
+
+Qual è la dimensione totale di Λ•(V)?;Σₖ C(n,k) = 2ⁿ.
+
+Se V è una rappresentazione di G, anche T^k(V), S^k(V), Λ^k(V) lo sono?;Sì. G agisce su ciascun fattore tensoriale e l'azione commuta con il quoziente, quindi le strutture quoziente restano rappresentazioni.
+
+Enuncia la formula per χ_{Λ²(V)}(g).;χ_{Λ²(V)}(g) = (χ_V(g)² - χ_V(g²)) / 2
+
+Enuncia la formula per χ_{S²(V)}(g).;χ_{S²(V)}(g) = (χ_V(g)² + χ_V(g²)) / 2
+
+Come si dimostrano le formule di χ_{Λ²} e χ_{S²}?;Sia {v₁,...,vₙ} base di autovettori di ρ(g) con autovalori λ₁,...,λₙ. La base di Λ²(V) è {vᵢ∧vⱼ | i<j} con autovalore λᵢλⱼ. Quindi χ_{Λ²}(g)=Σᵢ﹤ⱼλᵢλⱼ=(χ(g)²-χ(g²))/2. Per S²: si usa T²=Λ²⊕S², quindi χ_{S²}=χ_{T²}-χ_{Λ²}.
+
+Perché Σᵢ﹤ⱼλᵢλⱼ = (χ(g)²-χ(g²))/2?;Perché (Σλᵢ)²=Σλᵢ²+2Σᵢ﹤ⱼλᵢλⱼ, quindi Σᵢ﹤ⱼλᵢλⱼ=((Σλᵢ)²-Σλᵢ²)/2=(χ(g)²-χ(g²))/2, dato che Σλᵢ²=χ(g²) perché gli autovalori di ρ(g²) sono i quadrati di quelli di ρ(g).
+
+Cosa sono T²(V*), S²(V*), Λ²(V*) in termini di forme bilineari?;T²(V*)={forme bilineari su V}; S²(V*)={forme bilineari simmetriche su V}; Λ²(V*)={forme bilineari antisimmetriche su V}.
+
+Cos'è lo stabilizzatore di un sottospazio W⊆V rispetto a G?;H={g∈G | ρ(g)W⊆W} — il sottogruppo di G che manda W in sé. W è una rappresentazione di H.
+
+Come si costruisce la rappresentazione indotta Ind_H^G W?;Si sommano i traslati di W per i rappresentanti dei laterali: U=⊕_{[g]∈G/H} ρ(g)W. La somma è diretta e indicizzata dai laterali di H in G.
+
+Perché nella rappresentazione indotta si somma su G/H e non su G?;Perché elementi dello stesso laterale gH danno lo stesso sottospazio: se g'=gh con h∈H, allora ρ(g')W=ρ(g)ρ(h)W=ρ(g)W (dato che ρ(h)W=W). Ogni sottospazio compare una sola volta per laterale.
+
+Perché la somma U=⊕ρ(g)W è diretta?;Perché laterali distinti danno sottospazi che si intersecano solo in {0}: vivono in direzioni diverse di V.
+
+Perché U=Ind_H^G W è G-stabile?;Per ogni h∈G e ogni addendo ρ(g)W: ρ(h)·ρ(g)W=ρ(hg)W, che è l'addendo corrispondente al laterale [hg]∈G/H. Quindi h manda addendi in addendi e U rimane dentro U.
+
+Qual è la dimensione di Ind_H^G W?;dim(Ind_H^G W) = |G/H|·dim W = (|G|/|H|)·dim W.
+
+Enuncia il teorema sul bound della dimensione delle irriducibili.;Se A≤G è un sottogruppo abeliano, allora ogni rappresentazione irriducibile V di G soddisfa dim V ≤ |G|/|A|.
+
+Dimostra il bound dim V ≤ |G|/|A| per A≤G abeliano.;1) Restringi a A: V è rappr di A. 2) A abeliano → ogni irriducibile di A ha dim 1 (Corollario di Schur). Quindi ∃W≤V con dim W=1, sotto-A-modulo. 3) Costruisci U=⊕_{[g]∈G/A}ρ(g)W⊆V con dim U=|G/A|. 4) U è sotto-G-modulo non nullo e V è irriducibile → V=U → dim V=|G|/|A|.
+
+Perché nel bound ogni irriducibile di A ha dimensione 1?;A abeliano → ogni ρ(a) commuta con tutti gli altri ρ(a') → per Schur (Parte 2) ogni ρ(a)=λ·id → ogni sottospazio 1-dimensionale è stabile → le irriducibili non possono avere dimensione >1.
+
+Qual è il corollario del bound per il gruppo diedrale Dₙ?;Ogni irriducibile di Dₙ ha dim ≤ 2, perché Dₙ contiene il sottogruppo ciclico Cₙ abeliano con [Dₙ:Cₙ]=2, quindi dim V ≤ |Dₙ|/|Cₙ|=2.
