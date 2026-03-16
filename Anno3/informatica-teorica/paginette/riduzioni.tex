@@ -111,4 +111,99 @@ Per definire formalmente la calcolabilità di $ f $ è necessario introdurre un 
 
   La riduzione è corretta. Poiché $ \mathcal{L}_u \notin R $ e $ \mathcal{L}_u \leq \mathcal{L}_{ne} $, per il teorema sulle riduzioni segue $ \mathcal{L}_{ne} \notin R $.
 }
+
+\section{Corrispondenza di Post}
+Andiamo a definire un problema che inizialmente sembra semplice, ma che usando le riduzioni puo' essere dimostrato che non appartiene a R: il \textbf{problema di corrispondenza di Post} (PCP).
+
+\subsection{Definizione}
+
+E' un problema di decisione:
+
+\begin{itemize}
+\item \textbf{Input}: lista di coppie di stringhe $ w \in \Sigma^* $ $ R, S  $ tale che $ |R| = |S| $
+  \begin{center} 
+  \begin{tabular}{c|c}
+    $R(r_i)$ & $S(s_i)$ \\ \hline
+    1 & 1 1 1 \\
+    1 0 1 1 1 & 1 0 \\
+    1 0 & 0 \\
+  \end{tabular}
+  \end{center}
+\item \textbf{Output}: se esiste una sequenza di indici $ i_1, ..., i_u $ (con $ u > 0 $ per non essere banale) tale che
+  \[
+  r_{i_1} \cdot ... \cdot r_{i_u} = s_{i_1} \cdot ... \cdot s_{i_u}
+  \]
+  allora l'input e' accettato.
+\end{itemize}
+
+\ex{}{
+  Per la costruzione di sopra, l'input $ R,S  $ e' accettato, dato che la sequenza
+  \[
+  2,1,1,3
+  \]
+  genera le stringhe
+  \[
+  r \to 101111110
+  \]
+  e 
+  \[
+  s \to 101111110
+  \]
+  che sono uguali.
+}
+
+\subsection{Appartenenza a RE}
+Per dimostrare che PCP $ \in RE $, ci basta costruire una macchina (anche non deterministica) che riconosca il linguaggio associato al problema.\\
+
+La soluzione e' abbastanza semplice: basta costruire una macchina non-deterministica che "indovina" (guess) la sequenza e che ne controlli (check) la validita'.
+
+\subsection{Non-appartenenza a R}
+Dobbiamo ora vedere se PCP appartiene o meno a $ R $, che coincide col trovare una macchina in grado di decidere il linguaggio del problema.\\
+
+Intuitivamente si puo' vedere come, dato che le sequenze possibili sono infinite, il problema possa divergere. Ma vediamo come dimostrarlo:
+\begin{itemize}
+\item Riduciamo il linugaggio $ \mathcal{L}_u$ a un linguaggio intermedio $ MPCP $. Dato che il linguaggio universale e' indecidibile, lo e' anche $ MPCP $.
+\item Facciamo una seconda riduzione da $ MPCP $ a $ PCP $, e per lo stesso motivo questo significa che $ PCP \not\in R $. 
+\end{itemize}
+
+Quindi
+\[
+  \mathcal{L}_u \leq MPCP \leq PCP
+\]
+Il linguaggio $ MPCP $ e' molto simile a $ PCP $, ma le sequenze accettate devono iniziare tutte con il primo indice.
+
+\subsubsection{Riduzione a MPCP}
+
+Guardiamo la prima riduzione $ \mathcal{L}_u \leq MPCP$ e facciamoci le solite domande
+
+\begin{enumerate}
+\item Qual'e' il problema di partenza? E quello di arrivo?
+\item Quali sono gli input dei due problemi?
+\item Quali sono le istanze si dei due problemi? E le istanze no?
+\item Come facciamo a trasformare istanze si del problema di partenza in istanze si del problema di arrivo e stessa cosa per le istanze no?
+\end{enumerate}
+
+Sappiamo che l'input al problema di partenza sono le coppie macchina/stringa $ (M,w) $ e le sue istanze si' sono le coppie dove $ M $ accetta $ w $, mentre le no sono quelle dove $ M $ non accetta $ w $.\\
+
+Dobbiamo trovare ora una funzione calcolabile $ f $ che prende gli input di $ \mathcal{L}_u $ e li trasforma in input di $ MPCP $ in modo che: se $ (M,w) $ e' un'istanza si, allora $ f((M,w)) $ e' un'istanza si di $ MPCP $; e se e' un'istanza no, allora $ f((M,w)) $ e' un'istanza no di $ MPCP $.
+
+\nt{
+  ATTENZIONE: puo' sembrare possibile definire $ f $ come la funzione che "simula" $ w $ su $ M $ e se accetta allora crea un'istanza si banale per MPCP, altrimenti ne crea una no banale. Ma questo non e' possibile dato che $ \mathcal{L}_u \not\in R$ quindi $ f $ puo' divergere, rendendola non-calcolabile. 
+}
+
+Ricordiamoci che una computazione di una MdT puo' essere scritta come una sequenza di configurazioni.
+
+\ex{}{
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2026-03-16-19-11-14.png}
+  \end{center}
+  Dato in input $ w = 01 $, otteniamo la seguente computazione
+  \[
+  q_1 01 \vdash 1q_2 1 \vdash 10q_1 \vdash 1q_2 01 \vdash q_3 101
+  \]
+  dove l'ultima e' una configurazione accettante.
+}
+L'idea e' quella di guardare la funzione di transizione della macchina $ M $ e la stringa in input $ w $ per poi impostare le stringhe in $ R $ e i $ S $ in modo tale che se esiste una computazione di $ M $ per $ w $, allora esiste una sequenza per cui $ r = s  $ e' la stringa che rappresenta la computazione. Al contrario, se non esiste una computazione allora non esistera' nessuna permutazione per cui $ r = s  $.
+
+
 % \end{document}
