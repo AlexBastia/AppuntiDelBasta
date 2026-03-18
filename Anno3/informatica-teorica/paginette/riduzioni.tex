@@ -111,4 +111,199 @@ Per definire formalmente la calcolabilità di $ f $ è necessario introdurre un 
 
   La riduzione è corretta. Poiché $ \mathcal{L}_u \notin R $ e $ \mathcal{L}_u \leq \mathcal{L}_{ne} $, per il teorema sulle riduzioni segue $ \mathcal{L}_{ne} \notin R $.
 }
+
+\section{Corrispondenza di Post}
+Andiamo a definire un problema che inizialmente sembra semplice, ma che usando le riduzioni puo' essere dimostrato che non appartiene a R: il \textbf{problema di corrispondenza di Post} (PCP).
+
+\subsection{Definizione}
+
+E' un problema di decisione:
+
+\begin{itemize}
+\item \textbf{Input}: lista di coppie di stringhe $ w \in \Sigma^* $ $ R, S  $ tale che $ |R| = |S| $
+  \begin{center} 
+  \begin{tabular}{c|c}
+    $R(r_i)$ & $S(s_i)$ \\ \hline
+    1 & 1 1 1 \\
+    1 0 1 1 1 & 1 0 \\
+    1 0 & 0 \\
+  \end{tabular}
+  \end{center}
+\item \textbf{Output}: se esiste una sequenza di indici $ i_1, ..., i_u $ (con $ u > 0 $ per non essere banale) tale che
+  \[
+  r_{i_1} \cdot ... \cdot r_{i_u} = s_{i_1} \cdot ... \cdot s_{i_u}
+  \]
+  allora l'input e' accettato.
+\end{itemize}
+
+\ex{}{
+  Per la costruzione di sopra, l'input $ R,S  $ e' accettato, dato che la sequenza
+  \[
+  2,1,1,3
+  \]
+  genera le stringhe
+  \[
+  r \to 101111110
+  \]
+  e 
+  \[
+  s \to 101111110
+  \]
+  che sono uguali.
+}
+
+\subsection{Appartenenza a RE}
+Per dimostrare che PCP $ \in RE $, ci basta costruire una macchina (anche non deterministica) che riconosca il linguaggio associato al problema.\\
+
+La soluzione e' abbastanza semplice: basta costruire una macchina non-deterministica che "indovina" (guess) la sequenza e che ne controlli (check) la validita'.
+
+\subsection{Non-appartenenza a R}
+Dobbiamo ora vedere se PCP appartiene o meno a $ R $, che coincide col trovare una macchina in grado di decidere il linguaggio del problema.\\
+
+Intuitivamente si puo' vedere come, dato che le sequenze possibili sono infinite, il problema possa divergere. Ma vediamo come dimostrarlo:
+\begin{itemize}
+\item Riduciamo il linugaggio $ \mathcal{L}_u$ a un linguaggio intermedio $ MPCP $. Dato che il linguaggio universale e' indecidibile, lo e' anche $ MPCP $.
+\item Facciamo una seconda riduzione da $ MPCP $ a $ PCP $, e per lo stesso motivo questo significa che $ PCP \not\in R $. 
+\end{itemize}
+
+Quindi
+\[
+  \mathcal{L}_u \leq MPCP \leq PCP
+\]
+Il linguaggio $ MPCP $ e' molto simile a $ PCP $, ma le sequenze accettate devono iniziare tutte con il primo indice.
+
+\subsubsection{Riduzione a MPCP}
+
+Guardiamo la prima riduzione $ \mathcal{L}_u \leq MPCP$ e facciamoci le solite domande
+
+\begin{enumerate}
+\item Qual'e' il problema di partenza? E quello di arrivo?
+\item Quali sono gli input dei due problemi?
+\item Quali sono le istanze si dei due problemi? E le istanze no?
+\item Come facciamo a trasformare istanze si del problema di partenza in istanze si del problema di arrivo e stessa cosa per le istanze no?
+\end{enumerate}
+
+Sappiamo che l'input al problema di partenza sono le coppie macchina/stringa $ (M,w) $ e le sue istanze si' sono le coppie dove $ M $ accetta $ w $, mentre le no sono quelle dove $ M $ non accetta $ w $.\\
+
+Dobbiamo trovare ora una funzione calcolabile $ f $ che prende gli input di $ \mathcal{L}_u $ e li trasforma in input di $ MPCP $ in modo che: se $ (M,w) $ e' un'istanza si, allora $ f((M,w)) $ e' un'istanza si di $ MPCP $; e se e' un'istanza no, allora $ f((M,w)) $ e' un'istanza no di $ MPCP $.
+
+\nt{
+  ATTENZIONE: puo' sembrare possibile definire $ f $ come la funzione che "simula" $ w $ su $ M $ e se accetta allora crea un'istanza si banale per MPCP, altrimenti ne crea una no banale. Ma questo non e' possibile dato che $ \mathcal{L}_u \not\in R$ quindi $ f $ puo' divergere, rendendola non-calcolabile. 
+}
+
+Ricordiamoci che una computazione di una MdT puo' essere scritta come una sequenza di configurazioni.
+
+\ex{}{ \label{es:comp}
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2026-03-16-19-11-14.png}
+  \end{center}
+  Dato in input $ w = 01 $, otteniamo la seguente computazione
+  \[
+  q_1 01 \vdash 1q_2 1 \vdash 10q_1 \vdash 1q_2 01 \vdash q_3 101
+  \]
+  dove l'ultima e' una configurazione accettante.
+}
+L'idea e' quella di guardare la funzione di transizione della macchina $ M $ e la stringa in input $ w $ per poi impostare le stringhe in $ R $ e in $ S $ in modo tale che se esiste una computazione di $ M $ per $ w $, allora esiste una sequenza per cui $ r = s  $, che e' la stringa che rappresenta la computazione. Al contrario, se non esiste una computazione allora non esistera' nessuna sequenza per cui $ r = s  $.\\
+
+Proviamo a guardare un esempio di come possiamo costruire una tale funzione sulla macchina \ref{es:comp}:
+
+\begin{center}
+  \begin{tabular}{c|c}
+    $ R $ & $ S $ \\ \hline
+    $ \# $ & $ \# q_1 01 \# $ \\
+    $ q_1 0 $ & $ 1q_2 $\\
+    $ 1 $ & $ 1 $\\
+    $ \# $ & $ \# $\\
+    $ q_2 1 $ & $ 0 q_1 $\\
+    $ 0q_1\# $ & $ q_2 01 $\\
+    $ 1q_2 0 $ & $ q_3 1 0 $\\
+    $ q_3 1 $ & $ q_3 $\\
+    $ q_3 0 $ & $ q_3 $\\
+    $ q_3 \#\# $ & $ \# $
+  \end{tabular}
+\end{center}
+
+Per come abbiamo costruito $ R $ e $ S  $, vediamo che c'e' una soluzione al problema MPCP che e' la seguente:
+
+\[
+r = s = \# q_1 01 \# 1q_2 1 \# 10q_1 \# 1q_2 01 \# q_3 101 \# q_3 01 \# q_3 1 \# q_3 \# \# 
+\]
+che e' proprio la computazione della stringa $ w $ con delle parti finali aggiuntive.\\
+
+Abbiamo infatti costruito $ R $ in modo da essere un "passo" piu' indietro rispetto a $ S  $ nella computazione, ovvero se su $ r_i $ leggo una configurazione allora su $ s_i $ avro' il suo legal successor. Quando $ s  $ raggiunge lo stato accettante (quindi $ w $ e' accettata), $ r $ fa un "passo" in piu' per pareggiare le due stringhe.\\
+
+In questo modo, se esiste una computazione per $ w = 01 $ le due stringhe possono ricongiungersi; ma se $ s  $ non arriva mai ad una configurazione accettante, allora $ r $ sara' sempre un passo indietro.\\
+
+Formalizziamo questa idea definendo una costruzione della coppia $ (R,S) $ a partire da $ (M,w) $, distinguendo 5 parti:
+\begin{center}
+  \begin{tabular}{ll|ll}
+    &$ R $ & $ S $ & \\ \hline
+    &$ \# $ & $ \# q_0 w_1...w_n $ & \\ \hline
+    $ \forall x \in \Gamma $&$ x $ & $ x $ & \\
+    &$ \# $ & $ \# $ &\\ \hline
+    $ \forall q \in Q \setminus F, $&$ qx $ & $ yp $ & $ \delta (q,x) = (p, y, \to) $\\
+    $ \forall x,y,z \in \Gamma $&$ zqx $ & $ pzy $ & $ \delta (q,x) = (p, y, \gets) $\\
+    &$ q\# $ & $ yp\# $ & $ \delta (q,\cancel{b}) = (p, y, \to) $\\
+    &$ zq\# $ & $ pzy\# $ & $ \delta (q,\cancel{b}) = (p, y, \gets) $\\ \hline
+    $ \forall q \in F, $&$ xqy $&$ q  $&\\
+    $ \forall x,y,z \in \Gamma $&$ xq $&$ q  $&\\
+    &$ qy $&$ q  $&\\ \hline
+    $ \forall q \in F $&$ q\#\# $&$ \#  $&
+  \end{tabular}
+\end{center}
+
+Controlliamo che $ f $ sia effettivamente la trasformazione che stavamo cercando:
+\begin{itemize}
+\item E' una funzione calcolabile?\\
+  \textbf{Si'}, dato che che non ci serve sapere se $ M $ accetta $ w $, ma costruisce solo un numero finito di coppie di stringhe guardando la funzione di transizione di $ M $.
+\item Se $ (M,w) \in \mathcal{L}_u $, e' vero che $ f(M,w) $ e' un'istanza si' di $ MPCP $?\\
+  \textbf{Si'}, dato che per ogni $ w $ accettata da $ M $ esiste una sequenza che simula l'esecuzione di $ M $ su $ w $.
+\item Se $ (M,w) \not\in \mathcal{L}_u $, e' vero che $ f(M,w) $ e' un'istanza no di $ MPCP $?\\
+  \textbf{Si'}, dato che se $ f(M,w) = (R,S) $ e' un'istanza si di $ MPCP $, allora esiste una sequenza che inizia con la configurazione iniziale di $ M $ su $ w $ e finisce in una configurazione accettante rispettando la funzione di transizione di $ M $, quindi $ M $ accetta $ w $ quindi $ (M,w) \in \mathcal{L}_u $. Dato che abbiamo dimostrato il contra-positivo, abbiamo dimostrato la premessa iniziale.
+\end{itemize}
+
+\subsubsection{Riduzione a PCP}
+Ci basta ora trovare la seconda riduzione $ MPCP \leq PCP $.
+
+Dopo aver risposto alle solite domande, non rimane che costruire la funzione $ f $:
+\begin{center}
+  \begin{tabular}{c|c}
+    $ R $ & $ S  $\\ \hline
+    1 & 111\\
+    10111 & 10\\
+    10 & 0
+  \end{tabular} $ \longrightarrow $
+  \begin{tabular}{c|c}
+    T & U\\ \hline
+    *1* & *1*1*1\\ \hline
+    1* & *1*1*1\\
+    1*0*1*1*1* & *1*0\\
+    1*0* & *0\\ \hline
+    \$ & *\$
+\end{tabular}
+\end{center}
+
+Stiamo aggiungendo un carattere speciale a sinistra di ogni carattere delle stringhe in $ R $ e a destra di ogni carattere delle stringhe in $ S  $. In questo modo e' impossibile chesia un'istanza si di $ PCP $ dato che $ t $ iniziera' sempre con il carattere speciale e $ u $ no.\\
+
+Aggiungiamo quindi una coppia $ t_0 = *t_1 , u_0 = u_1 $ in modo che, se esiste una sequenza che risolva il problema, allora il primo indice della sequenza $ i_1 $ e' per forza 0.\\
+
+Dobbiamo inoltre aggiungere un carattere speciale alla fine di $ u $, quindi aggiungiamo una coppia $ t_{k+1} = \$, u_{k+1} = *\$ $ in modo che, se esiste una sequenza che risolva il problema, allora l'ultimo indice di tale sequenza e' per forza $ k + 1 $.\\
+
+Controlliamo che $ f $ sia effettivamente la trasformazione che stavamo cercando:
+\begin{itemize}
+\item E' una funzione calcolabile?\\
+  \textbf{Si'}, non fa nulla di crazy.
+\item Se $ (R,S) $ e' un'istanza si' di $ MPCP $, e' vero che $ f(R,S) = (T,U) $ e' un'istanza si' di $ PCP $?\\
+  \textbf{Si'}, dato che sia $ r_1r_{i_2}...r_{i_n} = s_1s_{i_2}...s_{i_n} $ una sequenza di $ (R,S) $, allora la sequenza $ t_0t_{i_2}...t_{i_n}t_{k+1} = u_0u_{i_2}...u_{i_n} u_{k+1} $ e' un'istanza si' di $ PCP $.
+\item Se $ (R,S)$ e' un'istanza no di $ MPCP $, e' vero che $ f(R,S) $ e' un'istanza no di $ MPCP $?\\
+  \textbf{Si'}, dato che se $ f(R,S) = (T,U) $ e' un'istanza si di $ PCP $, allora per le proprieta' di $ f $ indicate prima, $ t $ e $ u $ devono iniziare con $ t_0/u_0 $ e finire con $ t_{k+1}/u_{k+1} $:
+    \[
+    t_0t_{i_2}...t_{i_n}t_{k+1} = u_0u_{i_2}...u_{i_n}u_{k+1}
+    \]
+    Tralasciando l'ultimo indice e considerando $ i_1 = 1 $, vediamo come
+    \[
+    r_1r_{i_2}...r_{i_n} = s_1s_{i_2}...s_{i_n}
+    \]
+    e' una soluzione al problema $ MPCP $, quindi $ (R,S) $ e' un'istanza si. Dato che abbiamo dimostrato il contra-positivo, abbiamo dimostrato la premessa iniziale.
+\end{itemize}
 % \end{document}

@@ -1024,3 +1024,219 @@ Si verifica che $ U $ è $ G $-stabile: per qualsiasi $ h \in G $ e qualsiasi ad
   }
 \pf{Dimostrazione}{ $ D_n $ contiene il sottogruppo ciclico $ C_n $ di indice $ [D_n : C_n] = 2 $, quindi $ \dim V \leq |D_n|/|C_n| = 2 $
 }
+
+\subsection{Descrizione Esplicita tramite Classi Laterali}
+
+Sia $R$ un sistema completo di rappresentanti per $G/H$ (un elemento di $G$ per ogni classe laterale). Ogni $g \in G$ permuta le classi laterali: dato $r \in R$,
+\[
+  gr = r_g h, \quad r_g \in R,\quad h \in H
+\]
+Quindi $g$ agisce su $V = \bigoplus_{r \in R} rW$ mandando $rW$ in $r_g W$: $r$ permuta gli addendi e $h$ agisce all'interno di $W$.
+
+\nt{
+  In modo più esplicito, $\forall r' \in R$, l'elemento $g$ manda $r'W$ in $gr'W = r_{g,r'}W$, dove $r_{g,r'}$ è il rappresentante di $g \cdot r'$ in $G/H$.
+}
+
+\ex{ES 1 — $H = \{e\}$, $W$ banale}{
+  Se $H = \{e\}$, ci sono $|G|$ classi laterali (una per elemento). Quindi:
+  \[
+    \mathrm{Ind}_H^G W = \bigoplus_{g \in G} g \otimes \mathbb{C} \cong \mathbb{C}[G]
+  \]
+  Si ottiene la \textbf{rappresentazione regolare}! È come fare la rappresentazione regolare usando le classi laterali (invece di fissare tutti gli elementi di $G$).
+}
+
+\ex{ES 2 — $G = D_4$, $H = C_4 = \langle R \rangle$, $W = \mathbb{C}$}{
+  Sia $W$ la rappresentazione di $C_4$ data da $R \cdot z = iz$ (quindi $R^k \cdot z = i^k z$).
+
+  Le classi laterali sono $G/H = \{H,\, sH\}$, con rappresentanti $\{e, s\}$. Quindi:
+  \[
+    V = \mathrm{Ind}_H^G W = W \oplus sW
+  \]
+  con base $\{e_1,\, se_1\}$ dove $e_1$ è una base di $W$.
+
+  Determiniamo l'azione di $R$ e $S$ (generatori di $D_4$) su $ae_1 + bse_1 \in V$.
+
+  \textbf{Azione di $R$:} Usando la relazione $SR = R^{-1}S$ nel gruppo diedrale:
+  \begin{align*}
+    R \cdot (ae_1 + bse_1) &= aRe_1 + b(RS)e_1 \\
+    &= a \cdot ie_1 + b \cdot SR^{-1}e_1 \\
+    &= aie_1 + b(-i)se_1
+  \end{align*}
+  \[
+    \Rightarrow\quad \rho(R) = \begin{pmatrix} i & 0 \\ 0 & -i \end{pmatrix}
+  \]
+
+  \textbf{Azione di $S$:}
+  \begin{align*}
+    S \cdot (ae_1 + bse_1) &= aSe_1 + bS^2e_1 = be_1 + ase_1
+  \end{align*}
+  \[
+    \Rightarrow\quad \rho(S) = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}
+  \]
+
+  \nt{
+    Poiché $\chi_U(R) = 0$, $\chi_U(R^2) = -2$, $\chi_U(S) = 0$, si verifica che $\chi_U = \chi_{V'}$ dove $V'$ è la rappresentazione naturale 2-dimensionale irriducibile di $D_4$. Quindi $U \cong V'$.
+  }
+}
+
+% ============================================================
+\subsection{Definizione tramite Prodotto Tensoriale}
+% ============================================================
+
+Prima di dare la definizione formale via tensori, ricordiamo la costruzione del prodotto tensoriale relativo.
+
+\dfn{Prodotto Tensoriale di $A$-moduli}{
+  Dati $V, W$ due $A$-moduli (su un anello $A$), il \textbf{prodotto tensoriale su $A$} è:
+  \[
+    V \otimes_A W \;:=\; \text{quoziente dell'$A$-modulo libero generato da } \{v \otimes w\}
+  \]
+  quozientato per le relazioni che rendono $\otimes$ $A$-bilineare (gli elementi di $A$ vengono trattati come scalari).
+}
+
+\ex{Esempi di prodotto tensoriale}{
+  \begin{enumerate}
+    \item $\mathbb{Z}^n \otimes_\mathbb{Z} \mathbb{Q} \cong \mathbb{Q}^n$: si prende il vettore intero e lo si ``immerge'' nei razionali.
+    \item $(\mathbb{Z}, +) \otimes_\mathbb{Z} \mathbb{Q} = \{0\}$: sia $n = \mathrm{ord}(g)$, allora
+      \[
+        g \otimes \frac{p}{q} = ng \otimes \frac{p}{qn} = 0
+      \]
+      perché moltiplicare per $n$ dà $0$ a sinistra e dividere per $n$ non cambia il risultato a destra.
+    \item $\mathbb{R}^n \otimes_\mathbb{R} \mathbb{C} \cong \mathbb{C}^n$: il tensore serve per \textbf{estendere gli scalari} da $\mathbb{R}$ a $\mathbb{C}$. Una base $\{x_1, \ldots, x_n\}$ di $\mathbb{R}^n$ diventa $\{x_1, \ldots, x_n, ix_1, \ldots, ix_n\}$.
+  \end{enumerate}
+}
+
+\dfn{Rappresentazione Indotta (via tensore)}{
+  \[
+    \mathrm{Ind}_H^G W \;:=\; \mathbb{C}[G] \otimes_{\mathbb{C}[H]} W
+  \]
+  dove $\mathbb{C}[G]$ è visto come $\mathbb{C}[H]$-modulo a destra. L'azione di $G$ è:
+  \[
+    g \cdot (t \otimes w) = gt \otimes w, \qquad g \in G,\; t \in \mathbb{C}[G],\; w \in W
+  \]
+}
+
+\nt{
+  Se $g' \in gH$, cioè $g' = gh$, allora:
+  \[
+    g'(t \otimes w) = gh(t \otimes w) = ght \otimes w = gt \otimes hw
+  \]
+  Stiamo facendo il ``twisting'' in $H$. Questo è coerente: elementi della stessa classe laterale agiscono allo stesso modo (a meno dell'azione di $H$ su $W$). Si può vedere anche come un'estensione di scalari da $\mathbb{C}[H]$ a $\mathbb{C}[G]$.
+}
+
+\nt{
+  La scelta del sistema di rappresentanti $R$ non è importante: la rappresentazione indotta è ben definita indipendentemente dalla scelta.
+}
+
+% ============================================================
+\subsection{Proprietà della Rappresentazione Indotta}
+% ============================================================
+
+\mprop{}{
+  \begin{enumerate}
+    \item $\dim \mathrm{Ind}_H^G W = \dim W \cdot \dfrac{|G|}{|H|}$
+    \item Se $K \leq H \leq G$, allora $\mathrm{Ind}_H^G \mathrm{Ind}_K^H W \cong \mathrm{Ind}_K^G W$
+  \end{enumerate}
+}
+
+\nt{
+  Abbiamo quindi due modi per costruire rappresentazioni di $G$ a partire da sottogruppi:
+  \begin{enumerate}
+    \item \textbf{Discendere}: se $N \trianglelefteq G$, un $G/N$-modulo diventa $G$-modulo componendo con la proiezione $G \to G/N$. Es: $G = D_4$, $N = Z(G) \Rightarrow G/N \cong$ Klein.
+    \item \textbf{Salire}: se $H \leq G$, un $H$-modulo diventa $G$-modulo tramite $\mathrm{Ind}_H^G$. Es: $G = D_4$, $H = C_4 \cong \mathbb{Z}/4$.
+  \end{enumerate}
+}
+
+% ============================================================
+\subsection{Carattere della Rappresentazione Indotta}
+% ============================================================
+
+\thm{Carattere dell'Indotta}{
+  Sia $H \leq G$, $(W, \theta)$ rappresentazione di $H$ e $V = \mathrm{Ind}_H^G W$. Sia $R$ un sistema completo di rappresentanti per $G/H$. Allora per ogni $g \in G$:
+  \[
+    \chi_V(g) = \frac{1}{|H|} \sum_{\substack{s \in G \\ s^{-1}gs \in H}} \chi_W(s^{-1}gs)
+  \]
+}
+
+\pf{Dimostrazione}{
+  $V = \bigoplus_{r \in R} rW$ e $g$ permuta gli addendi: $\forall r \in R$, $gr = r_g h$ con $r_g \in R$, $h \in H$.
+
+  Scegliamo una base per $V$ come unione di basi degli $rW$ al variare di $r \in R$ (possibile per somma diretta). Nella matrice di $\rho(g)$ in questa base:
+  \begin{itemize}
+    \item se $r_g \neq r$, l'addendo $rW$ viene mandato in un altro addendo $\Rightarrow$ nessun termine diagonale contribuisce;
+    \item se $r_g = r$, cioè $gr = rh$ per qualche $h \in H$, allora $g$ manda $rW$ in sé stesso e la traccia del blocco è $\chi_W(h) = \chi_W(r^{-1}gr)$.
+  \end{itemize}
+  Quindi:
+  \[
+    \chi_V(g) = \sum_{\substack{r \in R \\ r_g = r}} \chi_W(r^{-1}gr)
+      = \sum_{\substack{r \in R \\ r^{-1}gr \in H}} \chi_W(r^{-1}gr)
+  \]
+  Poiché questa somma dipende dalla rappresentazione $r$ delle classi, possiamo estenderla a tutti gli $s \in G$: all'interno della stessa classe laterale $rH$ ci sono $|H|$ elementi, tutti con lo stesso valore (il carattere è una funzione centrale), quindi dividendo per $|H|$:
+  \[
+    \chi_V(g) = \frac{1}{|H|} \sum_{\substack{s \in G \\ s^{-1}gs \in H}} \chi_W(s^{-1}gs) \qquad \square
+  \]
+}
+
+% ============================================================
+\section{Reciprocità di Frobenius}
+% ============================================================
+
+\subsection{Ripasso: Prodotto Hermitiano}
+
+Ricordiamo che per $\varphi, \psi \in \mathcal{C}(G)$ si ha:
+\[
+  \langle \varphi, \psi \rangle_G = \frac{1}{|G|} \sum_{g \in G} \varphi(g)\,\overline{\psi(g)}
+\]
+Analogamente, per $\chi, \xi \in \mathcal{C}(H)$:
+\[
+  \langle \chi, \xi \rangle_H = \frac{1}{|H|} \sum_{h \in H} \chi(h)\,\overline{\xi(h)}
+\]
+
+\subsection{Restrizione e Induzione}
+
+Sia $H \leq G$. Abbiamo due operazioni:
+\begin{itemize}
+  \item \textbf{Induzione}: da una rappresentazione $(W, \theta)$ di $H$ costruiamo $\mathrm{Ind}_H^G W$ (rappresentazione di $G$), con carattere $\mathrm{Ind}\,\chi$.
+  \item \textbf{Restrizione}: da una rappresentazione $(V, \rho)$ di $G$ otteniamo $\mathrm{Res}_H^G V$ (rappresentazione di $H$), componendo $H \hookrightarrow G \xrightarrow{\rho} GL(V)$, con carattere $\mathrm{Res}_H^G \rho$.
+\end{itemize}
+Possiamo quindi sia restringere $G$ ad $H$, sia far ``salire'' $H$ a $G$. Il teorema di Frobenius dice che è la stessa cosa.
+
+\thm{Reciprocità di Frobenius}{
+  \[
+    \langle \mathrm{Ind}\,\chi,\; \psi \rangle_G \;=\; \langle \chi,\; \mathrm{Res}_H^G\,\psi \rangle_H
+  \]
+}
+
+\pf{Dimostrazione}{
+  Calcoliamo il lato sinistro usando il teorema sul carattere dell'indotta:
+  \begin{align*}
+    \langle \mathrm{Ind}\,\chi, \psi \rangle_G
+    &= \frac{1}{|G|} \sum_{g \in G} \mathrm{Ind}\,\chi(g)\,\overline{\psi(g)} \\
+    &\overset{\text{Thm}}{=} \frac{1}{|G|} \cdot \frac{1}{|H|} \sum_{g \in G} \sum_{\substack{s \in G \\ s^{-1}gs \in H}} \chi(s^{-1}gs)\,\overline{\psi(g)}
+  \end{align*}
+  Facciamo il cambio di variabili $s^{-1}gs = h \in H$, cioè $g = shs^{-1}$, quindi $g^{-1} = sh^{-1}s^{-1}$. Poiché $\psi$ è una funzione centrale, $\overline{\psi(g)} = \overline{\psi(shs^{-1})} = \overline{\psi(h)}$. La somma diventa:
+  \[
+    = \frac{1}{|G|\,|H|} \sum_{s \in G} \sum_{h \in H} \chi(h)\,\overline{\psi(h)}
+  \]
+  Poiché $s$ non compare nell'integrando, la somma su $s$ dà un fattore $|G|$:
+  \[
+    = \frac{1}{|H|} \sum_{h \in H} \chi(h)\,\overline{\psi(h)} = \langle \chi,\, \mathrm{Res}_H^G\,\psi \rangle_H \qquad \square
+  \]
+}
+
+\ex{Esempio: $G = D_4$, $V$ naturale, $W$ repr. di $C_4$}{
+  Sia $V$ la rappresentazione naturale di $D_4$ su $\mathbb{C}^2$ e sia $W$ la rappresentazione di $C_4 = \langle R \rangle \leq D_4$ data da $R \cdot z = iz$.
+
+  Vogliamo calcolare $\langle \chi_V, \mathrm{Ind}\,\chi_W \rangle_{D_4}$ (che vale $1 \iff V \cong \mathrm{Ind}\,\chi_W$).
+
+  Per Reciprocità di Frobenius:
+  \[
+    \langle \chi_V, \mathrm{Ind}\,\chi_W \rangle_{D_4}
+    = \langle \mathrm{Res}_{C_4}^{D_4}\,\chi_V,\, \chi_W \rangle_{C_4}
+    = \frac{1}{4} \sum_{R^i \in C_4} \chi_V(R^i)\,\overline{\chi_W(R^i)}
+  \]
+  I valori del carattere di $V$ sulle rotazioni (dalla tavola di $D_4$) sono $\chi_V(e) = 2$, $\chi_V(R) = 0$, $\chi_V(R^2) = -2$, $\chi_V(R^3) = 0$. I valori di $\chi_W$ sono $\chi_W(R^k) = i^k$. Quindi:
+  \[
+    = \frac{1}{4}\left(2 \cdot 1 + 0 \cdot (-i) + (-2) \cdot (-1) + 0 \cdot i\right) = \frac{1}{4}(2 + 0 + 2 + 0) = 1
+  \]
+  Quindi $V \cong \mathrm{Ind}_{C_4}^{D_4} W$. \checkmark
+}
