@@ -306,4 +306,17 @@ Controlliamo che $ f $ sia effettivamente la trasformazione che stavamo cercando
     \]
     e' una soluzione al problema $ MPCP $, quindi $ (R,S) $ e' un'istanza si. Dato che abbiamo dimostrato il contra-positivo, abbiamo dimostrato la premessa iniziale.
 \end{itemize}
+
+\section{Teorema di Rice}
+Una proprieta' di una macchina e' un linguaggio le cui stringhe che ci appartengono sono codifiche di macchine che appartengono a un certo insieme.
+
+Le proprieta' possono essere strutturali o relative al linguaggio riconosciuto dalla macchina.
+
+Una proprieta' e' banale se P e vuota o se contiene tutte le macchine.
+
+Una proprieta' P di macchine si dice \textit{semantica} se 
+\[
+  \forall M_1, M_2. L(M_1) = L(M_2) \implies (M_1 \in P \implies M_2 \in P)
+\]
+
 % \end{document}
