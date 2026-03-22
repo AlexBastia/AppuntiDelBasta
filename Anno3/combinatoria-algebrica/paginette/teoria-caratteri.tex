@@ -1128,6 +1128,71 @@ Prima di dare la definizione formale via tensori, ricordiamo la costruzione del 
 }
 
 % ============================================================
+\subsection{Equivalenza delle Due Definizioni}
+% ============================================================
+
+\thm{}{
+  Sia $H \leq G$ e $(W, \sigma)$ una rappresentazione di $H$. Le due costruzioni della rappresentazione indotta sono isomorfe come $G$-moduli:
+  \[
+    \mathbb{C}[G] \otimes_{\mathbb{C}[H]} W \;\cong\; \bigoplus_{r \in R} rW
+  \]
+  dove $R$ è un sistema completo di rappresentanti per $G/H$.
+}
+
+\pf{Dimostrazione}{
+  \textbf{Passo 1 — Decomposizione di $\mathbb{C}[G]$ come $\mathbb{C}[H]$-modulo destro.}
+
+  Come $\mathbb{C}[H]$-modulo destro, $\mathbb{C}[G]$ si decompone secondo le classi laterali sinistre:
+  \[
+    \mathbb{C}[G] = \bigoplus_{r \in R} r \cdot \mathbb{C}[H]
+  \]
+  Infatti ogni $g \in G$ si scrive in modo unico come $g = rh$ con $r \in R$ e $h \in H$, quindi $\{rh \mid r \in R,\, h \in H\}$ è una base di $\mathbb{C}[G]$ e ogni $rh$ sta nell'addendo $r \cdot \mathbb{C}[H]$.
+
+  \textbf{Passo 2 — Tensorizzazione addendo per addendo.}
+
+  Il prodotto tensoriale commuta con le somme dirette (nel primo argomento), quindi:
+  \[
+    \mathbb{C}[G] \otimes_{\mathbb{C}[H]} W
+    = \left(\bigoplus_{r \in R} r \cdot \mathbb{C}[H]\right) \otimes_{\mathbb{C}[H]} W
+    \cong \bigoplus_{r \in R} \big(r \cdot \mathbb{C}[H] \otimes_{\mathbb{C}[H]} W\big)
+  \]
+
+  \textbf{Passo 3 — Ogni addendo è isomorfo a $W$.}
+
+  Per ogni $r \in R$, consideriamo la mappa:
+  \[
+    \varphi_r : r \cdot \mathbb{C}[H] \otimes_{\mathbb{C}[H]} W \longrightarrow W, \qquad rh \otimes w \longmapsto \sigma(h)w
+  \]
+  Questa è ben definita: se spostiamo un elemento $h' \in H$ attraverso il tensore, abbiamo
+  \[
+    rh h' \otimes w = rh \otimes h'w = rh \otimes \sigma(h')w
+  \]
+  e la mappa dà $\sigma(hh')w = \sigma(h)\sigma(h')w$ nel primo caso e $\sigma(h)\sigma(h')w$ nel secondo, quindi è compatibile con le relazioni del tensore su $\mathbb{C}[H]$.
+
+  La mappa inversa è $w \mapsto r \otimes w$, quindi $\varphi_r$ è un isomorfismo di spazi vettoriali. In particolare:
+  \[
+    \mathbb{C}[G] \otimes_{\mathbb{C}[H]} W \;\cong\; \bigoplus_{r \in R} W_r
+  \]
+  dove $W_r \cong W$ come spazio vettoriale, con l'elemento $r \otimes w$ che corrisponde a $w$ nella copia $W_r$.
+
+  \textbf{Passo 4 — L'azione di $G$ coincide.}
+
+  Nella costruzione tensoriale, $g \in G$ agisce per $g \cdot (r \otimes w) = gr \otimes w$. Scriviamo $gr = r' h_{g,r}$ con $r' \in R$ e $h_{g,r} \in H$. Allora:
+  \[
+    g \cdot (r \otimes w) = gr \otimes w = r' h_{g,r} \otimes w = r' \otimes \sigma(h_{g,r})w
+  \]
+  Questo corrisponde esattamente all'azione nella costruzione per somma diretta: $g$ manda l'addendo $W_r$ nell'addendo $W_{r'}$, applicando $\sigma(h_{g,r})$ all'interno di $W$. La mappa:
+  \[
+    \Phi : \mathbb{C}[G] \otimes_{\mathbb{C}[H]} W \longrightarrow \bigoplus_{r \in R} rW, \qquad r \otimes w \longmapsto \rho(r)w \in rW
+  \]
+  è un isomorfismo di $G$-moduli perché:
+  \begin{align*}
+    \Phi(g \cdot (r \otimes w)) &= \Phi(r' \otimes \sigma(h_{g,r})w) = \rho(r')\sigma(h_{g,r})w \\
+    &= \rho(r' h_{g,r})w = \rho(gr)w = g \cdot \rho(r)w = g \cdot \Phi(r \otimes w) \qquad\square
+  \end{align*}
+}
+
+% ============================================================
 \subsection{Proprietà della Rappresentazione Indotta}
 % ============================================================
 

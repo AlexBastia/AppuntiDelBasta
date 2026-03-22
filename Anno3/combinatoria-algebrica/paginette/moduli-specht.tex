@@ -1,0 +1,254 @@
+% \begin{document}
+\chapter{Moduli di Specht e Classificazione delle Rappresentazioni Irriducibili di $S_n$}
+
+\section{Tableau di Young}
+
+\dfn{Tableau iniettivo}{
+Data una partizione $\lambda \vdash n$ con diagramma di Ferrers associato, un \textbf{tableau iniettivo} $T$ di forma $\lambda$ è un riempimento delle celle del diagramma con gli interi $1, \dots, n$, ciascuno usato esattamente una volta.
+}
+
+\dfn{Tableau di Young Standard (SYT)}{
+Un \textbf{Tableau di Young Standard} è un tableau iniettivo in cui le entrate sono strettamente crescenti lungo ogni riga (da sinistra a destra) e lungo ogni colonna (dal basso verso l'alto).
+}
+
+L'azione naturale di $S_n$ sui tableau iniettivi di forma $\lambda$ è data da: per ogni $\sigma \in S_n$, il tableau $\sigma \cdot T$ si ottiene sostituendo ogni entrata $i$ di $T$ con $\sigma(i)$.
+
+\dfn{Gruppo di riga e gruppo di colonna}{
+Sia $T$ un tableau iniettivo di forma $\lambda = (\lambda_1, \dots, \lambda_k) \vdash n$.
+\begin{itemize}
+\item Il \textbf{gruppo di riga} $R(T) \leq S_n$ è il sottogruppo delle permutazioni che spostano le entrate di $T$ solo all'interno delle rispettive righe. Si ha $R(T) \cong S_{\lambda} := S_{\lambda_1} \times \cdots \times S_{\lambda_k}$.
+\item Il \textbf{gruppo di colonna} $C(T) \leq S_n$ è il sottogruppo delle permutazioni che spostano le entrate di $T$ solo all'interno delle rispettive colonne. Si ha $C(T) \cong S_{\lambda'}$, dove $\lambda'$ è la partizione coniugata.
+\end{itemize}
+}
+
+\subsection{Proprietà di coniugio}
+
+\mprop{Coniugio dei gruppi di riga e colonna}{
+Per ogni $\sigma \in S_n$ e ogni tableau iniettivo $T$:
+\[
+R(\sigma \cdot T) = \sigma\, R(T)\, \sigma\inv, \qquad C(\sigma \cdot T) = \sigma\, C(T)\, \sigma\inv.
+\]
+}
+
+\pf{Dimostrazione}{
+Dimostriamo $R(\sigma \cdot T) = \sigma R(T) \sigma\inv$; il caso $C(T)$ è identico, sostituendo ``riga'' con ``colonna''.
+
+\begin{enumerate}
+\item ($\supseteq$) Sia $p \in R(T)$. Dato $x = \sigma(y)$ nella riga di $\sigma \cdot T$, si ha
+\[
+(\sigma p \sigma\inv)(x) = \sigma(p(y)).
+\]
+Poiché $p(y)$ sta nella stessa riga di $y$ in $T$, la sua immagine $\sigma(p(y))$ sta nella stessa riga di $x$ in $\sigma \cdot T$. Dunque $\sigma p \sigma\inv \in R(\sigma \cdot T)$.
+
+\item ($\subseteq$) Sia $q \in R(\sigma \cdot T)$. Poniamo $p := \sigma\inv q \sigma$. Per ogni $y$ in una riga di $T$, l'elemento $\sigma(y)$ sta nella riga corrispondente di $\sigma \cdot T$, quindi $q(\sigma(y))$ vi rimane, e $\sigma\inv(q(\sigma(y))) = p(y)$ torna nella riga di $y$ in $T$. Dunque $p \in R(T)$ e $q = \sigma p \sigma\inv$.
+\end{enumerate}
+}
+
+\section{Lemma di partizione dei tableau}
+
+\mlenma{Partizione dei tableau}{
+Siano $T, \wt{T}$ tableau iniettivi di forma $\lambda, \wt{\lambda} \vdash n$, con $\lambda \not>_{\mathrm{lex}} \wt{\lambda}$. Allora si verifica esattamente una delle seguenti:
+\begin{enumerate}
+\item Esistono $i \neq j$ nella stessa colonna di $T$ e nella stessa riga di $\wt{T}$.
+\item $\lambda = \wt{\lambda}$ e esistono $\wt{p} \in R(\wt{T})$, $q \in C(T)$ tali che $\wt{p}\wt{T} = qT$.
+\end{enumerate}
+}
+
+\pf{Dimostrazione}{
+Assumiamo che (1) sia falsa e mostriamo (2).
+
+Se nessuna coppia di interi nella stessa riga di $\wt{T}$ condivide la medesima colonna di $T$, allora gli elementi della prima riga di $\wt{T}$ occupano colonne distinte di $T$. Esiste quindi $q_1 \in C(T)$ che li sposta tutti nella prima riga di $q_1 T$.
+
+Iterando: per ogni $k$, si trovano $q_1, \dots, q_k \in C(T)$ tali che le entrate delle prime $k$ righe di $\wt{T}$ cadono nelle prime $k$ righe di $q_k \cdots q_1 T$. Ne segue
+\[
+\wt{\lambda}_1 + \cdots + \wt{\lambda}_k \leq \lambda_1 + \cdots + \lambda_k \quad \forall\, k,
+\]
+cioè $\lambda \geq \wt{\lambda}$ nell'ordine di dominanza. Poiché l'ordine lessicografico inverso estende quello di dominanza, $\lambda \geq_{\mathrm{lex}} \wt{\lambda}$. Ma per ipotesi $\lambda \not>_{\mathrm{lex}} \wt{\lambda}$, dunque $\lambda = \wt{\lambda}$.
+
+Ponendo $q = q_k \cdots q_1 \in C(T)$, i tableau $qT$ e $\wt{T}$ hanno le stesse entrate in ogni riga. Esiste allora $\wt{p} \in R(\wt{T})$ con $\wt{p}\wt{T} = qT$.
+}
+
+\section{Ordine sui tableau}
+
+\dfn{Parola di colonna}{
+La \textbf{parola di colonna} $w_{\mathrm{col}}(T)$ di un tableau $T$ è la sequenza ottenuta leggendo le entrate colonna per colonna, da sinistra a destra, dall'alto verso il basso in ciascuna colonna.
+}
+
+\dfn{Ordine sui tableau}{
+Dati due tableau iniettivi $T, \wt{T}$ della stessa dimensione, si dice $\wt{T} > T$ se:
+\begin{enumerate}
+\item la forma di $\wt{T}$ è strettamente maggiore di quella di $T$ nell'ordine lessicografico inverso, oppure
+\item le forme coincidono e il più grande intero che occupa celle diverse nei due tableau compare prima in $w_{\mathrm{col}}(\wt{T})$ che in $w_{\mathrm{col}}(T)$.
+\end{enumerate}
+}
+
+\nt{
+Se $T$ è un SYT, per ogni $p \in R(T)$ e $q \in C(T)$ vale $p \cdot T \geq T$ e $q \cdot T \leq T$. L'intero più grande spostato da $p$ si muove a sinistra (prima nella parola di colonna); quello spostato da $q$ scende nella colonna (dopo nella parola di colonna).
+}
+
+\cor{Ordine e intersezione righe-colonne}{
+Siano $T, \wt{T}$ due SYT con $\wt{T} > T$. Allora esistono $i \neq j$ nella stessa colonna di $T$ e nella stessa riga di $\wt{T}$.
+}
+
+\pf{Dimostrazione}{
+Per assurdo: se tali interi non esistono, per il Lemma di partizione esistono $\wt{p} \in R(\wt{T})$, $q \in C(T)$ con $\wt{p}\wt{T} = qT$. Poiché $T, \wt{T}$ sono SYT:
+\[
+T \geq q \cdot T = \wt{p} \cdot \wt{T} \geq \wt{T}
+\]
+cioè $T \geq \wt{T}$, in contraddizione con $\wt{T} > T$.
+}
+
+\section{Tabloidi e la rappresentazione $M^\lambda$}
+
+\dfn{Tabloide}{
+Il \textbf{tabloide} $\{T\}$ associato a un tableau iniettivo $T$ è l'orbita di $T$ sotto l'azione di $R(T)$. L'ordine degli elementi all'interno di ciascuna riga non ha importanza. L'azione di $S_n$ sui tabloidi è $\sigma \cdot \{T\} := \{\sigma \cdot T\}$.
+}
+
+\dfn{Rappresentazione $M^\lambda$}{
+Lo spazio vettoriale complesso $M^\lambda$ ha come base formale l'insieme di tutti i tabloidi di forma $\lambda \vdash n$, con l'azione di $S_n$ data da permutazione dei tabloidi. Si ha l'isomorfismo
+\[
+M^\lambda \cong \mathrm{Ind}_{S_\lambda}^{S_n} \mathbf{1}.
+\]
+}
+
+\ex{Esempi di $M^\lambda$}{
+\begin{itemize}
+\item $\lambda = (2,1)$, $n = 3$: i tabloidi sono $\{1,2\mid 3\}$, $\{1,3\mid 2\}$, $\{2,3\mid 1\}$, dunque $\dim M^{(2,1)} = 3$.
+\item $\lambda = (n)$: un unico tabloide, $M^{(n)} \cong \mathbf{1}$ (rappresentazione banale).
+\item $\lambda = (1^n)$: $n!$ tabloidi, $M^{(1^n)}$ è la rappresentazione regolare.
+\end{itemize}
+}
+
+\section{Simmetrizzatori di Young}
+
+\dfn{Simmetrizzatori}{
+Sia $T$ un tableau iniettivo di dimensione $n$. Si definiscono in $\mathbb{C}[S_n]$:
+\begin{enumerate}
+\item \textbf{Simmetrizzatore delle righe:} $\displaystyle a_T := \sum_{p \in R(T)} p$.
+\item \textbf{Simmetrizzatore delle colonne:} $\displaystyle b_T := \sum_{q \in C(T)} \mathrm{sgn}(q)\, q$.
+\item \textbf{Simmetrizzatore di Young:} $c_T := b_T\, a_T$.
+\end{enumerate}
+}
+
+\mprop{Proprietà algebriche dei simmetrizzatori}{
+Per ogni $p \in R(T)$, $q \in C(T)$ e $\sigma \in S_n$:
+\begin{enumerate}
+\item $p\, a_T = a_T\, p = a_T$, \quad $a_T^2 = |R(T)|\, a_T$.
+\item $q\, b_T = b_T\, q = \mathrm{sgn}(q)\, b_T$, \quad $b_T^2 = |C(T)|\, b_T$.
+\item $\sigma\, a_T\, \sigma\inv = a_{\sigma \cdot T}$, \quad $\sigma\, b_T\, \sigma\inv = b_{\sigma \cdot T}$.
+\end{enumerate}
+}
+
+\section{Vettore di Specht e modulo di Specht}
+
+\dfn{Vettore di Specht}{
+Il \textbf{vettore di Specht} associato a un tableau iniettivo $T$ di forma $\lambda$ è
+\[
+v_T := b_T \cdot \{T\} = \sum_{q \in C(T)} \mathrm{sgn}(q)\, \{q \cdot T\} \;\in M^\lambda.
+\]
+}
+
+\mprop{Proprietà del vettore di Specht}{
+\begin{enumerate}
+\item $v_T \neq 0$ per ogni tableau iniettivo $T$.
+\item Per ogni $\sigma \in S_n$: $\sigma \cdot v_T = v_{\sigma \cdot T}$.
+\end{enumerate}
+}
+
+\dfn{Modulo di Specht}{
+Il \textbf{modulo di Specht} è il sottomodulo
+\[
+S^\lambda := \mathbb{C}[S_n] \cdot v_T \subseteq M^\lambda,
+\]
+generato ciclicamente da un qualsiasi vettore di Specht $v_T$ di forma $\lambda$.
+}
+
+\thm{Base standard dei moduli di Specht}{
+L'insieme $\{v_T \mid T \text{ è un SYT di forma } \lambda\}$ è una base di $S^\lambda$. In particolare
+\[
+\dim S^\lambda = f^\lambda := \#\{\text{SYT di forma } \lambda\}.
+\]
+}
+
+\ex{Modulo di Specht $S^{(2,1)}$ per $S_3$}{
+Sia $T$ l'SYT $\begin{smallmatrix} 1 & 2 \\ 3 \end{smallmatrix}$. Le colonne sono $\{1,3\}$ e $\{2\}$, quindi $C(T) = \{\id, (13)\}$.
+\[
+v_T = \{T\} - \{(13) \cdot T\} = \{1,2 \mid 3\} - \{2,3 \mid 1\}.
+\]
+L'altro SYT è $T' = \begin{smallmatrix} 1 & 3 \\ 2 \end{smallmatrix}$ con $C(T') = \{\id, (12)\}$:
+\[
+v_{T'} = \{1,3 \mid 2\} - \{2,3 \mid 1\}.
+\]
+I vettori $v_T, v_{T'}$ sono linearmente indipendenti e formano la base standard di $S^{(2,1)}$, che è la rappresentazione standard irriducibile di $S_3$ ($\dim S^{(2,1)} = 2$).
+}
+
+\section{Il Lemma Tecnico}
+
+\mlenma{Il Lemma Tecnico}{
+Siano $T, \wt{T}$ tableau iniettivi di forma $\lambda, \wt{\lambda} \vdash n$, con $\lambda \not>_{\mathrm{lex}} \wt{\lambda}$. Allora:
+\[
+b_T\{\wt{T}\} = \begin{cases} 0 & \text{se } \exists\, i \neq j \text{ nella stessa colonna di } T \text{ e nella stessa riga di } \wt{T}, \\ \pm\, v_T & \text{altrimenti.} \end{cases}
+\]
+}
+
+\pf{Dimostrazione}{
+\begin{enumerate}
+\item Siano $i \neq j$ nella stessa colonna di $T$ e nella stessa riga di $\wt{T}$. Sia $t = (ij)$.
+\begin{itemize}
+\item $t \in C(T)$, dunque $b_T t = -b_T$.
+\item $t\{\wt{T}\} = \{\wt{T}\}$, perché $i,j$ stanno nella stessa riga di $\wt{T}$.
+\end{itemize}
+Allora:
+\[
+b_T\{\wt{T}\} = b_T\bigl(t\{\wt{T}\}\bigr) = (b_T t)\{\wt{T}\} = -b_T\{\wt{T}\} \implies b_T\{\wt{T}\} = 0.
+\]
+
+\item Non esistono tali interi. Per il Lemma di partizione esistono $\wt{p} \in R(\wt{T})$, $q \in C(T)$ con $\wt{p}\wt{T} = qT$. Allora:
+\[
+b_T\{\wt{T}\} \stackrel{\text{(i)}}{=} b_T\{\wt{p}\wt{T}\} \stackrel{\text{(ii)}}{=} b_T\{qT\} \stackrel{\text{(iii)}}{=} b_T q\{T\} \stackrel{\text{(iv)}}{=} \mathrm{sgn}(q)\,b_T\{T\} \stackrel{\text{(v)}}{=} \mathrm{sgn}(q)\,v_T = \pm v_T
+\]
+dove: (i) $\wt{p} \in R(\wt{T})$ non altera il tabloide; (ii) si usa $\wt{p}\wt{T} = qT$; (iii) $q$ agisce sul tableau dentro il tabloide; (iv) $q \in C(T) \implies b_T q = \mathrm{sgn}(q)\,b_T$; (v) $v_T = b_T\{T\}$ per definizione.
+\end{enumerate}
+}
+
+\cor{Annullamento per tableau standard}{
+Se $T, \wt{T}$ sono SYT con $\wt{T} > T$, allora $b_T\{\wt{T}\} = 0$.
+}
+
+\pf{Dimostrazione}{
+Per il Corollario precedente, l'ipotesi $\wt{T} > T$ garantisce l'esistenza di $i \neq j$ nella stessa colonna di $T$ e nella stessa riga di $\wt{T}$. Si applica il Caso 1 del Lemma 4.1.
+}
+
+\section{Classificazione delle rappresentazioni irriducibili di $S_n$}
+
+\thm{Classificazione delle rappresentazioni irriducibili di $S_n$}{
+I moduli di Specht $\{S^\lambda \mid \lambda \in \mathrm{Par}(n)\}$ costituiscono un sistema completo di rappresentazioni irriducibili di $S_n$, a due a due non isomorfe.
+}
+
+\pf{Dimostrazione}{
+\begin{enumerate}
+\item \textbf{Non banalità.} Il vettore $v_T \neq 0$: nell'espansione $v_T = \sum_{q \in C(T)} \mathrm{sgn}(q)\{qT\}$, il termine $q = \id$ produce $\{T\}$ con coefficiente $+1$, e nessun altro termine lo cancella. Dunque $S^\lambda \neq 0$.
+
+\item \textbf{Non isomorfismo.} Sia $T$ un tableau di forma $\lambda$. L'azione di $b_T$ su $S^\lambda$ soddisfa
+\[
+b_T \cdot S^\lambda = \mathbb{C}\, v_T \neq 0.
+\]
+Se $\wt{\lambda} >_{\mathrm{lex}} \lambda$, il Lemma Tecnico (Caso 1) implica $b_T \cdot S^{\wt{\lambda}} = 0$. Questa differenza nell'azione algebrica esclude ogni isomorfismo tra $S^\lambda$ e $S^{\wt{\lambda}}$.
+
+\item \textbf{Irriducibilità.} Per assurdo, sia $S^\lambda = V \oplus W$. Applicando $b_T$:
+\[
+\mathbb{C}\, v_T = b_T V \oplus b_T W.
+\]
+Essendo $\mathbb{C}\, v_T$ unidimensionale, uno dei due sommandi è nullo; supponiamo $b_T W = 0$. Allora $v_T \in b_T V$, ma $v_T$ genera ciclicamente $S^\lambda$, dunque $V = S^\lambda$.
+
+\item \textbf{Completezza.} La famiglia $\{S^\lambda\}_{\lambda \vdash n}$ è indicizzata dalle partizioni di $n$, che sono in biiezione con le classi di coniugio di $S_n$. Poiché il numero di rappresentazioni irriducibili di un gruppo finito coincide con il numero delle sue classi di coniugio, la famiglia è completa.
+\end{enumerate}
+}
+
+\subsection{Ruolo nella teoria}
+
+La formula-chiave che governa l'intera classificazione è l'asimmetria dell'azione di $b_T$:
+\[
+b_T \cdot S^\lambda = \mathbb{C}\, v_T \neq 0, \qquad b_T \cdot S^{\wt{\lambda}} = 0 \;\;\text{se } \wt{\lambda} >_{\mathrm{lex}} \lambda.
+\]
+Questa proprietà garantisce simultaneamente la non isomorfismo tra moduli associati a partizioni diverse e l'impossibilità di scomporre ciascun modulo in sottomoduli propri.
