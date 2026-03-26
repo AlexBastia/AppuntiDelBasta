@@ -1,7 +1,88 @@
 % \begin{document}
-\chapter{Moduli di Specht e Classificazione delle Rappresentazioni Irriducibili di $S_n$}
+\chapter{Classificazione delle Rappresentazioni Irriducibili di $S_n$}
+L'idea e' quella di usare polinomi simmetrici (modo vecchio) e \textit{tableau} (piu' moderno) per poter descrivere le rappresentazioni irriducibili di $ S_n $ (e quindi il loro carattere) $ \forall n \in \mathbb{N} $.
+
+\section{Partizioni e Ordini}
+\dfn{Partizione}{
+  Diciamo che $ \lambda $ e' una \textit{partizione} di $ n \in \mathbb{N} $ e lo indichiamo con $ \lambda \vdash n $ se:
+  \[
+    \lambda = (\lambda_1, ..., \lambda_k)
+  \]
+  dove
+  \[
+  \lambda_1 \geq ... \geq \lambda_k \geq 0 \in \mathbb{N}\ \land\ \sum_{i = 1}^{k} \lambda_i = n
+  \]
+
+  Indichiamo con $ Par(n)=\{\lambda | \lambda \vdash n\} $ e con $ Par = \bigcup_{n \in \mathbb{N}} Par(n) $.\\
+
+  Inoltre, $ |\lambda| = n $ e $ l(\lambda) = k $ e' la lunghezza della partizione.
+}
+L'ordinamento sui lambda nella descrizione della partizione serve a fare in modo che non vengano contate partizioni uguali ma scritte in modo diverso.
+\ex{Partizione}{
+  $(3,2,2) \vdash 7$
+}
+
+Indichiamo adesso tre relazioni d'ordine sulle partizioni:
+
+\dfn{Partizione "sghemba"}{
+  La relazione totale $ \mu \subseteq \lambda $ su $ Par $ e' definita come
+  \[
+  \forall i. \mu_i \leq \lambda_i
+  \]
+  Se $ l(\mu) \neq l(\lambda) $ basta estendere la partizione piu' corta con degli zeri.\\
+
+  In questo caso, la \textit{partizione sghemba} (che non e' una vera partizione) e'
+  \[
+    \lambda/\mu \coloneq (\lambda_1-\mu_1, ..., \lambda_k - \mu_k)
+  \]
+}
+\nt{
+  Si puo' vedere $ \mu \subseteq \lambda $ come il fatto che il \textit{diagramma di Ferrer} di $ \mu $ e' contenuto dentro a quello di $ \lambda $. La partizione sghemba e' quindi la differenza dei due diagrammi.
+}
+
+\ex{Partizione sghemba}{
+  $ \lambda = (3,2,2), \mu = (2) $, quindi abbiamo che $ \mu \subseteq \lambda $. I due diagrammi di Ferrer sono:
+  \begin{center} 
+    \ydiagram{2,2,3}
+    \ydiagram{2}
+  \end{center}
+  Possiamo quindi calcolare $ \lambda / \mu $:
+  \begin{center}
+    \ydiagram{2,2,2+1}
+  \end{center}
+}
+
+\dfn{Ordine dominante}{
+  Relazione d'ordine su $ Par(n) $ indicata con $ \mu \leq \lambda $ ed e' definita come
+  \[
+  \forall i.\ \mu_1 + ... + \mu_i \leq \lambda_1 + ... + \lambda_i
+  \]
+  E' una relazione parziale in quanto se $ l(\lambda) \neq l(\mu) $ allora le due partizioni di $ n $ sono incompatibili.
+}
+\ex{Ordine dominante}{
+  $(2,2) <= (3,1)$
+}
+
+\dfn{RLO}{
+  Il Reverse Lexicografic Order e' un ordine totale su $ Par(n) $ indicato con $ \mu \leq^R \lambda $ se:
+  \begin{itemize}
+  \item $ \mu = \lambda $, oppure
+  \item $ \exists i.\ \mu_1 = \lambda_1,...,\mu_i = \lambda_i $ ma $ \mu_{i+1} < \lambda_{i+1} $
+  \end{itemize}
+}
+\ex{RLO su $ Par(5) $}{
+  $ (5) >^R (4,1) >^R (3,2) >^R (3,1,1) >^R (2,2,1) >^R (2,1^3) >^R (1^5) $
+}
+
+\mprop{}{
+  Se $ \lambda \leq \mu $, allora $ \lambda \leq^R \mu $.
+}
 
 \section{Tableau di Young}
+
+\dfn{Semi-Standard Young Tableau}{
+  Riempimento di un diagramma di Ferrer con numeri $ \{1,...,n\} $ strettamente ascendenti sulle colonne e debolmente ascendenti sulle righe.
+}
 
 \dfn{Tableau iniettivo}{
 Data una partizione $\lambda \vdash n$ con diagramma di Ferrers associato, un \textbf{tableau iniettivo} $T$ di forma $\lambda$ è un riempimento delle celle del diagramma con gli interi $1, \dots, n$, ciascuno usato esattamente una volta.
@@ -9,6 +90,37 @@ Data una partizione $\lambda \vdash n$ con diagramma di Ferrers associato, un \t
 
 \dfn{Tableau di Young Standard (SYT)}{
 Un \textbf{Tableau di Young Standard} è un tableau iniettivo in cui le entrate sono strettamente crescenti lungo ogni riga (da sinistra a destra) e lungo ogni colonna (dal basso verso l'alto).
+}
+
+\ex{Tableaux}{
+  Prendiamo $ \lambda = (3,2,1) $ e $ \mu = (1) $ partizioni. Consideriamo il diagramma di Ferrer della loro partizione sghemba $ \lambda/\mu $:
+  \begin{center}
+    \ydiagram{1,2,1+2}
+  \end{center}
+  Vediamo ora come possiamo riempirlo:
+  \begin{center}
+  \begin{ytableau}
+    1\\
+    1 & 2\\
+    \none & 3 & 4
+  \end{ytableau}\quad\quad
+  \begin{ytableau}
+    4\\
+    1 & 2\\
+    \none & 1 & 1
+  \end{ytableau}\quad\quad
+  \begin{ytableau}
+    2\\
+    1 & 4\\
+    \none & 3 & 5
+  \end{ytableau}\quad\quad
+  \end{center}
+  Il primo non e' neanche un SSYT, il secondo lo e' ma non un SYT, il terzo invece e' proprio un SYT.\\
+
+  Possiamo associare al secondo tableau il seguente monomio:
+  \[
+  X_1^3X_2^2X_3^0X_4^1X_5^0
+  \]
 }
 
 L'azione naturale di $S_n$ sui tableau iniettivi di forma $\lambda$ è data da: per ogni $\sigma \in S_n$, il tableau $\sigma \cdot T$ si ottiene sostituendo ogni entrata $i$ di $T$ con $\sigma(i)$.
