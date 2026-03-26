@@ -1,0 +1,42 @@
+Che cos'e' il carattere di una rappresentazione (V, ρ)?;La funzione χ_ρ: G → C definita da χ_ρ(g) = tr(ρ(g)), cioe' la traccia della matrice associata a g.
+Quanto vale χ_ρ(e)?;dim V, perche' ρ(e) = Id_V e tr(Id_V) = dim V.
+Perche' il carattere e' costante sulle classi di coniugio?;Perche' χ(hgh⁻¹) = tr(ρ(h)ρ(g)ρ(h)⁻¹) = tr(ρ(g)) = χ(g), per la ciclicita' della traccia. I caratteri sono quindi funzioni di classe.
+Perche' χ_ρ(g⁻¹) = coniugato di χ_ρ(g)?;Gli autovalori di ρ(g) sono radici dell'unita' (perche' g ha ordine finito), quindi hanno modulo 1. Gli autovalori di ρ(g⁻¹) = ρ(g)⁻¹ sono i loro inversi λ⁻¹ = coniugato(λ) quando |λ| = 1.
+Regola generale per il carattere della rappresentazione di permutazione?;χ(g) = numero di punti fissi di g. Infatti la matrice di ρ(g) e' una matrice di permutazione e i termini diagonali sono 1 solo per gli indici fissati da g.
+Che cos'e' il prodotto tensoriale V ⊗ U?;Lo spazio quoziente L(V×U)/B, dove L(V×U) e' lo spazio vettoriale libero su tutte le coppie (v,u) e B e' il sottospazio delle relazioni di bilinearita'. Nel quoziente vale (av₁+bv₂)⊗u = a(v₁⊗u) + b(v₂⊗u) e simmetrico.
+Dimensione di V ⊗ U?;dim V · dim U. Se {v_i} e {u_j} sono basi, allora {v_i ⊗ u_j} e' una base di V ⊗ U.
+Che cos'e' lo spazio duale V*?;V* = Hom_K(V, K), lo spazio dei funzionali lineari su V. Ha dimensione dim V.
+Isomorfismo canonico V* ⊗ U ≅ ...?;Hom_K(V, U), tramite la mappa φ ⊗ u ↦ (v ↦ φ(v)·u). Ben definita per la proprieta' universale del tensore.
+Carattere della somma diretta χ_{V⊕U}(g) = ?;χ_V(g) + χ_U(g). Segue dalla matrice a blocchi diagonali della somma diretta.
+Carattere del prodotto tensoriale χ_{V⊗U}(g) = ?;χ_V(g) · χ_U(g). Segue dal prodotto di Kronecker delle matrici: tr(A⊗B) = tr(A)·tr(B).
+Carattere del duale χ_{V*}(g) = ?;coniugato(χ_V(g)). Perche' ρ*(g) = (ρ(g)⁻¹)ᵀ ha autovalori λ⁻¹ = coniugato(λ) (radici dell'unita').
+Carattere di Hom(V,U)?;χ_{Hom(V,U)}(g) = coniugato(χ_V(g)) · χ_U(g). Segue da Hom(V,U) ≅ V* ⊗ U e dalle formule per duale e tensore.
+Come agisce G su Hom_K(V,U)?;Per coniugazione: (g·f)(v) = π(g) ∘ f ∘ ρ(g)⁻¹(v). Si ottiene combinando l'azione duale su V* e l'azione su U tramite l'isomorfismo canonico.
+Che cos'e' la componente isotipica banale V^G?;V^G = {v ∈ V | ρ(g)v = v per ogni g ∈ G}, il sottospazio dei punti fissi. E' la somma di tutte le copie della rappresentazione banale dentro V.
+Formula per dim V^G?;dim V^G = (1/|G|) Σ_{g∈G} χ_V(g). Si ottiene come traccia del proiettore φ = (1/|G|) Σ ρ(g) su V^G.
+Perche' (Hom_C(U,W))^G = Hom_G(U,W)?;Perche' f ∈ Hom(U,W)^G significa g·f = f, cioe' π(g)∘f∘ρ(g)⁻¹ = f, che e' esattamente la condizione per essere un morfismo di rappresentazioni.
+Che cos'e' il prodotto hermitiano sulle funzioni centrali C(G)?;⟨χ₁, χ₂⟩ = (1/|G|) Σ_{g∈G} χ₁(g)·coniugato(χ₂(g)). E' lineare nel primo argomento, antilineare nel secondo, e definito positivo.
+Enunciato dell'ortogonalita' dei caratteri.;Se U, W sono irriducibili: ⟨χ_U, χ_W⟩ = 1 se U ≅ W, e ⟨χ_U, χ_W⟩ = 0 se U ≇ W.
+Schema della dimostrazione dell'ortogonalita' dei caratteri.;⟨χ_U, χ_W⟩ = (1/|G|)Σ χ_{U*⊗W}(g) = [Lemma A] dim(Hom(U,W))^G = [Lemma B] dim Hom_G(U,W) = [Schur] δ_{U,W}. Catena: media del carattere → punti fissi → morfismi G-equiv → Schur.
+Come si calcolano le molteplicita' k_i nella decomposizione V ≅ ⊕ V_i^{k_i}?;k_i = ⟨χ_V, χ_{V_i}⟩. Segue dalla linearita' del prodotto hermitiano e dall'ortogonalita'.
+Criterio di irriducibilita' tramite caratteri.;V e' irriducibile ⟺ ⟨χ_V, χ_V⟩ = 1. Perche' ⟨χ_V, χ_V⟩ = Σ k_i², che vale 1 sse un solo k_i = 1 e gli altri sono 0.
+Il carattere e' un invariante completo: cosa significa?;V ≅ W ⟺ χ_V = χ_W. Due rappresentazioni sono isomorfe se e solo se hanno lo stesso carattere.
+Struttura della rappresentazione regolare: con che molteplicita' appare ogni irriducibile V_i in C[G]?;k_i = dim V_i. Perche' il carattere regolare vale |G| per g=e e 0 altrimenti, quindi k_i = ⟨χ_{V_i}, χ_{reg}⟩ = χ_{V_i}(e) = dim V_i.
+Identita' di Burnside.;|G| = Σ (dim V_i)², dove la somma e' su tutte le irriducibili. Segue dalla dimensione della regolare: dim C[G] = |G| = Σ k_i · dim V_i = Σ (dim V_i)².
+I caratteri irriducibili formano una base di quale spazio?;Di C(G), lo spazio delle funzioni centrali. Quindi sono una base ortonormale. Di conseguenza il numero di irriducibili = numero di classi di coniugio di G.
+Idea della dimostrazione che i caratteri irriducibili generano C(G).;Se α ∈ C(G) con ⟨α, χ_{V_i}⟩ = 0 per ogni i, allora ψ_{α,V_i} = Σ α(g)ρ(g) e' un endomorfismo G-equivariante, per Schur e' λ·Id, ma tr = |G|⟨α, χ_{V_i}⟩ = 0 quindi λ = 0. Allora ψ_{α,V} = 0 per ogni V. In particolare sulla regolare: 0 = Σ α(g)·g, quindi α = 0.
+Quando G e' abeliano, le sue irriducibili hanno dimensione...?;Tutte dimensione 1. Perche' G abeliano ⟹ |G| classi di coniugio ⟹ |G| irriducibili ⟹ per Burnside Σ d_i² = |G| con |G| addendi, quindi d_i = 1 per ogni i.
+Potenza tensoriale T^k(V): definizione e dimensione?;T^k(V) = V ⊗ ··· ⊗ V (k volte). dim T^k(V) = n^k. Il gruppo S_k agisce permutando i fattori.
+Potenza simmetrica S^k(V): definizione e dimensione?;S^k(V) = T^k(V)/W dove W impone che scambiare due fattori non cambi il tensore. dim S^k(V) = C(n+k-1, k) (monomio di grado k in n variabili).
+Potenza esterna Λ^k(V): definizione e dimensione?;Λ^k(V) = T^k(V)/W' dove W' impone che scambiare due fattori cambi il segno. dim Λ^k(V) = C(n, k). Se due fattori sono uguali il tensore e' 0.
+Formula del carattere di Λ²(V)?;χ_{Λ²(V)}(g) = (χ_V(g)² - χ_V(g²))/2. Si usa Σ_{i<j} λ_iλ_j = ((Σλ_i)² - Σλ_i²)/2 e il fatto che Σλ_i² = χ_V(g²).
+Formula del carattere di S²(V)?;χ_{S²(V)}(g) = (χ_V(g)² + χ_V(g²))/2. Segue da T²(V) = Λ²(V) ⊕ S²(V).
+Perche' Λⁿ(V) ha dimensione 1 quando dim V = n?;dim Λⁿ(V) = C(n,n) = 1. Esiste un'unica forma n-lineare alternante (a meno di costanti): il determinante. Il cambio di segno per scambio di colonne e' proprio la proprieta' alternante.
+Che cos'e' la rappresentazione indotta Ind_H^G W (costruzione per somma diretta)?;Se H ≤ G e W e' una rappresentazione di H, allora Ind_H^G W = ⊕_{[g]∈G/H} ρ(g)W. Si sommano tutti i traslati di W per i laterali di H in G. dim = [G:H] · dim W.
+Che cos'e' la rappresentazione indotta Ind_H^G W (costruzione tensoriale)?;Ind_H^G W = C[G] ⊗_{C[H]} W, dove C[G] e' visto come C[H]-modulo destro. L'azione di G e': g·(t⊗w) = gt⊗w.
+Perche' le due definizioni di indotta (somma diretta e tensore) coincidono?;C[G] = ⊕_{r∈R} r·C[H] come C[H]-modulo destro, quindi C[G]⊗_{C[H]}W ≅ ⊕_r (r·C[H]⊗_{C[H]}W) ≅ ⊕_r W. L'azione di G coincide: g·(r⊗w) = r'⊗σ(h)w dove gr = r'h, che e' lo stesso di g che permuta gli addendi rW nella somma diretta.
+Formula del carattere dell'indotta.;χ_{Ind W}(g) = (1/|H|) Σ_{s∈G, s⁻¹gs∈H} χ_W(s⁻¹gs). Solo i laterali r tali che r⁻¹gr ∈ H contribuiscono alla traccia (gli altri permutano addendi diversi).
+Enunciato della Reciprocita' di Frobenius.;⟨Ind χ, ψ⟩_G = ⟨χ, Res_H^G ψ⟩_H. Il prodotto scalare di un carattere indotto con un carattere di G equivale al prodotto scalare del carattere originale con la restrizione a H.
+Schema della dimostrazione della Reciprocita' di Frobenius.;Si espande ⟨Ind χ, ψ⟩_G con la formula dell'indotta, si fa il cambio di variabile s⁻¹gs = h (cioe' g = shs⁻¹), si usa che ψ e' funzione centrale (ψ(shs⁻¹) = ψ(h)), la somma su s si separa dando un fattore |G| che si cancella, e resta (1/|H|) Σ_{h∈H} χ(h)·coniugato(ψ(h)) = ⟨χ, Res ψ⟩_H.
+Se H = {e} e W e' la rappresentazione banale, cos'e' Ind_H^G W?;La rappresentazione regolare C[G]. Ci sono |G| classi laterali (una per elemento), quindi Ind W = ⊕_{g∈G} g⊗C ≅ C[G].
+Bound sulla dimensione delle irriducibili: se A ≤ G e' abeliano, allora dim V ≤ ...?;dim V ≤ [G:A] = |G|/|A|. Si restringe V ad A, si trova W di dim 1 (A abeliano ⟹ irriducibili di dim 1), si induce a G ottenendo un sottospazio G-stabile di V di dimensione ≤ [G:A].
