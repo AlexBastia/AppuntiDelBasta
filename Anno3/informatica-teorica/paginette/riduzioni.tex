@@ -797,15 +797,134 @@ $\overline{\mathrm{HALT}_eps} \leq \mathrm{HALT}_{\forall}$.
 \]
 
 \section{Teorema di Rice}
-Una proprieta' di una macchina e' un linguaggio le cui stringhe che ci appartengono sono codifiche di macchine che appartengono a un certo insieme.
+Il \textbf{Teorema di Rice} è un meta-teorema che identifica l'indecidibilità dei linguaggi che contengono stringhe che codificano macchine di Turing.
+ 
+\subsection{Proprietà di macchina}
 
-Le proprieta' possono essere strutturali o relative al linguaggio riconosciuto dalla macchina.
-
-Una proprieta' e' banale se P e vuota o se contiene tutte le macchine.
-
-Una proprieta' P di macchine si dice \textit{semantica} se 
+\dfn{Proprieta' di macchina}{
+Una \textbf{proprietà di macchina} è un insieme $P$ di codifiche di macchine di Turing.
+}
+Ad essa si associa il linguaggio
 \[
-  \forall M_1, M_2. L(M_1) = L(M_2) \implies (M_1 \in P \implies M_2 \in P)
+  L_P = \{ M \mid M \in P \}
 \]
+che descrive il problema di \emph{decidere la proprietà $P$ di una macchina}.
+ 
+Un linguaggio $L$ è una proprietà di macchine se contiene \emph{solo} codifiche di macchine di Turing.
+ 
+\medskip
+\dfn{Proprieta' di macchina banale}{
+Una proprietà $P$ di macchine è \textbf{banale} se:
+\begin{itemize}
+  \item $P = \emptyset$, oppure
+  \item $P = $ tutte le macchine di Turing.
+\end{itemize}
+}
+Decidere queste proprietà è ovviamente triviale.
+ 
+\ex{Proprieta' di macchina}{
+\begin{align*}
+  P_1 &= \{ M \mid M \text{ ha 5 stati} \}
+        \quad\text{(contiene codifiche di MdT $\Rightarrow$ proprietà di macchina; non è banale)}\\
+  P_2 &= \{ \langle M \rangle \mid \mathcal{L}(M) \text{ contiene solo stringhe di lunghezza pari} \}\\
+  P_3 &= \{ \langle M \rangle \mid \mathcal{L}(M) = \emptyset \} = L_e
+\end{align*}
+Si noti che $P_1$ riguarda la \emph{struttura} della macchina, mentre $P_2$ e $P_3$ riguardano il \emph{linguaggio} della macchina.
+}
+ 
+\subsection{Proprietà semantica (di linguaggio)}
+
+\dfn{Proprieta' semantica}{
+Sia $P$ una proprietà di macchine. $P$ è una \textbf{proprietà semantica} se
+ 
+\[
+  \forall M_1, M_2.\; \mathcal{L}(M_1) = \mathcal{L}(M_2)
+  \;\Rightarrow\;
+  \bigl(M_1 \in P \Leftrightarrow M_2 \in P\bigr).
+\] 
+}
+Quindi, anziché come un insieme di macchine, possiamo vedere $P$ come un insieme di linguaggi:
+\[
+  P \subseteq \mathrm{RE}
+\]
+dove $\mathrm{RE}$ è la classe dei linguaggi riconoscibili da una macchina di Turing.
+ 
+\medskip
+Di conseguenza, $P$ è banale se e solo se $P = \emptyset$ oppure $P = \mathrm{RE}$.
+ 
+\medskip
+Decidere la proprietà $P$ significa decidere il linguaggio
+\[
+  L_P = \{ M \mid \mathcal{L}(M) \in P \},
+\]
+dove le MdT vengono usate come codifiche finite di linguaggi che potrebbero essere infiniti.
+ 
+\subsection{Teorema di Rice}
+ 
+\thm{Rice}{
+  Ogni proprietà non banale di linguaggi $\mathrm{RE}$ è indecidibile.
+}
+ 
+\pf{Dimostrazione}{
+Sia $P \subseteq \mathrm{RE}$ una proprietà di linguaggio non banale. La dimostrazione si divide in due casi a seconda che $\emptyset \in P$ o meno.
+ 
+\medskip
+\textbf{Caso (a): $\emptyset \notin P$.}
+ 
+Poiché $P \neq \emptyset$ (altrimenti sarebbe banale), esiste $L \neq \emptyset$ con $L \in P$; sia $M_L$ una MdT tale che $\mathcal{L}(M_L) = L$.
+ 
+Mostriamo che
+\[
+  L_P = \{ \langle M \rangle \mid \mathcal{L}(M) \in P \}
+\]
+è indecidibile ($L_P \notin R$), riducendo $L_u$ a $L_P$:
+\[
+  L_u \;\leq\; L_P, \qquad
+  (M,w) \;\xmapsto{\;f\;}\; N = f(M,w).
+\]
+ 
+La macchina $N = f(M,w)$ è definita nel modo seguente: dato un input $x$,
+\begin{enumerate}
+  \item simula $M$ su $w$;
+  \item se $M$ accetta $w$, avvia $M_L$ su $x$ e ne restituisce il risultato.
+\end{enumerate}
+ 
+\medskip
+Il comportamento è illustrato dallo schema seguente.
+ 
+TODO: immagine macchina
+ 
+\medskip
+\textbf{Correttezza della riduzione.}
+ 
+\begin{itemize}
+  \item[$(\Rightarrow)$] Supponiamo $(M,w) \in L_u$, ovvero $M \vdash w$.
+    In questo caso $N$ si comporta come $M_L$ sulla codifica di $M$;
+    quindi $\mathcal{L}(N) = \mathcal{L}(M_L) = L \in P$, da cui $N \in L_P$.
+ 
+  \item[$(\Leftarrow)$] Supponiamo $(M,w) \notin L_u$, ovvero $M \not\vdash w$.
+    Allora il primo passo di $N$ non termina su nessun input, quindi
+    \[
+      \mathcal{L}(N) = \emptyset.
+    \]
+    Poiché $\emptyset \notin P$, si ha $N \notin L_P$.
+\end{itemize}
+ 
+Dunque $L_u \leq L_P$ e $L_P$ è indecidibile.
+ 
+\medskip
+\textbf{Caso (b): $\emptyset \in P$.}
+ 
+Consideriamo il complemento $\overline{P} = \mathrm{RE} \setminus P$.
+Poiché $\emptyset \notin \overline{P}$ e $\overline{P}$ non è banale (in quanto $P$ non è banale),
+dal Caso~(a) $L_{\overline{P}}$ è indecidibile.
+ 
+Ora osserviamo che
+\[
+  \overline{L_{\overline{P}}} = L_P.
+\]
+Supponiamo per assurdo che $\overline{L_{\overline{P}}} \in R$; allora anche $L_{\overline{P}} \in R$, contraddizione.
+Quindi $\overline{L_{\overline{P}}} = L_P$ è indecidibile.
+}
 
 % \end{document}
