@@ -88,6 +88,16 @@ Indichiamo adesso tre relazioni d'ordine sulle partizioni:
 Data una partizione $\lambda \vdash n$ con diagramma di Ferrers associato, un \textbf{tableau iniettivo} $T$ di forma $\lambda$ è un riempimento delle celle del diagramma con gli interi $1, \dots, n$, ciascuno usato esattamente una volta.
 }
 
+\ex{Tableau Iniettivo}{
+  $ \lambda = (3,2) \vdash 5 $
+  \begin{center}
+  \begin{ytableau}
+    2 & 3\\
+    5 & 1 & 4
+  \end{ytableau}
+  \end{center}
+}
+
 \dfn{Tableau di Young Standard (SYT)}{
 Un \textbf{Tableau di Young Standard} è un tableau iniettivo in cui le entrate sono strettamente crescenti lungo ogni riga (da sinistra a destra) e lungo ogni colonna (dal basso verso l'alto).
 }
@@ -125,12 +135,41 @@ Un \textbf{Tableau di Young Standard} è un tableau iniettivo in cui le entrate 
 
 L'azione naturale di $S_n$ sui tableau iniettivi di forma $\lambda$ è data da: per ogni $\sigma \in S_n$, il tableau $\sigma \cdot T$ si ottiene sostituendo ogni entrata $i$ di $T$ con $\sigma(i)$.
 
+\ex{Azione naturale di $ S_n $ sui tableau}{
+  \begin{center}
+    $ (1,3) $
+    \begin{ytableau}
+    1 \\
+    2 & 3
+    \end{ytableau} = 
+    \begin{ytableau}
+    3\\
+    2 & 1
+    \end{ytableau}
+  \end{center}
+}
+
 \dfn{Gruppo di riga e gruppo di colonna}{
 Sia $T$ un tableau iniettivo di forma $\lambda = (\lambda_1, \dots, \lambda_k) \vdash n$.
 \begin{itemize}
 \item Il \textbf{gruppo di riga} $R(T) \leq S_n$ è il sottogruppo delle permutazioni che spostano le entrate di $T$ solo all'interno delle rispettive righe. Si ha $R(T) \cong S_{\lambda} := S_{\lambda_1} \times \cdots \times S_{\lambda_k}$.
 \item Il \textbf{gruppo di colonna} $C(T) \leq S_n$ è il sottogruppo delle permutazioni che spostano le entrate di $T$ solo all'interno delle rispettive colonne. Si ha $C(T) \cong S_{\lambda'}$, dove $\lambda'$ è la partizione coniugata.
 \end{itemize}
+}
+
+\ex{Gruppi di riga e colonna}{
+  Dato $ T = $
+  \begin{ytableau}
+    4 & 5\\
+    1&2&3
+  \end{ytableau}, abbiamo che:
+  \[
+    R(T) = \{g \in S_5 | g: \{123\} \to \{123\} \lor \{45\} \to \{45\}\} \cong S_3 \times S_2  
+  \]
+  e 
+  \[
+    C(T) = \{g \in S_n | g: \{41\} \to \{41\} \lor \{52\} \to \{52\}\} \cong S_2 \times S_2
+  \]
 }
 
 \subsection{Proprietà di coniugio}
@@ -159,11 +198,81 @@ Poiché $p(y)$ sta nella stessa riga di $y$ in $T$, la sua immagine $\sigma(p(y)
 \section{Lemma di partizione dei tableau}
 
 \mlenma{Partizione dei tableau}{
-Siano $T, \wt{T}$ tableau iniettivi di forma $\lambda, \wt{\lambda} \vdash n$, con $\lambda \not>_{\mathrm{lex}} \wt{\lambda}$. Allora si verifica esattamente una delle seguenti:
+Siano $T, \wt{T}$ tableau iniettivi di forma $\lambda, \wt{\lambda} \vdash n$, con $\lambda \not>^R \wt{\lambda}$. Allora si verifica esattamente una delle seguenti:
 \begin{enumerate}
 \item Esistono $i \neq j$ nella stessa colonna di $T$ e nella stessa riga di $\wt{T}$.
 \item $\lambda = \wt{\lambda}$ e esistono $\wt{p} \in R(\wt{T})$, $q \in C(T)$ tali che $\wt{p}\wt{T} = qT$.
 \end{enumerate}
+}
+
+\ex{Partizione tableau caso 1}{
+  Prendiamo $ \lambda = \wt{\lambda} = (2,1) \vdash 3 $ e 
+  \begin{center}
+    $ T = $
+  \begin{ytableau}
+    2\\
+    1&3
+  \end{ytableau}, $ \wt{T} =  $
+    \begin{ytableau}
+      3\\
+      1&2
+    \end{ytableau}
+  \end{center}
+
+  In questo caso abbiamo che 1 e 2 sono nella stessa colonna in $ T $ e nella stessa riga in $ \wt{T} $, quindi siamo nel primo caso. Ma sappiamo anche che $ \lambda = \wt{\lambda} $ quindi non possono esistere permutazioni $ \wt{p}, q $ tali che:
+  \[
+    \wt{p}\wt{T} = qT
+  \]
+  altrimenti varrebbe anche il secondo.
+}
+
+\ex{Partizioni tableau caso 2}{
+  Prendiamo $ \lambda = \wt{\lambda} = (3,2,1) \vdash 6 $ e 
+  \begin{center}
+    $ T = $
+  \begin{ytableau}
+    3\\
+    1&4\\
+    2&6&5
+  \end{ytableau}, $ \wt{T} =  $
+    \begin{ytableau}
+      2\\
+      6&3\\
+      4&5&1
+    \end{ytableau}
+  \end{center}
+  Siamo nel secondo caso, quindi sappiamo che $ \exists \wt{p} \in R(\wt{T}), q \in C(T) $ tali che $ \wt{p}\wt{T} = qT $, che possiamo trovare seguendo un semplice algoritmo:
+
+  \begin{enumerate}
+    \item Trovo le permutazioni di colonna per avere gli stessi numeri di $ \wt{T} $ sulla prima riga. Scelgo $ q_1 = (12)(46) $:
+     \begin{center}
+$ q_1T = $
+  \begin{ytableau}
+    3\\
+    2&6\\
+    1&4&5
+  \end{ytableau} 
+      \end{center}
+    \item Ripeto per tutte le righe sopra (tranne l'ultima che sara' automatica). Basta scegliere $ q_2 = (23) $:
+     \begin{center}
+$ q_2q_1T = $
+  \begin{ytableau}
+    2\\
+    3&6\\
+    1&4&5
+  \end{ytableau} 
+      \end{center}
+      Quindi $ q = q_2q_1 = (123)(46) $
+    \item Per ogni riga di $ \wt{T} $ trovo le permutazioni di riga per mettere i numeri nello stesso ordine di $ qT $. Scelgo $ \wt{p} = (36)(154) $:
+      \begin{center}
+        $ \wt{p}\wt{T} = $
+    \begin{ytableau}
+      2\\
+      3&6\\
+      1&4&5
+    \end{ytableau} $ = qT $
+      \end{center}
+  \end{enumerate}
 }
 
 \pf{Dimostrazione}{
@@ -175,7 +284,7 @@ Iterando: per ogni $k$, si trovano $q_1, \dots, q_k \in C(T)$ tali che le entrat
 \[
 \wt{\lambda}_1 + \cdots + \wt{\lambda}_k \leq \lambda_1 + \cdots + \lambda_k \quad \forall\, k,
 \]
-cioè $\lambda \geq \wt{\lambda}$ nell'ordine di dominanza. Poiché l'ordine lessicografico inverso estende quello di dominanza, $\lambda \geq_{\mathrm{lex}} \wt{\lambda}$. Ma per ipotesi $\lambda \not>_{\mathrm{lex}} \wt{\lambda}$, dunque $\lambda = \wt{\lambda}$.
+cioè $\lambda \geq \wt{\lambda}$ nell'ordine di dominanza. Poiché l'ordine lessicografico inverso estende quello di dominanza, $\lambda \geq^R \wt{\lambda}$. Ma per ipotesi $\lambda \not>^R \wt{\lambda}$, dunque $\lambda = \wt{\lambda}$.
 
 Ponendo $q = q_k \cdots q_1 \in C(T)$, i tableau $qT$ e $\wt{T}$ hanno le stesse entrate in ogni riga. Esiste allora $\wt{p} \in R(\wt{T})$ con $\wt{p}\wt{T} = qT$.
 }
@@ -186,12 +295,20 @@ Ponendo $q = q_k \cdots q_1 \in C(T)$, i tableau $qT$ e $\wt{T}$ hanno le stesse
 La \textbf{parola di colonna} $w_{\mathrm{col}}(T)$ di un tableau $T$ è la sequenza ottenuta leggendo le entrate colonna per colonna, da sinistra a destra, dall'alto verso il basso in ciascuna colonna.
 }
 
+\ex{Parola di colonna}{
+  $ W_{\text{col}}(T) = 312465 $ e $ W_{\text{col}}(\wt{T}) = 264351 $
+}
+
 \dfn{Ordine sui tableau}{
 Dati due tableau iniettivi $T, \wt{T}$ della stessa dimensione, si dice $\wt{T} > T$ se:
 \begin{enumerate}
 \item la forma di $\wt{T}$ è strettamente maggiore di quella di $T$ nell'ordine lessicografico inverso, oppure
 \item le forme coincidono e il più grande intero che occupa celle diverse nei due tableau compare prima in $w_{\mathrm{col}}(\wt{T})$ che in $w_{\mathrm{col}}(T)$.
 \end{enumerate}
+}
+
+\ex{Ordine su tableau}{
+  Abbiamo che $ \wt{T} > T $, dato che hanno la stessa forma e il 6 compare prima in $\wt{T}$ che in $ T $.
 }
 
 \nt{
@@ -214,6 +331,29 @@ cioè $T \geq \wt{T}$, in contraddizione con $\wt{T} > T$.
 
 \dfn{Tabloide}{
 Il \textbf{tabloide} $\{T\}$ associato a un tableau iniettivo $T$ è l'orbita di $T$ sotto l'azione di $R(T)$. L'ordine degli elementi all'interno di ciascuna riga non ha importanza. L'azione di $S_n$ sui tabloidi è $\sigma \cdot \{T\} := \{\sigma \cdot T\}$.
+}
+
+\ex{Tabloide}{
+  Sia $ T =  $ \begin{ytableau}
+    2&4\\
+    1&3&5
+  \end{ytableau}, abbiamo che
+  \begin{center}
+  $ \{T\} =  $ \ytableausetup
+{boxsize=normal,tabloids}
+\ytableaushort{
+24, 135
+}
+  \end{center}
+
+  Inoltre, sia $ \sigma = (14) $, la sua azione naturale su $ \{T\} $ e'
+  \begin{center}
+    $ (14)\{T\} =  $ 
+\ytableaushort{
+12, 345
+}
+  \end{center}\ytableausetup
+{boxsize=normal, notabloids}
 }
 
 \dfn{Rappresentazione $M^\lambda$}{
@@ -267,6 +407,39 @@ v_T := b_T \cdot \{T\} = \sum_{q \in C(T)} \mathrm{sgn}(q)\, \{q \cdot T\} \;\in
 \end{enumerate}
 }
 
+\ex{}{
+  $ \lambda = (2,1) \vdash 3 $, prendiamo
+  \begin{center}
+    T = 
+  \begin{ytableau}
+  2\\
+    1&3
+  \end{ytableau}   
+    $\wt{T} = $
+  \begin{ytableau}
+  3\\
+    1&2
+  \end{ytableau}
+  \end{center}
+
+  Calcoliamo
+  \[
+    a_T = id + (13)\quad b_T = -(12) + id
+  \]
+  \[
+  a_{\wt{T}} = id + (12)\quad b_{\wt{T}} = -(13) + id
+  \]
+  Possiamo ora calcolare i due vettori di Specht
+  \ytableausetup{boxsize=normal,tabloids}
+  \begin{center}
+    $ v_T = - $\ytableaushort{1,23}$ + $\ytableaushort{2,13}\\
+    $ v_{\wt{T}} = - $\ytableaushort{1,23}$ + $\ytableaushort{3,12}
+  \end{center}
+
+  Che appartengono a $ M^{\lambda} $. 
+
+}
+
 \dfn{Modulo di Specht}{
 Il \textbf{modulo di Specht} è il sottomodulo
 \[
@@ -283,24 +456,39 @@ L'insieme $\{v_T \mid T \text{ è un SYT di forma } \lambda\}$ è una base di $S
 }
 
 \ex{Modulo di Specht $S^{(2,1)}$ per $S_3$}{
-Sia $T$ l'SYT $\begin{smallmatrix} 1 & 2 \\ 3 \end{smallmatrix}$. Le colonne sono $\{1,3\}$ e $\{2\}$, quindi $C(T) = \{\id, (13)\}$.
+Sia $T$ l'SYT $\begin{smallmatrix} 3\\ 1 & 2 \end{smallmatrix}$. Le colonne sono $\{1,3\}$ e $\{2\}$, quindi $C(T) = \{\id, (13)\}$.
 \[
 v_T = \{T\} - \{(13) \cdot T\} = \{1,2 \mid 3\} - \{2,3 \mid 1\}.
 \]
-L'altro SYT è $T' = \begin{smallmatrix} 1 & 3 \\ 2 \end{smallmatrix}$ con $C(T') = \{\id, (12)\}$:
+L'altro SYT è $T' = \begin{smallmatrix} 2\\ 1 & 3 \end{smallmatrix}$ con $C(T') = \{\id, (12)\}$:
 \[
 v_{T'} = \{1,3 \mid 2\} - \{2,3 \mid 1\}.
 \]
-I vettori $v_T, v_{T'}$ sono linearmente indipendenti e formano la base standard di $S^{(2,1)}$, che è la rappresentazione standard irriducibile di $S_3$ ($\dim S^{(2,1)} = 2$).
+I vettori $v_T, v_{T'}$ sono linearmente indipendenti e formano la base standard di $S^{(2,1)}$, che è la rappresentazione standard irriducibile di $S_3$ ($\dim S^{(2,1)} = 2$), mentre $ S^{(3)} $ e' la standard e $ S^{1^3} $ e' la segno.
+}
+
+\ex{}{
+  Determinare $ S^{\lambda} $, dove $ \lambda \vdash 4 $.
 }
 
 \section{Il Lemma Tecnico}
 
 \mlenma{Il Lemma Tecnico}{
-Siano $T, \wt{T}$ tableau iniettivi di forma $\lambda, \wt{\lambda} \vdash n$, con $\lambda \not>_{\mathrm{lex}} \wt{\lambda}$. Allora:
+Siano $T, \wt{T}$ tableau iniettivi di forma $\lambda, \wt{\lambda} \vdash n$, con $\lambda \not>^R \wt{\lambda}$. Allora:
 \[
 b_T\{\wt{T}\} = \begin{cases} 0 & \text{se } \exists\, i \neq j \text{ nella stessa colonna di } T \text{ e nella stessa riga di } \wt{T}, \\ \pm\, v_T & \text{altrimenti.} \end{cases}
 \]
+}
+
+\nt{
+  Quindi $ b_T.M^{\lambda} = \mathbb{C} v_T $. TODO: che cosa significa $ \mathbb{C} v_T $? Diomadonna
+}
+
+\ex{}{
+  $ T < \wt{T} $ e i numeri 1 e 2 sono presenti sulla stessa colonna di $ T $ e sulla stessa riga di $ \wt{T} $, allora
+  \[
+    b_T \{\wt{T}\} = \{3 | 12\} - \{3 | 12\} = 0
+  \]
 }
 
 \pf{Dimostrazione}{
@@ -361,6 +549,6 @@ Essendo $\mathbb{C}\, v_T$ unidimensionale, uno dei due sommandi è nullo; suppo
 
 La formula-chiave che governa l'intera classificazione è l'asimmetria dell'azione di $b_T$:
 \[
-b_T \cdot S^\lambda = \mathbb{C}\, v_T \neq 0, \qquad b_T \cdot S^{\wt{\lambda}} = 0 \;\;\text{se } \wt{\lambda} >_{\mathrm{lex}} \lambda.
+b_T \cdot S^\lambda = \mathbb{C}\, v_T \neq 0, \qquad b_T \cdot S^{\wt{\lambda}} = 0 \;\;\text{se } \wt{\lambda} >^R \lambda.
 \]
 Questa proprietà garantisce simultaneamente la non isomorfismo tra moduli associati a partizioni diverse e l'impossibilità di scomporre ciascun modulo in sottomoduli propri.
