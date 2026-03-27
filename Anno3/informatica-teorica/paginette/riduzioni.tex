@@ -307,6 +307,495 @@ Controlliamo che $ f $ sia effettivamente la trasformazione che stavamo cercando
     e' una soluzione al problema $ MPCP $, quindi $ (R,S) $ e' un'istanza si. Dato che abbiamo dimostrato il contra-positivo, abbiamo dimostrato la premessa iniziale.
 \end{itemize}
 
+\section{Il Problema del Tassellamento}
+ 
+\subsection{Definizione informale}
+ 
+Si consideri un piano quadrettato infinito (il primo quadrante di $\mathbb{N}\times\mathbb{N}$).
+Abbiamo un numero finito di \emph{tipi di piastrelle}, ciascuna con i quattro lati
+colorati. Una piastrella speciale $S$ (o $d_0$) deve essere posizionata nell'origine
+$(0,0)$.
+ 
+Le piastrelle possono essere affiancate \emph{solo ``a domino''}: i bordi a contatto
+devono avere lo stesso colore. \textbf{Non è consentita la rotazione.}
+ 
+\begin{center}
+\begin{tikzpicture}
+  % Tile with labels B, C (top-left), A (right), R (bottom-right)
+  \draw[thick] (0,0) rectangle (1,1);
+  \draw[thick] (0,0) -- (1,1);
+  \draw[thick] (1,0) -- (0,1);
+  \node at (0.25,0.75) {\small $B$};
+  \node at (0.75,0.75) {\small $C$};
+  \node at (0.75,0.25) {\small $A$};
+  \node at (0.25,0.25) {\small $R$};
+  \draw[->, thick] (1.3, 0.5) -- (2.2, 0.5);
+  \node[align=left] at (4.2, 0.5) {possono essere affiancate\\solo ``a domino''};
+\end{tikzpicture}
+\end{center}
+ 
+\medskip
+\noindent
+\textbf{Domanda:} È possibile ricoprire l'intero primo quadrante affiancando le
+piastrelle (senza ruotarle)?
+ 
+\subsection{Formalizzazione}
+ 
+\dfn{Sistema di tassellamento}{
+Un \emph{sistema di tassellamento} è una quadrupla
+\[
+  T = (D,\, d_0,\, H,\, V)
+\]
+dove:
+\begin{itemize}
+  \item $D$ è l'insieme finito dei \emph{tipi di piastrelle};
+  \item $d_0 \in D$ è la \emph{piastrella speciale} (l'unica che può stare in
+        posizione $(0,0)$);
+  \item $H \subseteq D \times D$ sono le \emph{regole di affiancamento orizzontale}:
+        $(a,b)\in H$ significa che $a$ può stare immediatamente a sinistra di $b$;
+  \item $V \subseteq D \times D$ sono le \emph{regole di affiancamento verticale}:
+        $(a,b)\in V$ significa che $a$ può stare immediatamente sotto $b$.
+\end{itemize}
+}
+ 
+\dfn{Tassellamento valido}{
+  Una funzione $f : \mathbb{N} \times \mathbb{N} \to D$ è un \emph{tassellamento valido} per $T$ se:
+\begin{align}
+  f(0,0) &= d_0, \label{eq:initial}\\
+  \bigl(f(m,n),\, f(m+1,n)\bigr) &\in H \quad \forall m,n \in \mathbb{N}, \label{eq:horiz}\\
+  \bigl(f(m,n),\, f(m,n+1)\bigr) &\in V \quad \forall m,n \in \mathbb{N}. \label{eq:vert}
+\end{align}
+}
+ 
+Il \textbf{Problema del Tassellamento} (Tiling) è:
+\[
+  \text{Tiling} = \{\, T = (D, d_0, H, V) \mid \exists f : \mathbb{N}\times\mathbb{N} \to D
+  \text{ tassellamento valido per } T \,\}.
+\]
+  
+\subsection{Indecidibilita' del Tassellamento}
+ 
+Vogliamo dimostrare che Tiling è indecidibile. Per farlo mostriamo che
+\[
+  \overline{\mathrm{HALT}_\epsilon} \;\leq\; \text{Tiling},
+\]
+dove $\mathrm{HALT}_\epsilon = \{\,M \mid M \text{ si ferma su } \varepsilon\,\}$ e
+$\overline{\mathrm{HALT}_eps}$ è il suo complementare (le macchine che \emph{non} si fermano su~$\varepsilon$).
+ 
+Poiché $\overline{\mathrm{HALT}_eps} \notin \mathrm{RE}$, dalla riduzione segue che
+Tiling $\notin \mathrm{RE}$, in particolare è indecidibile.
+  
+Definiamo una funzione calcolabile
+\[
+  g : \text{Macchine di Turing} \;\longrightarrow\; \text{Sistemi di tassellamento},
+  \quad M \;\longmapsto\; T = g(M),
+\]
+tale che:
+\begin{itemize}
+  \item Se $M$ \textbf{non si ferma} su $\varepsilon$ (cioè $M \notin \mathrm{HALT}_\epsilon$),
+        allora $\exists f$ per $T$, ossia $T \in \text{Tiling}$.
+      \item Se $M$ \textbf{si ferma} su $\varepsilon$ (cioè $M \in \mathrm{HALT}_eps$),
+        allora $\nexists f$ per $T$, ossia $T \notin \text{Tiling}$.
+\end{itemize}
+  
+Se $M$ diverge su $\varepsilon$, la computazione è infinita:
+\[
+  c_1 \vdash c_2 \vdash c_3 \vdash \cdots
+\]
+Ogni configurazione $c_i$ viene ``tradotta'' in una riga del piano.
+ 
+\begin{center}
+\begin{tikzpicture}[scale=0.72]
+  % Grid
+  \draw[step=1.2cm, gray!50, thin] (0,0) grid (7.2, 4.8);
+  % Row labels
+  \node[left] at (0, 0.6) {$c_1$};
+  \node[left] at (0, 1.8) {$c_2$};
+  \node[left] at (0, 3.0) {$c_3$};
+  \node[left] at (0, 4.2) {$\vdots$};
+  % Sample cell labels (first row, cells 0..2)
+  \node[font=\small] at (0.6, 0.6) {$(q_0,\flat)$};
+  \node[font=\small] at (1.8, 0.6) {$\flat$};
+  \node[font=\small] at (3.0, 0.6) {$\flat$};
+  % second row
+  \node[font=\small] at (0.6, 1.8) {$\flat$};
+  \node[font=\small] at (1.8, 1.8) {$(q_1,\flat)$};
+  \node[font=\small] at (3.0, 1.8) {$\flat$};
+  % arrows
+  \foreach \x in {0.6, 1.8, 3.0, 4.2, 5.4} {
+    \draw[->, gray] (\x, 1.1) -- (\x, 1.5);
+    \draw[->, gray] (\x, 2.3) -- (\x, 2.7);
+    \draw[->, gray] (\x, 3.5) -- (\x, 3.9);
+  }
+  \node at (6.6, 2.4) {$\cdots$};
+  \draw[->, thick] (7.4, 2.4) -- (8.0, 2.4);
+  \node[right] at (8.0, 2.4) {$\infty$};
+\end{tikzpicture}
+\end{center}
+ 
+\noindent\textbf{Intuizione:} se la sequenza $c_1, c_2, \ldots$ è infinita, allora
+è possibile piastrellare tutto il piano.
+ 
+ 
+\paragraph{Colori (lati delle piastrelle).}
+I colori codificano coppie (stato, simbolo) oppure semplici simboli del nastro:
+\[
+  \underbrace{q_0\flat,\quad \flat,\quad q_1\flat,\quad \ldots}_{\text{coppie (stato, simbolo)}},
+  \qquad
+  \underbrace{\vec{q}_1,\quad \vec{q}_0,\quad \ldots}_{\text{stati con direzione}}
+\]
+ 
+\paragraph{Tipi di piastrelle.}
+ 
+Per codificare la computazione di $M$ costruiamo $D$, $H$ e $V$ come segue. Ogni
+piastrella è un quadratino con quattro lati colorati (basso, alto, sinistra, destra).
+Usiamo la notazione diagonale:
+\[
+  \begin{tikzpicture}[baseline=-0.5ex,scale=0.5]
+    \draw[thick] (0,0) rectangle (1,1);
+    \draw[thick] (0,0)--(1,1); \draw[thick](1,0)--(0,1);
+    \node[font=\tiny] at (0.5,0.15) {$\mathit{bot}$};
+    \node[font=\tiny] at (0.5,0.85) {$\mathit{top}$};
+    \node[font=\tiny] at (0.15,0.5) {$\mathit{left}$};
+    \node[font=\tiny] at (0.85,0.5) {$\mathit{right}$};
+  \end{tikzpicture}
+\]
+ 
+\noindent
+Costruiamo tre famiglie di piastrelle:
+ 
+\begin{enumerate}[label=\textbf{\arabic*)}]
+ 
+\item \textbf{Piastrelle di propagazione (per ogni $x \in \Gamma$).}\\
+  Per ogni simbolo $x$ del nastro, una piastrella che porta il simbolo al livello
+  superiore senza modificarlo:
+  \begin{center}
+  \begin{tikzpicture}[scale=0.7]
+    \draw[thick] (0,0) rectangle (1.2,1.2);
+    \draw[thick] (0,0)--(1.2,1.2); \draw[thick](1.2,0)--(0,1.2);
+    \node[font=\small] at (0.6, 0.9) {$x$};
+    \node[font=\small] at (0.6, 0.3) {$x$};
+    \node[font=\small] at (0.25, 0.6) {$\cdot$};
+    \node[font=\small] at (0.95, 0.6) {$\cdot$};
+    \node[right=0.6cm] at (1.2,0.6) {$\forall x \in \Gamma$};
+  \end{tikzpicture}
+  \end{center}
+  Questi permettono di portare i simboli al livello sopra.
+ 
+\item \textbf{Piastrelle di transizione $\to$ (mossa a destra).}\\
+  Per ogni transizione $\delta(q, x) = (p, y, \to)$ e per ogni $z \in \Gamma$,
+  si generano due piastrelle adiacenti:
+ 
+  \begin{center}
+  \begin{tikzpicture}[scale=0.7]
+    % left tile: bottom=(q,x), top=y, right=arrow_p
+    \draw[thick] (0,0) rectangle (1.2,1.2);
+    \draw[thick] (0,0)--(1.2,1.2); \draw[thick](1.2,0)--(0,1.2);
+    \node[font=\small] at (0.6,0.25) {$(q,x)$};
+    \node[font=\small] at (0.6,0.95) {$y$};
+    \node[font=\small] at (0.22,0.6) {$\cdot$};
+    \node[font=\small] at (0.98,0.6) {$\vec{p}$};
+    % right tile: bottom=z, top=(p,z), left=arrow_p
+    \draw[thick] (2,0) rectangle (3.2,1.2);
+    \draw[thick] (2,0)--(3.2,1.2); \draw[thick](3.2,0)--(2,1.2);
+    \node[font=\small] at (2.6,0.25) {$z$};
+    \node[font=\small] at (2.6,0.95) {$(p,z)$};
+    \node[font=\small] at (2.22,0.6) {$\vec{p}$};
+    \node[font=\small] at (2.98,0.6) {$\cdot$};
+    \node[right=0.3cm] at (3.2,0.6) {$\forall z \in \Gamma$};
+  \end{tikzpicture}
+  \end{center}
+ 
+\item \textbf{Piastrelle di transizione $\leftarrow$ (mossa a sinistra).}\\
+  Per ogni transizione $\delta(q, x) = (p, y, \leftarrow)$ e per ogni $z \in \Gamma$:
+ 
+  \begin{center}
+  \begin{tikzpicture}[scale=0.7]
+    % left tile: bottom=z, top=(p,z), right=arrow_p_left
+    \draw[thick] (0,0) rectangle (1.2,1.2);
+    \draw[thick] (0,0)--(1.2,1.2); \draw[thick](1.2,0)--(0,1.2);
+    \node[font=\small] at (0.6,0.25) {$z$};
+    \node[font=\small] at (0.6,0.95) {$(p,z)$};
+    \node[font=\small] at (0.22,0.6) {$\cdot$};
+    \node[font=\small] at (0.98,0.6) {$\overleftarrow{p}$};
+    % right tile: bottom=(q,x), top=y, left=arrow_p_left
+    \draw[thick] (2,0) rectangle (3.2,1.2);
+    \draw[thick] (2,0)--(3.2,1.2); \draw[thick](3.2,0)--(2,1.2);
+    \node[font=\small] at (2.6,0.25) {$(q,x)$};
+    \node[font=\small] at (2.6,0.95) {$y$};
+    \node[font=\small] at (2.22,0.6) {$\overleftarrow{p}$};
+    \node[font=\small] at (2.98,0.6) {$\cdot$};
+    \node[right=0.3cm] at (3.2,0.6) {$\forall z \in \Gamma$};
+  \end{tikzpicture}
+  \end{center}
+ 
+\item \textbf{Piastrella iniziale $d_0$.}\\
+  La piastrella speciale che forza la prima riga a contenere $c_1 = (q_0, \flat)$:
+ 
+  \begin{center}
+  \begin{tikzpicture}[scale=0.7]
+    \draw[thick] (0,0) rectangle (1.2,1.2);
+    \draw[thick] (0,0)--(1.2,1.2); \draw[thick](1.2,0)--(0,1.2);
+    \node[font=\small] at (0.6,0.25) {$(q_0,\flat)$};
+    \node[font=\small] at (0.6,0.95) {$(q_0,\flat)$};
+    \node[font=\small] at (0.25,0.6) {$\flat$};
+    \node[font=\small] at (0.95,0.6) {$\flat$};
+    \node[below=0.15cm] at (0.6,0) {$= d_0$};
+  \end{tikzpicture}
+  \end{center}
+ 
+\end{enumerate}
+ 
+\subsubsection{Correttezza della riduzione}
+ 
+\mlenma{}{
+La funzione $g$ è calcolabile.
+}
+\pf{Dimostrazione}{
+$D$, $H$, $V$ si calcolano in modo effettivo a partire dalla descrizione di $M$:
+basta enumerare le transizioni e generare le piastrelle corrispondenti.
+}
+ 
+\thm{}{
+  $M \notin \mathrm{HALT}_eps \;\Longleftrightarrow\; g(M) \in \mathrm{Tiling}$.
+}
+\pf{Dimostrazione}{
+\textbf{($\Rightarrow$)} Sia $M$ una macchina che \emph{non} si ferma su $\varepsilon$.
+Allora la computazione è infinita: $c_1 \vdash c_2 \vdash \cdots$
+ 
+Per definizione di $g(M) = T$, abbiamo la possibilità di estendere le righe
+all'infinito: la riga $n$ del tassellamento codifica la configurazione $c_n$.
+La funzione $f(m,n) = \text{(tipo della cella } m \text{ nella configurazione } c_n)$
+è un tassellamento valido per $T$.
+ 
+\textbf{($\Leftarrow$)} Sia $T = g(M)$ ammette un tassellamento $f$.
+Per costruzione, la riga 0 è forzata a contenere le piastrelle speciali che
+codificano $c_1$. Ogni riga deve essere la configurazione successiva, dunque $f$
+codifica una computazione infinita $c_1 \vdash c_2 \vdash \cdots$, il che implica
+  $M \notin \mathrm{HALT}_eps$.
+ 
+  Per contrapposizione: $M \in \mathrm{HALT}_eps \Rightarrow g(M) \notin \mathrm{Tiling}$.
+}
+ 
+\cor{}{
+Il Problema del Tassellamento è indecidibile.
+}
+ 
+\section{Teoria della Ricorsione: gerarchia RE/R/co-RE}
+ 
+\subsection{Riepilogo delle classi}
+ 
+\dfn{}{
+\begin{align*}
+  \mathrm{R}    &= \{\,L \mid L \text{ è decidibile}\,\}\\
+  \mathrm{RE}   &= \{\,L \mid L \text{ è semidecidibile (riconoscibile)}\,\}\\
+  \mathrm{coRE} &= \{\,L \mid \overline{L} \in \mathrm{RE}\,\}
+\end{align*}
+}
+ 
+\begin{center}
+\begin{tikzpicture}[scale=1]
+  % Outer ellipse: RE
+  \draw[thick] (0,0) ellipse (3.5cm and 2.2cm);
+  \node[above] at (0, 2.2) {$\mathrm{RE}$};
+  % Inner ellipse: R
+  \draw[thick] (0,-0.2) ellipse (1.6cm and 1.1cm);
+  \node at (0,-0.2) {$\mathrm{R}$};
+  % Labels inside RE but outside R
+  \node[font=\small] at (-2.5, 0.6) {$\mathrm{HALT}_eps$};
+  \node[font=\small] at (-2.5, 0.0) {$\mathrm{HALT}$};
+  \node[font=\small] at (-2.5,-0.6) {$\mathrm{HALT}_eps$};
+  % Second blob: co-RE (overlapping)
+  \draw[thick, dashed] (2.0, 0) ellipse (2.2cm and 1.6cm);
+  \node[above] at (3.8, 1.0) {$\mathrm{coRE}$};
+  \node[font=\small] at (3.2, 0.5) {$\overline{L_u}$};
+  \node[font=\small] at (3.2,-0.1) {$\overline{L_d}$};
+  \node[font=\small] at (3.2,-0.7) {$\overline{L_e}$};
+\end{tikzpicture}
+\end{center}
+ 
+\paragraph{Esempi notevoli.}
+\begin{itemize}
+  \item $L_u = \{(M,w) \mid M \text{ si ferma su } w\}$: è un problema t.c.\ in $\mathrm{RE}$,
+        abbiamo una procedura per rispondere sì in tempo finito.
+  \item $\overline{L_u}$: è un problema che deve arrivare all'infinito per dire sì,
+    quindi $\overline{L_u} \notin \mathrm{RE}$.
+\end{itemize}
+ 
+Tutti questi problemi hanno il complementare in $\mathrm{RE}$, quindi possiamo dire no in
+tempo finito. Definiamo così due classi:
+ 
+\begin{center}
+\begin{tikzpicture}[scale=0.9]
+  % co-RE arch
+  \draw[thick] (-3,0) arc (180:0:1.8cm and 1.4cm);
+  \node[font=\small] at (-3.6, 0.2) {$\mathrm{CO\text{-}RE}$};
+  \node[font=\small] at (-2.5, 0.5) {$\mathrm{HALT}_eps$};
+  \node[font=\small] at (-2.5,-0.1) {$L_e$};
+  \draw[thick] (-3,0) -- (3,0);
+  % R box
+  \draw[thick] (-1,-0.6) rectangle (1,1.3);
+  \node at (0, 0.35) {$\mathrm{R}$};
+  \node[font=\small, right=0.05cm] at (1, 0.8) {$\mathrm{HALT}_{\forall}$};
+  \node[font=\small, right=0.05cm] at (1, 0.35) {$L_u$};
+  \node[font=\small, right=0.05cm] at (1,-0.1) {$\mathrm{HALT}_eps$};
+  % RE arch
+  \draw[thick] (3,0) arc (0:180:1.8cm and 1.4cm) ;
+  \node[font=\small] at (3.6, 0.2) {$\mathrm{RE}$};
+  \node[font=\small] at (2.5, 0.5) {$\overline{L_u}$};
+  \node[font=\small] at (2.5,-0.1) {$\overline{L_d}$};
+  % What's outside?
+  \node[align=center, font=\small] at (0,-1.2)
+    {Cosa sta fuori? Non possiamo dire né sì né no.\\
+     (non è comunque il più difficile)};
+\end{tikzpicture}
+\end{center}
+ 
+\subsection{Teoremi fondamentali}
+ 
+\thm{}{\label{thm:rneqre}
+  $\mathrm{R} \neq \mathrm{RE}$
+}
+\pf{Dimostrazione}{
+  $\exists L \in \mathrm{RE}$ con $L \notin \mathrm{R}$: ad esempio $\mathrm{HALT}_eps \in \mathrm{RE} \setminus \mathrm{R}$.
+}
+ 
+\thm{}{\label{thm:corere}
+  $\mathrm{coRE} \cap \mathrm{RE} = \mathrm{R}$
+}
+\pf{Dimostrazione}{
+  \textbf{($\mathrm{coRE} \cap \mathrm{RE} \subseteq \mathrm{R}$):} Sia $L \in \mathrm{coRE} \cap \mathrm{RE}$.
+  Se $L \in \mathrm{coRE}$, allora $\overline{L} \in \mathrm{RE}$.
+  Ma se $L \in \mathrm{RE}$ e $\overline{L} \in \mathrm{RE}$, allora $L \in \mathrm{R}$
+(si eseguono in parallelo i due semidecisori e si risponde quando uno dei due
+si ferma).
+ 
+  \textbf{($\mathrm{R} \subseteq \mathrm{coRE} \cap \mathrm{RE}$):} Sia $L \in \mathrm{R}$; allora esiste $H$ che
+  decide $L$. Tale $H$ risponde sì ($\in \mathrm{RE}$) e risponde no ($\in \mathrm{coRE}$).
+}
+ 
+\thm{}{\label{thm:reneqcore}
+  $\mathrm{RE} \neq \mathrm{coRE}$
+}
+\pf{Dimostrazione}{
+  Per il Teorema~\ref{thm:corere}, $\mathrm{coRE} \cap \mathrm{RE} = \mathrm{R}$.
+  Se fosse $\mathrm{RE} = \mathrm{coRE}$, allora $\mathrm{RE} = \mathrm{R}$, contraddicendo il Teorema~\ref{thm:rneqre}.
+}
+ 
+\subsection{Il problema \texorpdfstring{$\mathrm{HALT}_{\forall}$}{HALT\_forall}}
+ 
+\dfn{}{
+\[
+  \mathrm{HALT}_{\forall} = \{\,M \mid M \text{ si ferma su tutte le stringhe}\,\}
+\]
+}
+ 
+\begin{itemize}
+  \item $\mathrm{HALT}_{\forall} \notin \mathrm{RE}$: per rispondere sì bisognerebbe provarlo su tutte le
+        stringhe (infinitely many).
+      \item $\mathrm{HALT}_{\forall} \notin \mathrm{coRE}$: per rispondere no bisognerebbe dimostrare che $M$
+        non si ferma su una stringa, ma questo è indecidibile.
+\end{itemize}
+ 
+Dunque $\mathrm{HALT}_{\forall}$ sta \emph{fuori} sia da $\mathrm{RE}$ che da $\mathrm{coRE}$.
+ 
+% ============================================================
+\section{Riduzione di \texorpdfstring{$\mathrm{HALT}_{\forall}$}{HALT\_forall} fuori da \texorpdfstring{$\mathrm{RE}$}{RE} e \texorpdfstring{$\mathrm{coRE}$}{co-RE}}
+% ============================================================
+ 
+Usiamo il principio: $A \leq B \Rightarrow (A \notin \mathrm{RE} \Rightarrow B \notin \mathrm{RE})$.
+Dimostriamo due riduzioni.
+ 
+\subsection{Riduzione 1: \texorpdfstring{$\mathrm{HALT}_eps \leq \mathrm{HALT}_{\forall}$}{HALT\_eps <= HALT\_forall}}
+ 
+\textbf{Conseguenza:} $\mathrm{HALT}_eps \in \mathrm{coRE}$ e $\mathrm{HALT}_eps \leq \mathrm{HALT}_{\forall}$, quindi
+$\mathrm{HALT}_{\forall} \notin \mathrm{coRE}$.
+ 
+\medskip
+\noindent\textit{Costruzione.}
+Data $M$, costruiamo $N = f(M)$ tale che:
+ 
+\begin{center}
+\begin{tikzpicture}[>=Stealth, node distance=1.6cm]
+  % Box N
+  \draw[thick] (-1.5,-1.5) rectangle (3.5,1.5);
+  \node[above] at (1.0, 1.5) {$N$};
+  % Input w
+  \node[left] at (-1.5, 0.5) {$w$};
+  \draw[->] (-1.5, 0.5) -- (-0.5, 0.5);
+  % Machine M box
+  \draw[thick] (-0.5,-1.0) rectangle (2.5, 1.0);
+  \node at (1.0, 0) {$M$};
+  % epsilon input
+  \draw[->] (-1.5,-0.4) node[left]{$\varepsilon$} -- (-0.5,-0.4);
+  % Outputs
+  \draw[->] (2.5, 0.7) -- (3.5, 0.7) node[right]{sì};
+  \draw[->] (2.5, 0.0) -- (3.5, 0.0) node[right]{no};
+  \draw[->] (2.5,-0.7) -- (3.5,-0.7) node[right]{\textit{loop}};
+\end{tikzpicture}
+\end{center}
+ 
+$N$ su input $w$: simula $M$ su $\varepsilon$, ignorando $w$.
+\begin{itemize}
+  \item Se $M$ non si ferma su $\varepsilon$: $N$ non si ferma mai $\Rightarrow
+    N \notin \mathrm{HALT}_{\forall}$.
+  \item Se $M$ si ferma su $\varepsilon$: $N$ si ferma su ogni $w \Rightarrow
+    N \in \mathrm{HALT}_{\forall}$.
+\end{itemize}
+ 
+Quindi: $M \in \mathrm{HALT}_eps \Leftrightarrow N \in \mathrm{HALT}_{\forall}$.
+ 
+\subsection{Riduzione 2: \texorpdfstring{$\overline{\mathrm{HALT}_eps} \leq \mathrm{HALT}_{\forall}$}{HALT\_eps-bar <= HALT\_forall}}
+ 
+\textbf{Conseguenza:} $\overline{\mathrm{HALT}_eps} \notin \mathrm{RE}$ (poiché
+$\overline{\mathrm{HALT}_eps} = \mathrm{coRE} \setminus \mathrm{RE}$), quindi $\mathrm{HALT}_{\forall} \notin \mathrm{RE}$.
+ 
+\medskip
+\noindent\textit{Costruzione.}
+Data $M$, costruiamo $N = f(M)$ tale che:
+ 
+\begin{center}
+\begin{tikzpicture}[>=Stealth]
+  % Outer box N
+  \draw[thick] (-2,-2) rectangle (4.5, 2);
+  \node[above] at (1.25, 2) {$N$};
+  % Input w
+  \draw[->] (-2, 0.8) node[left]{$w$} -- (-1.0, 0.8);
+  % Inner description
+  \draw[thick] (-1.0,-1.4) rectangle (3.5, 1.4);
+  \node at (1.25, 0) {$M$};
+  % epsilon
+  \draw[->] (-2,-0.5) node[left]{$\varepsilon$} -- (-1.0, -0.5);
+  \node[font=\small, below left] at (-1.0,-0.5) {$\|w\|$ ``$@$''};
+  % HALT oracle
+  \draw[->] (3.5, 0.7) -- (4.5, 0.7) node[right]{\small $\neg\mathrm{HALT}$};
+  \node[font=\small] at (3.5, 0.7) [right] {};
+  % No/loop
+  \draw[->] (3.5, -0.7) -- (4.5, -0.7) node[right]{\small no/$\text{loop}$};
+\end{tikzpicture}
+\end{center}
+ 
+$N$ su input $w$: simula $M$ su $\varepsilon$ per $|w|$ passi (usando la
+lunghezza di $w$ come ``conto alla rovescia'').
+ 
+\begin{itemize}
+  \item Se $M$ \textbf{non} si ferma su $\varepsilon$: la simulazione non termina
+        mai entro $|w|$ passi per nessun $w$, quindi $N$ si ferma sempre
+        $\Rightarrow N \in \mathrm{HALT}_{\forall}$.
+  \item Se $M$ \textbf{si ferma} su $\varepsilon$ in $k$ passi: per ogni $w$
+        con $|w| \geq k$, la simulazione completa e $N$ diverge su $w$
+        $\Rightarrow N \notin \mathrm{HALT}_{\forall}$.
+\end{itemize}
+ 
+Quindi: $M \notin \mathrm{HALT}_eps \Leftrightarrow N \in \mathrm{HALT}_{\forall}$, cioè
+$\overline{\mathrm{HALT}_eps} \leq \mathrm{HALT}_{\forall}$.
+ 
+\bigskip
+\noindent\textbf{Conclusione.}
+\[
+  \mathrm{HALT}_{\forall} \notin \mathrm{RE} \quad \text{e} \quad \mathrm{HALT}_{\forall} \notin \mathrm{coRE}
+\]
+
 \section{Teorema di Rice}
 Una proprieta' di una macchina e' un linguaggio le cui stringhe che ci appartengono sono codifiche di macchine che appartengono a un certo insieme.
 
