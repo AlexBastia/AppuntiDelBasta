@@ -2,7 +2,11 @@
 Il livello più alto dello stack, il \textbf{Livello Applicazione}, è dove le applicazioni di rete vivono. A differenza degli altri livelli, non fornisce servizi a un livello superiore, ma direttamente alle applicazioni con cui l'utente interagisce (browser, client di posta, ecc.). Questo capitolo esplora i principi di funzionamento di queste applicazioni e approfondisce i protocolli che le rendono possibili, come HTTP e SMTP.
 
 \section{Principi delle Applicazioni di Rete}
+Le applicazioni di rete sono ovunque nella nostra vita quotidiana. Tra gli esempi più comuni troviamo: e-mail, web, messaggistica, accesso remoto (remote login), condivisione file P2P, giochi multiutente, streaming video (YouTube, Netflix), voice over IP (es. Skype), videoconferenza in tempo reale, social networking e motori di ricerca.
+
 La creazione di un'applicazione di rete consiste nello scrivere programmi che vengono eseguiti su host diversi (\textit{end systems}) e comunicano tra loro attraverso la rete. Una caratteristica fondamentale è che gli sviluppatori di applicazioni non hanno bisogno di programmare i dispositivi del nucleo della rete (come router e switch), i quali non eseguono applicazioni utente. Tutta la complessità applicativa risiede ai bordi della rete (\textit{network edge}), un principio di progettazione che ha permesso uno sviluppo e una diffusione delle applicazioni estremamente rapidi.
+
+\nt{Il fatto che le applicazioni risiedano solo sugli \textit{end systems} e non sui dispositivi del nucleo della rete (router, switch) permette uno sviluppo e una propagazione delle applicazioni estremamente rapidi: non è necessario modificare l'infrastruttura di rete per creare una nuova applicazione.}
 
 \subsection{Architetture Applicative}
 Le applicazioni di rete sono tipicamente strutturate secondo due paradigmi principali: client-server o peer-to-peer (P2P).
@@ -23,12 +27,37 @@ In questo modello, non esiste un server centrale sempre attivo. La comunicazione
 \end{itemize}
 
 \subsection{Comunicazione tra Processi}
-A un livello più basso, la comunicazione di rete avviene tra \textbf{processi} (programmi in esecuzione) su host diversi.
+A un livello più basso, la comunicazione di rete avviene tra \textbf{processi} (programmi in esecuzione su un host).
 \begin{itemize}
-    \item Un processo \textbf{client} è quello che inizia la comunicazione.
-    \item Un processo \textbf{server} è quello che attende di essere contattato.
+    \item Sullo \textbf{stesso host}, due processi comunicano tramite meccanismi di \textbf{inter-process communication (IPC)}, definiti dal sistema operativo.
+    \item Su \textbf{host diversi}, i processi comunicano scambiandosi \textbf{messaggi} attraverso la rete.
 \end{itemize}
-I processi si scambiano messaggi attraverso un'interfaccia software chiamata \textbf{socket}. Un socket è l'equivalente di una "porta" dell'abitazione di un processo: il processo mittente spinge il messaggio fuori dalla sua porta, affidandosi all'infrastruttura di trasporto (gestita dal sistema operativo) per recapitarlo alla porta del processo destinatario. Per identificare univocamente un processo su Internet, non basta l'indirizzo IP dell'host, poiché su un singolo host possono essere in esecuzione molti processi. L'identificativo completo è quindi la coppia: (\textbf{indirizzo IP}, \textbf{numero di porta}).
+
+Indipendentemente dall'architettura, si distinguono sempre due ruoli:
+\begin{itemize}
+    \item Un processo \textbf{client} è quello che \textbf{inizia} la comunicazione.
+    \item Un processo \textbf{server} è quello che \textbf{attende} di essere contattato.
+\end{itemize}
+
+\nt{Anche nelle architetture P2P, ogni peer ha sia un processo client sia un processo server: quando richiede un servizio agisce da client, quando lo fornisce agisce da server.}
+
+\paragraph{Socket}
+I processi si scambiano messaggi attraverso un'interfaccia software chiamata \textbf{socket}. Un socket è l'equivalente di una "porta" dell'abitazione di un processo: il processo mittente spinge il messaggio fuori dalla sua porta, affidandosi all'infrastruttura di trasporto per recapitarlo alla porta del processo destinatario. Nello stack protocollare, il socket si colloca tra il livello applicazione e il livello trasporto:
+\begin{itemize}
+    \item \textbf{Sopra il socket} (livello applicazione): controllato dallo \textbf{sviluppatore} dell'applicazione.
+    \item \textbf{Sotto il socket} (trasporto, rete, link, fisico): controllato dal \textbf{sistema operativo}.
+\end{itemize}
+
+\paragraph{Indirizzamento dei Processi}
+Per identificare univocamente un processo su Internet, non basta l'indirizzo IP dell'host (un numero a \textbf{32 bit}), poiché su un singolo host possono essere in esecuzione molti processi contemporaneamente. L'identificativo completo è quindi la coppia: (\textbf{indirizzo IP}, \textbf{numero di porta}).
+
+\ex{Numeri di porta comuni}{
+    \begin{itemize}
+        \item Server HTTP: porta \textbf{80}
+        \item Server di posta (SMTP): porta \textbf{25}
+    \end{itemize}
+    Ad esempio, per inviare un messaggio HTTP al web server \texttt{gaia.cs.umass.edu}, l'identificativo completo è: IP \texttt{128.119.245.12}, porta \texttt{80}.
+}
 
 \subsection{Protocolli di Livello Applicazione}
 Un protocollo di livello applicazione definisce le regole della comunicazione tra processi. Specifica:
@@ -39,28 +68,96 @@ Un protocollo di livello applicazione definisce le regole della comunicazione tr
     \item \textbf{Regole}: Quando e come i processi inviano e rispondono ai messaggi.
 \end{itemize}
 
-\nt{I protocolli possono essere \textbf{aperti} (definiti in documenti pubblici chiamati RFC, come HTTP e SMTP) o \textbf{proprietari} (controllati da un'entità specifica, come Skype).}
+\nt{I protocolli possono essere \textbf{aperti} (definiti in documenti pubblici chiamati RFC, come HTTP e SMTP) o \textbf{proprietari} (controllati da un'entità specifica, come Skype). I protocolli proprietari hanno codice sorgente privato e spesso impiegano chiavi di cifratura per criptare i messaggi trasmessi, rendendone difficile l'interoperabilità.}
 
 \subsection{Servizi del Livello Trasporto}
 Le applicazioni hanno esigenze diverse dal livello di trasporto sottostante, che su Internet è fornito da TCP o UDP.
 \begin{itemize}
-    \item \textbf{TCP (Transmission Control Protocol)}: Offre un servizio \textbf{affidabile} e orientato alla connessione. Garantisce che tutti i dati arrivino a destinazione senza errori e in ordine. Include anche meccanismi di controllo di flusso e di congestione. È la scelta per applicazioni che non tollerano la perdita di dati, come il trasferimento di file, il web e l'e-mail.
-    \item \textbf{UDP (User Datagram Protocol)}: Offre un servizio "leggero", \textbf{non affidabile} e senza connessione. Non offre alcuna garanzia. Il suo vantaggio è la velocità e l'assenza di overhead, che lo rendono adatto per applicazioni sensibili al ritardo che possono tollerare qualche perdita di dati, come lo streaming audio/video o i giochi online.
+    \item \textbf{TCP (Transmission Control Protocol)}: Offre un servizio \textbf{affidabile} e orientato alla connessione (\textit{connection-oriented}): è necessario un setup (handshake) tra client e server prima dello scambio dati. TCP fornisce:
+    \begin{itemize}
+        \item \textbf{Trasporto affidabile}: tutti i dati arrivano a destinazione, senza errori e in ordine.
+        \item \textbf{Controllo di flusso} (\textit{flow control}): il mittente non sovraccarica il ricevente.
+        \item \textbf{Controllo della congestione} (\textit{congestion control}): il mittente viene rallentato quando la rete è sovraccarica.
+    \end{itemize}
+    TCP \textbf{non fornisce}: garanzie di timing (ritardo), garanzie di throughput minimo, sicurezza (cifratura). È la scelta per applicazioni che non tollerano la perdita di dati, come il trasferimento di file, il web e l'e-mail.
+    \item \textbf{UDP (User Datagram Protocol)}: Offre un servizio "leggero", \textbf{non affidabile} e senza connessione. UDP \textbf{non fornisce}: affidabilità, controllo di flusso, controllo della congestione, garanzie di timing, garanzie di throughput, sicurezza, né setup della connessione. Il suo vantaggio è la velocità e l'assenza di overhead, che lo rendono adatto per applicazioni sensibili al ritardo che possono tollerare qualche perdita di dati, come lo streaming audio/video o i giochi online.
 \end{itemize}
+
+\nt{\textbf{Perché esiste UDP?} Se TCP offre così tanto, perché usare UDP? Perché per alcune applicazioni (es. telefonia Internet, streaming real-time) il ritardo aggiuntivo introdotto dai meccanismi di affidabilità e controllo della congestione di TCP è inaccettabile. È preferibile ricevere qualche dato corrotto o perso piuttosto che riceverlo in ritardo.}
+
+\subsection{Requisiti del Trasporto per le Applicazioni Comuni}
+Le applicazioni differiscono nelle loro esigenze rispetto al livello di trasporto lungo quattro dimensioni principali: \textbf{integrità dei dati} (tolleranza alla perdita), \textbf{timing} (sensibilità al ritardo), \textbf{throughput} (banda necessaria) e \textbf{sicurezza}.
+
+\begin{table}[h]
+\centering
+\begin{tabularx}{\textwidth}{|X|c|X|c|}
+\hline
+\textbf{Applicazione} & \textbf{Perdita dati} & \textbf{Throughput} & \textbf{Time-sensitive} \\
+\hline
+Trasferimento file & nessuna & elastico & no \\
+E-mail & nessuna & elastico & no \\
+Documenti web & nessuna & elastico & no \\
+Audio/video real-time & tollerata & audio: 5Kbps--1Mbps, video: 10Kbps--5Mbps & sì, 100 ms \\
+Audio/video stored & tollerata & come sopra & sì, pochi secondi \\
+Giochi interattivi & tollerata & pochi Kbps & sì, pochi secondi \\
+Text messaging & nessuna & elastico & sì e no \\
+\hline
+\end{tabularx}
+\caption{Requisiti di trasporto delle applicazioni più comuni}
+\end{table}
+
+La tabella seguente riassume invece quali protocolli applicativi e di trasporto vengono utilizzati dalle applicazioni Internet più diffuse.
+
+\begin{table}[h]
+\centering
+\begin{tabularx}{\textwidth}{|X|X|c|}
+\hline
+\textbf{Applicazione} & \textbf{Protocollo app layer} & \textbf{Trasporto} \\
+\hline
+E-mail & SMTP [RFC 2821] & TCP \\
+Accesso terminale remoto & Telnet [RFC 854] & TCP \\
+Web & HTTP [RFC 2616] & TCP \\
+Trasferimento file & FTP [RFC 959] & TCP \\
+Streaming multimedia & HTTP, RTP [RFC 1889] & TCP o UDP \\
+Telefonia Internet & SIP, RTP, proprietari (es. Skype) & TCP o UDP \\
+\hline
+\end{tabularx}
+\caption{Applicazioni Internet e protocolli utilizzati}
+\end{table}
+
+\subsection{Sicurezza del Trasporto: SSL/TLS}
+TCP e UDP di per sé \textbf{non forniscono alcuna cifratura}: le password e i dati inviati attraverso un socket transitano in Internet in chiaro (\textit{cleartext}). Per risolvere questo problema è stato introdotto \textbf{SSL (Secure Sockets Layer)}, oggi standardizzato come \textbf{TLS (Transport Layer Security)}.
+
+SSL opera al \textbf{livello applicazione}: non è un'estensione di TCP, ma uno strato software aggiuntivo. Le applicazioni utilizzano librerie SSL che a loro volta comunicano con TCP. SSL fornisce:
+\begin{itemize}
+    \item \textbf{Cifratura}: la connessione TCP viene cifrata end-to-end.
+    \item \textbf{Integrità dei dati}: garanzia che i dati non siano stati alterati in transito.
+    \item \textbf{Autenticazione endpoint}: verifica dell'identità del server (e opzionalmente del client) tramite certificati.
+\end{itemize}
+
+\nt{Con la \textbf{SSL socket API}, le password inviate attraverso il socket vengono cifrate prima di attraversare Internet. In questo modo, anche se un attaccante intercetta il traffico, non può leggere il contenuto in chiaro.}
+
+\subsection{Approfondimento: Campionamento e Digitalizzazione Audio}
+Nell'ambito delle applicazioni multimediali è utile comprendere come il segnale audio analogico venga convertito in dati digitali. I suoni distinguibili dall'orecchio umano si trovano tra i 22\,000 e i 23\,000 Hz. Per il \textbf{teorema di Shannon}, la frequenza di campionamento deve essere almeno il doppio della frequenza massima del segnale, quindi circa \textbf{44\,000 Hz}.
+
+Campionando un byte per ogni campione a 44\,000 Hz si ottiene un flusso di circa \textbf{44 Kbps}. La \textbf{digitalizzazione} del suono analogico tramite campionamento è alla base di formati come il \textbf{MP3}, che applica algoritmi di compressione con perdita per ridurre significativamente la dimensione dei file musicali mantenendo una qualità percettiva accettabile.
 
 ---
 \section{Il Web e il Protocollo HTTP}
-Il World Wide Web è un'applicazione basata sul protocollo \textbf{HTTP (HyperText Transfer Protocol)}. Una pagina web è composta da \textbf{oggetti} (un file HTML di base, immagini JPEG, file audio, ecc.). Ogni oggetto è indirizzabile tramite un \textbf{URL (Uniform Resource Locator)}.
+Il World Wide Web è un'applicazione basata sul protocollo \textbf{HTTP (HyperText Transfer Protocol)}. Una pagina web è un insieme di \textbf{oggetti} strutturati in \textbf{HTML} (HyperText Markup Language), un linguaggio di markup che permette di etichettare e strutturare il contenuto informativo. Gli oggetti possono essere: file HTML, immagini JPEG, applet Java, file audio, ecc.
+
+Ogni pagina web è composta da un \textbf{file HTML di base} (che convenzionalmente ha un nome standard, tipicamente \texttt{index.html}) il quale contiene riferimenti ad altri oggetti. Ogni oggetto è indirizzabile tramite un \textbf{URL (Uniform Resource Locator)}.
 
 \ex{Struttura di un URL}{
+    Consideriamo l'URL: \texttt{http://www.someschool.edu/someDept/pic.gif}
     \begin{itemize}
-        \item `http`: Protocollo di livello applicazione.
-        \item `www.someschool.edu`: Nome dell'host (server).
-        \item `/someDept/pic.gif`: Percorso (\textit{path}) dell'oggetto sul server.
+        \item \texttt{http}: Protocollo di livello applicazione utilizzato.
+        \item \texttt{www.someschool.edu}: \textbf{Host name} --- il nome di default attribuito alla macchina che fa da web server per quel dominio.
+        \item \texttt{/someDept/pic.gif}: \textbf{Path name} --- il percorso dell'oggetto sul server. La radice (\texttt{/}) corrisponde alla cartella dentro la quale si trova l'eseguibile del web server.
     \end{itemize}
 }
 
-HTTP è un protocollo client-server. Il client (un browser) richiede, riceve e visualizza gli oggetti web; il server invia gli oggetti in risposta alle richieste. Utilizza TCP come protocollo di trasporto, tipicamente sulla porta 80.
+HTTP è un protocollo client-server. Il client è un \textbf{browser}: un'applicazione utente che interpreta il formato HTML delle pagine web e le visualizza. Il server invia gli oggetti in risposta alle richieste. HTTP utilizza TCP come protocollo di trasporto, tipicamente sulla porta 80.
 
 \dfn{Protocollo Stateless}{
     HTTP è un protocollo \textbf{stateless} (senza stato), il che significa che il server non conserva alcuna informazione sulle richieste passate di un client. Ogni richiesta è trattata in modo indipendente. Mantenere uno stato renderebbe i server molto più complessi e difficili da gestire in caso di crash.

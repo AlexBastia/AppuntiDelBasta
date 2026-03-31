@@ -325,25 +325,26 @@ Sia $H \leq G$. Abbiamo due operazioni:
 Possiamo quindi sia restringere $G$ ad $H$, sia far ``salire'' $H$ a $G$. Il teorema di Frobenius dice che è la stessa cosa.
 
 \thm{Reciprocità di Frobenius}{
+  Siano $H \leq G$ un sottogruppo di un gruppo finito $G$, $W$ una rappresentazione di $H$ e $U$ una rappresentazione di $G$. Allora:
   \[
-    \langle \mathrm{Ind}\,\chi,\; \psi \rangle_G \;=\; \langle \chi,\; \mathrm{Res}_H^G\,\psi \rangle_H
+    \langle \chi_{\mathrm{Ind}_H^G W},\; \chi_U \rangle_G \;=\; \langle \chi_W,\; \chi_{\mathrm{Res}_H^G U} \rangle_H
   \]
 }
 
 \pf{Dimostrazione}{
   Calcoliamo il lato sinistro usando il teorema sul carattere dell'indotta:
   \begin{align*}
-    \langle \mathrm{Ind}\,\chi, \psi \rangle_G
-    &= \frac{1}{|G|} \sum_{g \in G} \mathrm{Ind}\,\chi(g)\,\overline{\psi(g)} \\
-    &\overset{\text{Thm}}{=} \frac{1}{|G|} \cdot \frac{1}{|H|} \sum_{g \in G} \sum_{\substack{s \in G \\ s^{-1}gs \in H}} \chi(s^{-1}gs)\,\overline{\psi(g)}
+    \langle \chi_{\mathrm{Ind}_H^G W}, \chi_U \rangle_G
+    &= \frac{1}{|G|} \sum_{g \in G} \chi_{\mathrm{Ind}_H^G W}(g)\,\overline{\chi_U(g)} \\
+    &\overset{\text{Thm}}{=} \frac{1}{|G|} \cdot \frac{1}{|H|} \sum_{g \in G} \sum_{\substack{s \in G \\ s^{-1}gs \in H}} \chi_W(s^{-1}gs)\,\overline{\chi_U(g)}
   \end{align*}
-  Facciamo il cambio di variabili $s^{-1}gs = h \in H$, cioè $g = shs^{-1}$, quindi $g^{-1} = sh^{-1}s^{-1}$. Poiché $\psi$ è una funzione centrale, $\overline{\psi(g)} = \overline{\psi(shs^{-1})} = \overline{\psi(h)}$. La somma diventa:
+  Facciamo il cambio di variabili $s^{-1}gs = h \in H$, cioè $g = shs^{-1}$. Poiché $\chi_U$ è una funzione centrale, $\overline{\chi_U(g)} = \overline{\chi_U(shs^{-1})} = \overline{\chi_U(h)}$. La somma diventa:
   \[
-    = \frac{1}{|G|\,|H|} \sum_{s \in G} \sum_{h \in H} \chi(h)\,\overline{\psi(h)}
+    = \frac{1}{|G|\,|H|} \sum_{s \in G} \sum_{h \in H} \chi_W(h)\,\overline{\chi_U(h)}
   \]
   Poiché $s$ non compare nell'integrando, la somma su $s$ dà un fattore $|G|$:
   \[
-    = \frac{1}{|H|} \sum_{h \in H} \chi(h)\,\overline{\psi(h)} = \langle \chi,\, \mathrm{Res}_H^G\,\psi \rangle_H \qquad \square
+    = \frac{1}{|H|} \sum_{h \in H} \chi_W(h)\,\overline{\chi_U(h)} = \langle \chi_W,\, \chi_{\mathrm{Res}_H^G U} \rangle_H \qquad \square
   \]
 }
 

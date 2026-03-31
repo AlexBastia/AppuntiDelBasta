@@ -20,12 +20,34 @@ In pratica consiste nel creare un'architettura di difesa e prevenzione. Questi s
     \end{itemize}
 \end{itemize}
 
-Si introduce il concetto di attacco con il tipico esempio di Alice e Bob che vogliono comunicare e Trudy, l'attaccante, che può intercettare, elliminare o aggiungere messaggi durante la comunicazione dei due amamnti carucci (Morbidelli - Morigi)
+\nt{È spesso più conveniente per un attaccante colpire l'\textbf{essere umano} piuttosto che i sistemi di difesa, che costano di più da aggirare. Questa è la base degli attacchi di \textit{social engineering}.}
+
+\subsection{Alice, Bob e Trudy}
+Si introduce il concetto di attacco con il tipico esempio di Alice e Bob che vogliono comunicare in modo sicuro e Trudy, l'attaccante (\textit{intruder}), che può intercettare, eliminare o aggiungere messaggi durante la comunicazione.
 \begin{center}
     \includegraphics[width=10cm]{img/trudy_bob_alice.png}
 \end{center}
+L'obiettivo della sicurezza di rete è rendere sicura la comunicazione tra le macchine di Alice e Bob nonostante la presenza di Trudy.
 
-Vabbuò passiamo alla sezione sucessiva:
+Nella realtà, "Alice" e "Bob" possono essere:
+\begin{itemize}
+    \item Persone reali che comunicano tra loro.
+    \item Browser e server web per transazioni elettroniche (es. acquisti online).
+    \item Client e server di online banking.
+    \item Server DNS che scambiano record.
+    \item Router che scambiano aggiornamenti delle tabelle di routing.
+\end{itemize}
+
+\subsection{Tipi di Attacchi}
+Trudy (il "cattivo") può compiere diversi tipi di attacco:
+\begin{itemize}
+    \item \textbf{Eavesdropping} (intercettazione): Trudy si collega al canale di comunicazione e "ascolta" i messaggi in transito, senza alterarli. Basta collegare un computer al cavo per poter intercettare.
+    \item \textbf{Inserimento attivo}: Trudy inserisce attivamente messaggi falsi nella connessione.
+    \item \textbf{Impersonation (Spoofing)}: Trudy falsifica l'indirizzo sorgente di un pacchetto (o qualsiasi altro campo), facendosi passare per qualcun altro. Ad esempio, può cambiare il TTL (\textit{Time To Leave}) di un pacchetto.
+    \item \textbf{Hijacking}: Trudy "prende il controllo" di una connessione in corso, rimuovendo il mittente o il destinatario legittimo e inserendosi al suo posto.
+    \item \textbf{Denial of Service (DoS)}: Trudy impedisce il funzionamento del servizio sovraccaricandone le risorse. Basta scoprire l'indirizzo IP della macchina e indirizzarle tutte le richieste.
+\end{itemize}
+
 \section{Principi di crittografa}
 Partiamo dalla defnizione
 
@@ -62,8 +84,8 @@ Gli attacchi crittografici mirano a violare la sicurezza di un sistema di cifrat
         \item \textbf{Forza bruta}: prova tutte le chiavi possibili
         \item \textbf{Analisi statistica}: cerca pattern ripetuti nei dati cifrati
     \end{itemize}
-    \item \textbf{known-plaintext attack}: Trudy possiede sia il testo cifrato che il corrispondente testo in chiaro. Con queste informazioni, cerca di scoprire la chiave di cifratura o il meccanismo utilizzato, così da poter decifrare altri messaggi cifrati dallo stesso sistema.
-    
+    \item \textbf{Known-plaintext attack}: Trudy possiede sia il testo cifrato che il corrispondente testo in chiaro. Con queste informazioni, cerca di scoprire la chiave di cifratura o il meccanismo utilizzato, così da poter decifrare altri messaggi cifrati dallo stesso sistema.
+
     \ex{}{
     Se Trudy sa che nel testo in chiaro compare la parola "hello" e trova nel messaggio cifrato la sequenza "JGRRG", può iniziare a costruire un dizionario di corrispondenze tra lettere:
 
@@ -74,7 +96,8 @@ Gli attacchi crittografici mirano a violare la sicurezza di un sistema di cifrat
         \item $o \to G$
     \end{itemize}
     }
-    
+
+    \item \textbf{Chosen-plaintext attack}: Trudy è in grado di ottenere il testo cifrato corrispondente a un testo in chiaro da lei scelto. Questo tipo di attacco è più potente del known-plaintext, perché l'attaccante può scegliere strategicamente i messaggi per ottenere informazioni sulla chiave.
 \end{enumerate}
 
 \nt{un buon metodo per evitare questi attacchi è rendere lo spazio delle chiavi il più vasto possibile e utilizzare algoritmi sicuri che resistano alle analisi statistiche}
@@ -84,7 +107,22 @@ Adesso entriamo nel vivo della difesa cazzo
     mittente e destinatario condividono la stessa chiave segreta $K_S$ per cifrare e decifrare i messaggi
 }
 
-I pratica il mittente (Alice) cirfra il plaintext con l'algoritmo di cifratura usando la chiave $K_S$ottenendo il ciphertext, Bob riceve il ciphertext e lo decifra usando lo stesso algoritmo e la chiave $K_S$, recuperando il messaggio originale
+In pratica il mittente (Alice) cifra il plaintext con l'algoritmo di cifratura usando la chiave $K_S$ ottenendo il ciphertext, Bob riceve il ciphertext e lo decifra usando lo stesso algoritmo e la chiave $K_S$, recuperando il messaggio originale.
+
+\paragraph{Il problema della condivisione della chiave simmetrica}
+Se Alice e Bob non si sono scambiati la chiave $K_S$ di persona, dovrebbero inviarsela attraverso la rete, ma Trudy potrebbe intercettarla. Questo è il problema fondamentale della crittografia simmetrica, che verrà risolto con la crittografia a chiave pubblica (più avanti).
+
+Nel frattempo, un attaccante Trudy che intercetta il ciphertext può tentare di decifrarlo con due approcci:
+\begin{itemize}
+    \item \textbf{Brute force}: prova tutte le combinazioni possibili di bit della chiave (la chiave è una stringa di bit). Il costo è \textbf{esponenziale}: con chiavi di $n$ bit, ci sono $2^n$ possibili chiavi.
+    \item \textbf{Analisi statistica}: se Trudy sa che Alice e Bob si scambiano messaggi in una certa lingua, può sfruttare le caratteristiche statistiche dei messaggi (frequenza di certe parole/lettere cifrate) per individuare una correlazione (pattern) tra testo cifrato e plaintext.
+\end{itemize}
+
+\nt{Gli algoritmi di cifratura/decifratura (come RSA) devono cercare di \textbf{eliminare la correlazione} tra plaintext e testo cifrato. Questi algoritmi sono noti: Trudy li conosce. La sicurezza risiede nella chiave, non nell'algoritmo.}
+
+\ex{Alan Turing e Enigma}{
+    Durante la Seconda Guerra Mondiale, Alan Turing eseguì un attacco di tipo known-plaintext sulla macchina Enigma tedesca. Sapendo che i messaggi nazisti iniziavano tipicamente con "Heil Hitler", partendo dal testo cifrato riuscì a indovinare la chiave di cifratura. Questo è un esempio classico di come la conoscenza di parte del plaintext possa compromettere l'intero schema crittografico.
+}
 \begin{center}
     \includegraphics[width=10cm]{img/CHIAVE_SIMMETRICA.png}
 \end{center}
@@ -123,7 +161,21 @@ Il DES è stato uno standard di crittografia a chiave simmetrica ampiamente adot
 
 La struttura del DES prevede 16 "round" identici di elaborazione, dove ogni round utilizza una porzione diversa (48 bit) della chiave principale. Questo processo complesso di permutazioni e sostituzioni mira a offuscare la relazione tra il testo in chiaro e quello cifrato.
 
+Il DES utilizza la tecnica del \textbf{Cipher Block Chaining (CBC)}: il messaggio viene suddiviso in blocchi di 64 bit, e ogni blocco viene cifrato con la stessa chiave $K_S$. Se il messaggio non è un multiplo di 64 bit, si aggiungono bit di \textbf{padding} all'ultimo blocco per raggiungere la dimensione richiesta.
+
+\ex{Cifratura di un messaggio di 100 bit con DES}{
+    Un messaggio di 100 bit viene diviso in:
+    \begin{itemize}
+        \item Blocco 1: i primi 64 bit, cifrati con chiave $K_S$.
+        \item Blocco 2: i restanti 36 bit + 28 bit di padding, portati a 64 bit e cifrati con la stessa chiave $K_S$.
+    \end{itemize}
+}
+
+\nt{Una debolezza del DES è che tutti i blocchi vengono cifrati con la \textbf{stessa chiave}, creando una correlazione ciclica: pattern ripetuti nel plaintext possono produrre pattern ripetuti nel ciphertext.}
+
 \nt{Oggi il DES è considerato \textbf{insicuro}. Una chiave a 56 bit è troppo corta per resistere a un attacco a forza bruta con la potenza di calcolo moderna. Nel 1998, una chiave DES fu violata in meno di un giorno.}
+
+\paragraph{Backdoor} Una \textbf{backdoor} è una funzione nascosta che inverte il processo di cifratura, permettendo di ottenere il plaintext dal messaggio cifrato senza conoscere la chiave. Le eventuali backdoor del DES non sono ancora note.
 
 Per aumentarne la sicurezza, è stato introdotto il \textbf{3DES (Triple DES)}, che applica l'algoritmo DES tre volte consecutive con tre chiavi diverse, portando la dimensione effettiva della chiave a 168 bit e rendendo gli attacchi a forza bruta computazionalmente impraticabili.
 
@@ -147,6 +199,10 @@ Se Alice vuole inviare un messaggio a Bob, cifra il messaggio con la chiave pubb
     \includegraphics[width=10cm]{CHIAVE_PUBBLICA.png}
 \end{center}
 Questo sistema si basa su \textbf{funzioni matematiche unidirezionali (one-way)}, facili da calcolare in una direzione ma computazionalmente impossibili da invertire senza informazioni aggiuntive. Un esempio è la fattorizzazione di numeri molto grandi.
+
+\nt{Le chiavi $K_B^+$ e $K_B^-$ del destinatario sono \textbf{correlate matematicamente}, ma non è possibile ricavare l'una dall'altra in tempo utile.}
+
+\nt{\textbf{Attenzione ai messaggi corti}: se il messaggio $m$ è composto da pochi bit, un attaccante che intercetta $K_B^+(m)$ può fare brute force provando a cifrare tutti i possibili messaggi corti con $K_B^+$ (che è pubblica) e confrontarli. La soluzione è aggiungere bit di \textbf{padding} al messaggio prima della cifratura, aumentandone la lunghezza effettiva.}
 
 \subsubsection{Algoritmo RSA (Rivest, Shamir, Adelson)}
 L'algoritmo RSA è l'implementazione più nota della crittografia a chiave pubblica. La sua sicurezza si basa sulla difficoltà di fattorizzare un numero intero che è il prodotto di due numeri primi molto grandi.
@@ -408,49 +464,20 @@ Le tecniche utilizzate dagli IDS includono:
 
 Gli IDS sono spesso dispiegati in congiunzione con i firewall per fornire una difesa a più livelli, offrendo visibilità sulle minacce che potrebbero superare i filtri perimetrali.
 
-
-
-\section{Firewall e IDS}
-
-Innanzi definiamo che cos'è un \textit{Firewall}
-
-\dfn{Firewall}{
-        Si definisce \textbf{Firewall} un sistema di sicurezza che isola una rete interna di un'organizzazione da internet, controllando e filtrando il traffico di rete in entrata e uscita in base a regole di sicurezza definite dette di \texttt{ACCESS} o \texttt{DENIED}
-}
-
-L'idea del Firewall è che l'esterno di una rete è composta dai cosiddetti "cattivi ragazzi" che la mamma non vi raccomanderebbe come compagni d'uscita, mentre l'interno della rete è composta da "bravi ragazzi" di cui fidarsi, lo scopo del sistema è, quindi, separare i buoni dai cattivi
+L’idea del Firewall è che l’esterno di una rete è composta dai cosiddetti "cattivi ragazzi", mentre l’interno della rete è composta da "bravi ragazzi" di cui fidarsi, lo scopo del sistema è, quindi, separare i buoni dai cattivi.
 
 \begin{center}
     \includegraphics[width=10cm]{img/buoni_cattivi_e_firewall.png}
 \end{center}
 
-Il Firewall si rivela utile per principalmente tre motivi:
-\begin{itemize}
-    \item \textbf{Prevenzione degli attacchi Denial of Service (Dos)}: tipologia di attacco informatico che mira a rendere inaccessibili o indisponibili i servizi di una rete ad utenti legittimi
-    
-    Un esempio è il \textbf{SYN flooding} in cui un attaccante invia molte richieste di connessione false, esaurendo le risorse del server sovraccaricandolo e impedendo connessioni legittime
+Un esempio concreto di attacco DoS è il \textbf{SYN flooding}, in cui un attaccante invia molte richieste di connessione TCP false, esaurendo le risorse del server e impedendo connessioni legittime.
 
-    \item \textbf{Protezione dei dati interni da accessi non autorizzati}: ovvero impedisce che gli attaccanti possona \textit{modificare o rubare dati sensibili}
-    
-    Un esempio classico è un attaccante che sostituisce il sito web di un'organizzazione con un contenuto malevolo.
-
-    \item \textbf{Accesso selettivo e autorizzato alla rete interna}: Permette l’accesso solo a utenti o dispositivi autenticati, migliorando la sicurezza
-\end{itemize}
-
-Esistono tre tipi di tipoligie di Firewall che approfonoidremo nel dettaglio:
-\begin{itemize}
-    \item \textbf{Stateless Packet Filter}: Controlla ogni pacchetto singolarmente, senza tenere traccia delle connessioni
-    \item \textbf{Statefull Packet Filter}: Tiene traccia dello stato delle connessioni (es. richieste e risposte)  
-    \item \textbf{Application Gateway} (proxy Firewall): controlla il traffico a livello applicativo (es. HTTP, FTP, e.mail), filtrando così le informazioni che all'interno dei protocolli del livello (ad esempio il contenuto di una mail)
-\end{itemize}
-
-Si notino nel dettaglio
 \subsection{Stateless Packet Filtering}
 
 \dfn{Stateless Packet Filtering}{
-    Lo \textbf{Stateless Packet Filtering} è una tecnica di sicurezza di rete in cui un firewall esamina ogni pacchetto individualmente, senza tener conto delle connessioni stabilite in precedenza. Questo significa che ogni pacchetto è valutato isolatamente sulla base di un insieme di regole predefinite
+    Lo \textbf{Stateless Packet Filtering} è una tecnica di sicurezza di rete in cui un firewall esamina ogni pacchetto individualmente, senza tener conto delle connessioni stabilite in precedenza. Ogni pacchetto è valutato isolatamente sulla base di un insieme di regole predefinite.
 }
-Di solito un firewall con filtraggio stateless è implementato su un router che collega una rete interna a internet. Il router analizza ogni pacchetto in ingresso e in uscita e decide se bloccarlo o lasciarlo in base a regole definite nelle cosiddette "\textbf{white list}" (pacchetti che possono passare) e o "\textbf{black list}" (lista di pacchetti da bloccare)
+Di solito un firewall con filtraggio stateless è implementato su un router che collega una rete interna a Internet. Il router analizza ogni pacchetto in ingresso e in uscita e decide se bloccarlo o lasciarlo in base a regole definite nelle cosiddette "\textbf{white list}" (pacchetti che possono passare) o "\textbf{black list}" (lista di pacchetti da bloccare).
 
 Il firewall prende decisioni basandosi su parametri del pacchetto, tra cui:
 \begin{itemize}
@@ -502,17 +529,17 @@ Riporto qui una tabella con altri esempi:
 Queste tabelle sono il vero e proprio cuore pulsante del Firewall e indicano quale pacchetto può passare e chi no
 \ex{ACL}{
     \begin{center}
-        \begin{tabularx}{0.5\textwidth}{|l|l|l|l|l|l|l|}
+        \begin{tabularx}{\textwidth}{|c|X|X|c|c|c|c|}
             \hline
-            \textbf{azione} & \textbf{indirizzo sorgente} & \textbf{indirizzo destinazione} & \textbf{protocollo} & \textbf{porta sorgente} & \textbf{porta destinazione} & \textbf{flag bit} \\
+            \textbf{Azione} & \textbf{IP sorgente} & \textbf{IP destinazione} & \textbf{Proto} & \textbf{Porta src} & \textbf{Porta dst} & \textbf{Flag} \\
             \hline
-            allow & 222.22/16 & outside of 222.22/16 & TCP & $>$ 1023 & 80 & any \\
+            allow & 222.22/16 & outside 222.22/16 & TCP & $>$1023 & 80 & any \\
             \hline
-            allow & outside of 222.22/16 & 222.22/16 & TCP & 80 & $>$ 1023 & ACK \\
+            allow & outside 222.22/16 & 222.22/16 & TCP & 80 & $>$1023 & ACK \\
             \hline
-            allow & 222.22/16 & outside of 222.22/16 & UDP & $>$ 1023 & 53 & --- \\
+            allow & 222.22/16 & outside 222.22/16 & UDP & $>$1023 & 53 & --- \\
             \hline
-            allow & outside of 222.22/16 & 222.22/16 & UDP & 53 & $>$ 1023 & --- \\
+            allow & outside 222.22/16 & 222.22/16 & UDP & 53 & $>$1023 & --- \\
             \hline
             deny & all & all & all & all & all & all \\
             \hline

@@ -1,3 +1,335 @@
+\chapter{Il Livello Rete: Il Piano Dati (Data Plane)}
+
+\dfn{Livello di Rete (Network Layer)}{
+    Il \textbf{livello di rete} è responsabile del trasporto dei segmenti dal mittente al destinatario attraverso una o più reti. Sul lato mittente, incapsula i segmenti in \textbf{datagrammi}; sul lato ricevente, consegna i segmenti al livello trasporto. Il protocollo di livello rete è presente in \textit{ogni} host e router; i router esaminano i campi header di \textit{tutti} i datagrammi IP che li attraversano.
+}
+
+\section{Le Due Funzioni Chiave del Livello di Rete}
+
+Le due funzioni fondamentali del livello di rete sono:
+
+\begin{itemize}
+    \item \textbf{Forwarding} (Piano Dati): funzione \textit{locale}, per-router. Determina come un datagramma in arrivo su una porta di ingresso venga inoltrato alla porta di uscita corretta. Opera in hardware, su scala dei \textbf{nanosecondi}. Analogia: attraversare un singolo svincolo autostradale.
+    \item \textbf{Routing} (Piano di Controllo): logica di \textit{rete}. Determina il percorso end-to-end dei pacchetti dalla sorgente alla destinazione tramite algoritmi di routing. Opera in software, su scala dei \textbf{millisecondi}. Analogia: pianificare l'intero viaggio da casa a destinazione.
+\end{itemize}
+
+\subsection{Data Plane e Control Plane}
+
+\dfn{Data Plane}{
+    La funzione \textbf{locale} di ogni router che determina come un datagramma in arrivo su una porta di ingresso venga inoltrato alla porta di uscita appropriata, consultando la \textbf{tabella di inoltro (forwarding table)}.
+}
+
+\dfn{Control Plane}{
+    La logica a livello di \textbf{rete} che determina il percorso dei datagrammi tra router lungo il cammino end-to-end dalla sorgente alla destinazione. Esistono due approcci:
+    \begin{itemize}
+        \item \textbf{Per-Router Control Plane (tradizionale)}: ogni router esegue un algoritmo di routing e comunica con gli altri router per calcolare la propria tabella di forwarding in modo distribuito. Trova applicazione nelle reti dinamiche (es. reti veicolari).
+        \item \textbf{Logically Centralized Control Plane (SDN)}: un controller remoto centralizzato calcola le tabelle di inoltro tramite un algoritmo e le distribuisce ai router via rete. \textbf{Vantaggio}: il controller conosce tutta la rete e può trovare il cammino ottimo globale. \textbf{Svantaggio}: attacco di \textit{poisoning} delle tabelle; se il controller si rompe, si ha inefficienza.
+    \end{itemize}
+}
+
+\nt{Il router \textbf{non} memorizza la tabella di instradamento (quella è del control plane); il router legge l'header del pacchetto e sceglie l'instradamento sulla porta corretta consultando la tabella di inoltro (forwarding table), che è locale.}
+
+\subsection{Modello di Servizio della Rete}
+
+Il modello di servizio della rete definisce le garanzie offerte al canale che trasporta datagrammi:
+
+\begin{itemize}
+    \item Per \textbf{singoli datagrammi}: consegna garantita, consegna garantita con ritardo $<$ 40 ms.
+    \item Per un \textbf{flusso di datagrammi}: consegna in ordine, bandwidth minima garantita, limiti sulla variazione di spaziatura tra pacchetti (\textit{jitter}).
+\end{itemize}
+
+\begin{table}[h]
+\centering
+\begin{tabularx}{\textwidth}{|X|X|c|c|c|c|}
+\hline
+\textbf{Architettura} & \textbf{Modello} & \textbf{Banda} & \textbf{Perdita} & \textbf{Ordine} & \textbf{Timing} \\
+\hline
+Internet & Best effort & nessuna & no & no & no \\
+ATM & CBR (Constant Bit Rate) & costante & sì & sì & sì \\
+ATM & VBR (Variable Bit Rate) & garantita & sì & sì & sì \\
+ATM & ABR (Asynchronous Bit Rate) & minima garantita & no & sì & no \\
+ATM & UBR (Unspecified Bit Rate) & nessuna & no & sì & no \\
+\hline
+\end{tabularx}
+\caption{Modelli di servizio del livello di rete}
+\end{table}
+
+\nt{Internet utilizza il modello \textbf{best effort}: nessuna garanzia di banda, di ordine, di timing, né di perdita. L'Internet usa un buffer per garantire la visione di contenuti multimediali: caricando frame in anticipo nel buffer (tecnica usata per dare l'illusione della scorrevolezza, come ATM garantisce). ATM CBR si usa per la voce; ATM VBR per i video; ABR significa \textit{Asynchronous Bit Rate} (non è detto che i bit arrivino in modo sincrono).}
+
+% ---
+
+\section{Architettura Interna di un Router}
+
+Un router ha un'architettura interna composta da quattro componenti principali:
+
+\begin{enumerate}
+    \item \textbf{Porte di ingresso (Input ports)}: gestiscono la ricezione dei bit fisici, il protocollo data link, e il lookup/forwarding del pacchetto.
+    \item \textbf{Switching fabric}: trasferisce il pacchetto dalla porta di ingresso alla porta di uscita corretta. Opera in hardware puro.
+    \item \textbf{Porte di uscita (Output ports)}: gestiscono il buffering e la trasmissione dei pacchetti.
+    \item \textbf{Routing processor}: esegue il software del control plane (algoritmi di routing) su scala dei millisecondi. Determina la porta di uscita comunicando con le input ports.
+\end{enumerate}
+
+\nt{Le porte di uscita sono determinate dall'instradamento deciso dal \textbf{Routing Processor} (o dal remote controller in SDN). I router possono avere più porte di uscita a seconda di quante interfacce di rete sono implementate.}
+
+\subsection{Funzioni delle Porte di Ingresso}
+
+Ogni porta di ingresso esegue tre fasi in sequenza:
+
+\begin{enumerate}
+    \item \textbf{Line termination} (livello fisico): ricezione bit-level. Evita riflessioni dei segnali entranti (elettrici/ottici) tramite impedenza adattata.
+    \item \textbf{Link layer protocol} (livello data link): apre la "busta" del livello fisico, legge il MAC address. Es. Ethernet.
+    \item \textbf{Lookup, forwarding e queueing} (livello rete): meccanismo che guarda dentro il pacchetto e vede il mittente. Effettua il lookup nella tabella di forwarding (in memoria locale della porta) per determinare la porta di uscita, poi mette il pacchetto in coda per il switch fabric.
+\end{enumerate}
+
+Il processo di lookup nella porta di ingresso è detto \textbf{decentralized switching} (\textit{match plus action}): usando i valori dell'header, si cerca la porta di uscita nella tabella di forwarding in memoria locale. L'obiettivo è completare il processing della porta di ingresso alla \textbf{line speed}. Se i datagrammi arrivano più velocemente del tasso di forwarding verso il switch fabric, si forma una coda.
+
+Esistono due tipi di forwarding:
+\begin{itemize}
+    \item \textbf{Destination-based forwarding}: inoltro basato solo sull'indirizzo IP di destinazione (approccio tradizionale).
+    \item \textbf{Generalized forwarding}: inoltro basato su qualsiasi insieme di valori dell'header (SDN/OpenFlow).
+\end{itemize}
+
+\subsection{Destination-Based Forwarding e Longest Prefix Matching}
+
+Nel forwarding tradizionale, la tabella di inoltro associa \textit{range} di indirizzi di destinazione a interfacce di uscita:
+
+\ex{Tabella di inoltro destination-based}{
+    \begin{center}
+    \begin{tabular}{|l|c|}
+    \hline
+    \textbf{Range di indirizzi di destinazione} & \textbf{Interfaccia} \\
+    \hline
+    11001000 00010111 00010*** ******** & 0 \\
+    11001000 00010111 00011000 ******** & 1 \\
+    11001000 00010111 00011*** ******** & 2 \\
+    otherwise & 3 \\
+    \hline
+    \end{tabular}
+    \end{center}
+    Gli asterischi indicano che il bit va bene sia 1 che 0 (prefisso). Il range di indirizzi che vengono instradati sulla porta 0 sono quelli che hanno quel determinato prefisso.
+}
+
+Quando i range non si dividono in modo "pulito", si usa la regola del \textbf{longest prefix matching}:
+
+\dfn{Longest Prefix Matching}{
+    Quando si cerca nella tabella di forwarding la entry corrispondente a un dato indirizzo di destinazione, si usa il \textbf{prefisso più lungo} che corrisponde all'indirizzo. Non può accadere che lo stesso indirizzo corrisponda su due porte contemporaneamente.
+}
+
+\ex{Longest Prefix Matching}{
+    Tabella di forwarding:
+    \begin{center}
+    \begin{tabular}{|l|c|}
+    \hline
+    \textbf{Prefisso} & \textbf{Interfaccia} \\
+    \hline
+    11001000 00010111 00010*** ******** & 0 \\
+    11001000 00010111 00011000 ******** & 1 \\
+    11001000 00010111 00011*** ******** & 2 \\
+    otherwise & 3 \\
+    \hline
+    \end{tabular}
+    \end{center}
+    \begin{itemize}
+        \item DA: \texttt{11001000 00010111 00010}110 10100001 $\Rightarrow$ interfaccia \textbf{0} (corrisponde al prefisso di 21 bit della riga 0)
+        \item DA: \texttt{11001000 00010111 00011}000 10101010 $\Rightarrow$ interfaccia \textbf{1} (corrisponde sia alla riga 1 che alla riga 2, ma il prefisso della riga 1 è più lungo $\Rightarrow$ vince la riga 1)
+    \end{itemize}
+}
+
+\nt{Il longest prefix matching è spesso implementato tramite \textbf{TCAM (Ternary Content Addressable Memory)}: memorie indirizzabili per contenuto (non per indirizzo) che permettono di recuperare la entry corrispondente in un singolo ciclo di clock, indipendentemente dalla dimensione della tabella. Cisco Catalyst: fino a $\sim$1M entry in TCAM.}
+
+\subsection{Switching Fabric}
+
+La \textbf{switching fabric} è il blocco che trasferisce i pacchetti dai buffer delle porte di ingresso ai buffer delle porte di uscita. Il \textbf{switching rate} è il tasso al quale i pacchetti possono essere trasferiti dagli ingressi alle uscite (spesso misurato come multiplo della line rate). Con $N$ ingressi, è desiderabile che la switching rate sia $N$ volte la line rate.
+
+Esistono tre tipi di switching fabric:
+
+\paragraph{1. Switching via Memoria}
+I primi router erano computer tradizionali dove lo switching era sotto controllo diretto della CPU. Il pacchetto veniva copiato nella memoria di sistema e poi trasferito alla porta di uscita. \textbf{Svantaggio}: la velocità è limitata dalla bandwidth della memoria (2 attraversamenti del bus per datagramma — uno in lettura, uno in scrittura).
+
+\nt{Questo approccio è alla base della \textbf{rete su chip}: architettura di rete che sposta dati da una scheda madre a un'altra.}
+
+\paragraph{2. Switching via Bus}
+Il datagramma viene trasferito dalla memoria della porta di ingresso alla memoria della porta di uscita tramite un \textbf{bus condiviso}. \textbf{Svantaggio} (\textit{bus contention}): la velocità di switching è limitata dalla bandwidth del bus — può gestire un solo flusso alla volta. Es. Cisco 5600: bus da 32 Gbps, sufficiente per router di accesso e aziendali.
+
+\paragraph{3. Switching via Crossbar (Interconnection Network)}
+Una \textbf{crossbar} è una griglia di connessioni che permette di decidere il percorso individuale di ogni pacchetto. \textbf{Vantaggio}: cammini paralleli — è possibile trasferire più pacchetti contemporaneamente su percorsi indipendenti. È la soluzione più performante e scalabile.
+
+\subsection{Queueing e Perdita di Pacchetti}
+
+Le code si formano sia nelle porte di ingresso che in quelle di uscita quando il tasso di arrivo dei pacchetti supera la capacità della switching fabric o della porta di uscita.
+
+\begin{itemize}
+    \item \textbf{Input queueing}: se la switching fabric è più lenta delle porte di ingresso, si formano code. Problema del \textbf{Head-of-Line (HOL) blocking}: un pacchetto in testa alla coda blocca altri pacchetti in attesa anche se le loro porte di uscita sono libere.
+    \item \textbf{Output queueing}: se il tasso di switch supera la line speed della porta di uscita, i pacchetti si accodano. Quando il buffer è pieno, i pacchetti vengono \textbf{scartati} (packet loss).
+\end{itemize}
+
+% ---
+
+\section{Il Protocollo IP}
+
+\dfn{IP (Internet Protocol)}{
+    Il protocollo del livello di rete di Internet. È un protocollo di tipo \textbf{best-effort}: non garantisce consegna, ordine, né timing. Ogni entità (host o router) che partecipa a Internet esegue IP.
+}
+
+\subsection{Formato del Datagramma IP (IPv4)}
+
+Un datagramma IP è composto da un \textbf{header} (tipicamente 20 byte) e un \textbf{payload} (i dati del livello trasporto). I campi principali dell'header sono:
+
+\begin{itemize}
+    \item \textbf{Version} (4 bit): versione del protocollo IP (4 per IPv4).
+    \item \textbf{Header length} (4 bit): lunghezza dell'header in parole da 32 bit (tipicamente 5, cioè 20 byte).
+    \item \textbf{Type of Service (TOS)} (8 bit): indica il tipo di servizio richiesto (es. bassa latenza per VoIP).
+    \item \textbf{Length} (16 bit): lunghezza totale del datagramma in byte (header + dati).
+    \item \textbf{Identifier, Flags, Fragment Offset}: campi usati per la \textbf{frammentazione}.
+    \item \textbf{TTL (Time To Live)} (8 bit): numero massimo di hop rimanenti. Ogni router lo decrementa di 1; se raggiunge 0, il pacchetto viene scartato e il router invia un ICMP \textit{Time Exceeded}.
+    \item \textbf{Protocol} (8 bit): indica il protocollo del livello trasporto (6 = TCP, 17 = UDP).
+    \item \textbf{Header Checksum} (16 bit): controllo di errore sull'header.
+    \item \textbf{Source/Destination IP Address} (32 bit ciascuno): indirizzi del mittente e del destinatario.
+    \item \textbf{Options} (variabile): campi opzionali (es. timestamp, record route).
+    \item \textbf{Data} (payload): il segmento TCP/UDP o altro.
+\end{itemize}
+
+\subsection{Frammentazione IP}
+
+I link di rete hanno un \textbf{MTU (Maximum Transfer Unit)}: la dimensione massima del frame a livello data link. Se un datagramma IP è più grande dell'MTU del link attraversato, deve essere \textbf{frammentato}.
+
+La frammentazione funziona così:
+\begin{itemize}
+    \item Il datagramma viene diviso in frammenti più piccoli, ognuno con lo stesso campo \textbf{Identifier} del datagramma originale.
+    \item Il campo \textbf{Fragment Offset} indica la posizione del frammento nel datagramma originale (in unità di 8 byte).
+    \item Il \textbf{flag More Fragments (MF)}: impostato a 1 per tutti i frammenti tranne l'ultimo.
+    \item Il \textbf{destinatario finale} riassembla i frammenti nell'ordine corretto usando Identifier, Offset e MF.
+\end{itemize}
+
+\ex{Frammentazione di un datagramma}{
+    Datagramma di 4000 byte, MTU = 1500 byte. Serve frammentare in 3 frammenti:
+    \begin{center}
+    \begin{tabular}{|c|c|c|c|}
+    \hline
+    \textbf{Frammento} & \textbf{Lunghezza} & \textbf{Offset} & \textbf{MF} \\
+    \hline
+    1 & 1500 byte (20 hdr + 1480 dati) & 0 & 1 \\
+    2 & 1500 byte (20 hdr + 1480 dati) & 185 (= 1480/8) & 1 \\
+    3 & 1040 byte (20 hdr + 1020 dati) & 370 (= 2960/8) & 0 \\
+    \hline
+    \end{tabular}
+    \end{center}
+}
+
+\nt{In \textbf{IPv6} la frammentazione non è supportata dai router intermedi: se un datagramma è troppo grande, il router lo scarta e invia un ICMP \textit{Packet Too Big} alla sorgente, che deve ridurre la dimensione.}
+
+\subsection{Indirizzamento IPv4}
+
+\dfn{Indirizzo IP}{
+    Un identificatore a \textbf{32 bit} associato a un'interfaccia di rete (la connessione tra host/router e link fisico). Scritto in notazione decimale puntata: quattro ottetti separati da punti (es. \texttt{192.168.1.1}).
+}
+
+Un host ha tipicamente un'interfaccia; un router ne ha più d'una (una per ogni link cui è connesso).
+
+\paragraph{Subnet e CIDR}
+
+\dfn{Subnet (Sottorete)}{
+    Un insieme di interfacce di rete che possono raggiungersi fisicamente \textbf{senza passare per un router}. Gli indirizzi IP di una subnet condividono gli stessi bit di ordine superiore (il \textbf{prefisso di rete}).
+}
+
+\dfn{CIDR (Classless Inter-Domain Routing)}{
+    Notazione che indica il prefisso di rete come \texttt{a.b.c.d/x}, dove \texttt{x} è il numero di bit del prefisso. Es. \texttt{200.23.16.0/23}: i primi 23 bit identificano la rete, i restanti 9 identificano gli host.
+}
+
+\ex{Identificare le subnet}{
+    Data la topologia: tre router connessi tra loro e ognuno connesso a due host. Le subnet sono:
+    \begin{itemize}
+        \item Le tre reti che collegano ogni router ai propri host (3 subnet "normali")
+        \item Le tre reti "degeneri" che collegano coppie di router tra loro (totale: \textbf{6 subnet})
+    \end{itemize}
+}
+
+\paragraph{Indirizzi Speciali}
+\begin{itemize}
+    \item \textbf{Broadcast}: tutti i bit dell'host a 1 (es. \texttt{255.255.255.255} per broadcast globale, o \texttt{x.x.x.255} per broadcast di subnet).
+    \item \textbf{Network address}: tutti i bit dell'host a 0 (es. \texttt{192.168.1.0/24}).
+    \item \textbf{Loopback}: \texttt{127.0.0.1}.
+    \item \textbf{Indirizzi privati} (non routati su Internet): \texttt{10.0.0.0/8}, \texttt{172.16.0.0/12}, \texttt{192.168.0.0/16}.
+\end{itemize}
+
+\subsection{DHCP: Assegnazione Dinamica degli Indirizzi}
+
+\dfn{DHCP (Dynamic Host Configuration Protocol)}{
+    Un protocollo applicativo che permette a un host di ottenere un indirizzo IP \textbf{automaticamente} da un server DHCP quando si connette alla rete. L'indirizzo è assegnato in \textbf{lease} (affitto) per un certo periodo.
+}
+
+Il processo DHCP avviene in quattro passi (\textit{DORA}):
+\begin{enumerate}
+    \item \textbf{DHCP Discover}: il client invia in broadcast (\texttt{255.255.255.255}) una richiesta di configurazione.
+    \item \textbf{DHCP Offer}: il server DHCP risponde con un indirizzo IP disponibile, maschera di rete, default gateway, e indirizzo del server DNS.
+    \item \textbf{DHCP Request}: il client sceglie un'offerta e la conferma in broadcast.
+    \item \textbf{DHCP ACK}: il server conferma l'assegnazione.
+\end{enumerate}
+
+\nt{DHCP permette anche il \textbf{rilascio} dell'indirizzo quando l'host si disconnette. Possibile attacco: facendo spoofing del MAC address, un attaccante può apparire come una scheda di rete nuova e spammare richieste DHCP in broadcast fino a esaurire gli IP disponibili (\textit{DHCP starvation}). Può essere fermato solo tramite autenticazione.}
+
+\subsection{NAT: Network Address Translation}
+
+\dfn{NAT (Network Address Translation)}{
+    Una tecnica per cui un router di confine (tipicamente il router di casa/azienda) traduce gli indirizzi IP \textbf{privati} della rete interna in un unico indirizzo IP \textbf{pubblico} verso l'esterno, e viceversa. Permette a tutti i dispositivi di una rete privata di condividere un solo indirizzo IP pubblico.
+}
+
+Il NAT usa una \textbf{tabella di traduzione NAT} che mappa coppie (IP privato, porta) in coppie (IP pubblico, porta NAT):
+
+\ex{Funzionamento del NAT}{
+    Host interno con IP \texttt{10.0.0.1} porta 3345 vuole connettersi a \texttt{128.119.40.186:80}:
+    \begin{enumerate}
+        \item Il router NAT sostituisce l'indirizzo sorgente del datagramma: \texttt{10.0.0.1:3345} $\to$ \texttt{138.76.29.7:5001} (IP pubblico del router, porta assegnata).
+        \item La risposta arriva a \texttt{138.76.29.7:5001}; il router consulta la tabella NAT e traduce la destinazione in \texttt{10.0.0.1:3345}, consegnando il pacchetto all'host interno.
+    \end{enumerate}
+}
+
+\nt{Il NAT è controverso: viola il principio end-to-end di Internet (un router non dovrebbe modificare i pacchetti). Tuttavia risolve il problema dell'esaurimento degli indirizzi IPv4 e fornisce un certo grado di sicurezza (gli host interni non sono direttamente raggiungibili dall'esterno).}
+
+\subsection{IPv6}
+
+IPv6 è stato sviluppato per risolvere l'esaurimento degli indirizzi IPv4 e introduce diverse migliorie:
+
+\begin{itemize}
+    \item \textbf{Indirizzi a 128 bit}: spazio di indirizzamento enormemente più grande ($2^{128}$ indirizzi).
+    \item \textbf{Header fisso da 40 byte}: formato semplificato e fisso, più efficiente da processare.
+    \item \textbf{Nessuna frammentazione}: i router \textit{non} frammentano; se il pacchetto è troppo grande, lo scartano.
+    \item \textbf{Flow label}: campo che identifica un "flusso" di pacchetti (es. per QoS). Usato per la prioritizzazione del traffico.
+    \item \textbf{Etichetta di flusso}: indica già la porta di destinazione, dato che per ogni flusso il router IPv6 salva la porta in una tabella separata.
+    \item \textbf{Nessun checksum}: rimosso per velocizzare il processing (già presente nel livello trasporto e data link).
+    \item \textbf{Nessun campo Options nell'header fisso}: le opzioni sono gestite tramite header di estensione (next header chaining).
+\end{itemize}
+
+\paragraph{Tunneling IPv4-IPv6}
+La transizione da IPv4 a IPv6 avviene gradualmente. La tecnica del \textbf{tunneling} permette di far viaggiare datagrammi IPv6 all'interno di datagrammi IPv4 attraverso la rete legacy: il datagramma IPv6 viene incapsulato nel payload di un datagramma IPv4.
+
+\section{Forwarding Generalizzato e SDN}
+
+Mentre il forwarding tradizionale usa solo l'indirizzo di destinazione IP, il \textbf{forwarding generalizzato} (usato nelle reti SDN con OpenFlow) permette di prendere decisioni di forwarding basate su \textit{qualsiasi} combinazione di campi dell'header.
+
+\dfn{OpenFlow}{
+    Il protocollo più famoso per le reti SDN. Nelle SDN, ogni switch mantiene una \textbf{flow table} (tabella dei flussi) con regole del tipo \textbf{match + action}:
+    \begin{itemize}
+        \item \textbf{Match}: confronto su qualsiasi campo degli header (IP sorgente/destinazione, porta TCP/UDP, MAC address, VLAN tag, ecc.).
+        \item \textbf{Action}: cosa fare se c'è corrispondenza (forward su una porta, drop, modify header, send to controller, ecc.).
+        \item \textbf{Counter}: contatori per statistiche di prestazione (numero di pacchetti, byte, ecc.).
+    \end{itemize}
+}
+
+\ex{Esempi di match+action in OpenFlow}{
+    \begin{itemize}
+        \item \textbf{Routing tradizionale}: match su IP destinazione $\to$ forward sulla porta corretta.
+        \item \textbf{Firewall}: match su IP sorgente/destinazione e porta $\to$ drop (scarta) o allow.
+        \item \textbf{NAT}: match su IP sorgente e porta $\to$ modify (riscrive) IP e porta.
+        \item \textbf{Load balancing}: match su IP destinazione $\to$ forward su una delle porte di uscita (distribuzione del carico).
+    \end{itemize}
+    Il software indirizza il pacchetto nella porta giusta — è il software a fare il forwarding in SDN.
+}
+
+\nt{Il forwarding generalizzato permette di implementare in un unico paradigma funzionalità che tradizionalmente richiedevano dispositivi separati: router, firewall, load balancer, NAT. Questo è il vantaggio principale delle reti SDN.}
+
+% ---
+
 \chapter{Il Livello Rete: Il Piano di Controllo (Control Plane)}
 Dopo aver analizzato il \textit{data plane}, ovvero come un router inoltra i pacchetti basandosi su una tabella di forwarding, esploriamo ora il \textit{control plane}. Il suo compito è determinare come vengono costruite e aggiornate queste tabelle. È qui che risiede l'intelligenza della rete, incarnata dagli algoritmi di routing.
 
