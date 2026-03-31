@@ -644,32 +644,35 @@ dato che $ \alpha \in \mathcal{C}(G) $. Dato che possiamo trattare la rapresenta
 I caratteri $\chi_{V_1}, \ldots, \chi_{V_r}$ delle rappresentazioni irriducibili (a meno di iso.) formano una base ortonormale di $\mathcal{C}(G)$.
 }
 \pf{Dimostrazione}{
-  Sappiamo gia' che i caratteri sono ortogonali (e quindi lin. ind.).
+  Sappiamo gia' che i caratteri sono ortonormali (e quindi lin. ind.).
 
-  Dobbiamo provare che generino $\mathcal{C}(G)$: dobbiamo mostrare che se $\alpha \in \mathcal{C}(G)$ soddisfa $\langle \alpha, \chi_{V_i}\rangle = 0$ per ogni $i$, allora $\alpha = 0$.
+  Dobbiamo provare che generino $\mathcal{C}(G)$: mostriamo che se $\alpha \in \mathcal{C}(G)$ soddisfa $\langle \alpha, \chi_{V_i}\rangle = 0$ per ogni $i$, allora $\alpha = 0$.
 
-Per ogni irriducibile $V_i$, possiamo costruire il morfismo di rappresentazioni $ \psi_{\alpha, V_i}: V_i \to V_i $, che per il Lemma di Shur e' un omotetia
-\[
-\psi_{\alpha, V_i} = \lambda id
-\]
-Quindi sappiamo che la traccia di $ \psi_{\alpha, V_i} $ e'
-\[
-  \lambda \cdot dim V_i = \sum_{g\in G} \alpha(g)\chi_{V_i}(g) = |G|\langle \alpha, \chi_{V_i}\rangle
-\]
-Che per ipotesi pero' e' zero. Cio' implica che $ \lambda = 0 $, e quindi che $ \psi_{\alpha, V_i} = 0 $ per ogni $ V_i $ irriducibile.\\
+  Per ogni irriducibile $V_i$, costruiamo l'operatore $ \psi_{\alpha, V_i}: V_i \to V_i $ definito prima. Per il Lemma e' un morfismo di rappresentazioni, e per Schur e' un'omotetia:
+  \[
+    \psi_{\alpha, V_i} = \lambda \cdot \mathrm{Id}_{V_i}
+  \]
 
-Ma cio' significa che per qualsiasi rappresentazione $ V $ si ha che
-\[
-\psi_{\alpha, V} = 0
-\]
-dato che $ \psi_{\alpha, V \oplus W} = \psi_{\alpha, V} \oplus \psi_{\alpha, W} $. In particolare
-\[
-  0 = \psi_{\alpha, \mathbb{C}[G]}(1_G) = \sum_{g \in G} \alpha(g)\rho_{reg}(g)1_G = \sum_{g \in G} \alpha(g)\rho_{reg}(g)
-\]
-quindi, dato che gli elementi di $ G $ formano una base, per essere 0 allora $ \forall g \in G. \alpha(g) = 0 $, ovvero
-\[
-\alpha = 0
-\]
+  Calcoliamo la traccia di $ \psi_{\alpha, V_i} $ in due modi:
+  \begin{itemize}
+    \item Da un lato: $ \mathrm{tr}(\psi_{\alpha, V_i}) = \lambda \cdot \dim V_i $.
+    \item Dall'altro: $ \mathrm{tr}(\psi_{\alpha, V_i}) = \sum_{g \in G} \alpha(g) \chi_{V_i}(g) $.
+  \end{itemize}
+  Riscriviamo la somma usando la rappresentazione duale: poiche' $ \chi_{V_i}(g) = \overline{\chi_{V_i^*}(g)} $, si ha
+  \[
+    \sum_{g \in G} \alpha(g) \chi_{V_i}(g) = \sum_{g \in G} \alpha(g) \overline{\chi_{V_i^*}(g)} = |G| \langle \alpha, \chi_{V_i^*} \rangle
+  \]
+  Dato che $ V_i $ e' irriducibile, anche $ V_i^* $ lo e' (perche' $ \langle \chi_{V_i^*}, \chi_{V_i^*} \rangle = \langle \chi_{V_i}, \chi_{V_i} \rangle = 1 $). Quindi per ipotesi $ \langle \alpha, \chi_{V_i^*} \rangle = 0 $, da cui:
+  \[
+    \lambda \cdot \dim V_i = 0 \implies \lambda = 0
+  \]
+  e quindi $ \psi_{\alpha, V_i} = 0 $ per ogni $ V_i $ irriducibile.
+
+  Dato che $ \psi_{\alpha, V \oplus W} = \psi_{\alpha, V} \oplus \psi_{\alpha, W} $ e ogni rappresentazione si decompone in somma diretta di irriducibili, si ha $ \psi_{\alpha, V} = 0 $ per qualsiasi rappresentazione $ V $. Applichiamo alla rappresentazione regolare $ \mathbb{C}[G] $ e valutiamo sull'elemento identita' $ 1_G $:
+  \[
+    0 = \psi_{\alpha, \mathbb{C}[G]}(1_G) = \sum_{g \in G} \alpha(g)\rho_{\mathrm{reg}}(g)(1_G) = \sum_{g \in G} \alpha(g) \cdot g
+  \]
+  Dato che gli elementi di $ G $ formano una base di $ \mathbb{C}[G] $, tutti i coefficienti devono essere nulli: $ \alpha(g) = 0 $ per ogni $ g \in G $, cioe' $ \alpha = 0 $.
 }
 
 \cor{Numero di Irriducibili}{
