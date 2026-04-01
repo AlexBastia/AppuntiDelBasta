@@ -1,3 +1,255 @@
-% \begin{document}
-\chapter{Complessita Strutturale}
-% \end{document}
+\chapter{Complessità Strutturale}
+
+Finora abbiamo studiato le classi $RE$ e $R$, occupandoci di stabilire se un problema fosse decidibile o meno. D'ora in poi ci concentreremo esclusivamente sui problemi $\in R$, ovvero sui problemi \textit{decidibili}, e ci chiederemo quanto siano \textit{difficili} tra loro.
+
+Questa area di ricerca nasce da una questione storica e tecnologica: negli anni '30, con Turing, tutto era molto astratto. La domanda era ``se mai fossi in grado di costruire questa macchina, che problemi sarebbe in grado di risolvere?''. Quando nei primi anni '60 le macchine reali arrivarono, la gente si trovava lì ad aspettare le risposte e si rese conto che certi problemi richiedevano molto più tempo di altri. Nacque allora la domanda fondamentale:
+
+\begin{center}
+\textit{``L'algoritmo che ho è lento perché non sono furbo a sufficienza, o il problema è talmente complicato che non riuscirò mai ad avere un algoritmo veloce?''}
+\end{center}
+
+Questo fu formalizzato da \textbf{Hartmanis, Stearns e Lewis nel 1965}, introducendo i concetti di \textbf{complessità temporale} e \textbf{complessità spaziale}. Lo studio si chiama \textbf{complessità strutturale} perché si vuole occupare della struttura dei problemi:
+
+\begin{center}
+\textit{``Com'è che la struttura di un problema influenza la complessità degli algoritmi che lo risolvono?''}
+\end{center}
+
+L'oggetto di interesse non è la complessità di un algoritmo specifico (come nel corso di Algoritmi e Strutture Dati), bensì la complessità \textit{intrinseca del problema}, indipendentemente dall'algoritmo scelto:
+
+\begin{center}
+\textit{Dato un problema, stabilire la famiglia di problemi di complessità simile a cui appartiene.}
+\end{center}
+
+\section{Definizioni di Complessità Temporale}
+
+Ci focalizzeremo sull'insieme dei problemi decidibili. L'obiettivo è arricchire la struttura di $R$ identificando al suo interno classi di linguaggi di difficoltà differente.
+
+\dfn{Computation Time}{
+  Si definisce \textit{computation time} di una MdT $M$ su input $w$ il numero di passi che $M$ esegue prima di arrestarsi su $w$.\\
+  Se $M$ è non deterministica, il computation time è dato dalla lunghezza del \textit{branch di computazione più lungo} nell'albero delle computazioni.
+}
+
+\dfn{Time Function}{
+  Si definisce \textit{time function} una funzione $t : \mathbb{N} \to \mathbb{N}$ tale che $t(n)$ è non decrescente e strettamente positiva.
+}
+
+\dfn{Running Time}{
+  Sia $t(n)$ una time function. Si definisce il \textit{running time} di una MdT $M$ pari a $t(n)$ se per tutte le stringhe $w$, a parte un numero finito, il computation time di $M$ su $w$ non eccede $t(\|w\|)$.
+}
+
+\nt{
+  L'eccezione per un numero finito di stringhe serve a non far dipendere la definizione da casi limite irrilevanti: ci interessa il comportamento asintotico, non gli outlier.
+}
+
+\subsection{Notazione Asintotica}
+
+\dfn{Big O}{
+  Si definisce \textit{Big O}: una funzione $f(n) \in O(g(n))$ per un'altra funzione $g(n)$ se:
+  \[
+    \exists\, c, n_0 \;:\; \forall n \geq n_0,\quad f(n) \leq c \cdot g(n)
+  \]
+  Rappresenta un \textit{limite asintotico superiore}.
+}
+
+\dfn{Big $\Omega$}{
+  Si definisce \textit{Big Omega}: una funzione $f(n) \in \Omega(g(n))$ per un'altra funzione $g(n)$ se:
+  \[
+    \exists\, c, n_0 \;:\; \forall n \geq n_0,\quad f(n) \geq c \cdot g(n)
+  \]
+  Rappresenta un \textit{limite asintotico inferiore}.
+}
+
+\dfn{Big $\Theta$}{
+  Si definisce \textit{Big Theta}: una funzione $f(n) \in \Theta(g(n))$ se $f(n) \in O(g(n))$ e $f(n) \in \Omega(g(n))$ simultaneamente. Rappresenta un \textit{limite asintotico stretto}.
+}
+
+\subsection{Complessità di un Problema}
+
+Attraverso la notazione asintotica introduciamo il concetto centrale di complessità di un \textit{problema}, distinguendola dalla complessità di un algoritmo specifico.
+
+\dfn{Time Complexity Upper Bound}{
+  Si definisce il \textit{time complexity upper bound} di un problema $P$ pari a $O(f(n))$ (dove $f(n)$ è una time function) se esiste almeno una MdT che risolve $P$ con un running time che è $O(f(n))$.
+}
+
+\dfn{Time Complexity Lower Bound}{
+  Si definisce il \textit{time complexity lower bound} di un problema $P$ pari a $\Omega(f(n))$ (dove $f(n)$ è una time function) se \textbf{tutti} gli algoritmi o tutte le MdT che risolvono $P$ hanno un running time che è $\Omega(f(n))$.
+}
+
+\nt{
+  Questa è la distinzione concettuale più importante del capitolo. Il lower bound dice che nessun algoritmo, presente o futuro, potrà mai fare meglio di così. L'upper bound dice che esiste almeno un algoritmo che fa così bene. Quando i due limiti coincidono, conosciamo la complessità \textit{esatta} del problema.
+}
+
+\[
+  \Rightarrow \text{la complessità temporale di un problema è legata alla complessità temp. degli algoritmi che lo risolvono.}
+\]
+
+\section{Classe DTime e la Classe P}
+
+\dfn{Classe di Complessità Temporale DTime}{
+  Sia $t(n)$ una time function. Si definisce la classe di complessità temporale deterministica:
+  \[
+    DTime(t(n)) = \left\{ L \;\middle|\; \exists\, M \text{ deterministica che \underline{decide} } L \text{ in tempo } O(t(n)) \right\}
+  \]
+}
+
+\dfn{Classe P}{
+  Si definisce la classe \textit{P} (Polynomial Time) come l'unione di tutte le classi $DTime$ con limite temporale polinomiale:
+  \[
+    P = \bigcup_{c \geq 1} DTime(n^c)
+  \]
+  $P$ identifica i problemi \textit{trattabili}: risolvibili in tempo polinomiale deterministico.
+}
+
+\nt{
+  $P$ contiene solo \textit{problemi di decisione} (risposta sì/no). Conseguentemente, ``ordinare un array'' o ``sommare due numeri'' non sono elementi di $P$ in senso formale, perché non sono problemi di decisione. Le loro versioni decisionali (``esiste un elemento $> k$?'') invece appartengono a $P$.
+
+  Inoltre, $P$ è \textbf{invariante rispetto ai modelli di calcolo deterministici ragionevoli}: simulare un modello avanzato su una MdT a nastro singolo, oppure su un computer RAM convenzionale, produce al massimo un incremento polinomiale nel tempo, assorbito dalla definizione stessa di $P$.
+}
+
+\subsection{Esempi in P}
+
+\subsubsection{Reachability}
+
+\[
+  Reach = \left\{ \langle G, s, t \rangle \;\middle|\;
+  \begin{array}{l}
+    G \text{ è un grafo diretto,} \\
+    s, t \text{ sono nodi } \in G, \\
+    \exists \text{ un percorso da } s \text{ a } t \in G
+  \end{array}
+  \right\}
+\]
+
+$Reach \in P$: è sufficiente una BFS/DFS a partire da $s$. L'algoritmo visita ogni nodo al più una volta, con costo $O(n^2)$ nella taglia del grafo.
+
+\subsubsection{Primes}
+
+\[
+  Primes = \{ n \mid n \text{ è un numero primo} \}
+\]
+
+L'algoritmo \textit{naive} — dividere $n$ per $2, 3, \ldots, n-1$ — sembra $O(n)$ divisioni, ma bisogna stare attenti a cosa intendiamo per ``taglia dell'input''. L'input è $n$ rappresentato in \textbf{binario}: ha taglia $\|n\| = \log_2 n$ bit. Quindi il valore $n \approx 2^{\|n\|}$, e il numero di divisioni è $O(2^{\|n\|})$: \textbf{esponenziale nella taglia dell'input}.
+
+\[
+  n \approx 2^{\|n\|} \implies \text{algoritmo naive}: O\!\left(2^{\|n\|} \cdot \|n\|^k\right)
+\]
+
+Nonostante questo, $Primes \in P$ dagli inizi del 2000: Agrawal, Kayal e Saxena (algoritmo \textbf{AKS}) hanno dimostrato l'esistenza di un algoritmo deterministico polinomiale, con complessità $O(n^6)$ nella taglia dell'input. Fu un risultato storico e sorprendente, atteso per decenni.
+
+\ex{}{
+  Il numero $N = 1.000.000$ richiede circa $\log_2(10^6) \approx 20$ bit per essere rappresentato. L'algoritmo naive compie $\approx 10^6 = 2^{20}$ divisioni: raddoppiare la taglia dell'input (da 10 a 20 bit) fa esplodere il numero di operazioni da $10^3$ a $10^6$. Questa è la definizione di crescita esponenziale rispetto alla taglia.
+}
+
+\section{Classe NTime e la Classe NP}
+
+I seguenti due problemi resistono ad algoritmi polinomiali deterministici e motivano la definizione di una nuova classe.
+
+\subsection{SAT (Soddisfacibilità Booleana)}
+
+Ci interessano formule in \textbf{Forma Normale Congiuntiva (CNF)}: una congiunzione di clausole, dove ogni clausola è una disgiunzione di letterali.
+
+\[
+  \mathcal{C} = c_1 \wedge c_2 \wedge \cdots \wedge c_n, \qquad
+  c_i = l_1 \vee l_2 \vee \cdots \vee l_m, \qquad
+  l_j = x_k \;\text{ oppure }\; \neg x_k
+\]
+
+\ex{}{
+  \[
+    \mathcal{C} = (x_1 \vee x_2 \vee \neg x_3) \wedge (\neg x_2 \vee x_4) \wedge (\neg x_3 \vee x_5 \vee \neg x_6)
+  \]
+  Con l'assegnamento $x_1 = V,\; x_2 = F,\; x_5 = V$, la formula è soddisfatta.
+}
+
+\[
+  Sat = \left\{ \varphi \;\middle|\; \varphi \text{ è in CNF e soddisfacibile} \right\}
+\]
+
+Dato un assegnamento in mano, verificare se soddisfa la formula costa tempo polinomiale: si scorrono tutte le clausole e si controlla che almeno un letterale per clausola sia vero.
+
+Il problema è \textit{trovare} quell'assegnamento: con $n$ variabili ci sono $2^n$ assegnamenti possibili. Testarli tutti costa:
+\[
+  O\!\left(2^n \cdot \mathrm{poly}(\|\varphi\|)\right)
+\]
+Tempo esponenziale. Da ciò non possiamo concludere che $Sat \notin P$, semplicemente questo algoritmo non lo colloca in $P$.
+
+\subsection{Independent Set}
+
+\dfn{Independent Set}{
+  Si definisce \textit{independent set} di un grafo $G$ un insieme $S$ di nodi tale che nessuna coppia di nodi in $S$ è collegata da un arco.
+}
+
+\[
+  IS = \left\{ \langle G, k \rangle \;\middle|\; \exists \text{ un independent set di taglia } k \in G \right\}
+\]
+
+Dato un insieme $S$, verificare che sia un IS richiede tempo quadratico (si controllano tutte le coppie). Trovarlo richiede generare tutti i $\binom{n}{k}$ sottoinsiemi di taglia $k$:
+\[
+  \binom{n}{k} \cdot O(n^2) \quad \Rightarrow \text{ esponenziale}
+\]
+
+\subsection{L'intuizione non deterministica}
+
+SAT e IS condividono un pattern:
+\begin{enumerate}
+  \item La difficoltà sta nel \textit{trovare} la soluzione (assegnamento, sottoinsieme).
+  \item Una volta trovata, \textit{verificarla} è facile (polinomiale).
+\end{enumerate}
+
+Una \textbf{MdT non deterministica} sfrutta esattamente questo: invece di esplorare tutto lo spazio delle soluzioni, \textit{indovina} la soluzione giusta e poi la verifica. La macchina accetta se \textit{esiste almeno un ramo} dell'albero di computazione che accetta.
+
+\ex{IS su MdT non deterministica}{
+  \begin{enumerate}
+    \item \textbf{Fase di guess}: per ogni nodo, la MdT ND sceglie non deterministicamente se includerlo in $S$ o meno. Costo $O(n)$.
+    \item \textbf{Fase di check}: verifica che $|S| = k$ e che nessun arco colleghi due nodi in $S$. Costo $O(n^2)$.
+  \end{enumerate}
+  Complessivamente: tempo \textbf{polinomiale non deterministico}. Similmente per SAT: la MdT indovina un assegnamento in $O(n)$ e lo verifica in $O(\|\varphi\|)$.
+}
+
+\dfn{Classe di Complessità NTime}{
+  Sia $t(n)$ una time function. Si definisce la classe di complessità temporale non deterministica:
+  \[
+    NTime(t(n)) = \left\{ L \;\middle|\; \exists\, M \text{ non deterministica che decide } L \text{ in tempo } O(t(n)) \right\}
+  \]
+}
+
+\dfn{Classe NP}{
+  Si definisce la classe \textit{NP} (Non-deterministic Polynomial Time) come:
+  \[
+    NP = \bigcup_{c \geq 1} NTime(n^c)
+  \]
+  $NP$ è la classe dei problemi la cui soluzione può essere \textbf{verificata} in tempo polinomiale, equivalentemente dei problemi \textbf{risolti} in tempo polinomiale non deterministico.
+}
+
+\nt{
+  Dire che un problema è in $NP$ \textbf{non} significa che si riesce a risolverlo velocemente: significa che se qualcuno ci regala la soluzione (il \textit{certificato}), possiamo verificarla in tempo polinomiale. È questa l'intuizione del pattern \textit{Guess \& Check}.
+}
+
+\section{La Questione P vs NP}
+
+Chiaramente $P \subseteq NP$: qualsiasi problema risolvibile deterministicamente in tempo polinomiale può anche essere verificato in tempo polinomiale. La domanda aperta fondamentale è:
+
+\[
+  \boxed{P \overset{?}{=} NP}
+\]
+
+Ovvero: ogni problema la cui soluzione è facilmente \textit{verificabile} è anche facilmente \textit{trovabile}? La risposta è quasi certamente no, ma non è mai stata dimostrata. È uno dei sette Millennium Prize Problems (Clay Mathematics Institute, 2000).
+
+\nt{
+  Un teorema centrale in questa direzione è il risultato di \textbf{Baker, Gill e Solovay (1975)}: esistono due oracoli $A$ e $B$ tali che $P^A = NP^A$ ma $P^B \neq NP^B$. Questo dimostra che qualsiasi tecnica di dimostrazione \textit{relativizzante} (come la diagonalizzazione pura) non potrà mai risolvere la questione P vs NP, poiché qualunque risultato ottenuto con tali tecniche dovrebbe valere per entrambi gli oracoli simultaneamente.
+}
+
+\begin{center}
+\begin{tikzpicture}
+  \draw[thick] (0,0) ellipse (3.5cm and 2.2cm);
+  \node[above] at (0, 2.2) {$R$};
+  \draw[thick] (0,-0.2) ellipse (2.4cm and 1.5cm);
+  \node[above] at (0, 1.3) {$NP$};
+  \draw[thick] (0,-0.3) ellipse (1.2cm and 0.8cm);
+  \node at (0,-0.3) {$P$};
+  \node[font=\small] at (-2.8, 0.6) {problemi};
+  \node[font=\small] at (-2.8, 0.1) {indecidibili};
+  \node[font=\small] at (1.8, 1.1) {$SAT$};
+  \node[font=\small] at (1.8, 0.5) {$IS$};
+\end{tikzpicture}
+\end{center}
