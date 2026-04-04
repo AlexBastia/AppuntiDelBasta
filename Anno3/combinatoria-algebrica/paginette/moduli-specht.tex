@@ -471,6 +471,240 @@ I vettori $v_T, v_{T'}$ sono linearmente indipendenti e formano la base standard
   Determinare $ S^{\lambda} $, dove $ \lambda \vdash 4 $.
 }
 
+% ============================================================
+\section{Dimostrazione del Teorema della Base Standard}
+% ============================================================
+
+La dimostrazione si articola in due parti: prima mostriamo che i vettori di Specht $\{v_T \mid T \in \mathrm{SYT}(\lambda)\}$ sono linearmente indipendenti (dunque $\dim S^\lambda \geq f^\lambda$), poi con un argomento di conteggio concludiamo che $\dim S^\lambda = f^\lambda$.
+
+\subsection{Composizioni deboli e ordine di dominanza}
+
+\dfn{Composizione debole}{
+  Una \textbf{composizione debole} (weak composition) di $n$ in $k$ parti è un vettore $\alpha = (\alpha_1, \ldots, \alpha_k) \in \mathbb{N}^k$ tale che $\alpha_1 + \cdots + \alpha_k = n$. Poniamo $\alpha_j = 0$ per $j > \ell(\alpha)$.
+}
+
+\ex{}{
+  Le composizioni deboli di $3$ in $2$ parti sono: $(3,0)$, $(2,1)$, $(1,2)$, $(0,3)$.
+}
+
+\dfn{Ordine di dominanza}{
+  Date due composizioni deboli $\alpha, \beta$, si dice che $\alpha \leq \beta$ nell'ordine di dominanza se
+  \[
+    \alpha_1 + \alpha_2 + \cdots + \alpha_i \leq \beta_1 + \beta_2 + \cdots + \beta_i \qquad \forall\, i
+  \]
+}
+
+\subsection{Tabloid parziali e forma}
+
+\dfn{Tabloid parziale}{
+  Sia $\{T\}$ un tabloide di forma $\lambda \vdash n$ e sia $T$ l'unico tableau iniettivo in $\{T\}$ con righe crescenti da sinistra a destra. Il \textbf{tabloid parziale} $\{T\}^i$ è il tabloide parziale ottenuto da $T$ rimuovendo tutte le entrate $j > i$.
+}
+
+\dfn{Forma di un tabloid}{
+  La \textbf{forma} $\mathrm{sh}(\{T\})$ di un tabloide $\{T\}$ è la sequenza di composizioni deboli:
+  \[
+    \mathrm{sh}(\{T\}) := \big(\mathrm{sh}(\{T\}^0),\, \mathrm{sh}(\{T\}^1),\, \ldots,\, \mathrm{sh}(\{T\}^n)\big)
+  \]
+  dove $\mathrm{sh}(\{T\}^i)$ è la composizione debole che conta quante entrate $\leq i$ compaiono in ciascuna riga.
+}
+
+\ex{}{
+  Sia $\lambda = (2,2)$ e
+  \begin{center}
+    $T = $\begin{ytableau}
+      1 & 2\\
+      3 & 4
+    \end{ytableau}
+  \end{center}
+  I tabloid parziali sono:
+  \begin{center}
+    $\{T\} = $\begin{ytableau}
+      1 & 2\\
+      3 & 4
+    \end{ytableau}\quad
+    $\{T\}^1 = $\begin{ytableau}
+      1 & \none\\
+      \none & \none
+    \end{ytableau}\quad
+    $\{T\}^2 = $\begin{ytableau}
+      1 & 2\\
+      \none & \none
+    \end{ytableau}\quad
+    $\{T\}^3 = $\begin{ytableau}
+      1 & 2\\
+      3 & \none
+    \end{ytableau}\quad
+    $\{T\}^4 = $\begin{ytableau}
+      1 & 2\\
+      3 & 4
+    \end{ytableau}
+  \end{center}
+  Le forme (composizioni deboli) sono rispettivamente $(0,0)$, $(0,1)$, $(0,2)$, $(1,2)$, $(2,2)$.
+
+  Quindi $\mathrm{sh}(\{T\}) = \big((0,0),\, (0,1),\, (0,2),\, (1,2),\, (2,2)\big)$.
+}
+
+\dfn{Ordine sui tabloidi}{
+  Dati due tabloidi $\{T\}$ e $\{T'\}$ della stessa forma $\lambda$, si dice $\{T\} \leq \{T'\}$ se
+  \[
+    \mathrm{sh}(\{T\}^i) \leq \mathrm{sh}(\{T'\}^i) \qquad \forall\, i
+  \]
+  nell'ordine di dominanza.
+}
+
+\subsection{Lemma sull'ordine e il gruppo di colonna}
+
+\mlenma{}{
+  Sia $T$ un SYT e sia $q \in C(T)$, $q \neq \mathrm{id}$. Allora $\{T\} \not\leq \{qT\}$ nell'ordine sui tabloidi.
+}
+
+\pf{Dimostrazione}{
+  Sia $q \in C(T)$ con $q \neq \mathrm{id}$. Allora $q$ sposta almeno un'entrata verso l'alto nella sua colonna (dato che $T$ è SYT, le colonne sono crescenti dall'alto verso il basso). L'entrata spostata verso l'alto va in una riga con indice minore, il che fa diminuire le somme parziali in almeno una componente della forma di $\{qT\}$. Quindi esiste un $i$ tale che $\mathrm{sh}(\{T\}^i) \not\leq \mathrm{sh}(\{qT\}^i)$, da cui $\{T\} \not\leq \{qT\}$.
+}
+
+\subsection{Indipendenza lineare dei vettori di Specht}
+
+\mprop{}{
+  L'insieme $\{v_T \mid T \in \mathrm{SYT}(\lambda)\}$ è linearmente indipendente in $M^\lambda$.
+}
+
+\pf{Dimostrazione}{
+  Supponiamo per assurdo che $\sum_{T \in \mathrm{SYT}(\lambda)} \gamma_T\, v_T = 0$ con $\gamma_T \in \mathbb{C}$ non tutti nulli. Tra tutti i tableau standard con $\gamma_T \neq 0$, scegliamo $\overline{T}$ tale che il tabloide $\{\overline{T}\}$ sia \textbf{massimale} nell'ordine parziale sui tabloidi.
+
+  Osserviamo che il tabloide $\{\overline{T}\}$ compare nell'espansione
+  \[
+    v_{\overline{T}} = \sum_{q \in C(\overline{T})} \mathrm{sgn}(q)\, \{q\overline{T}\}
+  \]
+  \textit{solo} con il termine $q = \mathrm{id}$ (coefficiente $+1$). Infatti, per ogni $q \in C(\overline{T})$ con $q \neq \mathrm{id}$, il Lemma garantisce $\{\overline{T}\} \not\leq \{q\overline{T}\}$, quindi i tabloidi $\{q\overline{T}\}$ sono tutti diversi da $\{\overline{T}\}$.
+
+  Affinche' la somma totale faccia zero, il termine $\{\overline{T}\}$ deve essere cancellato dall'espansione di un altro vettore $v_{\widetilde{T}}$ con $\gamma_{\widetilde{T}} \neq 0$. Poiche' tableau standard distinti producono tabloidi distinti, $\{\overline{T}\}$ puo' emergere da $v_{\widetilde{T}}$ solo come termine permutato, cioe' deve valere $\{\overline{T}\} = \{\widetilde{q}\widetilde{T}\}$ per qualche $\widetilde{q} \in C(\widetilde{T})$ con $\widetilde{q} \neq \mathrm{id}$.
+
+  Ma applicando il Lemma a $\widetilde{T}$, si ha $\{\widetilde{T}\} \not\leq \{\widetilde{q}\widetilde{T}\} = \{\overline{T}\}$, cioe' $\{\widetilde{T}\} \not\leq \{\overline{T}\}$. Questo contraddice la massimalita' di $\{\overline{T}\}$, perche' $\widetilde{T}$ ha coefficiente non nullo ma il suo tabloide non e' dominato da $\{\overline{T}\}$.
+
+  Quindi nessun altro vettore puo' cancellare il termine $\{\overline{T}\}$: nella combinazione lineare $\sum \gamma_T v_T = 0$, il tabloide $\{\overline{T}\}$ compare con coefficiente $\gamma_{\overline{T}} \neq 0$. Ma i tabloidi sono base di $M^\lambda$, quindi linearmente indipendenti: contraddizione.
+}
+
+\subsection{Argomento di conteggio}
+
+Per concludere la dimostrazione del teorema, serve mostrare che $\dim S^\lambda = f^\lambda$. L'indipendenza lineare da' $\dim S^\lambda \geq f^\lambda$. Il verso opposto segue da un argomento di conteggio.
+
+\mlenma{Young}{
+  Sia $\mu \vdash n$ e sia $f^\mu = \#\{\text{SYT di forma } \mu\}$. Denotiamo con $\nu \to \mu$ il fatto che $\nu$ si ottiene da $\mu$ rimuovendo una cella, e con $\lambda \leftarrow \mu$ il fatto che $\lambda$ si ottiene da $\mu$ aggiungendo una cella.
+  \begin{center}
+    $\nu \to \mu$:\quad
+    \begin{ytableau}
+      {} & {}\\
+      {} & {} & {}
+    \end{ytableau}
+    $\;\to\;$
+    \begin{ytableau}
+      {} & {} & {}\\
+      {} & {} & {}
+    \end{ytableau}
+    \qquad\qquad
+    $\lambda \leftarrow \mu$:\quad
+    \begin{ytableau}
+      {} & {} & {}\\
+      {} & {} & {}
+    \end{ytableau}
+    $\;\leftarrow\;$
+    \begin{ytableau}
+      {} & {}\\
+      {} & {} & {}
+    \end{ytableau}
+  \end{center}
+  Allora valgono le seguenti identita':
+  \begin{enumerate}
+    \item \textbf{Regola di discesa:} $\displaystyle\sum_{\nu \to \mu} f^\nu = f^\mu$
+    \item \textbf{Regola di salita:} $\displaystyle\sum_{\lambda \leftarrow \mu} f^\lambda = (n+1)\, f^\mu$
+    \item \textbf{Identita' delle dimensioni:} $\displaystyle\sum_{\lambda \vdash n} (f^\lambda)^2 = n!$
+  \end{enumerate}
+}
+
+\pf{Dimostrazione}{
+  \textbf{Regola di discesa (1).}
+  In un qualsiasi SYT di forma $\mu$, l'elemento massimo $n$ si trova necessariamente in una cella rimovibile (un angolo esterno del diagramma). Rimuovendo la cella occupata da $n$, si ottiene un SYT valido di dimensione $n-1$ di forma $\nu \to \mu$. Questo definisce una biiezione
+  \[
+    \{\text{SYT di forma } \mu\} \longrightarrow \bigsqcup_{\nu \to \mu} \{\text{SYT di forma } \nu\}
+  \]
+  da cui $f^\mu = \sum_{\nu \to \mu} f^\nu$.
+
+  \begin{center}
+    $\mu = (2,1)$:\quad
+    \begin{ytableau}
+      2\\
+      1 & 3
+    \end{ytableau}
+    $\;\longrightarrow\;$
+    \begin{ytableau}
+      2\\
+      1 & \none
+    \end{ytableau}\quad ($\nu = (1,1)$)
+  \end{center}
+
+  \textbf{Regola di salita (2).}
+    Per induzione su $n$. Il caso base $n = 1$ è immediato.
+
+  Sia $n \geq 2$ e supponiamo per ipotesi induttiva che per ogni $\nu \vdash n-1$ valga
+  \[
+    \sum_{\lambda \leftarrow \nu} f^\lambda = n \cdot f^\nu.
+  \]
+  Vogliamo mostrare che $\sum_{\lambda \leftarrow \mu} f^\lambda = (n+1) f^\mu$ per $\mu \vdash n$.
+
+  Scriviamo $(n+1)f^\mu = f^\mu + n \cdot f^\mu$ e applichiamo la regola di discesa al primo addendo e poi al secondo:
+  \[
+    (n+1)f^\mu = \sum_{\nu \to \mu} f^\nu + n \sum_{\nu \to \mu} f^\nu = \sum_{\nu \to \mu} f^\nu + \sum_{\nu \to \mu} \sum_{\lambda \leftarrow \nu} f^\lambda
+  \]
+  dove nell'ultimo passaggio abbiamo usato l'ipotesi induttiva $n \cdot f^\nu = \sum_{\lambda \leftarrow \nu} f^\lambda$ su ogni termine.
+
+  Lavoriamo ora sulla doppia somma. Per ogni $\nu \to \mu$, tra le partizioni $\lambda \leftarrow \nu$ ce n'è esattamente una uguale a $\mu$ (quella che si ottiene rimettendo la stessa cella che era stata tolta). Separiamo quindi i termini $\lambda = \mu$ dai termini $\lambda \neq \mu$:
+  \[
+    \sum_{\nu \to \mu} \sum_{\lambda \leftarrow \nu} f^\lambda = \sum_{\nu \to \mu} f^\mu + \sum_{\nu \to \mu} \sum_{\substack{\lambda \leftarrow \nu \\ \lambda \neq \mu}} f^\lambda = r \cdot f^\mu + \sum_{\nu \to \mu} \sum_{\substack{\lambda \leftarrow \nu \\ \lambda \neq \mu}} f^\lambda
+  \]
+  dove $r$ è il numero di celle rimovibili di $\mu$. Sostituendo:
+  \[
+    (n+1)f^\mu = \sum_{\nu \to \mu} f^\nu + r \cdot f^\mu + \sum_{\nu \to \mu} \sum_{\substack{\lambda \leftarrow \nu \\ \lambda \neq \mu}} f^\lambda.
+  \]
+
+  Osserviamo ora che la doppia somma conta coppie $(\nu, \lambda)$ con $\nu \to \mu$, $\lambda \leftarrow \nu$, $\lambda \neq \mu$: si toglie una cella da $\mu$ per ottenere $\nu$, poi se ne aggiunge una diversa per ottenere $\lambda \neq \mu$. Questo è equivalente ad aggiungere prima una cella a $\mu$ per ottenere $\lambda \leftarrow \mu$, poi togliere una cella diversa per ottenere $\nu \neq \mu$. Scambiando l'ordine di sommazione:
+  \[
+    \sum_{\nu \to \mu} \sum_{\substack{\lambda \leftarrow \nu \\ \lambda \neq \mu}} f^\lambda = \sum_{\lambda \leftarrow \mu} \sum_{\substack{\nu \to \lambda \\ \nu \neq \mu}} f^\nu.
+  \]
+
+  Applichiamo ora la regola di discesa a ogni $f^\lambda$: si ha $f^\lambda = \sum_{\nu \to \lambda} f^\nu$. Tra questi $\nu$ ce n'è esattamente uno uguale a $\mu$ (dato che $\mu \to \lambda$), quindi $\sum_{\nu \to \lambda, \nu \neq \mu} f^\nu = f^\lambda - f^\mu$. Sostituendo:
+  \[
+    \sum_{\lambda \leftarrow \mu} \sum_{\substack{\nu \to \lambda \\ \nu \neq \mu}} f^\nu = \sum_{\lambda \leftarrow \mu} (f^\lambda - f^\mu) = \sum_{\lambda \leftarrow \mu} f^\lambda - (r+1) f^\mu
+  \]
+  dove $r+1$ è il numero di celle aggiungibili a $\mu$ (un fatto geometrico: un diagramma con $r$ celle rimovibili ne ha esattamente $r+1$ aggiungibili).
+
+  Mettendo tutto insieme:
+  \[
+    (n+1)f^\mu = \sum_{\nu \to \mu} f^\nu + r \cdot f^\mu + \sum_{\lambda \leftarrow \mu} f^\lambda - (r+1) f^\mu = \sum_{\lambda \leftarrow \mu} f^\lambda + \sum_{\nu \to \mu} f^\nu - f^\mu.
+  \]
+  Infine la regola di discesa dà $\sum_{\nu \to \mu} f^\nu = f^\mu$, quindi i due ultimi termini si cancellano e si ottiene
+  \[
+    (n+1)f^\mu = \sum_{\lambda \leftarrow \mu} f^\lambda
+  \]
+
+  \textbf{Identita' delle dimensioni (3).}
+  Per induzione su $n$. Il caso $n = 1$ e' banale ($1^2 = 1!$). Per il passo induttivo:
+  \[
+    \sum_{\lambda \vdash n+1} (f^\lambda)^2 \overset{(1)}{=} \sum_{\lambda \vdash n+1} f^\lambda \left(\sum_{\nu \to \lambda} f^\nu\right)
+  \]
+  Invertendo l'ordine di sommazione (aggiungere a $\nu \vdash n$ anziche' togliere da $\lambda \vdash n+1$):
+  \[
+    = \sum_{\nu \vdash n} f^\nu \left(\sum_{\lambda \leftarrow \nu} f^\lambda\right) \overset{(2)}{=} \sum_{\nu \vdash n} f^\nu \cdot (n+1)\, f^\nu = (n+1) \sum_{\nu \vdash n} (f^\nu)^2 \overset{\text{ind.}}{=} (n+1) \cdot n! = (n+1)!
+  \]
+}
+
+\pf{Dimostrazione del Teorema (Base Standard)}{
+  Sappiamo che $|S_n| = n! = \sum_{\lambda \vdash n} (\dim S^\lambda)^2$ (formula di Burnside, dato che gli $S^\lambda$ sono le irriducibili di $S_n$). Dall'indipendenza lineare si ha $\dim S^\lambda \geq f^\lambda$, quindi:
+  \[
+    n! = \sum_{\lambda \vdash n} (\dim S^\lambda)^2 \geq \sum_{\lambda \vdash n} (f^\lambda)^2 = n!
+  \]
+  La disuguaglianza e' in realta' un'uguaglianza, il che forza $\dim S^\lambda = f^\lambda$ per ogni $\lambda$. I $f^\lambda$ vettori linearmente indipendenti $\{v_T \mid T \in \mathrm{SYT}(\lambda)\}$ in uno spazio di dimensione $f^\lambda$ formano quindi una base. $\qquad\square$
+}
+
 \section{Il Lemma Tecnico}
 
 \mlenma{Il Lemma Tecnico}{
