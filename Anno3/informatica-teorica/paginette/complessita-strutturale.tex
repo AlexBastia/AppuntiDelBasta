@@ -1,3 +1,4 @@
+% \begin{document}
 \chapter{Complessità Strutturale}
 
 Finora abbiamo studiato le classi $RE$ e $R$, occupandoci di stabilire se un problema fosse decidibile o meno. D'ora in poi ci concentreremo esclusivamente sui problemi $\in R$, ovvero sui problemi \textit{decidibili}, e ci chiederemo quanto siano \textit{difficili} tra loro.
@@ -253,3 +254,81 @@ Ovvero: ogni problema la cui soluzione è facilmente \textit{verificabile} è an
   \node[font=\small] at (1.8, 0.5) {$IS$};
 \end{tikzpicture}
 \end{center}
+
+\section{Riduzioni Polinomiali}
+\dfn{Riduzione Polinomiale}{
+  Siano $ A $ e $ B $ due linguaggi. Si dice che $ A $ si \textit{riduce polinomialmente} a $ B $ ($ A \leq_P B $) se $ \exists f: \Sigma^* \to \Sigma^* $ tale che:
+  \begin{enumerate}
+  \item $ f $ e' calcolabile in tempo polinomiale deterministico
+  \item $ \forall w \in \Sigma^* $
+    \[
+      w \in A \iff f(w) \in B
+    \]
+  \end{enumerate}
+}
+
+\dfn{NP-Hardness}{
+  Un linguaggio $ A $ si dice \textit{NP-Hard} se $ \forall L \in NP $
+  \[
+  L \leq_P A
+  \]
+}
+
+\dfn{NP-Completeness}{
+  Un linguaggio $ A $ si dice \textit{NP-Complete} se 
+  \begin{enumerate}
+  \item $ A $ e' NP-Hard
+  \item $ A \in NP $
+  \end{enumerate}
+}
+
+\thm{Collasso di NP}{
+  Sia $ L $ un linguaggio NP-Complete, allora
+  \[
+  L \in P \iff P = NP
+  \]
+}
+\pf{Dimostrazione}{
+  \begin{itemize}
+    \item $ \impliedby) $ Abbiamo che $ L \in NP $ dato che e' NP-Complete, ma per ipotesi $ NP = P $ quindi $ L \in P $.
+    \item $ \implies) $ Dato che $ L $ e' NP-Complete sappiamo che tutti i linguaggi NP si riducono polinomialmente a $ L $. Ma per ipotesi $ L $ e' risolvibile in tempo polinomiale deterministico, quindi anche tutti i linguaggi che si riducono polinomialmente a esso appartengono a $ P $, quindi $ NP \subseteq P $. Se un problema e' risolvibile con una macchina deterministica, allora esiste sicuramente una macchina non deterministica che lo risolve, quindi $ P \subseteq NP $. Quindi $ P = NP $.  
+  \end{itemize}
+}
+
+\thm{Transitivita' delle riduzioni polinomiali}{
+  Siano $ A,B $ e $ C $ tre linguaggi. Se $ A \leq_P B $ e $ B \leq_P C $, allora
+  \[
+  A \leq_P C
+  \]
+}
+\pf{Dimostrazione}{
+  Basta considerare la composizione delle funzioni garantite dalla riduzione. Dato che queste sono deterministiche polinomiali, lo sara' anche la composizione.
+}
+
+\thm{Riduzioni NP-Hard}{
+  Dati due linugaggi $ A,B $ con $ A $ NP-Hard tali che $ A \leq_P B $, allora
+  \[
+    B \text{e' NP-Hard} 
+  \]
+}
+\pf{Dimostrazione}{
+  Sfruttiamo la transitivita' della riduzione polinomiale per dimostrare che se $ \forall L \in NP. L \leq_P A $ e $ A \leq_P B $ allora $ B $ e' NP-Hard.
+}
+
+Useremo questa proprieta' per dimostrare che un linugaggio e' NP-Hard, dato che trovare una riduzione per ogni linugaggio in NP e' impossibile (ce ne stanno infiniti). Ci serve pero' almeno un linugaggio che sappiamo essere NP-Hard verso il quale ci possiamo ridurre, e questo e' proprio SAT (vedremo piu' avanti come si puo' dimostrare). Per facilitarci la vita useremo un linugaggio simile, 3SAT, che dimostriamo essere NP-Hard riducendoci SAT
+
+\dfn{3SAT}{
+  Come SAT, ma le formule sono in 3CNF (ogni clausola $ c_i $ ha lunghezza massima di 3 letterali)
+  \[
+  \text{3STA} = \{\psi | \psi \text{ e' in 3CNF ed e' soddisfacibile}\}
+  \]
+}
+
+\mprop{NP-Completezza di 3SAT}{
+  3SAT e' NP-Completo
+}
+\pf{Dimostrazione}{
+  Allo stesso modo di SAT, 3SAT appartiene a NP. Dobbiamo dimostrare che e' NP-Hard, che facciamo dimostrando $ SAT \leq_P 3SAT $. Possiamo fare cio' usando una funzione abbastanza ez che a ogni passaggio riesce a diminuire di 1 la lunghezza delle clausole troppo lunghe, quindi dopo un numero finito di riduzioni riusciamo a dimostrare la riduzione iniziale (usando la prop. transitiva).
+}
+
+% \end{document}
