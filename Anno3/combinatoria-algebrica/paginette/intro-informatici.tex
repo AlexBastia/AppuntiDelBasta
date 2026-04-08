@@ -186,6 +186,72 @@ La normalità è la condizione necessaria e sufficiente per poter definire un'op
 Questo ci permette di creare il \textbf{Gruppo Quoziente} $G/N$, una struttura fondamentale che "semplifica" il gruppo di partenza collassando tutto il sottogruppo $N$ nell'elemento neutro.
 }
 
+\subsection{Gruppo Quoziente}
+Avendo definito i sottogruppi normali, siamo ora pronti a costruire una delle strutture più potenti dell'algebra astratta.
+\dfn{Gruppo Quoziente}{
+Sia $G$ un gruppo e $N \trianglelefteq G$ un suo sottogruppo normale. Si definisce \textbf{gruppo quoziente} di $G$ rispetto a $N$, denotato con $G/N$, l'insieme dei laterali sinistri di $N$ in $G$:
+$$G/N = \{ gN \mid g \in G \}$$
+dotato dell'operazione binaria:
+$$(aN) \cdot (bN) = (ab)N$$
+}
+\nt{
+\textbf{Buona Definizione dell'Operazione}
+
+La normalità di $N$ è esattamente la condizione che garantisce che il prodotto tra laterali sia \textit{ben definito}, ovvero indipendente dai rappresentanti scelti. Se $aN = a'N$ e $bN = b'N$, allora $a' = an_1$ e $b' = bn_2$ per certi $n_1, n_2 \in N$, e si ottiene:
+$$a'b' = an_1 b n_2 = ab(b^{-1}n_1 b)n_2$$
+Poiché $N \trianglelefteq G$, si ha $b^{-1}n_1 b \in N$, quindi $a'b' \in abN$, ovvero $(a'b')N = (ab)N$. Senza la normalità, questa costruzione collasserebbe.
+}
+\dfn{Struttura di Gruppo su $G/N$}{
+L'insieme $G/N$ con l'operazione $(aN)(bN) = (ab)N$ è un \textbf{gruppo}, detto gruppo quoziente. I suoi elementi strutturali sono:
+\begin{itemize}
+    \item \textbf{Elemento Neutro:} Il laterale $eN = N$ stesso.
+    \item \textbf{Inverso:} L'inverso del laterale $gN$ è il laterale $g^{-1}N$.
+    \item \textbf{Ordine:} Per il Teorema di Lagrange, $|G/N| = [G : N] = \dfrac{|G|}{|N|}$.
+\end{itemize}
+}
+\nt{
+\textbf{Interpretazione Intuitiva}
+
+Il gruppo quoziente $G/N$ è il gruppo che si ottiene ``collassando'' ogni elemento di $N$ all'identità. Tutti gli elementi di uno stesso laterale $gN$ diventano un unico elemento nel nuovo gruppo. In questo senso, $G/N$ è una \textbf{versione semplificata} di $G$, in cui le distinzioni interne a $N$ vengono dimenticate.
+
+\medskip
+Si può pensare ai laterali come a ``classi di equivalenza'': due elementi $a, b \in G$ sono equivalenti (cioè finiscono nello stesso laterale) se e solo se $a^{-1}b \in N$.
+}
+\dfn{Proiezione Canonica}{
+La mappa naturale associata alla costruzione del gruppo quoziente è la \textbf{proiezione canonica} (o omomorfismo naturale):
+$$\pi: G \to G/N, \qquad \pi(g) = gN$$
+Questa è un omomorfismo di gruppi surgettivo il cui nucleo è esattamente $N$:
+$$\ker(\pi) = N$$
+}
+\nt{
+\textbf{Esempi Fondamentali}
+\begin{itemize}
+    \item \textbf{Gruppo ciclico $\mathbb{Z}/n\mathbb{Z}$:} Prendendo $G = (\mathbb{Z}, +)$ e $N = n\mathbb{Z}$ (i multipli di $n$), si ottiene il gruppo delle classi di resto modulo $n$. Il laterale $k + n\mathbb{Z}$ è la classe di $k$ modulo $n$.
+    \item \textbf{Gruppo delle rotazioni:} Sia $G = D_n$ il gruppo diedrale e $N = R_n \trianglelefteq D_n$ il sottogruppo delle rotazioni (che è normale in $D_n$). Il gruppo quoziente $D_n / R_n \cong \mathbb{Z}/2\mathbb{Z}$ è semplicemente il gruppo che distingue ``rotazioni'' da ``riflessioni''.
+    \item \textbf{Abelianizzazione:} Dato un gruppo $G$ qualsiasi, il suo \textit{commutatore} $[G, G]$ (generato da tutti i commutatori $aba^{-1}b^{-1}$) è sempre normale. Il quoziente $G/[G,G]$ è il più grande quoziente abeliano di $G$, detto \textbf{abelianizzazione} di $G$.
+\end{itemize}
+
+\textbf{Proprietà Strutturali}
+\begin{itemize}
+    \item \textbf{Ereditarietà della commutatività:} Se $G$ è abeliano, allora $G/N$ è abeliano per ogni $N \trianglelefteq G$. Il viceversa non vale in generale.
+    \item \textbf{Corrispondenza dei sottogruppi:} Esiste una bigezione tra i sottogruppi di $G/N$ e i sottogruppi di $G$ che contengono $N$ (Teorema di Corrispondenza). I sottogruppi normali di $G/N$ corrispondono ai sottogruppi normali di $G$ contenenti $N$.
+\end{itemize}
+}
+\thm{Primo Teorema di Isomorfismo}{
+Sia $\phi: G \to H$ un omomorfismo di gruppi. Allora $\ker(\phi) \trianglelefteq G$ e vale il seguente isomorfismo canonico:
+$$G / \ker(\phi) \cong \operatorname{Im}(\phi)$$
+La mappa $\tilde{\phi}: G/\ker(\phi) \to \operatorname{Im}(\phi)$ definita da $\tilde{\phi}(g\ker(\phi)) = \phi(g)$ è un isomorfismo ben definito.
+}
+\nt{
+\textbf{Significato del Primo Teorema di Isomorfismo}
+
+Questo teorema afferma che \textit{ogni omomorfismo è, a meno di isomorfismo, una proiezione canonica}. Esso permette di:
+\begin{itemize}
+    \item \textbf{Identificare gruppi quoziente:} Invece di descrivere $G/N$ astrattamente tramite i laterali, spesso è più conveniente trovare un omomorfismo $\phi$ con $\ker(\phi) = N$ e riconoscere $G/N \cong \operatorname{Im}(\phi)$ come sottogruppo noto.
+    \item \textbf{Fattorizzare omomorfismi:} Ogni omomorfismo $\phi: G \to H$ si decompone come $\phi = \iota \circ \tilde{\phi} \circ \pi$, dove $\pi$ è la proiezione canonica, $\tilde\phi$ è l'isomorfismo del teorema e $\iota$ è l'inclusione di $\operatorname{Im}(\phi)$ in $H$.
+\end{itemize}
+}
+
 
 \subsection{Gruppi Simmetrici}
 \dfn{Il Gruppo Simmetrico}{
