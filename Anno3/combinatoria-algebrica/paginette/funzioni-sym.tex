@@ -1,0 +1,191 @@
+% \begin{document}
+\chapter{Funzioni Simmetriche}
+\dfn{Anello in piu' variabili}{}
+\dfn{Come si chiama??}{
+  L'anello con somma definita in modo naturale
+  \[
+    \mathbb{Q}[[X]] = \{\sum_{n\geq 0} a_nx^n | a_n \in \mathbb{Q}\} 
+  \]
+  Anche il prodotto e' il classico. Alla fine sono polinomi infiniti.
+}
+Sono delle serie infinite (diverse da quelle in analisi). Posso vederla come $ f: \mathbb{N} \to \mathbb{Q} $ o come successione dei suoi elementi $ (a_0,a_1,...,a_n,...) $.
+
+Se $ a_0 \neq 0 $, allora $ \sum_{n \geq 0} $ e' invertibile. In particolare $ 1 + ax + a^2x^2 + ... + a^nx^n + ... $ moltiplicato per $ (1 - ax) $ viene 1. Quindi per definizione posso scriverlo come $ \frac{1}{1-ax} $ (semplicemente un modo veloce per scriverlo).
+
+Non ci interessa della convergenza o definita/indefinita. 
+
+Possiamo definire anche una derivata. Nota: vale per qualsiasi anello (commutativo?), non solo $ \mathbb{Q} $.
+
+\dfn{Derivata}{
+  $ D: \mathbb{Q}[[x]] \to \mathbb{Q}[[x]] $ e' definita come:
+  \[
+    \sum_{n \geq 0} a_nx^n \mapsto \sum_{n \geq 1} n a_nx^{n-1}
+  \]
+}
+Vediamo come $ D(f + g) = Df + Dg $ e $ D(fg) = D(f)g + D(g)f $. Notare come non centrano limiti ecc., e' solo un conto.
+
+Dimostrazioni lasciate a ddestroyer04.
+
+Se $ f(x) \in \mathbb{Q}[[x]] $ allora
+\[
+  e^{f(x)} = exp(f(x)) \coloneq \sum_{n \geq 0} \frac{1}{n!}f(x)^n \in \mathbb{Q}[[x]]
+\]
+Sono uguaglianze formali! Inoltre, se $ g(x) \in 1 + x\mathbb{Q}[[x]] $ ($ a_0 = 1 $), allora definiamo
+\[
+  log(g(x)) \coloneq \sum_{n \geq 1} (-1)^{n-1}\frac{(g(x)-1)^n}{n}
+\]
+In particolare $ log(1+u) = \sum_{n\geq 1} (-1)^{n-1}\frac{u^n}{n}  $ (piu' familiare, ?).
+
+Valgono quello che ci aspettiamo, non perche' stiamo tirando in gioco l'analisi ma puramente per le definizioni date.
+\[
+  log(exp(f(x))) = f(x)
+\]
+\[
+  exp(log(1+xf(x))) = 1 + xf(x)
+\]
+\[
+exp(f(x) + g(x)) = exp(f(x))exp(g(x))
+\]
+\[
+  log(g(t)h(t)) = log(g(t)) + log((h(t)))\ \text{(quando definiti)}
+\]
+\[
+  D(exp(f(x))) = D(f'(x))exp(f(x))
+\]
+\[
+  D(log(g(x))) = \frac{D(g(x))}{g(x)}
+\]
+
+Torniamo ora a $ \mathbb{Q}[x_1,...,x_k] $ (anello di polinomi in $ n $ indeterminate). $ S_k $ agisce su $ \mathbb{Q}[x_1,...,x_k] $:
+\[
+  \sigma f(x_1,...,x_k) = f(x_{\sigma_1},...,x_{\sigma_k})
+\]
+permutando le indeterminate.
+
+\dfn{}{
+  \[
+    Sym[X_k] \coloneq \mathbb{Q}[x_1,...,x_k]^{S_k}\ \text{(punti fissi sotto l'azione di )}S_k
+  \]
+  E' quindi l'anello delle funzioni simmetriche (controlla!!)
+}
+
+$ Sym[X_k] = $ somma diretta di $ Sym^n[X_k] $ con $ n \geq 0 $, che sono i polinomi omogenei simmetrici di grado $ n $. 
+
+\mprop{}{
+  Ogni elemento di $ Sym[X_k] $ e' somma delle sue componenti omogenee di grado $ n $, e ciascuna di esse appartiene a $ Sym[X_k] $.
+}
+
+Notiamo che l'azione di $ S_k $ rispetta il grado.
+
+Supponiamo che $ k \geq n $. No aspe' sta roba qua' serve per sopra, i $ k $ dopo non centrano.
+
+Una composizione di $ n $ 
+\dfn{Composizione}{
+  \[
+    \alpha = (\alpha_1,...,\alpha_n)\ \alpha_i \in \mathbb{N} \setminus \{0\}
+  \]
+  tali che
+  \[
+  \sum_{i = 1}^{k} \alpha_i = n
+  \]
+  Cosa cambia dalle weak compositions? Le weak possono essere 0
+
+  $ \alpha_i $ e' una \textit{parte} di $ \alpha $ e una composiziione con $ k $ parti si dice \textit{k-composizione}.
+}
+
+\ex{Composizioni}{
+  Le composizioni di 4 sono:
+}
+
+La funzione dalle weak k-compositions di $ n $ alle compositions $ n + k $:
+\[
+  (\alpha_1,...,\alpha_k) \mapsto (\alpha_1 + 1,..., \alpha_k + 1)
+\]
+e' una biezione. Quindi la cardinalita' di questi insiemi e' uguale, ed e' (ce lo dice dopo perche' si e' dimenticata)
+
+E' $ \binom{n + k -1}{k-1} $, la dimostrazione segue dal lemma:
+\mlenma{Dimensione compositions}{
+  $ \{\text{k-composizioni di } n\} $ e' in corrispondenza biunivoca con $ \{\text{sottoinsiemi di } \{1,..., n-1\} \} $ di cardinalita' $ k - 1 $:
+  \[
+    (\alpha_1,...,\alpha_k) \gets \to \{\alpha_1, \alpha_1 + \alpha_2,...,\alpha_1+\alpha_2+...+\alpha_{k-1}\}
+  \]
+}
+boh fine non so, qualcosa ha cucinato. Ora andiamo a vedere le funzioni simmetriche che ci servono di piu'.
+
+\section{Funzioni simmetriche}
+Sia $ k \geq n $, definiremo 4 basi diverse di $ Sym^n[X_k] $.
+
+Sia $ \lambda \vdash n $ e sia $ \alpha $ una weak composition di $ n $.
+
+Allora ad $ \alpha $ possiamo associare una partizione di $ n $. E' abbastanza ovvio, non formalizziamo tutto, vediamo un esempio:
+\ex{}{
+  $ \alpha = (3,1,0,1,2) $ e' una comp (debole) di 7, allora $ \lambda(\alpha) = (3,2,1,1) $. Basta togliere gli 0 e permutare dai e' ez.
+}
+
+Sia $ \lambda \vdash n $ data.
+
+Sia $ m_\lambda(x) = \sum_{\alpha \models n} x^\alpha $ ($ \alpha $ e' una k-composizione debole di $ n $), dove $ x^\alpha = x_1^{\alpha_1}...x_k^{\alpha_k} $.
+
+\ex{}{
+  $ \lambda=(2,1,1) $, $ n = 4 $ e $ k = 3 $, allora
+  \[
+    m_{(2,1,1)} = x_1^2x_2x_3 + x_1x_2^2x_3 + x_1x_2x_3^2
+  \]
+  Chiaramente questo e' un polinomio simmetrico: $ m_\lambda \in Sym^n[X_k] $.
+}
+La marta sta avendo un esaurimento nervoso, ci fara' sapere perche'. Comunque questo e'.
+
+Possiamo scrivere
+\[
+  f = \sum_{\alpha \models n} c_\alpha x^\alpha \in Sym^n[X_k]
+\]
+e' un generico elemento dell'insieme, quindi e' solo un altro modo per descriverlo.
+
+A ogni composizione di $ n $ corrisponde un monomio, a qui corrisponde una partizione.
+
+Vabbe' la marta si e' messa a piangere e ha cancellato tutto, le dispiace. Ricomincia:
+
+se $ f $ e' un polinomio in $ x_1,...,x_k $ omogeneo di grado $ n $, allora $ f $ e' somma di monomi i cui esponenti delle variabili formano una weak composition, a cui possiamo associare una partizione. Ha ridetto la stessa cosa, ok.
+
+Se $ f $ e' anche simmetrico ($ f \in Sym^n[X_k] $) allora $ f = \sum c_\lambda m_\lambda  $.
+\ex{}{
+  $ n = 2 $ e $ k = 3 $, $ f = 3x_1x_2 + 3x_2x_3 + 3 x_1x_3 =  $ monomi con stessa $ \lambda $ avranno anche lo stesso coefficente quindi possiamo raggrupparli.
+}
+
+Gli $ m_\lambda $ sono lin. ind., quindi $ dim Sym^n[X_k] = \# Par(n) $ e generano, quindi sono una base.
+
+Se $ A = (a_{ij})_{i,j \geq 1} $ con un numero finito di coefficenti non nulli. $ r_i = \sum_{j} a_{ij} $ (somma elementi riga $ i $) e $ c_j = \sum_{i} a_{ij} $ (somma elementi colonna $ j $).
+
+$ row A = (r_1,r_2,...) $ e $ col A = (c_1,c_2,...) $. Una $ 0-1 $ matrice e' una matrice a coeff. in $ \{0,1\} $.
+
+\dfn{}{
+  $ e_s = m_{1^s} = \sum_{i_1 < i_2 < ... < i_s} x_{i_1}x_{i_2}...x_{i_s} $
+}
+\dfn{}{
+  Sia $ \lambda \vdash n $, $ e_\lambda = e_{\lambda_1}e_{\lambda_2}...e_{\lambda_k} $
+}
+
+\ex{}{
+  Se $ \lambda = (2,2,1) $ ($ k = 3 $):
+
+  \[
+    e_1 = m_{(1,1,1)} = x_1 + x_2 + x_3
+  \]
+  \[
+    e_2 = (x_1x_2+x_1x_3+x_2x_3)
+  \]
+  \[
+  e_{\lambda} = e_2^2 + e_1
+  \]
+}
+
+\mprop{}{
+  Sia $ \lambda \vdash n $ e sia $ \alpha = (\alpha_1,...) $ una composizione debole di $ n $.
+  \[
+    e_{\lambda} \in Sym^n[X_k] \implies e_\lambda = \sum_{\mu \vdash n} M_{\lambda \mu}m_\mu
+  \]
+  Dove $ M_{\lambda \mu} $ e' il numero di $ (0,1) $ matrici con $ row(A) = \lambda $ e $ col(A) = \alpha $ e $ \mu = \mu(\alpha) $
+}
+
+
+% \end{document}
