@@ -464,7 +464,7 @@ L'altro SYT è $T' = \begin{smallmatrix} 2\\ 1 & 3 \end{smallmatrix}$ con $C(T')
 \[
 v_{T'} = \{1,3 \mid 2\} - \{2,3 \mid 1\}.
 \]
-I vettori $v_T, v_{T'}$ sono linearmente indipendenti e formano la base standard di $S^{(2,1)}$, che è la rappresentazione standard irriducibile di $S_3$ ($\dim S^{(2,1)} = 2$), mentre $ S^{(3)} $ e' la standard e $ S^{1^3} $ e' la segno.
+I vettori $v_T, v_{T'}$ sono linearmente indipendenti e formano la base standard di $S^{(2,1)}$, che è la rappresentazione standard irriducibile di $S_3$ ($\dim S^{(2,1)} = 2$), mentre $ S^{(3)} $ è la rappresentazione banale (triviale) e $ S^{(1^3)} $ è la rappresentazione segno.
 }
 
 \ex{}{
@@ -569,19 +569,21 @@ La dimostrazione si articola in due parti: prima mostriamo che i vettori di Spec
 }
 
 \pf{Dimostrazione}{
-  Supponiamo per assurdo che $\sum_{T \in \mathrm{SYT}(\lambda)} \gamma_T\, v_T = 0$ con $\gamma_T \in \mathbb{C}$ non tutti nulli. Tra tutti i tableau standard con $\gamma_T \neq 0$, scegliamo $\overline{T}$ tale che il tabloide $\{\overline{T}\}$ sia \textbf{massimale} nell'ordine parziale sui tabloidi.
+  Prima osserviamo che l'ordine sui tabloidi è un \textbf{ordine totale} sull'insieme dei tabloidi di forma $\lambda$: la forma $\mathrm{sh}(\{T\})$ determina univocamente $\{T\}$ (dall'incremento $\mathrm{sh}(\{T\}^i) - \mathrm{sh}(\{T\}^{i-1})$ si ricava in quale riga si trova $i$, per ogni $i$), e la successione di composizioni $(\mathrm{sh}(\{T\}^i))_i$ è sempre comparabile fra tabloidi SYT della stessa forma.
+
+  Supponiamo per assurdo che $\sum_{T \in \mathrm{SYT}(\lambda)} \gamma_T\, v_T = 0$ con $\gamma_T \in \mathbb{C}$ non tutti nulli. Poiché l'ordine è totale, tra tutti i tableau standard con $\gamma_T \neq 0$ esiste un \textbf{massimo} $\overline{T}$, cioè un SYT tale che $\{T\} \leq \{\overline{T}\}$ per ogni altro $T$ con $\gamma_T \neq 0$.
 
   Osserviamo che il tabloide $\{\overline{T}\}$ compare nell'espansione
   \[
     v_{\overline{T}} = \sum_{q \in C(\overline{T})} \mathrm{sgn}(q)\, \{q\overline{T}\}
   \]
-  \textit{solo} con il termine $q = \mathrm{id}$ (coefficiente $+1$). Infatti, per ogni $q \in C(\overline{T})$ con $q \neq \mathrm{id}$, il Lemma garantisce $\{\overline{T}\} \not\leq \{q\overline{T}\}$, quindi i tabloidi $\{q\overline{T}\}$ sono tutti diversi da $\{\overline{T}\}$.
+  \textit{solo} con il termine $q = \mathrm{id}$ (coefficiente $+1$). Infatti, per ogni $q \in C(\overline{T})$ con $q \neq \mathrm{id}$, il Lemma garantisce $\{\overline{T}\} \not\leq \{q\overline{T}\}$; poiché l'ordine è totale questo significa $\{q\overline{T}\} < \{\overline{T}\}$, quindi $\{q\overline{T}\} \neq \{\overline{T}\}$.
 
-  Affinche' la somma totale faccia zero, il termine $\{\overline{T}\}$ deve essere cancellato dall'espansione di un altro vettore $v_{\widetilde{T}}$ con $\gamma_{\widetilde{T}} \neq 0$. Poiche' tableau standard distinti producono tabloidi distinti, $\{\overline{T}\}$ puo' emergere da $v_{\widetilde{T}}$ solo come termine permutato, cioe' deve valere $\{\overline{T}\} = \{\widetilde{q}\widetilde{T}\}$ per qualche $\widetilde{q} \in C(\widetilde{T})$ con $\widetilde{q} \neq \mathrm{id}$.
+  Affinché la somma totale faccia zero, il termine $\{\overline{T}\}$ deve essere cancellato dall'espansione di un altro vettore $v_{\widetilde{T}}$ con $\gamma_{\widetilde{T}} \neq 0$. Poiché SYT distinti producono tabloidi distinti (le righe di un SYT sono ordinate, quindi il tabloide ne determina il contenuto di ciascuna riga), $\{\overline{T}\}$ può emergere da $v_{\widetilde{T}}$ solo come termine permutato: deve valere $\{\overline{T}\} = \{\widetilde{q}\widetilde{T}\}$ per qualche $\widetilde{q} \in C(\widetilde{T})$ con $\widetilde{q} \neq \mathrm{id}$.
 
-  Ma applicando il Lemma a $\widetilde{T}$, si ha $\{\widetilde{T}\} \not\leq \{\widetilde{q}\widetilde{T}\} = \{\overline{T}\}$, cioe' $\{\widetilde{T}\} \not\leq \{\overline{T}\}$. Questo contraddice la massimalita' di $\{\overline{T}\}$, perche' $\widetilde{T}$ ha coefficiente non nullo ma il suo tabloide non e' dominato da $\{\overline{T}\}$.
+  Ma applicando il Lemma a $\widetilde{T}$, si ha $\{\widetilde{T}\} \not\leq \{\widetilde{q}\widetilde{T}\} = \{\overline{T}\}$; poiché l'ordine è totale, $\{\widetilde{T}\} > \{\overline{T}\}$. Questo contraddice la massimalità di $\{\overline{T}\}$: $\widetilde{T}$ ha coefficiente non nullo e il suo tabloide è strettamente maggiore di $\{\overline{T}\}$.
 
-  Quindi nessun altro vettore puo' cancellare il termine $\{\overline{T}\}$: nella combinazione lineare $\sum \gamma_T v_T = 0$, il tabloide $\{\overline{T}\}$ compare con coefficiente $\gamma_{\overline{T}} \neq 0$. Ma i tabloidi sono base di $M^\lambda$, quindi linearmente indipendenti: contraddizione.
+  Quindi nessun altro vettore può cancellare il termine $\{\overline{T}\}$: nella combinazione lineare $\sum \gamma_T v_T = 0$, il tabloide $\{\overline{T}\}$ compare con coefficiente $\gamma_{\overline{T}} \neq 0$. Ma i tabloidi sono base di $M^\lambda$, quindi linearmente indipendenti: contraddizione.
 }
 
 \subsection{Argomento di conteggio}
@@ -698,7 +700,7 @@ Per concludere la dimostrazione del teorema, serve mostrare che $\dim S^\lambda 
 }
 
 \pf{Dimostrazione del Teorema (Base Standard)}{
-  Sappiamo che $|S_n| = n! = \sum_{\lambda \vdash n} (\dim S^\lambda)^2$ (formula di Burnside, dato che gli $S^\lambda$ sono le irriducibili di $S_n$). Dall'indipendenza lineare si ha $\dim S^\lambda \geq f^\lambda$, quindi:
+  Sappiamo che $|S_n| = n! = \sum_{\lambda \vdash n} (\dim S^\lambda)^2$ (dalla decomposizione della rappresentazione regolare e dal teorema di Maschke/Wedderburn: $\mathbb{C}[S_n] \cong \bigoplus_\lambda \mathrm{End}(S^\lambda)$, prendendo le dimensioni). Dall'indipendenza lineare si ha $\dim S^\lambda \geq f^\lambda$, quindi:
   \[
     n! = \sum_{\lambda \vdash n} (\dim S^\lambda)^2 \geq \sum_{\lambda \vdash n} (f^\lambda)^2 = n!
   \]
@@ -715,7 +717,7 @@ b_T\{\wt{T}\} = \begin{cases} 0 & \text{se } \exists\, i \neq j \text{ nella ste
 }
 
 \nt{
-  Quindi $ b_T.M^{\lambda} = \mathbb{C} v_T $. TODO: che cosa significa $ \mathbb{C} v_T $? Diomadonna
+  Il lemma tecnico implica che $b_T \cdot M^{\wt{\lambda}} = \mathbb{C}\, v_T$ per ogni $\wt{\lambda}$ con $\lambda \not>^R \wt{\lambda}$; in particolare $b_T \cdot M^\lambda = \mathbb{C}\, v_T$. Qui $\mathbb{C}\, v_T := \{z \cdot v_T \mid z \in \mathbb{C}\}$ è il sottospazio monodimensionale generato da $v_T$: il moltiplicatore $b_T$ ``proietta'' tutto $M^\lambda$ sull'asse di $v_T$.
 }
 
 \ex{}{
@@ -750,7 +752,7 @@ Se $T, \wt{T}$ sono SYT con $\wt{T} > T$, allora $b_T\{\wt{T}\} = 0$.
 }
 
 \pf{Dimostrazione}{
-Per il Corollario precedente, l'ipotesi $\wt{T} > T$ garantisce l'esistenza di $i \neq j$ nella stessa colonna di $T$ e nella stessa riga di $\wt{T}$. Si applica il Caso 1 del Lemma 4.1.
+Dall'ipotesi $\wt{T} > T$ (nell'ordine sui tableau iniettivi della stessa forma) e dal fatto che entrambi sono SYT della stessa forma $\lambda$, il \textbf{Lemma di partizione dei tableau} garantisce l'alternativa: o esistono $i \neq j$ nella stessa colonna di $T$ e nella stessa riga di $\wt{T}$, oppure esiste $\wt{p} \in R(\wt{T})$, $q \in C(T)$ con $\wt{p}\wt{T} = qT$. Quest'ultima opzione è impossibile: se $\wt{p}\wt{T} = qT$ allora $\wt{T}$ e $T$ avrebbero le stesse entrate per righe (a meno di ordine), ma SYT distinti della stessa forma producono tabloidi distinti (e quindi row-set distinti per qualche riga), contraddizione. Dunque si è nel primo caso, e si applica il Caso 1 del Lemma Tecnico.
 }
 
 \section{Classificazione delle rappresentazioni irriducibili di $S_n$}

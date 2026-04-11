@@ -328,7 +328,44 @@ Useremo questa proprieta' per dimostrare che un linugaggio e' NP-Hard, dato che 
   3SAT e' NP-Completo
 }
 \pf{Dimostrazione}{
-  Allo stesso modo di SAT, 3SAT appartiene a NP. Dobbiamo dimostrare che e' NP-Hard, che facciamo dimostrando $ SAT \leq_P 3SAT $. Possiamo fare cio' usando una funzione abbastanza ez che a ogni passaggio riesce a diminuire di 1 la lunghezza delle clausole troppo lunghe, quindi dopo un numero finito di riduzioni riusciamo a dimostrare la riduzione iniziale (usando la prop. transitiva).
+  \textbf{3SAT $\in$ NP}: il certificato e' un'assegnazione; la verifica che ogni clausola
+  abbia un letterale vero e' polinomiale.
+
+  \textbf{$\text{SAT} \leq_P \text{3SAT}$}: data $\phi$ in CNF, costruiamo $\phi'$ in 3CNF
+  tale che $\phi \text{ soddisfacibile} \iff \phi' \text{ soddisfacibile}$.
+  Per ogni clausola $C_i = (l_1 \vee \cdots \vee l_k)$:
+  \begin{itemize}
+    \item \textbf{$k = 1$:} si aggiungono due variabili fresche $y_1, y_2$ e si sostituisce con:
+      \[
+        (l_1 \vee y_1 \vee y_2)\wedge(l_1 \vee y_1 \vee \neg y_2)\wedge(l_1 \vee \neg y_1 \vee y_2)\wedge(l_1 \vee \neg y_1 \vee \neg y_2)
+      \]
+    \item \textbf{$k = 2$:} si aggiunge una variabile fresca $y$ e si sostituisce con:
+      \[
+        (l_1 \vee l_2 \vee y)\wedge(l_1 \vee l_2 \vee \neg y)
+      \]
+    \item \textbf{$k = 3$:} invariata.
+    \item \textbf{$k > 3$:} si introducono $k-3$ variabili fresche $z_1,\dots,z_{k-3}$ e si sostituisce con la catena:
+      \[
+        (l_1 \vee l_2 \vee z_1)\wedge(\neg z_1 \vee l_3 \vee z_2)\wedge\cdots\wedge(\neg z_{k-3} \vee l_{k-1} \vee l_k)
+      \]
+  \end{itemize}
+
+  La riduzione e' polinomiale: ogni clausola di $k$ letterali produce $O(k)$ clausole e variabili.
+
+  \textbf{Completezza} ($\phi$ soddisfacibile $\Rightarrow$ $\phi'$ soddisfacibile):
+  \begin{itemize}
+    \item Sia $l_{i^*} = \top$ il letterale vero in $C_i$.
+    \item Si pone $z_j = \top$ per $j < i^*-2$, $z_j = \bot$ per $j \geq i^*-2$.
+    \item Le clausole prima di $i^*$ sono soddisfatte da $z_j = \top$, quella in $i^*$ da $l_{i^*} = \top$, quelle dopo da $\neg z_j = \top$.
+  \end{itemize}
+
+  \textbf{Correttezza} ($\phi'$ soddisfacibile $\Rightarrow$ $\phi$ soddisfacibile),
+  per assurdo supponiamo $l_j = \bot$ per ogni $j$:
+  \begin{itemize}
+    \item $(l_1 \vee l_2 \vee z_1)$: $l_1 = l_2 = \bot \Rightarrow z_1 = \top$.
+    \item Per induzione: $z_j = \top$ e $l_{j+2} = \bot \Rightarrow z_{j+1} = \top$.
+    \item Ma nell'ultima clausola $(\neg z_{k-3} \vee l_{k-1} \vee l_k)$: tutti $\bot$. $\contradiction$
+  \end{itemize}
 }
 
 % \end{document}

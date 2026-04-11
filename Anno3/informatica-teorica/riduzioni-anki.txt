@@ -1,0 +1,36 @@
+#separator:tab
+#html:true
+#notetype:Basic
+#deck:Informatica Teorica::Riduzioni
+
+Cos'è una <b>riduzione</b> da $A$ a $B$?	Una funzione $f$ calcolabile tale che per ogni stringa $w$:<br>$$w \in A \iff f(w) \in B$$<br>Si scrive $A \leq B$. Intuitivamente: $A$ non è più difficile di $B$ — saper risolvere $B$ implica saper risolvere $A$.
+
+Cos'è un <b>trasduttore</b>?	Una MdT con tre nastri:<br>• <b>Input</b> — sola lettura<br>• <b>Worktape</b> — lettura e scrittura<br>• <b>Output</b> — sola scrittura<br><br>Un trasduttore $M$ <i>calcola</i> $f$ se su ogni input $w$ si arresta lasciando $f(w)$ sul nastro di output.
+
+Cos'è una <b>funzione calcolabile</b>?	Una funzione per cui esiste un trasduttore che la calcola e che si <b>arresta sempre</b> in tempo finito su ogni input.
+
+Enuncia il <b>Teorema sulle riduzioni</b>.	Siano $A \leq B$. Allora:<br>$$A \notin R \Rightarrow B \notin R$$$$A \notin RE \Rightarrow B \notin RE$$<br>Equivalentemente (contronominale):<br>$$B \in R \Rightarrow A \in R \qquad B \in RE \Rightarrow A \in RE$$
+
+Come si usa la riduzione per dimostrare <b>indecidibilità</b>?	Si parte da $A$ noto indecidibile, si mostra $A \leq B$, e si conclude che $B \notin R$.<br><br>Perché: se $B \in R$ esisterebbe un decisore per $A$ (componi trasduttore di $f$ con decisore di $B$). Contraddizione.
+
+Come si costruisce $M_A$ data la riduzione $A \leq B$ e un decisore $M_B$ per $B$?	$M_A$ su input $w$:<br>1. Calcola $f(w)$ tramite il trasduttore<br>2. Esegue $M_B$ su $f(w)$<br>3. Risponde come $M_B$<br><br>Termina sempre (trasduttore + decisore terminano), risposta corretta per la proprietà $w \in A \iff f(w) \in B$.
+
+Definisci $\mathcal{L}_{ne}$.	$$\mathcal{L}_{ne} = \{ M_i \mid \mathcal{L}(M_i) \neq \emptyset \}$$L'insieme delle MdT che accettano almeno una stringa.
+
+Dimostra $\mathcal{L}_{ne} \in RE$.	<b>Guess &amp; Check</b>: costruiamo $M_{ne}$ non deterministica su input $M_i$:<br>1. Indovina non deterministicamente una stringa $w$<br>2. Simula $M_i$ su $w$ tramite $M_u$<br>3. Se $M_i$ accetta $w$, risponde sì<br><br>Se $\mathcal{L}(M_i) \neq \emptyset$ esiste un $w^*$ accettato: un ramo lo indovinerà. Non servono garanzie sul no.
+
+Dimostra $\mathcal{L}_{ne} \notin R$.	Riduzione $\mathcal{L}_u \leq \mathcal{L}_{ne}$.<br><br>$f(M, w) = M'$ dove $M'$ <b>ignora il suo input</b>, scrive $w$ sul nastro e simula $M$ su $w$.<br><br>• $(M,w) \in \mathcal{L}_u \Rightarrow M$ accetta $w \Rightarrow \mathcal{L}(M') = \Sigma^* \neq \emptyset \Rightarrow M' \in \mathcal{L}_{ne}$<br>• $(M,w) \notin \mathcal{L}_u \Rightarrow M$ non accetta $w \Rightarrow \mathcal{L}(M') = \emptyset \Rightarrow M' \notin \mathcal{L}_{ne}$<br><br>Poiché $\mathcal{L}_u \notin R$ e $\mathcal{L}_u \leq \mathcal{L}_{ne}$, segue $\mathcal{L}_{ne} \notin R$.
+
+Cos'è il <b>Problema di Corrispondenza di Post (PCP)</b>?	<b>Input</b>: due liste di stringhe $R = (r_1,\dots,r_k)$ e $S = (s_1,\dots,s_k)$ su $\Sigma^*$.<br><b>Output</b>: esiste una sequenza di indici $i_1,\dots,i_u$ (con $u > 0$) tale che<br>$$r_{i_1} \cdots r_{i_u} = s_{i_1} \cdots s_{i_u}$$?
+
+Perché $PCP \in RE$?	Guess &amp; Check: la MdT non deterministica indovina una sequenza di indici e verifica che le concatenazioni coincidano.
+
+Perché $PCP \notin R$? (schema)	Doppia riduzione:<br>$$\mathcal{L}_u \leq MPCP \leq PCP$$<br>$\mathcal{L}_u \notin R$ + transitività delle riduzioni $\Rightarrow PCP \notin R$.
+
+Cos'è <b>MPCP</b>?	Come PCP, ma la sequenza accettante deve <b>iniziare obbligatoriamente con l'indice 1</b> (il primo elemento della lista).
+
+Come funziona la riduzione $\mathcal{L}_u \leq MPCP$?	$f(M, w) = (R, S)$ costruita guardando la funzione di transizione di $M$ e $w$, in 5 parti:<br>• Coppia iniziale: $(\#,\; \#q_0 w_1\!\cdots\! w_n)$<br>• Copia simboli del nastro: $(x, x)$ per ogni $x \in \Gamma$, $(\#,\#)$<br>• Transizioni $\to$: $(qx,\; yp)$<br>• Transizioni $\gets$: $(zqx,\; pzy)$<br>• Stato accettante: $(xqy,\; q)$, $(xq,\; q)$, $(qy,\; q)$<br>• Chiusura: $(q\#\#,\; \#)$ per $q \in F$<br><br>La soluzione MPCP, se esiste, è la codifica dell'intera computazione di $M$ su $w$.
+
+Perché la riduzione $\mathcal{L}_u \leq MPCP$ è calcolabile?	$f$ non deve simulare $M$ su $w$: <b>guarda solo la funzione di transizione di $M$</b> e costruisce un numero finito di coppie. Non dipende dall'esito della computazione.
+
+Come funziona la riduzione $MPCP \leq PCP$?	Data $(R, S)$ istanza di MPCP, si costruisce $(T, U)$ per PCP:<br>• Si aggiunge $*$ a <b>sinistra</b> di ogni carattere di $R$ e a <b>destra</b> di ogni carattere di $S$<br>• Si aggiunge coppia iniziale $t_0 = *t_1,\; u_0 = u_1$ (forza il primo indice a 0)<br>• Si aggiunge coppia finale $t_{k+1} = \$,\; u_{k+1} = *\$$ (forza l'ultimo indice a $k+1$)<br><br>In questo modo ogni soluzione PCP deve iniziare con l'indice 0 → simula MPCP.
