@@ -944,4 +944,395 @@ Il problema dello Knapsack (zaino) e' uno dei problemi di ottimizzazione combina
   \textbf{Pseudo-polinomialita'}: esiste un algoritmo di programmazione dinamica che risolve Knapsack in $O(n \cdot W)$. Sembra polinomiale, ma $W$ puo' essere esponenziale nella taglia dell'input (se $W$ e' codificato con $b$ bit, $W \leq 2^b$). Un algoritmo polinomiale nel \textit{valore numerico} ma non nella \textit{taglia} si chiama \textbf{pseudo-polinomiale}. Knapsack e' NP-Completo ``debole'': la difficolta' scompare se i numeri sono piccoli.
 }
 
+\section{Teorema di Cook-Levin}
+
+Fino a questo punto abbiamo dimostrato la NP-hardness di ogni nuovo problema riducendoci da uno gia' noto. Ma da dove viene il primo problema NP-hard? La catena ha bisogno di una radice: qualcuno deve dimostrare \textit{dalla definizione} che ogni linguaggio in NP si riduce polinomialmente a SAT. Questo e' il risultato ottenuto indipendentemente da \textbf{Stephen Cook} (1971) e \textbf{Leonid Levin} (1973).
+
+\thm{Cook-Levin}{
+  SAT e' NP-Completo.
+}
+\pf{Dimostrazione}{
+  SAT $\in$ NP e' gia' noto (guess di un assegnamento, check polinomiale). Dimostriamo la NP-hardness: $\forall L \in NP.\; L \leq_P \text{SAT}$.
+
+  \textbf{Strategia.} Per definizione, se $L \in NP$ esiste una NTM $M$ che decide $L$ in tempo $p(n)$. Non costruiamo una riduzione diversa per ogni $L$: sfruttiamo $M$ stessa. Dato un input $w$, costruiamo in tempo polinomiale una formula $\varphi_w$ in CNF tale che:
+  \[
+    \varphi_w \text{ soddisfacibile} \iff \exists \text{ cammino accettante di } M \text{ su } w \iff w \in L
+  \]
+  La computazione di $M$ e' un processo \textit{locale} (ogni passo dipende solo da stato, testina, simbolo), il che si traduce naturalmente in vincoli booleani di taglia polinomiale.
+
+  \begin{center}
+    \includegraphics[width=0.45\textwidth]{img/cook-levin-albero-computazione.png}
+  \end{center}
+
+  \textbf{Ipotesi su $M$ (senza perdita di generalita').}
+  \begin{itemize}
+    \item \textbf{Cammini uniformi}: ogni cammino ha esattamente $p(n)$ passi (i cammini piu' corti vengono allungati con passi fittizi nello stato finale).
+    \item \textbf{Nastro finito}: $M$ usa al piu' $2p(n)$ celle, numerate da $-p(n)+1$ a $p(n)$, con $w$ a partire dalla cella $1$.
+    \item \textbf{Inattivita' finale}: raggiunti $q_{\text{acc}}$ o $q_{\text{rej}}$, $M$ resta li' per i passi successivi.
+  \end{itemize}
+
+  \textbf{Variabili booleane.} Per ogni passo $i \in \{1,\dots,p(n)\}$:
+  \begin{itemize}
+    \item $q^i$ per ogni $q \in Q$: ``al passo $i$, lo stato e' $q$''.
+    \item $h^{i,j}$ per ogni cella $j$: ``al passo $i$, la testina e' sulla cella $j$''.
+    \item $\alpha^{i,j}$ per ogni $\alpha \in \Gamma$, cella $j$: ``al passo $i$, la cella $j$ contiene $\alpha$''.
+    \item $u^{i,j}$ per ogni cella $j$: ``la cella $j$ non cambia dal passo $i$ al passo $i+1$''.
+  \end{itemize}
+  Totale: $O(p(n)^2 \cdot (|Q| + |\Gamma|))$ variabili, polinomiale in $n$.
+
+  \textbf{La formula $\varphi_w = \text{Cons} \wedge \text{Init} \wedge \text{Trans} \wedge \text{Accept}$.}
+  \begin{itemize}
+    \item \textbf{Cons} (consistenza): garantisce che ogni passo abbia esattamente uno stato, una posizione di testina, un simbolo per cella. Per ogni $i$: $\bigvee_{q} q^i$ (almeno uno) e $\neg q^i \vee \neg q'^i$ per $q \neq q'$ (al piu' uno). Analogamente per testina e simboli.
+
+    \item \textbf{Init}: fissa la configurazione al passo $1$:
+    \[
+      q_1^1 \;\wedge\; h^{1,1} \;\wedge\; w_1^{1,1} \wedge \cdots \wedge w_n^{1,n} \;\wedge\; \blank^{1,j} \text{ per le celle fuori da } [1,n]
+    \]
+
+    \item \textbf{Trans}: codifica le transizioni legali. Per ogni $i$, $j$, $q$, $\alpha$:
+    \begin{itemize}
+      \item \textit{Inerzia} (cella lontana dalla testina): $\neg h^{i,j} \wedge \alpha^{i,j} \Rightarrow \alpha^{i+1,j}$.
+      \item \textit{Transizione} (cella sotto la testina): se $\delta(q,\alpha) = \{(q'_1,\beta_1,d_1),(q'_2,\beta_2,d_2),\dots\}$,
+      \[
+        q^i \wedge h^{i,j} \wedge \alpha^{i,j} \;\Rightarrow\;
+        \bigl[(q'^{i+1}_1 \wedge h^{i+1,j+d_1} \wedge \beta_1^{i+1,j}) \vee (q'^{i+1}_2 \wedge h^{i+1,j+d_2} \wedge \beta_2^{i+1,j}) \vee \cdots\bigr]
+      \]
+      Il \textbf{non-determinismo} di $M$ si codifica come \textbf{OR}: l'assegnamento ``sceglie'' quale transizione applicare, simulando la scelta del ramo nell'albero di computazione.
+    \end{itemize}
+
+    \item \textbf{Accept}: $q_{\text{acc}}^{p(n)}$ -- al passo finale la macchina e' in stato accettante.
+  \end{itemize}
+
+  \textbf{Completezza} ($w \in L \Rightarrow \varphi_w$ soddisfacibile):
+  \begin{itemize}
+    \item Esiste un cammino accettante $\text{ID}_1,\dots,\text{ID}_{p(n)}$. Assegniamo $\top$ alle variabili che lo descrivono: per costruzione l'assegnamento soddisfa Cons, Init, Trans e Accept.
+  \end{itemize}
+
+  \textbf{Correttezza} ($\varphi_w$ soddisfacibile $\Rightarrow$ $w \in L$):
+  \begin{itemize}
+    \item Dato $\tau \models \varphi_w$, costruiamo un cammino: al passo $i$ lo stato e' l'unico $q$ con $\tau(q^i) = \top$ (Cons), la testina e' sull'unica cella $j$ con $\tau(h^{i,j}) = \top$, il nastro e' descritto dalle $\alpha^{i,j}$.
+    \item Init garantisce la configurazione iniziale corretta. Trans garantisce che ogni transizione sia legale. Accept garantisce che l'ultima configurazione sia accettante. Quindi $w \in L$.
+  \end{itemize}
+
+  \textbf{Polinomialita' e conversione in CNF.}
+  \begin{itemize}
+    \item La formula ha dimensione $O(p(n)^2 \cdot |Q| \cdot |\Gamma|)$, polinomiale.
+    \item Le implicazioni e le disgiunzioni di congiunzioni non sono in CNF, ma si convertono in CNF con distributivita', De Morgan e linearizzazione. Poiche' ogni sotto-espressione ha dimensione costante, la taglia resta polinomiale.
+  \end{itemize}
+}
+
+\nt{
+  Il Teorema di Cook-Levin e' la radice dell'intera gerarchia NP: senza di esso non avremmo nessun problema NP-hard concreto. Risolvere SAT in tempo polinomiale equivarrebbe a dimostrare $P = NP$, perche' ogni problema in NP si riduce a SAT.
+}
+
+\section{La Classe coNP}
+
+Abbiamo visto che NP e' la classe dei problemi di decisione per i quali un ``si''' puo' essere verificato in tempo polinomiale a patto di avere un certificato adeguato: per SAT un'assegnazione soddisfacente, per HAMILTONIAN PATH la sequenza dei vertici, per CLIQUE la lista dei vertici della clique.
+
+Ma cosa succede se invertiamo la domanda? Se invece di chiedere ``\textit{esiste} un'assegnazione che soddisfa $\varphi$?'' chiediamo ``\textit{tutte} le assegnazioni la soddisfano?'' o ``\textit{nessuna} la soddisfa?''. Questi problemi sembrano strutturalmente diversi: per dire ``no'' a ``tutte le assegnazioni soddisfano'' basta esibire un controesempio, ma per dire ``si''' sembra necessario controllare tutte le possibilita'. Questa asimmetria fra ``esiste'' e ``per ogni'' porta naturalmente alla definizione di \textbf{coNP}.
+
+\subsection{Definizione}
+
+\dfn{Complemento di un linguaggio}{
+  Dato $L \subseteq \Sigma^*$, il suo complemento e':
+  \[
+    \overline{L} = \Sigma^* \setminus L = \{x \in \Sigma^* \mid x \notin L\}
+  \]
+  Per problemi ``naturali'' con codifiche fissate, il complemento nel senso del linguaggio coincide con l'intuizione: ``scambia le risposte si' e no''.
+}
+
+\dfn{Classe coNP}{
+  \[
+    \text{coNP} = \{L \mid \overline{L} \in \text{NP}\}
+  \]
+  Equivalentemente, $L \in \text{coNP}$ se esiste una NTM $N$ polinomiale che decide $\overline{L}$, oppure se esiste un polinomio $p$ e una MdT deterministica $M$ tale che:
+  \[
+    x \in L \iff \forall\, y,\; |y| \leq p(|x|),\; M(x, y) \text{ accetta}
+  \]
+}
+
+\nt{
+  Confrontando NP e coNP la differenza e' un singolo quantificatore:
+  \[
+    L \in NP \iff \exists\, y,\; |y| \leq p(|x|) : M(x,y) \text{ accetta}
+  \]
+  \[
+    L \in coNP \iff \forall\, y,\; |y| \leq p(|x|) : M(x,y) \text{ accetta}
+  \]
+  In NP il certificato $y$ e' un \textit{testimone positivo}; in coNP, negando l'espressione, $x \notin L \iff \exists\, y : M(x,y) \text{ rifiuta}$: $y$ e' un \textit{controesempio} (o \textit{refuter}), cioe' una prova polinomialmente verificabile che $x \notin L$.
+}
+
+\subsection{Esempi classici di problemi in coNP}
+
+\ex{TAUT -- Tautologie booleane}{
+  Il prototipo dei problemi coNP:
+  \[
+    \text{TAUT} = \{\varphi \mid \varphi \text{ e' una tautologia}\} = \{\varphi \mid \forall\, a,\; \varphi(a) = 1\}
+  \]
+  Il complemento $\overline{\text{TAUT}} = \{\varphi \mid \exists\, a : \varphi(a) = 0\}$ equivale a SAT applicato a $\neg \varphi$: $\varphi$ non e' tautologia sse $\neg \varphi$ e' soddisfacibile. Poiche' SAT $\in$ NP, $\overline{\text{TAUT}} \in$ NP, quindi TAUT $\in$ coNP.
+
+  Verificare un ``si''' richiederebbe controllare tutte le $2^n$ assegnazioni; verificare un ``no'' richiede solo un controesempio. Struttura duale a SAT.
+}
+
+\ex{UNSAT}{
+  \[
+    \text{UNSAT} = \{\varphi \mid \varphi \text{ non e' soddisfacibile}\} = \{\varphi \mid \forall\, a,\; \varphi(a) = 0\}
+  \]
+  $\overline{\text{UNSAT}} = \text{SAT} \in$ NP $\Rightarrow$ UNSAT $\in$ coNP. Dire ``si''' significa certificare che \textbf{nessuna} assegnazione soddisfa $\varphi$.
+}
+
+\ex{NON-HAM -- grafi non hamiltoniani}{
+  \[
+    \text{NON-HAM} = \{G \mid G \text{ non ha un ciclo hamiltoniano}\}
+  \]
+  Complemento di HAM $\in$ NP (certificato = sequenza dei vertici). Quindi NON-HAM $\in$ coNP.
+}
+
+\ex{NON-CLIQUE}{
+  \[
+    \text{NON-CLIQUE} = \{\langle G, k \rangle \mid G \text{ non contiene clique di dimensione } k\}
+  \]
+  Complemento di CLIQUE, quindi in coNP.
+}
+
+\ex{PRIMES -- storicamente un esempio paradigmatico}{
+  \[
+    \text{PRIMES} = \{n \mid n \text{ e' primo}\}
+  \]
+  Il complemento $\text{COMPOSITE} = \{n \mid n \text{ non e' primo}\}$ e' in NP: il certificato e' un divisore non banale di $n$. Quindi PRIMES $\in$ coNP.
+
+  \textbf{Nota storica}: PRIMES e' stato dimostrato \textbf{in $P$} nel 2002 dall'algoritmo AKS (Agrawal-Kayal-Saxena). Per decenni fu un esempio cruciale di problema in $NP \cap coNP$ non noto in $P$.
+}
+
+\subsection{Relazione tra P, NP e coNP}
+
+\thm{$P \subseteq NP \cap coNP$}{
+  \label{th:p-subset-np-conp}
+  Se $L \in P$, allora $L \in NP \cap coNP$.
+}
+\pf{Dimostrazione}{
+  Se $L \in P$, un algoritmo deterministico polinomiale $M$ decide $L$. Lo stesso $M$ (negando il risultato) decide $\overline{L}$ in tempo polinomiale $\Rightarrow$ $\overline{L} \in P \subseteq$ NP $\Rightarrow$ $L \in$ coNP. Analogamente $L \in$ NP.
+}
+
+\thm{$P = NP \Rightarrow NP = coNP$}{
+  Se $P = NP$, allora $NP = coNP$.
+}
+\pf{Dimostrazione}{
+  \begin{itemize}
+    \item \textbf{NP $\subseteq$ coNP}: sia $L \in$ NP $=$ P. Poiche' $P$ e' chiusa sotto complemento (Teorema~\ref{th:p-subset-np-conp}: basta invertire la risposta del decisore), $\overline{L} \in P = $ NP. Per definizione di coNP, $L \in$ coNP.
+    \item \textbf{coNP $\subseteq$ NP}: sia $L \in$ coNP, cioe' $\overline{L} \in$ NP $=$ P. Di nuovo per chiusura di $P$ sotto complemento (Teorema~\ref{th:p-subset-np-conp}), $L \in P =$ NP.
+  \end{itemize}
+  \textbf{Contropositiva}: se NP $\neq$ coNP allora $P \neq NP$. Separare NP da coNP sarebbe dunque un modo per dimostrare $P \neq NP$ -- ma nessuno sa come fare nessuna delle due separazioni.
+}
+
+\nt{
+  \textbf{Congetture sulle inclusioni}:
+  \begin{itemize}
+    \item $P \neq NP$ (la domanda madre).
+    \item $NP \neq coNP$ (piu' forte di $P \neq NP$).
+    \item $P \subsetneq NP \cap coNP$ (aperto).
+  \end{itemize}
+  Se SAT fosse in coNP, ogni formula non soddisfacibile avrebbe una prova succinta della sua insoddisfacibilita' -- cosa che si crede non esista. Nessuno sa come costruire tali prove, e la comunita' scientifica congettura che non ce ne siano.
+}
+
+\subsection{coNP-Completezza}
+
+\dfn{coNP-Completezza}{
+  Un linguaggio $L$ e' \textit{coNP-Completo} se:
+  \begin{enumerate}
+    \item $L \in$ coNP
+    \item $\forall\, L' \in$ coNP, $L' \leq_P L$ (coNP-hardness)
+  \end{enumerate}
+  $L$ e' ``il piu' difficile'' dei problemi in coNP, nello stesso senso in cui SAT e' ``il piu' difficile'' dei problemi in NP.
+}
+
+\thm{Chiusura di coNP sotto riduzione polinomiale}{
+  \label{th:chiusura-conp-riduzione}
+  Se $A \leq_P B$ e $B \in$ coNP, allora $A \in$ coNP.
+}
+\pf{Dimostrazione}{
+  $B \in$ coNP $\Rightarrow$ $\overline{B} \in$ NP. La stessa riduzione $f$ testimonia $\overline{A} \leq_P \overline{B}$:
+  \[
+    x \in \overline{A} \iff x \notin A \iff f(x) \notin B \iff f(x) \in \overline{B}
+  \]
+  NP e' chiusa sotto riduzione polinomiale $\Rightarrow$ $\overline{A} \in$ NP $\Rightarrow$ $A \in$ coNP.
+}
+
+\thm{Dualita' NP-completezza / coNP-completezza}{
+  \label{th:dualita-np-conp}
+  $L$ e' NP-Completo $\iff$ $\overline{L}$ e' coNP-Completo.
+}
+\pf{Dimostrazione}{
+  \begin{itemize}
+    \item \textbf{Membership}: $L \in$ NP $\iff$ $\overline{L} \in$ coNP per definizione di coNP.
+    \item \textbf{Hardness}: sia $L$ NP-hard, cioe' $\forall L' \in$ NP, $L' \leq_P L$ tramite una riduzione $f$. Verifichiamo che la stessa $f$ testimonia $\overline{L'} \leq_P \overline{L}$:
+    \[
+      x \in \overline{L'} \iff x \notin L' \iff f(x) \notin L \iff f(x) \in \overline{L}
+    \]
+    Poiche' ogni linguaggio in coNP e' il complemento di un linguaggio in NP, $\overline{L}$ e' coNP-hard. Combinando con $\overline{L} \in$ coNP, $\overline{L}$ e' coNP-Completo.
+    \item Simmetricamente nell'altra direzione.
+  \end{itemize}
+}
+
+\ex{Problemi coNP-Completi}{
+  Preso qualsiasi problema NP-Completo, il suo complemento e' coNP-Completo:
+  \begin{itemize}
+    \item \textbf{TAUT}: complemento di SAT (via negazione della formula).
+    \item \textbf{UNSAT}: complemento diretto di SAT.
+    \item \textbf{NON-3-COL}: complemento di 3-COL.
+    \item \textbf{NON-HAM}: complemento di HAM.
+    \item \textbf{NON-CLIQUE}: complemento di CLIQUE.
+  \end{itemize}
+}
+
+\thm{Collasso $NP = coNP$ via problema NP-Completo}{
+  \[
+    NP = coNP \iff \exists\, L \text{ NP-Completo tale che } L \in coNP
+  \]
+}
+\pf{Dimostrazione}{
+  \begin{itemize}
+    \item $(\Rightarrow)$ Supponiamo $NP = coNP$. Per Cook-Levin, SAT e' NP-Completo, quindi SAT $\in$ NP $=$ coNP. Testimone trovato: $L =$ SAT.
+
+    \item $(\Leftarrow)$ Supponiamo che esista $L$ NP-Completo con $L \in$ coNP. Mostriamo $NP = coNP$.
+
+    \textit{NP $\subseteq$ coNP}: sia $L' \in$ NP qualunque. Poiche' $L$ e' NP-hard, $L' \leq_P L$. Per ipotesi $L \in$ coNP, e coNP e' chiusa sotto riduzione polinomiale (Teorema~\ref{th:chiusura-conp-riduzione}), quindi $L' \in$ coNP.
+
+    \textit{coNP $\subseteq$ NP}: sia $M \in$ coNP qualunque, cioe' $\overline{M} \in$ NP. Per la dualita' (Teorema~\ref{th:dualita-np-conp}), $\overline{L}$ e' coNP-Completo, e $\overline{L} \in$ NP (perche' $L \in$ coNP). Poiche' $\overline{L}$ e' coNP-hard e $M \in$ coNP, $M \leq_P \overline{L}$. Ma $\overline{L} \in$ NP e NP e' chiusa sotto riduzione polinomiale, quindi $M \in$ NP.
+  \end{itemize}
+}
+
+\nt{
+  Questo teorema fornisce una strada concreta per dimostrare il collasso $NP = coNP$: basterebbe esibire \textbf{un solo} problema NP-Completo anche in coNP. Ad esempio, ``certificati succinti di non soddisfacibilita''' per SAT (cioe', per ogni $\varphi$ non soddisfacibile, una prova polinomialmente verificabile) dimostrerebbero SAT $\in$ coNP e quindi $NP = coNP$.
+
+  Si congettura che nessun problema NP-Completo stia in coNP. Questa congettura e' piu' forte di $P \neq NP$: se $NP \neq coNP$ allora $P \neq NP$.
+}
+
+\subsection{Certificati: la caratterizzazione duale}
+
+La caratterizzazione via certificati chiarisce la differenza strutturale fra NP e coNP.
+
+\dfn{Certificati}{
+  \begin{itemize}
+    \item \textbf{NP}: $L \in NP \iff \exists$ polinomio $p$, MdT deterministica $M$ tali che
+    \[
+      x \in L \iff \exists\, y,\; |y| \leq p(|x|) : M(x,y) \text{ accetta}
+    \]
+    Il certificato $y$ e' un \textit{testimone positivo}.
+
+    \item \textbf{coNP}: $L \in coNP \iff \exists$ polinomio $p$, MdT deterministica $M$ tali che
+    \[
+      x \in L \iff \forall\, y,\; |y| \leq p(|x|) : M(x,y) \text{ accetta}
+    \]
+    Equivalentemente, $x \notin L \iff \exists\, y : M(x,y) \text{ rifiuta}$: $y$ e' un \textit{controesempio} (refuter), una prova polinomialmente verificabile che $x \notin L$.
+  \end{itemize}
+}
+
+\ex{Testimoni e controesempi}{
+  \begin{center}
+  \begin{tabular}{l l l}
+    \textbf{Problema} & \textbf{Testimone positivo} & \textbf{Controesempio negativo} \\ \hline
+    SAT & assegnamento soddisfacente & -- (congetturato non esistere) \\
+    TAUT & -- (congetturato non esistere) & assegnamento che falsifica $\varphi$ \\
+    CLIQUE & lista dei vertici della clique & -- \\
+    NON-HAM & -- & ciclo hamiltoniano \\
+    PRIMES (pre-AKS) & certificato di Pratt & divisore non banale \\
+  \end{tabular}
+  \end{center}
+}
+
+\subsection{$NP \cap coNP$: i problemi ``ben caratterizzati''}
+
+I problemi in $NP \cap coNP$ hanno certificati brevi \textbf{sia} per i si''' \textbf{sia} per i no. Sono considerati ``a un passo da $P$'': storicamente quasi tutti i problemi naturali in $NP \cap coNP$ hanno finito per essere dimostrati in $P$.
+
+\ex{Problemi in $NP \cap coNP$}{
+  \begin{itemize}
+    \item \textbf{PRIMES} (pre-AKS 2002): certificato positivo = certificato di Pratt; negativo = divisore non banale. Dimostrato in $P$ (AKS).
+    \item \textbf{LINEAR PROGRAMMING} (decisione): in $NP \cap coNP$ per dualita' LP. Dimostrato in $P$ da Khachiyan (metodo dell'ellissoide, 1979).
+    \item \textbf{FACTORING} (versione decisionale): ``dato $n, k$, esiste un divisore di $n$ tra $2$ e $k$?''. In NP (certificato = divisore) e coNP (certificato = fattorizzazione completa). Non noto in $P$: la crittografia RSA ne dipende.
+    \item \textbf{PARITY GAMES}: famoso problema della teoria dei giochi, in $NP \cap coNP$, non noto in $P$.
+  \end{itemize}
+}
+
+\nt{
+  Intuizione: un problema in $NP \cap coNP$ ha buona struttura -- la risposta si puo' sempre giustificare con un certificato polinomiale. Questo suggerisce (ma non dimostra) che il problema sia in $P$. FACTORING e' il candidato piu' famoso per un problema in $NP \cap coNP$ fuori da $P$.
+}
+
+\subsubsection{Il problema della fattorizzazione (FACTORING)}
+
+``Dato un numero, produrre la sua fattorizzazione in primi'' non e' un problema di decisione, quindi non puo' stare in NP. Ne formuliamo la versione decisionale:
+
+\dfn{FACTOR}{
+  \[
+    \text{FACTOR} = \{ \langle n, k \rangle \mid n \text{ e' un naturale che ha almeno un fattore primo } p \leq k \}
+  \]
+}
+
+\ex{}{
+  $175 = 5 \cdot 5 \cdot 7$, quindi $\langle 175, 6 \rangle \in \text{FACTOR}$ e $\langle 175, 4 \rangle \notin \text{FACTOR}$.
+}
+
+\thm{$\text{FACTOR} \in NP \cap coNP$}{
+  \label{th:factor-np-conp}
+  FACTOR appartiene a $NP \cap coNP$.
+}
+\pf{Dimostrazione}{
+  \begin{itemize}
+    \item \textbf{FACTOR $\in NP$}: si indovina un fattore primo $p \leq k$ e si verifica che $p$ sia primo (test AKS, polinomiale deterministico in $O((\log n)^{12})$) e che $p \mid n$ (divisione intera, polinomiale). Tutto polinomiale.
+
+    \item \textbf{FACTOR $\in coNP$}: mostriamo che $\overline{\text{FACTOR}} \in NP$.
+    \[
+      \overline{\text{FACTOR}} = \{ \langle n, k \rangle \mid \text{tutti i fattori primi di } n \text{ sono} > k \}
+    \]
+    Si indovina l'intera fattorizzazione $p_1, p_2, \ldots, p_m$ di $n$. Il numero di fattori e' al piu' $\log_2 n$, polinomiale nella taglia di $n$.
+    \begin{enumerate}
+      \item Si verifica che ogni $p_i$ sia primo: un numero polinomiale di test polinomiali.
+      \item Si verifica $p_1 \cdot p_2 \cdots p_m = n$: moltiplicazione polinomiale.
+      \item Si verifica $p_i > k$ per ogni $i$: confronto polinomiale.
+    \end{enumerate}
+    Dunque $\overline{\text{FACTOR}} \in NP$, cioe' FACTOR $\in$ coNP.
+  \end{itemize}
+  Quindi FACTOR $\in NP \cap coNP$. \qed
+}
+
+\nt{
+  Buona parte dei sistemi crittografici a chiave pubblica (RSA) si basano sulla difficolta' di FACTORING. Non sappiamo se FACTOR $\in P$; nessuno ci e' mai riuscito, e si ipotizza che non lo sia.
+
+  Con alta probabilita' FACTOR non e' NP-Completo: se lo fosse, poiche' FACTOR $\in NP \cap$ coNP, avremmo $NP = coNP$, cosa che non ci aspettiamo.
+}
+
+\section{Le classi EXP e NEXP}
+
+\dfn{EXP}{
+  \[
+    EXP = \bigcup_{c \geq 1} DTime\!\left(2^{n^c}\right)
+  \]
+  Problemi risolvibili da una MdTD in tempo $2^{\text{poly}(n)}$.
+}
+
+\dfn{NEXP}{
+  \[
+    NEXP = \bigcup_{c \geq 1} NTime\!\left(2^{n^c}\right)
+  \]
+  Problemi risolvibili da una MdTN in tempo $2^{\text{poly}(n)}$.
+
+  \textbf{Caratterizzazione via certificati}: $L \in NEXP$ iff le istanze ``si''' hanno certificati di taglia esponenziale verificabili in tempo polinomiale nella taglia combinata di input e certificato. La verifica e' polinomiale in $|x| + |y|$ (non in $|x|$ soltanto), altrimenti sarebbe doppiamente esponenziale nella taglia dell'input.
+}
+
+Le relazioni tra le classi sono:
+\[
+  P \subseteq NP \subseteq EXP \subseteq NEXP
+\]
+\begin{itemize}
+  \item $NP \subseteq EXP$: una MdTN in tempo $p(n)$ si simula deterministicamente esplorando tutti i rami, $2^{O(p(n))} \in EXP$.
+  \item $coNP \subseteq EXP$: se $L \in coNP$ allora $\overline{L} \in NP \subseteq EXP$, e $EXP$ e' chiusa sotto complemento, quindi $L \in EXP$.
+  \item $EXP \subseteq NEXP$: banale.
+\end{itemize}
+
+Non sappiamo se $EXP = NEXP$, pero' sappiamo che $NEXP \neq NP$ (per il teorema di gerarchia temporale non deterministica).
+
+\nt{
+  Le separazioni \textbf{dimostrate} sono $P \subsetneq EXP$ e $NP \subsetneq NEXP$, entrambe per il teorema di gerarchia temporale. Tutte le altre ($P \stackrel{?}{=} NP$, $EXP \stackrel{?}{=} NEXP$, \ldots) sono aperte.
+}
+
 % \end{document}

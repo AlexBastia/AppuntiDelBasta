@@ -1,0 +1,150 @@
+#separator:tab
+#html:true
+#notetype:Basic
+#deck:Informatica Teorica::Complessità Strutturale
+
+Di cosa si occupa la <b>complessità strutturale</b>?	Dello studio della complessità <i>intrinseca</i> dei problemi decidibili ($\in R$), non di algoritmi specifici.<br><br>Domanda guida: <i>"com'è che la struttura di un problema influenza la complessità degli algoritmi che lo risolvono?"</i><br><br>Formalizzata da Hartmanis, Stearns e Lewis (1965).
+
+Cos'è il <b>computation time</b> di una MdT?	Il numero di passi che $M$ esegue prima di arrestarsi su un input $w$.<br><br>Se $M$ è non deterministica: la lunghezza del <b>branch più lungo</b> nell'albero delle computazioni.
+
+Cos'è una <b>time function</b>?	Una funzione $t : \mathbb{N} \to \mathbb{N}$ che sia:<br>• non decrescente<br>• strettamente positiva
+
+Cos'è il <b>running time</b> di una MdT?	$M$ ha running time $t(n)$ se, per tutte le stringhe $w$ a parte un numero finito, il computation time di $M$ su $w$ non eccede $t(\|w\|)$.<br><br>L'eccezione serve a ignorare gli outlier e considerare solo il comportamento asintotico.
+
+Definisci <b>Big O</b>.	$f(n) \in O(g(n))$ se<br>$$\exists c, n_0 : \forall n \geq n_0,\; f(n) \leq c \cdot g(n)$$<br>Limite asintotico <b>superiore</b>.
+
+Definisci <b>Big $\Omega$</b>.	$f(n) \in \Omega(g(n))$ se<br>$$\exists c, n_0 : \forall n \geq n_0,\; f(n) \geq c \cdot g(n)$$<br>Limite asintotico <b>inferiore</b>.
+
+Definisci <b>Big $\Theta$</b>.	$f(n) \in \Theta(g(n))$ se $f \in O(g)$ <b>e</b> $f \in \Omega(g)$.<br><br>Limite asintotico <b>stretto</b>.
+
+Cos'è il <b>time complexity upper bound</b> di un problema $P$?	Si dice $O(f(n))$ se <b>esiste almeno una</b> MdT che risolve $P$ con running time $O(f(n))$.<br><br>"Almeno un algoritmo fa così bene."
+
+Cos'è il <b>time complexity lower bound</b> di un problema $P$?	Si dice $\Omega(f(n))$ se <b>tutte</b> le MdT che risolvono $P$ hanno running time $\Omega(f(n))$.<br><br>"Nessun algoritmo, presente o futuro, può fare meglio."
+
+Definisci <b>DTime(t(n))</b>.	$$DTime(t(n)) = \{L \mid \exists M \text{ deterministica che \underline{decide} } L \text{ in tempo } O(t(n))\}$$
+
+Definisci la classe <b>P</b>.	$$P = \bigcup_{c \geq 1} DTime(n^c)$$<br>La classe dei problemi <b>trattabili</b>: decidibili in tempo polinomiale deterministico.<br><br>Contiene solo <b>problemi di decisione</b> (sì/no) ed è invariante rispetto a modelli di calcolo ragionevoli.
+
+Perché $Primes$ sembra esponenziale con l'algoritmo naive?	L'input $n$ è rappresentato in <b>binario</b>: ha taglia $\|n\| = \log_2 n$ bit. Quindi $n \approx 2^{\|n\|}$ e le $n$ divisioni sono $O(2^{\|n\|})$.<br><br>$Primes \in P$ è stato dimostrato nel 2002 dall'algoritmo <b>AKS</b>.
+
+Definisci <b>NTime(t(n))</b>.	$$NTime(t(n)) = \{L \mid \exists M \text{ non deterministica che decide } L \text{ in tempo } O(t(n))\}$$
+
+Definisci la classe <b>NP</b>.	$$NP = \bigcup_{c \geq 1} NTime(n^c)$$<br>Problemi decisi in tempo polinomiale non deterministico, equivalentemente problemi la cui soluzione si <b>verifica</b> in tempo polinomiale.
+
+Qual è il pattern <b>Guess &amp; Check</b> per NP?	1. <b>Guess</b>: la MdT ND indovina non deterministicamente una soluzione candidata<br>2. <b>Check</b>: verifica in tempo polinomiale deterministico che sia corretta<br><br>La macchina accetta se <i>esiste almeno un ramo</i> dell'albero che accetta.
+
+Perché $P \subseteq NP$?	Una MdT deterministica è un caso particolare di MdT non deterministica (con un solo ramo). Qualsiasi problema risolvibile in $P$ può essere risolto anche da una NTM nello stesso tempo.
+
+Cos'è il risultato di <b>Baker, Gill, Solovay (1975)</b>?	Esistono due oracoli $A, B$ tali che $P^A = NP^A$ ma $P^B \neq NP^B$.<br><br>Conseguenza: nessuna tecnica <b>relativizzante</b> (come la diagonalizzazione pura) può risolvere P vs NP.
+
+Definisci <b>riduzione polinomiale</b> $A \leq_P B$.	$\exists f : \Sigma^* \to \Sigma^*$ tale che:<br>1. $f$ è calcolabile in tempo polinomiale deterministico<br>2. $\forall w \in \Sigma^*:\; w \in A \iff f(w) \in B$
+
+Definisci <b>NP-Hardness</b>.	$A$ è NP-Hard se $\forall L \in NP.\; L \leq_P A$.<br><br>$A$ è "almeno difficile quanto qualsiasi problema in NP" (ma non richiede $A \in NP$).
+
+Definisci <b>NP-Completeness</b>.	$A$ è NP-Completo se:<br>1. $A$ è NP-Hard<br>2. $A \in NP$
+
+Enuncia il <b>Teorema di Collasso di NP</b>.	Sia $L$ NP-Completo. Allora:<br>$$L \in P \iff P = NP$$<br>Un solo problema NP-Completo in $P$ farebbe collassare NP su P.
+
+Dimostra $L \in P \Rightarrow P = NP$ (per $L$ NP-Completo).	$L$ NP-Completo $\Rightarrow$ ogni $L' \in NP$ si riduce polinomialmente a $L$. Per ipotesi $L \in P$, quindi la composizione (riduzione + decisore di $L$) decide $L'$ in tempo polinomiale $\Rightarrow$ $NP \subseteq P$.<br><br>$P \subseteq NP$ è banale. Dunque $P = NP$.
+
+Enuncia la <b>transitività</b> delle riduzioni polinomiali.	Se $A \leq_P B$ e $B \leq_P C$ allora $A \leq_P C$.<br><br>Basta comporre le funzioni: la composizione di due funzioni polinomiali è polinomiale.
+
+Se $A$ è NP-Hard e $A \leq_P B$, cosa posso concludere?	$B$ è NP-Hard.<br><br>Per transitività: $\forall L \in NP.\; L \leq_P A \leq_P B \Rightarrow L \leq_P B$.<br><br>È il modo pratico per dimostrare NP-hardness: ridursi da un problema già noto NP-Hard.
+
+Definisci <b>3SAT</b>.	$$\text{3SAT} = \{\psi \mid \psi \text{ è in 3CNF ed è soddisfacibile}\}$$<br>Come SAT, ma ogni clausola $c_i$ ha al più <b>3 letterali</b>.
+
+Come riduco una clausola di $k$ letterali a 3CNF?	• $k=1$, $(l_1)$: si aggiungono $y_1, y_2$ fresche e si sostituisce con le 4 clausole $(l_1 \vee \pm y_1 \vee \pm y_2)$<br>• $k=2$, $(l_1 \vee l_2)$: si aggiunge $y$ e si sostituisce con $(l_1 \vee l_2 \vee y) \wedge (l_1 \vee l_2 \vee \neg y)$<br>• $k=3$: invariata<br>• $k>3$: catena con $k-3$ variabili fresche $z_1, \dots, z_{k-3}$:<br>$(l_1 \vee l_2 \vee z_1)\wedge(\neg z_1 \vee l_3 \vee z_2)\wedge\cdots\wedge(\neg z_{k-3} \vee l_{k-1} \vee l_k)$
+
+Perché la catena $k > 3$ preserva la soddisfacibilità?	<b>Completezza</b>: se $l_{i^*}$ è il letterale vero, si pone $z_j = \top$ per $j < i^*-2$ e $z_j = \bot$ per $j \geq i^*-2$.<br><br><b>Correttezza</b>: se tutti i $l_j$ fossero falsi, la catena forzerebbe $z_1 = z_2 = \cdots = \top$, ma nell'ultima clausola $(\neg z_{k-3} \vee l_{k-1} \vee l_k)$ tutto sarebbe $\bot$. Contraddizione.
+
+Definisci <b>Independent Set (IS)</b> (problema decisionale).	$$\text{IS} = \{\langle G, k\rangle \mid G \text{ ha un IS } S \text{ con } |S| \geq k\}$$<br>Un IS è $S \subseteq V$ tale che nessuna coppia di nodi in $S$ è collegata da un arco.
+
+Come funziona la riduzione $\text{3SAT} \leq_P \text{IS}$?	Data $\varphi = C_1 \wedge \cdots \wedge C_m$ in 3CNF, si costruisce $\langle G, k\rangle$ con $k = m$:<br>• <b>Nodi</b>: uno per ogni <i>occorrenza</i> di letterale ($3m$ nodi), raggruppati in $m$ triangoli<br>• <b>Archi intra-clausola</b>: triangoli tra i 3 nodi di ogni clausola (al più un nodo per clausola in $S$)<br>• <b>Archi inter-clausola</b>: tra letterali complementari ($x_i$ e $\neg x_i$ in clausole diverse)
+
+Definisci <b>Vertex Cover (VC)</b>.	$$\text{VC} = \{\langle G, k\rangle \mid G \text{ ha un VC } C \text{ con } |C| \leq k\}$$<br>Un VC è $C \subseteq V$ tale che per ogni arco $\{u,v\} \in E$, almeno uno tra $u$ e $v$ appartiene a $C$.<br><br>Intuizione: telecamere agli incroci per sorvegliare tutti i corridoi.
+
+Enuncia il <b>Lemma del Complemento IS-VC</b>.	Sia $G = (V,E)$ e $S \subseteq V$. Allora:<br>$$S \text{ è IS di } G \iff V \setminus S \text{ è VC di } G$$<br><b>Corollario</b>: $G$ ha IS di taglia $k$ $\iff$ $G$ ha VC di taglia $|V|-k$.
+
+Come funziona la riduzione $\text{IS} \leq_P \text{VC}$?	Data $\langle G, k\rangle$ istanza di IS, si costruisce $\langle H, \ell\rangle$ con:<br>• $H = G$ (stesso grafo)<br>• $\ell = |V| - k$<br><br>Per il Lemma del Complemento, $G$ ha IS $\geq k$ $\iff$ $G$ ha VC $\leq |V|-k$. Costo $O(1)$ (solo il parametro cambia).
+
+Definisci <b>CLIQUE</b>.	$$\text{CLIQUE} = \{\langle G, k\rangle \mid G \text{ ha una clique } C \text{ con } |C| \geq k\}$$<br>Una clique è $C \subseteq V$ tale che ogni coppia $u, v \in C$ è collegata.
+
+Enuncia il <b>Lemma del Complemento IS-Clique</b>.	Sia $G = (V,E)$ e $S \subseteq V$. Allora:<br>$$S \text{ è IS di } G \iff S \text{ è clique di } \overline{G}$$<br>dove $\overline{G}$ è il grafo complemento: $\overline{E} = \{\{u,v\} \mid u \neq v, \{u,v\} \notin E\}$.
+
+Come funziona la riduzione $\text{IS} \leq_P \text{CLIQUE}$?	Data $\langle G, k\rangle$ istanza di IS, si costruisce:<br>• $H = \overline{G}$ (grafo complemento)<br>• $\ell = k$ (stesso parametro)<br><br>Per il lemma, $G$ ha IS $\geq k$ $\iff$ $\overline{G}$ ha clique $\geq k$. Costo $O(|V|^2)$.
+
+Definisci <b>Dominating Set (DS)</b>.	Un DS è $D \subseteq V$ tale che ogni $v \in V \setminus D$ ha almeno un vicino $u \in D$ con $\{u,v\} \in E$.<br><br>$\text{DS} = \{\langle G, k\rangle \mid G \text{ ha DS } D \text{ con } |D| \leq k\}$<br><br>"$D$ domina $V$: ogni nodo fuori è raggiungibile in un salto."
+
+Qual è la differenza tra <b>VC</b> e <b>DS</b>?	• <b>VC</b>: copre tutti gli <i>archi</i> (ogni arco ha un estremo nel cover)<br>• <b>DS</b>: raggiunge tutti i <i>nodi</i> (ogni nodo esterno ha un vicino nel set)<br><br>Un VC in grafi senza nodi isolati è sempre un DS, ma non viceversa: un DS può saltare un arco intero.
+
+Come funziona la riduzione $\text{VC} \leq_P \text{DS}$?	Non si può usare $H = G$ (un DS non implica un VC). Costruzione:<br>• Per ogni arco $e = \{u,v\}$ di $G$, si aggiunge un nuovo nodo $v_e$ collegato a $u$ e $v$ (e a nient'altro)<br>• $\ell = k$<br><br>Ogni VC di $G$ è un DS di $H$; ogni DS di $H$ si trasforma in VC di $G$ sostituendo i $v_e$ con un loro estremo.
+
+Definisci <b>Kernel</b>.	Dato un grafo <b>diretto</b> $G$, un kernel $K \subseteq V$ soddisfa:<br>1. <b>Indipendenza</b>: $\forall u,v \in K.\; (u,v) \notin E$<br>2. <b>Dominanza (assorbenza)</b>: $\forall v \notin K.\; \exists u \in K.\; (v, u) \in E$ (arco <b>uscente</b> da $v$ verso $K$)<br><br>$\text{KERNEL} = \{G \mid G \text{ diretto che possiede un kernel}\}$<br>Non c'è parametro $k$.
+
+Come funziona la riduzione $\text{3SAT} \leq_P \text{KERNEL}$?	<b>Gadget variabile</b>: per ogni $x_i$, due nodi $x_i \leftrightarrow \neg x_i$ collegati bidirezionalmente (esattamente uno in $K$).<br><b>Nodi clausola</b>: uno per ogni $C_j$.<br><b>Archi</b>:<br>• $C_j \to \ell$ per ogni letterale $\ell \in C_j$<br>• $\bar{\ell} \to C_j$ per ogni letterale $\ell \in C_j$<br><br>$K$ = letterali veri di $\tau$; ogni $C_j$ è dominata tramite un letterale vero.
+
+Cos'è una <b>relazione binaria</b> per certificati?	$R \subseteq \Sigma^* \times \Sigma^*$: insieme di coppie $\langle x, y\rangle$ dove $x$ è l'istanza e $y$ il <b>certificato</b>.<br><br>La relazione "certifica" istanze sì: $x \in L \iff \exists y.\; \langle x,y\rangle \in R$.
+
+Cosa significa <b>polinomialmente bilanciata</b>?	$R$ è pol. bilanciata se $\exists c$ tale che $\forall \langle x,y\rangle \in R:\; \|y\| \leq \|x\|^c$.<br><br>Il certificato non è esponenzialmente più grande dell'istanza (altrimenti non potremmo nemmeno leggerlo in tempo polinomiale).
+
+Cosa significa <b>polinomialmente decidibile</b>?	$R$ è pol. decidibile se esiste una MdT deterministica che, data una coppia $\langle x,y\rangle$, decide in tempo polinomiale se $\langle x,y\rangle \in R$.<br><br>Dato il certificato, possiamo verificarne la correttezza in tempo polinomiale.
+
+Enuncia la <b>caratterizzazione di NP tramite certificati</b>.	$$L \in NP \iff \exists R_L \text{ pol. bilanciata e pol. decidibile tale che } L = \{x \mid \exists y.\; \langle x,y\rangle \in R_L\}$$<br><br>NP = problemi le cui istanze sì ammettono <b>certificati concisi e polinomialmente verificabili</b>.
+
+Dimostra $(\Leftarrow)$ di NP via certificati (da $R_L$ a NP).	Data $R_L$ pol. bilanciata/decidibile, costruiamo NTM $M$:<br>1. Su input $x$, indovina non det. $y$ di lunghezza $\leq \|x\|^c$<br>2. Verifica deterministicamente $\langle x,y\rangle \in R_L$ (polinomiale)<br>3. Accetta sse la verifica dà sì<br><br>$x \in L \Rightarrow$ esiste $y$, un ramo lo indovina. $x \notin L \Rightarrow$ nessun $y$ funziona.
+
+Dimostra $(\Rightarrow)$ di NP via certificati (da NP a $R_L$).	Sia $L \in NP$ deciso da NTM $M$ in tempo $p(n)$. Usiamo come certificato $y$ = <b>sequenza di ID del ramo accettante</b>.<br><br>• <b>Bilanciata</b>: al più $p(n)$ configurazioni di taglia $\leq p(n)$, totale $p(n)^2$ polinomiale<br>• <b>Decidibile</b>: si verifica che ogni ID sia legal successor della precedente e che l'ultima sia accettante (polinomiale)<br><br>Certificati validi esistono sse $x \in L$.
+
+Definisci <b>VCOL</b> e il <b>numero cromatico</b>.	Una $k$-colorazione di $G$ è $f : V \to \{1,\dots,k\}$ tale che $\{u,v\} \in E \Rightarrow f(u) \neq f(v)$.<br><br>Il numero cromatico $\chi(G)$ è il minimo $k$ per cui $G$ è $k$-colorabile.<br><br>$\text{VCOL} = \{\langle G, k\rangle \mid G \text{ ammette } k\text{-colorazione}\}$
+
+Qual è la dicotomia di complessità di $k$-VCOL?	• $k = 1$: banale ($G$ senza archi)<br>• $k = 2$: in P ($G$ bipartito, verificabile con BFS/DFS)<br>• $k \geq 3$: <b>NP-Completo</b><br><br>Aggiungere un solo colore trasforma un problema trattabile in uno intrattabile.
+
+Quali sono i 3 ingredienti della riduzione $\text{3SAT} \leq_P \text{3-VCOL}$?	1. <b>Triangolo base</b> $\{T, F, B\}$: forza 3 colori distinti (true, false, base)<br>2. <b>Gadget variabile</b>: nodi $x_i, \neg x_i$ collegati tra loro e a $B$ $\Rightarrow$ uno riceve "true", l'altro "false"<br>3. <b>Gadget OR</b>: sotto-grafo con 2 input e 1 output, output può essere "true" sse almeno un input lo è<br><br>L'output di ogni clausola è collegato a $F, B$ per forzarlo a "true".
+
+Definisci <b>Exact Cover (EC)</b>.	Dato universo $U$ e famiglia $\mathcal{F}$ di sottoinsiemi, una exact cover è $\mathcal{P} \subseteq \mathcal{F}$ che forma una <b>partizione</b> di $U$:<br>1. <b>Copertura</b>: $\bigcup_{s \in \mathcal{P}} s = U$<br>2. <b>Disgiunzione</b>: $\mathcal{P}$ a due a due disgiunti
+
+Qual è la differenza tra <b>EC</b> e <b>Set Cover</b>?	• <b>Set Cover</b>: copre $U$ con al più $k$ insiemi, <b>sovrapposizioni permesse</b><br>• <b>Exact Cover</b>: ogni elemento di $U$ compare in <b>esattamente uno</b> degli insiemi selezionati
+
+Come funziona la riduzione $\text{3SAT} \leq_P \text{EC}$?	Universo $U_\varphi$ = variabili $\{x_i\}$ $\cup$ clausole $\{c_j\}$ $\cup$ ausiliari $\{P_{j,k}\}$.<br>3 tipi di insiemi in $\mathcal{F}_\varphi$:<br>• <b>Singleton</b> $\{P_{j,k}\}$ (riempitivi)<br>• <b>Verità</b> $T_{i,\top} = \{x_i\} \cup \{P_{j,k} : \lambda_{j,k} = \neg x_i\}$ e $T_{i,\bot}$ simmetrico<br>• <b>Clausola</b> $\{c_j, P_{j,k}\}$<br><br>Scegliere $T_{i,\top}$ o $T_{i,\bot}$ = assegnare $x_i$; $\{c_j, P_{j,k}\}$ selezionabile solo se $\lambda_{j,k}$ vero.
+
+Definisci <b>Knapsack</b> (decisionale).	Dati pesi $w_1,\dots,w_n$, valori $v_1,\dots,v_n$, capacità $W$, soglia $K$:<br>$$\text{KN} = \{(\vec w, \vec v, W, K) \mid \exists S : \sum_{i \in S} w_i \leq W \wedge \sum_{i \in S} v_i \geq K\}$$
+
+Qual è l'idea della riduzione $\text{EC} \leq_P \text{Knapsack}$?	Codificare ogni $F_i \in \mathcal{F}$ come intero in base $m+1$: la $j$-esima cifra vale $1$ se $j \in F_i$, $0$ altrimenti.<br><br>Si pone $w_i = v_i$ e $W = K = (1,1,\dots,1)_{m+1}$. Base $m+1$ $\Rightarrow$ <b>nessun riporto</b> (al più $m$ numeri sommati) $\Rightarrow$ $\sum w_i = W$ sse gli $F_i$ sono disgiunti e coprono tutto.
+
+Cos'è la <b>pseudo-polinomialità</b> di Knapsack?	Esiste DP in tempo $O(n \cdot W)$, apparentemente polinomiale.<br><br>Ma $W$ è codificato con $b$ bit $\Rightarrow$ $W \leq 2^b$: <b>esponenziale nella taglia dell'input</b>.<br><br>Un algoritmo polinomiale nel valore ma non nella taglia è <b>pseudo-polinomiale</b>. Knapsack è NP-Completo "debole": facile se i numeri sono piccoli.
+
+Cosa afferma il <b>Teorema di Cook-Levin</b>?	<b>SAT è NP-Completo</b>.<br><br>$SAT \in NP$ è facile. La parte difficile è $\forall L \in NP.\; L \leq_P SAT$: senza di questo non avremmo nessun problema NP-Hard concreto. Dimostrato da Cook (1971) e Levin (1973) indipendentemente.
+
+Qual è la strategia del Teorema di Cook-Levin?	Dato $L \in NP$ deciso da NTM $M$ in tempo $p(n)$, si costruisce $\varphi_w$ in CNF tale che:<br>$$\varphi_w \text{ soddisfacibile} \iff \exists \text{ cammino accettante di } M \text{ su } w$$<br><br>La computazione di $M$ è <b>locale</b> (passo dipende solo da stato, testina, simbolo) $\Rightarrow$ si codifica in vincoli booleani polinomiali.
+
+Quali variabili booleane si usano in Cook-Levin?	Per ogni passo $i \in \{1, \dots, p(n)\}$:<br>• $q^i$: "al passo $i$ lo stato è $q$"<br>• $h^{i,j}$: "al passo $i$ la testina è sulla cella $j$"<br>• $\alpha^{i,j}$: "al passo $i$ la cella $j$ contiene $\alpha$"<br>• $u^{i,j}$: "la cella $j$ non cambia dal passo $i$ al $i+1$"<br><br>Totale $O(p(n)^2 \cdot (|Q| + |\Gamma|))$ variabili, polinomiale.
+
+Com'è strutturata la formula $\varphi_w$ in Cook-Levin?	$\varphi_w = \text{Cons} \wedge \text{Init} \wedge \text{Trans} \wedge \text{Accept}$<br>• <b>Cons</b>: coerenza (esattamente uno stato, una testina, un simbolo per cella)<br>• <b>Init</b>: configurazione iniziale ($q_1, h^{1,1}, w_1\cdots w_n$)<br>• <b>Trans</b>: transizioni legali (inerzia per celle lontane, transizioni per cella sotto testina)<br>• <b>Accept</b>: $q_{\text{acc}}^{p(n)}$
+
+Come si codifica il <b>non determinismo</b> in Cook-Levin?	Come <b>OR</b>: se $\delta(q, \alpha) = \{(q'_1, \beta_1, d_1), (q'_2, \beta_2, d_2), \dots\}$, si scrive<br>$$q^i \wedge h^{i,j} \wedge \alpha^{i,j} \Rightarrow \bigvee_k (q'^{i+1}_k \wedge h^{i+1,j+d_k} \wedge \beta_k^{i+1,j})$$<br><br>L'assegnamento "sceglie" quale transizione applicare: simula la scelta del ramo.
+
+Definisci la classe <b>coNP</b>.	$$\text{coNP} = \{L \mid \overline{L} \in NP\}$$<br>Equivalentemente via certificati:<br>$$x \in L \iff \forall y, |y| \leq p(|x|) : M(x,y) \text{ accetta}$$<br><br>In NP il certificato è un <b>testimone positivo</b> ($\exists$); in coNP è un <b>controesempio/refuter</b> ($\neg x \in L \iff \exists y$ che rifiuta).
+
+Esempi classici di problemi in <b>coNP</b>.	• <b>TAUT</b>: $\{\varphi \mid \forall a.\; \varphi(a) = 1\}$ (complemento di SAT via negazione)<br>• <b>UNSAT</b>: $\{\varphi \mid \forall a.\; \varphi(a) = 0\}$<br>• <b>NON-HAM</b>: grafi senza ciclo hamiltoniano<br>• <b>NON-CLIQUE</b>: senza clique di taglia $k$<br>• <b>PRIMES</b> (pre-AKS): complemento = COMPOSITE con certificato = divisore
+
+Dimostra $P \subseteq NP \cap coNP$.	Sia $L \in P$ deciso da $M$ deterministica polinomiale. Stesso $M$ (invertendo la risposta) decide $\overline{L}$ in tempo polinomiale $\Rightarrow$ $\overline{L} \in P \subseteq NP \Rightarrow L \in coNP$.<br><br>Analogamente $L \in NP$ perché $P \subseteq NP$.
+
+Dimostra $P = NP \Rightarrow NP = coNP$.	• <b>NP $\subseteq$ coNP</b>: $L \in NP = P$. $P$ chiusa sotto complemento $\Rightarrow$ $\overline{L} \in P = NP \Rightarrow L \in coNP$<br>• <b>coNP $\subseteq$ NP</b>: $L \in coNP \Rightarrow \overline{L} \in NP = P$. Per chiusura $L \in P = NP$<br><br><b>Contropositiva</b>: $NP \neq coNP \Rightarrow P \neq NP$.
+
+Definisci <b>coNP-Completezza</b>.	$L$ è coNP-Completo se:<br>1. $L \in coNP$<br>2. $\forall L' \in coNP.\; L' \leq_P L$<br><br>$L$ è "il più difficile" dei problemi in coNP.
+
+Enuncia la <b>dualità NP-completezza / coNP-completezza</b>.	$L$ è NP-Completo $\iff$ $\overline{L}$ è coNP-Completo.<br><br>Dimostrazione: stessa riduzione $f$ testimonia $L' \leq_P L \iff \overline{L'} \leq_P \overline{L}$ perché $x \in \overline{L'} \iff f(x) \in \overline{L}$.
+
+coNP è chiusa sotto riduzione polinomiale?	Sì: se $A \leq_P B$ e $B \in coNP$ allora $A \in coNP$.<br><br>Dim: la stessa $f$ testimonia $\overline{A} \leq_P \overline{B}$, e NP è chiusa sotto $\leq_P$.
+
+Enuncia il <b>collasso $NP = coNP$ via NP-completo</b>.	$$NP = coNP \iff \exists L \text{ NP-Completo tale che } L \in coNP$$<br><br>Basterebbe esibire <b>un solo</b> problema NP-Completo anche in coNP (ad esempio, certificati succinti di insoddisfacibilità per SAT) per dimostrare $NP = coNP$.
+
+Definisci <b>FACTOR</b>.	$$\text{FACTOR} = \{\langle n, k\rangle \mid n \in \mathbb{N} \text{ ha almeno un fattore primo } p \leq k\}$$<br><br>Versione decisionale del problema della fattorizzazione.
+
+Dimostra $\text{FACTOR} \in NP \cap coNP$.	• <b>FACTOR $\in NP$</b>: si indovina $p \leq k$, si verifica che $p$ è primo (AKS polinomiale) e $p \mid n$<br>• <b>FACTOR $\in coNP$</b>: $\overline{\text{FACTOR}} \in NP$ indovinando l'intera fattorizzazione $p_1, \dots, p_m$ (al più $\log_2 n$ fattori), verificando primalità, prodotto $= n$, e $p_i > k$ per ogni $i$
+
+Perché FACTOR è improbabile essere NP-Completo?	Se FACTOR fosse NP-Completo, poiché FACTOR $\in NP \cap coNP$ avremmo $NP = coNP$ (via collasso), cosa che si congettura <b>falsa</b>.<br><br>$NP \neq coNP$ è una congettura più forte di $P \neq NP$.
+
+Definisci <b>EXP</b> e <b>NEXP</b>.	$$EXP = \bigcup_{c \geq 1} DTime(2^{n^c})$$$$NEXP = \bigcup_{c \geq 1} NTime(2^{n^c})$$<br>Problemi risolvibili in tempo $2^{\text{poly}(n)}$ rispettivamente deterministico/non deterministico.
+
+Quali relazioni valgono tra le classi principali?	$$P \subseteq NP \subseteq EXP \subseteq NEXP$$<br>• $NP \subseteq EXP$: simulazione deterministica di una NTM polinomiale costa $2^{O(p(n))}$<br>• $coNP \subseteq EXP$: $EXP$ è chiusa sotto complemento<br>• <b>Separazioni dimostrate</b>: $P \subsetneq EXP$ e $NP \subsetneq NEXP$ (teorema di gerarchia temporale)<br>• Tutte le altre ($P \overset?= NP$, $EXP \overset?= NEXP$) sono aperte.
