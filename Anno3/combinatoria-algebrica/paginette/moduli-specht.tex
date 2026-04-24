@@ -80,8 +80,15 @@ Indichiamo adesso tre relazioni d'ordine sulle partizioni:
 
 \section{Tableau di Young}
 
-\dfn{Semi-Standard Young Tableau}{
-  Riempimento di un diagramma di Ferrer con numeri $ \{1,...,n\} $ strettamente ascendenti sulle colonne e debolmente ascendenti sulle righe.
+\dfn{Semi-Standard Young Tableau (SSYT)}{
+  Dati $\mu \subseteq \lambda$ partizioni, un \textbf{Tableau di Young Semistandard} di forma
+  $\lambda/\mu$ è un riempimento del diagramma di Ferrers di $\lambda/\mu$ con interi positivi
+  tali che le entrate siano:
+  \begin{itemize}
+    \item \textbf{debolmente crescenti} lungo ogni riga (da sinistra verso destra);
+    \item \textbf{strettamente crescenti} lungo ogni colonna (dal basso verso l'alto,
+          notazione francese).
+  \end{itemize}
 }
 
 \dfn{Tableau iniettivo}{
@@ -99,7 +106,10 @@ Data una partizione $\lambda \vdash n$ con diagramma di Ferrers associato, un \t
 }
 
 \dfn{Tableau di Young Standard (SYT)}{
-Un \textbf{Tableau di Young Standard} è un tableau iniettivo in cui le entrate sono strettamente crescenti lungo ogni riga (da sinistra a destra) e lungo ogni colonna (dal basso verso l'alto).
+  Un \textbf{Tableau di Young Standard} di forma $\lambda/\mu$ con $|\lambda/\mu|=n$ è un SSYT
+  in cui ogni intero da $1$ a $n$ compare \textbf{esattamente una volta}. Equivalentemente,
+  è un tableau iniettivo con entrate strettamente crescenti lungo ogni riga
+  (da sinistra verso destra) e lungo ogni colonna (dal basso verso l'alto).
 }
 
 \ex{Tableaux}{
@@ -560,6 +570,39 @@ La dimostrazione si articola in due parti: prima mostriamo che i vettori di Spec
 
 \pf{Dimostrazione}{
   Sia $q \in C(T)$ con $q \neq \mathrm{id}$. Allora $q$ sposta almeno un'entrata verso l'alto nella sua colonna (dato che $T$ è SYT, le colonne sono crescenti dal basso verso l'alto). L'entrata spostata verso l'alto va in una riga con indice maggiore, il che fa diminuire le somme parziali in almeno una componente della forma di $\{qT\}$. Quindi esiste un $i$ tale che $\mathrm{sh}(\{T\}^i) \not\leq \mathrm{sh}(\{qT\}^i)$, da cui $\{T\} \not\leq \{qT\}$.
+}
+
+\ex{Lemma sull'ordine e gruppo di colonna}{
+  Sia $\lambda = (2,1)$ e consideriamo l'SYT
+  \begin{center}
+    $T = $\begin{ytableau}
+      2\\
+      1 & 3
+    \end{ytableau}
+  \end{center}
+  Le colonne di $T$ sono $\{1,2\}$ e $\{3\}$, quindi $C(T) = \{\mathrm{id},\, (1\,2)\}$. Prendiamo $q = (1\,2) \neq \mathrm{id}$:
+  \begin{center}
+    $qT = $\begin{ytableau}
+      1\\
+      2 & 3
+    \end{ytableau}
+  \end{center}
+
+  Calcoliamo le forme parziali dei due tabloidi (riga 1 = basso, riga 2 = alto):
+  \[
+    \begin{array}{c|c|c}
+      i & \mathrm{sh}(\{T\}^i) & \mathrm{sh}(\{qT\}^i) \\
+      \hline
+      0 & (0,0) & (0,0) \\
+      1 & (1,0) & (0,1) \\
+      2 & (1,1) & (1,1) \\
+      3 & (2,1) & (2,1)
+    \end{array}
+  \]
+
+  Al passo $i = 1$: $\mathrm{sh}(\{T\}^1) = (1,0)$ ha prima somma parziale $1$, mentre $\mathrm{sh}(\{qT\}^1) = (0,1)$ ha prima somma parziale $0$. Poiché $1 \not\leq 0$, abbiamo $\mathrm{sh}(\{T\}^1) \not\leq \mathrm{sh}(\{qT\}^1)$ nell'ordine di dominanza, dunque $\{T\} \not\leq \{qT\}$.
+
+  Intuitivamente: $q = (1\,2)$ ha spinto l'entrata $1$ dalla riga bassa alla riga alta, alleggerendo le somme parziali basse di $\{qT\}$ rispetto a quelle di $\{T\}$.
 }
 
 \subsection{Indipendenza lineare dei vettori di Specht}
