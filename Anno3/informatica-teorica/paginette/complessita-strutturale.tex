@@ -364,8 +364,975 @@ Useremo questa proprieta' per dimostrare che un linugaggio e' NP-Hard, dato che 
   \begin{itemize}
     \item $(l_1 \vee l_2 \vee z_1)$: $l_1 = l_2 = \bot \Rightarrow z_1 = \top$.
     \item Per induzione: $z_j = \top$ e $l_{j+2} = \bot \Rightarrow z_{j+1} = \top$.
-    \item Ma nell'ultima clausola $(\neg z_{k-3} \vee l_{k-1} \vee l_k)$: tutti $\bot$. $\contradiction$
+    \item Ma nell'ultima clausola $(\neg z_{k-3} \vee l_{k-1} \vee l_k)$: tutti $\bot$. Contraddizione.
   \end{itemize}
+}
+
+\section{Independent Set, Vertex Cover e Clique}
+
+La catena di riduzioni che costruiremo e':
+\[
+  \text{3SAT} \leq_P \text{IS} \leq_P \text{VC}, \qquad \text{IS} \leq_P \text{CLIQUE}
+\]
+
+\subsection{Independent Set}
+
+\dfn{Independent Set (problema decisionale)}{
+  \[
+    \text{IS} = \{\langle G, k \rangle \mid G \text{ ha un independent set } S \text{ con } |S| \geq k\}
+  \]
+  dove un independent set e' un $S \subseteq V$ tale che nessuna coppia di nodi in $S$ e' collegata da un arco.
+}
+
+\thm{NP-Completezza di IS}{
+  IS e' NP-Completo.
+}
+\pf{Dimostrazione}{
+  \textbf{IS $\in$ NP}: guess \& check. Una NTM genera $S \subseteq V$, verifica $|S| \geq k$ e che $\forall u,v \in S.\; \{u,v\} \notin E$. Costo $O(|S|^2)$.
+
+  \textbf{$\text{3SAT} \leq_P \text{IS}$}: data $\varphi = C_1 \wedge \cdots \wedge C_m$ in 3CNF su variabili $x_1,\dots,x_n$, costruiamo $\langle G, k \rangle$ con $k = m$:
+
+  \begin{itemize}
+    \item \textbf{Nodi}: per ogni \textit{occorrenza} di letterale nella formula, un nodo. Totale $3m$ nodi, raggruppati in $m$ triangoli (uno per clausola).
+    \item \textbf{Archi intra-clausola}: si collegano i 3 nodi di ogni clausola a formare un triangolo. $\Rightarrow$ da ogni clausola al piu' un nodo nell'IS.
+    \item \textbf{Archi inter-clausola (consistenza)}: si aggiunge un arco tra ogni coppia di nodi etichettati con letterali complementari ($x_i$ e $\neg x_i$ in clausole diverse). $\Rightarrow$ impossibile selezionare un letterale e la sua negazione.
+  \end{itemize}
+
+  \textbf{Completezza} ($\varphi$ soddisfacibile $\Rightarrow$ IS di taglia $\geq k$):
+  \begin{itemize}
+    \item Dall'assegnamento $\tau \models \varphi$, per ogni clausola $C_j$ scegliamo un letterale vero $\ell^{C_j}$ e lo mettiamo in $S$.
+    \item $|S| = m = k$, un nodo per triangolo $\Rightarrow$ nessun arco intra-clausola violato.
+    \item $\tau$ e' consistente $\Rightarrow$ nessun arco inter-clausola violato.
+  \end{itemize}
+
+  \textbf{Correttezza} (IS di taglia $\geq k$ $\Rightarrow$ $\varphi$ soddisfacibile):
+  \begin{itemize}
+    \item $|S| \geq m$ con $m$ triangoli $\Rightarrow$ $S$ contiene esattamente un nodo per triangolo.
+    \item Definiamo $\tau$: $x_i = \top$ se il nodo $x_i \in S$, $x_i = \bot$ se $\neg x_i \in S$, arbitrario altrimenti.
+    \item Ben definito (no letterali complementari in $S$). Ogni clausola ha un letterale vero $\Rightarrow$ $\tau \models \varphi$.
+  \end{itemize}
+
+  La costruzione e' $O(m + n)$, quindi polinomiale.
+}
+
+\subsection{Vertex Cover}
+
+\dfn{Vertex Cover (problema decisionale)}{
+  \[
+    \text{VC} = \{\langle G, k \rangle \mid G \text{ ha un vertex cover } C \text{ con } |C| \leq k\}
+  \]
+  dove un vertex cover e' un $C \subseteq V$ tale che per ogni arco $\{u,v\} \in E$, almeno uno tra $u$ e $v$ appartiene a $C$.
+}
+
+\nt{
+  Intuitivamente: se gli archi sono corridoi e i nodi incroci, un vertex cover e' un posizionamento di telecamere agli incroci tale che ogni corridoio sia sorvegliato. L'obiettivo e' minimizzare il numero di telecamere.
+}
+
+\thm{Lemma del Complemento IS-VC}{
+  Sia $G = (V,E)$ e $S \subseteq V$. Allora:
+  \[
+    S \text{ e' un IS di } G \iff V \setminus S \text{ e' un VC di } G
+  \]
+}
+\pf{Dimostrazione}{
+  Poniamo $C = V \setminus S$.
+
+  \begin{itemize}
+    \item $(\Rightarrow)$ $S$ e' un IS $\Rightarrow$ $C$ e' un VC.
+
+    Sia $\{u,v\} \in E$ un arco qualsiasi. Dobbiamo mostrare che almeno un estremo sta in $C$.
+    Poiche' $S$ e' un IS, $u$ e $v$ non possono stare \textit{entrambi} in $S$ (altrimenti sarebbero due nodi adiacenti nell'IS). Quindi almeno uno dei due $\notin S$, e di conseguenza $\in C = V \setminus S$. L'arco e' coperto.
+    Questo vale per ogni arco, dunque $C$ e' un VC.
+
+    \item $(\Leftarrow)$ $C$ e' un VC $\Rightarrow$ $S$ e' un IS.
+
+    Siano $u,v \in S$ due nodi qualsiasi. Dobbiamo mostrare che $\{u,v\} \notin E$.
+    Poiche' $u,v \in S = V \setminus C$, abbiamo $u,v \notin C$.
+    Se per assurdo $\{u,v\} \in E$, questo arco non avrebbe nessun estremo in $C$: contraddizione col fatto che $C$ e' un VC. Dunque $\{u,v\} \notin E$.
+    Questo vale per ogni coppia in $S$, dunque $S$ e' un IS.
+  \end{itemize}
+
+}
+
+\cor{}{
+  $G$ ha un IS di taglia $k$ $\iff$ $G$ ha un VC di taglia $|V| - k$.
+}
+
+\thm{NP-Completezza di VC}{
+  VC e' NP-Completo.
+}
+\pf{Dimostrazione}{
+  \textbf{VC $\in$ NP}: guess \& check. NTM genera $C \subseteq V$, verifica $|C| \leq k$ e che ogni arco abbia almeno un estremo in $C$.
+
+  \textbf{$\text{IS} \leq_P \text{VC}$}: data $\langle G, k \rangle$ istanza di IS, costruiamo $\langle H, \ell \rangle$ con:
+  \[
+    H = G, \quad \ell = |V| - k
+  \]
+  \begin{itemize}
+    \item $\langle G, k \rangle \in \text{IS}$: esiste IS $S$ con $|S| \geq k$. Per il lemma, $V \setminus S$ e' VC con $|V \setminus S| \leq |V| - k = \ell$. Dunque $\langle H, \ell \rangle \in \text{VC}$.
+    \item $\langle H, \ell \rangle \in \text{VC}$: esiste VC $C$ con $|C| \leq \ell$. Per il lemma, $V \setminus C$ e' IS con $|V \setminus C| \geq k$. Dunque $\langle G, k \rangle \in \text{IS}$.
+  \end{itemize}
+  La riduzione non modifica il grafo, solo il parametro: $O(1)$.
+}
+
+\subsection{Clique}
+
+\dfn{Clique (problema decisionale)}{
+  \[
+    \text{CLIQUE} = \{\langle G, k \rangle \mid G \text{ ha una clique } C \text{ con } |C| \geq k\}
+  \]
+  dove una clique e' un $C \subseteq V$ tale che ogni coppia $u,v \in C$ e' collegata: $\{u,v\} \in E$.
+}
+
+\dfn{Grafo Complemento}{
+  Dato $G = (V,E)$, il complemento $\bar{G} = (V, \bar{E})$ ha:
+  \[
+    \bar{E} = \{\{u,v\} \mid u \neq v,\; \{u,v\} \notin E\}
+  \]
+}
+
+\thm{Lemma del Complemento IS-Clique}{
+  Sia $G = (V,E)$ e $S \subseteq V$. Allora:
+  \[
+    S \text{ e' un IS di } G \iff S \text{ e' una clique di } \bar{G}
+  \]
+}
+\pf{Dimostrazione}{
+  $(\Rightarrow)$ $S$ e' un IS di $G$ $\Rightarrow$ $S$ e' una clique di $\bar{G}$.
+
+  Siano $u,v \in S$ due nodi qualsiasi. Poiche' $S$ e' un IS di $G$, i nodi $u$ e $v$ non sono adiacenti in $G$: $\{u,v\} \notin E$. Ma per definizione di grafo complemento, se un arco non esiste in $G$ allora esiste in $\bar{G}$: $\{u,v\} \in \bar{E}$.
+  Questo vale per ogni coppia in $S$, dunque tutti i nodi di $S$ sono mutualmente collegati in $\bar{G}$: $S$ e' una clique.
+
+  $(\Leftarrow)$ $S$ e' una clique di $\bar{G}$ $\Rightarrow$ $S$ e' un IS di $G$.
+
+  Siano $u,v \in S$ due nodi qualsiasi. Poiche' $S$ e' una clique di $\bar{G}$, i nodi $u$ e $v$ sono adiacenti in $\bar{G}$: $\{u,v\} \in \bar{E}$. Ma per definizione di grafo complemento, se un arco esiste in $\bar{G}$ allora non esiste in $G$: $\{u,v\} \notin E$.
+  Questo vale per ogni coppia in $S$, dunque nessun nodo di $S$ e' collegato ad un altro in $G$: $S$ e' un IS.
+}
+
+\thm{NP-Completezza di CLIQUE}{
+  CLIQUE e' NP-Completo.
+}
+\pf{Dimostrazione}{
+  \textbf{CLIQUE $\in$ NP}: guess \& check. NTM genera $C \subseteq V$, verifica $|C| \geq k$ e che ogni coppia sia collegata.
+
+  \textbf{$\text{IS} \leq_P \text{CLIQUE}$}: data $\langle G, k \rangle$ istanza di IS, costruiamo:
+  \[
+    H = \bar{G}, \quad \ell = k
+  \]
+  \begin{itemize}
+    \item $\langle G, k \rangle \in \text{IS}$: esiste IS $S$ con $|S| \geq k$. Per il lemma, $S$ e' clique di $\bar{G} = H$. Dunque $\langle H, \ell \rangle \in \text{CLIQUE}$.
+    \item $\langle H, \ell \rangle \in \text{CLIQUE}$: esiste clique $C$ di $\bar{G}$ con $|C| \geq k$. Per il lemma, $C$ e' IS di $G$. Dunque $\langle G, k \rangle \in \text{IS}$.
+  \end{itemize}
+  Costruzione di $\bar{G}$: $O(|V|^2)$, polinomiale.
+}
+
+\section{Dominating Set e Kernel}
+
+\subsection{Dominating Set}
+
+\dfn{Dominating Set}{
+  Dato $G = (V,E)$ non diretto, un \textit{dominating set} e' un $D \subseteq V$ tale che per ogni $v \in V \setminus D$ esiste $u \in D$ con $\{u,v\} \in E$. In altre parole, $D$ ``domina'' tutto il resto del grafo: ogni nodo fuori da $D$ e' raggiungibile da $D$ in un singolo salto.
+  \[
+    \text{DS} = \{\langle G, k \rangle \mid G \text{ ha un dominating set } D \text{ con } |D| \leq k\}
+  \]
+}
+
+E' importante non confondere DS con VC. In un Vertex Cover vogliamo coprire tutti gli \textit{archi} (ogni arco ha almeno un estremo nel cover); in un Dominating Set vogliamo raggiungere tutti i \textit{nodi} (ogni nodo fuori dal set ha un vicino nel set). Un VC e' sempre un DS in grafi senza nodi isolati, ma il viceversa non vale: un DS puo' ``saltare'' un arco intero, purche' entrambi gli estremi siano dominati da qualche altro nodo.
+
+\thm{NP-Completezza di DS}{
+  DOMINATING SET e' NP-Completo.
+}
+\pf{Dimostrazione}{
+  \textbf{DS $\in$ NP}: indovino un insieme $D$ di taglia $\leq k$ e verifico che ogni nodo fuori da $D$ abbia almeno un vicino dentro $D$. Guess e check entrambi in tempo polinomiale.
+
+  \textbf{$\text{VC} \leq_P \text{DS}$}: non possiamo usare $H = G$ direttamente perche' un DS non implica necessariamente un VC. La costruzione e' piu' furba.
+
+  Data $\langle G, k \rangle$ istanza di VC (senza nodi isolati), costruiamo $H$ aggiungendo un nuovo nodo per ogni arco di $G$: se $G$ ha un arco $e = \{u,v\}$, aggiungiamo in $H$ un nodo $v_e$ collegato sia a $u$ che a $v$ (e a nient'altro). La soglia resta $\ell = k$.
+
+  \textbf{Completezza} ($G$ ha VC $C$ con $|C| \leq k$ $\Rightarrow$ $H$ ha DS di taglia $\leq k$):
+
+  Mostriamo che $C$ e' gia' un DS di $H$. Per ogni nodo originale $v \notin C$: poiche' $G$ non ha nodi isolati, $v$ ha almeno un vicino, e quell'arco e' coperto da $C$, quindi almeno un vicino di $v$ sta in $C$ -- $v$ e' dominato. Per ogni nodo speciale $v_e$ (aggiunto per $e = \{u,v\}$): per definizione di VC, almeno uno tra $u$ e $v$ sta in $C$, ed e' adiacente a $v_e$ in $H$ -- $v_e$ e' dominato. Dunque $C$ e' un DS di $H$ di taglia $\leq k$.
+
+  \textbf{Correttezza} ($H$ ha DS $D$ con $|D| \leq k$ $\Rightarrow$ $G$ ha VC di taglia $\leq k$):
+
+  $D$ potrebbe contenere nodi speciali. Li sostituiamo: per ogni $v_e \in D$ (nodo aggiunto per l'arco $\{u,v\}$), lo rimpiazziamo con uno degli estremi $u$ o $v$. Il nodo $v_e$ era collegato solo a $u$ e $v$, quindi dominava al piu' loro; sostituirlo con $u$ (o $v$) mantiene la dominanza su tutti i nodi vicini. La taglia non aumenta.
+
+  Dopo la sostituzione, $D$ contiene solo nodi originali di $G$. Poiche' $D$ deve dominare ogni nodo speciale $v_e$, deve contenere almeno uno tra $u$ e $v$ per ogni arco $\{u,v\}$: questa e' esattamente la definizione di vertex cover. Dunque $D$ e' un VC di $G$ di taglia $\leq k$.
+
+  Costruzione: $O(|V| + |E|)$, polinomiale.
+}
+
+\subsection{Kernel}
+
+\dfn{Kernel}{
+  Dato un grafo \textbf{diretto} $G = (V,E)$, un \textit{kernel} e' un $K \subseteq V$ che soddisfa simultaneamente:
+  \begin{enumerate}
+    \item \textbf{Indipendenza}: $K$ e' un IS di $G$ -- non esistono $u,v \in K$ con $(u,v) \in E$.
+    \item \textbf{Dominanza (assorbenza)}: per ogni $v \in V \setminus K$, esiste $u \in K$ con $(v, u) \in E$ -- ogni nodo esterno ha un arco \textit{uscente} verso un nodo del kernel.
+  \end{enumerate}
+  \[
+    \text{KERNEL} = \{G \mid G \text{ e' un grafo diretto che possiede un kernel}\}
+  \]
+}
+
+\nt{
+  La proprieta' di dominanza e' simile al dominating set, ma orientata: non basta essere adiacenti, ci deve essere un arco che va \textit{dal} nodo esterno \textit{verso} $K$. Notare anche che non c'e' un parametro $k$: si chiede solo l'esistenza di un kernel, di qualsiasi taglia. Il problema e' gia' difficile senza vincoli sulla taglia.
+
+  Il kernel modella le ``posizioni vincenti'' in un gioco combinatorio a due giocatori: se ti trovi su un nodo del kernel, il tuo avversario e' costretto a muoversi fuori dal kernel; da fuori, puoi sempre tornare nel kernel al prossimo passo.
+}
+
+\thm{NP-Completezza di KERNEL}{
+  KERNEL e' NP-Completo.
+}
+\pf{Dimostrazione}{
+  \textbf{KERNEL $\in$ NP}: indovino un insieme $K$, verifico che sia indipendente (nessun arco tra nodi di $K$) e assorbente (ogni nodo esterno ha un arco verso $K$). Entrambe le verifiche in tempo polinomiale.
+
+  \textbf{$\text{3SAT} \leq_P \text{KERNEL}$}: data $\varphi = C_1 \wedge \cdots \wedge C_m$ in 3CNF su variabili $x_1,\dots,x_n$, costruiamo un grafo diretto $G$ tale che $\varphi$ e' soddisfacibile $\iff$ $G$ ha un kernel.
+
+  \textbf{Costruzione di $G$}:
+  \begin{itemize}
+    \item \textbf{Gadget variabile}: per ogni variabile $x_i$, creiamo due nodi $x_i$ e $\neg x_i$ collegati bidirezionalmente ($x_i \leftrightarrow \neg x_i$). In qualsiasi kernel: l'indipendenza impedisce che entrambi stiano in $K$; la dominanza impone che almeno uno ci stia (ciascuno dei due deve poter raggiungere qualcuno in $K$, e l'unico candidato e' il complementare). Quindi esattamente uno tra $x_i$ e $\neg x_i$ appartiene a $K$ -- questo corrisponde all'assegnamento della variabile.
+    \item \textbf{Nodi clausola}: per ogni clausola $C_j$, creiamo un nodo $C_j$.
+    \item \textbf{Archi clausola $\to$ letterale}: per ogni letterale $\ell$ in $C_j$, arco $C_j \to \ell$. Cosi' il nodo clausola puo' ``raggiungere'' i letterali che la compongono: se almeno uno sta in $K$, allora $C_j$ e' dominato.
+    \item \textbf{Archi letterale negato $\to$ clausola}: per ogni letterale $\ell$ in $C_j$, arco $\bar{\ell} \to C_j$. Questi archi servono a garantire la struttura corretta nella direzione inversa.
+  \end{itemize}
+
+  \textbf{Completezza} ($\varphi$ soddisfacibile $\Rightarrow$ $G$ ha un kernel):
+
+  Dato $\tau \models \varphi$, costruiamo $K$ mettendo in $K$ il letterale vero di ogni coppia: $x_i \in K$ se $\tau(x_i) = \top$, $\neg x_i \in K$ altrimenti. I nodi clausola non entrano in $K$.
+
+  $K$ e' indipendente: all'interno di ogni coppia $(x_i, \neg x_i)$ scegliamo un solo nodo. Tra nodi letterali di coppie diverse non ci sono archi. Nessun arco tra nodi di $K$.
+
+  $K$ e' assorbente: ogni nodo letterale non in $K$ (diciamo $\neg x_i$, se $x_i \in K$) ha l'arco $\neg x_i \to x_i$ verso $K$, quindi e' dominato. Ogni nodo clausola $C_j$: poiche' $\tau \models \varphi$, almeno un letterale $\ell$ di $C_j$ e' vero, quindi $\ell \in K$, e l'arco $C_j \to \ell$ domina $C_j$.
+
+  \textbf{Correttezza} ($G$ ha un kernel $K$ $\Rightarrow$ $\varphi$ e' soddisfacibile):
+
+  In ogni coppia $(x_i, \neg x_i)$ esattamente uno sta in $K$ (come argomentato sopra), quindi l'assegnamento $\tau_K$ e' ben definito e consistente.
+
+  I nodi clausola non possono stare in $K$: hanno archi uscenti verso nodi letterali che a loro volta sono collegati tra loro -- la struttura del gadget variabile impedirebbe l'indipendenza. Quindi ogni $C_j \notin K$, e per la dominanza deve esistere un arco $C_j \to \ell$ con $\ell \in K$. Ma i letterali in $K$ sono quelli resi veri da $\tau_K$, quindi $C_j$ contiene almeno un letterale vero: $\tau_K \models \varphi$.
+
+  Costruzione: $O(n + m)$, polinomiale.
+}
+
+\section{Definizione Alternativa della Classe NP}
+
+Guardando tutti i problemi NP studiati finora -- IS, VC, Clique, DS, 3SAT -- c'e' un pattern ricorrente. Per dimostrare che un problema $L$ sta in NP costruiamo sempre la stessa struttura:
+\begin{enumerate}
+  \item \textbf{Guess}: indoviniamo non deterministicamente una soluzione candidata
+  \item \textbf{Check}: verifichiamo in tempo polinomiale deterministico che sia corretta
+\end{enumerate}
+In IS: indovino un insieme $S$, verifico che sia indipendente e abbia taglia $\geq k$. In 3SAT: indovino un assegnamento $\sigma$, verifico che soddisfi tutte le clausole. La domanda e': questo e' un caso, o riflette qualcosa di strutturale su NP?
+
+La risposta e' che non e' un caso -- e' una caratterizzazione equivalente della classe NP. Questa e' la \textbf{definizione alternativa di NP tramite certificati}.
+
+\subsection{Relazione Binaria e Certificati}
+
+Per formalizzare l'idea di ``soluzione candidata'' e ``verifica'' usiamo il concetto di relazione binaria.
+
+\dfn{Relazione Binaria}{
+  Una relazione binaria $R$ su $\Sigma^*$ e' un insieme $R \subseteq \Sigma^* \times \Sigma^*$, cioe' un insieme di coppie di stringhe. La prima componente $x$ e' l'\textit{istanza del problema}, la seconda $y$ e' il \textit{certificato}.
+}
+
+\ex{}{
+  Per IS: $x = \langle G, k \rangle$, $y = S$ (l'insieme di nodi). La coppia $\langle x, y \rangle \in R_{\text{IS}}$ se e solo se $S$ e' effettivamente un IS di taglia $\geq k$ in $G$. La relazione ``certifica'' le istanze si' di IS: $x \in \text{IS}$ se e solo se $\exists\, y$ tale che $\langle x, y \rangle \in R_{\text{IS}}$.
+}
+
+Perche' l'idea funzioni, la relazione deve soddisfare due proprieta':
+
+\dfn{Polinomialmente Bilanciata}{
+  $R$ e' \textit{polinomialmente bilanciata} se esiste una costante $c$ tale che per ogni $\langle x, y \rangle \in R$:
+  \[
+    \|y\| \leq \|x\|^c
+  \]
+  Il certificato non e' troppo piu' grande dell'istanza -- al piu' polinomialmente. Se il certificato fosse di taglia esponenziale, non potremmo nemmeno leggerlo in tempo polinomiale.
+}
+
+\dfn{Polinomialmente Decidibile}{
+  $R$ e' \textit{polinomialmente decidibile} se esiste una MdT deterministica che, data una coppia $\langle x, y \rangle$, stabilisce in tempo polinomiale se appartiene a $R$.
+
+  Dato il certificato, possiamo controllarne la correttezza in tempo polinomiale.
+}
+
+\subsection{Il Teorema Centrale}
+
+\thm{Caratterizzazione di NP tramite certificati}{
+  \[
+    L \in NP \iff \exists\, R_L \text{ pol. bilanciata e pol. decidibile tale che } L = \{x \mid \exists\, y : \langle x, y \rangle \in R_L\}
+  \]
+}
+\pf{Dimostrazione}{
+  \textbf{($\Leftarrow$) Da $R_L$ a NP.}
+
+  Supponiamo che esista $R_L$ polinomialmente bilanciata e decidibile con $L = \{x \mid \exists\, y : \langle x, y \rangle \in R_L\}$. Costruiamo una MdT non deterministica $M$ che decide $L$ in tempo polinomiale:
+  \begin{enumerate}
+    \item Dato $x$ in input, $M$ indovina non deterministicamente una stringa $y$ di lunghezza al piu' $\|x\|^c$ (possibile per il bilanciamento).
+    \item $M$ verifica deterministicamente se $\langle x, y \rangle \in R_L$ usando il decisore polinomiale di $R_L$.
+    \item Se si', accetta; altrimenti rifiuta.
+  \end{enumerate}
+  Se $x \in L$, esiste un $y$ tale che $\langle x, y \rangle \in R_L$: un ramo non deterministico indovinera' quel $y$ e la verifica dara' esito positivo. Se $x \notin L$, nessun $y$ funziona, nessun ramo accetta. Il tutto in tempo polinomiale, quindi $L \in NP$.
+
+  \textbf{($\Rightarrow$) Da NP a $R_L$.}
+
+  Supponiamo $L \in NP$: esiste una MdT non deterministica $M$ che decide $L$ in tempo $p(n)$. L'idea e' usare come certificato la \textbf{sequenza delle Instantaneous Description} (ID) del ramo accettante di $M$.
+
+  Poiche' $M$ lavora in tempo $p(n)$, il ramo accettante e' una sequenza di al piu' $p(n)$ configurazioni, ciascuna di taglia $\leq p(n)$ (la macchina non puo' scrivere piu' di $p(n)$ simboli). Il certificato totale ha taglia $p(n) \cdot p(n)$ = prodotto di polinomi = ancora polinomiale.
+
+  Il certificato $y$ = sequenza di ID del ramo accettante e':
+  \begin{itemize}
+    \item \textbf{Conciso}: taglia polinomiale in $\|x\|$ $\Rightarrow$ $R_L$ e' polinomialmente bilanciata.
+    \item \textbf{Verificabile}: data la sequenza di ID, si verifica che ogni ID sia il legal successor della precedente secondo la funzione di transizione di $M$, e che l'ultima sia accettante. Questo si fa in tempo polinomiale deterministico $\Rightarrow$ $R_L$ e' polinomialmente decidibile.
+  \end{itemize}
+
+  Solo le istanze si' hanno un tale certificato: se $x \in L$ esiste un ramo accettante e quindi un certificato valido; se $x \notin L$ non esiste nessun ramo accettante e nessun certificato valido. Quindi $L$ e' caratterizzato da $R_L$ polinomialmente bilanciata e decidibile.
+}
+
+\subsection{Cosa ci dice questa caratterizzazione}
+
+Il teorema ci da' una visione completamente nuova di NP:
+
+\begin{center}
+  \textit{NP = classe dei problemi le cui istanze si' ammettono certificati concisi e polinomialmente verificabili.}
+\end{center}
+
+La distinzione tra P e NP si riformula cosi':
+\begin{itemize}
+  \item In $P$: problemi la cui soluzione si \textbf{calcola} in tempo polinomiale.
+  \item In $NP$: problemi la cui soluzione si \textbf{verifica} in tempo polinomiale (una volta che ce la danno).
+\end{itemize}
+
+Verificare una soluzione e' apparentemente piu' facile che trovarla. La domanda $P \overset{?}{=} NP$ chiede se questa differenza e' reale o solo apparente.
+
+\ex{Certificati per i problemi noti}{
+  \begin{center}
+  \begin{tabular}{l l l l}
+    \textbf{Problema} & \textbf{Istanza $x$} & \textbf{Certificato $y$} & \textbf{Verifica} \\ \hline
+    IS & $\langle G, k \rangle$ & insieme $S$ & $S$ e' IS e $|S| \geq k$? \\
+    VC & $\langle G, k \rangle$ & insieme $C$ & $C$ copre tutti gli archi e $|C| \leq k$? \\
+    3SAT & formula $\varphi$ & assegnamento $\sigma$ & $\sigma$ soddisfa tutte le clausole? \\
+    Clique & $\langle G, k \rangle$ & insieme $S$ & $S$ e' clique e $|S| \geq k$? \\
+  \end{tabular}
+  \end{center}
+  In ogni caso il certificato ha taglia polinomiale e la verifica e' polinomiale.
+}
+
+\section{Colorabilita' dei Grafi (Vertex Coloring)}
+
+Il problema della colorabilita' dei grafi nasce dal celebre \textbf{problema dei quattro colori}: e' possibile colorare qualsiasi mappa geografica usando al piu' quattro colori, in modo che due regioni confinanti non abbiano mai lo stesso colore? (Risposta affermativa, dimostrata nel 1976 con l'ausilio di un computer.)
+
+Modellando la mappa come un grafo -- dove ogni regione e' un nodo e due nodi sono collegati se le regioni condividono un confine -- il problema diventa: e' possibile assegnare a ciascun nodo uno tra $k$ colori, in modo che nodi adiacenti ricevano colori diversi? Le applicazioni spaziano dall'assegnazione di frequenze radio allo scheduling di esami all'allocazione di registri nei compilatori.
+
+\dfn{$k$-colorazione e numero cromatico}{
+  Data una $k$-colorazione di $G = (V,E)$ una funzione $f : V \to \{1,\dots,k\}$ tale che per ogni arco $\{u,v\} \in E$ si abbia $f(u) \neq f(v)$. Il \textit{numero cromatico} $\chi(G)$ e' il minimo $k$ per cui $G$ ammette una $k$-colorazione.
+  \[
+    \text{VCOL} = \{\langle G, k \rangle \mid G \text{ e' un grafo non diretto che ammette una } k\text{-colorazione}\}
+  \]
+}
+
+\ex{}{
+  Un grafo bipartito (senza cicli di lunghezza dispari) e' sempre 2-colorabile. Un ciclo di lunghezza dispari richiede almeno 3 colori. Un grafo completo $K_n$ richiede esattamente $n$ colori.
+}
+
+\thm{NP-Completezza di VCOL}{
+  VCOL e' NP-Completo.
+}
+\pf{Dimostrazione}{
+  \textbf{VCOL $\in$ NP}: guess \& check. Si indovina $f(v) \in \{1,\dots,k\}$ per ogni nodo ($O(n \log k)$ passi), poi si verificano tutti gli archi ($O(|E|)$ confronti).
+
+  \textbf{$\text{3SAT} \leq_P \text{VCOL}$}: la riduzione costruisce sempre un grafo con $k = 3$ colori fissi, indipendentemente dalla formula. Dati $\varphi = C_1 \wedge \cdots \wedge C_m$ su variabili $x_1,\dots,x_n$, costruiamo $\langle G, 3 \rangle$.
+
+  \textbf{Ingrediente 1 -- Triangolo di base $\{T, F, B\}$}:
+  creiamo tre nodi $T$ (true), $F$ (false), $B$ (base) collegati a triangolo.
+
+  \begin{center}
+    \includegraphics[width=0.25\textwidth]{img/vcol-triangolo-base.png}
+  \end{center}
+
+  In qualsiasi 3-colorazione, $T$, $F$, $B$ ricevono tre colori distinti. Chiamiamo ``colore true'' il colore di $T$, ``colore false'' quello di $F$, ``colore base'' quello di $B$.
+
+  \textbf{Ingrediente 2 -- Gadget variabile}: per ogni variabile $x_i$, creiamo due nodi $x_i$ e $\neg x_i$ con archi:
+  \begin{itemize}
+    \item $\{x_i, \neg x_i\}$ -- non possono avere lo stesso colore.
+    \item $\{x_i, B\}$ e $\{\neg x_i, B\}$ -- nessuno dei due puo' avere il colore ``base''.
+  \end{itemize}
+  Dunque dei due colori rimasti (``true'' e ``false''), uno va a $x_i$ e l'altro a $\neg x_i$: \textbf{una 3-colorazione codifica automaticamente un assegnamento di verita'}.
+
+  \textbf{Ingrediente 3 -- Gadget OR}: un sotto-grafo con due nodi di input e un nodo di output tale che:
+  \[
+    \text{output puo' essere ``true''} \iff \text{almeno un input e' ``true''}
+  \]
+  Il gadget e' un triangolo con due nodi intermedi. Se entrambi gli input sono ``false'', i nodi intermedi sono forzati a prendere ``true'' e ``base'', e l'output -- collegato a entrambi -- deve essere ``false''. Se almeno un input e' ``true'', i gradi di liberta' sono sufficienti per colorare l'output con ``true''.
+
+  \begin{center}
+    \includegraphics[width=0.3\textwidth]{img/vcol-gadget-or.png}
+  \end{center}
+
+  Una clausola $(l_1 \vee l_2 \vee l_3)$ si modella concatenando due gadget OR:
+  \begin{enumerate}
+    \item Primo gadget OR: input $l_1$ e $l_2$, output intermedio $= l_1 \vee l_2$.
+    \item Secondo gadget OR: input $l_1 \vee l_2$ e $l_3$, output finale $= l_1 \vee l_2 \vee l_3$.
+  \end{enumerate}
+  L'output finale viene poi collegato a $F$ e $B$, forzandolo ad essere ``true'': questo e' possibile solo se almeno un letterale della clausola e' vero.
+
+  Il grafo completo risultante e' mostrato in figura:
+
+  \begin{center}
+    \includegraphics[width=0.55\textwidth]{img/vcol-grafo-completo.png}
+  \end{center}
+
+  \textbf{Completezza} ($\varphi$ soddisfacibile $\Rightarrow$ $G$ ha una 3-colorazione):
+  \begin{itemize}
+    \item Coloriamo $T$ con ``true'', $F$ con ``false'', $B$ con ``base''.
+    \item Per ogni $x_i$: se $\tau(x_i) = \top$ coloriamo $x_i$ con ``true'' e $\neg x_i$ con ``false'', viceversa se $\tau(x_i) = \bot$. Consistente con i gadget variabile.
+    \item Per ogni clausola: $\tau \models \varphi$ garantisce almeno un letterale vero $\Rightarrow$ il gadget OR permette all'output di essere ``true'' $\Rightarrow$ l'output, collegato a $F$ e $B$, deve essere ``true'' -- e lo puo' essere.
+  \end{itemize}
+
+  \textbf{Correttezza} (G ha una 3-colorazione $\Rightarrow$ $\varphi$ soddisfacibile):
+  \begin{itemize}
+    \item $T$, $F$, $B$ ricevono tre colori distinti; chiamiamo ``true'' il colore di $T$.
+    \item Ogni $x_i$ riceve ``true'' o ``false'' (collegato a $B$ $\Rightarrow$ non ``base''). Definiamo $\tau(x_i) = \top$ sse $f(x_i) = $ ``true''.
+    \item Per ogni clausola: l'output e' collegato a $F$ e $B$ $\Rightarrow$ deve essere ``true''. Per la proprieta' del gadget OR, questo e' possibile solo se almeno un letterale e' ``true'' $\Rightarrow$ ogni clausola e' soddisfatta $\Rightarrow$ $\tau \models \varphi$.
+  \end{itemize}
+
+  Costruzione: $O(n + m)$ nodi e archi, polinomiale.
+}
+
+\nt{
+  La riduzione usa sempre $k = 3$, quindi il caso ristretto \textbf{3-VCOL} (colorare con esattamente 3 colori) e' gia' NP-Completo. Notiamo la dicotomia:
+  \begin{itemize}
+    \item $k = 1$: banale -- $G$ e' 1-colorabile $\iff$ $G$ non ha archi.
+    \item $k = 2$: in $P$ -- $G$ e' 2-colorabile $\iff$ $G$ e' bipartito (verificabile con BFS/DFS).
+    \item $k \geq 3$: NP-Completo.
+  \end{itemize}
+  Aggiungere un solo colore trasforma un problema trattabile in uno intrattabile.
+}
+
+\section{Exact Cover (EC)}
+
+Il problema dell'Exact Cover e' uno dei problemi NP-completi classici, presente nella lista originale di Karp (1972). A differenza dei problemi su grafi visti finora, Exact Cover opera su \textbf{famiglie di insiemi}: dato un universo di oggetti e una collezione di sottoinsiemi, chiediamo se e' possibile selezionare alcuni di questi sottoinsiemi in modo che coprano l'intero universo \textit{esattamente}, senza sovrapposizioni. Nella catena delle riduzioni, EC occupa una posizione strategica:
+\[
+  \text{3SAT} \leq_P \text{EC} \leq_P \text{Knapsack}
+\]
+
+\dfn{Exact Cover}{
+  Dato un universo finito $U = \{u_1,\dots,u_n\}$ e una famiglia $\mathcal{F} = \{s_1,\dots,s_m\}$ di sottoinsiemi di $U$, una \textit{exact cover} e' una sotto-famiglia $\mathcal{P} \subseteq \mathcal{F}$ tale che gli insiemi in $\mathcal{P}$ formino una \textbf{partizione} di $U$:
+  \begin{enumerate}
+    \item \textbf{Copertura completa}: $\bigcup_{s \in \mathcal{P}} s = U$
+    \item \textbf{Nessuna sovrapposizione}: gli insiemi in $\mathcal{P}$ sono a due a due disgiunti
+  \end{enumerate}
+  \[
+    \text{EC} = \{(U, \mathcal{F}) \mid \exists\, \mathcal{P} \subseteq \mathcal{F} \text{ partizione di } U\}
+  \]
+}
+
+\nt{
+  Differenza con Set Cover: in Set Cover si richiede solo di coprire $U$ con al piu' $k$ insiemi, permettendo sovrapposizioni. In Exact Cover ogni elemento di $U$ deve comparire in \textbf{esattamente uno} degli insiemi selezionati.
+}
+
+\ex{}{
+  $U = \{1,2,3,4,5\}$, $\mathcal{F} = \{\{1,2\}, \{2,3\}, \{3,4,5\}, \{1,2,3\}, \{4,5\}\}$.
+
+  $\mathcal{P} = \{\{1,2\}, \{3,4,5\}\}$ e' una exact cover: unione $= U$, disgiunti. Anche $\mathcal{P} = \{\{1,2,3\}, \{4,5\}\}$ funziona.
+}
+
+\thm{NP-Completezza di EC}{
+  EXACT COVER e' NP-Completo.
+}
+\pf{Dimostrazione}{
+  \textbf{EC $\in$ NP}: si indovina $\mathcal{P} \subseteq \mathcal{F}$, poi si verifica che ogni elemento di $U$ compaia in esattamente un insieme di $\mathcal{P}$. Costo $O(|U| \cdot |\mathcal{P}| \cdot \max|s_i|)$, polinomiale.
+
+  \textbf{$\text{3SAT} \leq_P \text{EC}$}: data $\varphi = C_1 \wedge \cdots \wedge C_l$ in 3CNF su variabili $x_1,\dots,x_n$, costruiamo $(U_\varphi, \mathcal{F}_\varphi)$.
+
+  \textbf{Costruzione dell'universo $U_\varphi$}:
+  \[
+    U_\varphi = \underbrace{\{x_i\}_{i=1}^n}_{\text{variabili}} \;\cup\; \underbrace{\{c_j\}_{j=1}^l}_{\text{clausole}} \;\cup\; \underbrace{\{P_{j,k} \mid 1 \leq j \leq l,\; 1 \leq k \leq 3\}}_{\text{ausiliari per ogni occorrenza di letterale}}
+  \]
+
+  \textbf{Costruzione della famiglia $\mathcal{F}_\varphi$} (tre tipi):
+  \begin{itemize}
+    \item \textbf{Tipo 1 -- Singleton}: per ogni ausiliario $P_{j,k}$, il singleton $\{P_{j,k}\}$. Servono come riempitivi per coprire gli ausiliari rimasti liberi.
+
+    \item \textbf{Tipo 2 -- Insiemi verita'}: per ogni variabile $x_i$, due insiemi:
+    \begin{align*}
+      T_{i,\top} &= \{x_i\} \cup \{P_{j,k} \mid \lambda_{j,k} = \neg x_i\}\\
+      T_{i,\bot} &= \{x_i\} \cup \{P_{j,k} \mid \lambda_{j,k} = x_i\}
+    \end{align*}
+    $T_{i,\top}$ rappresenta $x_i = \top$: copre $x_i$ e gli ausiliari dei letterali \textit{falsificati} da $x_i = \top$ (cioe' le occorrenze di $\neg x_i$). Simmetricamente $T_{i,\bot}$ per $x_i = \bot$.
+
+    \item \textbf{Tipo 3 -- Insiemi clausola}: per ogni clausola $C_j$ e posizione $k \in \{1,2,3\}$:
+    \[
+      \{c_j,\; P_{j,k}\}
+    \]
+    Copre l'elemento clausola $c_j$ tramite il $k$-esimo letterale. Puo' essere selezionato solo se $P_{j,k}$ non e' gia' stato coperto, il che accade quando $\lambda_{j,k}$ e' \textbf{vero} nell'assegnamento.
+  \end{itemize}
+
+  \textbf{Intuizione del meccanismo}:
+  \begin{enumerate}
+    \item Per ogni $x_i$ scegliamo esattamente uno tra $T_{i,\top}$ e $T_{i,\bot}$: questo copre $x_i$ e consuma gli ausiliari dei letterali resi falsi.
+    \item Gli ausiliari dei letterali \textit{veri} restano liberi: solo per essi si puo' selezionare l'insieme clausola $\{c_j, P_{j,k}\}$.
+    \item Gli ausiliari rimasti vengono coperti dai singleton.
+  \end{enumerate}
+
+  \textbf{Completezza} ($\varphi$ soddisfacibile $\Rightarrow$ EC ha soluzione):
+
+  Dato $\tau \models \varphi$, costruiamo $\mathcal{P}$:
+  \begin{itemize}
+    \item Per ogni $x_i$: aggiungiamo $T_{i,\top}$ se $\tau(x_i) = \top$, $T_{i,\bot}$ altrimenti. Copre tutti gli $x_i$ e gli ausiliari dei letterali falsificati.
+    \item Per ogni clausola $C_j$: $\tau \models C_j$ garantisce almeno un letterale vero $\lambda_{j,k}$, il cui ausiliario $P_{j,k}$ e' libero. Aggiungiamo $\{c_j, P_{j,k}\}$. Copre $c_j$ e $P_{j,k}$.
+    \item Per ogni $P_{j,k}$ rimasto scoperto: aggiungiamo il singleton $\{P_{j,k}\}$.
+  \end{itemize}
+  Ogni elemento di $U_\varphi$ e' coperto esattamente una volta: $x_i$ dal passo 1, $c_j$ dal passo 2, ogni $P_{j,k}$ da esattamente uno dei tre passi. $\mathcal{P}$ e' una partizione.
+
+  \textbf{Correttezza} (EC ha soluzione $\Rightarrow$ $\varphi$ soddisfacibile):
+
+  Sia $\mathcal{P}$ una partizione di $U_\varphi$. Definiamo $\tau_\mathcal{P}$: $\tau_\mathcal{P}(x_i) = \top$ sse $T_{i,\top} \in \mathcal{P}$.
+
+  Ben definito: $x_i$ deve essere coperto esattamente una volta, e solo $T_{i,\top}$ e $T_{i,\bot}$ lo contengono, quindi esattamente uno dei due sta in $\mathcal{P}$.
+
+  $\tau_\mathcal{P} \models \varphi$: per ogni clausola $C_j$, l'elemento $c_j$ deve essere coperto, e solo gli insiemi $\{c_j, P_{j,k}\}$ lo contengono. Dunque uno di essi, diciamo $\{c_j, P_{j,k}\}$, e' in $\mathcal{P}$. Poiche' $\mathcal{P}$ e' una partizione, $P_{j,k}$ non e' coperto da nessun $T_{i,*}$, il che significa che $\lambda_{j,k}$ non e' stato falsificato, cioe' e' \textbf{vero} in $\tau_\mathcal{P}$. Quindi $C_j$ e' soddisfatta. Questo vale per ogni clausola.
+
+  \textbf{Complessita'}: $|U_\varphi| = n + l + 3l = n + 4l$, $|\mathcal{F}_\varphi| \leq 2n + 3l + 3l$. Costruzione $O(n + l)$, polinomiale.
+}
+
+\section{Knapsack}
+
+Il problema dello Knapsack (zaino) e' uno dei problemi di ottimizzazione combinatoria piu' celebri. L'idea e' intuitiva: uno zaino ha capacita' limitata, ogni oggetto ha un peso e un valore, e vogliamo massimizzare il valore totale senza superare la capacita'. Nella catena delle riduzioni:
+\[
+  \text{EC} \leq_P \text{Knapsack} \leq_P \text{Subset Sum}
+\]
+
+\dfn{Knapsack (versione decisionale)}{
+  Dati $n$ oggetti con pesi $w_1,\dots,w_n \in \mathbb{N}$, valori $v_1,\dots,v_n \in \mathbb{N}$, capacita' $W \in \mathbb{N}$ e soglia $K \in \mathbb{N}$:
+  \[
+    \text{KN} = \left\{ (w_1,\dots,w_n,\, v_1,\dots,v_n,\, W, K) \;\middle|\; \exists\, S \subseteq \{1,\dots,n\} :\; \sum_{i \in S} w_i \leq W \;\wedge\; \sum_{i \in S} v_i \geq K \right\}
+  \]
+}
+
+\thm{NP-Completezza di Knapsack}{
+  KNAPSACK e' NP-Completo.
+}
+\pf{Dimostrazione}{
+  \textbf{KN $\in$ NP}: si indovina $S \subseteq \{1,\dots,n\}$, poi si calcolano le due somme e si confrontano con $W$ e $K$. Costo $O(n)$, polinomiale.
+
+  \textbf{$\text{EC} \leq_P \text{KN}$}: data un'istanza $(U, \mathcal{F})$ di EC con $U = \{1,\dots,n\}$ e $\mathcal{F} = \{F_1,\dots,F_m\}$, costruiamo un'istanza di Knapsack.
+
+  \textbf{Idea chiave}: codifichiamo ogni sottoinsieme $F_i$ come un numero intero: la $j$-esima cifra (in base $m+1$) vale $1$ se $j \in F_i$, $0$ altrimenti. Per evitare riporti nella somma -- che corromperebbero l'informazione -- usiamo la base $m+1$: siccome sommiamo al piu' $m$ numeri, ogni cifra vale al piu' $m < m+1$, e non si genera mai riporto.
+
+  \textbf{Costruzione}: per ogni $F_i \in \mathcal{F}$:
+  \[
+    w_i = v_i = \sum_{j \in F_i} (m+1)^{n-j}
+  \]
+  Poniamo $W = K = \sum_{j=1}^{n} (m+1)^{n-j}$, cioe' il numero $(1,1,\dots,1)$ in base $m+1$ (tutte le cifre uguali a 1). La scelta $w_i = v_i$ e $W = K$ forza il vincolo a diventare $\sum_{i \in S} w_i = W$ \textit{esattamente} (non piu' $\leq$ e $\geq$, ma uguaglianza), simulando la copertura esatta.
+
+  \textbf{Completezza} (EC ha soluzione $\Rightarrow$ KN ha soluzione):
+
+  Sia $\mathcal{P} \subseteq \mathcal{F}$ una partizione di $U$. Gli insiemi in $\mathcal{P}$ sono disgiunti e la loro unione e' $U$, quindi per ogni posizione $j$ esattamente un $w_i$ ha un $1$ in quella cifra. Sommando i $w_i$ corrispondenti a $\mathcal{P}$: ogni cifra contribuisce esattamente $1$, senza riporti (base $m+1$). La somma e' $W$, quindi $\sum w_i = W = K$ e l'istanza di Knapsack e' soddisfatta.
+
+  \textbf{Correttezza} (KN ha soluzione $\Rightarrow$ EC ha soluzione):
+
+  Sia $S$ con $\sum_{i \in S} w_i = W$ (l'uguaglianza e' forzata da $w_i = v_i$ e $W = K$). Ogni $w_i$ ha cifre in $\{0,1\}$ e sommiamo al piu' $m$ numeri, quindi ogni cifra della somma e' in $\{0,\dots,m\} \subset \{0,\dots,m+1-1\}$: \textbf{nessun riporto}. Poiche' la somma deve dare $(1,1,\dots,1)$, in ogni posizione $j$ la somma delle cifre e' esattamente $1$: ogni elemento di $U$ e' coperto da esattamente un insieme in $S$. Dunque $S$ e' una partizione di $U$.
+
+  \textbf{Complessita'}: ogni $w_i$ ha $n$ cifre in base $m+1$, quindi $O(n \log m)$ bit. Costruzione polinomiale.
+}
+
+\nt{
+  \textbf{Subset Sum come caso speciale}: la riduzione produce istanze con $w_i = v_i$ e $W = K$, che e' esattamente la definizione di Subset Sum:
+  \[
+    \text{SS} = \left\{ (a_1,\dots,a_n,\, t) \;\middle|\; \exists\, S : \sum_{i \in S} a_i = t \right\}
+  \]
+  Quindi la stessa riduzione dimostra $\text{EC} \leq_P \text{SS}$, e SS e' NP-Completo.
+
+  \textbf{Pseudo-polinomialita'}: esiste un algoritmo di programmazione dinamica che risolve Knapsack in $O(n \cdot W)$. Sembra polinomiale, ma $W$ puo' essere esponenziale nella taglia dell'input (se $W$ e' codificato con $b$ bit, $W \leq 2^b$). Un algoritmo polinomiale nel \textit{valore numerico} ma non nella \textit{taglia} si chiama \textbf{pseudo-polinomiale}. Knapsack e' NP-Completo ``debole'': la difficolta' scompare se i numeri sono piccoli.
+}
+
+\section{Teorema di Cook-Levin}
+
+Fino a questo punto abbiamo dimostrato la NP-hardness di ogni nuovo problema riducendoci da uno gia' noto. Ma da dove viene il primo problema NP-hard? La catena ha bisogno di una radice: qualcuno deve dimostrare \textit{dalla definizione} che ogni linguaggio in NP si riduce polinomialmente a SAT. Questo e' il risultato ottenuto indipendentemente da \textbf{Stephen Cook} (1971) e \textbf{Leonid Levin} (1973).
+
+\thm{Cook-Levin}{
+  SAT e' NP-Completo.
+}
+\pf{Dimostrazione}{
+  SAT $\in$ NP e' gia' noto (guess di un assegnamento, check polinomiale). Dimostriamo la NP-hardness: $\forall L \in NP.\; L \leq_P \text{SAT}$.
+
+  \textbf{Strategia.} Per definizione, se $L \in NP$ esiste una NTM $M$ che decide $L$ in tempo $p(n)$. Non costruiamo una riduzione diversa per ogni $L$: sfruttiamo $M$ stessa. Dato un input $w$, costruiamo in tempo polinomiale una formula $\varphi_w$ in CNF tale che:
+  \[
+    \varphi_w \text{ soddisfacibile} \iff \exists \text{ cammino accettante di } M \text{ su } w \iff w \in L
+  \]
+  La computazione di $M$ e' un processo \textit{locale} (ogni passo dipende solo da stato, testina, simbolo), il che si traduce naturalmente in vincoli booleani di taglia polinomiale.
+
+  \begin{center}
+    \includegraphics[width=0.45\textwidth]{img/cook-levin-albero-computazione.png}
+  \end{center}
+
+  \textbf{Ipotesi su $M$ (senza perdita di generalita').}
+  \begin{itemize}
+    \item \textbf{Cammini uniformi}: ogni cammino ha esattamente $p(n)$ passi (i cammini piu' corti vengono allungati con passi fittizi nello stato finale).
+    \item \textbf{Nastro finito}: $M$ usa al piu' $2p(n)$ celle, numerate da $-p(n)+1$ a $p(n)$, con $w$ a partire dalla cella $1$.
+    \item \textbf{Inattivita' finale}: raggiunti $q_{\text{acc}}$ o $q_{\text{rej}}$, $M$ resta li' per i passi successivi.
+  \end{itemize}
+
+  \textbf{Variabili booleane.} Per ogni passo $i \in \{1,\dots,p(n)\}$:
+  \begin{itemize}
+    \item $q^i$ per ogni $q \in Q$: ``al passo $i$, lo stato e' $q$''.
+    \item $h^{i,j}$ per ogni cella $j$: ``al passo $i$, la testina e' sulla cella $j$''.
+    \item $\alpha^{i,j}$ per ogni $\alpha \in \Gamma$, cella $j$: ``al passo $i$, la cella $j$ contiene $\alpha$''.
+    \item $u^{i,j}$ per ogni cella $j$: ``la cella $j$ non cambia dal passo $i$ al passo $i+1$''.
+  \end{itemize}
+  Totale: $O(p(n)^2 \cdot (|Q| + |\Gamma|))$ variabili, polinomiale in $n$.
+
+  \textbf{La formula $\varphi_w = \text{Cons} \wedge \text{Init} \wedge \text{Trans} \wedge \text{Accept}$.}
+  \begin{itemize}
+    \item \textbf{Cons} (consistenza): garantisce che ogni passo abbia esattamente uno stato, una posizione di testina, un simbolo per cella. Per ogni $i$: $\bigvee_{q} q^i$ (almeno uno) e $\neg q^i \vee \neg q'^i$ per $q \neq q'$ (al piu' uno). Analogamente per testina e simboli.
+
+    \item \textbf{Init}: fissa la configurazione al passo $1$:
+    \[
+      q_1^1 \;\wedge\; h^{1,1} \;\wedge\; w_1^{1,1} \wedge \cdots \wedge w_n^{1,n} \;\wedge\; \blank^{1,j} \text{ per le celle fuori da } [1,n]
+    \]
+
+    \item \textbf{Trans}: codifica le transizioni legali. Per ogni $i$, $j$, $q$, $\alpha$:
+    \begin{itemize}
+      \item \textit{Inerzia} (cella lontana dalla testina): $\neg h^{i,j} \wedge \alpha^{i,j} \Rightarrow \alpha^{i+1,j}$.
+      \item \textit{Transizione} (cella sotto la testina): se $\delta(q,\alpha) = \{(q'_1,\beta_1,d_1),(q'_2,\beta_2,d_2),\dots\}$,
+      \[
+        q^i \wedge h^{i,j} \wedge \alpha^{i,j} \;\Rightarrow\;
+        \bigl[(q'^{i+1}_1 \wedge h^{i+1,j+d_1} \wedge \beta_1^{i+1,j}) \vee (q'^{i+1}_2 \wedge h^{i+1,j+d_2} \wedge \beta_2^{i+1,j}) \vee \cdots\bigr]
+      \]
+      Il \textbf{non-determinismo} di $M$ si codifica come \textbf{OR}: l'assegnamento ``sceglie'' quale transizione applicare, simulando la scelta del ramo nell'albero di computazione.
+    \end{itemize}
+
+    \item \textbf{Accept}: $q_{\text{acc}}^{p(n)}$ -- al passo finale la macchina e' in stato accettante.
+  \end{itemize}
+
+  \textbf{Completezza} ($w \in L \Rightarrow \varphi_w$ soddisfacibile):
+  \begin{itemize}
+    \item Esiste un cammino accettante $\text{ID}_1,\dots,\text{ID}_{p(n)}$. Assegniamo $\top$ alle variabili che lo descrivono: per costruzione l'assegnamento soddisfa Cons, Init, Trans e Accept.
+  \end{itemize}
+
+  \textbf{Correttezza} ($\varphi_w$ soddisfacibile $\Rightarrow$ $w \in L$):
+  \begin{itemize}
+    \item Dato $\tau \models \varphi_w$, costruiamo un cammino: al passo $i$ lo stato e' l'unico $q$ con $\tau(q^i) = \top$ (Cons), la testina e' sull'unica cella $j$ con $\tau(h^{i,j}) = \top$, il nastro e' descritto dalle $\alpha^{i,j}$.
+    \item Init garantisce la configurazione iniziale corretta. Trans garantisce che ogni transizione sia legale. Accept garantisce che l'ultima configurazione sia accettante. Quindi $w \in L$.
+  \end{itemize}
+
+  \textbf{Polinomialita' e conversione in CNF.}
+  \begin{itemize}
+    \item La formula ha dimensione $O(p(n)^2 \cdot |Q| \cdot |\Gamma|)$, polinomiale.
+    \item Le implicazioni e le disgiunzioni di congiunzioni non sono in CNF, ma si convertono in CNF con distributivita', De Morgan e linearizzazione. Poiche' ogni sotto-espressione ha dimensione costante, la taglia resta polinomiale.
+  \end{itemize}
+}
+
+\nt{
+  Il Teorema di Cook-Levin e' la radice dell'intera gerarchia NP: senza di esso non avremmo nessun problema NP-hard concreto. Risolvere SAT in tempo polinomiale equivarrebbe a dimostrare $P = NP$, perche' ogni problema in NP si riduce a SAT.
+}
+
+\section{La Classe coNP}
+
+Abbiamo visto che NP e' la classe dei problemi di decisione per i quali un ``si''' puo' essere verificato in tempo polinomiale a patto di avere un certificato adeguato: per SAT un'assegnazione soddisfacente, per HAMILTONIAN PATH la sequenza dei vertici, per CLIQUE la lista dei vertici della clique.
+
+Ma cosa succede se invertiamo la domanda? Se invece di chiedere ``\textit{esiste} un'assegnazione che soddisfa $\varphi$?'' chiediamo ``\textit{tutte} le assegnazioni la soddisfano?'' o ``\textit{nessuna} la soddisfa?''. Questi problemi sembrano strutturalmente diversi: per dire ``no'' a ``tutte le assegnazioni soddisfano'' basta esibire un controesempio, ma per dire ``si''' sembra necessario controllare tutte le possibilita'. Questa asimmetria fra ``esiste'' e ``per ogni'' porta naturalmente alla definizione di \textbf{coNP}.
+
+\subsection{Definizione}
+
+\dfn{Complemento di un linguaggio}{
+  Dato $L \subseteq \Sigma^*$, il suo complemento e':
+  \[
+    \overline{L} = \Sigma^* \setminus L = \{x \in \Sigma^* \mid x \notin L\}
+  \]
+  Per problemi ``naturali'' con codifiche fissate, il complemento nel senso del linguaggio coincide con l'intuizione: ``scambia le risposte si' e no''.
+}
+
+\dfn{Classe coNP}{
+  \[
+    \text{coNP} = \{L \mid \overline{L} \in \text{NP}\}
+  \]
+  Equivalentemente, $L \in \text{coNP}$ se esiste una NTM $N$ polinomiale che decide $\overline{L}$, oppure se esiste un polinomio $p$ e una MdT deterministica $M$ tale che:
+  \[
+    x \in L \iff \forall\, y,\; |y| \leq p(|x|),\; M(x, y) \text{ accetta}
+  \]
+}
+
+\nt{
+  Confrontando NP e coNP la differenza e' un singolo quantificatore:
+  \[
+    L \in NP \iff \exists\, y,\; |y| \leq p(|x|) : M(x,y) \text{ accetta}
+  \]
+  \[
+    L \in coNP \iff \forall\, y,\; |y| \leq p(|x|) : M(x,y) \text{ accetta}
+  \]
+  In NP il certificato $y$ e' un \textit{testimone positivo}; in coNP, negando l'espressione, $x \notin L \iff \exists\, y : M(x,y) \text{ rifiuta}$: $y$ e' un \textit{controesempio} (o \textit{refuter}), cioe' una prova polinomialmente verificabile che $x \notin L$.
+}
+
+\subsection{Esempi classici di problemi in coNP}
+
+\ex{TAUT -- Tautologie booleane}{
+  Il prototipo dei problemi coNP:
+  \[
+    \text{TAUT} = \{\varphi \mid \varphi \text{ e' una tautologia}\} = \{\varphi \mid \forall\, a,\; \varphi(a) = 1\}
+  \]
+  Il complemento $\overline{\text{TAUT}} = \{\varphi \mid \exists\, a : \varphi(a) = 0\}$ equivale a SAT applicato a $\neg \varphi$: $\varphi$ non e' tautologia sse $\neg \varphi$ e' soddisfacibile. Poiche' SAT $\in$ NP, $\overline{\text{TAUT}} \in$ NP, quindi TAUT $\in$ coNP.
+
+  Verificare un ``si''' richiederebbe controllare tutte le $2^n$ assegnazioni; verificare un ``no'' richiede solo un controesempio. Struttura duale a SAT.
+}
+
+\ex{UNSAT}{
+  \[
+    \text{UNSAT} = \{\varphi \mid \varphi \text{ non e' soddisfacibile}\} = \{\varphi \mid \forall\, a,\; \varphi(a) = 0\}
+  \]
+  $\overline{\text{UNSAT}} = \text{SAT} \in$ NP $\Rightarrow$ UNSAT $\in$ coNP. Dire ``si''' significa certificare che \textbf{nessuna} assegnazione soddisfa $\varphi$.
+}
+
+\ex{NON-HAM -- grafi non hamiltoniani}{
+  \[
+    \text{NON-HAM} = \{G \mid G \text{ non ha un ciclo hamiltoniano}\}
+  \]
+  Complemento di HAM $\in$ NP (certificato = sequenza dei vertici). Quindi NON-HAM $\in$ coNP.
+}
+
+\ex{NON-CLIQUE}{
+  \[
+    \text{NON-CLIQUE} = \{\langle G, k \rangle \mid G \text{ non contiene clique di dimensione } k\}
+  \]
+  Complemento di CLIQUE, quindi in coNP.
+}
+
+\ex{PRIMES -- storicamente un esempio paradigmatico}{
+  \[
+    \text{PRIMES} = \{n \mid n \text{ e' primo}\}
+  \]
+  Il complemento $\text{COMPOSITE} = \{n \mid n \text{ non e' primo}\}$ e' in NP: il certificato e' un divisore non banale di $n$. Quindi PRIMES $\in$ coNP.
+
+  \textbf{Nota storica}: PRIMES e' stato dimostrato \textbf{in $P$} nel 2002 dall'algoritmo AKS (Agrawal-Kayal-Saxena). Per decenni fu un esempio cruciale di problema in $NP \cap coNP$ non noto in $P$.
+}
+
+\subsection{Relazione tra P, NP e coNP}
+
+\thm{$P \subseteq NP \cap coNP$}{
+  \label{th:p-subset-np-conp}
+  Se $L \in P$, allora $L \in NP \cap coNP$.
+}
+\pf{Dimostrazione}{
+  Se $L \in P$, un algoritmo deterministico polinomiale $M$ decide $L$. Lo stesso $M$ (negando il risultato) decide $\overline{L}$ in tempo polinomiale $\Rightarrow$ $\overline{L} \in P \subseteq$ NP $\Rightarrow$ $L \in$ coNP. Analogamente $L \in$ NP.
+}
+
+\thm{$P = NP \Rightarrow NP = coNP$}{
+  Se $P = NP$, allora $NP = coNP$.
+}
+\pf{Dimostrazione}{
+  \begin{itemize}
+    \item \textbf{NP $\subseteq$ coNP}: sia $L \in$ NP $=$ P. Poiche' $P$ e' chiusa sotto complemento (Teorema~\ref{th:p-subset-np-conp}: basta invertire la risposta del decisore), $\overline{L} \in P = $ NP. Per definizione di coNP, $L \in$ coNP.
+    \item \textbf{coNP $\subseteq$ NP}: sia $L \in$ coNP, cioe' $\overline{L} \in$ NP $=$ P. Di nuovo per chiusura di $P$ sotto complemento (Teorema~\ref{th:p-subset-np-conp}), $L \in P =$ NP.
+  \end{itemize}
+  \textbf{Contropositiva}: se NP $\neq$ coNP allora $P \neq NP$. Separare NP da coNP sarebbe dunque un modo per dimostrare $P \neq NP$ -- ma nessuno sa come fare nessuna delle due separazioni.
+}
+
+\nt{
+  \textbf{Congetture sulle inclusioni}:
+  \begin{itemize}
+    \item $P \neq NP$ (la domanda madre).
+    \item $NP \neq coNP$ (piu' forte di $P \neq NP$).
+    \item $P \subsetneq NP \cap coNP$ (aperto).
+  \end{itemize}
+  Se SAT fosse in coNP, ogni formula non soddisfacibile avrebbe una prova succinta della sua insoddisfacibilita' -- cosa che si crede non esista. Nessuno sa come costruire tali prove, e la comunita' scientifica congettura che non ce ne siano.
+}
+
+\subsection{coNP-Completezza}
+
+\dfn{coNP-Completezza}{
+  Un linguaggio $L$ e' \textit{coNP-Completo} se:
+  \begin{enumerate}
+    \item $L \in$ coNP
+    \item $\forall\, L' \in$ coNP, $L' \leq_P L$ (coNP-hardness)
+  \end{enumerate}
+  $L$ e' ``il piu' difficile'' dei problemi in coNP, nello stesso senso in cui SAT e' ``il piu' difficile'' dei problemi in NP.
+}
+
+\thm{Chiusura di coNP sotto riduzione polinomiale}{
+  \label{th:chiusura-conp-riduzione}
+  Se $A \leq_P B$ e $B \in$ coNP, allora $A \in$ coNP.
+}
+\pf{Dimostrazione}{
+  $B \in$ coNP $\Rightarrow$ $\overline{B} \in$ NP. La stessa riduzione $f$ testimonia $\overline{A} \leq_P \overline{B}$:
+  \[
+    x \in \overline{A} \iff x \notin A \iff f(x) \notin B \iff f(x) \in \overline{B}
+  \]
+  NP e' chiusa sotto riduzione polinomiale $\Rightarrow$ $\overline{A} \in$ NP $\Rightarrow$ $A \in$ coNP.
+}
+
+\thm{Dualita' NP-completezza / coNP-completezza}{
+  \label{th:dualita-np-conp}
+  $L$ e' NP-Completo $\iff$ $\overline{L}$ e' coNP-Completo.
+}
+\pf{Dimostrazione}{
+  \begin{itemize}
+    \item \textbf{Membership}: $L \in$ NP $\iff$ $\overline{L} \in$ coNP per definizione di coNP.
+    \item \textbf{Hardness}: sia $L$ NP-hard, cioe' $\forall L' \in$ NP, $L' \leq_P L$ tramite una riduzione $f$. Verifichiamo che la stessa $f$ testimonia $\overline{L'} \leq_P \overline{L}$:
+    \[
+      x \in \overline{L'} \iff x \notin L' \iff f(x) \notin L \iff f(x) \in \overline{L}
+    \]
+    Poiche' ogni linguaggio in coNP e' il complemento di un linguaggio in NP, $\overline{L}$ e' coNP-hard. Combinando con $\overline{L} \in$ coNP, $\overline{L}$ e' coNP-Completo.
+    \item Simmetricamente nell'altra direzione.
+  \end{itemize}
+}
+
+\ex{Problemi coNP-Completi}{
+  Preso qualsiasi problema NP-Completo, il suo complemento e' coNP-Completo:
+  \begin{itemize}
+    \item \textbf{TAUT}: complemento di SAT (via negazione della formula).
+    \item \textbf{UNSAT}: complemento diretto di SAT.
+    \item \textbf{NON-3-COL}: complemento di 3-COL.
+    \item \textbf{NON-HAM}: complemento di HAM.
+    \item \textbf{NON-CLIQUE}: complemento di CLIQUE.
+  \end{itemize}
+}
+
+\thm{Collasso $NP = coNP$ via problema NP-Completo}{
+  \[
+    NP = coNP \iff \exists\, L \text{ NP-Completo tale che } L \in coNP
+  \]
+}
+\pf{Dimostrazione}{
+  \begin{itemize}
+    \item $(\Rightarrow)$ Supponiamo $NP = coNP$. Per Cook-Levin, SAT e' NP-Completo, quindi SAT $\in$ NP $=$ coNP. Testimone trovato: $L =$ SAT.
+
+    \item $(\Leftarrow)$ Supponiamo che esista $L$ NP-Completo con $L \in$ coNP. Mostriamo $NP = coNP$.
+
+    \textit{NP $\subseteq$ coNP}: sia $L' \in$ NP qualunque. Poiche' $L$ e' NP-hard, $L' \leq_P L$. Per ipotesi $L \in$ coNP, e coNP e' chiusa sotto riduzione polinomiale (Teorema~\ref{th:chiusura-conp-riduzione}), quindi $L' \in$ coNP.
+
+    \textit{coNP $\subseteq$ NP}: sia $M \in$ coNP qualunque, cioe' $\overline{M} \in$ NP. Per la dualita' (Teorema~\ref{th:dualita-np-conp}), $\overline{L}$ e' coNP-Completo, e $\overline{L} \in$ NP (perche' $L \in$ coNP). Poiche' $\overline{L}$ e' coNP-hard e $M \in$ coNP, $M \leq_P \overline{L}$. Ma $\overline{L} \in$ NP e NP e' chiusa sotto riduzione polinomiale, quindi $M \in$ NP.
+  \end{itemize}
+}
+
+\nt{
+  Questo teorema fornisce una strada concreta per dimostrare il collasso $NP = coNP$: basterebbe esibire \textbf{un solo} problema NP-Completo anche in coNP. Ad esempio, ``certificati succinti di non soddisfacibilita''' per SAT (cioe', per ogni $\varphi$ non soddisfacibile, una prova polinomialmente verificabile) dimostrerebbero SAT $\in$ coNP e quindi $NP = coNP$.
+
+  Si congettura che nessun problema NP-Completo stia in coNP. Questa congettura e' piu' forte di $P \neq NP$: se $NP \neq coNP$ allora $P \neq NP$.
+}
+
+\subsection{Certificati: la caratterizzazione duale}
+
+La caratterizzazione via certificati chiarisce la differenza strutturale fra NP e coNP.
+
+\dfn{Certificati}{
+  \begin{itemize}
+    \item \textbf{NP}: $L \in NP \iff \exists$ polinomio $p$, MdT deterministica $M$ tali che
+    \[
+      x \in L \iff \exists\, y,\; |y| \leq p(|x|) : M(x,y) \text{ accetta}
+    \]
+    Il certificato $y$ e' un \textit{testimone positivo}.
+
+    \item \textbf{coNP}: $L \in coNP \iff \exists$ polinomio $p$, MdT deterministica $M$ tali che
+    \[
+      x \in L \iff \forall\, y,\; |y| \leq p(|x|) : M(x,y) \text{ accetta}
+    \]
+    Equivalentemente, $x \notin L \iff \exists\, y : M(x,y) \text{ rifiuta}$: $y$ e' un \textit{controesempio} (refuter), una prova polinomialmente verificabile che $x \notin L$.
+  \end{itemize}
+}
+
+\ex{Testimoni e controesempi}{
+  \begin{center}
+  \begin{tabular}{l l l}
+    \textbf{Problema} & \textbf{Testimone positivo} & \textbf{Controesempio negativo} \\ \hline
+    SAT & assegnamento soddisfacente & -- (congetturato non esistere) \\
+    TAUT & -- (congetturato non esistere) & assegnamento che falsifica $\varphi$ \\
+    CLIQUE & lista dei vertici della clique & -- \\
+    NON-HAM & -- & ciclo hamiltoniano \\
+    PRIMES (pre-AKS) & certificato di Pratt & divisore non banale \\
+  \end{tabular}
+  \end{center}
+}
+
+\subsection{$NP \cap coNP$: i problemi ``ben caratterizzati''}
+
+I problemi in $NP \cap coNP$ hanno certificati brevi \textbf{sia} per i si''' \textbf{sia} per i no. Sono considerati ``a un passo da $P$'': storicamente quasi tutti i problemi naturali in $NP \cap coNP$ hanno finito per essere dimostrati in $P$.
+
+\ex{Problemi in $NP \cap coNP$}{
+  \begin{itemize}
+    \item \textbf{PRIMES} (pre-AKS 2002): certificato positivo = certificato di Pratt; negativo = divisore non banale. Dimostrato in $P$ (AKS).
+    \item \textbf{LINEAR PROGRAMMING} (decisione): in $NP \cap coNP$ per dualita' LP. Dimostrato in $P$ da Khachiyan (metodo dell'ellissoide, 1979).
+    \item \textbf{FACTORING} (versione decisionale): ``dato $n, k$, esiste un divisore di $n$ tra $2$ e $k$?''. In NP (certificato = divisore) e coNP (certificato = fattorizzazione completa). Non noto in $P$: la crittografia RSA ne dipende.
+    \item \textbf{PARITY GAMES}: famoso problema della teoria dei giochi, in $NP \cap coNP$, non noto in $P$.
+  \end{itemize}
+}
+
+\nt{
+  Intuizione: un problema in $NP \cap coNP$ ha buona struttura -- la risposta si puo' sempre giustificare con un certificato polinomiale. Questo suggerisce (ma non dimostra) che il problema sia in $P$. FACTORING e' il candidato piu' famoso per un problema in $NP \cap coNP$ fuori da $P$.
+}
+
+\subsubsection{Il problema della fattorizzazione (FACTORING)}
+
+``Dato un numero, produrre la sua fattorizzazione in primi'' non e' un problema di decisione, quindi non puo' stare in NP. Ne formuliamo la versione decisionale:
+
+\dfn{FACTOR}{
+  \[
+    \text{FACTOR} = \{ \langle n, k \rangle \mid n \text{ e' un naturale che ha almeno un fattore primo } p \leq k \}
+  \]
+}
+
+\ex{}{
+  $175 = 5 \cdot 5 \cdot 7$, quindi $\langle 175, 6 \rangle \in \text{FACTOR}$ e $\langle 175, 4 \rangle \notin \text{FACTOR}$.
+}
+
+\thm{$\text{FACTOR} \in NP \cap coNP$}{
+  \label{th:factor-np-conp}
+  FACTOR appartiene a $NP \cap coNP$.
+}
+\pf{Dimostrazione}{
+  \begin{itemize}
+    \item \textbf{FACTOR $\in NP$}: si indovina un fattore primo $p \leq k$ e si verifica che $p$ sia primo (test AKS, polinomiale deterministico in $O((\log n)^{12})$) e che $p \mid n$ (divisione intera, polinomiale). Tutto polinomiale.
+
+    \item \textbf{FACTOR $\in coNP$}: mostriamo che $\overline{\text{FACTOR}} \in NP$.
+    \[
+      \overline{\text{FACTOR}} = \{ \langle n, k \rangle \mid \text{tutti i fattori primi di } n \text{ sono} > k \}
+    \]
+    Si indovina l'intera fattorizzazione $p_1, p_2, \ldots, p_m$ di $n$. Il numero di fattori e' al piu' $\log_2 n$, polinomiale nella taglia di $n$.
+    \begin{enumerate}
+      \item Si verifica che ogni $p_i$ sia primo: un numero polinomiale di test polinomiali.
+      \item Si verifica $p_1 \cdot p_2 \cdots p_m = n$: moltiplicazione polinomiale.
+      \item Si verifica $p_i > k$ per ogni $i$: confronto polinomiale.
+    \end{enumerate}
+    Dunque $\overline{\text{FACTOR}} \in NP$, cioe' FACTOR $\in$ coNP.
+  \end{itemize}
+  Quindi FACTOR $\in NP \cap coNP$. \qed
+}
+
+\nt{
+  Buona parte dei sistemi crittografici a chiave pubblica (RSA) si basano sulla difficolta' di FACTORING. Non sappiamo se FACTOR $\in P$; nessuno ci e' mai riuscito, e si ipotizza che non lo sia.
+
+  Con alta probabilita' FACTOR non e' NP-Completo: se lo fosse, poiche' FACTOR $\in NP \cap$ coNP, avremmo $NP = coNP$, cosa che non ci aspettiamo.
+}
+
+\section{Le classi EXP e NEXP}
+
+\dfn{EXP}{
+  \[
+    EXP = \bigcup_{c \geq 1} DTime\!\left(2^{n^c}\right)
+  \]
+  Problemi risolvibili da una MdTD in tempo $2^{\text{poly}(n)}$.
+}
+
+\dfn{NEXP}{
+  \[
+    NEXP = \bigcup_{c \geq 1} NTime\!\left(2^{n^c}\right)
+  \]
+  Problemi risolvibili da una MdTN in tempo $2^{\text{poly}(n)}$.
+
+  \textbf{Caratterizzazione via certificati}: $L \in NEXP$ iff le istanze ``si''' hanno certificati di taglia esponenziale verificabili in tempo polinomiale nella taglia combinata di input e certificato. La verifica e' polinomiale in $|x| + |y|$ (non in $|x|$ soltanto), altrimenti sarebbe doppiamente esponenziale nella taglia dell'input.
+}
+
+Le relazioni tra le classi sono:
+\[
+  P \subseteq NP \subseteq EXP \subseteq NEXP
+\]
+\begin{itemize}
+  \item $NP \subseteq EXP$: una MdTN in tempo $p(n)$ si simula deterministicamente esplorando tutti i rami, $2^{O(p(n))} \in EXP$.
+  \item $coNP \subseteq EXP$: se $L \in coNP$ allora $\overline{L} \in NP \subseteq EXP$, e $EXP$ e' chiusa sotto complemento, quindi $L \in EXP$.
+  \item $EXP \subseteq NEXP$: banale.
+\end{itemize}
+
+Non sappiamo se $EXP = NEXP$, pero' sappiamo che $NEXP \neq NP$ (per il teorema di gerarchia temporale non deterministica).
+
+\nt{
+  Le separazioni \textbf{dimostrate} sono $P \subsetneq EXP$ e $NP \subsetneq NEXP$, entrambe per il teorema di gerarchia temporale. Tutte le altre ($P \stackrel{?}{=} NP$, $EXP \stackrel{?}{=} NEXP$, \ldots) sono aperte.
 }
 
 % \end{document}
