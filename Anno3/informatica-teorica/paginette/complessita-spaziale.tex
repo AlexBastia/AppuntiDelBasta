@@ -1,3 +1,200 @@
 % \begin{document}
-\chapter{Complessita Spaziale}
+\chapter{Complessita' Spaziale}
+
+Una macchina limitata in \textbf{spazio} polinomiale e' strettamente piu' potente di una limitata in \textbf{tempo} polinomiale: in tempo $t(n)$ si toccano al piu' $t(n)$ celle, quindi il tempo vincola anche lo spazio; viceversa, una macchina con spazio polinomiale puo' usare tempo esponenziale riutilizzando le stesse celle.
+
+\section{Modello: MdT con nastro di input read-only}
+
+Per definire in modo sensato lo spazio logaritmico, usiamo una MdT con due nastri:
+\begin{itemize}
+  \item \textbf{Nastro di input} (sola lettura): la testina puo' muoversi ma non scrivere.
+  \item \textbf{Nastro di lavoro} (lettura/scrittura): qui la MdT svolge i calcoli.
+\end{itemize}
+
+Il vincolo di spazio si applica \textbf{solo al nastro di lavoro}. Senza questa separazione, anche uno spazio logaritmico occuperebbe almeno $n$ celle (l'input stesso), rendendo impossibile definire classi sub-lineari.
+
+\dfn{Computation space}{
+  Il \textit{computation space} di $M$ su input $w$ e' il numero di celle distinte visitate sul nastro di lavoro. Per MdTN, e' il massimo su tutti i rami di computazione.
+}
+
+\dfn{Space function}{
+  Una funzione $S : \mathbb{N} \to \mathbb{N}$ e' una \textit{space function} se e' strettamente positiva e non decrescente.
+}
+
+\dfn{Running space}{
+  Sia $s(n)$ una space function. Il \textit{running space} di $M$ e' $s(n)$ se per ogni $w$, a parte un numero finito di eccezioni, il computation space di $M$ su $w$ e' limitato da $s(|w|)$.
+
+  Cioe': $M$ ``usa spazio $s(n)$'' se su \textbf{quasi tutti} gli input di lunghezza $n$ occupa al piu' $s(n)$ celle sul worktape.
+}
+
+\dfn{DSpace}{
+  Sia $s(n)$ una space function.
+  \[
+    DSpace(s(n)) = \{ L \mid \exists\, M \text{ deterministica con } \mathcal{L}(M) = L \text{ e running space } O(s(n)) \}
+  \]
+}
+
+\dfn{NSpace}{
+  Sia $s(n)$ una space function.
+  \[
+    NSpace(s(n)) = \{ L \mid \exists\, N \text{ non deterministica con } \mathcal{L}(N) = L \text{ e running space } O(s(n)) \}
+  \]
+}
+
+\section{Le classi L e NL}
+
+\dfn{L e NL}{
+  \[
+    L = DSpace(\log n) \qquad NL = NSpace(\log n)
+  \]
+  Lo spazio logaritmico e' sufficiente per memorizzare un numero costante di \textbf{puntatori} o \textbf{contatori} sull'input: $\log n$ bit bastano per un indice in $\{1,\ldots,n\}$.
+}
+
+Chiaramente $L \subseteq NL$, ma non sappiamo se $L = NL$ (domanda aperta analoga a $P$ vs $NP$).
+
+\ex{$L_{01} = \{0^n 1^n \mid n \geq 0\} \in L$}{
+  Il linguaggio delle stringhe con $n$ zeri seguiti da $n$ uni. L'approccio ``naivo'' (copiare l'input sul worktape e fare il ping-pong marcando uno zero a sinistra e un uno a destra) funziona ma usa \textbf{spazio lineare}, perche' riscrive tutto l'input sul nastro di lavoro. Mostrare che $L_{01} \in L$ richiede un algoritmo piu' furbo.
+}
+\pf{Soluzione}{
+  Costruiamo una MdT che usa due contatori \textbf{in binario} sul worktape. Su input $w$:
+  \begin{enumerate}
+    \item Se $w$ e' vuota, accetta.
+    \item Scorri l'input da sinistra a destra, incrementando un contatore $c_0$ sul worktape per ogni $0$ letto, finche' non trovi un $1$.
+    \item Leggi il resto dell'input (sempre da sinistra a destra) e incrementa un secondo contatore $c_1$ (scritto subito dopo il primo) per ogni $1$ letto, finche' non trovi il blank di fine input.
+    \item Se trovi uno $0$ dopo un $1$, rifiuta (forma non corretta).
+    \item Confronta i due contatori: accetta sse $c_0 = c_1$.
+  \end{enumerate}
+
+  \textbf{Analisi spaziale}. Nel caso peggiore, ciascun contatore deve rappresentare il numero $n = |w|$. Scritto in \textbf{binario}, ogni contatore occupa $\lceil \log_2 n \rceil$ celle. Poiche' i contatori sono in numero \textbf{costante} (due) e le operazioni di incremento e confronto richiedono spazio costante aggiuntivo:
+  \[
+    S_M(n) \in O(\log n) \quad\Longrightarrow\quad L_{01} \in L
+  \]
+
+  \textbf{Nota}: la scelta della base \emph{non e' accidentale}. Un contatore in unario occuperebbe $n$ celle (spazio lineare); in binario bastano $\log n$ bit. Un algoritmo logspace puo' ``ricordare'' indici e contatori sull'input, ma non il contenuto dell'input stesso.
+}
+
+\ex{$\textit{Reach} \in NL$}{
+  \[
+    \textit{Reach} = \{ \langle G, s, t \rangle \mid G \text{ grafo orientato, esiste un cammino da } s \text{ a } t \}
+  \]
+  L'algoritmo classico (BFS/DFS) decide $\textit{Reach}$ in tempo polinomiale, ma usa una coda/stack che nel caso pessimo contiene tutti i nodi $\Rightarrow$ spazio \textbf{lineare}. Mostrare $\textit{Reach} \in NL$ richiede un approccio non deterministico.
+}
+\pf{Soluzione}{
+  \textbf{Idea}. Invece di memorizzare l'intero cammino, indoviniamo \textbf{un passo alla volta} e sovrascriviamo il nodo precedente. Per evitare cicli infiniti, limitiamo il numero di passi a $|V|$: se esiste un cammino, ne esiste uno di lunghezza $\leq |V|$.
+
+  \textbf{Pseudocodice}:
+  \begin{enumerate}
+    \item $p \leftarrow s$, $\mathit{cnt} \leftarrow 0$.
+    \item Se $p = t$, accetta.
+    \item Indovina non deterministicamente un vertice $p'$ di $G$.
+    \item Se $(p, p') \notin A$, rifiuta.
+    \item $p \leftarrow p'$, $\mathit{cnt} \leftarrow \mathit{cnt} + 1$.
+    \item Se $\mathit{cnt} > |V|$, rifiuta (loop rilevato); altrimenti torna al passo 2.
+  \end{enumerate}
+
+  \textbf{Correttezza}. Se esiste un cammino $s \to v_1 \to \cdots \to t$ di lunghezza $\leq |V|$, un ramo non deterministico lo indovina (indovinando $v_1, v_2, \ldots, t$ in sequenza) e accetta. Se non esiste, nessun ramo puo' accettare: o ci si blocca su un arco inesistente, o il contatore supera $|V|$.
+
+  \textbf{Analisi spaziale}. Il worktape contiene solo tre valori, ciascuno di taglia logaritmica:
+  \begin{itemize}
+    \item il nodo corrente $p$: $\lceil \log_2 |V| \rceil$ bit (indice in $\{1, \ldots, |V|\}$),
+    \item il guess $p'$: $\lceil \log_2 |V| \rceil$ bit,
+    \item il contatore $\mathit{cnt}$: $\lceil \log_2 |V| \rceil$ bit.
+  \end{itemize}
+  Totale: $O(\log n)$. Dunque $\textit{Reach} \in NL$.
+}
+
+\subsection{NL-completezza}
+
+Per decidere $\textit{Reach}$ il non determinismo e' davvero necessario? Esiste un algoritmo \textbf{deterministico} in logspace? \textbf{Non si sa}: sappiamo $L \subseteq NL$ ma non se $L = NL$. E' una domanda aperta, analoga in scala ridotta a $P$ vs $NP$.
+
+Come per $NP$, sono stati individuati i ``problemi piu' difficili'' della classe: gli \textbf{NL-completi}. Vedremo che $\textit{Reach}$ stesso e' NL-completo, il che e' un forte indizio (non una prova) che $\textit{Reach} \notin L$.
+
+\subsubsection{Perche' non usare la riduzione polinomiale?}
+
+Per NP-completezza avevamo usato la riduzione polinomiale ($\leq_P$). Per NL non possiamo usarla: sarebbe \textbf{troppo potente}. Infatti $NL \subseteq P$ (come vedremo), quindi una riduzione in tempo polinomiale da $L \in NL$ a qualsiasi problema potrebbe ``risolvere'' $L$ direttamente durante la costruzione dell'istanza. Servirebbe una riduzione piu' debole.
+
+\subsubsection{Trasduttore logspace}
+
+Per le riduzioni polinomiali avevamo usato trasduttori (MdT con input read-only, worktape, output). Qui usiamo un trasduttore analogo, con un vincolo aggiuntivo sull'output:
+
+\dfn{Trasduttore logspace}{
+  Una MdT con tre nastri:
+  \begin{itemize}
+    \item \textbf{Nastro di input}: sola lettura, testina bidirezionale.
+    \item \textbf{Nastro di lavoro}: lettura/scrittura, bidirezionale, spazio \textbf{logaritmico}.
+    \item \textbf{Nastro di output}: \textbf{sola scrittura}, testina \textbf{unidirezionale} (puo' solo avanzare).
+  \end{itemize}
+  Il trasduttore \textit{calcola} una funzione $f$ se per ogni input $w$ lascia $f(w)$ sul nastro di output.
+}
+
+\nt{
+  Il nastro di output e' write-only unidirezionale altrimenti diventerebbe un secondo foglio di brutta, e il vincolo di spazio sarebbe inutile. L'output e' ``il foglio di bella'': scritto una volta per tutte, senza ripensamenti.
+}
+
+\dfn{Riduzione logspace}{
+  Siano $A, B$ due linguaggi. Esiste una \textit{riduzione logspace} da $A$ a $B$, denotata $A \leq_L B$, se esiste $f$ tale che:
+  \begin{enumerate}
+    \item $f$ e' calcolabile in logspace deterministico (tramite un trasduttore come sopra).
+    \item Per ogni $w$: $w \in A \iff f(w) \in B$.
+  \end{enumerate}
+}
+
+Le riduzioni logspace godono delle stesse proprieta' di quelle polinomiali: transitivita', chiusura sotto $L$ e $NL$, ecc.
+
+\dfn{NL-completezza}{
+  Un linguaggio $L$ e' \textit{NL-completo} se:
+  \begin{enumerate}
+    \item $L \in NL$ (membership).
+    \item $\forall L' \in NL,\; L' \leq_L L$ (NL-hardness).
+  \end{enumerate}
+}
+
+\subsection{$\textit{Reach}$ e' NL-completo}
+
+Come SAT e' il problema ``canonico'' per NP (Cook-Levin), $\textit{Reach}$ gioca lo stesso ruolo per NL.
+
+\thm{$\textit{Reach}$ e' NL-completo}{
+  \label{th:reach-nl-completo}
+  $\textit{Reach} \in NL$ e per ogni $L \in NL$, $L \leq_L \textit{Reach}$.
+}
+\pf{Dimostrazione}{
+  \textbf{Membership}: gia' vista ($\textit{Reach} \in NL$).
+
+  \textbf{Hardness}. Sia $L \in NL$ generico, deciso da una MdTN $M_L$ in spazio logaritmico. Costruiamo una riduzione logspace $f$ che su input $w$ produce una tripla $\langle G, s, t \rangle$ tale che:
+  \[
+    w \in L \iff \text{esiste un cammino da } s \text{ a } t \text{ in } G
+  \]
+
+  \textbf{Idea chiave}: i nodi di $G$ sono le \textbf{configurazioni} di $M_L$ su $w$; gli archi rappresentano i passi della funzione di transizione. Cosi' un cammino in $G$ corrisponde a una computazione accettante di $M_L$.
+
+  \textbf{Configurazione di $M_L$ su $w$}. Poiche' l'input e' read-only, non cambia mai: non serve ricordarlo nella configurazione. Una configurazione e' data da:
+  \begin{itemize}
+    \item $H_1$: posizione della testina sull'input, in $\{1, \ldots, n\}$ $\to$ $O(\log n)$ bit.
+    \item $H_2$: posizione della testina sul worktape, in $\{1, \ldots, O(\log n)\}$ $\to$ $O(\log \log n)$ bit.
+    \item Contenuto del worktape: stringa di lunghezza $O(\log n)$ su $\Gamma$ $\to$ $O(\log n)$ bit.
+    \item $Q$: stato corrente $\to$ $O(1)$ bit.
+  \end{itemize}
+  Scriviamo una configurazione come stringa $\langle H_1 \mid H_2 \mid \text{worktape} \mid Q \rangle$ di taglia $O(\log n)$.
+
+  \textbf{Numero di configurazioni}: ogni configurazione ha $O(\log n)$ simboli, quindi il numero totale e' al piu' $2^{O(\log n)} = n^{O(1)}$, \textbf{polinomiale} in $n$. (E' per questo che $NL \subseteq P$: BFS deterministico su $G$ decide $L$ in tempo polinomiale.)
+
+  \textbf{Costruzione di $G$ in logspace}. Il trasduttore \textbf{non} puo' generare tutto $G$ sul worktape: occuperebbe spazio polinomiale. Genera invece nodi e archi \textbf{uno alla volta}, scrivendoli in output:
+
+  \textbf{Fase 1 -- nodi}. Itera su tutte le possibili stringhe di lunghezza $O(\log n)$ (come un contatore in base $|\Gamma|$); per ciascuna verifica in loco se e' una configurazione ben formata (posizioni in range, stato valido, worktape ben formato); se si', la scrive in output. Aggiunge infine un nodo fittizio $v^*$ che fara' da $t$.
+
+  \textbf{Fase 2 -- archi di transizione}. Ripulisce il worktape. Itera su tutte le coppie $(C_1, C_2)$ di stringhe candidate, ciascuna di taglia $O(\log n)$ $\Rightarrow$ coppia di taglia $O(\log n)$. Per ogni coppia verifica: $C_1$ e $C_2$ sensate? $C_2$ e' legal successor di $C_1$ secondo $\delta$? Se si', scrive in output l'arco $(C_1, C_2)$.
+
+  \textbf{Fase 3 -- archi verso $v^*$}. Ripulisce il worktape. Itera su tutte le configurazioni; per ogni $C$ con stato accettante scrive in output l'arco $(C, v^*)$.
+
+  Il worktape contiene sempre al piu' due label di configurazione piu' contatori ausiliari: spazio $O(\log n)$. L'output cresce polinomialmente ma e' write-only unidirezionale, quindi non conta.
+
+  \textbf{Output finale}: $f(w) = \langle G, s, t \rangle$ dove $s$ e' la configurazione iniziale di $M_L$ su $w$ e $t = v^*$.
+
+  \textbf{Correttezza}: per costruzione,
+  \[
+    M_L \text{ accetta } w \iff \exists \text{ cammino da } s \text{ a } v^* \text{ in } G \iff \langle G, s, t \rangle \in \textit{Reach}
+  \]
+  cioe' $w \in L \iff f(w) \in \textit{Reach}$. Poiche' $L \in NL$ era generico, $\textit{Reach}$ e' NL-hard. Combinando con la membership: $\textit{Reach}$ e' NL-completo. \qed
+}
+
 % \end{document}

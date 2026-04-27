@@ -1,0 +1,597 @@
+% \begin{document}
+\chapter{Wireless Network Security}
+
+\section{L'ambiente wireless/radio}
+
+Per capire la sicurezza delle reti wireless bisogna prima capire l'ambiente in cui operano. Una rete wireless \`e costituita da \textbf{tre componenti} fondamentali, ognuno dei quali rappresenta un potenziale punto di attacco:
+
+\begin{itemize}
+  \item \textbf{Client wireless}: il dispositivo dell'utente finale, come telefono, laptop, tablet, sensore IoT, dispositivo Bluetooth
+  \item \textbf{Access Point (AP)}: l'infrastruttura che fornisce connettivit\`a (base station cellulare, hotspot Wi-Fi, router domestico, ecc.)
+  \item \textbf{Mezzo trasmissivo}: l'aria stessa, ovvero le onde radio che trasportano i dati tra client e AP
+\end{itemize}
+
+\subsection{Perch\'e il wireless \`e pi\`u rischioso del cablato}
+
+Ci sono quattro ragioni strutturali per cui le reti wireless sono intrinsecamente pi\`u vulnerabili:
+
+\begin{itemize}
+  \item \textbf{Canale broadcast}: nelle reti cablate un segnale viaggia su un cavo dedicato, e per intercettarlo serve accesso fisico. In una rete wireless il segnale si propaga in tutte le direzioni: chiunque sia nel raggio pu\`o ascoltarlo. L'\textit{eavesdropping} diventa banale.
+  \item \textbf{Mobilit\`a}: i dispositivi cambiano rete, si riautenticano, si spostano. Ogni cambio di rete \`e una finestra di vulnerabilit\`a.
+  \item \textbf{Risorse limitate}: sensori IoT, smartwatch, embedded device hanno CPU e memoria ridotte. Difficile implementare crittografia pesante $\Rightarrow$ pi\`u vulnerabili a DoS e malware.
+  \item \textbf{Accessibilit\`a fisica}: un sensore incustodito in un campo agricolo o un magazzino pu\`o essere manomesso o ascoltato senza essere notato.
+\end{itemize}
+
+\section{Tassonomia delle minacce}
+
+Prima di entrare nel tecnico, \`e utile una mappa delle principali categorie di minaccia.
+
+\dfn{Rogue Access Point}{
+  Un attaccante configura un dispositivo wireless affinch\'e si comporti come un AP legittimo. Gli utenti si connettono credendo di essere sulla rete autentica, esponendo credenziali e traffico.
+}
+
+\dfn{Reti ad hoc}{
+  Reti peer-to-peer tra dispositivi wireless \textit{senza AP centrale}. La mancanza di un punto di controllo rende ogni nodo costretto a fidarsi direttamente degli altri.
+}
+
+\dfn{MAC Spoofing}{
+  Ogni scheda di rete ha un indirizzo MAC a 48 bit. In teoria univoco e fisso, in pratica modificabile via software in pochi secondi. Basta sniffare il traffico, individuare un MAC autorizzato e impersonarlo.
+}
+
+\dfn{Man-in-the-Middle (MitM)}{
+  L'attaccante si posiziona tra client e AP. Il client crede di parlare con l'AP, l'AP crede di parlare col client: in realt\`a tutto passa per l'attaccante.
+}
+
+\dfn{Denial of Service (DoS)}{
+  Saturazione del canale o delle risorse dell'AP con messaggi continui, impedendo il funzionamento per gli utenti legittimi. Il mezzo radio \`e particolarmente vulnerabile dato che \`e fisicamente condiviso.
+}
+
+\dfn{Network Injection}{
+  Iniezione di messaggi di protocollo fasulli (routing, gestione) verso AP esposti, con l'obiettivo di degradare le prestazioni o reindirizzare il traffico.
+}
+
+\subsection{Attacchi passivi vs attivi}
+
+\dfn{Attacco passivo}{
+  L'attaccante ascolta e basta, senza alterare il flusso. Esempi: \textit{eavesdropping} (intercettazione) e \textit{traffic analysis} (analisi dei metadati anche senza decifrare). Difficili da rilevare perch\'e non lasciano tracce.
+}
+
+\dfn{Attacco attivo}{
+  L'attaccante modifica, inietta o blocca il traffico. Rientrano in questa categoria: \textit{masquerade}, \textit{data modification}, \textit{denial of service}, \textit{replay attack}.
+}
+
+\section{Attacchi al livello radio}
+
+\subsection{Jamming}
+
+Il \textbf{jamming} \`e la forma pi\`u elementare di DoS wireless: trasmettere rumore o un segnale continuo sulla stessa frequenza della rete bersaglio.
+
+\ex{OOK (On-Off Keying)}{
+  Nella modulazione OOK il bit $1$ corrisponde alla portante accesa, il bit $0$ alla portante spenta. Se l'attaccante tiene la portante \textbf{sempre accesa} (trasmette sempre "1111...") il ricevitore non distingue pi\`u i dati legittimi dal rumore. \`E come urlare di continuo mentre qualcuno cerca di sentire un sussurro.
+}
+
+\nt{
+  Questo attacco richiede \textbf{molta energia}, proporzionale alla banda da disturbare.
+}
+
+\subsection{Frequency Hopping Spread Spectrum (FHSS)}
+
+Per rendere il jamming molto pi\`u costoso si usa banda larga: invece di una singola frequenza portante, se ne usano \textbf{molte}, saltando da una all'altra secondo una sequenza pseudo-casuale (PRNG) concordata a priori tra Tx e Rx.
+
+\mprop{Robustezza di FHSS}{
+  Un jammer che vuole disturbare la comunicazione deve disturbare \textbf{tutte} le frequenze contemporaneamente, richiedendo un'energia enormemente maggiore. In caso di collisione/jamming su una singola portante si perde solo la porzione di informazione trasmessa su quella frequenza.
+}
+
+Vantaggi:
+\begin{itemize}
+  \item Migliora la sicurezza
+  \item Riduce le interferenze
+  \item Connessioni stabili
+  \item Usato in Bluetooth, IoT, applicazioni militari
+\end{itemize}
+
+\nt{
+  Conoscere il seed del PRNG di FHSS equivale a poter intercettare tutta la comunicazione: la sicurezza dipende interamente dalla segretezza del seed.
+}
+
+\subsection{Eavesdropping / Sniffing}
+
+In un ambiente radio aperto, fare eavesdropping \`e semplice conoscendo tre cose:
+\begin{itemize}
+  \item la \textbf{frequenza} (o la sequenza di frequenze nel caso FHSS)
+  \item la \textbf{modulazione} usata
+  \item il \textbf{protocollo}
+\end{itemize}
+Con queste info basta un ricevitore SDR (Software-Defined Radio) nel raggio del segnale. Nessun accesso fisico richiesto.
+
+\subsection{Replay Attack}
+
+C'\`e una categoria di attacchi che non richiede nemmeno di conoscere modulazione o protocollo: il \textbf{replay attack}.
+
+\dfn{Replay Attack}{
+  Catturare una porzione di spettro radio in un momento e ritrasmetterla identica in seguito. Non serve capire cosa c'\`e dentro: basta registrare e riprodurre.
+}
+
+\nt{
+  Il canale radio NON \`e protetto da questo attacco dai meccanismi di confidenzialit\`a o integrit\`a! Se reinoltro un messaggio cifrato e integro, viene considerato valido.
+}
+
+\ex{Cancelli automatici}{
+  I cancelli controllati via radiocomando usano spesso OOK a 433 MHz. Un attaccante con un RTL-SDR (ricevitore da pochi euro) cattura il treno di impulsi mentre apri il cancello, poi lo riproduce per aprirlo lui stesso, senza mai capire cosa significhi il segnale.
+}
+
+\subsection{Rolling Code}
+
+Per difendersi dal replay naive, i sistemi pi\`u moderni usano il \textbf{Rolling Code}.
+
+\dfn{Rolling Code}{
+  Trasmettitore e ricevitore condividono un PRNG. Ogni pressione del telecomando invia il codice corrente, poi il trasmettitore avanza al codice successivo. Il ricevitore accetta solo se il codice \`e consistente con la sua posizione nel PRNG, e avanza anche lui.
+}
+
+\paragraph{Problema del disallineamento}: se il trasmettitore invia ma il ricevitore non riceve (fuori portata), i due PRNG si disallineano. Soluzione: il ricevitore accetta codici in una \textbf{finestra} di $N$ valori successivi a quello atteso (tipicamente $\sim 100$), poi sposta la finestra.
+
+\qs{Il Rolling Code risolve il replay?}{
+  \textbf{No!} Lo rende solo meno efficiente. Un attaccante pu\`o catturare vari codici prima che vengano usati dalla vittima, usarli in sequenza, poi ricatturarne altri. Per protezione robusta serve un \textbf{canale di ritorno}.
+}
+
+\subsection{Challenge and Response}
+
+Il limite dei metodi precedenti \`e la \textbf{mancanza di feedback}: cancelli e telecomandi sono solo trasmettitori. Con \textbf{transceiver} (Tx + Rx) si pu\`o fare Challenge and Response.
+
+\dfn{Challenge-Response}{
+  \begin{enumerate}
+    \item Il client (autenticando) invia una richiesta di accesso.
+    \item Il server (autenticatore) genera un numero casuale fresco, il \textbf{nonce}, e lo invia al client.
+    \item Il client \textbf{cifra} il nonce con la chiave condivisa e risponde.
+    \item Il server decifra e verifica la corrispondenza.
+  \end{enumerate}
+}
+
+Ogni sessione usa un nonce diverso, quindi un messaggio catturato non pu\`o essere riusato: il replay \`e neutralizzato strutturalmente.
+
+\subsection{Cifratura radio}
+
+Oltre che per autenticazione, la cifratura serve per \textbf{confidenzialit\`a} e \textbf{integrit\`a} dei dati in transito. Nel mondo radio si usano:
+\begin{itemize}
+  \item \textbf{Cifrari a blocco}: es. AES (standard de facto oggi)
+  \item \textbf{Cifrari a flusso}: es. \textbf{Kasumi / A5/3}, usato in 3G/4G GSM
+\end{itemize}
+
+\nt{
+  Nel 2010 \`e stato pubblicato il "\textit{sandwich attack}" (una variante di related-key attack) che ha rotto Kasumi permettendo di ricavare la chiave completa. Anche gli standard largamente adottati possono essere vulnerabili.
+}
+
+\section{RFID}
+
+\dfn{RFID (Radio Frequency IDentification)}{
+  Sistema di identificazione basato su campi elettromagnetici. Composto da:
+  \begin{itemize}
+    \item \textbf{Tag}: transponder radio miniaturizzato attaccato all'oggetto. Eccitato dal campo del lettore, trasmette ID e dati.
+    \item \textbf{Lettore}: genera il campo e riceve la risposta.
+    \item \textbf{Sistema informatico}: gestisce i dati ricevuti.
+  \end{itemize}
+}
+
+I tag possono essere \textbf{passivi} (alimentati dal campo del lettore, niente batteria) o \textbf{attivi} (con batteria, raggio maggiore). Usato ovunque: badge aziendali, carte contactless, antitaccheggio, passaporti biometrici.
+
+\ex{Badge Unibo}{
+  Usano la tecnologia \textbf{EM410X}: ogni badge ha un ID univoco, associato nel DB dell'universit\`a all'account. Il varco consulta il DB per verificare l'autorizzazione.
+}
+
+\subsection{Cloning dei tag RFID}
+
+I badge EM410X sono venduti con ID fisso e non modificabile. \textbf{Come aggirare la protezione?}
+
+\nt{
+  Basta comprare badge \textit{scrivibili} compatibili con lo stesso standard, leggere l'ID del badge vittima con un lettore RFID, e scriverlo sul badge vuoto. Clone funzionante. Rasoio di Occam / percorso di minima resistenza: non si rompe la crittografia, ci si procura lo stesso strumento.
+}
+
+\subsection{Spoofing RFID}
+
+Se non ci sono badge scrivibili ma il sistema \`e privo di crittografia, si usa un \textbf{transceiver RFID programmabile} (es. \texttt{Proxmark}) per emulare il segnale del tag legittimo:
+\begin{enumerate}
+  \item L'attacker intercetta i segnali emessi dai tag RFID con un lettore.
+  \item L'attacker usa il dispositivo specializzato per \textbf{imitare quei segnali}.
+\end{enumerate}
+
+La difesa fondamentale contro questi attacchi \`e l'uso di protocolli crittografici nell'RFID (challenge-response con chiavi vere). Tecnologie come \textbf{MIFARE DESFire} sono molto pi\`u resistenti di EM410X.
+
+\section{IEEE 802.11 --- Wi-Fi}
+
+Lo standard \textbf{IEEE 802.11}, comunemente noto come \textbf{Wi-Fi}, \`e la tecnologia wireless pi\`u pervasiva nel mondo informatico. Crea \textbf{Wireless LAN (WLAN)} interoperabili con le reti Ethernet (IEEE 802.3).
+
+Esistono diversi sotto-standard:
+\begin{itemize}
+  \item \textbf{IEEE 802.11g}: reti a 2.4 GHz
+  \item \textbf{IEEE 802.11ac/ax}: reti a 5 GHz
+\end{itemize}
+
+\subsection{Layer fisico}
+
+A livello fisico \textbf{802.11 non prevede protezioni}. Le onde radio si propagano in tutte le direzioni attraverso i muri. L'unica "protezione" fisica possibile sono materiali schermanti (vernici tipo \textbf{YSHIELD}, gabbie di Faraday) che attenuano la propagazione fuori dall'ambiente controllato.
+
+\subsection{Accesso al canale: CSMA/CA}
+
+Le reti 802.11 usano un canale condiviso $\Rightarrow$ gestiscono le collisioni con \textbf{CSMA/CA}.
+
+\dfn{CSMA/CA (Carrier Sense Multiple Access with Collision Avoidance)}{
+  Prima di trasmettere un nodo "ascolta" il canale:
+  \begin{itemize}
+    \item Se occupato, aspetta.
+    \item Se libero, aspetta comunque un tempo casuale (\textbf{backoff}) prima di trasmettere.
+  \end{itemize}
+  Questo riduce la probabilit\`a che due nodi trasmettano nello stesso istante.
+}
+
+\subsubsection{Problema del Terminale Nascosto}
+
+Non tutti i nodi si "vedono" a vicenda: l'AP di solito ha visibilit\`a di tutta la rete, ma i singoli nodi no.
+
+\ex{Hidden terminal}{
+  Tre nodi: $A$, $B$ (AP), $C$. Sia $A$ che $C$ sono nel raggio di $B$ ma non nel raggio l'uno dell'altro.
+  \[
+    [A] \;\text{---}\; (AP: B) \;\text{---}\; [C]
+  \]
+  $C$ non sa quando $A$ sta trasmettendo $\Rightarrow$ pu\`o trasmettere credendo il canale libero $\Rightarrow$ collisione sull'AP. \`E una criticit\`a strutturale delle reti wireless.
+}
+
+\subsubsection{Inter-Frame Space (IFS)}
+
+Dopo una collisione, tutti i nodi aspettano un \textbf{Inter-Frame Space (IFS)} prima di ritrasmettere. Il tempo totale \`e:
+\[
+  \text{DIFS} + \text{backoff}
+\]
+dove il backoff \`e estratto uniformemente in $[1, CW]$ con $CW$ = Contention Window. Gli IFS hanno diverse priorit\`a (SIFS, DIFS, EIFS) per diversi tipi di frame:
+\begin{itemize}
+  \item Spazi attendibili solo dall'access point
+  \item Spazi dedicati ai client
+  \item ecc.
+\end{itemize}
+
+\subsubsection{Appropriazione del canale (DoS su CSMA/CA)}
+
+\qs{Cosa succede se qualcuno non rispetta l'IFS dopo una collisione?}{
+  \textbf{Parla sempre e solo lui!} Appropriazione totale della rete.
+}
+
+\qs{E se due terminali non rispettano gli IFS?}{
+  \textbf{Nessuno pu\`o pi\`u parlare!} DoS totale.
+}
+
+\section{Meccanismi di "sicurezza" deboli}
+
+\subsection{SSID Hiding --- Security by Obscurity}
+
+\dfn{SSID Hiding}{
+  Disabilitare il broadcast del SSID del router: il nome della rete non appare nella lista delle reti disponibili. Per accedervi bisogna conoscerne il nome.
+}
+
+Il problema \`e fondamentale: quando un dispositivo che conosce gi\`a quella rete si riavvicina, manda \textbf{probe request in broadcast} chiedendo "C'\`e la rete X?" \textbf{con il nome in chiaro}. Chiunque abbia la scheda Wi-Fi in monitor mode pu\`o vedere questi probe e ricavare il nome.
+
+\nt{
+  Classico esempio di \textbf{security by obscurity}: una misura che d\`a una falsa sensazione di sicurezza senza fornire protezione reale.
+}
+
+\subsection{MAC Address Whitelisting}
+
+Un altro "meccanismo" comune: l'AP accetta connessioni solo da MAC specifici.
+
+Il problema \`e che l'indirizzo MAC viene trasmesso \textbf{in chiaro} in ogni frame 802.11. Un attaccante in ascolto vede i MAC autorizzati e con un semplice comando (\texttt{macchanger} su Linux) cambia il proprio MAC:
+
+\begin{verbatim}
+[root@snark ~]# macchanger -m 11:22:33:44:55:66 virbr0
+Current MAC:    52:54:00:b7:9a:84 (unknown)
+Permanent MAC:  00:00:00:00:00:00 (XEROX CORPORATION)
+\end{verbatim}
+
+Ancora security by obscurity.
+
+\subsection{Management Frames in chiaro}
+
+L'autenticazione e la confidenzialit\`a sono cruciali: in una rete \textbf{open} tutto il traffico viaggia in chiaro nell'etere, non serve nemmeno un MitM per sniffare.
+
+Tuttavia, anche in reti cifrate, 802.11 prevede che alcuni \textbf{management frames} viaggino \textbf{in chiaro} e senza autenticazione/anti-replay. Tra questi: \textbf{deauthentication} e \textbf{disassociation}.
+
+Le fasi dell'associazione 802.11 sono:
+\begin{enumerate}
+  \item \textbf{Authentication phase} (Request/Response)
+  \item \textbf{Association phase} (Request/Response)
+  \item \textbf{Normal communication}
+\end{enumerate}
+
+\subsubsection{Deauthentication / Dissociation Attack}
+
+L'attaccante pu\`o inviare un messaggio di deauthentication falsificato (con MAC sorgente dell'AP legittimo, non verificato) a un client. Il client si disconnette immediatamente $\Rightarrow$ DoS istantaneo e silenzioso. Viene anche usato come primo passo di attacchi pi\`u complessi (es. forzare la riconnessione per catturare l'handshake WPA).
+
+\nt{
+  \textbf{Soluzione}: standard \textbf{IEEE 802.11w-2009}, noto come \textbf{Protected Management Frames (PMF)}. Obbligatorio in WPA3.
+}
+
+\section{WEP --- Wired Equivalent Privacy}
+
+Prima forma di autenticazione e confidenzialit\`a in 802.11. Il nome era ambizioso: "privacy equivalente al cablato". La realt\`a \`e che \textbf{WEP \`e fondamentalmente rotto}, non va usato mai. Offre due modalit\`a.
+
+\subsection{WEP --- Shared Key}
+
+Tutti i dispositivi della rete condividono una chiave segreta. \textbf{Four-step challenge-response handshake}:
+\[
+  \begin{array}{rcl}
+    \text{Client} & \xrightarrow{\text{Auth request}} & \text{AP} \\
+    \text{Client} & \xleftarrow{n = \text{challenge}} & \text{AP} \\
+    \text{Client} & \xrightarrow{RC4_{k}(n)} & \text{AP} \\
+    \text{Client} & \xleftarrow{\text{Accept/Reject}} & \text{AP}
+  \end{array}
+\]
+
+Scopo: il client dimostra di possedere la chiave.
+
+\nt{
+  \textbf{Dannoso!} Un attaccante che cattura lo scambio conosce sia il plaintext $n$ (inviato in chiaro) sia il ciphertext $RC4(k, n)$. \textbf{Known Plaintext Attack (KPA)}: con abbastanza osservazioni ricava il keystream e quindi la chiave. Paradossalmente Shared Key \`e \textbf{meno sicura} dell'Open System.
+}
+
+\subsection{WEP --- Open System}
+
+Non c'\`e verifica con challenge. Chi si connette deve gi\`a conoscere il segreto comune, altrimenti non pu\`o decifrare i pacchetti dell'AP (e i suoi verranno scartati). L'autenticazione \`e implicita nella capacit\`a di cifrare correttamente.
+
+Struttura del pacchetto:
+\[
+  |\;\text{IV}\;|\;\text{Key ID}\;|\;\underbrace{\text{Data}\;|\;\text{ICV}}_{\text{Encrypted}}\;|
+\]
+
+\subsubsection{WEP con RC4}
+
+\dfn{RC4 in WEP}{
+  Stream cipher basato sulla chiave $k$ e sul \textbf{Initialization Vector} $v$ (a 24 bit), genera un keystream $RC4(v, k)$.
+}
+
+Per inviare il messaggio $M$ da Alice a Bob:
+\begin{enumerate}
+  \item Calcola checksum di integrit\`a a 32 bit (CRC32): $c(M)$
+  \item Plaintext: $P = \{M, c(M)\}$
+  \item Cifra $P$: $C = P \oplus RC4(v, k)$
+  \item Trasmette $C' = v \,\|\, C$
+\end{enumerate}
+Per decifrare il processo \`e invertito.
+
+\subsection{WEP --- IV Collision}
+
+\thm{Birthday Paradox sugli IV}{
+  Con soli 24 bit l'IV ha $2^{24} \approx 16$ milioni di valori possibili. Dopo $\sim 30\,000$ pacchetti la probabilit\`a di collisione supera il $50\%$:
+  \[
+    P_{\text{collision}} \approx 1 - e^{-\frac{30000^2}{2 \cdot 2^{24}}} \approx 1
+  \]
+}
+
+\nt{
+  Il birthday paradox dice che in un gruppo di 23 persone scelte a caso, almeno due condividono il compleanno con probabilit\`a $\geq 1/2$.
+}
+
+Se due frame usano lo stesso IV, usano lo stesso keystream: lo XOR dei ciphertext \`e uguale allo XOR dei plaintext. Da l\`i si fanno \textbf{attacchi statistici} per ricavare contenuti e, con abbastanza dati, la chiave. Catturando pacchetti con IV noto si fa inoltre \textbf{replay} ricircolando pacchetti vecchi.
+
+\nt{
+  Tool come \texttt{aircrack-ng} rompono WEP in pochi minuti su una rete trafficata.
+}
+
+\section{IEEE 802.11i e WPA/WPA2}
+
+Per ovviare ai problemi di WEP \`e stato sviluppato \textbf{IEEE 802.11i}, implementato nella famiglia \textbf{Wi-Fi Protected Access (WPA)}, arrivata alla versione 3.
+
+\subsection{Modi di utilizzo}
+
+\begin{itemize}
+  \item \textbf{PSK (Pre-Shared Key, 256 bit)}: reti domestiche. La passphrase viene derivata in chiave a 256 bit tramite PBKDF2.
+  \item \textbf{Enterprise}: autenticazione individuale tramite server RADIUS e protocollo EAP. Tipica di reti universitarie (ALMAWIFI, eduroam) e aziendali.
+  \item \textbf{WPS}: sistema di autenticazione facilitato.
+\end{itemize}
+
+\subsection{Schemi di protezione (802.11i)}
+
+IEEE 802.11i definisce due schemi per proteggere le \textbf{MPDU (MAC Protocol Data Unit)}:
+\begin{itemize}
+  \item \textbf{TKIP (Temporal Key Integrity Protocol)}: compatibile con hardware WEP, oggi \textbf{deprecato}
+  \item \textbf{CCMP (Counter Mode-CBC MAC Protocol)}: basato su \textbf{AES}, standard attuale
+\end{itemize}
+
+Formato MPDU:
+\[
+  \underbrace{|\;\text{MAC Ctrl}\;|\;\text{Dest}\;|\;\text{Source}\;|}_{\text{MAC header}}\;|\;\text{MSDU}\;|\;\underbrace{\text{CRC}}_{\text{trailer}}\;|
+\]
+
+\subsection{TKIP}
+
+Progettato per richiedere solo \textbf{modifiche software} ai dispositivi WEP. Fornisce:
+
+\dfn{Integrit\`a in TKIP --- MIC}{
+  Aggiunge un \textbf{Message Integrity Code (MIC)} a 64 bit al frame MAC dopo il campo Dati. Il MIC \`e generato dall'algoritmo \textbf{Michael} a partire da:
+  \begin{itemize}
+    \item MAC di origine e destinazione
+    \item campo Dati
+    \item materiale della chiave
+  \end{itemize}
+}
+
+\dfn{Confidenzialit\`a in TKIP}{
+  Cifra MPDU + MIC usando \textbf{RC4}.
+}
+
+\subsubsection{Temporal Key (TK) di 256 bit}
+
+\begin{itemize}
+  \item $2 \times 64$ bit $\Rightarrow$ usate con Michael per il MIC:
+    \begin{itemize}
+      \item Una chiave per STA $\to$ AP
+      \item Un'altra per AP $\to$ STA
+    \end{itemize}
+  \item Restanti $128$ bit $\Rightarrow$ troncati per generare la chiave RC4 di cifratura
+\end{itemize}
+
+\subsubsection{TKIP Sequence Counter (TSC)}
+
+\dfn{TSC}{
+  Contatore di sequenza assegnato a ciascun frame. Due scopi:
+  \begin{itemize}
+    \item Incluso in ogni MPDU e protetto dal MIC $\Rightarrow$ protegge dai \textbf{replay attack}.
+    \item Combinato con la TK per produrre una \textbf{chiave dinamica} che cambia a ogni MPDU $\Rightarrow$ rende molto pi\`u difficile la crittoanalisi.
+  \end{itemize}
+}
+
+\subsection{CCMP --- Counter Mode-CBC MAC Protocol}
+
+Destinato ai dispositivi 802.11 recenti con hardware dedicato. Fornisce:
+\begin{itemize}
+  \item \textbf{Integrit\`a}: MAC basato su CBC (Cipher Block Chaining) $\Rightarrow$ \textbf{CBC-MAC}
+  \item \textbf{Confidenzialit\`a}: AES in modalit\`a \textbf{CTR (Counter)}
+\end{itemize}
+
+\nt{
+  Dettagli:
+  \begin{itemize}
+    \item \textbf{Stessa chiave AES a 128 bit} sia per integrit\`a che per confidenzialit\`a.
+    \item \textbf{Packet counter a 48 bit} come nonce $\Rightarrow$ previene replay ($2^{48}$ valori, riutilizzo praticamente impossibile).
+  \end{itemize}
+}
+
+\section{Attacchi a WPA e WPS}
+
+\subsection{Attacchi a WPA-PSK}
+
+Anche WPA2 con CCMP non \`e immune se la passphrase \`e debole. Durante il \textbf{4-way handshake} di autenticazione vengono scambiati messaggi che permettono ad un attaccante in ascolto di catturare materiale crittografico sufficiente a tentare:
+\begin{itemize}
+  \item \textbf{Attacchi bruteforce}
+  \item \textbf{Attacchi a dizionario} (offline)
+\end{itemize}
+
+Si prova ogni passphrase candidata, si deriva la chiave con PBKDF2, si confronta con l'handshake catturato. Con GPU moderne e dizionari buoni, le password deboli cadono in minuti.
+
+\subsection{WPS (Wi-Fi Protected Setup)}
+
+WPS semplifica la connessione senza scambio di passphrase (una sorta di prova di accesso fisico). Metodologie:
+\begin{itemize}
+  \item \textbf{Tasto fisico} (pressione di un pulsante)
+  \item \textbf{Codice PIN a 8 cifre}
+\end{itemize}
+
+\subsubsection{Attacchi a WPS}
+
+\textbf{Tasto fisico}: aggirabile con Rogue AP in posizione tattica.
+
+\textbf{PIN}: problema molto pi\`u preoccupante.
+\begin{itemize}
+  \item Il PIN \`e a 7 cifre effettive (l'ottava \`e un checksum) $\Rightarrow$ $10^7 = 10\,000\,000$ tentativi teorici.
+  \item L'attaccante recupera il PIN in poche ore con brute force e da l\`i recupera la \textbf{PSK WPA/WPA2}.
+\end{itemize}
+
+\thm{Errore di design di WPS}{
+  Il PIN viene controllato in \textbf{due blocchi}:
+  \begin{itemize}
+    \item prima le prime 4 cifre
+    \item poi le altre 3 (solo se le prime 4 sono corrette)
+  \end{itemize}
+  Quindi i tentativi reali sono
+  \[
+    10^4 + 10^3 = 11\,000 \approx 20 \text{ ore di brute force}
+  \]
+  non $10^7$.
+}
+
+\subsubsection{PixieDust}
+
+L'implementazione WPS su molti dispositivi embedded (TP-Link, D-Link, Netgear) usava un \textbf{generatore di nonce prevedibile}. L'attacco \textbf{PixieDust} riduce il brute force a \textbf{pochi minuti} catturando e analizzando la comunicazione.
+
+\nt{
+  Tool: \texttt{pixiewps} su Kali Linux (\url{https://www.kali.org/tools/pixiewps/}).
+}
+
+\subsection{Rogue AP}
+
+Il settaggio del \textbf{nome della rete (SSID) non \`e crittografato}: solo l'accesso ad essa lo \`e. Questo permette attacchi \textbf{Rogue Access Point} con spoofing del nome: i client tentano l'accesso con la loro password e possono esporre handshake o credenziali all'attaccante.
+
+\nt{
+  \textbf{Contromisura}: WPA Enterprise con \textbf{certificati server} e autenticazione reciproca. Il client verifica l'identit\`a dell'AP tramite certificato $\Rightarrow$ un AP fasullo non passa la verifica.
+}
+
+\section{KRACK e WPA3}
+
+\subsection{KRACK --- Key Reinstallation AttaCK}
+
+Attacco del 2017, uno dei pi\`u eleganti e importanti degli ultimi anni. Sfrutta una vulnerabilit\`a nel \textbf{4-way handshake di WPA2}, non nella crittografia in s\'e ma nel protocollo di gestione delle chiavi.
+
+\dfn{KRACK}{
+  Nel 4-way handshake viene negoziata una chiave di sessione e un nonce. Se il client non invia un ACK del terzo messaggio, il server ritrasmette. L'attaccante manipola questo meccanismo per far s\`i che il client \textbf{reinstalli la stessa chiave}, reimpostando il nonce al valore iniziale.
+}
+
+\mprop{Perch\'e \`e grave}{
+  Se il nonce viene riusato con la stessa chiave, si ottiene lo \textbf{stesso keystream} per messaggi diversi. Come in WEP, questo rompe la confidenzialit\`a. In modalit\`a CTR (CCMP/AES) il riuso del nonce permette di decifrare e in alcuni casi forgiare pacchetti.
+}
+
+\nt{
+  Da \url{https://www.krackattacks.com/}: "\textit{In a key reinstallation attack, the adversary tricks a victim into reinstalling an already-in-use key. [...] When the victim reinstalls the key, associated parameters such as the incremental transmit packet number (i.e. nonce) and receive packet number (i.e. replay counter) are reset to their initial value. Essentially, to guarantee security, a key should only be installed and used once.}"
+}
+
+KRACK \`e stato il catalizzatore dell'adozione di \textbf{WPA3}.
+
+\subsection{WPA3}
+
+WPA3 (2018) risolve le principali debolezze di WPA2:
+
+\dfn{SAE (Simultaneous Authentication of Equals)}{
+  Sostituisce il PSK nelle reti domestiche. Variante del \textbf{Dragonfly Key Exchange} (RFC 7664), basato su Diffie-Hellman. Offre \textbf{forward secrecy}: anche se un attaccante registra traffico cifrato oggi e in futuro scopre la passphrase, non pu\`o decifrare il traffico passato, perch\'e le chiavi di sessione dipendono dai nonce freschi dell'handshake.
+}
+
+Vantaggi di WPA3:
+\begin{itemize}
+  \item \textbf{SAE} $\Rightarrow$ attacchi a dizionario offline molto pi\`u difficili
+  \item \textbf{Forward secrecy} $\Rightarrow$ traffico passato resta sicuro anche se la password viene scoperta dopo
+  \item \textbf{PMF obbligatori} $\Rightarrow$ l'attacco di deauthentication non funziona pi\`u
+  \item \textbf{Resistenza al KRACK}: il protocollo di handshake \`e stato riprogettato
+\end{itemize}
+
+Lato negativo: richiede hardware recente, non sempre retrocompatibile con dispositivi vecchi.
+
+\section{Riepilogo e concetti chiave}
+
+\subsection{Evoluzione della sicurezza Wi-Fi}
+
+\begin{center}
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+\textbf{Standard} & \textbf{Cifratura} & \textbf{Integrit\`a} & \textbf{Auth} & \textbf{Problemi} \\
+\hline
+Open & --- & --- & --- & Tutto in chiaro \\
+WEP Shared & RC4 & CRC32 & Challenge & KPA, IV collision, replay \\
+WEP Open & RC4 & CRC32 & PSK & IV collision (birthday) \\
+WPA (TKIP) & RC4 + TSC & Michael (MIC) & PSK / Enterprise & RC4 obsoleto, deprecato \\
+WPA2 (CCMP) & AES-CTR & CBC-MAC & PSK / Ent. / WPS & KRACK, PSK brute, WPS \\
+WPA3 (SAE) & AES-GCMP & --- & Dragonfly/SAE & Richiede HW recente \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Concetti chiave}
+
+\begin{enumerate}
+  \item \textbf{Il canale radio \`e intrinsecamente insicuro}: confidenzialit\`a e integrit\`a non bastano, serve \textbf{anti-replay} (nonce, sequence counter).
+  \item \textbf{Security by obscurity non funziona}: SSID hiding e MAC whitelist sono aggirabili con sniffing.
+  \item \textbf{PRNG prevedibili distruggono la sicurezza}: es. PixieDust su WPS.
+  \item \textbf{Riuso di chiavi/nonce \`e fatale}: IV collision in WEP, KRACK in WPA2. Una chiave va installata e usata \textbf{una volta sola}.
+  \item \textbf{Jamming \`e sempre possibile a livello fisico}: FHSS mitiga ma non elimina.
+  \item \textbf{Anche i management frames vanno protetti}: IEEE 802.11w (PMF) risolve i deauth attack.
+  \item \textbf{Autenticazione reciproca}: il client deve verificare anche l'identit\`a dell'AP (certificati) $\Rightarrow$ blocca i Rogue AP.
+  \item \textbf{Forward secrecy}: compromissione futura della password non rende decifrabili comunicazioni passate.
+  \item \textbf{Ogni evoluzione dello standard \`e stata guidata da attacchi reali}: WEP $\to$ WPA $\to$ WPA2 $\to$ WPA3.
+\end{enumerate}
+
+\subsection{Strumenti e riferimenti menzionati}
+
+\begin{itemize}
+  \item \texttt{Wireshark} --- sniffing di traffico
+  \item \texttt{macchanger} --- spoofing MAC
+  \item \texttt{Proxmark} --- spoofing RFID
+  \item \texttt{pixiewps} (Kali Linux) --- attacco PixieDust a WPS
+  \item \texttt{aircrack-ng} --- rottura di WEP
+  \item KRACK attacks --- \url{https://www.krackattacks.com/}
+  \item RFC 7664 --- Dragonfly Key Exchange
+  \item IEEE 802.11w-2009 --- Protected Management Frames
+\end{itemize}
+
+% \end{document}
