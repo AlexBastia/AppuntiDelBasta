@@ -675,26 +675,4 @@ Linee guida:
   \item Evitare linguaggi/funzioni che lasciano la responsabilit\`a della memoria al programmatore quando possibile (es. usare Rust).
 \end{itemize}
 
-\section{Riferimenti}
-
-\begin{itemize}
-  \item \textbf{Metasploit Project} --- \url{https://www.metasploit.com/}. Piattaforma open-source per sviluppare, testare e usare exploit code; pu\`o creare shellcode per vari task. Usato per penetration testing, sviluppo di firme IDS e ricerca su exploit.
-  \item \textbf{pwntools} --- \url{https://docs.pwntools.com/en/stable/}
-  \item \textbf{Rust} --- \url{https://rust-lang.org/}. Linguaggio che fornisce garanzie di memory safety a tempo di compilazione, eliminando intere classi di vulnerabilit\`a di buffer overflow.
-  \item Aleph One, \textit{Smashing the Stack for Fun and Profit}, \textit{Phrack} \#49 (1996).
-  \item NIST IR 7298 --- \textit{Glossary of Key Information Security Terms} (Luglio 2019).
-\end{itemize}
-
-\section{Riepilogo dei concetti chiave}
-
-\begin{enumerate}
-  \item Un \textbf{buffer overflow} scrive oltre la capacit\`a allocata di un buffer, sovrascrivendo memoria adiacente.
-  \item Negli \textbf{stack overflow}, la memoria sovrascritta include il \textbf{return address} (IP salvato) e il \textbf{frame pointer}.
-  \item \textbf{Smashing the Stack}: sovrascrivere l'IP per dirottare l'esecuzione verso uno \textbf{shellcode} iniettato nel buffer.
-  \item Lo \textbf{shellcode} \`e codice macchina position-independent, senza NULL byte, che tipicamente lancia \texttt{/bin/sh} con i privilegi del processo vittima.
-  \item Un \textbf{NOP sled} ingrandisce il bersaglio: l'IP pu\`o atterrare ovunque sulla rampa di NOP e finir\`a per eseguire lo shellcode.
-  \item Difese moderne combinate (\textbf{stack canaries + NX + ASLR}) rendono lo sfruttamento difficile ma non impossibile.
-  \item La \textbf{vera difesa} \`e scrivere codice sicuro: validare input e usare API con bounds checking.
-\end{enumerate}
-
 % \end{document}
