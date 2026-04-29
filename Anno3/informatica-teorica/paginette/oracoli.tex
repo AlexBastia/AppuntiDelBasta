@@ -1,3 +1,526 @@
 % \begin{document}
 \chapter{Oracoli e Classi Funzionali}
+
+Introduciamo gli ultimi concetti del corso: \textbf{macchine a oracolo}, \textbf{classi ad oracolo} ($P^C, NP^C, \ldots$) e un'introduzione alle classi funzionali.
+
+Il punto di partenza e' una domanda naturale: cosa succede se un problema sembra non essere ne' in $NP$ ne' in $coNP$, ma intuitivamente non e' nemmeno cosi' difficile da richiedere $PSpace$? Esistono classi intermedie? La risposta -- positiva -- arriva proprio attraverso le macchine a oracolo.
+
+\section{Il problema motivante: Min-cover}
+
+Ricordiamo il \textbf{Vertex Cover (VC)}: dato un grafo $G$, un VC e' un sottoinsieme di nodi tale che, per ogni arco, almeno uno dei due endpoint stia nel VC. La versione di decisione era:
+\[
+  \text{VC} = \{ \langle G, k\rangle \mid G \text{ ammette un vertex cover di taglia } \leq k \}
+\]
+ed era NP-completo (certificato conciso = il VC stesso).
+
+\dfn{Min-cover}{
+  \[
+    \text{Min-cover} = \{ \langle G, k\rangle \mid G \text{ ha vertex cover di taglia minima esattamente } k \}
+  \]
+  Dato un grafo $G$ e un intero $k$: i vertex cover \textbf{piu' piccoli} di $G$ hanno \textbf{esattamente} $k$ nodi?
+}
+
+\subsection{In quale classe sta Min-cover?}
+
+\textbf{Tentativo NP}: guessare un VC di taglia $k$ dimostra solo che \textit{esiste} un VC di taglia $k$, non che e' minimo. Potrebbe esserci un VC di taglia $k-1$ non trovato. Un certificato breve di minimalita' richiederebbe ``vedere tutti gli altri VC e mostrare che sono piu' grandi'' -- non un singolo guess polinomiale.
+
+\textbf{Tentativo coNP}: nemmeno qui possiamo guessare qualcosa per rispondere ``no''. Un VC che ci viene dato non ci dice se e' minimo o no.
+
+Quindi pare che Min-cover \textbf{non stia ne' in $NP$ ne' in $coNP$}.
+
+\textbf{Min-cover $\in PSpace$}: enumeriamo i sottoinsiemi candidati di $V$ uno alla volta, verifichiamo se sono VC, manteniamo solo la \textit{taglia minima trovata finora}. Cancelliamo il candidato corrente e proviamo il prossimo: lo spazio si \textit{riusa}, il tempo esplode (ma non c'e' vincolo).
+
+Tuttavia $PSpace$ sembra ``sparare con un cannone a una mosca'': Min-cover e' molto piu' semplice di un problema $PSpace$-completo. Servono \textbf{classi intermedie} fra $NP/coNP$ e $PSpace$.
+
+\subsection{L'idea: ridurre Min-cover a due query a VC}
+
+Bastano due test:
+\begin{itemize}
+  \item Esiste un VC di taglia $\leq k$? ($\langle G, k\rangle \in \text{VC}$)
+  \item Esiste un VC di taglia $\leq k-1$? ($\langle G, k-1\rangle \in \text{VC}$)
+\end{itemize}
+
+Possiamo riscrivere:
+\[
+  \text{Min-cover} = \{ \langle G, k\rangle \mid \langle G, k\rangle \in \text{VC} \;\wedge\; \langle G, k-1\rangle \notin \text{VC} \}
+\]
+
+Cioe' $G$ ha vertex cover di taglia minima $k$ sse esiste un VC di taglia $\leq k$ (allora il minimo e' $\leq k$) \textbf{e} non esiste un VC di taglia $\leq k-1$ (allora il minimo non e' $\leq k-1$). Combinando: il minimo e' proprio $k$.
+
+\textbf{Pseudocodice}. Se avessimo una sub-routine per VC:
+\begin{verbatim}
+min-cover(G, k) {
+    result1 = check-VC(G, k);
+    result2 = check-VC(G, k-1);
+    return result1 AND not result2;
+}
+\end{verbatim}
+
+Tempo polinomiale + 2 chiamate a un risolutore di VC. Vogliamo formalizzare il concetto di ``sub-routine''.
+
+\section{Macchine a oracolo}
+
+\dfn{MdT a oracolo}{
+  Una MdT a oracolo, denotata $M^?$, e' una MdT ordinaria che in piu' puo' fare \textbf{query} a un \textbf{oracolo} -- una scatola nera che risponde sempre, in \textbf{un solo passo}, a domande del tipo ``questa stringa appartiene al linguaggio $L$?''.
+
+  Quando l'oracolo decide un linguaggio specifico $L$, scriviamo $M^L$.
+}
+
+\textbf{Architettura}. Le MdT a oracolo (deterministiche o non deterministiche) hanno:
+\begin{itemize}
+  \item \textbf{Nastri ordinari} (input, work, ecc.) come una MdT normale.
+  \item \textbf{Oracle-tape (write-only)}: nastro di sola scrittura su cui $M$ scrive la query.
+  \item Tre stati particolari:
+  \begin{itemize}
+    \item $q_?$: stato di interrogazione. Quando $M$ entra in $q_?$, l'oracolo legge il contenuto dell'oracle-tape e in \textbf{un solo passo} decide se quella stringa $\in L$.
+    \item $q_{\text{yes}}$: $M$ transisce qui se l'oracolo ha risposto si'.
+    \item $q_{\text{no}}$: $M$ transisce qui se l'oracolo ha risposto no.
+  \end{itemize}
+\end{itemize}
+
+\textbf{Cancellazione magica}: appena ricevuta la risposta, l'oracle-tape si \textit{cancella automaticamente}. Niente tempo speso a ripulirla, pronti per la prossima query.
+
+\nt{
+  \textbf{Indipendenza dall'oracolo}. La funzione di transizione di $M$ e' definita \textbf{indipendentemente} dalla funzione di transizione dell'oracolo: $M$ non sa ``come'' l'oracolo decide, vede solo le risposte si'/no. Per questo si scrive $M^?$: la macchina e' ben definita anche prima di fissare l'oracolo. Cambiando oracolo, $M$ risolve problemi diversi pur restando ``la stessa macchina chiamante''.
+}
+
+\ex{Min-cover via oracolo per VC}{
+  Macchina $M$ deterministica polinomiale con oracolo per VC:
+  \begin{enumerate}
+    \item Scrivi $\langle G, k\rangle$ sull'oracle-tape. Entra in $q_?$.
+    \item Se l'oracolo dice \textbf{no}: rispondi no (se non c'e' VC di taglia $k$, il minimo e' $> k$).
+    \item Se l'oracolo dice si': scrivi $\langle G, k-1\rangle$ sull'oracle-tape. Entra in $q_?$.
+    \item Rispondi si' sse la prima query era si' e la seconda era no.
+  \end{enumerate}
+  Tempo polinomiale, \textbf{due query} a un oracolo per un linguaggio NP-completo (VC).
+}
+
+\section{Classi ad oracolo}
+
+\dfn{Classi ad oracolo $P^C$ e $NP^C$}{
+  Sia $C$ una classe di complessita' (es.\ $P, NP, coNP, \ldots$). Definiamo:
+  \begin{itemize}
+    \item $P^C = \{L \mid L \text{ deciso in tempo polinomiale da una MdT a oracolo \textbf{deterministica} con oracolo per un } L' \in C\}$
+    \item $NP^C = \{L \mid L \text{ deciso in tempo polinomiale da una MdT a oracolo \textbf{non deterministica} con oracolo per un } L' \in C\}$
+  \end{itemize}
+  Idea: $P^C$ e' cio' che riusciamo a fare in tempo polinomiale \textit{se gia' avessimo gratis} un oracolo per $C$.
+}
+
+\ex{$\text{Min-cover} \in P^{NP}$}{
+  Min-cover si decide da una MdT a oracolo deterministica polinomiale che interpella un oracolo per VC, e $\text{VC} \in NP$. Quindi $\text{Min-cover} \in P^{NP}$.
+
+  $P^{NP}$ e' (probabilmente) strettamente piu' grande di $NP$ ma strettamente piu' piccola di $PSpace$ -- proprio una di quelle classi intermedie che ci servivano.
+}
+
+\subsection{Relazioni fra classi a oracolo}
+
+\thm{$NP \subseteq P^{NP}$}{
+  Ogni linguaggio $NP$ e' in $P^{NP}$.
+}
+\pf{Dimostrazione}{
+  Sia $L \in NP$. Costruiamo $M$ a oracolo deterministica polinomiale con oracolo per $L$ stesso (che e' in $NP$):
+  \begin{enumerate}
+    \item Copia $w$ sull'oracle-tape.
+    \item Query: ``$w \in L$?''.
+    \item Restituisci la risposta dell'oracolo.
+  \end{enumerate}
+  Tempo polinomiale con oracolo $NP$ $\Rightarrow$ $L \in P^{NP}$.
+}
+
+\thm{$coNP \subseteq P^{NP}$}{
+  Ogni linguaggio $coNP$ e' in $P^{NP}$.
+}
+\pf{Dimostrazione}{
+  Sia $L \in coNP$. Per definizione $\overline{L} \in NP$. Diamo a $M$ l'oracolo per $\overline{L}$:
+  \begin{enumerate}
+    \item Copia $w$ sull'oracle-tape.
+    \item Query: ``$w \in \overline{L}$?''.
+    \item \textbf{Inverti} la risposta.
+  \end{enumerate}
+  Tempo polinomiale con oracolo $NP$ $\Rightarrow$ $L \in P^{NP}$.
+}
+
+\nt{
+  Abbiamo trovato una classe $P^{NP}$ che contiene sia $NP$ sia $coNP$. Si congettura (ma non e' dimostrato):
+  \[
+    NP \subsetneq P^{NP} \qquad coNP \subsetneq P^{NP}
+  \]
+  In particolare problemi come \textbf{Min-cover} vivono naturalmente in $P^{NP}$ senza essere ne' in $NP$ ne' in $coNP$. $P^{NP}$ cattura esattamente quei problemi che sono ``polinomialmente difficili a parte una manciata di chiamate a un risolutore $NP$''.
+}
+
+\begin{center}
+  \includegraphics[width=0.55\textwidth]{img/p-np-conp-pnp.png}
+\end{center}
+
+\section{Gerarchia polinomiale}
+
+Niente ci ferma dal \textbf{iterare} la costruzione delle classi a oracolo. Possiamo avere $NP^{(NP^{NP})}$, cioe' una macchina $NP$ che ha come oracolo linguaggi in $NP^{NP}$. Possiamo fare catene molto lunghe di oracoli annidati: tre, quattro, cinque, mille livelli\ldots Da' origine alla \textbf{gerarchia polinomiale}.
+
+\dfn{Gerarchia polinomiale}{
+  La gerarchia polinomiale e' un insieme di classi di complessita' ``al di sopra di $NP$'' definite ricorsivamente per $i \geq 0$:
+  \begin{itemize}
+    \item \textbf{Caso base}: $\Sigma_0^P = \Pi_0^P = \Delta_0^P = P$
+    \item \textbf{Passo $\Sigma$}: $\Sigma_i^P = NP^{\Sigma_{i-1}^P}$
+    \item \textbf{Passo $\Pi$}: $\Pi_i^P = co\Sigma_i^P$
+    \item \textbf{Passo $\Delta$}: $\Delta_{i+1}^P = P^{\Sigma_i^P}$
+  \end{itemize}
+  $\Sigma_i^P$ sono i problemi decisi in tempo polinomiale da una NTM con oracolo nel livello precedente; $\Delta_{i+1}^P$ idem ma con chiamante \textbf{deterministico}.
+}
+
+\textbf{I primi livelli}:
+\begin{itemize}
+  \item \textbf{Livello 0}: $\Sigma_0^P = \Pi_0^P = \Delta_0^P = P$
+  \item \textbf{Livello 1}:
+  \begin{itemize}
+    \item $\Sigma_1^P = NP^P = NP$ (un oracolo per $P$ non aggiunge nulla a una NTM polinomiale, che gia' decide $P$ ``internamente'')
+    \item $\Pi_1^P = coNP$
+    \item $\Delta_1^P = P^P = P$
+  \end{itemize}
+  \item \textbf{Livello 2}:
+  \begin{itemize}
+    \item $\Sigma_2^P = NP^{NP}$
+    \item $\Pi_2^P = coNP^{NP}$
+    \item $\Delta_2^P = P^{NP}$ \quad $\Longleftarrow$ \textit{qui sta Min-cover!}
+  \end{itemize}
+  \item \textbf{Livello 3}: $\Sigma_3^P = NP^{(NP^{NP})}$, $\Pi_3^P = coNP^{(NP^{NP})}$, $\Delta_3^P = P^{(NP^{NP})}$
+\end{itemize}
+
+\ex{$\text{Min-cover} \in \Delta_2^P$}{
+  Avevamo mostrato $\text{Min-cover} \in P^{NP}$. Per definizione $\Delta_2^P = P^{NP}$, quindi $\text{Min-cover} \in \Delta_2^P$.
+
+  Min-cover e' un esempio ``tipico'' di problema del secondo livello: non sta in $NP$ ne' in $coNP$, ma e' risolvibile in tempo polinomiale \textit{se} abbiamo accesso a un oracolo per un problema $NP$.
+}
+
+\subsection{Relazioni fra le classi della gerarchia}
+
+\thm{$\Sigma_i^P \subseteq \Delta_{i+1}^P$}{
+  Stesso argomento di $NP \subseteq P^{NP}$: una macchina deterministica polinomiale puo' delegare tutto all'oracolo, copiando l'input sull'oracle-tape, chiedendo all'oracolo di decidere il linguaggio in $\Sigma_i^P$ e restituendo la risposta.
+}
+
+\thm{$\Pi_i^P \subseteq \Delta_{i+1}^P$}{
+  Sia $L \in \Pi_i^P$, allora $\overline{L} \in \Sigma_i^P$. La macchina deterministica chiede all'oracolo per $\Sigma_i^P$ se $x \in \overline{L}$ e \textbf{inverte} la risposta. Tempo polinomiale con oracolo $\Sigma_i^P$.
+}
+
+\thm{$\Delta_i^P \subseteq \Sigma_i^P$}{
+  Entrambe usano oracolo in $\Sigma_{i-1}^P$, ma il chiamante di $\Delta_i^P$ e' deterministico mentre quello di $\Sigma_i^P$ e' non deterministico. Una NTM e' \textbf{piu' potente} di una DTM (tutto cio' che fa una determinista lo fa anche una non determinista).
+}
+
+\thm{$\Delta_i^P \subseteq \Pi_i^P$}{
+  $\Delta_i^P$ e' chiusa sotto complemento.
+}
+\pf{Dimostrazione}{
+  Sia $L \in \Delta_i^P = P^{\Sigma_{i-1}^P}$, deciso da $M^?$ deterministica polinomiale con oracolo $L' \in \Sigma_{i-1}^P$.
+
+  Scambiando gli stati di accept/reject in $M^?$ otteniamo $M_{\text{inv}}^?$ che decide $\overline{L}$ con lo stesso oracolo. Quindi $\overline{L} \in \Delta_i^P$. Per il teorema precedente $\overline{L} \in \Sigma_i^P$, e per definizione di $\Pi_i^P = co\Sigma_i^P$ otteniamo $L \in \Pi_i^P$.
+
+  L'argomento ``scambia accept/reject'' funziona solo perche' \textbf{il chiamante e' deterministico}: passa pulito attraverso una DTM, non attraverso una NTM.
+}
+
+\textbf{Schema delle inclusioni}:
+\[
+  P \subseteq NP \cup coNP \subseteq \Delta_2^P \subseteq \Sigma_2^P \cup \Pi_2^P \subseteq \Delta_3^P \subseteq \cdots
+\]
+
+\begin{center}
+  \includegraphics[width=0.75\textwidth]{img/gerarchia-polinomiale.png}
+\end{center}
+
+\subsection{Quanti livelli ci sono?}
+
+\textbf{Pensiamo siano infiniti}. Stabilire se la gerarchia abbia un numero finito o infinito di livelli e' uno dei problemi aperti centrali della complessita' computazionale. La congettura forte e': $\forall i,\; \Sigma_i^P \subsetneq \Sigma_{i+1}^P$.
+
+\dfn{Collasso della gerarchia}{
+  Se per qualche $i$ vale $\Sigma_i^P = \Pi_i^P$, allora \textbf{tutta la gerarchia collassa} a quel livello: $\Sigma_j^P = \Sigma_i^P$ per ogni $j \geq i$. In particolare:
+  \begin{itemize}
+    \item Se $NP = coNP$ ($\Sigma_1^P = \Pi_1^P$), la gerarchia collassa al livello 1: $PH = NP$.
+    \item Se $P = NP$ ($\Sigma_0^P = \Sigma_1^P$), tutta la gerarchia collassa a $P$.
+  \end{itemize}
+  Si congettura che nessun collasso avvenga.
+}
+
+\dfn{PH}{
+  L'unione di tutti i livelli si chiama \textit{Polynomial Hierarchy}:
+  \[
+    PH = \bigcup_{i \geq 0} \Sigma_i^P = \bigcup_{i \geq 0} \Pi_i^P = \bigcup_{i \geq 0} \Delta_i^P
+  \]
+  Banalmente $PH \subseteq PSpace$, ma $PH = PSpace$ e' considerato improbabile (un altro tipo di collasso).
+}
+
+\subsection{Intuizione: quantificatori e giochi}
+
+Cerchiamo di dare un'intuizione concreta su quali problemi vivono ai vari livelli.
+
+\textbf{SAT con quantificatori}. SAT si puo' riscrivere come
+\[
+  \text{SAT} \;\;\longrightarrow\;\; \exists\, \vec x.\; \varphi(\vec x)
+\]
+``esiste un assegnamento $\vec x$ tale che $\varphi(\vec x)$ sia vera?''. Lo possiamo chiamare $\exists$-SAT. Generalizziamo aggiungendo un quantificatore universale:
+
+\dfn{$\exists\forall$-SAT}{
+  \[
+    \exists\, \vec x.\; \forall\, \vec y.\; \varphi(\vec x, \vec y)
+  \]
+  ``\textbf{Esiste} un assegnamento $\vec x$ tale che, \textbf{qualunque} assegnamento $\vec y$ diamo, la formula sia soddisfatta?''
+}
+
+Si puo' mostrare che $\exists\forall\text{-SAT}$ e' $\Sigma_2^P$-completo, prototipo del livello 2 come SAT lo e' del livello 1.
+
+\textbf{Generalizzando}: aggiungendo piu' quantificatori alternati,
+\begin{itemize}
+  \item $\exists\forall\exists$-SAT: $\exists \vec x.\, \forall \vec y.\, \exists \vec z.\, \varphi(\vec x, \vec y, \vec z)$ $\to$ $\Sigma_3^P$-completo
+  \item $\forall\exists\forall$-SAT: $\to$ $\Pi_3^P$-completo
+  \item \ldots e cosi' via per tutti i livelli.
+\end{itemize}
+
+Il pattern: il \textbf{numero di alternanze} di quantificatori determina il livello, e il \textbf{primo quantificatore} determina se siamo in $\Sigma$ ($\exists$) o $\Pi$ ($\forall$).
+
+\nt{
+  \textbf{Connessione con i giochi}. Negli scacchi:
+  \begin{center}
+  \textit{``Esiste una mossa mia tale che, qualsiasi sia la risposta dell'avversario, esiste una mia risposta tale che, qualsiasi cosa faccia l'avversario, \ldots vinco?''}
+  \end{center}
+
+  Questa e' esattamente la struttura di $\exists\forall\exists\forall\cdots$-SAT: alternanza di $\exists$ (mie mosse) e $\forall$ (mosse dell'avversario). I problemi della gerarchia polinomiale catturano la complessita' dei \textbf{giochi a due giocatori} con strategie alternate:
+  \begin{itemize}
+    \item Strategia vincente in 1 mossa contro qualsiasi risposta $\to$ $\exists\forall \to \Sigma_2^P$
+    \item Strategia vincente in $k$ mosse $\to 2k$ quantificatori $\to \Sigma_{2k}^P$
+    \item Partita arbitrariamente lunga $\to$ tutta $PH$, fino a $PSpace$
+  \end{itemize}
+  Ed e' proprio per questo che giochi come scacchi e go generalizzati sono $PSpace$-completi (o $EXP$-completi, dipende dalla formulazione). La gerarchia polinomiale non e' un'astrazione fine a se' stessa: classifica problemi naturali come strategie vincenti con look-ahead limitato.
+}
+
+\section{Problemi di ottimizzazione e classi funzionali}
+
+Per tutto il corso ci siamo focalizzati sui \textbf{problemi di decisione} (sì/no), perche' piu' facili da analizzare formalmente. Ma all'inizio del corso avevamo detto che i problemi di decisione sono \textit{legati} ai problemi di ottimizzazione e di ricerca. E' arrivato il momento di esplorare questa connessione: introduciamo le \textbf{classi funzionali} e mostriamo come la complessita' della versione decisionale di un problema vincoli quella della sua versione di calcolo.
+
+\subsection{La classe FP}
+
+\dfn{FMin-cover}{
+  \[
+    \text{FMin-cover}(G) = \min \{ |V'| : V' \text{ e' un vertex cover per } G \}
+  \]
+  Functional Min-cover: dato un grafo $G$, calcolare la \textbf{taglia} del piu' piccolo vertex cover. A differenza di Min-cover (versione decisionale), l'output e' un \textit{numero}, non una risposta booleana.
+}
+
+\dfn{FP (Functional Polynomial)}{
+  $FP$ e' la classe delle \textbf{funzioni} calcolate da \textit{trasduttori} deterministici in tempo polinomiale.
+
+  $FP$ e' la classe ``cugina'' di $P$:
+  \begin{itemize}
+    \item $P$: \textit{problemi di decisione} decisi da MdT deterministiche polinomiali.
+    \item $FP$: \textit{funzioni} calcolate da trasduttori deterministici polinomiali.
+  \end{itemize}
+  Le riduzioni polinomiali $\leq_P$ viste in tutto il corso sono proprio funzioni in $FP$.
+}
+
+\nt{
+  Esisterebbe anche $FNP$, la versione funzionale di $NP$, ma e' tecnicamente piu' complessa e non la trattiamo. Ci concentriamo su $FP$ e su $FP^C$ (trasduttori polinomiali deterministici con oracolo in $C$).
+}
+
+\subsection{$\text{FMin-cover} \in FP^{NP}$}
+
+Supponiamo di avere un \textbf{oracolo per VC} (decisionale): ``data $\langle G, k\rangle$, esiste un VC di taglia $\leq k$?''.
+
+\textbf{Algoritmo lineare}. Scandire $k$ da 1 in su:
+\begin{verbatim}
+FMin-cover-naive(G) {
+    for k = 1, 2, 3, ..., |V| {
+        if oracle-VC(<G, k>) == YES { return k; }
+    }
+}
+\end{verbatim}
+
+Al peggio arriviamo a $k = |V|$ (tutto $V$ e' sempre un VC), quindi facciamo al piu' $|V|$ chiamate. Tempo polinomiale $\Rightarrow$ $\text{FMin-cover} \in FP^{NP}$.
+
+\textbf{Algoritmo migliore: ricerca binaria}. Iniziamo con $k = n/2$:
+\begin{itemize}
+  \item Se l'oracolo dice si', il minimo sta in $[0, n/2]$.
+  \item Se dice no, il minimo sta in $[n/2, n]$.
+\end{itemize}
+Dimezziamo l'intervallo a ogni passo $\Rightarrow$ $O(\log n)$ query.
+
+\dfn{$FP^C[g(n)]$}{
+  La classe $FP^C[g(n)]$ contiene le funzioni calcolate da trasduttori deterministici polinomiali con oracolo in $C$ che fanno al piu' $g(n)$ query.
+}
+
+\[
+  \text{FMin-cover} \in FP^{NP}[O(\log n)]
+\]
+
+\subsection{Connessione fra decisione e calcolo}
+
+\thm{$\text{FMin-cover} \in FP \Rightarrow P = NP$}{
+  Se calcolare in tempo polinomiale deterministico la taglia del VC minimo e' possibile (senza oracolo), allora $\text{VC} \in P$.
+}
+\pf{Dimostrazione}{
+  Riduciamo $\text{VC}$ a $\text{FMin-cover}$:
+  \begin{enumerate}
+    \item Dato $\langle G, k\rangle$, calcola $m = \text{FMin-cover}(G)$.
+    \item Confronta $m$ con $k$.
+    \item Rispondi si' sse $m \leq k$.
+  \end{enumerate}
+  Tutto in tempo polinomiale (per ipotesi $\text{FMin-cover} \in FP$). Quindi $\text{VC} \in P$. Ma $\text{VC}$ e' NP-completo $\Rightarrow$ $P = NP$.
+}
+
+\nt{
+  Si congettura quindi che $\text{FMin-cover} \notin FP$: non e' possibile calcolare la taglia del VC minimo in tempo polinomiale, perche' cio' collasserebbe $NP$ su $P$.
+
+  \textbf{Principio generale}: \textit{se un problema di decisione e' tosto, la sua variante di calcolo non puo' essere semplice}. Sapere che la versione decisionale di un problema (VC) e' NP-completa fornisce un \textbf{lower bound forte} sulla complessita' della versione di calcolo.
+}
+
+\section{Travelling Salesman Problem (TSP)}
+
+Vediamo un altro esempio paradigmatico: il commesso viaggiatore.
+
+\dfn{Grafo pesato}{
+  Un grafo pesato e' $G = \langle V, E, \lambda\rangle$ con $\lambda : E \to \mathbb{N}$ funzione che associa un peso a ogni arco.
+}
+
+\dfn{Ciclo Hamiltoniano (HC)}{
+  Un ciclo hamiltoniano di $G$ e' un ciclo che visita ogni nodo \textbf{esattamente una volta}.
+}
+
+\dfn{FTSP (Functional TSP)}{
+  Dato $G = \langle V, E, \lambda\rangle$ non orientato pesato, restituire il \textbf{costo minimo} di un ciclo hamiltoniano (o un simbolo di default se $G$ non ne ammette):
+  \[
+    \text{FTSP}(G) = \min \{ \lambda(\pi) : \pi \text{ ciclo hamiltoniano di } G\}
+  \]
+  Versione narrativa: un commesso deve visitare $|V|$ citta' (nodi), passando da ciascuna esattamente una volta e tornando alla citta' di partenza, percorrendo strade (archi) con distanze (pesi) note. Calcolare il \textit{percorso piu' corto}.
+}
+
+\dfn{TSP (versione decisionale)}{
+  \[
+    \text{TSP} = \{ \langle G, k\rangle \mid G \text{ grafo non orientato pesato che ammette un HC di peso } \leq k\}
+  \]
+}
+
+\subsection{$\text{FTSP} \in FP^{NP}$}
+
+\thm{$\text{FTSP} \in FP^{NP}$}{
+  Esiste un trasduttore deterministico polinomiale che, con accesso a un oracolo per il linguaggio $\text{TSP}$, calcola $\text{FTSP}(G)$ per ogni grafo non orientato pesato $G$.
+}
+\pf{Dimostrazione}{
+  \textbf{Idea}: ricerca binaria sul peso del ciclo, esattamente come per $\text{FMin-cover}$ ma sul dominio dei pesi anziche' delle taglie. Costruiamo un trasduttore $T^?$ con oracolo per $\text{TSP}$.
+
+  \textbf{Step 1 -- Calcolo dell'upper bound}. Sia
+  \[
+    \Sigma = \sum_{e \in E} \lambda(e)
+  \]
+  la somma dei pesi di tutti gli archi del grafo. $\Sigma$ e' un upper bound al peso di \textbf{qualsiasi} ciclo hamiltoniano: un HC contiene al piu' $|V|$ archi, e ogni arco ha peso $\leq \Sigma$. $T^?$ calcola $\Sigma$ scorrendo gli archi e accumulando la somma in tempo polinomiale.
+
+  \textbf{Step 2 -- Test di esistenza}. $T^?$ scrive $\langle G, \Sigma\rangle$ sull'oracle-tape ed entra in $q_?$:
+  \begin{itemize}
+    \item Se l'oracolo risponde \textbf{no}: nemmeno con il budget massimo $\Sigma$ esiste un HC, dunque $G$ non ammette alcun ciclo hamiltoniano. $T^?$ scrive sul nastro di output un simbolo di default e termina.
+    \item Se l'oracolo risponde \textbf{si'}: esiste almeno un HC di peso $\leq \Sigma$. Procediamo allo step 3.
+  \end{itemize}
+
+  \textbf{Step 3 -- Ricerca binaria}. $T^?$ esegue ricerca binaria sull'intervallo $[0, \Sigma]$ per individuare il minimo $k^*$ tale che $\langle G, k^*\rangle \in \text{TSP}$:
+  \begin{enumerate}
+    \item Mantieni due estremi $\ell = 0$, $r = \Sigma$.
+    \item Finche' $\ell < r$:
+    \begin{itemize}
+      \item Calcola $m = \lfloor (\ell + r) / 2 \rfloor$.
+      \item Query: $\langle G, m\rangle \in \text{TSP}$?
+      \item Se si': $r \leftarrow m$ (esiste HC di peso $\leq m$, il minimo sta in $[\ell, m]$).
+      \item Se no: $\ell \leftarrow m + 1$ (nessun HC di peso $\leq m$, il minimo sta in $[m+1, r]$).
+    \end{itemize}
+    \item All'uscita $\ell = r = k^*$. Scrivi $k^*$ sul nastro di output.
+  \end{enumerate}
+
+  \textbf{Correttezza}. La ricerca binaria preserva l'invariante ``$k^* \in [\ell, r]$'', dove $k^* = \min\{k : \langle G, k\rangle \in \text{TSP}\}$. La query a $\text{TSP}$ con budget $m$ distingue esattamente se $k^* \leq m$ (oracolo si') o $k^* > m$ (oracolo no), dimezzando l'intervallo a ogni passo. Per la \textbf{monotonia} di $\text{TSP}$ rispetto a $k$ ($\langle G, k\rangle \in \text{TSP} \Rightarrow \langle G, k+1\rangle \in \text{TSP}$), la ricerca binaria converge al $k^*$ corretto.
+
+  \textbf{Numero di query}. La ricerca binaria su $[0, \Sigma]$ richiede $\lceil \log_2(\Sigma + 1)\rceil$ iterazioni, ciascuna con una query. Dobbiamo verificare che $\log \Sigma$ sia polinomiale nella taglia dell'input $\|G\|$:
+  \[
+    \log_2 \Sigma = \log_2 \!\left(\sum_{e \in E} \lambda(e)\right) \leq \log_2 (|E| \cdot W_{\max}) = \log_2 |E| + \log_2 W_{\max}
+  \]
+  dove $W_{\max} = \max_{e \in E} \lambda(e)$. Crucialmente, i pesi sono codificati in \textbf{binario}, quindi $\log_2 W_{\max}$ e' esattamente la \textit{taglia} (numero di bit) del peso massimo, che e' $\leq \|G\|$. Dunque
+  \[
+    \log_2 \Sigma = O(\log |E| + \|G\|) = O(\|G\|)
+  \]
+  polinomiale (anzi, lineare) nella taglia dell'input. Aggiungendo lo step 2, il numero totale di query e':
+  \[
+    \#\text{query} = O(\log \Sigma) = O(\|G\|)
+  \]
+
+  \textbf{Tempo del trasduttore}. Ogni query richiede di scrivere $\langle G, m\rangle$ sull'oracle-tape (taglia polinomiale) e leggere la risposta (1 passo). Il calcolo di $\Sigma$, l'aggiornamento degli estremi e la scrittura dell'output sono tutti polinomiali. Tempo totale polinomiale.
+
+  Quindi $T^?$ e' un trasduttore deterministico polinomiale con oracolo $\text{TSP} \in NP$ che calcola $\text{FTSP}$, cioe' $\text{FTSP} \in FP^{NP}$. \qed
+}
+
+\nt{
+  In realta' la dimostrazione mostra il risultato piu' forte $\text{FTSP} \in FP^{NP}[O(\log \|G\|)]$: bastano un numero \textbf{logaritmico} di query nella taglia dell'input.
+}
+
+Come per $\text{FMin-cover}$: se $\text{FTSP} \in FP$ allora $\text{TSP} \in P$. Mostriamo ora che $\text{TSP}$ e' NP-completo, da cui segue che $\text{FTSP}$ probabilmente non sta in $FP$.
+
+\subsection{TSP e' NP-completo}
+
+\thm{NP-completezza di TSP}{
+  $\text{TSP}$ e' NP-completo.
+}
+\pf{Dimostrazione}{
+  \textbf{TSP $\in NP$}: guess \& check. Indoviniamo un HC (lista di vertici, polinomiale), verifichiamo che sia effettivamente un ciclo, che tutti i nodi siano contenuti esattamente una volta, e che il peso totale sia $\leq k$. Polinomiale.
+
+  \textbf{TSP NP-hard}: catena di riduzioni
+  \[
+    \text{3SAT} \leq_P \text{DHC} \leq_P \text{HC} \leq_P \text{TSP}
+  \]
+  dove DHC = Directed Hamiltonian Cycle (grafo orientato), HC = Hamiltonian Cycle (non orientato). Ognuna polinomiale, transitivita' di $\leq_P$ $\Rightarrow$ $\text{3SAT} \leq_P \text{TSP}$.
+}
+
+\subsubsection{Riduzione 1: $\text{3SAT} \leq_P \text{DHC}$}
+
+\textbf{Idea}: codificare gli assegnamenti di verita' come scelte di percorso. Date $n$ variabili abbiamo $2^n$ assegnamenti $\Rightarrow$ il grafo deve avere un numero esponenziale di percorsi.
+
+Sia $\varphi = c_1 \wedge \cdots \wedge c_m$ in 3CNF su variabili $x_1, \ldots, x_n$. Assunzione: nelle clausole non appare mai un letterale e il suo negato (altrimenti la clausola e' triviale).
+
+\textbf{Costruzione di $G$}:
+\begin{itemize}
+  \item \textbf{Catena variabile}: per ogni $x_i$, una catena di $2m$ nodi disposti come $m$ coppie, con un nodo $\Diamond$ all'inizio e uno alla fine. Due percorsi paralleli:
+  \begin{itemize}
+    \item \textbf{archi verdi}: rappresentano $x_i = \top$ (attraversano la catena in una direzione)
+    \item \textbf{archi rossi}: rappresentano $x_i = \bot$ (direzione opposta)
+  \end{itemize}
+  \item \textbf{Concatenazione}: dal nodo iniziale $s$ partono due archi (verde/rosso) verso la catena $x_1$. I $\Diamond$ finali della catena $x_i$ si collegano agli iniziali di $x_{i+1}$. Alla fine si arriva a $t$, che si collega a $s$ chiudendo il ciclo. Risultato: $2^n$ percorsi da $s$ a $s$.
+  \item \textbf{Nodi clausola}: $m$ nodi extra $c_1, \ldots, c_m$. Per ogni occorrenza di letterale in una clausola:
+  \begin{itemize}
+    \item Se $x_i \in c_j$ (positivo): aggiungiamo archi che permettono un \textit{detour} per $c_j$ \textbf{dalla catena verde} di $x_i$.
+    \item Se $\neg x_i \in c_j$ (negativo): detour per $c_j$ \textbf{dalla catena rossa}.
+  \end{itemize}
+\end{itemize}
+
+\textbf{Correttezza} ($\varphi$ soddisfacibile $\iff$ $G$ ha HC):
+\begin{itemize}
+  \item ($\Rightarrow$) Da $\sigma \models \varphi$, costruiamo l'HC: per ogni $x_i$ percorriamo la catena verde se $\sigma(x_i) = \top$, rossa altrimenti. Quando possibile, facciamo detour sui nodi clausola. Poiche' $\sigma$ soddisfa $\varphi$, ogni $c_j$ ha almeno un letterale vero $\Rightarrow$ esiste un detour disponibile sul colore giusto per visitare $c_j$.
+  \item ($\Leftarrow$) Sia $\pi$ un HC di $G$. Si dimostra strutturalmente che dopo un detour su $c_j$ si torna alla \textit{stessa catena} (altrimenti si crea una strada chiusa). Definiamo $\sigma$: $\sigma(x_i) = \top$ se l'HC percorre la catena verde di $x_i$. Se $\pi$ visita $c_j$ via catena verde di $x_i$ allora $x_i \in c_j$ e' vero; via catena rossa di $x_i$ allora $\neg x_i \in c_j$ e' vero. In entrambi i casi $c_j$ contiene un letterale soddisfatto.
+\end{itemize}
+
+\subsubsection{Riduzione 2: $\text{DHC} \leq_P \text{HC}$}
+
+\textbf{Costruzione}. Per ogni nodo $a$ in $G$, in $H$ mettiamo \textbf{tre nodi}: $a^{\text{in}}, a^{\text{mid}}, a^{\text{out}}$. Aggiungiamo archi non orientati:
+\begin{itemize}
+  \item $a^{\text{in}} - a^{\text{mid}}$ e $a^{\text{mid}} - a^{\text{out}}$
+  \item Per ogni arco orientato $(a \to b)$ in $G$: $a^{\text{out}} - b^{\text{in}}$ in $H$
+\end{itemize}
+
+\textbf{Correttezza} (HC orientato in $G$ $\iff$ HC non orientato in $H$):
+\begin{itemize}
+  \item ($\Rightarrow$) Da $\pi = v_1, v_2, \ldots$ HC di $G$, costruiamo $\gamma = v_1^{\text{in}}, v_1^{\text{mid}}, v_1^{\text{out}}, v_2^{\text{in}}, \ldots$ HC di $H$ (gli archi $v_i^{\text{out}} - v_{i+1}^{\text{in}}$ esistono perche' $v_i \to v_{i+1}$ esiste in $G$).
+  \item ($\Leftarrow$) Il nodo $a^{\text{mid}}$ ha solo due vicini ($a^{\text{in}}$ e $a^{\text{out}}$) $\Rightarrow$ in qualsiasi HC di $H$ deve apparire come $a^{\text{in}} - a^{\text{mid}} - a^{\text{out}}$ (o reverse). Quindi i nodi di $H$ vanno in alternanza in-mid-out. Recuperiamo $\pi = v_1, v_2, \ldots$ HC di $G$ perche' l'arco $v_i^{\text{out}} - v_{i+1}^{\text{in}}$ in $H$ corrisponde all'arco orientato $v_i \to v_{i+1}$ in $G$.
+\end{itemize}
+
+\subsubsection{Riduzione 3: $\text{HC} \leq_P \text{TSP}$}
+
+\textbf{Costruzione (banale)}: $H = G$, $\lambda(e) = 1$ per ogni arco, $k = |V|$.
+
+\textbf{Correttezza}: $G$ ha HC $\iff$ $H$ ha HC di peso $\leq k$. Ogni HC visita esattamente $|V|$ archi di peso 1, peso totale $|V| = k$.
+
+\nt{
+  Mettendo insieme la catena $\text{3SAT} \leq_P \text{DHC} \leq_P \text{HC} \leq_P \text{TSP}$ e $\text{TSP} \in NP$: $\text{TSP}$ e' NP-completo. Di conseguenza:
+  \[
+    \text{FTSP} \in FP \implies \text{TSP} \in P \implies P = NP
+  \]
+  Si congettura quindi che $\text{FTSP} \notin FP$: non esiste un algoritmo polinomiale per il commesso viaggiatore (salvo $P = NP$).
+}
+
 % \end{document}

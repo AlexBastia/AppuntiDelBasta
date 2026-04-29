@@ -197,4 +197,212 @@ Come SAT e' il problema ``canonico'' per NP (Cook-Levin), $\textit{Reach}$ gioca
   cioe' $w \in L \iff f(w) \in \textit{Reach}$. Poiche' $L \in NL$ era generico, $\textit{Reach}$ e' NL-hard. Combinando con la membership: $\textit{Reach}$ e' NL-completo. \qed
 }
 
+\section{Teorema di Savitch}
+
+Abbiamo visto che $\textit{Reach} \in NL$: una NTM puo' decidere la raggiungibilita' usando solo spazio logaritmico. Ma il non determinismo qui e' davvero \textbf{necessario}? Nessuno sa rispondere a $\textit{Reach}$ in spazio logaritmico \textbf{deterministico} (cioe' nessuno sa se $\textit{Reach} \in L$), e nessuno sa nemmeno dimostrare che sia impossibile. La domanda $L$ vs $NL$ e' aperta come la $P$ vs $NP$.
+
+Pero' qualcosa di sorprendente lo sappiamo: \textbf{possiamo decidere $\textit{Reach}$ in spazio $\log^2 n$ deterministico}. Cioe' la perdita di potenza nel passare da $NL$ a determinismo costa ``solo'' un quadrato sullo spazio.
+
+Il teorema di \textbf{Savitch (1970)} generalizza questa osservazione a \textbf{qualsiasi} classe $NSpace(s(n))$ con $s(n) \in \Omega(\log n)$: il non determinismo si puo' simulare deterministicamente al costo di al piu' \textbf{un quadrato} sullo spazio. Per il tempo, invece, simulare non determinismo deterministicamente costa al piu' un \textbf{esponenziale} (banalmente). Lo spazio si comporta in modo molto piu' ``amichevole''.
+
+\subsection{$\textit{Reach} \in DSpace(\log^2 n)$}
+
+Sebbene non siamo in grado di dimostrare che $\textit{Reach} \in L = DSpace(\log n)$, siamo pero' in grado di dimostrare che
+\[
+  \textit{Reach} \in DSpace((\log n)^2)
+\]
+
+\textbf{Idea: ricerca binaria sui cammini}. Abbiamo un grafo orientato e vogliamo andare da $s$ a $t$. Il trucco per riuscire a risolverlo in spazio $\log^2 n$ e' fare una specie di \textit{ricerca binaria sul cammino}:
+\begin{center}
+\textit{``Se esiste un path da $s$ a $t$ allora esiste un nodo intermedio $u$ (a meta' strada) tale che esiste un path da $s$ a $u$ \textbf{e} un path da $u$ a $t$.''}
+\end{center}
+
+Questa osservazione si applica ricorsivamente: se esiste un path da $s$ a $u$ di lunghezza $k$, allora esiste un nodo intermedio $u'$ tale che da $s$ a $u'$ c'e' un path di lunghezza $\lceil k/2 \rceil$ e da $u'$ a $u$ c'e' un path di lunghezza $\lfloor k/2 \rfloor$. E cosi' via.
+
+Si ha un approccio ricorsivo con tre casi:
+\begin{enumerate}
+  \item $k = 0$: rispondiamo ``si''' se $s = t$, ``no'' altrimenti.
+  \item $k = 1$: rispondiamo ``si''' se $(s, t)$ e' un arco di $G$, ``no'' altrimenti.
+  \item Altrimenti: proviamo tutti i nodi $u \in V$ per vedere se esiste $s \to u$ (di lunghezza $\lceil k/2 \rceil$) \textbf{e} $u \to t$ (di lunghezza $\lfloor k/2 \rfloor$).
+\end{enumerate}
+
+\textbf{Pseudocodice}:
+\begin{verbatim}
+Exists-path(G = <V, A>, s, t, k) {
+    if k == 0 {
+        if s == t  { ACCEPT; }
+        else       { REJECT; }
+    }
+    if k == 1 {
+        if (s, t) in A { ACCEPT; }
+        else           { REJECT; }
+    }
+    for each u in V {
+        if Exists-path(G, s, u, ceil(k/2)) and
+           Exists-path(G, u, t, floor(k/2)) {
+            ACCEPT;
+        }
+    }
+    REJECT;
+}
+\end{verbatim}
+
+La chiamata iniziale per decidere $\textit{Reach}(G, s, t)$ e' $\texttt{Exists-path}(G, s, t, |V|)$, perche' se un path esiste, ne esiste anche uno semplice di lunghezza al piu' $|V|$.
+
+\textbf{Analisi spaziale}. Per ogni chiamata ricorsiva servono tre registri: $s, t, u$ (puntatori a nodi) e $k$ (contatore). Ciascuno occupa $O(\log n)$ bit, quindi \textbf{$O(\log n)$ per ciascun frame} dello stack ricorsivo.
+
+Le due chiamate ricorsive per ogni $u$ \textbf{non vengono eseguite in parallelo}: prima esploriamo la prima chiamata fino in fondo, poi la seconda. In ogni momento sullo stack c'e' un solo cammino di chiamate dalla radice alla foglia attiva. Ogni livello dimezza $k$, quindi la profondita' dello stack e' $O(\log |V|) = O(\log n)$.
+
+\textbf{Spazio totale}:
+\[
+  \text{profondita'} \cdot \text{spazio per frame} = O(\log n) \cdot O(\log n) = O(\log^2 n)
+\]
+
+\thm{$\textit{Reach} \in DSpace(\log^2 n)$}{
+  \label{th:reach-log-squared}
+  $\textit{Reach}$ si decide deterministicamente in spazio $O(\log^2 n)$.
+}
+
+\subsection{Dimostrazione del Teorema di Savitch}
+
+\thm{Savitch (1970)}{
+  \label{th:savitch}
+  Sia $s(n)$ una space function con $s(n) \in \Omega(\log n)$. Allora:
+  \[
+    NSpace(s(n)) \subseteq DSpace(s(n)^2)
+  \]
+}
+
+In particolare:
+\begin{itemize}
+  \item $NL = NSpace(\log n) \subseteq DSpace(\log^2 n)$ (caso $s(n) = \log n$).
+  \item $NPSpace = NSpace(\text{poly}(n)) \subseteq DSpace(\text{poly}(n)^2) = PSpace$.
+\end{itemize}
+
+\pf{Dimostrazione}{
+  Per dimostrare il teorema sfruttiamo \textbf{due elementi}:
+  \begin{enumerate}
+    \item La \textbf{riduzione} verso $\textit{Reach}$ costruita nel teorema di NL-completezza (Teorema~\ref{th:reach-nl-completo}).
+    \item L'algoritmo $\texttt{Exists-path}$ appena visto (Teorema~\ref{th:reach-log-squared}).
+  \end{enumerate}
+
+  Sia $L \in NSpace(s(n))$. Allora esiste una MdTN $M$ con $\mathcal{L}(M) = L$ e running space $s(n)$. Vogliamo decidere $L$ deterministicamente in spazio $s(n)^2$. L'idea:
+  \begin{enumerate}
+    \item Costruiamo il \textbf{computation graph} di $M$ su input $w$.
+    \item Lanciamo $\texttt{Exists-path}$ su questo grafo.
+    \item Verifichiamo se esiste un percorso dalla configurazione iniziale a una accettante.
+  \end{enumerate}
+
+  \textbf{Il computation graph}. I nodi sono le \textbf{configurazioni} di $M$ su $w$; c'e' un arco da $C$ a $C'$ se $C'$ e' legal successor di $C$ secondo $\delta$. Una configurazione e' identificata da:
+  \begin{center}
+    \begin{tabular}{l l}
+      \textbf{Elemento} & \textbf{Spazio} \\ \hline
+      Contenuto del worktape & $O(s(n))$ \\
+      Posizione testina input & $O(\log n)$ \\
+      Posizione testina worktape & $O(\log s(n))$ \\
+      Stato corrente $Q$ & $O(1)$ \\
+    \end{tabular}
+  \end{center}
+
+  Poiche' $s(n) \in \Omega(\log n)$, il termine $O(s(n))$ \textbf{domina} tutti gli altri. Quindi la taglia di una configurazione e' $O(s(n))$.
+
+  \textbf{Numero di nodi e archi}. Sia $\ell = |\Gamma|$. Il numero di configurazioni e':
+  \[
+    N = O(\ell^{s(n)})
+  \]
+  e il numero di archi e' $O(\ell^{2 s(n)})$. La taglia totale del grafo e' \textbf{esponenziale} in $s(n)$.
+
+  \textbf{Spazio dell'algoritmo}. $\texttt{Exists-path}$ applicato a un grafo di $N$ nodi usa spazio $O(\log^2 N)$. Qui $\log N = O(s(n) \log \ell) = O(s(n))$ (perche' $\log \ell$ e' costante), quindi:
+  \[
+    \text{spazio} = O(\log^2 N) = O(s(n)^2)
+  \]
+
+  Dunque l'algoritmo deterministico decide $L$ in spazio $O(s(n)^2)$. Quindi $L \in DSpace(s(n)^2)$, e poiche' $L$ era arbitrario in $NSpace(s(n))$:
+  \[
+    NSpace(s(n)) \subseteq DSpace(s(n)^2). \qed
+  \]
+}
+
+\nt{
+  Esattamente come nella riduzione di NL-completezza, il computation graph \textbf{non viene materializzato in memoria}. Quando $\texttt{Exists-path}$ chiede ``esiste l'arco $(C, C')$?'', si calcola al volo se $C'$ e' legal successor di $C$ secondo $\delta$. Quando enumera ``\texttt{for each} $u \in V$'', enumera al volo le possibili configurazioni come stringhe di taglia $O(s(n))$. Lo spazio rimane $O(s(n)^2)$ -- molto inferiore alla taglia del grafo, che e' esponenziale in $s(n)$.
+}
+
+\subsection{Conseguenza: $PSpace = NPSpace$}
+
+Definiamo le classi $PSpace$ e $NPSpace$ come l'equivalente di $P$ e $NP$, ma sullo spazio invece che sul tempo:
+
+\dfn{PSpace e NPSpace}{
+  \[
+    PSpace = \bigcup_{c \geq 1} DSpace(n^c) \qquad NPSpace = \bigcup_{c \geq 1} NSpace(n^c)
+  \]
+}
+
+Banalmente $PSpace \subseteq NPSpace$. Per Savitch:
+\[
+  NSpace(n^c) \subseteq DSpace((n^c)^2) = DSpace(n^{2c}) \subseteq PSpace
+\]
+Quindi $NPSpace \subseteq PSpace$, e:
+
+\cor{$PSpace = NPSpace$}{
+  Le classi spaziali polinomiali deterministiche e non deterministiche coincidono.
+}
+
+\nt{
+  \textbf{Intuizione}: per tutte le classi spaziali da polinomiale a salire, la classe deterministica eguaglia la non deterministica. Il motivo profondo:
+  \begin{itemize}
+    \item Il \textbf{tempo}, una volta usato, e' perso e non lo possiamo riavere.
+    \item Lo \textbf{spazio} possiamo \textit{riutilizzarlo}.
+  \end{itemize}
+  Una macchina deterministica in $PSpace$ puo' simulare una NTM in $PSpace$ \textbf{riprovando} tutti i possibili rami uno alla volta -- cancellando il worktape fra un tentativo e l'altro. Lo spazio resta lo stesso, il tempo invece esplode (ma non c'e' un vincolo!). Per il tempo questo trucco non funziona: simulare deterministicamente una NTM polinomiale richiede tempo esponenziale, che \textbf{non si puo' riciclare} come lo spazio.
+}
+
+\subsection{La mappa delle classi}
+
+Ora che abbiamo Savitch, possiamo dare una mappa abbastanza completa delle relazioni note fra classi.
+
+\thm{$L \subseteq P$}{
+  \label{th:l-subset-p}
+  Ogni linguaggio in $L$ e' decidibile in tempo polinomiale.
+}
+\pf{Dimostrazione}{
+  Sia $M$ deterministica in spazio logaritmico, che si arresti sempre. Le possibili configurazioni attraversate sono al piu' $2^{O(\log n)} = n^{O(1)}$ -- polinomiali in $n$. Poiche' $M$ si arresta sempre, non puo' passare due volte per la stessa configurazione (sarebbe un loop). Avendo un numero polinomiale di configurazioni, il tempo e' polinomiale.
+}
+
+\thm{$NL \subseteq P$}{
+  $\textit{Reach}$ e' NL-completo (Teorema~\ref{th:reach-nl-completo}). Ogni problema in $NL$ si riduce in logspace (e in particolare in tempo polinomiale, per il Teorema~\ref{th:l-subset-p}) a $\textit{Reach}$. $\textit{Reach}$ si risolve in tempo polinomiale tramite BFS deterministico. Componendo: $NL \subseteq P$.
+}
+
+\thm{$NP \subseteq PSpace$}{
+  Sia $M$ una NTM in tempo polinomiale: in tempo polinomiale non puo' scrivere piu' di una quantita' polinomiale di celle, quindi $M$ e' anche in $NPSpace$. Per Savitch: $NP \subseteq NPSpace = PSpace$.
+}
+
+\thm{$coNP \subseteq PSpace$}{
+  Sia $L \in coNP$. Per definizione $\overline{L} \in NP \subseteq PSpace$. $PSpace$ e' deterministica, quindi chiusa per complemento (basta scambiare accept/reject). Dunque $L \in PSpace$.
+}
+
+\thm{$PSpace \subseteq EXP$}{
+  Una macchina in $PSpace$ ha al piu' $2^{\text{poly}(n)}$ configurazioni distinte. Se si arresta sempre, il tempo e' al piu' $2^{\text{poly}(n)}$. Dunque $PSpace \subseteq EXP \subseteq NEXP$.
+}
+
+\textbf{Schema riepilogativo}:
+\[
+  L \subseteq NL \subseteq P \subseteq NP \cup coNP \subseteq PSpace = NPSpace \subseteq EXP \subseteq NEXP
+\]
+
+\begin{center}
+  \includegraphics[width=0.6\textwidth]{img/mappa-classi-complessita.png}
+\end{center}
+
+\nt{
+  Tutte le inclusioni di sopra sono \textbf{note}, ma le sole inclusioni \textbf{strette} dimostrate lungo questa catena sono:
+  \[
+    L \subsetneq PSpace \subsetneq EXPSPACE, \qquad P \subsetneq EXP
+  \]
+  (per il teorema di gerarchia spaziale e temporale rispettivamente). Tutte le altre potrebbero teoricamente essere uguaglianze, e nessuno sa.
+}
+
+\nt{
+  \textbf{Problemi P-completi}. I problemi piu' difficili dentro $P$ sono i \textit{problemi P-completi} (rispetto a riduzioni logspace). Si congettura che non siano in $L$, ma non e' dimostrato. Caratterizzazione informale: i problemi P-completi sono \textbf{inerentemente sequenziali}, cioe' non parallelizzabili in modo significativo. Al contrario, i problemi in $L$ (o piu' in generale in $NC$) sono \textbf{parallelizzabili}. La classe $NC$ dei problemi efficientemente parallelizzabili sta fra $L$ e $P$, e la sua precisa relazione con esse e' una delle frontiere aperte della teoria.
+}
+
 % \end{document}

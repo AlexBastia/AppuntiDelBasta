@@ -1,0 +1,700 @@
+% \begin{document}
+\chapter{Attacchi di Buffer Overflow}
+
+\section{Introduzione}
+
+\subsection{Buffer overflow attacks}
+
+Il \textbf{software} \`e noto per avere \textbf{bug}:
+\begin{itemize}
+  \item Funzionalit\`a che non vanno come previsto o non funzionano affatto.
+  \item \textbf{Crash} che causano inaffidabilit\`a e perdita di dati.
+\end{itemize}
+
+\nt{
+  Per un attacker, \textbf{i bug nel software sono delle opportunit\`a}.
+}
+
+\subsection{Exploits}
+
+\dfn{Exploit}{
+  \textbf{Bug del software trasformati in armi}: l'utilizzo di errori di programmazione a vantaggio di un utente malintenzionato.
+}
+
+Usi tipici degli exploit:
+\begin{itemize}
+  \item Aggirare i controlli di \textbf{autenticazione} e \textbf{autorizzazione}
+  \item \textbf{Elevare i privilegi} (ad admin o root)
+  \item Dirottare i programmi per eseguire \textbf{codice non intenzionale / arbitrario / shellcode}
+  \item Consentire l'\textbf{accesso persistente e non autorizzato} ai sistemi
+\end{itemize}
+
+\subsection{Storia degli incidenti pi\`u importanti}
+
+\begin{center}
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{Anno} & \textbf{Evento} \\
+\hline
+1988 & Il Morris Internet Worm us\`o un exploit di buffer overflow in \texttt{fingerd}. \\
+1995 & Buffer overflow in NCSA httpd 1.3 pubblicato sulla mailing list Bugtraq da Thomas Lopatic. \\
+1996 & Aleph One pubblica \textit{Smashing the Stack for Fun and Profit} su \textit{Phrack} \#49. \\
+2001 & Worm \textbf{Code Red}: buffer overflow in Microsoft IIS 5.0. \\
+2003 & Worm \textbf{Slammer}: buffer overflow in Microsoft SQL Server 2000. \\
+2004 & Worm \textbf{Sasser}: buffer overflow nel LSASS di Windows 2000/XP. \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Definizione di buffer overflow}
+
+\dfn{Buffer Overflow (NISTIR 7298, 2019)}{
+  Una condizione su un'interfaccia in cui \`e possibile inserire \textbf{pi\`u input in un buffer} (o area di conservazione dei dati) rispetto alla \textbf{capacit\`a assegnata}, sovrascrivendo altre informazioni.
+
+  Gli avversari sfruttano tale condizione per mandare in crash un sistema o per inserire codice appositamente predisposto che consente loro di ottenere il controllo del sistema.
+}
+
+\nt{
+  Detto anche \textbf{buffer overrun} o \textbf{buffer overwrite}.
+}
+
+\paragraph{Esempio --- Buffer da 8 byte}: buffer che dovrebbe contenere \texttt{USERNAME}, ma riceve \texttt{USERNAME12}:
+\begin{verbatim}
+| Buffer (8 bytes)           | Overflow |
+| U | S | E | R | N | A | M | E | 1 | 2 |
+  0   1   2   3   4   5   6   7   8   9
+\end{verbatim}
+I byte \texttt{1} e \texttt{2} finiscono \textbf{oltre il buffer}, sovrascrivendo memoria adiacente.
+
+\section{Esecuzione di un programma}
+
+\subsection{I compilatori}
+
+\[
+  [\texttt{C}] \to \boxed{\text{Front End}} \to \boxed{\text{IR}} \to \boxed{\text{Back End}} \to [\texttt{ASM/BIN}]
+\]
+
+\begin{itemize}
+  \item I computer \textbf{non eseguono codice sorgente} (Java, C++, ...).
+  \item Eseguono \textbf{codice macchina} (machine code).
+  \item I \textbf{compilatori} traducono il codice sorgente in codice macchina.
+  \item L'\textbf{assembly} \`e codice macchina leggibile dall'uomo.
+\end{itemize}
+
+\subsection{Esempio C $\to$ x86-64}
+
+\begin{verbatim}
+#include <stdio.h>
+int main(int argc, char** argv) {
+    int i;
+    if (argc > 1) {
+        for (i = 1; i < argc; ++i) {
+            puts(argv[i]);
+        }
+    }
+    else {
+        puts("Hello world");
+    }
+    return 1;
+}
+\end{verbatim}
+
+In assembly x86-64 (estratto):
+\begin{verbatim}
+push   rbp
+mov    rbp,rsp
+sub    rsp,0x20
+mov    DWORD PTR [rbp-0x14],edi
+mov    QWORD PTR [rbp-0x20],rsi
+cmp    DWORD PTR [rbp-0x14],0x1
+jle    400578 <main+0x4b>
+...
+call   400410 <puts@plt>
+...
+leave
+ret
+\end{verbatim}
+
+\subsection{Memoria del computer}
+
+I \textbf{programmi in esecuzione} sono presenti nella memoria. Layout (Virtual Memory $\sim 4$ GB):
+
+\begin{verbatim}
+4 GB +----------------------+
+     |  Operating System    |
+     +----------------------+
+     |   Data Memory        |
+     |   (Variables)        |
+     +----------------------+
+     |       ...            |
+     +----------------------+
+     |   Program Memory     |
+     |   (Code)             |
+   0 +----------------------+
+\end{verbatim}
+
+\begin{itemize}
+  \item \textbf{Program Memory}: il codice del programma.
+  \item \textbf{Data Memory}: variabili, costanti e altre cose necessarie.
+  \item \textbf{OS Memory}: sempre disponibile per le \textbf{system calls} (aprire un file, eseguire un altro programma, stampare, ecc.).
+\end{itemize}
+
+\subsection{Memoria del programma e Instruction Pointer (IP)}
+
+\dfn{Instruction Pointer (IP / PC)}{
+  Registro della CPU che tiene traccia dell'istruzione corrente. Detto anche \textit{Program Counter}.
+}
+
+\begin{verbatim}
+0: integer count(string s, character c) {
+     integer counter=0;
+     integer pos;
+1:   for (pos = 0; pos < length(s); pos = pos + 1) {
+2:     if (s[pos] == c) counter = counter + 1;
+3:   }
+4:   return counter;
+5: }
+
+6: void main(integer argc, strings argv) {
+7:   count("testing", "t"); // should return 2
+8: }
+\end{verbatim}
+
+L'IP punta inizialmente alla riga 7 (chiamata di \texttt{count}). Il codice sta in Program Memory; le variabili (\texttt{counter}, \texttt{pos}) e le costanti (\texttt{"testing"}, \texttt{"t"}) sono salvate nella Data Memory.
+
+\section{Lo Stack e la chiamata di funzione}
+
+\subsection{Lo Stack}
+
+La \textbf{memoria dati} \`e organizzata usando una struttura specifica: lo \textbf{stack}.
+
+\begin{verbatim}
+max +------------+
+    |   stack    |   <-- cresce verso il basso
+    +------------+
+    |     v      |
+    |     ^      |
+    +------------+
+    |   heap     |   <-- cresce verso l'alto
+    +------------+
+    |   data     |
+    +------------+
+    |   text     |
+  0 +------------+
+\end{verbatim}
+
+\dfn{Stack frame}{
+  Ogni \textbf{funzione}, quando viene eseguita, ottiene un \textbf{frame} sullo stack.
+  \begin{itemize}
+    \item Frame \textbf{creato} quando viene chiamata la funzione, \textbf{distrutto} quando esce (exit/return).
+    \item Contiene le \textbf{variabili locali}.
+    \item Contiene le informazioni sul \textbf{flusso di controllo}: return address, old frame pointer.
+    \item \textbf{Lo stack cresce verso il basso}.
+  \end{itemize}
+}
+
+\subsection{Chiamata di una funzione}
+
+Sia $P$ il chiamante (\textit{calling}) e $Q$ il chiamato (\textit{called}) da $P$.
+
+\subsubsection{Lato chiamante (P)}
+
+\begin{enumerate}
+  \item Pusha i \textbf{parametri} per la funzione $Q$ sullo stack (tipicamente in \textbf{ordine inverso} di dichiarazione: \texttt{param 2}, poi \texttt{param 1}).
+  \item Esegue l'istruzione \texttt{call} che invoca la funzione target $\Rightarrow$ pusha l'\textbf{indirizzo di ritorno} (\texttt{Return addr in P}) sullo stack.
+\end{enumerate}
+
+\subsubsection{Prologo della chiamata (Q)}
+
+\begin{enumerate}
+  \setcounter{enumi}{2}
+  \item Pusha il \textbf{valore corrente del frame pointer} (che punta al frame del chiamante).
+  \item Imposta il \textbf{frame pointer} al valore corrente dello stack pointer $\Rightarrow$ identifica la \textbf{nuova posizione del frame} per $Q$.
+  \item \textbf{Alloca spazio per le variabili locali} muovendo lo stack pointer verso il basso.
+  \item Esegue il \textbf{corpo} della funzione chiamata.
+\end{enumerate}
+
+\subsubsection{Layout del frame durante l'esecuzione di Q}
+
+\begin{verbatim}
+P:  +----------------------+
+    |  Return addr         |
+    |  Old frame pointer   |  <-----+
+    |  param 2             |        |
+    |  param 1             |        |
+Q:  |  Return addr in P    |        |
+    |  Old frame pointer   |  <-- Frame pointer
+    |  local 1             |
+    |  local 2             |  <-- Stack pointer
+    +----------------------+
+\end{verbatim}
+
+\subsubsection{Uscita di Q}
+
+\begin{enumerate}
+  \setcounter{enumi}{6}
+  \item Imposta lo \textbf{stack pointer} al valore del frame pointer (scartando lo spazio delle variabili locali).
+  \item Pop dell'\textbf{old frame pointer} (ripristina il link al frame del chiamante).
+  \item Esegue l'istruzione \texttt{ret}, che pop l'indirizzo salvato e restituisce il controllo a $P$: il \textbf{return address} \`e l'indirizzo dell'istruzione in $P$ immediatamente dopo la \texttt{call}.
+\end{enumerate}
+
+\subsubsection{Ripresa in P}
+
+\begin{enumerate}
+  \setcounter{enumi}{9}
+  \item Pop dei \textbf{parametri} della funzione chiamata dallo stack.
+  \item Continua l'esecuzione con l'istruzione successiva alla chiamata.
+\end{enumerate}
+
+\subsection{Esempio di Stack Frame}
+
+\begin{verbatim}
+0: string count(string s, character c) {
+     integer counter;
+     integer pos;
+   ...
+5: }
+6: void main(integer argc, strings argv) {
+7:   count("testing", "t");
+8: }
+\end{verbatim}
+
+Lo stack frame durante l'esecuzione di \texttt{count}:
+\begin{verbatim}
+High +--------------+
+     |   argv       |
+     |   argc       |
+     |   "t"        |   <-- main()
+     |   "testing"  |
+     |   IP = 8     |   <-- count(): tornare a riga 8
+     |   counter    |
+     |   pos        |
+     +--------------+
+Low                       Stack grows downward
+\end{verbatim}
+
+\nt{
+  \textbf{Concetto chiave}: il frame deve tenere traccia dell'\textbf{IP successivo} (return address): la CPU lo user\`a a fine funzione per tornare al chiamante.
+}
+
+\subsection{Esempio di Ricorsione}
+
+\begin{verbatim}
+0: integer r(integer n) {
+1:   if (n > 0) r(n - 1);
+2:   return n;
+3: }
+4: void main(integer argc, strings argv) {
+5:   r(3); // should return 3
+6: }
+\end{verbatim}
+
+Stack risultante (dall'alto verso il basso):
+\begin{verbatim}
+main()  -> IP = ..., argv=3
+r(3)    -> IP = 6,  n-1 = 2
+r(2)    -> IP = 2,  n-1 = 1
+r(1)    -> IP = 2,  n-1 = 0
+r(0)    -> IP = 2,  0
+\end{verbatim}
+
+Ogni chiamata ricorsiva impila un nuovo frame.
+
+\subsection{Review}
+
+\begin{enumerate}
+  \item I programmi in esecuzione sono nella \textbf{memoria (RAM)}.
+  \item Il codice assembly \`e nella \textbf{program memory}. La CPU tiene traccia della prossima istruzione nel registro \textbf{IP / PC}.
+  \item La \textbf{memoria dati} \`e strutturata come una \textbf{pila di frame}:
+    \begin{itemize}
+      \item Ogni invocazione di funzione (\texttt{call}) aggiunge un frame.
+      \item Ogni frame contiene: \textbf{IP salvato} (e l'indirizzo del frame precedente) e le \textbf{variabili locali}.
+    \end{itemize}
+\end{enumerate}
+
+\section{Stack Buffer Overflow}
+
+\dfn{Stack Buffer Overflow}{
+  Si verifica quando il \textbf{buffer} si trova nello \textbf{stack}, solitamente come variabile locale nello stack frame di una funzione. Detto anche \textbf{stack smashing}.
+
+  Pi\`u formalmente: un processo (programma in esecuzione) tenta di memorizzare dati \textbf{oltre i limiti} di un buffer (sullo stack) di \textbf{dimensione fissa}, sovrascrivendo le posizioni di memoria adiacenti.
+}
+
+\nt{
+  Visti per la prima volta nel \textbf{Morris Internet Worm (1988)}, sfruttando la funzione C \texttt{gets()} nel daemon \texttt{fingerd}.
+}
+
+\subsection{Un esempio semplice di programma vulnerabile}
+
+\begin{verbatim}
+0: void print(string s) {
+     // only holds 32 characters, max
+     string buffer[32];
+1:   strcpy(buffer, s);   // copy s into buffer
+2:   puts(buffer);        // print buffer to stdout
+3: }
+
+4: void main(integer argc, strings argv) {
+5:   for (; argc > 0; argc = argc - 1) {
+6:     print(argv[argc]);
+7:   }
+8: }
+\end{verbatim}
+
+Output normale:
+\begin{verbatim}
+$ ./print Hello World
+World
+Hello
+
+$ ./print arg1 arg2 arg3
+arg3
+arg2
+arg1
+\end{verbatim}
+
+\paragraph{Dov'\`e il problema?} \texttt{strcpy(buffer, s)} \textbf{non controlla la lunghezza} dell'input!
+\begin{verbatim}
+#include <cstring>
+char *strcpy(char *to, const char *from);
+\end{verbatim}
+Da man-page: \textit{strcpy() does not perform bounds checking, and thus risks overrunning from or to. For a similar (and safer) function that includes bounds checking, see} \texttt{strncpy()}.
+
+\subsection{Cosa succede se s \`e pi\`u lunga di 32 caratteri?}
+
+Il buffer di 32 byte viene riempito, e i caratteri eccedenti \textbf{sovrascrivono}:
+\begin{itemize}
+  \item l'\textbf{old frame pointer}
+  \item il \textbf{return address salvato} (\texttt{IP = 7})
+  \item potenzialmente i parametri/dati di \texttt{main()}
+\end{itemize}
+
+\begin{verbatim}
+High +--------------------+
+     |   argv             |
+     |   argc             |
+     |   IP = ... (main)  |
+     |   IP = 7 (print)   |  <-- sovrascritto!
+     |   Data from argv   |  <-- buffer riempito oltre i limiti
+Low  +--------------------+
+\end{verbatim}
+
+\subsection{Crash del programma e DoS}
+
+Quando \texttt{print()} tenta di trasferire il controllo all'indirizzo di ritorno (\texttt{IP = 7}), salta a una \textbf{posizione di memoria illegale} $\Rightarrow$ \textbf{Segmentation Fault} $\Rightarrow$ terminazione anomala.
+
+\nt{
+  Fornire semplicemente un \textbf{input casuale} porta al crash del programma. Poich\'e il programma si \`e bloccato non pu\`o pi\`u fornire la funzione/servizio: nella sua forma pi\`u semplice, uno stack overflow \`e una forma di \textbf{Denial-of-Service (DoS)}.
+}
+
+\section{Smashing the Stack}
+
+\subsection{Idea chiave}
+
+\begin{itemize}
+  \item I bug di buffer overflow possono \textbf{sovrascrivere gli IP salvati} $\Rightarrow$ crash del programma.
+  \item \textbf{Idea chiave 1}: sostituire l'IP salvato $\Rightarrow$ pu\`o puntare ovunque l'attaccante voglia. \textbf{Ma dove?}
+  \item \textbf{Idea chiave 2}: riempire il buffer con \textbf{codice dannoso}.
+    \begin{itemize}
+      \item Il codice macchina \`e solo una stringa di byte.
+      \item Cambia l'IP per puntare al \textbf{codice dannoso (shellcode)} sullo stack.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Exploit v1 --- layout di memoria}
+
+Indirizzi di memoria di esempio:
+\begin{verbatim}
+:1000  +--------------------+
+       |   argv             |
+:996   +--------------------+
+       |   argc             |
+:992   +--------------------+
+       |   IP = ... (main)  |
+:988   +--------------------+
+       |   IP = 7 (print)   |  <-- da sovrascrivere
+:984   +--------------------+
+       |                    |
+       |   buffer (32 B)    |
+:952   +--------------------+
+\end{verbatim}
+
+\subsection{Exploit v1 --- sovrascrittura}
+
+L'attaccante inietta:
+\begin{itemize}
+  \item nel buffer (a partire da \texttt{:952}): \textbf{shellcode} (codice malicious).
+  \item dove si trova \texttt{IP = 7} (a \texttt{:984}): \texttt{IP = 952} $\Rightarrow$ punta all'inizio dello shellcode.
+\end{itemize}
+
+\begin{verbatim}
+:1000  +--------------------+
+       |   argv             |
+:996   |   argc             |
+:992   |   IP = ...         |
+:988   |   IP = 952         |  <-- sovrascritto!
+:984   +--------------------+
+       |                    |
+       | Malicious code /   |
+       | Shellcode          |
+:952   +--------------------+
+\end{verbatim}
+
+Quando \texttt{print()} ritorna, salta a \texttt{:952} ed esegue lo shellcode.
+
+\section{Shellcode}
+
+\dfn{Shellcode}{
+  Componente essenziale di molti attacchi di buffer overflow: il \textbf{codice fornito dall'attaccante} a cui si trasferisce l'esecuzione, spesso salvato nel buffer in overflow.
+
+  La sua funzione classica \`e quella di trasferire il controllo a un \textbf{interprete della riga di comando dell'utente, o shell}, dando accesso a qualsiasi programma disponibile sul sistema \textbf{con i privilegi del programma attaccato}.
+}
+
+\subsection{Caratteristiche}
+
+\begin{itemize}
+  \item Lo shellcode \`e semplicemente \textbf{machine code}: una serie di valori binari corrispondenti alle istruzioni macchina e ai dati che implementano la funzionalit\`a desiderata.
+  \item \`E \textbf{specifico per architettura del processore} e \textbf{sistema operativo}, perch\'e deve interagire con le system call.
+\end{itemize}
+
+\paragraph{Esempio --- Shellcode minimale (in C):}
+\begin{verbatim}
+{
+    // execute a shell with the privileges of the vulnerable program
+    exec("/bin/sh", NULL);
+}
+\end{verbatim}
+
+\subsection{Restrizioni generiche sul contenuto}
+
+\thm{Vincoli sullo shellcode}{
+  Uno shellcode pratico deve soddisfare tre vincoli:
+  \begin{enumerate}
+    \item \textbf{Position-Independent}: deve poter essere eseguito indipendentemente da dove si trovi in memoria. Possono essere usati solo riferimenti \textbf{relativi}, offset rispetto all'IP corrente.
+    \item \textbf{No NULL bytes}: in C la stringa termina con NULL ($\Rightarrow$ \texttt{strcpy} si fermerebbe!). L'unico NULL ammesso \`e alla \textbf{fine}, dopo tutto il codice e l'indirizzo di ritorno sovrascritto.
+    \item \textbf{Sopravvivenza alle trasformazioni}: cosa succede se il programma decifra/converte la stringa prima di copiarla? Se trasforma minuscole in maiuscole? Lo shellcode deve essere costruito per \textbf{evitare o tollerare} queste modifiche.
+  \end{enumerate}
+}
+
+\subsection{Un classico shellcode per attacco execve}
+
+Codice C equivalente:
+\begin{verbatim}
+int main(int argc, char *argv[]) {
+    char *sh;
+    char *args[2];
+    sh = "/bin/sh";
+    args[0] = sh;
+    args[1] = NULL;
+    execve(sh, args, NULL);
+}
+\end{verbatim}
+
+Codice in assembly x86 (con commenti):
+\begin{verbatim}
+       nop
+       nop
+       jmp find        // jump to end of code
+cont:  pop %esi        // pop address of sh off stack into %esi
+       xor %eax, %eax  // zero contents of EAX
+       mov %al, 0x7(%esi)   // copy zero byte to end of string sh
+       lea (%esi), %ebx     // load address of sh into %ebx
+       mov %ebx, 0x8(%esi)  // save address of sh in args[0]
+       mov %eax, 0xc(%esi)  // copy zero to args[1]
+       mov $0xb, %al        // copy execve syscall number (11) to AL
+       mov %esi, %ebx       // copy address of sh into %ebx
+       lea 0x8(%esi), %ecx  // copy address of args to %ecx
+       lea 0xc(%esi), %edx  // copy address of args[1] to %edx
+       int $0x80            // software interrupt to execute syscall
+find:  call cont            // call cont -- saves next address on stack
+sh:    .string "/bin/sh"
+args:  .long 0
+       .long 0
+\end{verbatim}
+
+\subsection{Generare shellcode}
+
+Tool comuni:
+\begin{itemize}
+  \item \textbf{Metasploit Project} --- \url{https://www.metasploit.com/}
+  \item \textbf{pwntools} --- \url{https://docs.pwntools.com/en/stable/}
+\end{itemize}
+
+\section{NOP Sled}
+
+\subsection{Hitting the Target --- il problema}
+
+\qs{Come possiamo indovinare in modo affidabile l'indirizzo dello shellcode?}{
+  \begin{itemize}
+    \item L'indirizzo dello shellcode deve essere \textbf{indovinato esattamente}: l'IP deve saltare all'inizio preciso dello shellcode.
+    \item \textbf{Gli indirizzi dello stack cambiano spesso}: cambiano ogni volta che un programma viene eseguito.
+  \end{itemize}
+  \textbf{Trucco}: rendere il bersaglio \textbf{ancora pi\`u grande} cos\`i \`e pi\`u facile da colpire.
+}
+
+\subsection{NOP Sled}
+
+\dfn{NOP Sled}{
+  La maggior parte delle CPU supporta istruzioni \textbf{no-op}: istruzioni semplici, da un byte, che non fanno nulla. Su Intel x86 l'opcode \texttt{0x90} \`e il NOP.
+
+  L'idea \`e di creare una \textit{slitta} di NOP davanti allo shellcode: funge da grande \textbf{rampa}. Se l'IP atterra in un punto \textbf{qualsiasi} della rampa, esegue NOP finch\'e non raggiunge lo shellcode.
+}
+
+\subsection{Exploit v2 con NOP sled}
+
+Buffer pi\`u grande (128 byte) consente:
+\begin{verbatim}
+:1000  +--------------------+
+       |   argv             |
+:996   |   argc             |
+:992   |   IP = ...         |
+:988   +--------------------+
+:984   |   IP = 900         |  <-- punta nel mezzo del NOP sled
+       +--------------------+
+       |   Malicious code   |
+       |   (shellcode)      |
+       +--------------------+
+       |                    |
+       |   NOP sled         |
+       |   (0x90 0x90 ...)  |
+:856   +--------------------+
+\end{verbatim}
+
+Anche se l'attaccante "indovina male" e atterra in un punto qualsiasi del NOP sled, l'esecuzione \textit{scivola} fino allo shellcode.
+
+\section{Funzioni C non sicure e altre forme di overflow}
+
+\subsection{Routine comuni della libreria C non sicure}
+
+\begin{center}
+\begin{tabular}{|l|p{8cm}|}
+\hline
+\textbf{Funzione} & \textbf{Descrizione} \\
+\hline
+\texttt{gets(char *str)} & Read line from standard input into \texttt{str} \\
+\texttt{sprintf(char *str, char *fmt, ...)} & Create \texttt{str} according to supplied format and variables \\
+\texttt{strcat(char *dest, char *src)} & Append contents of \texttt{src} to \texttt{dest} \\
+\texttt{strcpy(char *dest, char *src)} & Copy contents of \texttt{src} to \texttt{dest} \\
+\texttt{vsprintf(char *str, char *fmt, va\_list ap)} & Create \texttt{str} according to format and variables \\
+\hline
+\end{tabular}
+\end{center}
+
+\nt{
+  Tutte queste \textbf{non controllano i limiti} del buffer di destinazione.
+}
+
+\subsection{Altre forme di attacchi di overflow}
+
+\begin{itemize}
+  \item \textbf{Heap Overflows}: overflow in memoria allocata dinamicamente.
+  \item \textbf{Global Data Area Overflows}: overflow in variabili globali.
+  \item \textbf{Format String Overflows}: sfruttamento di funzioni \texttt{printf}-like con format string controllata dall'utente.
+  \item \textbf{Integer Overflows}: overflow numerico che produce dimensioni errate.
+\end{itemize}
+
+\section{Difese contro i Buffer Overflow}
+
+\subsection{Stack Canaries --- StackGuard}
+
+\dfn{Stack Canary}{
+  Il compilatore aggiunge un \textbf{valore speciale} (sentinel) sullo stack \textbf{prima di ogni IP salvato}.
+  \begin{itemize}
+    \item Il canary \`e impostato a un \textbf{valore casuale} in ogni frame.
+    \item All'\textbf{uscita della funzione} il canary viene \textbf{controllato}.
+    \item Se \`e stato alterato, il programma esce con un \textbf{errore}.
+  \end{itemize}
+}
+
+Esempio:
+\begin{verbatim}
+0: void print(string s) {
+1:   __set_stack_canary(random());
+2:   string buffer[32];
+3:   strcpy(buffer, s);
+4:   puts(buffer);
+5:   __check_stack_canary()
+6: }
+\end{verbatim}
+
+Layout di memoria con canary:
+\begin{verbatim}
+:1000  +--------------------+
+       |   argv             |
+:996   |   argc             |
+:992   |   IP = ...         |
+:988   +--------------------+
+       |   IP = 7           |
+:980   +--------------------+
+       |   canary = 189476  |  <-- sentinel
+       +--------------------+
+       |                    |
+       |   buffer           |
+:948   +--------------------+
+\end{verbatim}
+
+\mprop{Effetto del canary contro lo smashing}{
+  Il malicious code sovrascrive il canary insieme all'IP. Al \texttt{\_\_check\_stack\_canary()} la funzione rileva la modifica $\Rightarrow$ chiama \texttt{exit()} invece di tornare $\Rightarrow$ \textbf{l'attacco fallisce}.
+}
+
+\subsection{Stack non eseguibile}
+
+\dfn{NX / DEP (Data Execution Prevention)}{
+  Le CPU moderne impostano la memoria dello stack come \textbf{lettura/scrittura}, \textbf{ma non eXecute}.
+}
+
+\nt{
+  \textbf{Non evita} i buffer overflow ma \textbf{impedisce che lo shellcode venga inserito ed eseguito nello stack}.
+}
+
+\subsection{Address-Space Layout Randomization (ASLR)}
+
+\dfn{ASLR}{
+  Difesa al \textbf{livello del sistema operativo}: \textbf{randomizzazione del layout della memoria}. Ogni volta che un programma viene caricato, la posizione del codice (program memory) e dei dati (data memory) cambia.
+}
+
+\begin{itemize}
+  \item Rende \textbf{pi\`u difficile} per l'attaccante indovinare la destinazione del buffer sullo stack.
+  \item \textbf{Non impedisce lo sfruttamento, ma lo rende pi\`u difficile}.
+  \item Supportato da tutti i moderni sistemi operativi.
+  \item Funziona meglio quando la dimensione della memoria \`e grande (pi\`u entropia $\Rightarrow$ pi\`u difficile indovinare).
+\end{itemize}
+
+\subsection{Write Safe Code!}
+
+\nt{
+  Il messaggio importante \`e che \textbf{se i programmi non sono codificati correttamente} per proteggere le loro strutture dati fin dall'inizio, sono soggetti a potenziali attacchi.
+
+  Sebbene canary, NX e ASLR possano bloccare molti attacchi, alcuni --- come la corruzione del valore di una variabile adiacente per alterare il comportamento del programma --- \textbf{non possono essere bloccati se non con codice sicuro}.
+}
+
+Linee guida:
+\begin{itemize}
+  \item Usare funzioni con bounds checking: \texttt{strncpy}, \texttt{snprintf}, \texttt{fgets} invece di \texttt{strcpy}, \texttt{sprintf}, \texttt{gets}.
+  \item Validare gli input.
+  \item Evitare linguaggi/funzioni che lasciano la responsabilit\`a della memoria al programmatore quando possibile (es. usare Rust).
+\end{itemize}
+
+\section{Riferimenti}
+
+\begin{itemize}
+  \item \textbf{Metasploit Project} --- \url{https://www.metasploit.com/}. Piattaforma open-source per sviluppare, testare e usare exploit code; pu\`o creare shellcode per vari task. Usato per penetration testing, sviluppo di firme IDS e ricerca su exploit.
+  \item \textbf{pwntools} --- \url{https://docs.pwntools.com/en/stable/}
+  \item \textbf{Rust} --- \url{https://rust-lang.org/}. Linguaggio che fornisce garanzie di memory safety a tempo di compilazione, eliminando intere classi di vulnerabilit\`a di buffer overflow.
+  \item Aleph One, \textit{Smashing the Stack for Fun and Profit}, \textit{Phrack} \#49 (1996).
+  \item NIST IR 7298 --- \textit{Glossary of Key Information Security Terms} (Luglio 2019).
+\end{itemize}
+
+\section{Riepilogo dei concetti chiave}
+
+\begin{enumerate}
+  \item Un \textbf{buffer overflow} scrive oltre la capacit\`a allocata di un buffer, sovrascrivendo memoria adiacente.
+  \item Negli \textbf{stack overflow}, la memoria sovrascritta include il \textbf{return address} (IP salvato) e il \textbf{frame pointer}.
+  \item \textbf{Smashing the Stack}: sovrascrivere l'IP per dirottare l'esecuzione verso uno \textbf{shellcode} iniettato nel buffer.
+  \item Lo \textbf{shellcode} \`e codice macchina position-independent, senza NULL byte, che tipicamente lancia \texttt{/bin/sh} con i privilegi del processo vittima.
+  \item Un \textbf{NOP sled} ingrandisce il bersaglio: l'IP pu\`o atterrare ovunque sulla rampa di NOP e finir\`a per eseguire lo shellcode.
+  \item Difese moderne combinate (\textbf{stack canaries + NX + ASLR}) rendono lo sfruttamento difficile ma non impossibile.
+  \item La \textbf{vera difesa} \`e scrivere codice sicuro: validare input e usare API con bounds checking.
+\end{enumerate}
+
+% \end{document}
