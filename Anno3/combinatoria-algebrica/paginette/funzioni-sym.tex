@@ -204,4 +204,888 @@ $ row A = (r_1,r_2,...) $ e $ col A = (c_1,c_2,...) $. Una $ 0-1 $ matrice e' un
 }
 
 
+\section{Funzioni di potenza $ p_\lambda $}
+
+\dfn{Funzioni simmetriche di potenza}{
+  Per ogni $ n \geq 1 $:
+  \[
+    p_n := \sum_i x_i^n = m_{(n)} .
+  \]
+  Per convenzione $ p_0 = 1 $. Data $ \lambda = (\lambda_1, \dots, \lambda_k) \vdash n $:
+  \[
+    p_\lambda := p_{\lambda_1}\cdot p_{\lambda_2} \cdots p_{\lambda_k} .
+  \]
+}
+
+\ex{$ \lambda = (2,1) $, $ k = 3 $}{
+  \begin{align*}
+    p_{(2,1)} &= (x_1^2 + x_2^2 + x_3^2)(x_1 + x_2 + x_3) \\
+    &= x_1^3 + x_2^3 + x_3^3 + x_1^2 x_2 + x_1^2 x_3 + x_1 x_2^2 + x_2^2 x_3 + x_1 x_3^2 + x_2 x_3^2 .
+  \end{align*}
+}
+
+\subsection*{Funzione generatrice}
+
+Definiamo
+\[
+  P(t) := \sum_{n \geq 1} \frac{p_n}{n}\, t^n .
+\]
+La scelta del fattore $ \frac{1}{n} $ rende le formule con $ \exp $ e $ \log $ pulite. Da $ H(t) = \prod_i \frac{1}{1 - x_i t} $:
+\[
+  \log H(t) = \sum_i \log \frac{1}{1 - x_i t} = \sum_i \sum_{n \geq 1} \frac{x_i^n t^n}{n} = \sum_{n \geq 1} \frac{p_n}{n} t^n = P(t) ,
+\]
+da cui
+\[
+  \boxed{\ H(t) = \exp(P(t))\ } .
+\]
+Analogamente, da $ E(t) = \prod_i (1 + x_i t) $:
+\[
+  \log E(t) = \sum_i \sum_{n \geq 1} \frac{(-1)^{n - 1}}{n} x_i^n t^n = -P(-t) ,
+\]
+da cui
+\[
+  \boxed{\ E(t) = \exp(-P(-t))\ } .
+\]
+
+\section{Identita' di Newton}
+
+\thm{Identita' di Newton (omogenee)}{
+  Per ogni $ m \geq 1 $:
+  \[
+    m\, h_m = \sum_{i = 1}^m p_i\, h_{m - i} .
+  \]
+}
+\pf{Dim}{
+  Da $ H(t) = \exp(P(t)) $, derivando rispetto a $ t $:
+  \[
+    H'(t) = P'(t) \cdot \exp(P(t)) = P'(t) \cdot H(t) .
+  \]
+  Esplicitamente
+  \[
+    H'(t) = \sum_{n \geq 1} n\, h_n\, t^{n - 1}, \qquad P'(t) = \sum_{n \geq 1} p_n\, t^{n - 1} .
+  \]
+  L'identita' $ H'(t) = P'(t) H(t) $ diventa
+  \[
+    \sum_{n \geq 1} n h_n t^{n - 1} = \Big( \sum_{n \geq 1} p_n t^{n - 1} \Big) \Big( \sum_{n \geq 0} h_n t^n \Big) .
+  \]
+  Estraendo il coefficiente di $ t^{m - 1} $: $ m h_m = \sum_{i = 1}^m p_i h_{m - i} $.
+}
+
+\thm{Identita' di Newton (elementari)}{
+  Per ogni $ m \geq 1 $:
+  \[
+    m\, e_m = \sum_{i = 1}^m (-1)^{i - 1}\, p_i\, e_{m - i} .
+  \]
+}
+\pf{Dim}{
+  Deriviamo $ E(t) = \exp(-P(-t)) $: $ E'(t) = P(-t) \cdot E(t) $. Notare il segno: $ \frac{d}{dt}(-P(-t)) = P'(-t) $, e $ P(-t) = \sum_{n \geq 1} (-1)^{n - 1} \frac{p_n}{n} t^n $... estraendo il coefficiente di $ t^{m - 1} $ si ottiene la formula.
+}
+
+\ex{Calcolo di $ h_2 $ e $ e_2 $}{
+  Per $ m = 2 $: $ 2 h_2 = p_1 h_1 + p_2 h_0 = p_1^2 + p_2 $, quindi
+  \[
+    h_2 = \frac{p_1^2 + p_2}{2} .
+  \]
+  Analogamente $ 2 e_2 = p_1 e_1 - p_2 e_0 = p_1^2 - p_2 $, quindi
+  \[
+    e_2 = \frac{p_1^2 - p_2}{2} .
+  \]
+  Le due differiscono solo per il segno di $ p_2 $.
+}
+
+\section{Le $ p_\lambda $ sono una base}
+
+\cor{}{
+  $ \{p_\lambda \mid \lambda \vdash n,\ \ell(\lambda') \leq k\} $ e' una base di $ Sym^n[X_k] $.
+}
+\pf{Dim (traccia)}{
+  Si ordinano gli $ e_\lambda $ con l'ordine lessicografico inverso. Le identita' di Newton esprimono $ p_n $ in termini di $ e_1, \dots, e_n $, con termine dominante $ (-1)^{n - 1} n\, e_n $. Quindi per ogni $ \lambda $ il termine dominante di $ p_\lambda $ e' proporzionale a $ e_\lambda $ con coefficiente non nullo: la matrice di transizione da $ \{p_\lambda\} $ a $ \{e_\lambda\} $ e' triangolare con diagonale non nulla, quindi invertibile. Poiche' $ \{e_\lambda\} $ e' una base, anche $ \{p_\lambda\} $ lo e'.
+}
+
+\subsection*{Sviluppo di $ h_m $ nelle $ p_\lambda $}
+
+Da $ H(t) = \exp(P(t)) $ si ricava
+\[
+  h_m = \sum_{\lambda \vdash m} \frac{1}{z_\lambda} p_\lambda
+\]
+dove $ z_\lambda := \prod_{i \geq 1} i^{\alpha_i}\, \alpha_i! $, con $ \alpha_i = \#\{j : \lambda_j = i\} $.
+
+\osservazione{Interpretazione combinatoria.
+  In $ S_m $ il numero di permutazioni di tipo di ciclo $ \lambda $ e' $ \frac{m!}{z_\lambda} $. Quindi
+  \[
+    h_m = \frac{1}{m!} \sum_{\sigma \in S_m} p_{\lambda(\sigma)} .
+  \]
+  E' una media sul tipo di ciclo di tutte le permutazioni di $ S_m $.
+}
+
+\ex{$ m = 2 $}{
+  Le partizioni di 2 sono $ (2) $ e $ (1,1) $. $ z_{(2)} = 2^1 \cdot 1! = 2 $, $ z_{(1,1)} = 1^2 \cdot 2! = 2 $. Quindi
+  \[
+    h_2 = \frac{p_2}{2} + \frac{p_1^2}{2} = \frac{p_1^2 + p_2}{2} \checkmark
+  \]
+}
+
+\subsection*{Effetto di $ \omega $ sulle $ p_n $}
+
+\mprop{}{
+  $ \omega(p_n) = (-1)^{n - 1} p_n $.
+}
+\pf{Dim}{
+  Applichiamo $ \omega $ alle identita' di Newton per $ h_m $:
+  \[
+    m\, \omega(h_m) = \sum_{i = 1}^m \omega(p_i)\, \omega(h_{m - i}) .
+  \]
+  Poiche' $ \omega(h_m) = e_m $:
+  \[
+    m\, e_m = \sum_{i = 1}^m \omega(p_i)\, e_{m - i} .
+  \]
+  Confrontando con l'identita' di Newton per $ e_m $: $ m\, e_m = \sum_{i = 1}^m (-1)^{i - 1}\, p_i\, e_{m - i} $. Le due coincidono se e solo se $ \omega(p_i) = (-1)^{i - 1} p_i $.
+}
+
+Per $ \lambda \vdash n $ con $ \ell(\lambda) = k $:
+\[
+  \omega(p_\lambda) = \prod_{j = 1}^k (-1)^{\lambda_j - 1} p_{\lambda_j} = (-1)^{\sum_j (\lambda_j - 1)} p_\lambda = (-1)^{n - \ell(\lambda)} p_\lambda .
+\]
+
+\osservazione{Schema riassuntivo (relazioni fra basi).
+  \[
+    H(t) = \exp(P(t)), \qquad E(t) = \exp(-P(-t)), \qquad H(t) \cdot E(-t) = 1
+  \]
+  \[
+    h_m = \sum_{\lambda \vdash m} \frac{p_\lambda}{z_\lambda}, \qquad m h_m = \sum_i p_i h_{m - i}, \qquad m e_m = \sum_i (-1)^{i - 1} p_i e_{m - i}
+  \]
+  \[
+    \omega(e_n) = h_n, \quad \omega(h_n) = e_n, \quad \omega(p_n) = (-1)^{n - 1} p_n, \quad \omega^2 = id .
+  \]
+}
+
+\section{Raccordo: le quattro basi e il limite $ Sym[X] $}
+
+\subsection*{Ricapitolo delle basi}
+
+Abbiamo definito tre famiglie di generatori per $ \mathbb{Q}[x_1, \dots, x_k]^{S_k} $:
+\[
+  e_m = \sum_{i_1 < \dots < i_m} x_{i_1} \cdots x_{i_m}, \quad
+  h_m = \sum_{i_1 \leq \dots \leq i_m} x_{i_1} \cdots x_{i_m}, \quad
+  p_m = \sum_i x_i^m
+\]
+e quattro basi per $ Sym^n[X_k] $:
+\[
+  m_\lambda = \sum_{\lambda(\alpha) = \lambda} x^\alpha, \qquad
+  e_\lambda = \prod e_{\lambda_i}, \qquad
+  h_\lambda = \prod h_{\lambda_i}, \qquad
+  p_\lambda = \prod p_{\lambda_i} .
+\]
+
+\osservazione{
+  Le relazioni algebriche tra queste funzioni \textbf{non dipendono dal numero di variabili} $ k $ (purche' $ k $ sia abbastanza grande). Ad esempio
+  \[
+    e_2 = \frac{p_1^2 - p_2}{2} .
+  \]
+  Verifica per $ k = 2 $: $ e_2 = x_1 x_2 = \frac{(x_1 + x_2)^2 - x_1^2 - x_2^2}{2} $. Verifica per $ k = 3 $: $ e_2 = x_1 x_2 + x_1 x_3 + x_2 x_3 = \frac{(x_1 + x_2 + x_3)^2 - x_1^2 - x_2^2 - x_3^2}{2} $. La formula e' la stessa per ogni $ k \geq 2 $.
+}
+
+\osservazione{Coefficienti interi.
+  \begin{itemize}
+    \item Le $ m_\lambda $ generano $ \mathbb{N}[x_1, \dots, x_k]^{S_k} $ con coefficienti in $ \mathbb{N} $.
+    \item Le $ e_\lambda $ e $ h_\lambda $ generano $ \mathbb{Z}[x_1, \dots, x_k]^{S_k} $ con coefficienti in $ \mathbb{Z} $.
+    \item Le $ p_\lambda $ generano $ \mathbb{Z}[x_1, \dots, x_k]^{S_k} $ con coefficienti in $ \mathbb{Z} $.
+  \end{itemize}
+}
+
+\subsection*{Il limite: $ Sym[X] $}
+
+Fissata $ \lambda \vdash n $, la funzione $ m_\lambda(x_1, \dots, x_k) $ dipende da $ k $, ma al crescere di $ k $ si ottiene una catena di mappe compatibili
+\[
+  \cdots \to Sym[X_k] \to Sym[X_{k-1}] \to \cdots
+\]
+dove ogni freccia e' la specializzazione $ x_k = 0 $. Il \textbf{limite inverso} di questa catena e' l'anello delle \textit{funzioni simmetriche in infinite variabili}:
+\[
+  Sym[X] := \varprojlim_k Sym[X_k] .
+\]
+Possiamo lavorare con un numero infinito di variabili $ x_1, x_2, \dots $, e le basi $ \{m_\lambda\}, \{e_\lambda\}, \{h_\lambda\}, \{p_\lambda\}, \{s_\lambda\} $ restano basi anche in questo contesto.
+
+\section{La funzione di Schur come quoziente di determinanti}
+
+\subsection*{Polinomi alternanti}
+
+\dfn{Polinomio alternante}{
+  Un polinomio $ f \in \mathbb{Q}[x_1, \dots, x_k] $ e' \textit{alternante} se per ogni $ \sigma \in S_k $:
+  \[
+    \sigma \cdot f = \mathrm{sgn}(\sigma)\, f .
+  \]
+}
+
+\textbf{Costruzione.} Data una sequenza $ \lambda = (\lambda_1, \dots, \lambda_k) $ di interi, definiamo
+\[
+  a_\lambda := \det(x_i^{\lambda_j})_{i,j = 1}^k = \sum_{\sigma \in S_k} \mathrm{sgn}(\sigma)\, x_1^{\lambda_{\sigma(1)}} \cdots x_k^{\lambda_{\sigma(k)}} .
+\]
+E' alternante per costruzione (scambiare due righe del determinante cambia il segno). Se due componenti di $ \lambda $ coincidono, il determinante ha due colonne uguali e si annulla; quindi $ a_\lambda \neq 0 $ solo se i $ \lambda_i $ sono tutti distinti.
+
+\subsection*{Il determinante di Vandermonde}
+
+Il caso fondamentale e' $ \delta = (k-1, k-2, \dots, 1, 0) $:
+\[
+  a_\delta = \det(x_i^{k - j})_{i,j = 1}^k = \prod_{1 \leq i < j \leq k} (x_i - x_j) .
+\]
+
+\ex{$ k = 3 $}{
+  \[
+    a_\delta = (x_1 - x_2)(x_1 - x_3)(x_2 - x_3) = \det\begin{pmatrix} x_1^2 & x_1 & 1 \\ x_2^2 & x_2 & 1 \\ x_3^2 & x_3 & 1 \end{pmatrix} .
+  \]
+}
+
+\mprop{Caratterizzazione dei polinomi alternanti}{
+  Un polinomio $ p $ e' alternante se e solo se e' divisibile per $ a_\delta $.
+}
+\pf{Dim}{
+  $ (\Leftarrow) $ Se $ p = a_\delta \cdot g $ con $ g $ simmetrico, allora $ \sigma(p) = \mathrm{sgn}(\sigma)\, a_\delta \cdot g = \mathrm{sgn}(\sigma)\, p $.
+
+  $ (\Rightarrow) $ Se $ p $ e' alternante, per ogni coppia $ i \neq j $ la trasposizione $ (ij) $ da' $ (ij) \cdot p = -p $. Specializzando $ x_i = x_j $: $ p|_{x_i = x_j} = -p|_{x_i = x_j} $, quindi $ p|_{x_i = x_j} = 0 $, cioe' $ (x_i - x_j) \mid p $. Poiche' questi fattori sono a due a due coprimi e il loro prodotto e' $ a_\delta $, si ha $ a_\delta \mid p $.
+}
+
+\cor{}{
+  $ f $ e' alternante $ \iff f = a_\delta \cdot g $ con $ g $ simmetrico. L'applicazione $ g \mapsto a_\delta \cdot g $ e' un \textit{isomorfismo} $ Sym[X_k] \xrightarrow{\sim} A_k $ fra simmetrici e alternanti.
+}
+
+\subsection*{Definizione algebrica della funzione di Schur}
+
+\dfn{Funzione di Schur (algebrica)}{
+  Per ogni $ \lambda \vdash n $ con $ \ell(\lambda) \leq k $, la \textit{funzione di Schur} e'
+  \[
+    s_\lambda := \frac{a_{\lambda + \delta}}{a_\delta} ,
+  \]
+  dove $ \lambda + \delta = (\lambda_1 + k - 1,\ \lambda_2 + k - 2,\ \dots,\ \lambda_k + 0) $.
+}
+
+E' un polinomio simmetrico perche' numeratore e denominatore sono entrambi alternanti (corollario sopra).
+
+\ex{$ s_{(2,1)} $ con $ k = 2 $}{
+  $ \lambda = (2,1) $, $ \delta = (1,0) $, $ \lambda + \delta = (3,1) $:
+  \[
+    a_{(3,1)} = \det\begin{pmatrix} x_1^3 & x_1 \\ x_2^3 & x_2 \end{pmatrix} = x_1^3 x_2 - x_1 x_2^3 = x_1 x_2 (x_1 - x_2)(x_1 + x_2)
+  \]
+  \[
+    a_{(1,0)} = x_1 - x_2
+  \]
+  \[
+    s_{(2,1)} = \frac{x_1 x_2 (x_1 - x_2)(x_1 + x_2)}{x_1 - x_2} = x_1 x_2 (x_1 + x_2) = x_1^2 x_2 + x_1 x_2^2 = m_{(2,1)} .
+  \]
+  Con $ k = 3 $ si verifica $ s_{(2,1)} = m_{(2,1)} + 2 m_{(1,1,1)} $.
+}
+
+\thm{$ \{s_\lambda\} $ e' una base}{
+  $ \{s_\lambda \mid \lambda \vdash n,\ \ell(\lambda) \leq k\} $ e' una base di $ Sym^n[X_k] $.
+}
+\pf{Dim}{
+  \textbf{Passo 1.} Mostriamo che $ \{a_{\lambda + \delta} \mid \lambda \vdash n,\ \ell(\lambda) \leq k\} $ e' una base dello spazio $ A_k^{(m)} $ degli alternanti omogenei di grado $ m = n + |\delta| $.
+
+  Sia $ f = \sum_\alpha c_\alpha x^\alpha \in A_k^{(m)} $ alternante. Se $ c_\alpha \neq 0 $, allora $ \alpha_i \neq \alpha_j $ per $ i \neq j $ (altrimenti la trasposizione $ (ij) $ darebbe $ f = -f $, quindi $ f = 0 $). Gli esponenti distinti si ordinano come $ \alpha = \lambda + \delta $ per una partizione $ \lambda $. L'alternanza forza $ c_{\sigma(\alpha)} = \mathrm{sgn}(\sigma)\, c_\alpha $, quindi
+  \[
+    f = \sum_\lambda c_{\lambda + \delta}\, a_{\lambda + \delta} .
+  \]
+
+  \textbf{Passo 2.} La mappa $ \phi: Sym[X_k] \to A_k $, $ g \mapsto a_\delta \cdot g $, e' un isomorfismo che manda $ s_\lambda \mapsto a_\delta \cdot s_\lambda = a_{\lambda + \delta} $.
+
+  \textbf{Passo 3.} Poiche' $ \phi $ e' un isomorfismo e $ \{a_{\lambda + \delta}\} $ e' una base di $ A_k^{(m)} $, la preimmagine $ \{s_\lambda\} $ e' una base di $ Sym^n[X_k] $.
+}
+
+\cor{Estrazione dei coefficienti di Schur}{
+  Se $ f \in Sym[X_k] $ si scrive $ f = \sum_\mu c_\mu\, s_\mu $, allora
+  \[
+    c_\lambda = [x^{\lambda + \delta}]\ a_\delta \cdot f ,
+  \]
+  cioe' il coefficiente di $ s_\lambda $ in $ f $ e' il coefficiente del monomio $ x^{\lambda + \delta} $ nel prodotto $ a_\delta \cdot f $.
+}
+\pf{Dim}{
+  Moltiplicando $ f = \sum_\mu c_\mu\, s_\mu $ per $ a_\delta $:
+  \[
+    a_\delta \cdot f = \sum_\mu c_\mu\, a_\delta\, s_\mu = \sum_\mu c_\mu\, a_{\mu + \delta} .
+  \]
+  Il monomio $ x^{\lambda + \delta} $ appare solo in $ a_{\lambda + \delta} $ (con coefficiente 1, essendo il monomio ``di testa'' del determinante), quindi il suo coefficiente in $ a_\delta \cdot f $ e' esattamente $ c_\lambda $.
+}
+
+\section{Definizione combinatoria di Schur tramite SSYT}
+
+\dfn{Peso di un tableau e Schur combinatoria}{
+  Dato un SSYT $ T $ di forma $ \lambda $ con valori in $ \{1, \dots, k\} $, il \textit{peso} e'
+  \[
+    x^T := \prod_{i = 1}^k x_i^{\#\{i \in T\}} .
+  \]
+  La \textit{funzione di Schur combinatoria} e'
+  \[
+    \widehat{s}_\lambda := \sum_{T \in SSYT(\lambda),\ \text{valori in } \{1, \dots, k\}} x^T .
+  \]
+}
+
+\ex{$ \lambda = (2,1) $, $ k = 3 $}{
+  I SSYT di forma $ (2,1) $ con valori in $ \{1,2,3\} $ sono 8:
+  \[
+    \begin{ytableau} 2 \\ 1 & 1 \end{ytableau} \quad
+    \begin{ytableau} 3 \\ 1 & 1 \end{ytableau} \quad
+    \begin{ytableau} 2 \\ 1 & 2 \end{ytableau} \quad
+    \begin{ytableau} 3 \\ 1 & 2 \end{ytableau} \quad
+    \begin{ytableau} 2 \\ 1 & 3 \end{ytableau} \quad
+    \begin{ytableau} 3 \\ 1 & 3 \end{ytableau} \quad
+    \begin{ytableau} 3 \\ 2 & 2 \end{ytableau} \quad
+    \begin{ytableau} 3 \\ 2 & 3 \end{ytableau}
+  \]
+  con monomi $ x_1^2 x_2,\ x_1^2 x_3,\ x_1 x_2^2,\ x_1 x_2 x_3,\ x_1 x_2 x_3,\ x_1 x_3^2,\ x_2^2 x_3,\ x_2 x_3^2 $.
+  Sommando:
+  \[
+    \widehat{s}_{(2,1)} = x_1^2 x_2 + x_1^2 x_3 + x_1 x_2^2 + x_2^2 x_3 + x_1 x_3^2 + x_2 x_3^2 + 2 x_1 x_2 x_3 = m_{(2,1)} + 2 m_{(1,1,1)} = s_{(2,1)} \checkmark
+  \]
+}
+
+Le due definizioni coincidono: e' il \textit{Teorema fondamentale delle funzioni di Schur} (verra' dimostrato piu' avanti come $ s_\lambda = \widehat{s}_\lambda $).
+
+\section{Corrispondenza RSK: introduzione e algoritmo}
+
+\subsection*{Motivazione}
+
+La corrispondenza RSK (Robinson--Schensted--Knuth) e' una biezione fondamentale in combinatoria. Risponde alla domanda: c'e' un modo canonico per associare tableau a matrici di interi non negativi?
+
+\thm{RSK}{
+  Esiste una biezione
+  \[
+    \{\mathbb{N}\text{-matrici finite}\} \xleftrightarrow{\;\sim\;} \bigsqcup_\lambda \{\text{coppie } (R, L) \text{ di SSYT di forma } \lambda\} .
+  \]
+}
+
+\subsection*{Parola di lettura di una matrice}
+
+Data una matrice $ A = (a_{ij}) $ a coefficienti in $ \mathbb{N} $, costruiamo la \textit{parola di lettura} $ w_A $: per ogni colonna $ j $ da sinistra a destra, scriviamo il valore di riga $ i $ ripetuto $ a_{ij} $ volte, scorrendo le righe dall'alto in basso.
+
+\ex{}{
+  \[
+    A = \begin{pmatrix} 1 & 0 & 2 \\ 0 & 2 & 0 \\ 1 & 0 & 0 \end{pmatrix}
+  \]
+  Colonna 1: riga 1 da' 1 una volta, riga 3 da' 3 una volta $ \to 1, 3 $.
+  Colonna 2: riga 2 da' 2 due volte $ \to 2, 2 $.
+  Colonna 3: riga 1 da' 1 due volte $ \to 1, 1 $.
+  \[
+    w_A = 1, 3, 2, 2, 1, 1 .
+  \]
+}
+
+\subsection*{Algoritmo di inserzione: il bumping}
+
+L'ingrediente fondamentale e' il \textit{bumping} (scacciamento): come inserire un numero $ t $ in una riga di un SSYT preservando la struttura.
+
+\textbf{Algoritmo di inserzione di $ t $ nella riga $ r $:}
+\begin{enumerate}
+  \item Se $ t $ e' maggiore o uguale di tutti gli elementi della riga, lo aggiungo alla fine. Fine.
+  \item Altrimenti, trovo il primo elemento $ s > t $ nella riga. Sostituisco $ s $ con $ t $: $ t $ ``scaccia'' $ s $.
+  \item Inserisco $ s $ nella riga successiva con lo stesso algoritmo.
+  \item Quando un elemento si aggiunge alla fine di una riga, si aggiunge anche una nuova cella al tableau.
+\end{enumerate}
+
+\textbf{Proprieta' chiave del bumping.}
+\begin{itemize}
+  \item Se inserisco $ k $ in un SSYT $ T $, ottengo ancora un SSYT.
+  \item Il percorso di inserzione va verso il basso: ogni elemento scacciato finisce nella riga successiva piu' in basso.
+  \item L'elemento scacciato e' sempre strettamente maggiore di quello che lo scaccia, quindi nelle righe successive l'elemento inserito e' piu' grande, e puo' scacciare qualcosa piu' a sinistra.
+\end{itemize}
+
+\ex{Bumping}{
+  Inseriamo $ 4 $ nel tableau
+  \[
+    \begin{ytableau} 8 & 9 \\ 4 & 4 & 6 & 7 \\ 2 & 3 & 3 & 5 & 6 & 8 \\ 1 & 1 & 2 & 4 & 5 & 6 \end{ytableau}
+  \]
+  $ 4 $ in riga 1: primo elemento $ > 4 $ e' il secondo $ 5 $. Sostituisco $ 5 $ con $ 4 $.
+
+  $ 5 $ in riga 2: primo elemento $ > 5 $ e' $ 6 $. Sostituisco $ 6 $ con $ 5 $.
+
+  $ 6 $ in riga 3: primo elemento $ > 6 $ e' $ 7 $. Sostituisco $ 7 $ con $ 6 $.
+
+  $ 7 $ in riga 4: $ 7 < 8 $ e $ 7 < 9 $... no, $ 7 > 8 $? No. $ 7 $ si aggiunge alla fine della riga 4 dopo $ 9 $? In realta', si applica la regola: $ 7 $ si confronta col primo elemento della riga 4 ($ 8 $); $ 8 > 7 $, quindi $ 7 $ scaccia $ 8 $. $ 8 $ va in riga 5.
+}
+
+\subsection*{L'algoritmo RSK}
+
+\textbf{Input.} La parola $ w_A = w_1, w_2, \dots, w_N $.
+
+\textbf{Processo.} Manteniamo due tableau $ R $ (di \textit{inserzione}) e $ L $ (di \textit{registrazione}), entrambi inizialmente vuoti. Per ogni $ w_j $:
+\begin{enumerate}
+  \item Inserisco $ w_j $ in $ R $ tramite bumping.
+  \item In $ L $, aggiungo il numero di colonna $ j $ (cioe' l'indice della parola, ovvero il valore corrispondente in $ w_A $) nella nuova cella creata da $ R $.
+\end{enumerate}
+
+\textbf{Output.} La coppia $ (R, L) $ di SSYT della stessa forma $ \lambda $.
+
+\ex{Esempio completo}{
+  $ A = \begin{pmatrix} 1 & 0 & 2 \\ 0 & 2 & 0 \\ 1 & 0 & 0 \end{pmatrix} $, $ w_A = 1, 3, 2, 2, 1, 1 $.
+
+  \textbf{Inserisco $ 1 $:}
+  \[
+    R = \begin{ytableau} 1 \end{ytableau}, \quad L = \begin{ytableau} 1 \end{ytableau}
+  \]
+
+  \textbf{Inserisco $ 3 $:} $ 3 > 1 $, si aggiunge alla fine di riga 1.
+  \[
+    R = \begin{ytableau} 1 & 3 \end{ytableau}, \quad L = \begin{ytableau} 1 & 1 \end{ytableau}
+  \]
+
+  \textbf{Inserisco $ 2 $:} in riga 1 il primo $ > 2 $ e' $ 3 $; lo sostituisco e $ 3 $ va in riga 2.
+  \[
+    R = \begin{ytableau} 3 \\ 1 & 2 \end{ytableau}, \quad L = \begin{ytableau} 1 \\ 1 & 1 \end{ytableau}
+  \]
+
+  \textbf{Inserisco $ 2 $:} attenzione, il bumping usa $ > $ stretto, quindi $ 2 $ non scaccia $ 2 $; si aggiunge in fondo a riga 1.
+  \[
+    R = \begin{ytableau} 3 \\ 1 & 2 & 2 \end{ytableau}, \quad L = \begin{ytableau} 1 \\ 1 & 1 & 2 \end{ytableau}
+  \]
+
+  \textbf{Inserisco $ 1 $:} in riga 1 il primo $ > 1 $ e' il primo $ 2 $; lo sostituisco e $ 2 $ va in riga 2. In riga 2 il primo $ > 2 $ e' $ 3 $; lo sostituisco e $ 3 $ va in riga 3.
+  \[
+    R = \begin{ytableau} 3 \\ 2 \\ 1 & 1 & 2 \end{ytableau}, \quad L = \begin{ytableau} 2 \\ 1 \\ 1 & 1 & 2 \end{ytableau}
+  \]
+
+  \textbf{Inserisco $ 1 $:} in riga 1 $ 1 \not> 1 $, quindi si aggiunge in fondo.
+  \[
+    R = \begin{ytableau} 3 \\ 2 \\ 1 & 1 & 1 & 2 \end{ytableau}, \quad L = \begin{ytableau} 2 \\ 1 \\ 1 & 1 & 2 & 3 \end{ytableau}
+  \]
+
+  Risultato: $ (R, L) $ e' una coppia di SSYT di forma $ \lambda = (4, 1, 1) $.
+}
+
+\subsection*{Osservazioni}
+
+\osservazione{
+  La corrispondenza RSK e' una biezione: da $ (R, L) $ si puo' ricostruire univocamente $ A $. L'algoritmo inverso esiste ed e' simmetrico.
+}
+
+\osservazione{
+  Lungo il percorso di inserzione ci si muove sempre verso il basso, perche' l'elemento scacciato e' strettamente maggiore di quello che lo ha scacciato.
+}
+
+\osservazione{
+  Se inserisco $ k $ in un SSYT $ T $, ottengo ancora un SSYT: l'algoritmo mantiene la struttura ad ogni passo.
+}
+
+\subsection*{Perche' RSK e' importante}
+
+\textbf{Collegamento con i polinomi di Schur.} $ s_\lambda $ conta i SSYT di forma $ \lambda $. RSK spiega perche' il prodotto
+\[
+  s_\mu \cdot s_\nu = \sum_\lambda c^\lambda_{\mu \nu}\, s_\lambda
+\]
+ha coefficienti $ c^\lambda_{\mu \nu} $ (i numeri di \textit{Littlewood--Richardson}) interi non negativi: contano coppie di tableau.
+
+\textbf{Caso speciale.} Se $ A $ e' una matrice di permutazione, RSK si riduce alla classica corrispondenza di Robinson--Schensted fra permutazioni e coppie di SYT.
+
+\section{RSK: biunivocita' e prima ricostruzione}
+
+\subsection*{Esercizio 8 -- Ricostruzione di $A$ data $(L,R)$}
+
+Dati $ (L,R) $ coppia di SSYT della \textit{stessa forma}, vogliamo ricostruire la $ \mathbb{N} $-matrice finita $ A $ tale che $ \mathrm{RSK}(A) = (L,R) $.
+
+\ex{Caso esplicito}{
+  Siano
+  \[
+    R = \begin{ytableau} 2 & 3 \\ 1 & 1 & 3 \end{ytableau}
+    \qquad
+    L = \begin{ytableau} 2 & 3 \\ 1 & 2 & 3 \end{ytableau}
+    \qquad \text{(notazione francese: riga lunga in basso)}
+  \]
+  Vogliamo capire qual'e' \textit{l'ultima casella aggiunta}. Procediamo con il bumping inverso, ragionando sulla casella con il valore $ T $ massimo che sta piu' a destra nella riga piu' bassa (regola minima): in questo modo otteniamo passo dopo passo
+  \[
+    \binom{3}{3},\ \binom{3}{2},\ \binom{2}{1},\ \binom{1}{3},\ \binom{1}{2}
+  \]
+  e quindi
+  \[
+    w_A = \begin{pmatrix} 1 & 1 & 2 & 3 & 3 \\ 2 & 3 & 1 & 2 & 3 \end{pmatrix}
+    \implies
+    A = \begin{pmatrix} 0 & 1 & 1 \\ 1 & 0 & 0 \\ 0 & 1 & 1 \end{pmatrix}
+  \]
+}
+
+\textbf{Procedura generale per invertire RSK:}
+\begin{enumerate}
+  \item Trovo le caselle di $ R $ con valore $ T $ massimo.
+  \item Quella aggiunta per ultima e' la \textit{piu' a destra nella riga piu' bassa} (cioe' minima per l'ordine di bumping).
+  \item Sapendo qual e' la casella aggiunta, leggo in $ L $ il numero che vi era stato inserito; il bumping inverso mi dice quale numero era stato scacciato dalla riga sopra, e cosi' via.
+\end{enumerate}
+
+Avevamo gia' dimostrato (osservazioni 1--5) che RSK e' un'applicazione
+\[
+  \{\mathbb{N}\text{-matrici finite}\} \longrightarrow \{(L,R) \text{ SSYT della stessa forma}\}.
+\]
+
+\mprop{RSK e' biunivoca}{
+  Dato $ (L,R) $ SSYT della stessa forma, e' sempre possibile ricostruire $ w_A $ e quindi $ A $: ad ogni passo la casella aggiunta e' univocamente determinata dalla regola sopra.
+}
+
+\section{Forma bilineare su $ Sym[X] $}
+
+\subsection*{Ripasso: matrici $ \mathbb{N} $}
+
+Avevamo gia' dimostrato che
+\[
+  e_\lambda = \sum_{\mu \vdash n} M_{\lambda,\mu} m_\mu
+\]
+dove $ M_{\lambda,\mu} $ e' il coefficiente di $ x^\mu $ in $ e_\lambda $, ovvero il numero di $ (0,1) $-matrici con $ row(A) = \lambda $ e $ col(A) = \mu $.
+
+Si fa lo stesso ragionamento con le $ h_\lambda $: ora pero' in ogni colonna possiamo scegliere variabili \textit{con ripetizione}.
+
+\mprop{Sviluppo di $ h_\lambda $ nelle $ m_\mu $}{
+  \[
+    h_\lambda = \sum_{\mu \vdash n} N_{\lambda,\mu} m_\mu
+  \]
+  dove $ N_{\lambda,\mu} $ e' il coefficiente di $ x^\mu $ in $ h_\lambda $, ovvero il numero di $ \mathbb{N} $-matrici con $ row(A) = \lambda $ e $ col(A) = \mu $.
+}
+\pf{Dim}{
+  Si fa nel modo solito: in ogni colonna $ j $ scelgo un multi-insieme di taglia $ \lambda_j $ di variabili, ovvero un vettore $ (a_{1j}, a_{2j}, \dots) \in \mathbb{N}^\infty $ con $ \sum_i a_{ij} = \lambda_j $. Rimpiazzo le variabili con gli esponenti, ottenendo una $ \mathbb{N} $-matrice.
+}
+
+\osservazione{
+  $ N_{\lambda,\mu} = N_{\mu,\lambda} $: $ A \leftrightarrow A^T $ e' una biezione che scambia $ \lambda $ e $ \mu $. Lo stesso vale per $ M $.
+}
+
+\subsection*{Definizione della forma bilineare}
+
+\dfn{Forma bilineare $ \langle \cdot, \cdot \rangle $ su $ Sym[X] $}{
+  $ \langle \cdot, \cdot \rangle $ e' l'unica forma bilineare tale che
+  \[
+    \langle m_\lambda, h_\mu \rangle = \delta_{\lambda,\mu} = \begin{cases} 1 & \text{se } \lambda = \mu \\ 0 & \text{altrimenti} \end{cases}
+  \]
+  Dato che $ \{m_\lambda\} $ e $ \{h_\mu\} $ sono basi, la richiesta le rende \textit{basi duali}. Ogni forma bilineare puo' essere descritta in questo modo (su un prodotto di basi).
+}
+
+\section{Identita' di Cauchy}
+
+\mprop{Identita' di Cauchy}{
+  \[
+    \prod_{i,j} \frac{1}{1 - x_i y_j} = \sum_{\lambda} m_\lambda(x) h_\lambda(y)
+  \]
+  e
+  \[
+    \prod_{i,j} (1 + x_i y_j) = \sum_{\lambda} m_\lambda(x) e_\lambda(y)
+  \]
+  (la somma e' su tutte le partizioni di tutti gli $ n \in \mathbb{N} $.)
+}
+\pf{Dim}{
+  Dimostriamo la prima identita' (la seconda e' analoga). Sviluppando la serie geometrica:
+  \[
+    \prod_{i,j} \frac{1}{1 - x_i y_j} = \prod_{i,j}(1 + z_{ij} + z_{ij}^2 + \dots), \qquad z_{ij} = x_i y_j .
+  \]
+  Un monomio $ x^\alpha y^\beta $ si ottiene scegliendo una $ \mathbb{N} $-matrice $ A = (a_{ij}) $ tale che $ \prod_{i,j}(x_i y_j)^{a_{ij}} = x^\alpha y^\beta $, ovvero con $ row(A) = \alpha $ e $ col(A) = \beta $. Quindi
+  \[
+    \prod_{i,j} \frac{1}{1-x_i y_j} = \sum_\lambda \sum_\mu N_{\lambda,\mu}\, m_\lambda(x)\, m_\mu(y) = \sum_\lambda m_\lambda(x) \underbrace{\Big(\sum_\mu N_{\lambda,\mu} m_\mu(y) \Big)}_{= h_\lambda(y)} .
+  \]
+}
+
+\mprop{Caratterizzazione della dualita'}{
+  Se $ \{u_\lambda\} $ e $ \{v_\lambda\} $ sono due basi di $ Sym[X] $, allora sono \textit{duali} se e solo se
+  \[
+    \prod_{i,j} \frac{1}{1 - x_i y_j} = \sum_\lambda u_\lambda(x) v_\lambda(y).
+  \]
+}
+\pf{Dim}{Lasciata al lettore (Macdonald cap. I).}
+
+\mprop{Simmetria della forma bilineare}{
+  $ \langle \cdot, \cdot \rangle $ e' simmetrica.
+}
+\pf{Dim}{
+  \[
+    \langle h_\lambda, h_\mu \rangle = \Big\langle \sum_\nu N_{\lambda,\nu} m_\nu,\, h_\mu \Big\rangle = \sum_\nu N_{\lambda,\nu} \langle m_\nu, h_\mu \rangle = N_{\lambda,\mu} = N_{\mu,\lambda} = \langle h_\mu, h_\lambda \rangle .
+  \]
+}
+
+\section{Le $ p_\lambda $ e il prodotto scalare di Hall}
+
+\subsection*{Ripasso: $ z_\lambda $}
+
+Avevamo definito
+\[
+  z_\lambda = \prod_i (m_i!\, \cdot\, i^{m_i}), \qquad m_i = \#\{j : \lambda_j = i\}.
+\]
+
+\ex{$ \lambda = (2,1,1) $}{
+  $ m_1 = 2,\ m_2 = 1 $, quindi $ z_\lambda = 2!\cdot 1!\cdot 1^2 \cdot 2^1 = 4 $.
+}
+
+E avevamo dimostrato che
+\[
+  h_n = \sum_{\lambda \vdash n} \frac{1}{z_\lambda} p_\lambda .
+\]
+
+\mprop{Identita' di Cauchy nelle $ p_\lambda $}{
+  \[
+    \prod_{i,j} \frac{1}{1 - x_i y_j} = \sum_\lambda \frac{p_\lambda(x)\, p_\lambda(y)}{z_\lambda}
+  \]
+  \[
+    \prod_{i,j} (1 + x_i y_j) = \sum_\lambda (-1)^{|\lambda| - \ell(\lambda)} \frac{p_\lambda(x)\, p_\lambda(y)}{z_\lambda}
+  \]
+  Quindi $ \{p_\lambda\} $ e $ \{p_\lambda / z_\lambda\} $ sono basi duali.
+}
+\pf{Dim}{
+  Sia $ z_{ij} = x_i y_j $. Con la serie geometrica solita
+  \[
+    \prod_{i,j} \frac{1}{1 - x_i y_j t} = \prod_{i,j}(1 + z_{ij} t + z_{ij}^2 t^2 + \dots) = \sum_{n \in \mathbb{N}} h_n(z) t^n = \sum_n \Big( \sum_{\lambda \vdash n} \frac{1}{z_\lambda} p_\lambda(z) \Big) t^n
+  \]
+  Valutando in $ t = 1 $:
+  \[
+    \prod_{i,j} \frac{1}{1 - x_i y_j} = \sum_\lambda \frac{p_\lambda(z)}{z_\lambda} .
+  \]
+  Resta da osservare che, con $ z_{ij} = x_i y_j $, vale per ogni $ n $:
+  \[
+    p_n(z) = \sum_{i,j} (x_i y_j)^n = \Big( \sum_i x_i^n \Big) \Big( \sum_j y_j^n \Big) = p_n(x) p_n(y) .
+  \]
+  Quindi $ p_\lambda(z) = p_\lambda(x) p_\lambda(y) $.
+}
+
+\cor{Prodotto scalare di Hall}{
+  $ \langle \cdot, \cdot \rangle $ e' un \textit{prodotto scalare} (definito positivo) e $ \{p_\lambda\} $ e' una base ortogonale, con
+  \[
+    \langle p_\lambda, p_\mu \rangle = z_\lambda\, \delta_{\lambda,\mu} .
+  \]
+}
+\pf{Dim}{
+  Dalla dualita' di $ \{p_\lambda\} $ e $ \{p_\mu / z_\mu\} $: $ \langle p_\lambda, p_\mu / z_\mu \rangle = \delta_{\lambda,\mu} $, da cui $ \langle p_\lambda, p_\mu \rangle = z_\lambda \delta_{\lambda,\mu} $. E' definito positivo perche' gli $ z_\lambda $ sono positivi.
+}
+
+\cor{$ \omega: h_\lambda \leftrightarrow e_\lambda $ e' un'isometria}{}
+\pf{Dim}{
+  Basta verificare $ \langle \omega(p_\lambda), \omega(p_\mu) \rangle = \langle p_\lambda, p_\mu \rangle $. Sappiamo che $ \omega(p_n) = (-1)^{n-1} p_n $, quindi $ \omega(p_\lambda) = (-1)^{|\lambda|-\ell(\lambda)} p_\lambda $ e
+  \[
+    \langle \omega(p_\lambda), \omega(p_\mu) \rangle = (\pm 1)^2\, z_\lambda\, \delta_{\lambda,\mu} = \langle p_\lambda, p_\mu \rangle .
+  \]
+}
+
+\section{Funzioni di Schur combinatorie $ \widehat{s}_\lambda $}
+
+\dfn{Funzioni di Schur combinatorie}{
+  \[
+    \widehat{s}_\lambda(x) = \sum_{T \in SSYT(\lambda)} x^T
+  \]
+  dove $ x^T = \prod_i x_i^{\#\{i \in T\}} $. Si estende analogamente a forme skew $ \lambda/\mu $.
+}
+
+\thm{Le $ \widehat{s}_\lambda $ sono una base ortonormale di $ Sym[X] $}{}
+\pf{Dim}{
+  Dobbiamo mostrare che $ \langle \widehat{s}_\lambda, \widehat{s}_\mu \rangle = \delta_{\lambda,\mu} $. Equivalentemente (una base e' duale a se stessa $ \iff $ e' ortonormale): basta far vedere che
+  \[
+    \sum_\lambda \widehat{s}_\lambda(x)\, \widehat{s}_\lambda(y) = \prod_{i,j} \frac{1}{1 - x_i y_j} .
+  \]
+  Un monomio $ x^\alpha y^\beta $ nello sviluppo del prodotto di Cauchy si ottiene scegliendo una $ \mathbb{N} $-matrice $ A $ con $ row(A) = \alpha $ e $ col(A) = \beta $; quindi il coefficiente di $ x^\alpha y^\beta $ nel secondo membro e' il numero di tali matrici. Nel primo membro, e' il numero di coppie di SSYT $ (L,R) $ della stessa forma $ \lambda $ tali che $ type(R) = \alpha $ e $ type(L) = \beta $. Per la biezione RSK, i due numeri sono uguali.
+}
+
+\section{Numeri di Kostka}
+
+\dfn{Numeri di Kostka}{
+  Siano $ \lambda/\mu $ una forma skew (eventualmente con $ \mu = \emptyset $) e $ \alpha \models n $ una composizione. Si pone
+  \[
+    K_{\lambda/\mu, \alpha} = \#\{T \text{ SSYT di forma } \lambda/\mu \mid type(T) = \alpha\} .
+  \]
+  Caso particolare $ \alpha = (1^n) $:
+  \[
+    f^{\lambda/\mu} := K_{\lambda/\mu,\, 1^n} = \#\{\text{tableaux \textit{standard} di forma } \lambda/\mu\} .
+  \]
+}
+
+\mprop{}{
+  \[
+    \sum_{\lambda \vdash n} (f^\lambda)^2 = n!
+  \]
+}
+\pf{Dim}{
+  Restringiamo la biezione RSK alle \textit{matrici di permutazione}: $ \sigma \in S_n $ corrisponde alla matrice $ A_\sigma $ con $ w_{A_\sigma} = \binom{1\,2\cdots n}{\sigma(1)\,\sigma(2)\cdots\sigma(n)} $. Otteniamo cosi' una biezione
+  \[
+    S_n \xleftrightarrow{\,RSK\,} \bigsqcup_{\lambda \vdash n} SYT(\lambda) \times SYT(\lambda) ,
+  \]
+  da cui $ n! = \sum_\lambda (f^\lambda)^2 $.
+}
+
+\ex{$ n = 4 $}{
+  Le partizioni di 4 con i rispettivi $ f^\lambda $:
+  \[
+    f^{(4)} = 1, \quad f^{(3,1)} = 3, \quad f^{(2,2)} = 2, \quad f^{(2,1,1)} = 3, \quad f^{(1^4)} = 1
+  \]
+  e $ 1^2 + 3^2 + 2^2 + 3^2 + 1^2 = 24 = 4! $. (Ricorda: somma dei quadrati delle dimensioni degli irriducibili di $ S_4 $.)
+}
+
+\thm{}{
+  \[
+    e_\mu = \sum_{\lambda \vdash |\mu|} K_{\lambda'/\mu}\, s_\lambda
+  \]
+  (la somma usa $ \lambda' $, la trasposta). La dimostrazione non fa parte del programma.
+}
+
+\cor{Regola di Pieri}{
+  \[
+    s_\nu \cdot e_n = \sum_\lambda s_\lambda
+  \]
+  dove la somma e' sulle partizioni $ \lambda $ tali che $ \lambda/\nu $ e' una \textit{striscia verticale} (cioe' $ n $ caselle, mai due nella stessa riga).
+}
+
+\ex{$ \nu = (3,3,1) $, $ n = 2 $}{
+  Dobbiamo trovare tutte le posizioni in cui aggiungere 2 caselle, mai due nella stessa riga. Si ottiene
+  \[
+    s_\nu \cdot e_2 = s_{(4,4,1)} + s_{(3,3,1,1,1)} + s_{(4,3,2)} + s_{(4,3,1,1)} + s_{(3,3,2,1)} .
+  \]
+}
+
+\section{Simmetria e proprieta' di $ \widehat{s}_\lambda $}
+
+\mprop{Le $ \widehat{s}_\lambda $ sono simmetriche}{}
+\pf{Dim}{
+  Le trasposizioni adiacenti $ (i, i+1) $ generano $ S_\infty $, quindi basta mostrare $ (i, i+1) \cdot \widehat{s}_{\lambda/\mu} = \widehat{s}_{\lambda/\mu} $ (l'azione scambia $ i $ con $ i+1 $).
+
+  Costruiamo una biezione fra SSYT di forma $ \lambda/\mu $ che scambia $ \#\{i\} $ e $ \#\{i+1\} $:
+  \begin{itemize}
+    \item Le colonne che non contengono ne' $ i $ ne' $ i+1 $ non cambiano.
+    \item Le colonne che li contengono entrambi sono gia' incastrate verticalmente (con $ i $ sopra a $ i+1 $) e non si toccano.
+    \item Restano le colonne con \textit{solo uno} tra $ i $ e $ i+1 $: in ogni riga esse formano blocchi del tipo
+    \[
+      \underbrace{i\ i\ \cdots\ i}_{r}\ \underbrace{i{+}1\ \cdots\ i{+}1}_{s}
+    \]
+    e li sostituiamo con $ s $ entrate $ i $ seguite da $ r $ entrate $ i+1 $. La condizione di SSYT e' preservata.
+  \end{itemize}
+}
+
+\cor{}{
+  \[
+    s_{\lambda/\mu}(x) = \sum_{\nu \vdash |\lambda/\mu|} K_{\lambda/\mu, \nu}\, m_\nu(x)
+  \]
+  In particolare, per $ \mu = \emptyset $:
+  \[
+    \widehat{s}_\lambda(x) = \sum_{\nu \vdash |\lambda|} K_{\lambda, \nu}\, m_\nu(x) .
+  \]
+}
+\pf{Dim}{
+  Per definizione $ \widehat{s}_{\lambda/\mu} = \sum_\alpha K_{\lambda/\mu,\alpha}\, x^\alpha $ con $ \alpha $ composizione. Per la simmetria appena dimostrata, le composizioni che differiscono per permutazione hanno lo stesso coefficiente $ K_{\lambda/\mu, \nu} $ (con $ \nu $ partizione associata), quindi raggruppando si ottengono le $ m_\nu $.
+}
+
+\subsection*{Ordine di dominanza}
+
+Ricordiamo che $ \mu \trianglelefteq \lambda $ se per ogni $ i \geq 1 $ vale $ \sum_{j=1}^i \mu_j \leq \sum_{j=1}^i \lambda_j $.
+
+\mprop{}{
+  Siano $ \lambda, \mu \vdash n $. Se $ K_{\lambda,\mu} \neq 0 $ allora $ \mu \trianglelefteq \lambda $. Inoltre $ K_{\lambda,\lambda} = 1 $.
+}
+\pf{Dim}{
+  Sia $ T $ un SSYT di forma $ \lambda $ e tipo $ \mu $. In un SSYT tutti gli $ 1 $ stanno sulla prima riga (sotto violerebbero la stretta crescenza in colonna), quindi
+  \[
+    \mu_1 = \#\{1 \in T\} \leq \lambda_1 .
+  \]
+  Allo stesso modo gli $ 1 $ e i $ 2 $ devono comparire solo nelle prime due righe, quindi
+  \[
+    \mu_1 + \mu_2 \leq \lambda_1 + \lambda_2 .
+  \]
+  Cosi' via, $ \mu_1 + \dots + \mu_i \leq \lambda_1 + \dots + \lambda_i $ per ogni $ i $.
+
+  Per $ K_{\lambda,\lambda} = 1 $: l'unico SSYT di forma $ \lambda $ e tipo $ \lambda $ e' quello in cui la riga $ i $ contiene solo $ i $ (super-standard).
+}
+
+\cor{Le $ \widehat{s}_\lambda $ sono una base di $ Sym[X] $}{}
+\pf{Dim}{
+  La matrice di cambio di base $ K = (K_{\lambda,\mu}) $ e' triangolare (rispetto all'ordine di dominanza) con $ 1 $ sulla diagonale, quindi invertibile.
+}
+
+\osservazione{
+  Riassumendo: le $ \widehat{s}_\lambda $ con $ \lambda \vdash n $ sono una base \textit{ortonormale} di $ Sym^n[X] $.
+}
+
+\section{Sviluppi nelle $ \widehat{s}_\lambda $}
+
+\cor{}{
+  \[
+    h_\mu = \sum_\lambda K_{\lambda, \mu}\, \widehat{s}_\lambda
+  \]
+}
+\pf{Dim}{
+  Sia $ h_\mu = \sum_\lambda a_{\lambda,\mu}\, \widehat{s}_\lambda $. Per ortonormalita' delle $ \widehat{s}_\lambda $ e dualita' $ \langle h_\mu, m_\nu \rangle = \delta_{\mu,\nu} $:
+  \[
+    a_{\lambda,\mu} = \langle h_\mu, \widehat{s}_\lambda \rangle = \Big\langle h_\mu, \sum_\nu K_{\lambda,\nu} m_\nu \Big\rangle = \sum_\nu K_{\lambda,\nu}\, \delta_{\mu,\nu} = K_{\lambda,\mu} .
+  \]
+}
+
+\cor{}{
+  \[
+    h_1^n = \sum_{\lambda \vdash n} f^\lambda\, \widehat{s}_\lambda .
+  \]
+}
+\pf{Dim}{
+  $ h_1^n = h_{(1^n)} $ e applicando il corollario precedente con $ \mu = (1^n) $: $ K_{\lambda, 1^n} = f^\lambda $.
+}
+
+\section{Trasposta e simmetria di RSK}
+
+\osservazione{(Dimostrazione lasciata a Morbidelli)
+  Sia $ A $ una $ \mathbb{N} $-matrice finita e $ A \xrightarrow{RSK} (L,R) $. Allora $ A^T \xrightarrow{RSK} (R, L) $.
+}
+
+\cor{}{
+  $ A $ e' simmetrica $ \iff R = L $. Inoltre RSK ristretta e' una biezione fra $ \mathbb{N} $-matrici simmetriche con $ row(A) = \alpha $ e SSYT di tipo $ \alpha $.
+}
+
+\cor{Involuzioni di $ S_n $}{
+  \[
+    \sum_{\lambda \vdash n} f^\lambda = |\{\sigma \in S_n \mid \sigma^2 = id\}|
+  \]
+}
+\pf{Dim}{
+  Le matrici di permutazione sono ortogonali, quindi $ A^{-1} = A^T $, ossia $ \sigma = \sigma^{-1} $ se e solo se $ \sigma^2 = id $. Restringendo RSK alle matrici di permutazione \textit{simmetriche} otteniamo la biezione fra involuzioni di $ S_n $ e SYT di forma $ \lambda \vdash n $.
+}
+
+\ex{$ n = 4 $}{
+  $ \sum_\lambda f^\lambda = 1 + 3 + 2 + 3 + 1 = 10 $. Le involuzioni di $ S_4 $: $ 6 $ trasposizioni + $ 3 $ doppie trasposizioni + $ 1 \cdot id = 10 $. Torna.
+}
+
+\section{RSK duale (RSK*)}
+
+\textbf{Algoritmo.} Biezione fra $ (0,1) $-matrici finite e coppie $ (L,R) $ di tableaux della stessa forma tali che $ L' $ ed $ R $ sono SSYT (cioe' $ L $ e' SSYT trasposto: strettamente crescente in riga, debolmente crescente in colonna). Funziona nello stesso modo solo che, durante l'inserimento di un numero $ j $, si scaccia l'elemento piu' a sinistra che e' $ \leq j $.
+
+Cosi' come abbiamo dimostrato (con RSK)
+\[
+  \prod_{i,j} \frac{1}{1 - x_i y_j} = \sum_\lambda \widehat{s}_\lambda(x)\, \widehat{s}_\lambda(y) ,
+\]
+allo stesso modo, con RSK*, si dimostra che
+\[
+  \prod_{i,j} (1 + x_i y_j) = \sum_\lambda \widehat{s}_\lambda(x)\, \widehat{s}_{\lambda'}(y) .
+\]
+
+\cor{Azione di $ \omega $ su $ \widehat{s}_\lambda $}{
+  \[
+    \omega(\widehat{s}_\lambda) = \widehat{s}_{\lambda'}
+  \]
+  (analogamente per le $ \widehat{s}_{\lambda/\mu} $.)
+}
+\pf{Dim}{
+  Indichiamo con $ \omega_y $ l'involuzione che agisce solo sulle variabili $ y $ (le $ x $ diventano costanti). Calcoliamo:
+  \begin{align*}
+    \sum_\lambda \widehat{s}_\lambda(x)\, \omega_y(\widehat{s}_\lambda(y)) &= \omega_y\Big(\sum_\lambda \widehat{s}_\lambda(x)\, \widehat{s}_\lambda(y)\Big) \stackrel{Cauchy}{=} \omega_y\Big( \prod_{i,j} \frac{1}{1 - x_i y_j} \Big) \\
+    &= \omega_y \Big( \sum_\lambda m_\lambda(x)\, h_\lambda(y) \Big) = \sum_\lambda m_\lambda(x)\, e_\lambda(y) \\
+    &= \prod_{i,j} (1 + x_i y_j) = \sum_\lambda \widehat{s}_\lambda(x)\, \widehat{s}_{\lambda'}(y) .
+  \end{align*}
+  Dato che vale grado per grado e in ogni grado le $ \widehat{s}_\lambda $ formano una base, i coefficienti coincidono: $ \omega(\widehat{s}_\lambda) = \widehat{s}_{\lambda'} $.
+}
+
+\section{Identificazione $ s_\lambda = \widehat{s}_\lambda $}
+
+\thm{}{
+  \[
+    s_\lambda = \widehat{s}_\lambda \qquad \forall\, \lambda .
+  \]
+  Cioe' la funzione di Schur \textit{algebrica} (definita ad esempio come quoziente di determinanti alla Jacobi-Trudi, o tramite la formula bialternante) coincide con quella \textit{combinatoria}.
+}
+\pf{Dim}{
+  Dal teorema sui Kostka:
+  \[
+    e_\mu = \sum_\lambda K_{\lambda', \mu}\, s_\lambda .
+  \]
+  Dall'analoga relazione combinatoria $ h_\mu = \sum_\lambda K_{\lambda, \mu}\, \widehat{s}_\lambda $, applicando $ \omega $:
+  \[
+    e_\mu = \omega(h_\mu) = \omega\Big( \sum_\lambda K_{\lambda, \mu} \widehat{s}_\lambda \Big) = \sum_\lambda K_{\lambda, \mu}\, \widehat{s}_{\lambda'} = \sum_{\lambda'} K_{\lambda', \mu}\, \widehat{s}_\lambda
+  \]
+  (riordinando: $ \lambda $ e $ \lambda' $ percorrono entrambi le partizioni di $ |\mu| $.)
+
+  Confrontando le due espressioni per $ e_\mu $:
+  \[
+    \sum_\lambda K_{\lambda', \mu}\, s_\lambda = \sum_\lambda K_{\lambda', \mu}\, \widehat{s}_\lambda .
+  \]
+  La matrice $ K $ e' triangolare con $ 1 $ sulla diagonale, quindi invertibile: il sistema ha un'unica soluzione, ovvero $ s_\lambda = \widehat{s}_\lambda $ per ogni $ \lambda $.
+}
+
+
 % \end{document}
