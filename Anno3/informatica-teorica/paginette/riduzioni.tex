@@ -68,7 +68,7 @@ Per definire formalmente la calcolabilità di $ f $ è necessario introdurre un 
 }
 
 \nt{
-  Nella pratica usiamo sempre il corollario in questa direzione: vogliamo dimostrare che $ B $ è difficile. Partiamo da un $ A $ noto essere indecidibile, mostriamo $ A \leq B $, e concludiamo che $ B $ non può essere decidibile — altrimenti lo sarebbe anche $ A $.
+  Nella pratica usiamo sempre il corollario in questa direzione: vogliamo dimostrare che $ B $ è difficile. Partiamo da un $ A $ noto essere indecidibile, mostriamo $ A \leq B $, e concludiamo che $ B $ non può essere decidibile — altrimenti lo sarebbe anche $ A $. TODO: ma allora non sarebbe il verso del teorema??
 }
 
 \section{Esempio: $ \mathcal{L}_{ne} $}
@@ -683,7 +683,7 @@ si ferma).
   Se fosse $\mathrm{RE} = \mathrm{coRE}$, allora $\mathrm{RE} = \mathrm{R}$, contraddicendo il Teorema~\ref{thm:rneqre}.
 }
  
-\subsection{Il problema \texorpdfstring{$\mathrm{HALT}_{\forall}$}{HALT\_forall}}
+\section{Il problema \texorpdfstring{$\mathrm{HALT}_{\forall}$}{HALT\_forall}}
  
 \dfn{}{
 \[
@@ -695,21 +695,13 @@ si ferma).
   \item $\mathrm{HALT}_{\forall} \notin \mathrm{RE}$: per rispondere sì bisognerebbe provarlo su tutte le
         stringhe (infinitely many).
       \item $\mathrm{HALT}_{\forall} \notin \mathrm{coRE}$: per rispondere no bisognerebbe dimostrare che $M$
-        non si ferma su una stringa, ma questo è indecidibile.
-\end{itemize}
+        non si ferma su una stringa, ma questo è indecidibile. \end{itemize}
  
-Dunque $\mathrm{HALT}_{\forall}$ sta \emph{fuori} sia da $\mathrm{RE}$ che da $\mathrm{coRE}$.
- 
-% ============================================================
-\section{Riduzione di \texorpdfstring{$\mathrm{HALT}_{\forall}$}{HALT\_forall} fuori da \texorpdfstring{$\mathrm{RE}$}{RE} e \texorpdfstring{$\mathrm{coRE}$}{co-RE}}
-% ============================================================
- 
-Usiamo il principio: $A \leq B \Rightarrow (A \notin \mathrm{RE} \Rightarrow B \notin \mathrm{RE})$.
-Dimostriamo due riduzioni.
+Dunque sembra che $\mathrm{HALT}_{\forall}$ stia \emph{fuori} sia da $\mathrm{RE}$ che da $\mathrm{coRE}$. Dimostriamolo.
  
 \subsection{Riduzione 1: \texorpdfstring{$\mathrm{HALT}_eps \leq \mathrm{HALT}_{\forall}$}{HALT\_eps <= HALT\_forall}}
  
-\textbf{Conseguenza:} $\mathrm{HALT}_eps \in \mathrm{coRE}$ e $\mathrm{HALT}_eps \leq \mathrm{HALT}_{\forall}$, quindi
+\textbf{Conseguenza:} $\mathrm{HALT}_eps \notin \mathrm{coRE}$ e $\mathrm{HALT}_eps \leq \mathrm{HALT}_{\forall}$, quindi
 $\mathrm{HALT}_{\forall} \notin \mathrm{coRE}$.
  
 \medskip
@@ -748,8 +740,7 @@ Quindi: $M \in \mathrm{HALT}_eps \Leftrightarrow N \in \mathrm{HALT}_{\forall}$.
  
 \subsection{Riduzione 2: \texorpdfstring{$\overline{\mathrm{HALT}_eps} \leq \mathrm{HALT}_{\forall}$}{HALT\_eps-bar <= HALT\_forall}}
  
-\textbf{Conseguenza:} $\overline{\mathrm{HALT}_eps} \notin \mathrm{RE}$ (poiché
-$\overline{\mathrm{HALT}_eps} = \mathrm{coRE} \setminus \mathrm{RE}$), quindi $\mathrm{HALT}_{\forall} \notin \mathrm{RE}$.
+\textbf{Conseguenza:} $\overline{\mathrm{HALT}_eps} \notin \mathrm{RE}$, quindi $\mathrm{HALT}_{\forall} \notin \mathrm{RE}$.
  
 \medskip
 \noindent\textit{Costruzione.}
