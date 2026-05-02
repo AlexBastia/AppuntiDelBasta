@@ -736,6 +736,7 @@ Modellando la mappa come un grafo -- dove ogni regione e' un nodo e due nodi son
   VCOL e' NP-Completo.
 }
 \pf{Dimostrazione}{
+  TODO: mancano due immagini
   \textbf{VCOL $\in$ NP}: guess \& check. Si indovina $f(v) \in \{1,\dots,k\}$ per ogni nodo ($O(n \log k)$ passi), poi si verificano tutti gli archi ($O(|E|)$ confronti).
 
   \textbf{$\text{3SAT} \leq_P \text{VCOL}$}: la riduzione costruisce sempre un grafo con $k = 3$ colori fissi, indipendentemente dalla formula. Dati $\varphi = C_1 \wedge \cdots \wedge C_m$ su variabili $x_1,\dots,x_n$, costruiamo $\langle G, 3 \rangle$.
@@ -743,9 +744,13 @@ Modellando la mappa come un grafo -- dove ogni regione e' un nodo e due nodi son
   \textbf{Ingrediente 1 -- Triangolo di base $\{T, F, B\}$}:
   creiamo tre nodi $T$ (true), $F$ (false), $B$ (base) collegati a triangolo.
 
-  \begin{center}
-    \includegraphics[width=0.25\textwidth]{img/vcol-triangolo-base.png}
-  \end{center}
+<<<<<<< Updated upstream
+=======
+  TODO: manca l'immagine
+>>>>>>> Stashed changes
+  % \begin{center}
+  %   \includegraphics[width=0.25\textwidth]{img/vcol-triangolo-base.png}
+  % \end{center}
 
   In qualsiasi 3-colorazione, $T$, $F$, $B$ ricevono tre colori distinti. Chiamiamo ``colore true'' il colore di $T$, ``colore false'' quello di $F$, ``colore base'' quello di $B$.
 
@@ -762,9 +767,13 @@ Modellando la mappa come un grafo -- dove ogni regione e' un nodo e due nodi son
   \]
   Il gadget e' un triangolo con due nodi intermedi. Se entrambi gli input sono ``false'', i nodi intermedi sono forzati a prendere ``true'' e ``base'', e l'output -- collegato a entrambi -- deve essere ``false''. Se almeno un input e' ``true'', i gradi di liberta' sono sufficienti per colorare l'output con ``true''.
 
-  \begin{center}
-    \includegraphics[width=0.3\textwidth]{img/vcol-gadget-or.png}
-  \end{center}
+<<<<<<< Updated upstream
+=======
+  TODO: manca l'immagine
+>>>>>>> Stashed changes
+  % \begin{center}
+  %   \includegraphics[width=0.3\textwidth]{img/vcol-gadget-or.png}
+  % \end{center}
 
   Una clausola $(l_1 \vee l_2 \vee l_3)$ si modella concatenando due gadget OR:
   \begin{enumerate}

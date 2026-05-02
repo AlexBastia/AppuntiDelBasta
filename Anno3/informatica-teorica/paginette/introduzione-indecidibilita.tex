@@ -1,15 +1,7 @@
 % \begin{document}
-\chapter{Introduzione a problemi e indecidibilita}
+\chapter{Problemi e Macchine di Turing}
 
-Studieremo due arie:
-\begin{itemize}
-  \item \textbf{Calcolabilita}: ci chiediamo se per quel problema esistera mai un algoritmo in grado di risolverlo (decidibilita' del problema). Non li incontriamo spesso irl dato che siamo piu' spinti a fare robe che sappiamo gestire. Bisogna studiare la struttura del problema per decidere se esiste o meno un algoritmo che lo risolve.
-  \item \textbf{Complessita}: vogliamo determinare se un problema decidibile e' "facile" o "difficile", ovvero qual'e' la sua complessita' (diverso dalla complessita' degli algoritmi)
-\end{itemize}
-
-\nt{
-  Il professore usa in modo informale i termini "facile" e "difficile" perche' si tratta solo di un'introduzione. Piu' avanti definiremo meglio questi concetti in base a se la complessita' e' \textit{polinomiale} o meno.
-}
+\section{Problemi}
 
 \dfn{Problema}{
   Relazione fra stringhe.
@@ -24,101 +16,13 @@ Studieremo due arie:
   \end{itemize}
   Dove la prima stringa e' l'input e la seconda e' l'output. Dato che elencare tutte le tuple e' impossibile, le descriviamo a parole ma stando attenti ad essere precisi. Ci servono tre elementi:
   \begin{itemize}
-  \item What is input?
-  \item What is output?
-  \item Che relazione c'e' fra out e in?
+  \item What is input? Una coppia di numeri interi.
+  \item What is output? Un numero intero.
+  \item Che relazione c'e' fra out e in? Output = somma algebrica degli input.
   \end{itemize}
 }
 
-\section{Halting Problem}
-Definiamo prima per bene il problema:
-\begin{itemize}
-\item Input: Una stringa $ P $ che rapresenta il codice sorgente di un programma
-\item Output: Un booleano
-\item Relazione: Se $ P $ termina ritorna T, altrimenti F
-\end{itemize}
-
-Sembra un problema semplice, ma vedremo che in realta' e' indecidibile. Per confermare cio' dobbiamo formulare una dimostrazione formale, usando quel che viene chiamato "metodo diagonale".
-
-Il prof non va cosi' in dettaglio per il metodo usato nella dimostrazione (dato che e' solo un esempio introduttivo), ma secondo me e' interessante e fornisce un bell'esempio per l'utilita' della Teoria delle Categorie.
-
-\subsection{Il Metodo Diagonale}
-Il \textit{metodo diagonale} e' uno schema utile per la dimostrazione di certi teoremi. E' stato ideato per la prima volta da Cantor per dimostrare, per esempio, che $ \mathbb{R} $ non e' numerabile, dove viene usata la \textit{diagonale} di una tabella per dimostrare un assurdo. Questo metodo e' stato successivamente usato per dimostrare altre proposizioni molto importanti, come il teorema di Cantor (quello sugli insiemi potenza), il paradosso di Russel e i teoremi dell'incompletezza di Godel.
-
-La struttura della dimostrazione generale e' la seguente:
-\begin{center}
-  \includegraphics[width=0.5\textwidth]{img/2026-02-17-11-46-41.png}
-\end{center}
-Lo schema e' molto astratto, e' formato solo da \textit{punti} (i vertici) e \textit{frecce} che possono essere composte per formare altre frecce. I primi possono essere insiemi e le frecce funzioni, come vedremo. Le quattro frecce hanno delle funzioni particolari:
-\begin{itemize}
-  \item La funzione "potente" $ X $: nella Teoria delle Categorie viene definita \textit{morfismo punto-suriettivo}(?). E' la freccia che assumiamo esista per poi dimostrare l'assurdo.
-  \item La funzione diagonale $ D $: dato un elemento $ x $ ritorna la coppia $ (x,x) $. Raccoglie l'essenza del metodo diagonale in quanto e' la componente che causa l'\textit{auto-referenzialita'} che sta al cuore della dimostrazione.
-  \item La funzione che inverte $ I $: dato l'output di $ X $ lo \textit{inverte} in modo da causare l'assurdita'.
-  \item La funzione "speciale" $ S  $: composizione delle tre frecce sopra, insieme all'assunzione iniziale permette di dimostrare l'assurdo.
-\end{itemize}
-
-\nt{ Lowkey non l'ho spiegato benissimo dato che non ho studiato abbastanza le sue applicazioni e so solo le basi della Teoria delle Categorie quindi non e' rigoroso per niente. Forse nel futuro ci ritornero', boh.}
-
-Finita la costruzione, i prossimi passi sono:
-\begin{enumerate}
-\item Codifica $ S  $ con una \textit{COSA}, $ k $.
-\item Cosa succede se passo $ k $ a $ S  $?
-\end{enumerate}
-
-\nt{In verita' non sono sicurissimo se questi passi fanno parte del metodo generale o solo dell'halting}
-
-\subsection{Dimostrazione Halting Problem}
-Andiamo ora a vedere come puo' essere dimostrato che l'halting problem e' indecidibile.
-
-Per prima cosa dobbiamo definire la controparte concreta delle frecce e punti dello schema:
-\begin{itemize}
-\item I punti \textit{COSE} sono insiemi di tutti i programmi o dati possibili. Sfruttando la \textbf{Numerazione di Godel} possiamo attribuire a ognuno di questi un numero naturale. Quindi \textit{COSE} diventa $ \mathbb{N} $.
-\item I punti \textit{VALORI} sono tutti i possibili output di un programma, quindi dei dati. Quindi \textit{VALORI} diventa $ \mathbb{N} $.
-\item La freccia $ X $ diventa il programma \textit{HALT}, ovvero la funzione totale che prende un \textit{Programma} $ P $ e un \textit{Dato} $ D $ (entrambe $ \in \mathbb{N} $) tale che:
-  \[
-    X(P,D) = \begin{cases}
-    \text{"termina"} & P \text{ termina su } D\\
-    \text{"diverge"} & P \text{ non termina su } D
-    \end{cases}
-  \]
-  Per ora assumiamo l'esistenza di questo programma.
-\item La freccia $ D $ e' il programma che implementa la funzione totale $ \mathbb{N} \to \mathbb{N} \times \mathbb{N} $
-  \[
-    D(x) = (x,x)
-  \]
-  che e' facile da costruire e quindi esiste.
-\end{itemize}
-\begin{center}
-  \includegraphics[width=0.5\textwidth]{img/2026-02-17-23-12-59.png}
-\end{center}
-Non e' chiaro come dobbiamo definire $ I $ in modo da dimostrare l'assurdo, quindi lavoriamo top-down.
-
-Dato che una composizione di programmi e' un programma, anche $ S  $ e' sicuramente un programma, quindi una funzione parziale che puo' terminare o divergere dato un input.
-
-Essendo $ S  $ un programma, e' possibile rappresentarlo con un numero $ k \in \mathbb{N} $. Analizziamo $ S(k) $:
-\begin{itemize}
-  \item $ S(k) $ termina: in questo caso $ X(k,k) = \text{"termina"} $, quindi $ S(k) = I(\text{"termina"}) $. Per rimanere coerente $ I $ deve terminare sull'input "termina".
-  \item $ S(k) $ non termina: in questo caso $ X(k,k) = \text{"diverge"} $, quindi $ S(k) = I("diverge") $. Per rimanere coerente $ I $ deve divergere sull'input "diverge".
-\end{itemize}
-
-Ma noi non vogliamo la coerenza, vogliamo costruire $ S  $ in modo da dimostrare l'assurdo. Quindi definiamo $ I $ come la funzione parziale che:
-\begin{itemize}
-\item Diverge sull'input "termina"
-\item Termina sull'input "diverge"
-\end{itemize}
-
-Abbiamo quindi che:
-
-\begin{itemize}
-  \item Se $ X(k,k) = \text{"termina"} $, allora $ S(k) $ diverge
-  \item Se $ X(k,k) = "diverge" $, allora $ S(k) $ termina
-\end{itemize}
-
-Queste due implicazioni sono in opposizione alla definizione del programma \textit{HALT}, che quindi non puo' esistere.
-
-\section{Tipi di problemi}
-
-Ci sono due categorie:
+Possiamo dividere i problemi in due categoria a seconda del loro output:
 \begin{itemize}
 \item \textbf{Ricerca}: vogliamo calcolare un risultato arbitrario, ovvero \textit{ricercano} un output vario.
 \item \textbf{Decisione}: l'output e' \textit{booleano}.
@@ -128,7 +32,7 @@ Queste due tipologie non sono completamente sganciate, esiste una relazione.
 
 Dato un problema di ricerca, possiamo ricavare la versione "decisionale" che e' piu' facile da calcolare.
 
-\ex{Somma}{
+\ex{Somma funzionale (di ricerca) e decisionale}{
   Ricerca: dati $ a,b $ calcolare la somma $ c = a + b $.
 
   Decisione: dati $ a,b,c $ determinare se $ c = a + b $ (vero o falso).
@@ -140,26 +44,19 @@ Per questo motivo parleremo quasi totalmente solo di problemi di decisione.
   E' da qui che deriva il termine "decidibile".
 }
 
-\subsection{Problemi di decisione}
-\thm{}{
-  Tutti i problemi di decisione possono essere ridotti al riconoscimento di uno specifico linguaggio.
+E' possibile analizzare caratteristiche differenti dei problemi, noi vedremo:
+\begin{itemize}
+  \item \textbf{Calcolabilita}: ci chiediamo se per quel problema esistera mai un algoritmo in grado di risolverlo (decidibilita' del problema). Non li incontriamo spesso irl dato che siamo piu' spinti a fare robe che sappiamo gestire. Bisogna studiare la struttura del problema per decidere se esiste o meno un algoritmo che lo risolve.
+  \item \textbf{Complessita}: vogliamo determinare se un problema decidibile e' "facile" o "difficile", ovvero qual'e' la sua complessita' (diverso dalla complessita' degli algoritmi)
+\end{itemize}
+
+\nt{
+  Il professore usa in modo informale i termini "facile" e "difficile" perche' si tratta solo di un'introduzione. Piu' avanti definiremo meglio questi concetti in base a se la complessita' e' \textit{polinomiale} o meno.
 }
-
-\ex{}{
-  PATH $ <G,s,t> $: vogliamo stabilire se esiste un percorso da $ s  $ a $ t $.
-
-  Mostriamo di poter trasformare questo problema decisionale in un problema che chiede se una "parola" appartiene a uno specifico linguaggio.
-
-  \[
-  L_{\text{PATH}} = \{<G,s,t> | G \text{ e' un Grafo } \land s,t \text{ sono nodi del grafo } G \land \exists \text{ un percorso da } s \to t\}
-  \]
-
-  Ci riduciamo quindi a decidere se una data tripla appartiene a $ L_{\text{PATH}} $ o meno.
-}
-
-Quindi, mentre studiamo decidibilita' dei problemi guarderemo linguaggi e i loro \textit{automi}.
 
 \section{Linguaggi}
+
+Riprendiamo ora delle definizioni gia fatte nel corso di Linguaggi di programmazione per poi vedere come questo formalismo si collega ai problemi.
 
 \subsection{Definizioni}
 
@@ -186,45 +83,42 @@ $ w $ e' una parola o striga su $ \Sigma $ e' un concatenamento di 0 o piu' simb
   \]
 }
 
-\dfn{}{
-Dato un linguaggio $ L $ \textbf{fissato} per una stringa $ w $, decidere se:
+\dfn{Problema di decisione di un linguaggio}{
+Dato un linguaggio $ L $ \textbf{fissato}, il problema di decisione di un linguaggio consiste nel decidere se, per una stringa $ w $:
 \[
 w \in L
 \]
 }
 
-Il problema di appartenenza a un linguaggio $ L $ (\textbf{fissato!}) e' definito come:
+\subsection{Collegamento ai problemi di decisione}
+\thm{}{
+  Tutti i problemi di decisione possono essere ridotti al riconoscimento di uno specifico linguaggio.
+}
 
-dato il linguaggio $ L $, prendere in input una parola $ w $ e decidere se $ w \in L $.
+\ex{}{
+  PATH $ <G,s,t> $: vogliamo stabilire se esiste un percorso da $ s  $ a $ t $.
 
-input: stringa
-output: booleano
+  Mostriamo di poter trasformare questo problema decisionale in un problema che chiede se una "parola" appartiene a uno specifico linguaggio.
 
-Perche' vogliamo usare automi? : e' un formalismo piu' basico e piu' semplice da studiare rispetto a un arbitrario linguaggio di prorammazione.
+  \[
+  L_{\text{PATH}} = \{<G,s,t> | G \text{ e' un Grafo } \land s,t \text{ sono nodi del grafo } G \land \exists \text{ un percorso da } s \to t\}
+  \]
 
-\subsection{Automi}
-Vabbe' introduce gli automi, il Guerriero ci ha gia preparato adeguatamente.
+  Ci riduciamo quindi a decidere se una data tripla appartiene a $ L_{\text{PATH}} $ o meno.
+}
 
-Alright whatsapp.
+Quindi, mentre studiamo decidibilita' dei problemi guarderemo linguaggi e i loro \textit{automi}, che un formalismo piu' basico e piu' semplice da studiare rispetto a un arbitrario linguaggio di prorammazione.
 
-\subsection{Macchia di Turing}
+\section{Macchia di Turing}
 Automa piu' potente che Turing si invento per studiare i problemi importanti da chiudere, fra cui l'automatizzazione dei teoremi.
 
-E' nato per formalizzare il calcolo automatico in un tempo in cui non esistevano i computer, era la versione "automatizzata" di lui che scriveva su carta.
+E' nato per formalizzare il calcolo automatico in un tempo in cui non esistevano i computer, era la versione "automatizzata" di lui che scriveva su carta.\\
 
 Iniziamo con una spiegazione informale:
 
-E' una macchina caratterizzata da un nastro con delle cellette
+E' una macchina caratterizzata da un nastro con delle cellette. In ognuna cella c'e' un simbolo, ed e' infinito in entrambe le direzioni. Ha una testina posizionata su una cella da cui puo' leggere il simbolo. La testina puo' spostarsi a dx o sx, e a differenza degli automi visti puo' benissio tornare indietro e cambiare la decisione presa prima (backtracking). La testina puo' anche scrivere su una cella, perdendo cio' che c'era prima (una seconda differenza).\\
 
-In ognuna cella c'e' un simbolo, ed e' infinito in entrambe le direzioni
-
-Ha una testina posizionata su una cella da cui puo' leggere il simbolo
-
-La testina puo' spostarsi a dx o sx, e a differenza degli automi visti puo' benissio tornare indietro e cambiare la decisione presa prima (backtracking)
-
-La testina puo' anche scrivere su una cella, perdendo cio' che c'era prima (una seconda differenza)
-
-Per noi sta roba e' un algoritmo, dato che la macchina di Turing, in quanto automa, ha vari stati di funzionamento
+Per noi sta roba e' un algoritmo, dato che la macchina di Turing, in quanto automa, ha vari stati di funzionamento:
 \begin{itemize}
 \item Legge simbolo cella
 \item In base allo stato, sovrascrive qualcosa
@@ -255,7 +149,7 @@ Per noi sta roba e' un algoritmo, dato che la macchina di Turing, in quanto auto
   TODO: disegna automa
 }
 
-\subsubsection{Definizioni formali}
+\subsection{Definizioni formali}
 \dfn{Macchina di Turing}{
   E' la settupla
   \[
@@ -273,12 +167,9 @@ Per noi sta roba e' un algoritmo, dato che la macchina di Turing, in quanto auto
     \[
     Q \times \Gamma \to Q \times \Gamma \times \{\gets, \to\}
     \]
+    che codifica le funzioni di transizioni (gli archi dell'automa)
   \end{itemize}
 }
-
-La macchina di turing ha stati finiti (come gli altri automi) e il suo programma e' fissato (non cambia). Quindi come fa a eseguire qualunque computazione? Vedremo.
-
-  $ \delta $ codifica le funzioni di transizioni (gli archi dell'automa)
 
 \dfn{Configurazione}{
   Sia $ M = \{Q, q_0, F, \Sigma, \Gamma, \blank, \delta \} $ una MdT. Si definisce \textit{configurazione} una stringa $ \alpha q \beta $ dove
@@ -358,7 +249,7 @@ Possiamo ora definire quando una MdT accetta un input
 }
 \nt{
   Da questa definizione, se una MdT non si arresta allora l'input non e' accettato.
-  Quindi per non accettare puo' anche divergere. Questa roba qua per noi e' un po' cringe.
+  Quindi per non accettare puo' anche divergere. Questa roba qua per noi e' un po' cringe, infatti vedremo che tale comportamento definira' una classe distinta di linguaggi.
 }
 
 \dfn{Linguaggio di una MdT}{
@@ -366,7 +257,6 @@ Possiamo ora definire quando una MdT accetta un input
   \[
     \mathcal{L}(M) = \{w | M(w) = 1\}
   \]
-
 }
 
 \dfn{Decide}{
@@ -389,13 +279,14 @@ Possiamo ora definire quando una MdT accetta un input
   \]
 }
 
-\subsubsection{Esercizi}
+Quindi a prima vista possiamo vedere come decidere un linguaggio sia piu' "difficile" rispetto a riconoscerlo, dato che dobbiamo accettarci che la MdT si arresti per ogni input.
+
+\subsection{Esercizi}
 \ex{}{
   \begin{center}
     \includegraphics[width=0.5\textwidth]{img/2026-02-20-16-21-46.png}
   \end{center}
 }
-
 \ex{}{
   \begin{center}
     \includegraphics[width=0.5\textwidth]{img/2026-02-20-16-42-06.png}
@@ -406,5 +297,600 @@ Possiamo ora definire quando una MdT accetta un input
   \includegraphics[width=0.5\textwidth]{img/2026-02-20-16-57-21.png}
 \end{center}
 }
-% \end{document}
+\ex{}{
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2026-02-22-11-23-06.png}
+  \end{center}
+}
+\ex{}{
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2026-02-22-11-33-47.png}
+  \end{center}
+}
 
+\section{Miglioramenti QoL per le MdT}
+Le macchine che abbiamo visto finora sono molto tediose.
+
+Per esempio, per riconoscere il linguaggio $ L = \{ww^R | w \in (0|1)^*\} $ e' stato necessario costruire due rami (uno per lo 0 e uno per l'1). Sarebbe comodo poter usare un solo ramo che in qualche modo codifica entrambe i rami, vediamo come possiamo fare:
+
+\subsection{Macchine con memoria}
+\dfn{Memoria nello stato}{
+  Data una MdT, si dice che questa ha \textbf{memoria} (nello stato) se ad ogni stato e' associata una memoria di uno o piu' simboli:
+  \[
+  \langle q_1, -, ..., - \rangle
+  \]
+  Il numero di simboli in memoria e' fissato, ovvero non puo' cambiare durante l'esecuzione.
+}
+\ex{}{
+  Vogliamo riconoscere $ L = 10^*|01^* $
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2026-02-26-12-17-39.png}
+  \end{center}
+
+  Notiamo che la macchina con memoria sopra non e' altro che una rappresentazione piu' compatta di una normale MdT con due rami al posto di uno. 
+}
+\mprop{Equipotenza macchine con memoria}{
+  Data una MdT con memoria nello stato, e' sempre possibile costruire una MdT senza memoria che riconosce lo stesso linguaggio.
+}
+\pf{Dimostrazione}{
+  Boh in verita' non dimostra sto risultato, dice solo che alla fine le macchine con memoria sono un prodotto cartesiano di stati con simboli.
+}
+
+\subsection{Macchine Multitraccia}
+\dfn{Macchine Multitraccia}{
+  Multiple tracce lette in sincrono, la testina si muove tutta insieme ma possiamo leggere e scrivere singolarmente sulle tracce.
+}
+\ex{}{
+  Vogliamo riconoscere $ L = \{w\#w | w \in (a|b)^+\} $:
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2026-02-26-12-38-51.png}
+  \end{center}
+}
+\mprop{Equipotenza macchine multitraccia}{
+Data una macchina multitraccia, e' sempre possibile costruire una MdT classica che riconosce lo stesso linguaggio.
+}
+\pf{Dimostrazione}{
+  Data una macchina multitraccia di $ n $ tracce con alfabeti $ \Gamma_i $ per ogni traccia $ i $, possiamo costruire una MdT con $ \Gamma = \Gamma_1 \times ... \times \Gamma_n $ che si comporta esattamente come la macchina multitraccia.
+}
+
+\subsection{Macchine Multinastro}
+\dfn{Macchine Multinastro}{
+  MdT che ha piu' nastri con testine indipendenti. Il numero dei nastri e' fissato a costruzione. E' possibile che una testina rimanga ferma.
+}
+\ex{}{
+  Costruiamo la macchina multinastro che riconosce $ L = \{w | w \in (a|b|c)^* \land \text{ il numero delle a, b e c sono uguali}\} $. Vediamo l'idea:
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2026-02-26-18-38-01.png}
+  \end{center}
+  Ora costruiamo l'automa:
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2026-02-26-18-38-34.png}
+  \end{center}
+}
+\mprop{Equipotenza di macchine multinastro}{
+  Data una macchina multinastro, e' sempre possibile costruire una MdT classica che riconosce lo stesso linguaggio.
+}
+\pf{Dimostrazione}{
+  Data una macchina multinastro e' possibile costruire una multitraccia equivalente con $ 2n $ tracce (dove $ n $ e' il numero dei nastri) semplicemente usando le tracce dispari come "puntatori" che indicano l'ipotetica posizione della testina, come se fosse multinastro.
+
+  Ad ogni passo, collochiamo inizialmente la testina sul primo puntatore a sx per poi scansionare tutto fino all'ultimo puntatore. I simboli sotto ogni puntatore vengono salvati nella memoria, e la testina ritorna indietro cambiando in modo adeguato i simboli puntati e la posizione dei puntatori.
+}
+E' il modello di calcolo piu' flessibile che abbiamo a disposizione. Ma abbiamo visto che per simulare il suo comportamento con una macchina multitraccia impieghiamo piu' transizioni, ma quante di piu'?
+
+\mprop{}{
+  Se una macchina multinastro impiega $ n $ passi per computare una stringa, allora una macchina multitraccia equivalente impieghera $ O(n^2) $ passi.
+}
+
+\pf{Dimostrazione}{
+  Analizziamo il caso peggiore dopo $ m $ passi. Questo avviene quando una testina della macchina si sposta a sx ad ogni passo e una si sposta a dx ad ogni passo, in modo che distino $ 2m $ celle. 
+
+  Quindi una macchina multinastro avra' bisogno di percorrere due volte la distanza (passaggio in avanti e indietro) e deve poi aggiornare ogni puntatore (uno per ogni nastro), che nel caso peggiore comporta altre due transizioni.
+
+  Alla fine abbiamo che un solo passo di una macchina multinastro ($ k $ nastri) richiede nel caso peggiore $ 4m + 2k $ passi di una macchina multitraccia.
+
+  Possiamo quindi dire che una computazione che richiede $ n $ passi ad una macchina multinastro richiedera'
+  \[
+    \sum_{i=1}^{n} 4i + 2k \leq \sum_{i=1}^{n} 4n + 2k \leq n (4n + 2k)
+  \]
+  Quindi e' $ O(n^2) $.
+}
+
+\subsection{Esercizi}
+\ex{}{
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2026-02-25-14-28-08.png}
+\end{center}
+}
+\ex{}{
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2026-02-25-14-57-04.png}
+  \end{center}
+}
+\ex{}{
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2026-02-25-14-56-16.png}
+  \end{center}
+}
+\ex{}{
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2026-02-25-15-41-37.png}
+\end{center}
+}
+
+\section{Macchine Non Deterministiche}
+\subsection{Definizioni}
+In verita' adesso introduciamo un altro tipo di macchina crazy che ci servira' e che dimostreremo essere comunque equipotente alle MdT, vediamo un esempio:
+\ex{}{
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2026-02-27-15-17-51.png}
+  \end{center}
+  Notiamo che e' una macchina particolare perche' la sua funzione di transizione specifica un insieme di possibili passi data una configurazione.
+}
+
+\dfn{Macchina Non-deterministica}{
+  $ N $ e' una macchina non-deterministica se e':
+  \[
+  N = \langle \Sigma, \Gamma, b\, Q, q_0, F, \delta \rangle
+  \]
+  dove $ \delta $ cambia rispetto alla classica macchina:
+  \[
+    \delta: Q \times \Gamma \to 2^{Q\times\Gamma\times \{\gets, \to\}}
+  \]
+}
+\nt{
+  Le macchine deterministiche sono un sottoinsieme degenere delle macchine non deterministiche dove l'immagine e' formata solo da insiemi di cardinalita' 1.
+}
+
+\ex{}{
+  Supponiamo di voler vedere come funziona la macchina di prima su un input $ 01 $:
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2026-02-27-15-37-02.png}
+  \end{center}
+  Ma accetta o rifuita?
+}
+Supponiamo di avere una bella MdT non-deterministica, cosa darebbe in output? Questa e' una domanda a trabocchetto perche' in verita' non potrebbe esistere (le macchine quantistiche sono meno potenti). Come vogliamo definire se una stringa e' accettata quindi?
+
+Ci possiamo studiare l'\textit{albero di computazione}, che usa le configurazioni (che hanno significato analogo a quelle deterministiche) con le stesse definizioni di stato iniziale, finale e accettante, pero' cambiano i legal succesors.
+
+Quindi i nodi sono tutte le configurazioni che una macchina non deterministica puo' provare processando la stringa $ w $.
+La radice e' la config iniziale, e abbiamo un arco fra configurazioni $ a \to b $ se la config $ b $ e' legal successor della config $ a $.
+Quindi la computazione e' un albero e non una lista.
+
+La stringa $ w $ in input viene accettata quando nell'albero di computazione esiste almeno un percorso dalla radice a uno stato accettante.
+
+\subsection{Confronto con le MdT deterministiche}
+Ma sta roba e' capace di riconoscere linguaggi che le macchine deterministiche non sono in grado di descrivere? 
+
+\mprop{}{
+  Una macchina di turing non deterministica ha lo stesso potere espressivo di quelle deterministiche.
+}
+\pf{}{
+  La macchina non determinista $ N $ puo' essere ricondotta a una determinista $ M $
+  \[
+    N \longrightarrow M\ \mathcal{L}(N) = \mathcal{L}(M)
+  \]
+
+  Immaginiamo che $ N $ sia mononastro e $ M $ binastro.
+
+
+  Stiamo esplorando l'albero in BFS dato che, se ci fosse una computazione infinita nell'albero e lo esploriamo in DFS, e' possibile che la macchina deterministica si "blocchi" a esplorare il ramo infinito quando forse puo' esserci un'altro ramo che in realta' e' accettante.
+  
+}
+
+Ma questa simulazione quanto costa? 
+
+Supponiamo che il numero massimo di figli nell'albero di computazione abbia al massimo $ c $ figli, allora in numero di nodi totali di un albero di altezza $ m $ e'
+\[
+  O(e^m)
+\]
+Quindi anche il costo per simulare la BFS di questo albero sara' esponenziale. Ma in realta' non siamo sicuri che questo sia il limite, e non siamo neanche stati in grado di dimostrare che questa cosa non e' possibile. P vs NP e' incentrata proprio su questa questione 
+
+
+
+\subsection{Esercizi}
+\ex{}{
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2026-03-04-08-55-56.png}
+  \end{center}
+}
+\ex{}{
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2026-03-04-09-20-56.png}
+  \end{center}
+}
+\ex{}{
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2026-03-04-10-15-19.png}
+  \end{center}
+}
+\ex{}{
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{img/2026-03-04-11-05-59.png}
+  \end{center}
+}
+Ha spammato degli esercizi, onesto possiamo anche guardarli da virtuale.
+
+Abbiamo introdotto le macchine nondeterministiche per affrontare i problemi in modo piu' semplice, ora che siamo forti useremo algoritmi nondeterministici per risolvere problemi in modo da dimostrare la loro decidibilita'.
+
+\section{Macchine di turing universali}
+Le macchine di turing presentate finora sono "statiche" ovvero accettano/decidono un solo linguaggio. Sono programmate solo per fare una cosa, dato che la funzione di transizione è fissata.
+
+Tuttavia i computer che usiamo tutti i giorni sono "dinamici" ovvero possono eseguire qualunque programma, ovvero la funzione di transizione è più "ricca" di informazioni, dato che deve codificare anche il programma che deve eseguire.
+
+Quindi ci poniamo il problema: è possibile costruire una macchina di turing che possa eseguire qualunque programma? La risposta è sì, ed è la macchina di turing universale.
+
+\subsection{Codifica della macchina di turing}
+
+Consideriamo una MdT il cui alfabeto di input abbia solo due simboli $ \Sigma = \{0, 1\} $, mentre l'alfabeto di nastro può essere $ \Gamma = \{0, 1, \blank, \dots\} $.
+
+La funzione di transizione ha generalmente la forma:
+\[
+  \delta(Q_i, X_j) = (Q_k, X_l, D_m)
+\]
+
+\ex{}{
+  \[
+    \delta(q_3, \blank) = (q_5, 0, \to)
+  \]
+}
+
+Codifichiamo i simboli $ Q_i, X_j, Q_k, X_l, D_m $ partendo dai loro pedici:
+\[
+  Q_i = 0^i, \quad X_j = 0^j, \quad \text{sx} = D_1, \quad \text{dx} = D_2
+\]
+
+\nt{
+  Per convenzione fissiamo:
+  \begin{itemize}
+    \item $ x_1 = 0,\ x_2 = 1,\ x_3 = \blank,\ x_4, \dots $
+    \item $ q_1 $ è sempre lo stato iniziale
+    \item $ q_2 $ è sempre il singolo stato accettante
+  \end{itemize}
+}
+
+Ogni singola transizione $ c_i $ viene quindi codificata come una stringa binaria in cui i vari campi sono separati da $ 1 $. Ad esempio, la transizione $ \delta(q_3, \blank) = (q_5, x_1, D_2) $ viene codificata come:
+
+\[
+  c_1 = \underbrace{000}_{q_3} 1 \underbrace{000}_{X_3} 1 \underbrace{00000}_{q_5} 1 \underbrace{0}_{X_1} 1 \underbrace{00}_{D_2}
+\]
+
+Per unire più transizioni in un'unica stringa, le istanze $ c_i $ vengono separate da $ 11 $:
+\[
+  c_1 11 c_2 11 c_3 11 c_4 \cdots
+\]
+
+\nt{
+  Esistono infiniti modi per codificare una MdT, ma scegliamo questo. L'obiettivo è poter comunicare a una MdT come comportarsi rispetto a un'altra, quindi ogni stringa binaria può essere messa in associazione con una possibile MdT.
+
+  Ci saranno inevitabilmente stringhe binarie che non codificano nessuna MdT valida (perché non rispettano il formato). Per convenzione, assumiamo che tali stringhe corrispondano a una macchina con un unico stato non accettante.
+}
+
+\subsection{Definizione formale}
+
+\dfn{Macchina di Trueing universale}{
+  La Macchina di Turing Universale $ M_u $ e' una macchina che riceve in input una stringa binaria che codifica una macchina $ M $ e poi una stringa $ w $
+  \[
+    (M, w)  
+  \]
+  La macchina $ M_u $ e' in grado di dirci se $ M $ avrebbe accettato o meno $ w $
+}
+\dfn{Linguaggio universale}{
+  Linugaggio che accetta una macchina universale $ M_u $
+  \[
+  L_u = \{\langle M,w \rangle | M \models w\}
+  \]
+}
+
+\subsection{Processo di simulazione}
+
+La macchina $ M_u $ è una macchina a \textbf{quattro nastri}:
+\begin{itemize}
+  \item \textbf{Nastro 1 (input)}: contiene la coppia $ M \texttt{ 111 } w $, dove $ M $ e $ w $ sono separati da tre $ 1 $ consecutivi. Questo separatore è non ambiguo poiché nella codifica di $ M $ non compaiono mai tre $ 1 $ di fila.
+  \item \textbf{Nastro 2 (nastro simulato)}: contiene la ricodifica di $ w $ secondo i simboli simulati.
+  \[
+    C(w_i) = \begin{cases}
+  0 & w_i = 0 \\
+  00 & w_i = 1
+  \end{cases}
+  \]
+    e la codifica completa
+    \[
+      C(w_1) 1 C(w_2) 1 ... C(w_n)
+    \]
+  \item \textbf{Nastro 3 (stato simulato)}: tiene traccia dello stato corrente di $ M $ durante la simulazione.
+  \item \textbf{Nastro 4 (lavoro)}: nastro ausiliario per operazioni di copia e spostamento.
+\end{itemize}
+
+\begin{center}
+  \includegraphics[width=0.4\textwidth]{img/2026-03-06-16-13-45.png}
+\end{center}
+
+Se la codifica in input non e' sensata, allora la macchina universale simula la macchina che rifiuta tutto. Altrimenti la simulazione procede nelle seguenti fasi:
+
+\begin{enumerate}
+  \item \textbf{Inizializzazione}: $ M_u $ ricodifica $ w $ sul nastro 2 secondo lo schema dei simboli simulati. Ad esempio:
+    \[
+      w = \underbrace{0}_{X_1}\underbrace{1}_{X_2}\underbrace{0}_{X_1} \quad \Longrightarrow \quad \texttt{1 0 1 0 1}
+    \]
+    Scrive sul nastro 3 lo stato iniziale $ q_1 = 0 $.
+
+  \item \textbf{Ciclo di simulazione}: ad ogni passo, $ M_u $ conosce lo stato corrente di $ M $ (nastro 3) e il simbolo correntemente letto (nastro 2). Cerca quindi sul nastro 1 la transizione corrispondente $ \delta(q_i, x_j) $ e:
+    \begin{itemize}
+      \item aggiorna il nastro 3 con il nuovo stato $ q_k $
+      \item sovrascrive il simbolo sul nastro 2 con $ x_l $
+      \item sposta la testina sul nastro 2 nella direzione $ D_m $
+      \item usa il nastro 4 come area di lavoro se è necessario ridimensionare il nastro 2
+    \end{itemize}
+
+  \item \textbf{Terminazione}: la simulazione termina quando $ M $ raggiunge una configurazione finale:
+    \[
+      M \text{ accetta } w \implies M_u \text{ accetta}
+    \]
+    \[
+      M \text{ rifiuta } w \implies M_u \text{ rifiuta}
+    \]
+    \[
+      M \text{ non termina su } w \implies M_u \text{ non termina}
+    \]
+\end{enumerate}
+
+\nt{
+  I nostri computer sono esattamente delle $ M_u $. La loro funzione di transizione universale è fissata nell'hardware: è il \textbf{microcodice della CPU}. Questo risponde alla domanda su come mai le MdT classiche non si possono ``programmare'' mentre i computer sì.
+}
+
+\section{Calcolabilita' e Proprieta' dei Linguaggi}
+\thm{Ipotesi di Church-Turing}{
+Tutto cio' che e' calcolabile e' calcolabile da una macchina di Turing
+}
+E' self referential, non abbiamo una definizione di calcolabile, semplicemente non abbiamo sviluppato altri formalismi di calcolo con potere espressivo piu' alto. Quindi appunto non e' un teorema.
+
+\dfn{Classe}{
+  Semplicemente un insieme di linguaggi.
+}
+
+Introduciamo le prime due classi di calcolabilita':
+\begin{itemize}
+  \item \textbf{RE}: ci sono tutti i linguaggi semi-decidibili, ovvero per i quali esiste una MdT che accetta (non decide) il linguaggio (potrebbe non terminare).
+\item \textbf{R}: inclusa in RE, classe dei problemi di decisione ricorsivi (linguaggi ricorsivi), ovvero per i quali esiste una MdT  che quindi da' garanzia di risposta. Sono quindi linguaggi decidibili.
+\end{itemize}
+
+Abbiamo introdotto le classi di calcolabilità $ R $ e $ RE $, e abbiamo detto che i problemi possono stare in $ R $ e in $ RE $. Ma possono esistere problemi che stanno fuori da $ RE $? Sì, e ora li andremo a vedere.
+
+\subsection{Enumerare stringhe e macchine}
+
+Riconsideriamo macchine che processano in input stringhe binarie. Se prendiamo una stringa binaria e ci mettiamo un $ 1 $ davanti, possiamo associarle un numero intero:
+\[
+  1 \circ 00010\ldots
+\]
+In questo modo possiamo enumerare tutte le stringhe binarie:
+\[
+  \underbrace{1 \circ \varepsilon}_{1°} \quad
+  \underbrace{1 \circ 0}_{2°} \quad
+  \underbrace{1 \circ 1}_{3°} \quad
+  \underbrace{1 \circ 01}_{4°} \quad
+  \underbrace{1 \circ 10}_{5°} \quad \cdots
+\]
+Le stringhe con indice più basso sono tendenzialmente più corte; stringhe della stessa lunghezza sono ordinate lessicograficamente. Le stringhe binarie sono \textbf{infinite numerabili}.
+
+Lo stesso ragionamento vale per le MdT: grazie alla codifica binaria introdotta nella sezione precedente, possiamo mettere un $ 1 $ davanti alla codifica di ogni MdT e ottenere un numero intero. Quindi \textbf{possiamo contare le macchine di Turing}, chiamandole $ M_1, M_2, M_3, \ldots$
+
+\subsection{Vettore caratteristico e argomento diagonale}
+
+\dfn{Vettore caratteristico}{
+  Il \textbf{vettore caratteristico} del linguaggio $ \mathcal{L} $ è una stringa binaria infinita $ \chi_\mathcal{L} $ tale che la posizione $ i $-esima vale $ 1 $ se $ w_i \in \mathcal{L} $, e $ 0 $ altrimenti.
+  \[
+    \chi_\mathcal{L} = \{0\ 1\ 1\ 0\ 0\ 1\ \cdots\}
+  \]
+}
+
+Costruiamo ora una tabella infinita: sulle righe le MdT $ M_1, M_2, \ldots $, sulle colonne le stringhe $ w_1, w_2, \ldots $, e nella cella $ (i,j) $ scriviamo $ 1 $ se $ M_i $ accetta $ w_j $, $ 0 $ altrimenti. Ogni riga è quindi il vettore caratteristico del linguaggio accettato da quella macchina.
+
+\begin{center}
+\begin{tabular}{c|cccc c}
+       & $w_1$ & $w_2$ & $w_3$ & $w_4$ & $\cdots$ \\ \hline
+$M_1$  & \textbf{0} & 1 & 0 & 0 & $\cdots$ \\
+$M_2$  & 1 & \textbf{1} & 0 & 1 & $\cdots$ \\
+$M_3$  & 0 & 0 & \textbf{0} & 1 & $\cdots$ \\
+$M_4$  & 1 & 0 & 0 & \textbf{1} & $\cdots$ \\
+$\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ & $\ddots$
+\end{tabular}
+\end{center}
+
+Concentriamoci sulla \textbf{diagonale}: prendiamo il valore $ (i,i) $ per ogni $ i $, ottenendo la stringa $ D = \{0\ 1\ 0\ 1\ \cdots\} $. Definiamo $ \bar{D} $ come il suo complemento bit a bit, $ \bar{D} = \{1\ 0\ 1\ 0\ \cdots\} $.
+
+$ \bar{D} $ è interpretabile come vettore caratteristico di un linguaggio. Chiamiamo $ \mathcal{L}_d $ il linguaggio il cui vettore caratteristico è $ \bar{D} $:
+\[
+  \mathcal{L}_d = \{w_i \mid M_i \not\models w_i\}
+\]
+ovvero $ \mathcal{L}_d $ contiene la $ i $-esima stringa se e solo se la $ i $-esima macchina \textit{non} la accetta.
+
+\mprop{}{
+  $ \mathcal{L}_d \notin RE $
+}
+\pf{Dimostrazione}{
+  Supponiamo per assurdo che esista una MdT $ M_k $ tale che $ \mathcal{L}(M_k) = \mathcal{L}_d $. Chiediamoci se $ M_k $ accetta $ w_k $:
+  \begin{itemize}
+    \item Se $ M_k \models w_k $: allora $ w_k \in \mathcal{L}(M_k) = \mathcal{L}_d $, ma per definizione $ w_k \in \mathcal{L}_d \iff M_k \not\models w_k $. Contraddizione.
+    \item Se $ M_k \not\models w_k $: allora $ w_k \in \mathcal{L}_d $, quindi $ M_k $ dovrebbe accettare $ w_k $. Contraddizione.
+  \end{itemize}
+  In entrambi i casi arriviamo a una contraddizione, quindi $ \nexists $ una MdT che accetti $ \mathcal{L}_d $, ovvero $ \mathcal{L}_d \notin RE $
+}
+
+\nt{
+  Perché esistono linguaggi indecidibili? Le MdT sono enumerabili, quindi sono tante quanti $ \mathbb{N} $. I linguaggi invece sono tutti i possibili sottoinsiemi delle stringhe, quindi la loro cardinalità è quella di $ \mathbb{R} $. Esistono semplicemente \textbf{più linguaggi che algoritmi}.
+}
+
+\subsection{Proprietà sui linguaggi}
+
+\dfn{Complemento di un linguaggio}{
+  Sia $ \mathcal{L} \subseteq \Sigma^* $, il \textbf{complemento} di $ \mathcal{L} $ è:
+  \[
+    \overline{\mathcal{L}} = \Sigma^* \setminus \mathcal{L}
+  \]
+}
+
+\thm{}{
+  Se $ \mathcal{L} \in R \implies \overline{\mathcal{L}} \in R $
+}
+\pf{Dimostrazione}{
+  Siccome $ \mathcal{L} \in R $, esiste $ M_\mathcal{L} $ che decide $ \mathcal{L} $ (risponde sì o no in tempo finito). Costruiamo $ \overline{M} $ che si comporta esattamente come $ M_\mathcal{L} $ ma inverte la risposta:
+  \[
+    w \xrightarrow{\quad} M_\mathcal{L} \xrightarrow{\text{sì} \to \text{no},\ \text{no} \to \text{sì}} \overline{M}
+  \]
+  Poiché $ M_\mathcal{L} $ termina sempre, anche $ \overline{M} $ termina sempre $ \implies \overline{\mathcal{L}} \in R $. 
+}
+
+\thm{}{
+  Se $ \mathcal{L} \in RE \land \overline{\mathcal{L}} \in RE \implies \mathcal{L} \in R $
+}
+\pf{Dimostrazione}{
+  Siano $ M_\mathcal{L} $ e $ M_{\overline{\mathcal{L}}} $ le macchine che accettano rispettivamente $ \mathcal{L} $ e $ \overline{\mathcal{L}} $. Costruiamo $ M' $ che esegue $ M_\mathcal{L} $ e $ M_{\overline{\mathcal{L}}} $ \textbf{in parallelo} su un input $ w $:
+  \begin{itemize}
+    \item Se risponde $ M_\mathcal{L} $: $ w \in \mathcal{L} $, accetta.
+    \item Se risponde $ M_{\overline{\mathcal{L}}} $: $ w \notin \mathcal{L} $, rifiuta.
+  \end{itemize}
+  Poiché ogni stringa sta o in $ \mathcal{L} $ o in $ \overline{\mathcal{L}} $, una delle due macchine risponderà sempre in tempo finito $ \implies M' $ è un decisore $ \implies \mathcal{L} \in R $.
+}
+
+\nt{
+  Questo risultato implica che $ RE $ \textbf{non è chiuso per complemento}: se lo fosse, ogni linguaggio in $ RE $ sarebbe automaticamente in $ R $, e sappiamo che ciò non è vero.
+}
+
+Le classi $ R $ e $ RE $ formano quindi questa gerarchia stretta:
+\begin{center}
+  \begin{tikzpicture}
+    \draw[thick] (0,0) ellipse (3cm and 1.8cm) node[above=1.2cm] {$ RE $};
+    \draw[thick] (0,-0.1) ellipse (1.8cm and 1cm) node {$ R $};
+    \node at (0, 1.2) {$ \mathcal{L}_d \notin RE $};
+  \end{tikzpicture}
+\end{center}
+
+\subsection{Il Linguaggio Universale}
+
+\dfn{Linguaggio Universale}{
+  Il linguaggio universale è l'insieme delle coppie macchina-stringa tali che la macchina $ M $ accetta $ w $:
+  \[
+    \mathcal{L}_u = \{(M, w) \mid M \models w\}
+  \]
+}
+
+$ \mathcal{L}_u \in RE $? Sì, perché esiste $ M_u $ che lo accetta: data la coppia $ (M, w) $, simula $ M $ su $ w $ e risponde sì se $ M $ accetta. Se $ M $ non accetta, $ M_u $ non termina, quindi nessuna garanzia sul ``no''.
+
+$ \mathcal{L}_u \in R $? No.
+
+\thm{}{$ \mathcal{L}_u \notin R $}
+\pf{Dimostrazione}{
+  Supponiamo per assurdo che $ \mathcal{L}_u \in R $, ovvero esiste $ \bar{M}_u $ che \textit{decide} $ \mathcal{L}_u $. Costruiamo la macchina $ M' $:
+  \begin{enumerate}
+    \item Riceve $ w_i $ in input
+    \item Copia $ w_i $ per costruire la coppia $ (M_i, w_i) $
+    \item Esegue $ \bar{M}_u $ su $ (M_i, w_i) $ e \textbf{inverte} la risposta
+  \end{enumerate}
+  Analizziamo $ \mathcal{L}(M') $:
+  \begin{itemize}
+    \item $ M' $ risponde \textbf{sì} su $ w_i \iff \bar{M}_u $ risponde no $ \iff M_i \not\models w_i $
+    \item $ M' $ risponde \textbf{no} su $ w_i \iff \bar{M}_u $ risponde sì $ \iff M_i \models w_i $
+  \end{itemize}
+  Quindi $ \mathcal{L}(M') = \{w_i \mid M_i \not\models w_i\} = \mathcal{L}_d $. Ma $ M' $ termina sempre (poiché $ \bar{M}_u $ termina sempre per ipotesi), quindi $ M' $ sarebbe un decisore per $ \mathcal{L}_d $, il che implicherebbe $ \mathcal{L}_d \in R \subseteq RE $. Contraddizione con $ \mathcal{L}_d \notin RE $.
+}
+
+\nt{
+  Vale anche che $ \overline{\mathcal{L}_u} \notin RE $. Se così non fosse, avremmo $ \mathcal{L}_u \in RE $ e $ \overline{\mathcal{L}_u} \in RE $ contemporaneamente, il che implicherebbe $ \mathcal{L}_u \in R $ per il teorema di chiusura — assurdo.
+}
+
+\subsection{Il complemento di $ \mathcal{L}_d $}
+
+Consideriamo il complemento di $ \mathcal{L}_d $:
+\[
+  \bar{\mathcal{L}}_d = \{w_i \mid M_i \models w_i\}
+\]
+
+\thm{}{
+  $ \bar{\mathcal{L}}_d \in RE $
+}
+\pf{Dimostrazione}{
+  Costruiamo la macchina $ M $: dato $ M_i $ in input, costruisce la coppia $ (M_i, w_i) $ e la passa a $ M_u $. Se $ M_u $ accetta, risponde sì. Quindi:
+  \begin{itemize}
+    \item $ M_i \in \bar{\mathcal{L}}_d \Rightarrow M $ risponde sì
+    \item $ M_i \notin \bar{\mathcal{L}}_d \Rightarrow M $ non risponde sì
+  \end{itemize}
+  Quindi $ \bar{\mathcal{L}}_d \in RE $.
+}
+
+\nt{
+  $ \bar{\mathcal{L}}_d \notin R $: se lo fosse, anche $ \mathcal{L}_d \in R $ per chiusura di $ R $ per complemento, da cui $ \mathcal{L}_d \in RE $. Contraddizione.
+}
+
+\subsection{Il Problema della Fermata}
+
+\dfn{Problema della Fermata}{
+  \[
+    HALT = \{(M, w) \mid M \text{ si arresta su } w\}
+  \]
+}
+
+La differenza con $ \mathcal{L}_u $ è sottile: in $ \mathcal{L}_u $ la macchina deve fermarsi \textit{e accettare}; in $ HALT $ basta che si fermi, indipendentemente dal risultato.
+
+\thm{}{
+  $ HALT \in RE $
+}
+\pf{Dimostrazione}{
+  La macchina $ M_h $ accetta $ HALT $: simula $ M $ su $ w $ tramite $ M_u $, risponde sì se $ M $ si arresta. Se $ M $ non si arresta, $ M_h $ non termina. Quindi:
+  \begin{itemize}
+    \item $ (M, w) \in HALT \Rightarrow M_h $ risponde sì
+    \item $ (M, w) \notin HALT \Rightarrow M_h $ non risponde sì
+  \end{itemize}
+}
+
+\thm{}{
+  $ HALT \notin R $
+}
+\pf{Dimostrazione}{
+  Supponiamo per assurdo che $ HALT \in R $, ovvero esiste $ M_h^* $ che decide $ HALT $. Costruiamo $ M' $ su input $ (M, w) $:
+  \begin{enumerate}
+    \item Esegue $ M_h^* $ su $ (M, w) $
+    \item Se $ M_h^* $ risponde \textbf{no}: $ M $ non si ferma su $ w $, quindi $ M' $ risponde no
+    \item Se $ M_h^* $ risponde \textbf{sì}: $ M $ si ferma su $ w $, quindi $ M' $ simula $ M $ su $ w $ tramite $ M_u $ e ne usa la risposta
+  \end{enumerate}
+  In questo modo $ M' $ decide $ \mathcal{L}_u $, poiché $ M_h^* $ garantisce l'arresto anche sul ``no'' (loop $ \to $ no immediato). Quindi $ \mathcal{L}_u \in R $. Contraddizione.
+}
+
+\subsection{La variante $ HALT_\varepsilon $}
+
+\dfn{$ HALT_\varepsilon $}{
+  \[
+    HALT_\varepsilon = \{M \mid M \text{ si arresta su } \varepsilon\}
+  \]
+  Insieme delle MdT che si arrestano quando ricevono la stringa vuota in input.
+}
+
+\thm{}{
+  $ HALT_\varepsilon \in RE $
+}
+\pf{Dimostrazione}{
+  La macchina $ M_{h\varepsilon} $ prende in input $ M $, simula $ M $ su $ \varepsilon $ tramite $ M_u $, e risponde sì se $ M $ si arresta. Quindi:
+  \begin{itemize}
+    \item $ M \in HALT_\varepsilon \Rightarrow M_{h\varepsilon} $ risponde sì
+    \item $ M \notin HALT_\varepsilon \Rightarrow M_{h\varepsilon} $ non risponde sì
+  \end{itemize}
+}
+
+\thm{}{
+  $ HALT_\varepsilon \notin R $
+}
+\pf{Dimostrazione}{
+  Supponiamo per assurdo che esista $ M_{h\varepsilon}^* $ che decide $ HALT_\varepsilon $.  Costruiamo quindi $ M' $ su input $ (M, w) $:
+  \begin{enumerate}
+    \item Prende $ M $ e $ w $ e restituisce $ \tilde{M}_w $: una macchina che ignora il proprio input, scrive $ w $ sul nastro e simula $ M $ su $ w $.
+    \item Esegue $ M_{h\varepsilon}^* $ su $ \tilde{M}_w $
+  \end{enumerate}
+  Poiché $ \tilde{M}_w $ su $ \varepsilon $ si comporta esattamente come $ M $ su $ w $, abbiamo:
+  \begin{itemize}
+    \item $ M' $ risponde sì $ \iff M_{h\varepsilon}^* $ dice sì su $ \tilde{M}_w \iff \tilde{M}_w $ si arresta su $ \varepsilon \iff M $ si arresta su $ w $
+    \item $ M' $ risponde no altrimenti
+  \end{itemize}
+  Quindi $ M' $ decide $ HALT \Rightarrow HALT \in R $. Contraddizione.
+}
+
+
+% \end{document}

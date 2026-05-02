@@ -198,7 +198,7 @@ zeri, si ottiene una partizione di $ n $, denotata $ \lambda(\alpha) $.
 
   \textbf{Indipendenza lineare.} Per partizioni distinte $ \lambda \neq \mu $ i
   monomi che compongono $ m_\lambda $ e $ m_\mu $ appartengono a orbite disgiunte,
-  quindi non si cancellano in nessuna combinazione lineare non banale. \qed
+  quindi non si cancellano in nessuna combinazione lineare non banale.
 }
 
 \ex{$ n = 2 $, $ k = 3 $}{
@@ -265,7 +265,7 @@ zeri, si ottiene una partizione di $ n $, denotata $ \lambda(\alpha) $.
   riga 2, e cosi' via: il prodotto delle entrate scelte e' un monomio $ x^\alpha $.
   Convertendo le entrate scelte in $ 1 $ e le altre in $ 0 $ si ottiene una matrice
   $ 0$-$1 $ $ A $ con $ row(A) = \lambda $ e $ col(A) = \alpha $. Viceversa, ogni tale
-  matrice corrisponde a un unico termine di $ e_\lambda $. \qed
+  matrice corrisponde a un unico termine di $ e_\lambda $.
 }
 
 \osservazione{Interpretazione combinatoria.
@@ -337,7 +337,7 @@ zeri, si ottiene una partizione di $ n $, denotata $ \lambda(\alpha) $.
   \textbf{Indipendenza algebrica.} L'insieme
   $ \{e_\lambda \mid \lambda \in \mathrm{Par},\ \ell(\lambda') \leq k\} $ coincide con
   l'insieme dei monomi $ e_1^{a_1} e_2^{a_2} \cdots e_k^{a_k} $: l'indipendenza lineare
-  equivale all'indipendenza algebrica di $ e_1, \ldots, e_k $. \qed
+  equivale all'indipendenza algebrica di $ e_1, \ldots, e_k $.
 }
 
 \ex{$ n = 4 $}{
@@ -445,7 +445,7 @@ zeri, si ottiene una partizione di $ n $, denotata $ \lambda(\alpha) $.
       = \sum_{i = 0}^n (-1)^i\, h_i\, \omega(h_{n - i}) \quad \text{per } n \geq 1.
   \]
   Per l'unicita' osservata nel corollario precedente, segue $ \omega(h_n) = e_n $ per
-  ogni $ n \geq 1 $. \qed
+  ogni $ n \geq 1 $.
 }
 
 \cor{Le $ \{h_\lambda\} $ sono una base}{
@@ -512,7 +512,7 @@ zeri, si ottiene una partizione di $ n $, denotata $ \lambda(\alpha) $.
       = \sum_i \sum_{n \geq 1} \frac{(-1)^{n - 1}}{n} x_i^n t^n
       = -\sum_{n \geq 1} \frac{p_n (-t)^n}{n} = -P(-t),
   \]
-  che da' (5.2). \qed
+  che da' (5.2).
 }
 
 \subsubsection{Identita' di Newton}
@@ -541,7 +541,7 @@ zeri, si ottiene una partizione di $ n $, denotata $ \lambda(\alpha) $.
   Analogamente, derivando (5.2): $ E'(t) = P(-t) E(t) $ (notare il segno: la derivata
   di $ -P(-t) $ rispetto a $ t $ e' $ P'(-t) $, e $ P'(-t) = \sum_{n \geq 1} p_n (-t)^{n - 1} $;
   riordinando si ottiene $ P(-t) E(t) $). Estraendo il coefficiente di $ t^{m - 1} $
-  si ottiene (5.4). \qed
+  si ottiene (5.4).
 }
 
 \ex{Calcolo di $ h_2 $ ed $ e_2 $}{
@@ -596,26 +596,44 @@ zeri, si ottiene una partizione di $ n $, denotata $ \lambda(\alpha) $.
     \omega(p_\lambda) = \prod_{j = 1}^k \omega(p_{\lambda_j})
       = \prod_{j = 1}^k (-1)^{\lambda_j - 1} p_{\lambda_j}
       = (-1)^{\sum_j (\lambda_j - 1)} p_\lambda
-      = (-1)^{|\lambda| - \ell(\lambda)} p_\lambda. \qed
+      = (-1)^{|\lambda| - \ell(\lambda)} p_\lambda.
   \]
 }
 
-\subsection*{Sviluppo di $ h_m $ nelle $ p_\lambda $}
+\subsection{Sviluppo di $ h_m $ ed $ e_m $ nelle potenze}
 
-Da $ H(t) = \exp(P(t)) $ si ricava
-\[
-  h_m = \sum_{\lambda \vdash m} \frac{p_\lambda}{z_\lambda},
-\]
-dove $ z_\lambda := \prod_{i \geq 1} i^{\alpha_i}\, \alpha_i! $ con
-$ \alpha_i = \#\{j : \lambda_j = i\} $.
-
-\osservazione{Interpretazione combinatoria.
-  In $ S_m $ il numero di permutazioni di tipo di ciclo $ \lambda $ e'
-  $ \frac{m!}{z_\lambda} $. Quindi
+\dfn{Numero $ z_\lambda $}{
+  Data $ \lambda \vdash n $, sia $ \alpha_i = \alpha_i(\lambda) $ il numero di parti di
+  $ \lambda $ uguali a $ i $, cos\`\i\ che $ \lambda = 1^{\alpha_1} 2^{\alpha_2} \cdots n^{\alpha_n} $.
+  Si definisce
   \[
-    h_m = \frac{1}{m!} \sum_{\sigma \in S_m} p_{\lambda(\sigma)}:
+    z_\lambda := \alpha_1!\, \alpha_2!\, \cdots \alpha_n!\;\cdot\; 1^{\alpha_1}\, 2^{\alpha_2}\, \cdots n^{\alpha_n}.
   \]
-  e' una media sul tipo di ciclo di tutte le permutazioni di $ S_m $.
+}
+
+\mprop{Sviluppo di $ h_m $ ed $ e_m $ nelle potenze}{
+  Per ogni $ m \geq 1 $:
+  \[
+    h_m = \sum_{\lambda \vdash m} \frac{1}{z_\lambda}\, p_\lambda \qquad \text{e} \qquad
+    e_m = \sum_{\lambda \vdash m} \frac{(-1)^{|\lambda|-\ell(\lambda)}}{z_\lambda}\, p_\lambda.
+  \]
+}
+\pf{Dim}{
+  Estraiamo il coefficiente di $ t^m $ da $ H(t) = \exp(P(t)) $, usando
+  $ P(t) = \sum_{n \geq 1} p_n t^n/n $:
+  \begin{align*}
+    h_m
+    &= [t^m]\sum_{r=1}^{m}\frac{1}{r!}\!\left(\sum_{n=1}^{m}p_n\frac{t^n}{n}\right)^{\!r} \\
+    &= \sum_{\substack{\alpha_1+2\alpha_2+\cdots+m\alpha_m=m}}
+      \frac{p_1^{\alpha_1}p_2^{\alpha_2}\cdots p_m^{\alpha_m}}
+           {\alpha_1!\,\alpha_2!\cdots\alpha_m!\;1^{\alpha_1}2^{\alpha_2}\cdots m^{\alpha_m}}
+    = \sum_{\lambda \vdash m}\frac{p_\lambda}{z_\lambda}.
+  \end{align*}
+  La seconda identita' segue applicando $ \omega $: poiche' $ \omega(h_m) = e_m $ e
+  $ \omega(p_\lambda) = (-1)^{|\lambda|-\ell(\lambda)} p_\lambda $,
+  \[
+    e_m = \omega(h_m) = \sum_{\lambda \vdash m}
+      \frac{(-1)^{|\lambda|-\ell(\lambda)}}{z_\lambda}\, p_\lambda.  \]
 }
 
 \ex{$ m = 2 $}{
@@ -625,6 +643,48 @@ $ \alpha_i = \#\{j : \lambda_j = i\} $.
     h_2 = \frac{p_2}{2} + \frac{p_1^2}{2} = \frac{p_1^2 + p_2}{2}. \checkmark
   \]
 }
+
+\dfn{Tipo di ciclo}{
+  Data $ \sigma \in S_n $, il \textit{tipo di ciclo} di $ \sigma $ e' la partizione
+  $ \lambda(\sigma) \vdash n $ le cui parti sono le lunghezze dei cicli della decomposizione
+  ciclica di $ \sigma $. Se $ \sigma $ ha $ \alpha_i $ cicli di lunghezza $ i $, allora
+  $ \lambda(\sigma) = 1^{\alpha_1} 2^{\alpha_2} \cdots n^{\alpha_n} $.
+}
+
+\nt{
+  Vale $ \mathrm{sgn}(\sigma) = (-1)^{\sum_i \alpha_i(i-1)} = (-1)^{n - \ell(\lambda(\sigma))} $.
+}
+
+\mprop{Classi di coniugio di $ S_n $}{
+  Le classi di coniugio di $ S_n $ sono indicizzate dalle partizioni $ \lambda \vdash n $:
+  la classe associata a $ \lambda $ e'
+  \[
+    \{\sigma \in S_n \mid \lambda(\sigma) = \lambda\}.
+  \]
+  La cardinalita' di questa classe e'
+  \[
+    |\{\sigma \in S_n \mid \lambda(\sigma) = \lambda\}| = \frac{n!}{z_\lambda}.
+  \]
+}
+
+\mprop{$ h_n $ ed $ e_n $ come medie su $ S_n $}{
+  Per ogni $ n \in \mathbb{N} $:
+  \[
+    h_n = \frac{1}{n!}\sum_{\sigma \in S_n} p_{\lambda(\sigma)} \qquad \text{e} \qquad
+    e_n = \frac{1}{n!}\sum_{\sigma \in S_n} \mathrm{sgn}(\sigma)\, p_{\lambda(\sigma)}.
+  \]
+}
+\pf{Dim}{
+  Dalla proposizione precedente,
+  $ p_\lambda = \frac{z_\lambda}{n!}\!\!\sum_{\substack{\sigma \in S_n\\\lambda(\sigma)=\lambda}} p_{\lambda(\sigma)} $.
+  Inserendo nella prima identita':
+  \[
+    h_n = \sum_{\lambda \vdash n}\frac{1}{z_\lambda}\,p_\lambda
+        = \sum_{\lambda \vdash n}\frac{1}{n!}\!\!\sum_{\substack{\sigma \in S_n\\\lambda(\sigma)=\lambda}}
+          p_{\lambda(\sigma)}
+        = \frac{1}{n!}\sum_{\sigma \in S_n} p_{\lambda(\sigma)}.
+  \]
+  Per $ e_n $, si usa la formula del segno nella nota precedente e si ragiona analogamente.}
 
 \osservazione{Schema riassuntivo (relazioni fra basi).
   \[
@@ -642,7 +702,7 @@ $ \alpha_i = \#\{j : \lambda_j = i\} $.
 
 \section{Raccordo: le quattro basi e il limite $ Sym[X] $}
 
-\subsection*{Ricapitolo delle basi}
+\subsection{Ricapitolo delle basi}
 
 Abbiamo definito tre famiglie di generatori per $ \mathbb{Q}[x_1, \dots, x_k]^{S_k} $:
 \[
@@ -674,7 +734,7 @@ e quattro basi per $ Sym^n[X_k] $:
   \end{itemize}
 }
 
-\subsection*{Il limite: $ Sym[X] $}
+\subsection{Il limite: $ Sym[X] $}
 
 Fissata $ \lambda \vdash n $, la funzione $ m_\lambda(x_1, \dots, x_k) $ dipende da $ k $, ma al crescere di $ k $ si ottiene una catena di mappe compatibili
 \[
@@ -688,7 +748,16 @@ Possiamo lavorare con un numero infinito di variabili $ x_1, x_2, \dots $, e le 
 
 \section{La funzione di Schur come quoziente di determinanti}
 
-\subsection*{Polinomi alternanti}
+\osservazione{Dimensione di $ \mathrm{Sym}^m[X_k] $.
+  \[
+    \dim_{\mathbb{Q}} \mathrm{Sym}^m[X_k]
+    = |\{\lambda \in \mathrm{Par}(m) \mid \lambda_1 \leq k\}|
+    = |\{\lambda \in \mathrm{Par}(m) \mid \ell(\lambda') \leq k\}|
+    = |\{\lambda \in \mathrm{Par}(m) \mid \ell(\lambda) \leq k\}|.
+  \]
+}
+
+\subsection{Polinomi alternanti}
 
 \dfn{Polinomio alternante}{
   Un polinomio $ f \in \mathbb{Q}[x_1, \dots, x_k] $ e' \textit{alternante} se per ogni $ \sigma \in S_k $:
@@ -697,13 +766,37 @@ Possiamo lavorare con un numero infinito di variabili $ x_1, x_2, \dots $, e le 
   \]
 }
 
-\textbf{Costruzione.} Data una sequenza $ \lambda = (\lambda_1, \dots, \lambda_k) $ di interi, definiamo
-\[
-  a_\lambda := \det(x_i^{\lambda_j})_{i,j = 1}^k = \sum_{\sigma \in S_k} \mathrm{sgn}(\sigma)\, x_1^{\lambda_{\sigma(1)}} \cdots x_k^{\lambda_{\sigma(k)}} .
-\]
-E' alternante per costruzione (scambiare due righe del determinante cambia il segno). Se due componenti di $ \lambda $ coincidono, il determinante ha due colonne uguali e si annulla; quindi $ a_\lambda \neq 0 $ solo se i $ \lambda_i $ sono tutti distinti.
+\dfn{Polinomio $ a_\alpha $}{
+  Dato $ \alpha = (\alpha_1, \ldots, \alpha_k) \in \mathbb{N}^k $, l'azione di $ \sigma \in S_k $
+  su un monomio e' $ \sigma(x^\alpha) := x_1^{\alpha_{\sigma(1)}} \cdots x_k^{\alpha_{\sigma(k)}} $.
+  Si definisce
+  \[
+    a_\alpha := \det\!\bigl(x_i^{\alpha_j}\bigr)_{i,j=1}^k
+      = \sum_{\sigma \in S_k} \mathrm{sgn}(\sigma)\, \sigma(x^\alpha).
+  \]
+  Per costruzione $ a_\alpha $ e' alternante; in particolare $ a_\alpha = 0 $ a meno che le
+  componenti di $ \alpha $ siano tutte distinte.
+}
 
-\subsection*{Il determinante di Vandermonde}
+\ex{$ \alpha = (4,2,1) $, $ k = 3 $}{
+  \[
+    a_{(4,2,1)} = \det\begin{pmatrix} x_1^4 & x_1^2 & x_1 \\ x_2^4 & x_2^2 & x_2 \\ x_3^4 & x_3^2 & x_3 \end{pmatrix}.
+  \]
+}
+
+\nt{
+  Poiche' $ a_\alpha = 0 $ quando due componenti di $ \alpha $ coincidono, ci basta considerare
+  le $ \alpha \in \mathbb{N}^k $ con $ \alpha_1 > \alpha_2 > \cdots > \alpha_k $. Ogni tale
+  sequenza si scrive in modo unico come
+  \[
+    \alpha = \lambda + \delta, \qquad
+    \delta = (k-1,\, k-2,\, \ldots,\, 1,\, 0),
+  \]
+  con $ \lambda \in \mathrm{Par} $, $ \ell(\lambda) \leq k $, ponendo $ \lambda_j := \alpha_j - (k-j) \geq 0 $
+  per ogni $ j $.
+}
+
+\subsection{Il determinante di Vandermonde}
 
 Il caso fondamentale e' $ \delta = (k-1, k-2, \dots, 1, 0) $:
 \[
@@ -716,8 +809,9 @@ Il caso fondamentale e' $ \delta = (k-1, k-2, \dots, 1, 0) $:
   \]
 }
 
-\mprop{Caratterizzazione dei polinomi alternanti}{
-  Un polinomio $ p $ e' alternante se e solo se e' divisibile per $ a_\delta $.
+\mlenma{Fattorizzazione dei polinomi alternanti}{
+  Un polinomio $ f \in \mathbb{Q}[x_1,\ldots,x_k] $ e' alternante se e solo se $ f = a_\delta \cdot g $
+  con $ g \in \mathrm{Sym}[X_k] $.
 }
 \pf{Dim}{
   $ (\Leftarrow) $ Se $ p = a_\delta \cdot g $ con $ g $ simmetrico, allora $ \sigma(p) = \mathrm{sgn}(\sigma)\, a_\delta \cdot g = \mathrm{sgn}(\sigma)\, p $.
@@ -729,7 +823,7 @@ Il caso fondamentale e' $ \delta = (k-1, k-2, \dots, 1, 0) $:
   $ f $ e' alternante $ \iff f = a_\delta \cdot g $ con $ g $ simmetrico. L'applicazione $ g \mapsto a_\delta \cdot g $ e' un \textit{isomorfismo} $ Sym[X_k] \xrightarrow{\sim} A_k $ fra simmetrici e alternanti.
 }
 
-\subsection*{Definizione algebrica della funzione di Schur}
+\subsection{Definizione algebrica della funzione di Schur}
 
 \dfn{Funzione di Schur (algebrica)}{
   Per ogni $ \lambda \vdash n $ con $ \ell(\lambda) \leq k $, la \textit{funzione di Schur} e'
@@ -822,7 +916,7 @@ Le due definizioni coincidono: e' il \textit{Teorema fondamentale delle funzioni
 
 \section{Corrispondenza RSK: introduzione e algoritmo}
 
-\subsection*{Motivazione}
+\subsection{Motivazione}
 
 La corrispondenza RSK (Robinson--Schensted--Knuth) e' una biezione fondamentale in combinatoria. Risponde alla domanda: c'e' un modo canonico per associare tableau a matrici di interi non negativi?
 
@@ -833,7 +927,7 @@ La corrispondenza RSK (Robinson--Schensted--Knuth) e' una biezione fondamentale 
   \]
 }
 
-\subsection*{Parola di lettura di una matrice}
+\subsection{Parola di lettura di una matrice}
 
 Data una matrice $ A = (a_{ij}) $ a coefficienti in $ \mathbb{N} $, costruiamo la \textit{parola di lettura} $ w_A $: per ogni colonna $ j $ da sinistra a destra, scriviamo il valore di riga $ i $ ripetuto $ a_{ij} $ volte, scorrendo le righe dall'alto in basso.
 
@@ -849,7 +943,7 @@ Data una matrice $ A = (a_{ij}) $ a coefficienti in $ \mathbb{N} $, costruiamo l
   \]
 }
 
-\subsection*{Algoritmo di inserzione: il bumping}
+\subsection{Algoritmo di inserzione: il bumping}
 
 L'ingrediente fondamentale e' il \textit{bumping} (scacciamento): come inserire un numero $ t $ in una riga di un SSYT preservando la struttura.
 
@@ -882,7 +976,7 @@ L'ingrediente fondamentale e' il \textit{bumping} (scacciamento): come inserire 
   $ 7 $ in riga 4: $ 7 < 8 $ e $ 7 < 9 $... no, $ 7 > 8 $? No. $ 7 $ si aggiunge alla fine della riga 4 dopo $ 9 $? In realta', si applica la regola: $ 7 $ si confronta col primo elemento della riga 4 ($ 8 $); $ 8 > 7 $, quindi $ 7 $ scaccia $ 8 $. $ 8 $ va in riga 5.
 }
 
-\subsection*{L'algoritmo RSK}
+\subsection{L'algoritmo RSK}
 
 \textbf{Input.} La parola $ w_A = w_1, w_2, \dots, w_N $.
 
@@ -930,7 +1024,7 @@ L'ingrediente fondamentale e' il \textit{bumping} (scacciamento): come inserire 
   Risultato: $ (R, L) $ e' una coppia di SSYT di forma $ \lambda = (4, 1, 1) $.
 }
 
-\subsection*{Osservazioni}
+\subsection{Osservazioni}
 
 \osservazione{
   La corrispondenza RSK e' una biezione: da $ (R, L) $ si puo' ricostruire univocamente $ A $. L'algoritmo inverso esiste ed e' simmetrico.
@@ -944,7 +1038,7 @@ L'ingrediente fondamentale e' il \textit{bumping} (scacciamento): come inserire 
   Se inserisco $ k $ in un SSYT $ T $, ottengo ancora un SSYT: l'algoritmo mantiene la struttura ad ogni passo.
 }
 
-\subsection*{Perche' RSK e' importante}
+\subsection{Perche' RSK e' importante}
 
 \textbf{Collegamento con i polinomi di Schur.} $ s_\lambda $ conta i SSYT di forma $ \lambda $. RSK spiega perche' il prodotto
 \[
@@ -956,7 +1050,7 @@ ha coefficienti $ c^\lambda_{\mu \nu} $ (i numeri di \textit{Littlewood--Richard
 
 \section{RSK: biunivocita' e prima ricostruzione}
 
-\subsection*{Esercizio 8 -- Ricostruzione di $A$ data $(L,R)$}
+\subsection{Esercizio 8 -- Ricostruzione di $A$ data $(L,R)$}
 
 Dati $ (L,R) $ coppia di SSYT della \textit{stessa forma}, vogliamo ricostruire la $ \mathbb{N} $-matrice finita $ A $ tale che $ \mathrm{RSK}(A) = (L,R) $.
 
@@ -998,7 +1092,7 @@ Avevamo gia' dimostrato (osservazioni 1--5) che RSK e' un'applicazione
 
 \section{Forma bilineare su $ Sym[X] $}
 
-\subsection*{Ripasso: matrici $ \mathbb{N} $}
+\subsection{Ripasso: matrici $ \mathbb{N} $}
 
 Avevamo gia' dimostrato che
 \[
@@ -1022,7 +1116,7 @@ Si fa lo stesso ragionamento con le $ h_\lambda $: ora pero' in ogni colonna pos
   $ N_{\lambda,\mu} = N_{\mu,\lambda} $: $ A \leftrightarrow A^T $ e' una biezione che scambia $ \lambda $ e $ \mu $. Lo stesso vale per $ M $.
 }
 
-\subsection*{Definizione della forma bilineare}
+\subsection{Definizione della forma bilineare}
 
 \dfn{Forma bilineare $ \langle \cdot, \cdot \rangle $ su $ Sym[X] $}{
   $ \langle \cdot, \cdot \rangle $ e' l'unica forma bilineare tale che
@@ -1074,7 +1168,7 @@ Si fa lo stesso ragionamento con le $ h_\lambda $: ora pero' in ogni colonna pos
 
 \section{Le $ p_\lambda $ e il prodotto scalare di Hall}
 
-\subsection*{Ripasso: $ z_\lambda $}
+\subsection{Ripasso: $ z_\lambda $}
 
 Avevamo definito
 \[
@@ -1237,7 +1331,7 @@ E avevamo dimostrato che
   Per definizione $ \widehat{s}_{\lambda/\mu} = \sum_\alpha K_{\lambda/\mu,\alpha}\, x^\alpha $ con $ \alpha $ composizione. Per la simmetria appena dimostrata, le composizioni che differiscono per permutazione hanno lo stesso coefficiente $ K_{\lambda/\mu, \nu} $ (con $ \nu $ partizione associata), quindi raggruppando si ottengono le $ m_\nu $.
 }
 
-\subsection*{Ordine di dominanza}
+\subsection{Ordine di dominanza}
 
 Ricordiamo che $ \mu \trianglelefteq \lambda $ se per ogni $ i \geq 1 $ vale $ \sum_{j=1}^i \mu_j \leq \sum_{j=1}^i \lambda_j $.
 
@@ -1316,6 +1410,12 @@ Ricordiamo che $ \mu \trianglelefteq \lambda $ se per ogni $ i \geq 1 $ vale $ \
 \section{RSK duale (RSK*)}
 
 \textbf{Algoritmo.} Biezione fra $ (0,1) $-matrici finite e coppie $ (L,R) $ di tableaux della stessa forma tali che $ L' $ ed $ R $ sono SSYT (cioe' $ L $ e' SSYT trasposto: strettamente crescente in riga, debolmente crescente in colonna). Funziona nello stesso modo solo che, durante l'inserimento di un numero $ j $, si scaccia l'elemento piu' a sinistra che e' $ \leq j $.
+
+\ex{Esempio di RSK*}{
+  \begin{center}
+    \includegraphics[width=0.85\textwidth]{/home/giovanni/Pictures/Screenshots/Screenshot_20260502_143630.png}
+  \end{center}
+}
 
 Cosi' come abbiamo dimostrato (con RSK)
 \[
