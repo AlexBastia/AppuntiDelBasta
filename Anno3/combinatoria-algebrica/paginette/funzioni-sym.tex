@@ -2,9 +2,21 @@
 \chapter{Funzioni Simmetriche}
 
 \section{Serie formali di Potenze}
-\dfn{Anello in piu' variabili}{TODO: era tipo $ \mathbb{Q}[x_1,x_2,...,x_n] $}
+\dfn{Anello in piu' variabili}{
+  Sia $ \mathbb{N}^n $ l'insieme delle n-uple di interi non negativi $ \alpha = (\alpha_1, ..., \alpha_n) $. Definiamo il monomio associato ad $ \alpha $ come:
+  \[
+    x^\alpha = x_1^{\alpha_1}x_2^{\alpha_2}...x_n^{\alpha_n}
+  \]
+
+L'anello in $ n $ variabili su $ \mathbb{Q} $ e'
+\[
+  \mathbb{Q}[x_1,...,x_n] = \{\sum_{\alpha \in \mathbb{N}^n} a_\alpha x^\alpha | a_\alpha \in \mathbb{Q}\} 
+\]
+dove l'insieme $ \{\alpha \in \mathbb{N}^n | a_\alpha \neq 0\} $ è finito (ovvero, la somma ha solo un numero finito di termini non nulli).
+}
+
 \dfn{Anello delle serie formali}{
-  L'anello delle serie formali su $ \mathbb{Q} $ (va bene qualsiasi anello TODO: commutativo?) e'
+  L'anello delle serie formali su $ \mathbb{Q} $ e'
   \[
     \mathbb{Q}[[X]] = \{\sum_{n\geq 0} a_nx^n | a_n \in \mathbb{Q}\} 
   \]
@@ -13,6 +25,9 @@ Somma e prodotto sono definiti in modo classico:
 $$\left(\sum_n a_n x^n\right) + \left(\sum_n b_n x^n\right) = \sum_n (a_n + b_n) x^n$$
 $$\left(\sum_n a_n x^n\right) \cdot \left(\sum_n b_n x^n\right) = \sum_n \left(\sum_{k=0}^n a_k b_{n-k}\right) x^n$$
 }
+
+\nt{Va bene qualsiai anello che sia commutativo e che abbia l'unita'}
+
 Gli elementi si possono pensare come successioni $(a_0, a_1, a_2, \ldots)$ di coefficienti razionali, o equivalentemente come funzioni $\mathbb{N} \to \mathbb{Q}$.
 
 \nt{
@@ -22,6 +37,7 @@ Attenzione: sono "polinomi infiniti". Non ci interessa la convergenza — tutto 
 \mprop{Invertibilita di serie formali}{
   $f = \sum_{n \geq 0} a_n x^n$ è invertibile in $\mathbb{Q}[[x]]$ se e solo se $a_0 \neq 0$.
 }
+
 \ex{Serie invertibile}{
   La serie $1 + ax + a^2x^2 + \cdots = \sum_{n \geq 0} a^n x^n$ è l'inverso di $(1-ax)$, perché:
 
@@ -895,6 +911,7 @@ E' un polinomio simmetrico perche' numeratore e denominatore sono entrambi alter
 
 \ex{$ \lambda = (2,1) $, $ k = 3 $}{
   I SSYT di forma $ (2,1) $ con valori in $ \{1,2,3\} $ sono 8:
+    \ytableausetup{notabloids}
   \[
     \begin{ytableau} 2 \\ 1 & 1 \end{ytableau} \quad
     \begin{ytableau} 3 \\ 1 & 1 \end{ytableau} \quad
@@ -929,6 +946,22 @@ La corrispondenza RSK (Robinson--Schensted--Knuth) e' una biezione fondamentale 
 
 \subsection{Parola di lettura di una matrice}
 
+TODO: mi sa che noi abbiamo usato una definizione diversa. Negli appunti del GOAT D'Adderio usa la seguente def:
+
+\dfn{Permutazione generalizzata}{
+  Data una matrice $ A $, definiamo la sua permutazione associata come:
+  \[
+    w_A = \begin{pmatrix}
+    i_1 & i_2 & i_3 & ... & i_m\\
+    j_1 & j_2 & j_3 & ... & j_m\\
+    \end{pmatrix} 
+  \]
+  dove la colonna $ \begin{pmatrix}
+  i\\
+  j\\
+  \end{pmatrix} $ e' presente in $ w_A $ esattamente $ a_{ij} $ volte. Le colonne sono poi ordinate in modo tale che $ i_1 \gets i_2 \leq ... \leq i_m $ e nel caso in cui $ i_r = i_s $ (con $ r < s $) le colonne si ordinano in modo che $ j_r \leq j_s $.
+}
+
 Data una matrice $ A = (a_{ij}) $ a coefficienti in $ \mathbb{N} $, costruiamo la \textit{parola di lettura} $ w_A $: per ogni colonna $ j $ da sinistra a destra, scriviamo il valore di riga $ i $ ripetuto $ a_{ij} $ volte, scorrendo le righe dall'alto in basso.
 
 \ex{}{
@@ -958,7 +991,7 @@ L'ingrediente fondamentale e' il \textit{bumping} (scacciamento): come inserire 
 \textbf{Proprieta' chiave del bumping.}
 \begin{itemize}
   \item Se inserisco $ k $ in un SSYT $ T $, ottengo ancora un SSYT.
-  \item Il percorso di inserzione va verso il basso: ogni elemento scacciato finisce nella riga successiva piu' in basso.
+  \item Il percorso di inserzione va verso il basso: ogni elemento scacciato finisce nella riga successiva piu' in alto.
   \item L'elemento scacciato e' sempre strettamente maggiore di quello che lo scaccia, quindi nelle righe successive l'elemento inserito e' piu' grande, e puo' scacciare qualcosa piu' a sinistra.
 \end{itemize}
 
@@ -1412,9 +1445,10 @@ Ricordiamo che $ \mu \trianglelefteq \lambda $ se per ogni $ i \geq 1 $ vale $ \
 \textbf{Algoritmo.} Biezione fra $ (0,1) $-matrici finite e coppie $ (L,R) $ di tableaux della stessa forma tali che $ L' $ ed $ R $ sono SSYT (cioe' $ L $ e' SSYT trasposto: strettamente crescente in riga, debolmente crescente in colonna). Funziona nello stesso modo solo che, durante l'inserimento di un numero $ j $, si scaccia l'elemento piu' a sinistra che e' $ \leq j $.
 
 \ex{Esempio di RSK*}{
-  \begin{center}
-    \includegraphics[width=0.85\textwidth]{/home/giovanni/Pictures/Screenshots/Screenshot_20260502_143630.png}
-  \end{center}
+  TODO: /home/giovanni non ce l'ho :(
+  % \begin{center}
+  %   \includegraphics[width=0.85\textwidth]{/home/giovanni/Pictures/Screenshots/Screenshot_20260502_143630.png}
+  % \end{center}
 }
 
 Cosi' come abbiamo dimostrato (con RSK)
