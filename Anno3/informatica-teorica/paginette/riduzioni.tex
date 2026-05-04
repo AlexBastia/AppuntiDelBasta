@@ -181,7 +181,7 @@ Guardiamo la prima riduzione $ \mathcal{L}_u \leq MPCP$ e facciamoci le solite d
 \item Qual'e' il problema di partenza? E quello di arrivo?
 \item Quali sono gli input dei due problemi?
 \item Quali sono le istanze si dei due problemi? E le istanze no?
-\item Come facciamo a trasformare istanze si del problema di partenza in istanze si del problema di arrivo e stessa cosa per le istanze no?
+\item Come facciamo a trasformare istanze si del problema di partenza in istanze si del problema di arrivo e viceversa?
 \end{enumerate}
 
 Sappiamo che l'input al problema di partenza sono le coppie macchina/stringa $ (M,w) $ e le sue istanze si' sono le coppie dove $ M $ accetta $ w $, mentre le no sono quelle dove $ M $ non accetta $ w $.\\
@@ -381,9 +381,9 @@ Vogliamo dimostrare che Tiling è indecidibile. Per farlo mostriamo che
   \overline{\mathrm{HALT}_\epsilon} \;\leq\; \text{Tiling},
 \]
 dove $\mathrm{HALT}_\epsilon = \{\,M \mid M \text{ si ferma su } \varepsilon\,\}$ e
-$\overline{\mathrm{HALT}_eps}$ è il suo complementare (le macchine che \emph{non} si fermano su~$\varepsilon$).
+$\overline{\mathrm{HALT}_\eps}$ è il suo complementare (le macchine che \emph{non} si fermano su~$\varepsilon$).
  
-Poiché $\overline{\mathrm{HALT}_eps} \notin \mathrm{RE}$, dalla riduzione segue che
+Poiché $\overline{\mathrm{HALT}_\eps} \notin \mathrm{RE}$, dalla riduzione segue che
 Tiling $\notin \mathrm{RE}$, in particolare è indecidibile.
   
 Definiamo una funzione calcolabile
@@ -395,7 +395,7 @@ tale che:
 \begin{itemize}
   \item Se $M$ \textbf{non si ferma} su $\varepsilon$ (cioè $M \notin \mathrm{HALT}_\epsilon$),
         allora $\exists f$ per $T$, ossia $T \in \text{Tiling}$.
-      \item Se $M$ \textbf{si ferma} su $\varepsilon$ (cioè $M \in \mathrm{HALT}_eps$),
+      \item Se $M$ \textbf{si ferma} su $\varepsilon$ (cioè $M \in \mathrm{HALT}_\eps$),
         allora $\nexists f$ per $T$, ossia $T \notin \text{Tiling}$.
 \end{itemize}
   
@@ -558,7 +558,7 @@ basta enumerare le transizioni e generare le piastrelle corrispondenti.
 }
  
 \thm{}{
-  $M \notin \mathrm{HALT}_eps \;\Longleftrightarrow\; g(M) \in \mathrm{Tiling}$.
+  $M \notin \mathrm{HALT}_\eps \;\Longleftrightarrow\; g(M) \in \mathrm{Tiling}$.
 }
 \pf{Dimostrazione}{
 \textbf{($\Rightarrow$)} Sia $M$ una macchina che \emph{non} si ferma su $\varepsilon$.
@@ -573,9 +573,9 @@ La funzione $f(m,n) = \text{(tipo della cella } m \text{ nella configurazione } 
 Per costruzione, la riga 0 è forzata a contenere le piastrelle speciali che
 codificano $c_1$. Ogni riga deve essere la configurazione successiva, dunque $f$
 codifica una computazione infinita $c_1 \vdash c_2 \vdash \cdots$, il che implica
-  $M \notin \mathrm{HALT}_eps$.
+  $M \notin \mathrm{HALT}_\eps$.
  
-  Per contrapposizione: $M \in \mathrm{HALT}_eps \Rightarrow g(M) \notin \mathrm{Tiling}$.
+  Per contrapposizione: $M \in \mathrm{HALT}_\eps \Rightarrow g(M) \notin \mathrm{Tiling}$.
 }
  
 \cor{}{
@@ -603,9 +603,9 @@ Il Problema del Tassellamento è indecidibile.
   \draw[thick] (0,-0.2) ellipse (1.6cm and 1.1cm);
   \node at (0,-0.2) {$\mathrm{R}$};
   % Labels inside RE but outside R
-  \node[font=\small] at (-2.5, 0.6) {$\mathrm{HALT}_eps$};
+  \node[font=\small] at (-2.5, 0.6) {$\mathrm{HALT}_\eps$};
   \node[font=\small] at (-2.5, 0.0) {$\mathrm{HALT}$};
-  \node[font=\small] at (-2.5,-0.6) {$\mathrm{HALT}_eps$};
+  \node[font=\small] at (-2.5,-0.6) {$\mathrm{HALT}_\eps$};
   % Second blob: co-RE (overlapping)
   \draw[thick, dashed] (2.0, 0) ellipse (2.2cm and 1.6cm);
   \node[above] at (3.8, 1.0) {$\mathrm{coRE}$};
@@ -631,7 +631,7 @@ tempo finito. Definiamo così due classi:
   % co-RE arch
   \draw[thick] (-3,0) arc (180:0:1.8cm and 1.4cm);
   \node[font=\small] at (-3.6, 0.2) {$\mathrm{CO\text{-}RE}$};
-  \node[font=\small] at (-2.5, 0.5) {$\mathrm{HALT}_eps$};
+  \node[font=\small] at (-2.5, 0.5) {$\mathrm{HALT}_\eps$};
   \node[font=\small] at (-2.5,-0.1) {$L_e$};
   \draw[thick] (-3,0) -- (3,0);
   % R box
@@ -639,7 +639,7 @@ tempo finito. Definiamo così due classi:
   \node at (0, 0.35) {$\mathrm{R}$};
   \node[font=\small, right=0.05cm] at (1, 0.8) {$\mathrm{HALT}_{\forall}$};
   \node[font=\small, right=0.05cm] at (1, 0.35) {$L_u$};
-  \node[font=\small, right=0.05cm] at (1,-0.1) {$\mathrm{HALT}_eps$};
+  \node[font=\small, right=0.05cm] at (1,-0.1) {$\mathrm{HALT}_\eps$};
   % RE arch
   \draw[thick] (3,0) arc (0:180:1.8cm and 1.4cm) ;
   \node[font=\small] at (3.6, 0.2) {$\mathrm{RE}$};
@@ -658,7 +658,7 @@ tempo finito. Definiamo così due classi:
   $\mathrm{R} \neq \mathrm{RE}$
 }
 \pf{Dimostrazione}{
-  $\exists L \in \mathrm{RE}$ con $L \notin \mathrm{R}$: ad esempio $\mathrm{HALT}_eps \in \mathrm{RE} \setminus \mathrm{R}$.
+  $\exists L \in \mathrm{RE}$ con $L \notin \mathrm{R}$: ad esempio $\mathrm{HALT}_\eps \in \mathrm{RE} \setminus \mathrm{R}$.
 }
  
 \thm{}{\label{thm:corere}
@@ -699,9 +699,9 @@ si ferma).
  
 Dunque sembra che $\mathrm{HALT}_{\forall}$ stia \emph{fuori} sia da $\mathrm{RE}$ che da $\mathrm{coRE}$. Dimostriamolo.
  
-\subsection{Riduzione 1: \texorpdfstring{$\mathrm{HALT}_eps \leq \mathrm{HALT}_{\forall}$}{HALT\_eps <= HALT\_forall}}
+\subsection{Riduzione 1: \texorpdfstring{$\mathrm{HALT}_\eps \leq \mathrm{HALT}_{\forall}$}{HALT\_eps <= HALT\_forall}}
  
-\textbf{Conseguenza:} $\mathrm{HALT}_eps \notin \mathrm{coRE}$ e $\mathrm{HALT}_eps \leq \mathrm{HALT}_{\forall}$, quindi
+\textbf{Conseguenza:} $\mathrm{HALT}_\eps \notin \mathrm{coRE}$ e $\mathrm{HALT}_\eps \leq \mathrm{HALT}_{\forall}$, quindi
 $\mathrm{HALT}_{\forall} \notin \mathrm{coRE}$.
  
 \medskip
@@ -736,11 +736,11 @@ $N$ su input $w$: simula $M$ su $\varepsilon$, ignorando $w$.
     N \in \mathrm{HALT}_{\forall}$.
 \end{itemize}
  
-Quindi: $M \in \mathrm{HALT}_eps \Leftrightarrow N \in \mathrm{HALT}_{\forall}$.
+Quindi: $M \in \mathrm{HALT}_\eps \Leftrightarrow N \in \mathrm{HALT}_{\forall}$.
  
-\subsection{Riduzione 2: \texorpdfstring{$\overline{\mathrm{HALT}_eps} \leq \mathrm{HALT}_{\forall}$}{HALT\_eps-bar <= HALT\_forall}}
+\subsection{Riduzione 2: \texorpdfstring{$\overline{\mathrm{HALT}_\eps} \leq \mathrm{HALT}_{\forall}$}{HALT\_eps-bar <= HALT\_forall}}
  
-\textbf{Conseguenza:} $\overline{\mathrm{HALT}_eps} \notin \mathrm{RE}$, quindi $\mathrm{HALT}_{\forall} \notin \mathrm{RE}$.
+\textbf{Conseguenza:} $\overline{\mathrm{HALT}_\eps} \notin \mathrm{RE}$, quindi $\mathrm{HALT}_{\forall} \notin \mathrm{RE}$.
  
 \medskip
 \noindent\textit{Costruzione.}
@@ -779,8 +779,8 @@ lunghezza di $w$ come ``conto alla rovescia'').
         $\Rightarrow N \notin \mathrm{HALT}_{\forall}$.
 \end{itemize}
  
-Quindi: $M \notin \mathrm{HALT}_eps \Leftrightarrow N \in \mathrm{HALT}_{\forall}$, cioè
-$\overline{\mathrm{HALT}_eps} \leq \mathrm{HALT}_{\forall}$.
+Quindi: $M \notin \mathrm{HALT}_\eps \Leftrightarrow N \in \mathrm{HALT}_{\forall}$, cioè
+$\overline{\mathrm{HALT}_\eps} \leq \mathrm{HALT}_{\forall}$.
  
 \bigskip
 \noindent\textbf{Conclusione.}
