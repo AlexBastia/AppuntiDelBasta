@@ -282,6 +282,28 @@ zeri, si ottiene una partizione di $ n $, denotata $ \lambda(\alpha) $.
   Convertendo le entrate scelte in $ 1 $ e le altre in $ 0 $ si ottiene una matrice
   $ 0$-$1 $ $ A $ con $ row(A) = \lambda $ e $ col(A) = \alpha $. Viceversa, ogni tale
   matrice corrisponde a un unico termine di $ e_\lambda $.
+
+  \textbf{Monomio associato.} Il monomio prodotto dalla scelta codificata da $ A $ e':
+  \[
+    x^\alpha = \prod_j x_j^{\alpha_j}, \qquad \alpha_j = \sum_i a_{ij} = \mathrm{col}_j(A).
+  \]
+  Infatti $ x_j $ compare nel prodotto esattamente una volta per ogni riga $ i $ in cui
+  e' stata selezionata; poiche' ogni fattore $ e_{\lambda_i} $ e' elementare (ciascuna
+  variabile compare al piu' una volta per riga), il contributo totale di $ x_j $ e'
+  la somma di colonna $ \alpha_j $.
+
+  \textbf{Raggruppamento per partizione.} Due composizioni deboli $ \alpha $ e $ \alpha' $
+  producono monomi nella stessa orbita di $ S_k $ (e quindi contribuiscono alla stessa
+  funzione monomiale $ m_\mu $, con $ \mu $ la partizione ottenuta riordinando $ \alpha $
+  in ordine decrescente) se e solo se sono permutazioni l'una dell'altra.
+  Raggruppando tutti i termini di $ e_\lambda $ per la partizione $ \mu = \lambda(col(A)) $:
+  \[
+    e_\lambda
+    = \sum_{\mu \vdash n}
+      \bigl|\{\, A \in \{0,1\}^{\ell(\lambda)\times\infty} :
+        row(A) = \lambda,\ \lambda(col(A)) = \mu \,\}\bigr|\, m_\mu
+    = \sum_{\mu \vdash n} M_{\lambda,\mu}\, m_\mu.
+  \]
 }
 
 \osservazione{Interpretazione combinatoria.
@@ -327,14 +349,19 @@ zeri, si ottiene una partizione di $ n $, denotata $ \lambda(\alpha) $.
   \]
 }
 \pf{Dim}{
-  \textbf{Condizione di dominanza.} Supponiamo $ M_{\lambda,\mu} \neq 0 $, cosi' per la
-  proposizione precedente esiste una matrice $ 0$-$1 $ $ A $ con $ row(A) = \lambda $ e
-  $ col(A) = \mu $. Sia $ A' = (a'_{i,j})_{i,j \geq 1} $ la matrice $ 0$-$1 $ con
-  $ row(A') = \lambda $ e gli $ 1 $ di ogni riga giustificati a sinistra, cioe'
-  $ a'_{i,j} = 1 \iff 1 \leq j \leq \lambda_i $. Per ogni $ i $, il numero di $ 1 $
-  nelle prime $ i $ colonne di $ A' $ non e' inferiore a quello in $ A $: per
-  definizione di ordine di dominanza, $ col(A') \geq col(A) = \mu $. Ma
-  $ col(A') = \lambda' $, dunque $ \lambda' \geq \mu $.
+  \textbf{Condizione di dominanza ($M_{\lambda,\mu} = 0$ se $\mu \not\leq \lambda'$).}
+  Supponiamo per assurdo che $ \mu \not\leq \lambda' $ nell'ordine di dominanza:
+  esiste allora un indice $ k $ tale che
+  \[
+    \mu_1 + \cdots + \mu_k > \lambda'_1 + \cdots + \lambda'_k.
+  \]
+  Ma la forma di $ \lambda $ impone che la colonna $ j $ di qualsiasi matrice
+  $ 0 $-$ 1 $ con $ row(A) = \lambda $ contenga al piu' $ \lambda'_j $ uni
+  (al piu' uno per ogni riga $ i $ con $ \lambda_i \geq j $), quindi le prime
+  $ k $ colonne contengono complessivamente al piu'
+  $ \lambda'_1 + \cdots + \lambda'_k $ uni.
+  D'altra parte, se $ col(A) = \mu $, la somma dei primi $ k $ valori di colonna
+  vale $ \mu_1 + \cdots + \mu_k $: contraddizione. Dunque $ M_{\lambda,\mu} = 0 $.
 
   \textbf{Diagonale unitaria.} La matrice $ A' $ e' \emph{l'unica} matrice $ 0$-$1 $
   con $ row(A') = \lambda $ e $ col(A') = \lambda' $: gli $ 1 $ sono forzati a
