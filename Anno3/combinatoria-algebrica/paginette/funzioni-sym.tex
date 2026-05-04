@@ -2,9 +2,21 @@
 \chapter{Funzioni Simmetriche}
 
 \section{Serie formali di Potenze}
-\dfn{Anello in piu' variabili}{TODO: era tipo $ \mathbb{Q}[x_1,x_2,...,x_n] $}
+\dfn{Anello in piu' variabili}{
+  Sia $ \mathbb{N}^n $ l'insieme delle n-uple di interi non negativi $ \alpha = (\alpha_1, ..., \alpha_n) $. Definiamo il monomio associato ad $ \alpha $ come:
+  \[
+    x^\alpha = x_1^{\alpha_1}x_2^{\alpha_2}...x_n^{\alpha_n}
+  \]
+
+L'anello in $ n $ variabili su $ \mathbb{Q} $ e'
+\[
+  \mathbb{Q}[x_1,...,x_n] = \{\sum_{\alpha \in \mathbb{N}^n} a_\alpha x^\alpha | a_\alpha \in \mathbb{Q}\} 
+\]
+dove l'insieme $ \{\alpha \in \mathbb{N}^n | a_\alpha \neq 0\} $ è finito (ovvero, la somma ha solo un numero finito di termini non nulli).
+}
+
 \dfn{Anello delle serie formali}{
-  L'anello delle serie formali su $ \mathbb{Q} $ (va bene qualsiasi anello TODO: commutativo?) e'
+  L'anello delle serie formali su $ \mathbb{Q} $ e'
   \[
     \mathbb{Q}[[X]] = \{\sum_{n\geq 0} a_nx^n | a_n \in \mathbb{Q}\} 
   \]
@@ -13,6 +25,9 @@ Somma e prodotto sono definiti in modo classico:
 $$\left(\sum_n a_n x^n\right) + \left(\sum_n b_n x^n\right) = \sum_n (a_n + b_n) x^n$$
 $$\left(\sum_n a_n x^n\right) \cdot \left(\sum_n b_n x^n\right) = \sum_n \left(\sum_{k=0}^n a_k b_{n-k}\right) x^n$$
 }
+
+\nt{Va bene qualsiai anello che sia commutativo e che abbia l'unita'}
+
 Gli elementi si possono pensare come successioni $(a_0, a_1, a_2, \ldots)$ di coefficienti razionali, o equivalentemente come funzioni $\mathbb{N} \to \mathbb{Q}$.
 
 \nt{
@@ -22,6 +37,7 @@ Attenzione: sono "polinomi infiniti". Non ci interessa la convergenza — tutto 
 \mprop{Invertibilita di serie formali}{
   $f = \sum_{n \geq 0} a_n x^n$ è invertibile in $\mathbb{Q}[[x]]$ se e solo se $a_0 \neq 0$.
 }
+
 \ex{Serie invertibile}{
   La serie $1 + ax + a^2x^2 + \cdots = \sum_{n \geq 0} a^n x^n$ è l'inverso di $(1-ax)$, perché:
 
@@ -66,437 +82,643 @@ $$D(\exp(f(x))) = f'(x) \cdot \exp(f(x))$$
 $$D(\log(g(x))) = \frac{D(g(x))}{g(x)}$$  
 }
 
-\section{Polinomi Simmetrici}
-Torniamo ora a $ \mathbb{Q}[x_1,...,x_k] $ (anello di polinomi in $ n $ indeterminate). $ S_k $ agisce su $ \mathbb{Q}[x_1,...,x_k] $:
+\section{Funzioni simmetriche}
+
+Fissato un intero $ k \in \mathbb{N} $, consideriamo l'azione del gruppo simmetrico
+$ S_k $ su $ \mathbb{Q}[x_1, x_2, \ldots, x_k] $ per permutazione delle variabili: per
+ogni $ \sigma \in S_k $ e $ f(x_1, \ldots, x_k) \in \mathbb{Q}[x_1, \ldots, x_k] $,
 \[
-  \sigma f(x_1,...,x_k) = f(x_{\sigma_1},...,x_{\sigma_k})
+  \sigma \cdot f(x_1, \ldots, x_k) := f(x_{\sigma(1)}, x_{\sigma(2)}, \ldots, x_{\sigma(k)}).
 \]
-permutando le variabili.
 
 \dfn{Anello delle funzioni simmetriche}{
-  L'anello delle funzioni simmetriche in $k$ variabili è:
+  Un \textit{polinomio simmetrico} (o \textit{funzione simmetrica}) e' un elemento
+  $ f \in \mathbb{Q}[x_1, \ldots, x_k] $ tale che $ \sigma \cdot f = f $ per ogni
+  $ \sigma \in S_k $. Si pone
   \[
-    Sym[X_k] \coloneq \mathbb{Q}[x_1,...,x_k]^{S_k}\ \text{(punti fissi sotto l'azione di )}S_k
+    \mathrm{Sym}[X_k] := \mathbb{Q}[x_1, \ldots, x_k]^{S_k}
+      = \{\, f \in \mathbb{Q}[x_1, \ldots, x_k] \mid \sigma \cdot f = f\ \forall \sigma \in S_k\,\}.
   \]
-  cioè i polinomi invarianti sotto qualsiasi permutazione delle variabili.
+  E' chiaramente un sottoanello (sottoalgebra) di $ \mathbb{Q}[x_1, \ldots, x_k] $,
+  detto \textit{anello (algebra) delle funzioni simmetriche}.
 }
-
-\ex{Polinomi Simmetrici}{$x_1^2 + x_2^2 + x_3^2$ è simmetrico. $x_1^2 x_2 + x_2^2 x_3 + x_3^2 x_1$ non è simmetrico (si verifica applicando la trasposizione $(1\,3)$).}
 
 \mprop{Decomposizione per grado}{
-  Poiché $S_k$ preserva il grado dei monomi:
-
-$$\mathrm{Sym}[X_k] = \bigoplus_{n \geq 0} \mathrm{Sym}^n[X_k]$$
-
-dove $\mathrm{Sym}^n[X_k]$ sono i polinomi simmetrici omogenei di grado $n$.
+  Poiche' l'azione di $ S_k $ preserva il grado totale dei monomi:
+  \[
+    \mathrm{Sym}[X_k] = \bigoplus_{n \geq 0} \mathrm{Sym}^n[X_k],
+  \]
+  dove $ \mathrm{Sym}^n[X_k] $ e' lo spazio delle funzioni simmetriche omogenee di
+  grado totale $ n $.
 }
 
-Notiamo che l'azione di $ S_k $ rispetta il grado.
+\ex{Simmetrico vs. non simmetrico}{
+  $ x_1 + x_2 + \cdots + x_k $ e' simmetrico. $ x_1 - x_2 $ non lo e'.
+  Analogamente $ x_1^2 + x_2^2 + x_3^2 $ e' simmetrico, mentre
+  $ x_1^2 x_2 + x_2^2 x_3 + x_3^2 x_1 $ no (basta applicare la trasposizione $ (1\,3) $).
+}
 
-Supponiamo che $ k \geq n $. No aspe' sta roba qua' serve per sopra, i $ k $ dopo non centrano.
+\nt{Nel resto del corso saremo piuttosto disinvolti sul numero $ k $ di variabili,
+  spesso assumendo implicitamente che ce ne siano abbastanza. Questo si puo'
+  giustificare rigorosamente lavorando con le funzioni simmetriche in infinite
+  variabili.
+}
 
-Una composizione di $ n $ 
 \dfn{Composizione}{
-  \[
-    \alpha = (\alpha_1,...,\alpha_n)\ \alpha_i \in \mathbb{N} \setminus \{0\}
-  \]
-  tali che
-  \[
-  \sum_{i = 1}^{k} \alpha_i = n
-  \]
-  Cosa cambia dalle weak compositions? Le weak possono essere 0
-
-  $ \alpha_i $ e' una \textit{parte} di $ \alpha $ e una composiziione con $ k $ parti si dice \textit{k-composizione}.
+  Una \textit{composizione} di $ n $ e' un'espressione di $ n $ come somma ordinata
+  di interi positivi: piu' formalmente,
+  $ \alpha = (\alpha_1, \alpha_2, \ldots, \alpha_k) \in (\mathbb{N} \setminus \{0\})^k $
+  con $ \sum_{i=1}^k \alpha_i = n $. Le $ \alpha_i $ sono dette \textit{parti}, e una
+  composizione con $ k $ parti si dice $ k $-composizione.
 }
 
-\ex{Composizioni}{
-  Le composizioni di 4 sono:
+\ex{Composizioni di 4}{
+  $ (1,1,1,1),\ (2,1,1),\ (1,2,1),\ (1,1,2),\ (2,2),\ (3,1),\ (1,3),\ (4) $.
 }
 
-La funzione dalle weak k-compositions di $ n $ alle compositions $ n + k $:
+\mlenma{Numero di $ k $-composizioni}{
+  Data una $ k $-composizione $ \alpha = (\alpha_1, \ldots, \alpha_k) $ di $ n $, si
+  associa il sottoinsieme di cardinalita' $ k - 1 $ di
+  $ [n - 1] := \{1, 2, \ldots, n - 1\} $:
+  \[
+    \theta(\alpha) := \{\alpha_1,\, \alpha_1 + \alpha_2,\, \ldots,\, \alpha_1 + \cdots + \alpha_{k-1}\}.
+  \]
+  E' una biiezione tra le $ k $-composizioni di $ n $ e i sottoinsiemi di $ [n-1] $ di
+  cardinalita' $ k - 1 $: ce ne sono dunque $ \binom{n-1}{k-1} $.
+}
+
+\dfn{Composizione debole}{
+  Una \textit{composizione debole} (\textit{weak composition}) di $ n $ e'
+  $ \alpha = (\alpha_1, \alpha_2, \ldots, \alpha_k) \in (\mathbb{N} \cup \{0\})^k $ con
+  $ \sum_{i=1}^k \alpha_i = n $. Scriveremo $ \alpha \models n $.
+}
+
+\nt{Sommando $ (1, 1, \ldots, 1) $ a una composizione debole di $ n $ in $ k $ parti
+  si ottiene una composizione (forte) di $ n + k $: questa biiezione mostra che le
+  composizioni deboli di $ n $ in $ k $ parti sono $ \binom{n + k - 1}{k - 1} $.
+}
+
+Le composizioni deboli sono in biiezione naturale con i monomi in
+$ x_1, x_2, \ldots, x_k $: ad
+$ \alpha = (\alpha_1, \ldots, \alpha_k) $ si associa
 \[
-  (\alpha_1,...,\alpha_k) \mapsto (\alpha_1 + 1,..., \alpha_k + 1)
+  x^\alpha := x_1^{\alpha_1} x_2^{\alpha_2} \cdots x_k^{\alpha_k}.
 \]
-e' una biezione. Quindi la cardinalita' di questi insiemi e' uguale, ed e' (ce lo dice dopo perche' si e' dimenticata)
+Riordinando le parti di $ \alpha $ in ordine debolmente decrescente e scartando gli
+zeri, si ottiene una partizione di $ n $, denotata $ \lambda(\alpha) $.
 
-E' $ \binom{n + k -1}{k-1} $, la dimostrazione segue dal lemma:
-\mlenma{Dimensione compositions}{
-  $ \{\text{k-composizioni di } n\} $ e' in corrispondenza biunivoca con $ \{\text{sottoinsiemi di } \{1,..., n-1\} \} $ di cardinalita' $ k - 1 $:
-  \[
-    (\alpha_1,...,\alpha_k) \gets \to \{\alpha_1, \alpha_1 + \alpha_2,...,\alpha_1+\alpha_2+...+\alpha_{k-1}\}
-  \]
+\ex{Da composizione debole a partizione}{
+  $ \alpha = (3,1,0,1,2) \models 7 $ da' $ \lambda(\alpha) = (3,2,1,1) \vdash 7 $.
 }
-boh fine non so, qualcosa ha cucinato. Ora andiamo a vedere le funzioni simmetriche che ci servono di piu'.
 
-\section{Funzioni simmetriche}
-Sia $ k \geq n $, definiremo 4 basi diverse di $ Sym^n[X_k] $.
-
-Sia $ \lambda \vdash n $ e sia $ \alpha $ una weak composition di $ n $.
-
-Allora ad $ \alpha $ possiamo associare una partizione di $ n $. E' abbastanza ovvio, non formalizziamo tutto, vediamo un esempio:
-\ex{}{
-  $ \alpha = (3,1,0,1,2) $ e' una comp (debole) di 7, allora $ \lambda(\alpha) = (3,2,1,1) $. Basta togliere gli 0 e permutare dai e' ez.
-}
+\subsection{Monomiali}
 
 \dfn{Funzione simmetrica monomiale}{
-  Data una partizione $ \lambda \vdash n $, la \textit{funzione simmetrica monomiale} e':
+  Data $ \lambda \vdash n $, la \textit{funzione simmetrica monomiale}
+  $ m_\lambda \in \mathrm{Sym}^n[X_k] $ e':
   \[
-    m_\lambda(x) := \sum_{\substack{\alpha \models n \\ \lambda(\alpha) = \lambda}} x^\alpha
+    m_\lambda(x) := \sum_{\substack{\alpha \models n \\ \lambda(\alpha) = \lambda}} x^\alpha.
   \]
-  dove $ x^\alpha = x_1^{\alpha_1} x_2^{\alpha_2} \cdots x_k^{\alpha_k} $ e la somma varia su tutte le
-  composizioni deboli $ \alpha $ di $ n $ tali che, riordinate e private degli zeri, restituiscono
-  esattamente $ \lambda $.
-
-  In altri termini, $ m_\lambda(x) $ e' la somma di tutti i monomi \textit{distinti} ottenibili
-  permutando gli esponenti di $ \lambda $ sulle variabili $ x_1, \ldots, x_k $: e' la somma
-  dell'orbita di $ x^\lambda $ sotto l'azione di $ S_k $.
+  I monomi che vi compaiono formano un'orbita dell'azione di $ S_k $ sui monomi di
+  $ \mathbb{Q}[x_1, \ldots, x_k] $: e' la somma dell'orbita di $ x^\lambda $.
 }
 
 \ex{$ \lambda = (2,1,1) $, $ k = 3 $}{
-  Gli esponenti da distribuire sono $ 2, 1, 1 $. Le composizioni deboli di 4 in 3 parti con
-  $ \lambda(\alpha) = (2,1,1) $ sono $ (2,1,1) $, $ (1,2,1) $, $ (1,1,2) $, quindi:
+  Le composizioni deboli di 4 in 3 parti con $ \lambda(\alpha) = (2,1,1) $ sono
+  $ (2,1,1),\ (1,2,1),\ (1,1,2) $; dunque
   \[
-    m_{(2,1,1)}(x_1, x_2, x_3) = x_1^2 x_2 x_3 + x_1 x_2^2 x_3 + x_1 x_2 x_3^2
+    m_{(2,1,1)}(x_1, x_2, x_3) = x_1^2 x_2 x_3 + x_1 x_2^2 x_3 + x_1 x_2 x_3^2.
   \]
-  E' un polinomio simmetrico: $ m_\lambda \in \mathrm{Sym}^n[X_k] $.
 }
 
 \thm{Le $ m_\lambda $ sono una base di $ \mathrm{Sym}^n[X_k] $}{
-  L'insieme $ \{m_\lambda \mid \lambda \vdash n,\ \ell(\lambda) \leq k\} $ e' una base di
+  Se $ f = \sum_{\alpha \models n} c_\alpha\, x^\alpha \in \mathrm{Sym}^n[X_k] $, allora
+  $ f = \sum_{\lambda \vdash n} c_\lambda\, m_\lambda $. Pertanto
+  $ \{m_\lambda \mid \lambda \vdash n,\ \ell(\lambda) \leq k\} $ e' una base di
   $ \mathrm{Sym}^n[X_k] $. In particolare, per $ k \geq n $:
   \[
-    \dim \mathrm{Sym}^n[X_k] = p(n) = \#\mathrm{Par}(n).
+    \dim_{\mathbb{Q}} \mathrm{Sym}^n[X_k] = p(n) := |\mathrm{Par}(n)|.
   \]
 }
 \pf{Dim}{
-  Dobbiamo mostrare che le $ m_\lambda $ generano $ \mathrm{Sym}^n[X_k] $ e sono linearmente
-  indipendenti.
-
-  \textbf{Generazione.}
-  Un generico $ f \in \mathrm{Sym}^n[X_k] $ e' una combinazione lineare di monomi:
+  \textbf{Generazione.} Un generico $ f \in \mathrm{Sym}^n[X_k] $ si scrive come
+  $ f = \sum_{\alpha \models n} c_\alpha x^\alpha $. L'invarianza $ \sigma \cdot f = f $
+  forza tutti i monomi di una stessa orbita ad avere lo stesso coefficiente: se
+  $ \lambda(\alpha) = \lambda(\beta) $, allora $ c_\alpha = c_\beta =: c_\lambda $.
+  Raggruppando per orbita:
   \[
-    f = \sum_{\alpha \models n} c_\alpha\, x^\alpha.
-  \]
-  L'invarianza $ \sigma \cdot f = f $ per ogni $ \sigma \in S_k $ forza tutti i monomi della
-  stessa orbita ad avere lo stesso coefficiente: se $ \lambda(\alpha) = \lambda(\beta) $
-  (cioe' gli esponenti di $ \alpha $ e $ \beta $ sono una permutazione l'uno dell'altro),
-  allora $ c_\alpha = c_\beta =: c_\lambda $. Raggruppando per orbita:
-  \[
-    f = \sum_{\lambda \vdash n,\, \ell(\lambda) \leq k} c_\lambda
-        \underbrace{\Bigl(\sum_{\substack{\alpha \models n \\ \lambda(\alpha)=\lambda}} x^\alpha\Bigr)}_{= m_\lambda(x)}
-    = \sum_\lambda c_\lambda\, m_\lambda.
+    f = \sum_{\lambda \vdash n,\ \ell(\lambda) \leq k} c_\lambda
+        \underbrace{\sum_{\substack{\alpha \models n \\ \lambda(\alpha) = \lambda}} x^\alpha}_{= m_\lambda(x)}
+      = \sum_\lambda c_\lambda\, m_\lambda.
   \]
 
-  \textbf{Indipendenza lineare.}
-  Per costruzione, per partizioni distinte $ \lambda \neq \mu $ i monomi che compongono
-  $ m_\lambda $ e quelli di $ m_\mu $ appartengono a orbite disgiunte, quindi non si cancellano.
-  Pertanto nessuna combinazione lineare non banale delle $ m_\lambda $ puo' annullarsi.
+  \textbf{Indipendenza lineare.} Per partizioni distinte $ \lambda \neq \mu $ i
+  monomi che compongono $ m_\lambda $ e $ m_\mu $ appartengono a orbite disgiunte,
+  quindi non si cancellano in nessuna combinazione lineare non banale.
 }
+
 \ex{$ n = 2 $, $ k = 3 $}{
-  $ f = 3x_1x_2 + 3x_2x_3 + 3x_1x_3 $. I tre monomi hanno $ \lambda(\alpha) = (1,1) $, dunque
-  lo stesso coefficiente $ c_{(1,1)} = 3 $, e si raggruppano in $ f = 3\, m_{(1,1)} $.
+  $ f = 3 x_1 x_2 + 3 x_2 x_3 + 3 x_1 x_3 $: i tre monomi hanno $ \lambda(\alpha) = (1,1) $,
+  dunque coefficiente comune $ c_{(1,1)} = 3 $, e $ f = 3\, m_{(1,1)} $.
 }
 
-\dfn{Notazioni matriciali}{
-  Sia $ A = (a_{ij})_{i,j \geq 1} $ una matrice con un numero finito di entrate non nulle. Si pone:
-  \[
-    r_i(A) = \sum_j a_{ij}, \qquad c_j(A) = \sum_i a_{ij}
-  \]
-  (somme di riga e di colonna). Definiamo $ row(A) = (r_1, r_2, \ldots) $ e
-  $ col(A) = (c_1, c_2, \ldots) $. Una matrice $ 0$-$1 $ ha coefficienti in $ \{0,1\} $.
-}
+\subsection{Elementari}
 
 \dfn{Funzione simmetrica elementare}{
-  Per ogni $ s \geq 0 $:
+  Per ogni $ n \geq 1 $:
   \[
-    e_s := m_{(1^s)} = \sum_{i_1 < i_2 < \cdots < i_s} x_{i_1} x_{i_2} \cdots x_{i_s}.
+    e_n := m_{(1^n)} = \sum_{i_1 < i_2 < \cdots < i_n} x_{i_1} x_{i_2} \cdots x_{i_n},
   \]
-  Per convenzione $ e_0 = 1 $. E' la somma di tutti i prodotti di $ s $ variabili
-  \textit{distinte}. Data $ \lambda = (\lambda_1, \ldots, \lambda_k) \vdash n $:
+  con $ e_0 := m_\emptyset = 1 $. E' la somma di tutti i prodotti di $ n $ variabili
+  \textit{distinte}. Per $ \lambda = (\lambda_1, \ldots, \lambda_k) \vdash n $:
   \[
-    e_\lambda := e_{\lambda_1} \cdot e_{\lambda_2} \cdots e_{\lambda_k}.
+    e_\lambda := e_{\lambda_1} e_{\lambda_2} \cdots e_{\lambda_k}.
   \]
 }
 
-\ex{$ k = 3 $, $ \lambda = (2,2,1) $}{
+\ex{$ k = 3 $}{
+  $ e_1 = x_1 + x_2 + x_3 $, \quad $ e_2 = x_1 x_2 + x_1 x_3 + x_2 x_3 $, \quad
+  $ e_3 = x_1 x_2 x_3 $. Per $ \lambda = (3, 2) $:
   \[
-    e_1 = x_1 + x_2 + x_3, \quad e_2 = x_1x_2 + x_1x_3 + x_2x_3, \quad e_3 = x_1x_2x_3.
+    e_{(3,2)}(x_1, x_2, x_3) = (x_1 x_2 x_3)(x_1 x_2 + x_1 x_3 + x_2 x_3)
+      = x_1^2 x_2^2 x_3 + x_1^2 x_2 x_3^2 + x_1 x_2^2 x_3^2.
   \]
-  Per $ \lambda = (2,2,1) $: $ e_{(2,2,1)} = e_2 \cdot e_2 \cdot e_1 = e_2^2 \cdot e_1 $
-  (prodotto, non somma).
+}
+
+\subsubsection{Teorema fondamentale}
+
+\dfn{Notazioni matriciali}{
+  Sia $ A = (a_{ij})_{i,j \geq 1} $ una matrice con un numero finito di entrate non
+  nulle. Si pongono $ r_i(A) := \sum_j a_{ij} $ e $ c_j(A) := \sum_i a_{ij} $ (somme
+  di riga e di colonna), e si definiscono i vettori
+  \[
+    row(A) := (r_1, r_2, \ldots), \qquad col(A) := (c_1, c_2, \ldots).
+  \]
+  Una matrice $ 0$-$1 $ ha entrate in $ \{0, 1\} $.
 }
 
 \mprop{Sviluppo di $ e_\lambda $ nella base monomiale}{
-  Per ogni $ \lambda \vdash n $:
+  Sia $ \lambda \vdash n $ e $ \alpha = (\alpha_1, \alpha_2, \ldots) $ una composizione
+  debole di $ n $. Il coefficiente $ M_{\lambda,\alpha} $ di $ x^\alpha $ in $ e_\lambda $,
+  ovvero
   \[
-    e_\lambda = \sum_{\mu \vdash n} M_{\lambda\mu}\, m_\mu
+    e_\lambda = \sum_{\mu \vdash n} M_{\lambda,\mu}\, m_\mu,
   \]
-  dove $ M_{\lambda\mu} $ e' il numero di matrici $ 0$-$1 $ con $ row(A) = \lambda $ e
-  $ col(A) $ avente partizione associata $ \mu $.
-}
-\pf{Idea}{
-  Sviluppando $ e_\lambda = e_{\lambda_1} \cdots e_{\lambda_k} $, ogni monomio si ottiene
-  scegliendo dal fattore $ e_{\lambda_i} $ un insieme di $ \lambda_i $ variabili distinte.
-  Questo corrisponde a una matrice $ 0$-$1 $ con $ row(A) = \lambda $: la riga $ i $ indica
-  quali variabili si scelgono in $ e_{\lambda_i} $. Il tipo del monomio risultante e'
-  $ \mu = \lambda(col(A)) $.
-}
-
-\ex{$ \lambda = (3,1) $, $ n = 4 $}{
-  $ e_{(3,1)} = e_3 \cdot e_1 $. Due casi:
-  \begin{itemize}
-    \item La variabile di $ e_1 $ e' gia' in $ e_3 $: un esponente diventa 2, gli altri due
-          restano 1. Tipo $ (2,1,1) $. Si trova $ M_{(3,1),(2,1,1)} = 1 $.
-    \item La variabile di $ e_1 $ e' nuova: quattro esponenti pari a 1. Tipo $ (1,1,1,1) $.
-          Si trova $ M_{(3,1),(1,1,1,1)} = 4 $.
-  \end{itemize}
-  Quindi $ e_{(3,1)} = m_{(2,1,1)} + 4\,m_{(1,1,1,1)} $.
-}
-
-\thm{$ \{e_\lambda\} $ e' una base di $ \mathrm{Sym}^n[X_k] $}{
-  L'insieme $ \{e_\lambda \mid \lambda \vdash n,\ \ell(\lambda') \leq k\} $ e' una base di
-  $ \mathrm{Sym}^n[X_k] $.
+  e' uguale al numero di matrici $ 0$-$1 $ $ A = (a_{ij})_{i,j \geq 1} $ con
+  $ row(A) = \lambda $ e $ col(A) = \alpha $.
 }
 \pf{Dim}{
-  \textbf{Condizione di dominanza.} Sia $ M_{\lambda\mu} \neq 0 $, cioe' esiste $ A $ con
-  $ row(A) = \lambda $ e $ col(A) \sim \mu $. Costruiamo $ A' $ spostando gli $ 1 $ di ogni
-  riga il piu' a sinistra possibile: si ottiene $ col(A') = \lambda' $. Poiche' spostare a
-  sinistra non diminuisce le somme parziali di colonna, $ \lambda' \geq \mu $
-  nell'ordine di dominanza. Quindi $ M_{\lambda\mu} = 0 $ se $ \mu \not\leq \lambda' $.
+  Si consideri la matrice formale
+  \[
+    X = \begin{pmatrix}
+      x_1 & x_2 & x_3 & \cdots \\
+      x_1 & x_2 & x_3 & \cdots \\
+      \vdots & \vdots & \vdots
+    \end{pmatrix}.
+  \]
+  Per ottenere un termine in $ e_\lambda = e_{\lambda_1} e_{\lambda_2} \cdots $ si
+  scelgono $ \lambda_1 $ entrate distinte dalla riga 1 di $ X $, $ \lambda_2 $ dalla
+  riga 2, e cosi' via: il prodotto delle entrate scelte e' un monomio $ x^\alpha $.
+  Convertendo le entrate scelte in $ 1 $ e le altre in $ 0 $ si ottiene una matrice
+  $ 0$-$1 $ $ A $ con $ row(A) = \lambda $ e $ col(A) = \alpha $. Viceversa, ogni tale
+  matrice corrisponde a un unico termine di $ e_\lambda $.
+}
 
-  \textbf{Diagonale unitaria.} La matrice $ A' $ con $ row = \lambda $ e $ col = \lambda' $
-  e' unica (gli $ 1 $ sono forzati a sinistra in modo determinato), quindi
-  $ M_{\lambda\lambda'} = 1 $.
+\osservazione{Interpretazione combinatoria.
+  $ M_{\lambda,\mu} $ conta il numero di modi di mettere $ n $ palline (di cui
+  $ \lambda_i $ etichettate $ i $ per ogni $ i \geq 1 $) in scatole etichettate
+  $ 1, 2, \ldots $ in modo che (a) nessuna scatola contenga due palline con la stessa
+  etichetta e (b) la scatola $ i $ contenga esattamente $ \mu_i $ palline.
+}
 
-  \textbf{Conclusione.} Rispetto all'ordine lessicografico inverso, $ (M_{\lambda\mu}) $
-  e' triangolare superiore con $ 1 $ sulla diagonale, dunque invertibile. Poiche'
-  $ \{m_\lambda\} $ e' una base, anche $ \{e_\lambda\} $ lo e'.
+\ex{$ \lambda = (3,1) $, $ n = 4 $, $ k = 4 $}{
+  Espandiamo $ e_{(3,1)} = e_3 \cdot e_1 $ con quattro variabili. Ogni monomio si
+  ottiene scegliendo un sottoinsieme $ \{i, j, l\} $ per $ e_3 $ e un indice $ m $
+  per $ e_1 $.
+
+  \textbf{Caso 1: $ m \in \{i, j, l\} $.} Il monomio risultante e' di tipo
+  $ \lambda(\alpha) = (2,1,1) $. Per ogni monomio $ x_a^2 x_b x_c $ c'e' un'unica
+  coppia $ (\{a,b,c\}, a) $ che lo produce: in termini matriciali, l'unica matrice
+  $ 0$-$1 $ con $ row = (3,1) $ e $ col = (2,1,1) $ e'
+  $ \bigl(\begin{smallmatrix}1&1&1\\1&0&0\end{smallmatrix}\bigr) $, da cui
+  $ M_{(3,1),(2,1,1)} = 1 $.
+
+  \textbf{Caso 2: $ m \notin \{i, j, l\} $.} Quattro variabili distinte; il monomio
+  e' di tipo $ (1,1,1,1) $. Le coppie $ (\{i,j,l\}, m) $ con $ m \notin \{i,j,l\} $ e
+  $ \{i,j,l,m\} \subseteq \{1,2,3,4\} $ sono $ \binom{4}{3} = 4 $: in termini
+  matriciali, scelgo quale colonna ha l'$ 1 $ in riga 2. Quindi
+  $ M_{(3,1),(1,1,1,1)} = 4 $. Dunque
+  \[
+    e_{(3,1)} = m_{(2,1,1)} + 4\, m_{(1,1,1,1)}.
+  \]
+}
+
+\thm{Teorema fondamentale delle funzioni simmetriche}{
+  Siano $ \lambda, \mu \vdash n $.
+  \begin{itemize}
+    \item $ M_{\lambda,\mu} = 0 $ a meno che $ \mu \leq \lambda' $ (la partizione coniugata) nell'ordine di dominanza.
+    \item $ M_{\lambda,\lambda'} = 1 $.
+  \end{itemize}
+  Quindi $ \{e_\lambda \mid \lambda \vdash n,\ \ell(\lambda') \leq k\} $ e' una base
+  di $ \mathrm{Sym}^n[X_k] $. Equivalentemente, $ e_1, e_2, \ldots, e_k $ sono
+  algebricamente indipendenti e generano $ \mathrm{Sym}[X_k] $ come $ \mathbb{Q} $-algebra:
+  \[
+    \mathrm{Sym}[X_k] = \mathbb{Q}[e_1, e_2, \ldots, e_k].
+  \]
+}
+\pf{Dim}{
+  \textbf{Condizione di dominanza.} Supponiamo $ M_{\lambda,\mu} \neq 0 $, cosi' per la
+  proposizione precedente esiste una matrice $ 0$-$1 $ $ A $ con $ row(A) = \lambda $ e
+  $ col(A) = \mu $. Sia $ A' = (a'_{i,j})_{i,j \geq 1} $ la matrice $ 0$-$1 $ con
+  $ row(A') = \lambda $ e gli $ 1 $ di ogni riga giustificati a sinistra, cioe'
+  $ a'_{i,j} = 1 \iff 1 \leq j \leq \lambda_i $. Per ogni $ i $, il numero di $ 1 $
+  nelle prime $ i $ colonne di $ A' $ non e' inferiore a quello in $ A $: per
+  definizione di ordine di dominanza, $ col(A') \geq col(A) = \mu $. Ma
+  $ col(A') = \lambda' $, dunque $ \lambda' \geq \mu $.
+
+  \textbf{Diagonale unitaria.} La matrice $ A' $ e' \emph{l'unica} matrice $ 0$-$1 $
+  con $ row(A') = \lambda $ e $ col(A') = \lambda' $: gli $ 1 $ sono forzati a
+  sinistra in modo deterministico. Quindi $ M_{\lambda,\lambda'} = 1 $.
+
+  \textbf{Triangolarita' e basi.} Sia $ \lambda^1, \lambda^2, \ldots, \lambda^r $
+  l'elencazione di $ \{\lambda \vdash n \mid \ell(\lambda') \leq k\} $ in ordine
+  lessicografico inverso crescente (estensione lineare dell'ordine di dominanza, vedi
+  esercizio). Se $ M_{\lambda^i, (\lambda^j)'} \neq 0 $, dalla prima parte
+  $ \lambda^i \leq ((\lambda^j)')' = \lambda^j $, quindi $ i \leq j $. La matrice
+  $ (M_{\lambda,\mu}) $ con righe $ \lambda^1, \lambda^2, \ldots $ e colonne
+  $ (\lambda^1)', (\lambda^2)', \ldots $ e' triangolare superiore con $ 1 $ sulla
+  diagonale, dunque invertibile. Poiche' $ \{m_\lambda\} $ e' una base, anche
+  $ \{e_\lambda\} $ lo e'.
+
+  \textbf{Indipendenza algebrica.} L'insieme
+  $ \{e_\lambda \mid \lambda \in \mathrm{Par},\ \ell(\lambda') \leq k\} $ coincide con
+  l'insieme dei monomi $ e_1^{a_1} e_2^{a_2} \cdots e_k^{a_k} $: l'indipendenza lineare
+  equivale all'indipendenza algebrica di $ e_1, \ldots, e_k $.
 }
 
 \ex{$ n = 4 $}{
-  Ordine: $ (4) > (3,1) > (2,2) > (2,1,1) > (1^4) $. La matrice:
+  Ordine (lessicografico inverso): $ (4) > (3,1) > (2,2) > (2,1,1) > (1^4) $. La
+  matrice $ (M_{\lambda,\mu}) $ con questo ordinamento:
   \[
-    (M_{\lambda\mu}) = \begin{pmatrix}
-      1 & 4 & 6  & 12 & 24 \\
-      0 & 1 & 2  & 5  & 12 \\
-      0 & 0 & 1  & 2  & 6  \\
-      0 & 0 & 0  & 1  & 4  \\
-      0 & 0 & 0  & 0  & 1
+    (M_{\lambda,\mu}) = \begin{pmatrix}
+      1 & 4 & 6 & 12 & 24 \\
+      0 & 1 & 2 & 5  & 12 \\
+      0 & 0 & 1 & 2  & 6  \\
+      0 & 0 & 0 & 1  & 4  \\
+      0 & 0 & 0 & 0  & 1
     \end{pmatrix}
   \]
   e' triangolare superiore con $ 1 $ sulla diagonale.
 }
 
-\section{Funzioni simmetriche omogenee $ h_\lambda $}
+\subsection{Omogenee}
 
 \dfn{Funzione simmetrica omogenea completa}{
-  Per ogni $ n \geq 0 $, la \textit{funzione simmetrica omogenea completa} e':
+  Per ogni $ n \geq 1 $:
   \[
-    h_n := \sum_{i_1 \leq i_2 \leq \cdots \leq i_n} x_{i_1} x_{i_2} \cdots x_{i_n}
-    = \sum_{\lambda \vdash n} m_\lambda.
+    h_n := \sum_{i_1 \leq i_2 \leq \cdots \leq i_n} x_{i_1} x_{i_2} \cdots x_{i_n},
   \]
-  Per convenzione $ h_0 = 1 $. A differenza di $ e_n $, gli indici possono ripetersi.
-  Data $ \lambda \vdash n $:
+  con $ h_0 := m_\emptyset = 1 $. A differenza di $ e_n $, gli indici possono
+  ripetersi. Per $ \lambda = (\lambda_1, \ldots, \lambda_k) \vdash n $:
   \[
-    h_\lambda := h_{\lambda_1} \cdot h_{\lambda_2} \cdots h_{\lambda_k}.
+    h_\lambda := h_{\lambda_1} h_{\lambda_2} \cdots h_{\lambda_k}.
   \]
-  Anche $ \{h_\lambda \mid \lambda \vdash n\} $ e' una base di $ \mathrm{Sym}^n[X_k] $
-  (stesso argomento di triangolarita', usando matrici $ \mathbb{N} $ invece di $ 0$-$1 $).
 }
 
 \ex{$ k = 3 $}{
+  \begin{align*}
+    h_{(2,1)}(x_1, x_2, x_3) &= (x_1^2 + x_2^2 + x_3^2 + x_1 x_2 + x_1 x_3 + x_2 x_3)(x_1 + x_2 + x_3) \\
+    &= x_1^3 + x_2^3 + x_3^3 + 3 x_1 x_2 x_3 \\
+    &\quad + 2 x_1^2 x_2 + 2 x_1^2 x_3 + 2 x_2^2 x_1 + 2 x_2^2 x_3 + 2 x_3^2 x_1 + 2 x_3^2 x_2.
+  \end{align*}
+}
+
+\nt{$ h_n $ e' la somma di TUTTI i monomi di grado $ n $, dunque
   \[
-    h_2 = x_1^2 + x_2^2 + x_3^2 + x_1x_2 + x_1x_3 + x_2x_3 = m_{(2)} + m_{(1,1)}.
+    h_n = \sum_{\lambda \vdash n} m_\lambda.
   \]
 }
 
-\thm{$ H(t) \cdot E(-t) = 1 $}{
-  Le funzioni generatrici
+\dfn{Funzioni generatrici di $ h_n $ ed $ e_n $}{
   \[
-    H(t) := \sum_{n \geq 0} h_n\, t^n = \prod_i \frac{1}{1-x_i t}, \qquad
-    E(t) := \sum_{n \geq 0} e_n\, t^n = \prod_i (1 + x_i t)
+    H(t) := \sum_{n \geq 0} h_n\, t^n \in \mathrm{Sym}[X_k][[t]], \qquad
+    E(t) := \sum_{n \geq 0} e_n\, t^n \in \mathrm{Sym}[X_k][[t]].
   \]
-  soddisfano $ H(t) \cdot E(-t) = 1 $.
+}
+
+\mprop{Forma prodotto delle funzioni generatrici}{
+  \[
+    H(t) = \prod_i \frac{1}{1 - x_i t}, \qquad E(t) = \prod_i (1 + x_i t).
+  \]
+}
+
+\thm{Identita' fondamentale}{
+  $ H(t) \cdot E(-t) = 1 $.
 }
 \pf{Dim}{
-  $ \frac{1}{1-x_i t} = \sum_{m \geq 0} x_i^m t^m $ raccolta per grado da' $ h_n $; i prodotti
-  $ \prod_i (1+x_i t) $ raccolgono i monomi con variabili distinte, dando $ e_n $.
-  La relazione segue direttamente:
+  Direttamente dalla forma prodotto:
   \[
-    H(t) \cdot E(-t) = \prod_i \frac{1}{1-x_it} \cdot \prod_i (1-x_it) = 1.
+    H(t) \cdot E(-t) = \prod_i \frac{1}{1 - x_i t} \cdot \prod_i (1 - x_i t) = 1.
   \]
 }
 
-\cor{Ricorsione tra $ e_n $ e $ h_n $}{
-  Per ogni $ n \geq 1 $, estraendo il coefficiente di $ t^n $ in $ H(t) \cdot E(-t) = 1 $:
+\cor{Ricorsione tra $ e $ e $ h $}{
+  Estraendo il coefficiente di $ t^n $ in $ H(t) E(-t) = 1 $, per ogni $ n \geq 1 $:
   \[
-    \sum_{i=0}^{n} (-1)^i\, e_i\, h_{n-i} = 0.
+    \sum_{i = 0}^{n} (-1)^i\, e_i\, h_{n - i} = 0.
+  \]
+  Esplicitamente, per $ n = 1, 2, 3 $:
+  \begin{align*}
+    e_0 h_1 - e_1 h_0 = 0 &\quad\text{i.e.}\quad e_1 = h_1, \\
+    h_2 - e_1 h_1 + e_2 = 0 &\quad\text{i.e.}\quad e_2 = e_1 h_1 - h_2, \\
+    h_3 - e_1 h_2 + e_2 h_1 - e_3 = 0 &\quad\text{i.e.}\quad e_3 = e_1 h_2 - e_2 h_1 + h_3.
+  \end{align*}
+  In particolare, se $ \sum_{i = 0}^n (-1)^i u_i h_{n - i} = 0 $ per ogni $ n \geq 1 $
+  con $ u_0 = 1 $ e $ u_i \in \mathrm{Sym}[X_k] $, allora $ u_i = e_i $.
+}
+
+\subsubsection{Endomorfismo $ \omega $}
+
+\dfn{Endomorfismo $ \omega $}{
+  Definiamo un endomorfismo $ \omega : \mathrm{Sym}[X_k] \to \mathrm{Sym}[X_k] $ ponendo
+  \[
+    \omega(e_n) := h_n \quad \text{per ogni } n \geq 0.
+  \]
+  E' una buona definizione perche' (per il TFFS) le $ e_n $ sono algebricamente
+  indipendenti e generano $ \mathrm{Sym}[X_k] $. In particolare $ \omega(e_\lambda) = h_\lambda $
+  per ogni $ \lambda \in \mathrm{Par} $.
+}
+
+\thm{$ \omega $ e' un'involuzione}{
+  $ \omega^2 = \mathrm{id} $, l'automorfismo identita'. Equivalentemente,
+  $ \omega(h_n) = e_n $ per ogni $ n \geq 1 $ (e quindi $ \omega(h_\lambda) = e_\lambda $
+  per ogni $ \lambda \in \mathrm{Par} $).
+}
+\pf{Dim}{
+  Applichiamo $ \omega $ alle identita' $ \sum_{i = 0}^n (-1)^i e_i h_{n - i} = 0 $:
+  \[
+    0 = \sum_{i = 0}^n (-1)^i\, \omega(e_i)\, \omega(h_{n - i})
+      = \sum_{i = 0}^n (-1)^i\, h_i\, \omega(h_{n - i}) \quad \text{per } n \geq 1.
+  \]
+  Per l'unicita' osservata nel corollario precedente, segue $ \omega(h_n) = e_n $ per
+  ogni $ n \geq 1 $.
+}
+
+\cor{Le $ \{h_\lambda\} $ sono una base}{
+  $ \{h_\lambda \mid \lambda \in \mathrm{Par},\ \ell(\lambda') \leq k\} $ e' una base
+  di $ \mathrm{Sym}[X_k] $. Equivalentemente, $ h_1, h_2, \ldots, h_k $ sono
+  algebricamente indipendenti e generano $ \mathrm{Sym}[X_k] $:
+  \[
+    \mathrm{Sym}[X_k] = \mathbb{Q}[h_1, h_2, \ldots, h_k].
   \]
 }
 
-\ex{$ n = 2 $}{
-  $ h_2 - e_1 h_1 + e_2 = 0 $, cioe' $ h_2 = e_1^2 - e_2 $. (Confronta con il risultato
-  dalle Identita' di Newton: $ h_2 = \frac{p_1^2 + p_2}{2} $.)
+\nt{Con $ k $ variabili abbiamo $ \mathrm{Sym}[X_k] = \mathbb{Q}[h_1, \ldots, h_k] $,
+  quindi $ h_1, \ldots, h_k $ sono algebricamente indipendenti, ma $ h_{k+1} $ NON e'
+  algebricamente indipendente da $ h_1, \ldots, h_k $. Una considerazione analoga
+  vale per le altre basi che vedremo. Per le elementari, invece, non serve
+  precisarlo: per definizione $ e_{k+1} = e_{k+2} = \cdots = 0 $ (somma vuota).
 }
 
-\section{Funzioni di potenza $ p_\lambda $}
+\subsection{Potenze}
 
 \dfn{Funzioni simmetriche di potenza}{
   Per ogni $ n \geq 1 $:
   \[
-    p_n := \sum_i x_i^n = m_{(n)} .
+    p_n := m_{(n)} = \sum_i x_i^n,
   \]
-  Per convenzione $ p_0 = 1 $. Data $ \lambda = (\lambda_1, \dots, \lambda_k) \vdash n $:
+  con $ p_0 := m_\emptyset = 1 $. Per $ \lambda = (\lambda_1, \ldots, \lambda_k) \vdash n $:
   \[
-    p_\lambda := p_{\lambda_1}\cdot p_{\lambda_2} \cdots p_{\lambda_k} .
+    p_\lambda := p_{\lambda_1} p_{\lambda_2} \cdots p_{\lambda_k}.
   \]
 }
 
 \ex{$ \lambda = (2,1) $, $ k = 3 $}{
   \begin{align*}
-    p_{(2,1)} &= (x_1^2 + x_2^2 + x_3^2)(x_1 + x_2 + x_3) \\
-    &= x_1^3 + x_2^3 + x_3^3 + x_1^2 x_2 + x_1^2 x_3 + x_1 x_2^2 + x_2^2 x_3 + x_1 x_3^2 + x_2 x_3^2 .
+    p_{(2,1)}(x_1, x_2, x_3) &= (x_1^2 + x_2^2 + x_3^2)(x_1 + x_2 + x_3) \\
+    &= x_1^3 + x_2^3 + x_3^3 + x_1^2 x_2 + x_1^2 x_3 + x_2^2 x_1 + x_2^2 x_3 + x_3^2 x_1 + x_3^2 x_2.
   \end{align*}
 }
 
-\subsection*{Funzione generatrice}
-
-Definiamo
-\[
-  P(t) := \sum_{n \geq 1} \frac{p_n}{n}\, t^n .
-\]
-La scelta del fattore $ \frac{1}{n} $ rende le formule con $ \exp $ e $ \log $ pulite. Da $ H(t) = \prod_i \frac{1}{1 - x_i t} $:
-\[
-  \log H(t) = \sum_i \log \frac{1}{1 - x_i t} = \sum_i \sum_{n \geq 1} \frac{x_i^n t^n}{n} = \sum_{n \geq 1} \frac{p_n}{n} t^n = P(t) ,
-\]
-da cui
-\[
-  \boxed{\ H(t) = \exp(P(t))\ } .
-\]
-Analogamente, da $ E(t) = \prod_i (1 + x_i t) $:
-\[
-  \log E(t) = \sum_i \sum_{n \geq 1} \frac{(-1)^{n - 1}}{n} x_i^n t^n = -P(-t) ,
-\]
-da cui
-\[
-  \boxed{\ E(t) = \exp(-P(-t))\ } .
-\]
-
-\section{Identita' di Newton}
-
-\thm{Identita' di Newton (omogenee)}{
-  Per ogni $ m \geq 1 $:
+\dfn{Funzione generatrice $ P(t) $}{
   \[
-    m\, h_m = \sum_{i = 1}^m p_i\, h_{m - i} .
+    P(t) := \sum_{n \geq 1} p_n\, \frac{t^n}{n}.
   \]
 }
+
+\thm{$ H(t) = \exp(P(t)) $ ed $ E(t) = \exp(-P(-t)) $}{
+  Valgono le identita'
+  \begin{align}
+    H(t) &= \exp(P(t)), \tag{5.1} \\
+    E(t) &= \exp(-P(-t)). \tag{5.2}
+  \end{align}
+}
 \pf{Dim}{
-  Da $ H(t) = \exp(P(t)) $, derivando rispetto a $ t $:
+  Ricordando lo sviluppo di Taylor $ \log \frac{1}{1 - u} = -\log(1 - u) = \sum_{n \geq 1} \frac{u^n}{n} $:
+  \begin{align*}
+    H(t) &= \prod_{i = 1}^k \frac{1}{1 - x_i t}
+      = \exp\!\Bigg(\log \prod_{i = 1}^k \frac{1}{1 - x_i t}\Bigg)
+      = \exp\!\Bigg(\sum_{i = 1}^k \log \frac{1}{1 - x_i t}\Bigg) \\
+    &= \exp\!\Bigg(\sum_{i = 1}^k \sum_{n \geq 1} \frac{x_i^n t^n}{n}\Bigg)
+      = \exp\!\Bigg(\sum_{n \geq 1} \frac{p_n\, t^n}{n}\Bigg) = \exp(P(t)),
+  \end{align*}
+  che e' (5.1). Analogamente, da $ \log(1 + u) = \sum_{n \geq 1} \frac{(-1)^{n - 1}}{n} u^n $:
   \[
-    H'(t) = P'(t) \cdot \exp(P(t)) = P'(t) \cdot H(t) .
+    \log E(t) = \sum_i \log(1 + x_i t)
+      = \sum_i \sum_{n \geq 1} \frac{(-1)^{n - 1}}{n} x_i^n t^n
+      = -\sum_{n \geq 1} \frac{p_n (-t)^n}{n} = -P(-t),
+  \]
+  che da' (5.2).
+}
+
+\subsubsection{Identita' di Newton}
+
+\thm{Identita' di Newton}{
+  Per ogni $ m \geq 1 $:
+  \begin{align}
+    m\, h_m &= \sum_{i = 1}^m p_i\, h_{m - i}, \tag{5.3} \\
+    m\, e_m &= \sum_{i = 1}^m (-1)^{i - 1}\, p_i\, e_{m - i}. \tag{5.4}
+  \end{align}
+  Le (5.3) e (5.4) permettono di calcolare ricorsivamente $ h $ ed $ e $ a partire
+  dalle $ p $, e viceversa.
+}
+\pf{Dim}{
+  Derivando (5.1) rispetto a $ t $:
+  \[
+    H'(t) = \exp(P(t))' = P'(t) \exp(P(t)) = P'(t) H(t).
   \]
   Esplicitamente
   \[
-    H'(t) = \sum_{n \geq 1} n\, h_n\, t^{n - 1}, \qquad P'(t) = \sum_{n \geq 1} p_n\, t^{n - 1} .
+    \sum_{n \geq 1} n\, h_n\, t^{n - 1}
+      = \Bigg(\sum_{n \geq 1} p_n\, t^{n - 1}\Bigg) \Bigg(\sum_{n \geq 0} h_n\, t^n\Bigg).
   \]
-  L'identita' $ H'(t) = P'(t) H(t) $ diventa
-  \[
-    \sum_{n \geq 1} n h_n t^{n - 1} = \Big( \sum_{n \geq 1} p_n t^{n - 1} \Big) \Big( \sum_{n \geq 0} h_n t^n \Big) .
-  \]
-  Estraendo il coefficiente di $ t^{m - 1} $: $ m h_m = \sum_{i = 1}^m p_i h_{m - i} $.
+  Estraendo il coefficiente di $ t^{m - 1} $ si ottiene (5.3).
+
+  Analogamente, derivando (5.2): $ E'(t) = P(-t) E(t) $ (notare il segno: la derivata
+  di $ -P(-t) $ rispetto a $ t $ e' $ P'(-t) $, e $ P'(-t) = \sum_{n \geq 1} p_n (-t)^{n - 1} $;
+  riordinando si ottiene $ P(-t) E(t) $). Estraendo il coefficiente di $ t^{m - 1} $
+  si ottiene (5.4).
 }
 
-\thm{Identita' di Newton (elementari)}{
-  Per ogni $ m \geq 1 $:
-  \[
-    m\, e_m = \sum_{i = 1}^m (-1)^{i - 1}\, p_i\, e_{m - i} .
-  \]
-}
-\pf{Dim}{
-  Deriviamo $ E(t) = \exp(-P(-t)) $: $ E'(t) = P(-t) \cdot E(t) $. Notare il segno: $ \frac{d}{dt}(-P(-t)) = P'(-t) $, e $ P(-t) = \sum_{n \geq 1} (-1)^{n - 1} \frac{p_n}{n} t^n $... estraendo il coefficiente di $ t^{m - 1} $ si ottiene la formula.
-}
-
-\ex{Calcolo di $ h_2 $ e $ e_2 $}{
+\ex{Calcolo di $ h_2 $ ed $ e_2 $}{
   Per $ m = 2 $: $ 2 h_2 = p_1 h_1 + p_2 h_0 = p_1^2 + p_2 $, quindi
   \[
-    h_2 = \frac{p_1^2 + p_2}{2} .
+    h_2 = \frac{p_1^2 + p_2}{2}.
   \]
   Analogamente $ 2 e_2 = p_1 e_1 - p_2 e_0 = p_1^2 - p_2 $, quindi
   \[
-    e_2 = \frac{p_1^2 - p_2}{2} .
+    e_2 = \frac{p_1^2 - p_2}{2}.
   \]
   Le due differiscono solo per il segno di $ p_2 $.
 }
 
-\section{Le $ p_\lambda $ sono una base}
-
-\cor{}{
-  $ \{p_\lambda \mid \lambda \vdash n,\ \ell(\lambda') \leq k\} $ e' una base di $ Sym^n[X_k] $.
+\cor{Le $ \{p_\lambda\} $ sono una base}{
+  $ \{p_\lambda \mid \lambda \in \mathrm{Par},\ \ell(\lambda') \leq k\} $ e' una base
+  di $ \mathrm{Sym}[X_k] $. Equivalentemente, $ p_1, p_2, \ldots, p_k $ sono
+  algebricamente indipendenti e generano $ \mathrm{Sym}[X_k] $:
+  \[
+    \mathrm{Sym}[X_k] = \mathbb{Q}[p_1, p_2, \ldots, p_k].
+  \]
 }
 \pf{Dim (traccia)}{
-  Si ordinano gli $ e_\lambda $ con l'ordine lessicografico inverso. Le identita' di Newton esprimono $ p_n $ in termini di $ e_1, \dots, e_n $, con termine dominante $ (-1)^{n - 1} n\, e_n $. Quindi per ogni $ \lambda $ il termine dominante di $ p_\lambda $ e' proporzionale a $ e_\lambda $ con coefficiente non nullo: la matrice di transizione da $ \{p_\lambda\} $ a $ \{e_\lambda\} $ e' triangolare con diagonale non nulla, quindi invertibile. Poiche' $ \{e_\lambda\} $ e' una base, anche $ \{p_\lambda\} $ lo e'.
+  (Esercizio.) Si ordinano gli $ e_\lambda $ prima per grado e poi per ordine
+  lessicografico inverso dell'indice $ \lambda $; si mostra che se $ e_\lambda > e_\mu $
+  allora $ e_\lambda e_\nu > e_\mu e_\nu $ per ogni $ \nu $. Per (5.4), il termine
+  massimo di $ p_n $ con coefficiente non nullo e' $ (-1)^{n - 1} n e_n $: dunque il
+  termine massimo di $ p_\lambda $ e' $ \gamma e_\lambda $ con $ \gamma \neq 0 $. La
+  matrice di transizione da $ \{p_\lambda\} $ a $ \{e_\lambda\} $ e' triangolare con
+  diagonale non nulla, quindi invertibile.
 }
 
-\subsection*{Sviluppo di $ h_m $ nelle $ p_\lambda $}
-
-Da $ H(t) = \exp(P(t)) $ si ricava
-\[
-  h_m = \sum_{\lambda \vdash m} \frac{1}{z_\lambda} p_\lambda
-\]
-dove $ z_\lambda := \prod_{i \geq 1} i^{\alpha_i}\, \alpha_i! $, con $ \alpha_i = \#\{j : \lambda_j = i\} $.
-
-\osservazione{Interpretazione combinatoria.
-  In $ S_m $ il numero di permutazioni di tipo di ciclo $ \lambda $ e' $ \frac{m!}{z_\lambda} $. Quindi
+\mprop{Effetto di $ \omega $ sulle $ p_n $}{
+  Per ogni $ n \geq 1 $:
   \[
-    h_m = \frac{1}{m!} \sum_{\sigma \in S_m} p_{\lambda(\sigma)} .
+    \omega(p_n) = (-1)^{n - 1} p_n,
   \]
-  E' una media sul tipo di ciclo di tutte le permutazioni di $ S_m $.
+  da cui per ogni $ \lambda \in \mathrm{Par} $:
+  \[
+    \omega(p_\lambda) = (-1)^{|\lambda| - \ell(\lambda)} p_\lambda.
+  \]
+}
+\pf{Dim}{
+  Applichiamo $ \omega $ a (5.3) e usiamo $ \omega(h_m) = e_m $:
+  \[
+    m\, e_m = \sum_{i = 1}^m \omega(p_i)\, e_{m - i}.
+  \]
+  Confrontando con (5.4) ($ m\, e_m = \sum_{i = 1}^m (-1)^{i - 1} p_i\, e_{m - i} $),
+  per l'unicita' della ricorsione segue $ \omega(p_n) = (-1)^{n - 1} p_n $.
+  Per $ \lambda = (\lambda_1, \ldots, \lambda_k) $:
+  \[
+    \omega(p_\lambda) = \prod_{j = 1}^k \omega(p_{\lambda_j})
+      = \prod_{j = 1}^k (-1)^{\lambda_j - 1} p_{\lambda_j}
+      = (-1)^{\sum_j (\lambda_j - 1)} p_\lambda
+      = (-1)^{|\lambda| - \ell(\lambda)} p_\lambda.
+  \]
+}
+
+\subsection{Sviluppo di $ h_m $ ed $ e_m $ nelle potenze}
+
+\dfn{Numero $ z_\lambda $}{
+  Data $ \lambda \vdash n $, sia $ \alpha_i = \alpha_i(\lambda) $ il numero di parti di
+  $ \lambda $ uguali a $ i $, cos\`\i\ che $ \lambda = 1^{\alpha_1} 2^{\alpha_2} \cdots n^{\alpha_n} $.
+  Si definisce
+  \[
+    z_\lambda := \alpha_1!\, \alpha_2!\, \cdots \alpha_n!\;\cdot\; 1^{\alpha_1}\, 2^{\alpha_2}\, \cdots n^{\alpha_n}.
+  \]
+}
+
+\mprop{Sviluppo di $ h_m $ ed $ e_m $ nelle potenze}{
+  Per ogni $ m \geq 1 $:
+  \[
+    h_m = \sum_{\lambda \vdash m} \frac{1}{z_\lambda}\, p_\lambda \qquad \text{e} \qquad
+    e_m = \sum_{\lambda \vdash m} \frac{(-1)^{|\lambda|-\ell(\lambda)}}{z_\lambda}\, p_\lambda.
+  \]
+}
+\pf{Dim}{
+  Estraiamo il coefficiente di $ t^m $ da $ H(t) = \exp(P(t)) $, usando
+  $ P(t) = \sum_{n \geq 1} p_n t^n/n $:
+  \begin{align*}
+    h_m
+    &= [t^m]\sum_{r=1}^{m}\frac{1}{r!}\!\left(\sum_{n=1}^{m}p_n\frac{t^n}{n}\right)^{\!r} \\
+    &= \sum_{\substack{\alpha_1+2\alpha_2+\cdots+m\alpha_m=m}}
+      \frac{p_1^{\alpha_1}p_2^{\alpha_2}\cdots p_m^{\alpha_m}}
+           {\alpha_1!\,\alpha_2!\cdots\alpha_m!\;1^{\alpha_1}2^{\alpha_2}\cdots m^{\alpha_m}}
+    = \sum_{\lambda \vdash m}\frac{p_\lambda}{z_\lambda}.
+  \end{align*}
+  La seconda identita' segue applicando $ \omega $: poiche' $ \omega(h_m) = e_m $ e
+  $ \omega(p_\lambda) = (-1)^{|\lambda|-\ell(\lambda)} p_\lambda $,
+  \[
+    e_m = \omega(h_m) = \sum_{\lambda \vdash m}
+      \frac{(-1)^{|\lambda|-\ell(\lambda)}}{z_\lambda}\, p_\lambda.  \]
 }
 
 \ex{$ m = 2 $}{
-  Le partizioni di 2 sono $ (2) $ e $ (1,1) $. $ z_{(2)} = 2^1 \cdot 1! = 2 $, $ z_{(1,1)} = 1^2 \cdot 2! = 2 $. Quindi
+  Le partizioni di $ 2 $ sono $ (2) $ e $ (1,1) $; $ z_{(2)} = 2 $, $ z_{(1,1)} = 2 $.
+  Quindi
   \[
-    h_2 = \frac{p_2}{2} + \frac{p_1^2}{2} = \frac{p_1^2 + p_2}{2} \checkmark
+    h_2 = \frac{p_2}{2} + \frac{p_1^2}{2} = \frac{p_1^2 + p_2}{2}. \checkmark
   \]
 }
 
-\subsection*{Effetto di $ \omega $ sulle $ p_n $}
+\dfn{Tipo di ciclo}{
+  Data $ \sigma \in S_n $, il \textit{tipo di ciclo} di $ \sigma $ e' la partizione
+  $ \lambda(\sigma) \vdash n $ le cui parti sono le lunghezze dei cicli della decomposizione
+  ciclica di $ \sigma $. Se $ \sigma $ ha $ \alpha_i $ cicli di lunghezza $ i $, allora
+  $ \lambda(\sigma) = 1^{\alpha_1} 2^{\alpha_2} \cdots n^{\alpha_n} $.
+}
 
-\mprop{}{
-  $ \omega(p_n) = (-1)^{n - 1} p_n $.
+\nt{
+  Vale $ \mathrm{sgn}(\sigma) = (-1)^{\sum_i \alpha_i(i-1)} = (-1)^{n - \ell(\lambda(\sigma))} $.
+}
+
+\mprop{Classi di coniugio di $ S_n $}{
+  Le classi di coniugio di $ S_n $ sono indicizzate dalle partizioni $ \lambda \vdash n $:
+  la classe associata a $ \lambda $ e'
+  \[
+    \{\sigma \in S_n \mid \lambda(\sigma) = \lambda\}.
+  \]
+  La cardinalita' di questa classe e'
+  \[
+    |\{\sigma \in S_n \mid \lambda(\sigma) = \lambda\}| = \frac{n!}{z_\lambda}.
+  \]
+}
+
+\mprop{$ h_n $ ed $ e_n $ come medie su $ S_n $}{
+  Per ogni $ n \in \mathbb{N} $:
+  \[
+    h_n = \frac{1}{n!}\sum_{\sigma \in S_n} p_{\lambda(\sigma)} \qquad \text{e} \qquad
+    e_n = \frac{1}{n!}\sum_{\sigma \in S_n} \mathrm{sgn}(\sigma)\, p_{\lambda(\sigma)}.
+  \]
 }
 \pf{Dim}{
-  Applichiamo $ \omega $ alle identita' di Newton per $ h_m $:
+  Dalla proposizione precedente,
+  $ p_\lambda = \frac{z_\lambda}{n!}\!\!\sum_{\substack{\sigma \in S_n\\\lambda(\sigma)=\lambda}} p_{\lambda(\sigma)} $.
+  Inserendo nella prima identita':
   \[
-    m\, \omega(h_m) = \sum_{i = 1}^m \omega(p_i)\, \omega(h_{m - i}) .
+    h_n = \sum_{\lambda \vdash n}\frac{1}{z_\lambda}\,p_\lambda
+        = \sum_{\lambda \vdash n}\frac{1}{n!}\!\!\sum_{\substack{\sigma \in S_n\\\lambda(\sigma)=\lambda}}
+          p_{\lambda(\sigma)}
+        = \frac{1}{n!}\sum_{\sigma \in S_n} p_{\lambda(\sigma)}.
   \]
-  Poiche' $ \omega(h_m) = e_m $:
-  \[
-    m\, e_m = \sum_{i = 1}^m \omega(p_i)\, e_{m - i} .
-  \]
-  Confrontando con l'identita' di Newton per $ e_m $: $ m\, e_m = \sum_{i = 1}^m (-1)^{i - 1}\, p_i\, e_{m - i} $. Le due coincidono se e solo se $ \omega(p_i) = (-1)^{i - 1} p_i $.
-}
-
-Per $ \lambda \vdash n $ con $ \ell(\lambda) = k $:
-\[
-  \omega(p_\lambda) = \prod_{j = 1}^k (-1)^{\lambda_j - 1} p_{\lambda_j} = (-1)^{\sum_j (\lambda_j - 1)} p_\lambda = (-1)^{n - \ell(\lambda)} p_\lambda .
-\]
+  Per $ e_n $, si usa la formula del segno nella nota precedente e si ragiona analogamente.}
 
 \osservazione{Schema riassuntivo (relazioni fra basi).
   \[
-    H(t) = \exp(P(t)), \qquad E(t) = \exp(-P(-t)), \qquad H(t) \cdot E(-t) = 1
+    H(t) = \exp(P(t)), \qquad E(t) = \exp(-P(-t)), \qquad H(t) \cdot E(-t) = 1.
   \]
   \[
-    h_m = \sum_{\lambda \vdash m} \frac{p_\lambda}{z_\lambda}, \qquad m h_m = \sum_i p_i h_{m - i}, \qquad m e_m = \sum_i (-1)^{i - 1} p_i e_{m - i}
+    h_m = \sum_{\lambda \vdash m} \frac{p_\lambda}{z_\lambda}, \qquad
+    m\, h_m = \sum_i p_i\, h_{m - i}, \qquad
+    m\, e_m = \sum_i (-1)^{i - 1} p_i\, e_{m - i}.
   \]
   \[
-    \omega(e_n) = h_n, \quad \omega(h_n) = e_n, \quad \omega(p_n) = (-1)^{n - 1} p_n, \quad \omega^2 = id .
+    \omega(e_n) = h_n, \quad \omega(h_n) = e_n, \quad \omega(p_n) = (-1)^{n - 1} p_n, \quad \omega^2 = \mathrm{id}.
   \]
 }
 
 \section{Raccordo: le quattro basi e il limite $ Sym[X] $}
 
-\subsection*{Ricapitolo delle basi}
+\subsection{Ricapitolo delle basi}
 
 Abbiamo definito tre famiglie di generatori per $ \mathbb{Q}[x_1, \dots, x_k]^{S_k} $:
 \[
@@ -528,7 +750,7 @@ e quattro basi per $ Sym^n[X_k] $:
   \end{itemize}
 }
 
-\subsection*{Il limite: $ Sym[X] $}
+\subsection{Il limite: $ Sym[X] $}
 
 Fissata $ \lambda \vdash n $, la funzione $ m_\lambda(x_1, \dots, x_k) $ dipende da $ k $, ma al crescere di $ k $ si ottiene una catena di mappe compatibili
 \[
@@ -542,7 +764,16 @@ Possiamo lavorare con un numero infinito di variabili $ x_1, x_2, \dots $, e le 
 
 \section{La funzione di Schur come quoziente di determinanti}
 
-\subsection*{Polinomi alternanti}
+\osservazione{Dimensione di $ \mathrm{Sym}^m[X_k] $.
+  \[
+    \dim_{\mathbb{Q}} \mathrm{Sym}^m[X_k]
+    = |\{\lambda \in \mathrm{Par}(m) \mid \lambda_1 \leq k\}|
+    = |\{\lambda \in \mathrm{Par}(m) \mid \ell(\lambda') \leq k\}|
+    = |\{\lambda \in \mathrm{Par}(m) \mid \ell(\lambda) \leq k\}|.
+  \]
+}
+
+\subsection{Polinomi alternanti}
 
 \dfn{Polinomio alternante}{
   Un polinomio $ f \in \mathbb{Q}[x_1, \dots, x_k] $ e' \textit{alternante} se per ogni $ \sigma \in S_k $:
@@ -551,13 +782,37 @@ Possiamo lavorare con un numero infinito di variabili $ x_1, x_2, \dots $, e le 
   \]
 }
 
-\textbf{Costruzione.} Data una sequenza $ \lambda = (\lambda_1, \dots, \lambda_k) $ di interi, definiamo
-\[
-  a_\lambda := \det(x_i^{\lambda_j})_{i,j = 1}^k = \sum_{\sigma \in S_k} \mathrm{sgn}(\sigma)\, x_1^{\lambda_{\sigma(1)}} \cdots x_k^{\lambda_{\sigma(k)}} .
-\]
-E' alternante per costruzione (scambiare due righe del determinante cambia il segno). Se due componenti di $ \lambda $ coincidono, il determinante ha due colonne uguali e si annulla; quindi $ a_\lambda \neq 0 $ solo se i $ \lambda_i $ sono tutti distinti.
+\dfn{Polinomio $ a_\alpha $}{
+  Dato $ \alpha = (\alpha_1, \ldots, \alpha_k) \in \mathbb{N}^k $, l'azione di $ \sigma \in S_k $
+  su un monomio e' $ \sigma(x^\alpha) := x_1^{\alpha_{\sigma(1)}} \cdots x_k^{\alpha_{\sigma(k)}} $.
+  Si definisce
+  \[
+    a_\alpha := \det\!\bigl(x_i^{\alpha_j}\bigr)_{i,j=1}^k
+      = \sum_{\sigma \in S_k} \mathrm{sgn}(\sigma)\, \sigma(x^\alpha).
+  \]
+  Per costruzione $ a_\alpha $ e' alternante; in particolare $ a_\alpha = 0 $ a meno che le
+  componenti di $ \alpha $ siano tutte distinte.
+}
 
-\subsection*{Il determinante di Vandermonde}
+\ex{$ \alpha = (4,2,1) $, $ k = 3 $}{
+  \[
+    a_{(4,2,1)} = \det\begin{pmatrix} x_1^4 & x_1^2 & x_1 \\ x_2^4 & x_2^2 & x_2 \\ x_3^4 & x_3^2 & x_3 \end{pmatrix}.
+  \]
+}
+
+\nt{
+  Poiche' $ a_\alpha = 0 $ quando due componenti di $ \alpha $ coincidono, ci basta considerare
+  le $ \alpha \in \mathbb{N}^k $ con $ \alpha_1 > \alpha_2 > \cdots > \alpha_k $. Ogni tale
+  sequenza si scrive in modo unico come
+  \[
+    \alpha = \lambda + \delta, \qquad
+    \delta = (k-1,\, k-2,\, \ldots,\, 1,\, 0),
+  \]
+  con $ \lambda \in \mathrm{Par} $, $ \ell(\lambda) \leq k $, ponendo $ \lambda_j := \alpha_j - (k-j) \geq 0 $
+  per ogni $ j $.
+}
+
+\subsection{Il determinante di Vandermonde}
 
 Il caso fondamentale e' $ \delta = (k-1, k-2, \dots, 1, 0) $:
 \[
@@ -570,8 +825,9 @@ Il caso fondamentale e' $ \delta = (k-1, k-2, \dots, 1, 0) $:
   \]
 }
 
-\mprop{Caratterizzazione dei polinomi alternanti}{
-  Un polinomio $ p $ e' alternante se e solo se e' divisibile per $ a_\delta $.
+\mlenma{Fattorizzazione dei polinomi alternanti}{
+  Un polinomio $ f \in \mathbb{Q}[x_1,\ldots,x_k] $ e' alternante se e solo se $ f = a_\delta \cdot g $
+  con $ g \in \mathrm{Sym}[X_k] $.
 }
 \pf{Dim}{
   $ (\Leftarrow) $ Se $ p = a_\delta \cdot g $ con $ g $ simmetrico, allora $ \sigma(p) = \mathrm{sgn}(\sigma)\, a_\delta \cdot g = \mathrm{sgn}(\sigma)\, p $.
@@ -583,7 +839,7 @@ Il caso fondamentale e' $ \delta = (k-1, k-2, \dots, 1, 0) $:
   $ f $ e' alternante $ \iff f = a_\delta \cdot g $ con $ g $ simmetrico. L'applicazione $ g \mapsto a_\delta \cdot g $ e' un \textit{isomorfismo} $ Sym[X_k] \xrightarrow{\sim} A_k $ fra simmetrici e alternanti.
 }
 
-\subsection*{Definizione algebrica della funzione di Schur}
+\subsection{Definizione algebrica della funzione di Schur}
 
 \dfn{Funzione di Schur (algebrica)}{
   Per ogni $ \lambda \vdash n $ con $ \ell(\lambda) \leq k $, la \textit{funzione di Schur} e'
@@ -655,6 +911,7 @@ E' un polinomio simmetrico perche' numeratore e denominatore sono entrambi alter
 
 \ex{$ \lambda = (2,1) $, $ k = 3 $}{
   I SSYT di forma $ (2,1) $ con valori in $ \{1,2,3\} $ sono 8:
+    \ytableausetup{notabloids}
   \[
     \begin{ytableau} 2 \\ 1 & 1 \end{ytableau} \quad
     \begin{ytableau} 3 \\ 1 & 1 \end{ytableau} \quad
@@ -676,7 +933,7 @@ Le due definizioni coincidono: e' il \textit{Teorema fondamentale delle funzioni
 
 \section{Corrispondenza RSK: introduzione e algoritmo}
 
-\subsection*{Motivazione}
+\subsection{Motivazione}
 
 La corrispondenza RSK (Robinson--Schensted--Knuth) e' una biezione fondamentale in combinatoria. Risponde alla domanda: c'e' un modo canonico per associare tableau a matrici di interi non negativi?
 
@@ -687,7 +944,23 @@ La corrispondenza RSK (Robinson--Schensted--Knuth) e' una biezione fondamentale 
   \]
 }
 
-\subsection*{Parola di lettura di una matrice}
+\subsection{Parola di lettura di una matrice}
+
+TODO: mi sa che noi abbiamo usato una definizione diversa. Negli appunti del GOAT D'Adderio usa la seguente def:
+
+\dfn{Permutazione generalizzata}{
+  Data una matrice $ A $, definiamo la sua permutazione associata come:
+  \[
+    w_A = \begin{pmatrix}
+    i_1 & i_2 & i_3 & ... & i_m\\
+    j_1 & j_2 & j_3 & ... & j_m\\
+    \end{pmatrix} 
+  \]
+  dove la colonna $ \begin{pmatrix}
+  i\\
+  j\\
+  \end{pmatrix} $ e' presente in $ w_A $ esattamente $ a_{ij} $ volte. Le colonne sono poi ordinate in modo tale che $ i_1 \gets i_2 \leq ... \leq i_m $ e nel caso in cui $ i_r = i_s $ (con $ r < s $) le colonne si ordinano in modo che $ j_r \leq j_s $.
+}
 
 Data una matrice $ A = (a_{ij}) $ a coefficienti in $ \mathbb{N} $, costruiamo la \textit{parola di lettura} $ w_A $: per ogni colonna $ j $ da sinistra a destra, scriviamo il valore di riga $ i $ ripetuto $ a_{ij} $ volte, scorrendo le righe dall'alto in basso.
 
@@ -703,7 +976,7 @@ Data una matrice $ A = (a_{ij}) $ a coefficienti in $ \mathbb{N} $, costruiamo l
   \]
 }
 
-\subsection*{Algoritmo di inserzione: il bumping}
+\subsection{Algoritmo di inserzione: il bumping}
 
 L'ingrediente fondamentale e' il \textit{bumping} (scacciamento): come inserire un numero $ t $ in una riga di un SSYT preservando la struttura.
 
@@ -718,7 +991,7 @@ L'ingrediente fondamentale e' il \textit{bumping} (scacciamento): come inserire 
 \textbf{Proprieta' chiave del bumping.}
 \begin{itemize}
   \item Se inserisco $ k $ in un SSYT $ T $, ottengo ancora un SSYT.
-  \item Il percorso di inserzione va verso il basso: ogni elemento scacciato finisce nella riga successiva piu' in basso.
+  \item Il percorso di inserzione va verso il basso: ogni elemento scacciato finisce nella riga successiva piu' in alto.
   \item L'elemento scacciato e' sempre strettamente maggiore di quello che lo scaccia, quindi nelle righe successive l'elemento inserito e' piu' grande, e puo' scacciare qualcosa piu' a sinistra.
 \end{itemize}
 
@@ -736,7 +1009,7 @@ L'ingrediente fondamentale e' il \textit{bumping} (scacciamento): come inserire 
   $ 7 $ in riga 4: $ 7 < 8 $ e $ 7 < 9 $... no, $ 7 > 8 $? No. $ 7 $ si aggiunge alla fine della riga 4 dopo $ 9 $? In realta', si applica la regola: $ 7 $ si confronta col primo elemento della riga 4 ($ 8 $); $ 8 > 7 $, quindi $ 7 $ scaccia $ 8 $. $ 8 $ va in riga 5.
 }
 
-\subsection*{L'algoritmo RSK}
+\subsection{L'algoritmo RSK}
 
 \textbf{Input.} La parola $ w_A = w_1, w_2, \dots, w_N $.
 
@@ -784,7 +1057,7 @@ L'ingrediente fondamentale e' il \textit{bumping} (scacciamento): come inserire 
   Risultato: $ (R, L) $ e' una coppia di SSYT di forma $ \lambda = (4, 1, 1) $.
 }
 
-\subsection*{Osservazioni}
+\subsection{Osservazioni}
 
 \osservazione{
   La corrispondenza RSK e' una biezione: da $ (R, L) $ si puo' ricostruire univocamente $ A $. L'algoritmo inverso esiste ed e' simmetrico.
@@ -798,7 +1071,7 @@ L'ingrediente fondamentale e' il \textit{bumping} (scacciamento): come inserire 
   Se inserisco $ k $ in un SSYT $ T $, ottengo ancora un SSYT: l'algoritmo mantiene la struttura ad ogni passo.
 }
 
-\subsection*{Perche' RSK e' importante}
+\subsection{Perche' RSK e' importante}
 
 \textbf{Collegamento con i polinomi di Schur.} $ s_\lambda $ conta i SSYT di forma $ \lambda $. RSK spiega perche' il prodotto
 \[
@@ -810,7 +1083,7 @@ ha coefficienti $ c^\lambda_{\mu \nu} $ (i numeri di \textit{Littlewood--Richard
 
 \section{RSK: biunivocita' e prima ricostruzione}
 
-\subsection*{Esercizio 8 -- Ricostruzione di $A$ data $(L,R)$}
+\subsection{Esercizio 8 -- Ricostruzione di $A$ data $(L,R)$}
 
 Dati $ (L,R) $ coppia di SSYT della \textit{stessa forma}, vogliamo ricostruire la $ \mathbb{N} $-matrice finita $ A $ tale che $ \mathrm{RSK}(A) = (L,R) $.
 
@@ -852,7 +1125,7 @@ Avevamo gia' dimostrato (osservazioni 1--5) che RSK e' un'applicazione
 
 \section{Forma bilineare su $ Sym[X] $}
 
-\subsection*{Ripasso: matrici $ \mathbb{N} $}
+\subsection{Ripasso: matrici $ \mathbb{N} $}
 
 Avevamo gia' dimostrato che
 \[
@@ -876,7 +1149,7 @@ Si fa lo stesso ragionamento con le $ h_\lambda $: ora pero' in ogni colonna pos
   $ N_{\lambda,\mu} = N_{\mu,\lambda} $: $ A \leftrightarrow A^T $ e' una biezione che scambia $ \lambda $ e $ \mu $. Lo stesso vale per $ M $.
 }
 
-\subsection*{Definizione della forma bilineare}
+\subsection{Definizione della forma bilineare}
 
 \dfn{Forma bilineare $ \langle \cdot, \cdot \rangle $ su $ Sym[X] $}{
   $ \langle \cdot, \cdot \rangle $ e' l'unica forma bilineare tale che
@@ -928,7 +1201,7 @@ Si fa lo stesso ragionamento con le $ h_\lambda $: ora pero' in ogni colonna pos
 
 \section{Le $ p_\lambda $ e il prodotto scalare di Hall}
 
-\subsection*{Ripasso: $ z_\lambda $}
+\subsection{Ripasso: $ z_\lambda $}
 
 Avevamo definito
 \[
@@ -1091,7 +1364,7 @@ E avevamo dimostrato che
   Per definizione $ \widehat{s}_{\lambda/\mu} = \sum_\alpha K_{\lambda/\mu,\alpha}\, x^\alpha $ con $ \alpha $ composizione. Per la simmetria appena dimostrata, le composizioni che differiscono per permutazione hanno lo stesso coefficiente $ K_{\lambda/\mu, \nu} $ (con $ \nu $ partizione associata), quindi raggruppando si ottengono le $ m_\nu $.
 }
 
-\subsection*{Ordine di dominanza}
+\subsection{Ordine di dominanza}
 
 Ricordiamo che $ \mu \trianglelefteq \lambda $ se per ogni $ i \geq 1 $ vale $ \sum_{j=1}^i \mu_j \leq \sum_{j=1}^i \lambda_j $.
 
@@ -1171,6 +1444,13 @@ Ricordiamo che $ \mu \trianglelefteq \lambda $ se per ogni $ i \geq 1 $ vale $ \
 
 \textbf{Algoritmo.} Biezione fra $ (0,1) $-matrici finite e coppie $ (L,R) $ di tableaux della stessa forma tali che $ L' $ ed $ R $ sono SSYT (cioe' $ L $ e' SSYT trasposto: strettamente crescente in riga, debolmente crescente in colonna). Funziona nello stesso modo solo che, durante l'inserimento di un numero $ j $, si scaccia l'elemento piu' a sinistra che e' $ \leq j $.
 
+\ex{Esempio di RSK*}{
+  TODO: /home/giovanni non ce l'ho :(
+  % \begin{center}
+  %   \includegraphics[width=0.85\textwidth]{/home/giovanni/Pictures/Screenshots/Screenshot_20260502_143630.png}
+  % \end{center}
+}
+
 Cosi' come abbiamo dimostrato (con RSK)
 \[
   \prod_{i,j} \frac{1}{1 - x_i y_j} = \sum_\lambda \widehat{s}_\lambda(x)\, \widehat{s}_\lambda(y) ,
@@ -1222,5 +1502,348 @@ allo stesso modo, con RSK*, si dimostra che
   La matrice $ K $ e' triangolare con $ 1 $ sulla diagonale, quindi invertibile: il sistema ha un'unica soluzione, ovvero $ s_\lambda = \widehat{s}_\lambda $ per ogni $ \lambda $.
 }
 
+
+\section{Identita' di Jacobi-Trudi}
+
+\thm{Jacobi-Trudi}{
+  Sia $ \lambda = (\lambda_1, \ldots, \lambda_\ell) $ una partizione. Allora:
+  \[
+    s_\lambda = \det\bigl( h_{\lambda_i - i + j} \bigr)_{i,j = 1, \ldots, \ell}
+  \]
+  e analogamente, applicando l'involuzione $ \omega $:
+  \[
+    s_{\lambda'} = \det\bigl( e_{\lambda_i - i + j} \bigr)_{i,j = 1, \ldots, \ell}
+  \]
+  con la convenzione $ h_0 = e_0 = 1 $ e $ h_k = e_k = 0 $ per $ k < 0 $.
+}
+
+La seconda identita' segue dalla prima applicando $ \omega $. Dimostriamo la prima con il
+metodo di \textbf{Lindstr\"om-Gessel-Viennot} (cammini reticolari non intersecanti).
+
+\subsection{Cammini reticolari ed etichettatura}
+
+Consideriamo cammini sul reticolo $ \mathbb{Z} \times \mathbb{Z} $:
+\[
+  p = s_1, s_2, s_3, \ldots
+\]
+dove ciascun passo $ s_i $ ha lunghezza $ 1 $ ed e' verso \textbf{Nord (N)} o \textbf{Est (E)}.
+
+\dfn{Etichetta di un passo Est}{
+  Per ogni passo verso Est $ s_i $:
+  \[
+    L(s_i) := \bigl|\{s_j \text{ passo verso Nord che precede } s_i\}\bigr| + 1
+  \]
+  cioe' l'altezza ($ +1 $) a cui si trova il passo. Se $ p $ ha un numero finito di passi
+  Est, definiamo
+  \[
+    x^p := \prod_{s_i \in E} x_{L(s_i)}.
+  \]
+  Se $ p $ parte da $ u $ e termina in $ v $, scriviamo $ u \xrightarrow{p} v $.
+}
+
+\ex{Cammini in $ 2 \times 2 $: $ h_2 $}{
+  Cammini da $ (0,0) $ a $ (2,2) $ (due passi $ E $ e due $ N $):
+  \begin{itemize}
+    \item EENN: $ x_1^2 $ \quad ENEN: $ x_1 x_2 $ \quad ENNE: $ x_1 x_3 $
+    \item NEEN: $ x_2^2 $ \quad NENE: $ x_2 x_3 $ \quad NNEE: $ x_3^2 $
+  \end{itemize}
+  Sommando: $ x_1^2 + x_1 x_2 + x_1 x_3 + x_2^2 + x_2 x_3 + x_3^2 = h_2(x_1, x_2, x_3) $.
+}
+
+\osservazione{
+  Piu' in generale,
+  \[
+    h_n(x_1, \ldots, x_k) = \sum_p x^p
+  \]
+  dove la somma e' su tutti i cammini $ p $ da $ (a, b) $ a $ (a+n, b+k-1) $: i cammini
+  con $ n $ passi $ E $ distribuiti su $ k $ ``altezze'' corrispondono biunivocamente alle
+  weak $ k $-composizioni di $ n $.
+}
+
+\subsection{Famiglie di cammini}
+
+\dfn{Famiglia di cammini}{
+  Fissati punti iniziali $ u_1, \ldots, u_\ell $ e finali $ v_1, \ldots, v_\ell $, una
+  \textbf{famiglia} $ \mathcal{P} = (p_1, \ldots, p_\ell) $ di cammini soddisfa, per qualche
+  $ \sigma \in S_\ell $:
+  \[
+    u_i \xrightarrow{p_i} v_{\sigma(i)} \qquad \forall\, i = 1, \ldots, \ell.
+  \]
+  Definiamo
+  \[
+    x^{\mathcal{P}} := \prod_{i=1}^\ell x^{p_i}, \qquad
+    (-1)^{\mathcal{P}} := \mathrm{sgn}(\sigma).
+  \]
+
+  \textbf{Scelta canonica dei punti.} Data $ \lambda $ con $ \ell $ parti e $ k $ fissato:
+  \[
+    u_i := (1 - i,\, 0), \qquad v_i := (\lambda_i - i + 1,\, k - 1).
+  \]
+}
+
+\ex{$ \lambda = (2,2,2,1) $, $ k = 5 $}{
+  Una famiglia $ \mathcal{P} $ con $ \sigma = (1\,2\,3) $ (cioe' $ u_1 \to v_2 $,
+  $ u_2 \to v_3 $, $ u_3 \to v_1 $, $ u_4 \to v_4 $) ha
+  \[
+    x^{\mathcal{P}} = x_2^4 \, x_3^2 \, x_4, \qquad (-1)^{\mathcal{P}} = +1
+  \]
+  (un $ 3 $-ciclo e' una permutazione pari).
+}
+
+\subsection{Dimostrazione del teorema}
+
+\pf{Dim}{
+  La dimostrazione si articola in tre passi.
+
+  \textbf{(A) Espansione del determinante.}
+  \[
+    \det\bigl( h_{\lambda_i - i + j}(x_1, \ldots, x_k) \bigr)_{i,j=1}^\ell
+    = \sum_{\substack{\mathcal{P} \text{ famiglia} \\ u_j \to v_i}}
+      (-1)^{\mathcal{P}}\, x^{\mathcal{P}}.
+  \]
+  Per la scelta dei $ u_j, v_i $ vale $ h_{\lambda_i - i + j}(x_1, \ldots, x_k) = \sum_{u_j \xrightarrow{p} v_i} x^p $;
+  l'insieme delle $ \ell $-uple $ \mathcal{P} $ con permutazione $ \sigma $ corrisponde al
+  termine $ \mathrm{sgn}(\sigma) \prod_j h_{\lambda_{\sigma(j)} - \sigma(j) + j} $ del determinante.
+
+  \textbf{(B) Cancellazione delle famiglie intersecanti.}
+  Definiamo un'\textbf{involuzione} $ \iota $ sulle famiglie $ \mathcal{P} $:
+  \begin{itemize}
+    \item Se i cammini di $ \mathcal{P} $ \textit{non si intersecano}, $ \iota(\mathcal{P}) := \mathcal{P} $.
+    \item Altrimenti, sia $ i $ il piu' piccolo indice con $ p_i $ intersecante un altro
+          cammino, e $ j \neq i $ il piu' piccolo con $ p_j $ intersecante $ p_i $. Sia
+          $ v_0 $ il punto di intersezione piu' a sud-ovest di $ p_i \cap p_j $. Definiamo
+          \[
+            p_i' := u_i \xrightarrow{p_i} v_0 \xrightarrow{p_j} v_{\sigma(j)}, \qquad
+            p_j' := u_j \xrightarrow{p_j} v_0 \xrightarrow{p_i} v_{\sigma(i)},
+          \]
+          e sostituiamo $ p_i, p_j $ in $ \mathcal{P} $ con $ p_i', p_j' $.
+  \end{itemize}
+
+  \textbf{Osservazioni.}
+  \begin{enumerate}
+    \item $ \iota $ e' un'involuzione.
+    \item La permutazione di $ \iota(\mathcal{P}) $ e' $ (i\,j) \cdot \sigma $, dunque
+          $ (-1)^{\iota(\mathcal{P})} = -(-1)^{\mathcal{P}} $.
+    \item I passi orizzontali (Est) sono invariati nello scambio: $ x^{\iota(\mathcal{P})} = x^{\mathcal{P}} $.
+  \end{enumerate}
+
+  Quindi le famiglie intersecanti si cancellano a coppie sotto $ \iota $, e quelle non
+  intersecanti hanno necessariamente $ \sigma = \mathrm{id} $ (per la scelta dei $ u_i, v_i $),
+  cioe' segno $ +1 $:
+  \[
+    \det\bigl( h_{\lambda_i - i + j} \bigr)_{i,j=1}^\ell
+    = \sum_{\mathcal{P} \text{ non intersec.}} x^{\mathcal{P}}.
+  \]
+
+  \textbf{(C) Biiezione con $ \mathrm{SSYT}(\lambda) $.}
+  Data $ \mathcal{P} $ non intersecante, le etichette $ L(s) $ dei passi Est di $ p_i $,
+  lette in ordine crescente, danno la $ i $-esima riga di un tableau $ T $.
+
+  \textit{Verifiche:}
+  \begin{itemize}
+    \item \textbf{Forma $ \lambda $:} la riga $ i $ ha esattamente $ \lambda_i $ caselle
+          (uguali ai passi Est di $ p_i $).
+    \item \textbf{Righe debolmente crescenti:} per definizione di $ L $.
+    \item \textbf{Colonne strettamente crescenti:} per la non intersezione, il $ j $-esimo
+          passo Est di $ p_{i+1} $ e' strettamente piu' alto del $ j $-esimo di $ p_i $.
+  \end{itemize}
+
+  La ricostruzione inversa e' immediata: data $ T \in \mathrm{SSYT}(\lambda) $, la
+  $ i $-esima riga codifica univocamente $ p_i $. Quindi
+  \[
+    \sum_{\mathcal{P} \text{ non intersec.}} x^{\mathcal{P}}
+    = \sum_{T \in \mathrm{SSYT}(\lambda)} x^T = s_\lambda.
+  \]
+}
+
+\section{Regola di Murnaghan-Nakayama}
+
+\subsection{Border strip}
+
+\dfn{Forma connessa}{
+  Una shape skew $ \lambda/\mu $ e' \textbf{connessa} se l'interno e' un sottoinsieme
+  connesso di $ \mathbb{R}^2 $. Le celle che si toccano solo in un vertice non contano
+  come connesse: ad esempio $ (2,1)/(1) $ \textbf{non} e' connessa.
+}
+
+\dfn{Border strip}{
+  Una shape skew $ \lambda/\mu $ e' una \textbf{border strip} (o \textit{rim hook}, o
+  \textit{ribbon}) se e' connessa e non contiene alcun quadrato $ 2 \times 2 $.
+
+  L'\textbf{altezza} di una border strip $ B $ e':
+  \[
+    \mathrm{ht}(B) := (\#\text{righe di } B) - 1.
+  \]
+}
+
+\osservazione{
+  Dati interi positivi $ a_1, \ldots, a_k $, esiste un'unica border strip $ \lambda/\mu $
+  con $ a_i $ caselle nella riga $ i $ (basta porre $ a_i = \lambda_i - \mu_i $). Quindi
+  il numero di border strip di taglia $ n $ (a meno di traslazione) e' $ 2^{n-1} $.
+}
+
+\thm{Passo della Murnaghan-Nakayama}{
+  Per ogni $ \mu \in \mathrm{Par} $ e $ r \in \mathbb{N} $:
+  \[
+    \boxed{\ s_\mu \cdot p_r = \sum_\lambda (-1)^{\mathrm{ht}(\lambda/\mu)}\, s_\lambda\ }
+  \]
+  dove la somma e' su tutte le partizioni $ \lambda \supseteq \mu $ tali che $ \lambda/\mu $
+  e' una border strip di taglia $ r $.
+}
+
+\ex{$ \mu = (2,1) $, $ r = 3 $}{
+  Le border strip di taglia $ 3 $ aggiungibili a $ (2,1) $:
+  \begin{itemize}
+    \item $ \lambda = (5,1) $: tre caselle in riga 1, $ \mathrm{ht} = 0 $, segno $ + $.
+    \item $ \lambda = (3,3) $: caselle $ (1,3), (2,2), (2,3) $, $ \mathrm{ht} = 1 $, segno $ - $.
+    \item $ \lambda = (2,2,2) $: caselle $ (2,2), (3,1), (3,2) $, $ \mathrm{ht} = 1 $, segno $ - $.
+    \item $ \lambda = (2,1,1,1,1) $: tre caselle nella prima colonna, $ \mathrm{ht} = 2 $, segno $ + $.
+  \end{itemize}
+  Quindi:
+  \[
+    s_{(2,1)} \cdot p_3 = s_{(5,1)} - s_{(3,3)} - s_{(2,2,2)} + s_{(2,1^4)}.
+  \]
+  Nota: $ (4,2)/(2,1) $ non e' una border strip perche' non e' connessa.
+}
+
+\pf{Dim del Teorema}{
+  Lavoriamo con $ n = \ell(\mu) + r $ variabili. Sia $ \delta = (n-1, n-2, \ldots, 1, 0) $.
+  Moltiplicando $ s_\mu p_r $ per l'alternante $ a_\delta $:
+  \[
+    a_{\mu + \delta} \cdot p_r = \sum_{j=1}^n a_{\mu + \delta + r\varepsilon_j}
+  \]
+  dove $ \varepsilon_j $ e' il vettore con $ 1 $ in posizione $ j $ (poiche'
+  $ p_r = x_1^r + \cdots + x_n^r $).
+
+  \textbf{Riordino in ordine decrescente.} Per ciascun $ j $, riordiniamo
+  $ \mu + \delta + r\varepsilon_j $ in ordine strettamente decrescente:
+  \begin{itemize}
+    \item Se due termini coincidono, $ a_{\mu+\delta+r\varepsilon_j} = 0 $ (alternante con
+          due righe uguali).
+    \item Altrimenti, esiste un unico $ h \leq j $ tale che
+          \[
+            \mu_{h-1} + n - h + 1 > \mu_j + n - j + r > \mu_h + n - h
+          \]
+          e in tal caso
+          \[
+            a_{\mu + \delta + r\varepsilon_j} = (-1)^{j-h}\, a_{\lambda + \delta}
+          \]
+          dove
+          \[
+            \lambda = (\mu_1, \ldots, \mu_{h-1},\, \mu_j + r + h - j,\, \mu_h + 1, \ldots, \mu_{j-1} + 1,\, \mu_{j+1}, \ldots, \mu_n).
+          \]
+          Il segno $ (-1)^{j-h} $ proviene dal ciclo di lunghezza $ j - h + 1 $.
+  \end{itemize}
+
+  Le $ \lambda $ cosi' ottenute sono esattamente quelle per cui $ \lambda/\mu $ e' una
+  border strip $ B $ di taglia $ r $, e $ j - h = \mathrm{ht}(B) $. Dividendo per $ a_\delta $:
+  \[
+    s_\mu \cdot p_r = \frac{a_{\mu+\delta} p_r}{a_\delta}
+    = \sum_\lambda (-1)^{\mathrm{ht}(\lambda/\mu)}\, s_\lambda.
+  \]
+}
+
+\ex{Calcolo per $ \mu = (2,1) $, $ r = 3 $, $ n = 5 $}{
+  $ \delta = (4,3,2,1,0) $, $ \mu + \delta = (6,4,2,1,0) $. Calcoliamo
+  $ a_{\mu+\delta+3\varepsilon_j} $ per ogni $ j $:
+  \[
+    \begin{array}{c|c|c|c|c}
+      j & \mu+\delta+3\varepsilon_j & \text{riordinato} & \text{segno} & \lambda \\ \hline
+      1 & (9,4,2,1,0) & (9,4,2,1,0) & + & (5,1) \\
+      2 & (6,7,2,1,0) & (7,6,2,1,0) & - & (3,3) \\
+      3 & (6,4,5,1,0) & (6,5,4,1,0) & - & (2,2,2) \\
+      4 & (6,4,2,4,0) & \text{due righe uguali} & 0 & \text{---} \\
+      5 & (6,4,2,1,3) & (6,4,3,2,1) & + & (2,1,1,1,1)
+    \end{array}
+  \]
+  Quindi $ s_{(2,1)} p_3 = s_{(5,1)} - s_{(3,3)} - s_{(2,2,2)} + s_{(2,1^4)} $, in accordo
+  con il calcolo per ispezione delle border strip.
+}
+
+\subsection{Border strip tableaux}
+
+Per moltiplicare $ s_\mu $ per $ p_\alpha = p_{\alpha_1} p_{\alpha_2} \cdots $ con $ \alpha $
+composizione debole, si itera il teorema precedente. Questo motiva la seguente definizione.
+
+\dfn{Border strip tableau}{
+  Sia $ \alpha = (\alpha_1, \alpha_2, \ldots) $ una composizione debole di $ n $. Un
+  \textbf{border strip tableau} (o \textit{rim hook tableau}) di forma $ \lambda/\mu $
+  (con $ |\lambda/\mu| = n $) e tipo $ \alpha $ e' un riempimento delle caselle di
+  $ \lambda/\mu $ con interi positivi tale che:
+  \begin{enumerate}
+    \item ogni riga e ogni colonna e' debolmente crescente;
+    \item per ogni $ i $, l'insieme delle caselle contenenti $ i $ forma una border strip
+          di taglia $ \alpha_i $.
+  \end{enumerate}
+
+  Equivalentemente, una sequenza
+  \[
+    \mu = \lambda^0 \subseteq \lambda^1 \subseteq \cdots \subseteq \lambda^r = \lambda
+  \]
+  con $ \lambda^i / \lambda^{i-1} $ border strip di taglia $ \alpha_i $.
+
+  L'\textbf{altezza} del tableau e':
+  \[
+    \mathrm{ht}(T) := \sum_{i=1}^r \mathrm{ht}(B_i)
+  \]
+  dove $ B_1, \ldots, B_r $ sono le border strip non vuote.
+}
+
+\ex{Border strip tableau di forma $ \lambda = (7,5,5,5) $, tipo $ \alpha = (5,2,3,0,5,7) $}{
+  Un possibile $ T $:
+  \[
+    T = \begin{array}{|c|c|c|c|c|c|c|}
+      \hline 3 & 5 & 5 & 6 & 6 & & \\ \hline
+      3 & 3 & 5 & 5 & 6 & & \\ \hline
+      1 & 2 & 2 & 5 & 6 & & \\ \hline
+      1 & 1 & 1 & 1 & 6 & 6 & 6 \\ \hline
+    \end{array}
+  \]
+  Altezza: $ \mathrm{ht}(T) = 1 + 0 + 1 + 0 + 2 + 3 = 7 $. (Il valore $ 4 $ non compare
+  perche' $ \alpha_4 = 0 $.)
+}
+
+\thm{Murnaghan-Nakayama}{
+  Per ogni partizione $ \mu $ e ogni composizione debole
+  $ \alpha = (\alpha_1, \alpha_2, \ldots) $:
+  \[
+    \boxed{\ s_\mu \cdot p_\alpha
+    = \sum_{\substack{\lambda \supseteq \mu \\ |\lambda/\mu| = |\alpha|}}
+    \chi^{\lambda/\mu}(\alpha)\, s_\lambda\ }
+  \]
+  dove $ p_\alpha := p_{\alpha_1} p_{\alpha_2} \cdots $ e
+  \[
+    \chi^{\lambda/\mu}(\alpha) := \sum_T (-1)^{\mathrm{ht}(T)}
+  \]
+  con la somma su tutti i border strip tableaux $ T $ di forma $ \lambda/\mu $ e tipo $ \alpha $.
+}
+\pf{Dim}{
+  Si itera il Teorema 1 per ogni $ p_{\alpha_i} $: ad ogni passaggio si aggiunge una border
+  strip di taglia $ \alpha_i $, e i segni $ (-1)^{\mathrm{ht}(B_i)} $ moltiplicandosi
+  producono $ (-1)^{\mathrm{ht}(T)} $.
+}
+
+\cor{Caso $ \mu = \emptyset $}{
+  \[
+    \boxed{\ p_\alpha = \sum_{\lambda \vdash |\alpha|} \chi^\lambda(\alpha)\, s_\lambda\ }
+  \]
+  In particolare $ \chi^\lambda(\alpha) $ non dipende dall'ordine delle componenti di
+  $ \alpha $ (perche' $ p_\alpha $ non ne dipende). Vale anche la formula:
+  \[
+    \chi^\lambda(\alpha) = [x^{\lambda + \delta}]\, p_\alpha \cdot a_\delta
+  \]
+  con $ \delta = (n-1, \ldots, 1, 0) $, $ n = |\alpha| $.
+}
+
+\ex{Calcolo di $ p_3 $}{
+  Applichiamo il corollario con $ \mu = \emptyset $, $ \alpha = (3) $: enumeriamo le
+  partizioni $ \lambda \vdash 3 $ tali che $ \lambda $ stessa sia una border strip.
+  \begin{itemize}
+    \item $ \lambda = (3) $: $ \mathrm{ht} = 0 $, segno $ + $.
+    \item $ \lambda = (2,1) $: $ \mathrm{ht} = 1 $, segno $ - $.
+    \item $ \lambda = (1,1,1) $: $ \mathrm{ht} = 2 $, segno $ + $.
+  \end{itemize}
+  Quindi: $ p_3 = s_{(3)} - s_{(2,1)} + s_{(1,1,1)} $.
+}
 
 % \end{document}
