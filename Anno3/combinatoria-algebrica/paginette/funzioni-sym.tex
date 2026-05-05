@@ -1411,11 +1411,12 @@ E avevamo dimostrato che
 
 \thm{}{
   \[
-    e_\mu = \sum_{\lambda \vdash |\mu|} K_{\lambda'/\mu}\, s_\lambda
+    s_\nu e_\mu = \sum_{\substack{\lambda \supseteq \nu\\ |\lambda/\nu| = |\mu|}} K_{\lambda'/\nu', \mu}\, s_\lambda
   \]
   (la somma usa $ \lambda' $, la trasposta). La dimostrazione non fa parte del programma.
 }
 
+A noi interessa di piu' il seguente corollario
 \cor{Regola di Pieri}{
   \[
     s_\nu \cdot e_n = \sum_\lambda s_\lambda
@@ -1450,15 +1451,15 @@ E avevamo dimostrato che
 
 \cor{}{
   \[
-    s_{\lambda/\mu}(x) = \sum_{\nu \vdash |\lambda/\mu|} K_{\lambda/\mu, \nu}\, m_\nu(x)
+    \widehat{s}_{\lambda/\nu}(x) = \sum_{\mu \vdash |\lambda/\nu|} K_{\lambda/\nu, \mu}\, m_\mu(x)
   \]
   In particolare, per $ \mu = \emptyset $:
   \[
-    \widehat{s}_\lambda(x) = \sum_{\nu \vdash |\lambda|} K_{\lambda, \nu}\, m_\nu(x) .
+    \widehat{s}_\lambda(x) = \sum_{\mu \vdash |\lambda|} K_{\lambda, \mu}\, m_\mu(x) .
   \]
 }
 \pf{Dim}{
-  Per definizione $ \widehat{s}_{\lambda/\mu} = \sum_\alpha K_{\lambda/\mu,\alpha}\, x^\alpha $ con $ \alpha $ composizione. Per la simmetria appena dimostrata, le composizioni che differiscono per permutazione hanno lo stesso coefficiente $ K_{\lambda/\mu, \nu} $ (con $ \nu $ partizione associata), quindi raggruppando si ottengono le $ m_\nu $.
+  Per definizione $ \widehat{s}_{\lambda/\mu} = \sum_{\alpha \models |\lambda/\mu|} K_{\lambda/\mu,\alpha}\, x^\alpha $ con $ \alpha $ composizione. Per la simmetria appena dimostrata, le composizioni che differiscono per permutazione hanno lo stesso coefficiente $ K_{\lambda/\mu, \nu} $ (con $ \nu $ partizione associata), quindi raggruppando si ottengono le $ m_\nu $.
 }
 
 \subsection{Ordine di dominanza}
@@ -1469,7 +1470,7 @@ Ricordiamo che $ \mu \trianglelefteq \lambda $ se per ogni $ i \geq 1 $ vale $ \
   Siano $ \lambda, \mu \vdash n $. Se $ K_{\lambda,\mu} \neq 0 $ allora $ \mu \trianglelefteq \lambda $. Inoltre $ K_{\lambda,\lambda} = 1 $.
 }
 \pf{Dim}{
-  Sia $ T $ un SSYT di forma $ \lambda $ e tipo $ \mu $. In un SSYT tutti gli $ 1 $ stanno sulla prima riga (sotto violerebbero la stretta crescenza in colonna), quindi
+  Sia $ T $ un SSYT di forma $ \lambda $ e tipo $ \mu $. In un SSYT tutti gli $ 1 $ stanno sulla prima riga (sopra violerebbero la stretta crescenza in colonna), quindi
   \[
     \mu_1 = \#\{1 \in T\} \leq \lambda_1 .
   \]
