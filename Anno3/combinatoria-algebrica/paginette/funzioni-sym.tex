@@ -82,7 +82,7 @@ $$D(\exp(f(x))) = f'(x) \cdot \exp(f(x))$$
 $$D(\log(g(x))) = \frac{D(g(x))}{g(x)}$$  
 }
 
-\section{Funzioni simmetriche}
+\section{Basi dello spazio $ \mathrm{Sym}[X] $}
 
 Fissato un intero $ k \in \mathbb{N} $, consideriamo l'azione del gruppo simmetrico
 $ S_k $ su $ \mathbb{Q}[x_1, x_2, \ldots, x_k] $ per permutazione delle variabili: per
@@ -171,7 +171,7 @@ zeri, si ottiene una partizione di $ n $, denotata $ \lambda(\alpha) $.
   $ \alpha = (3,1,0,1,2) \models 7 $ da' $ \lambda(\alpha) = (3,2,1,1) \vdash 7 $.
 }
 
-\subsection{Monomiali}
+\subsection{Monomiali ($ m_\lambda $)}
 
 \dfn{Funzione simmetrica monomiale}{
   Data $ \lambda \vdash n $, la \textit{funzione simmetrica monomiale}
@@ -222,7 +222,7 @@ zeri, si ottiene una partizione di $ n $, denotata $ \lambda(\alpha) $.
   dunque coefficiente comune $ c_{(1,1)} = 3 $, e $ f = 3\, m_{(1,1)} $.
 }
 
-\subsection{Elementari}
+\subsection{Elementari ($ e_\lambda $)}
 
 \dfn{Funzione simmetrica elementare}{
   Per ogni $ n \geq 1 $:
@@ -282,6 +282,28 @@ zeri, si ottiene una partizione di $ n $, denotata $ \lambda(\alpha) $.
   Convertendo le entrate scelte in $ 1 $ e le altre in $ 0 $ si ottiene una matrice
   $ 0$-$1 $ $ A $ con $ row(A) = \lambda $ e $ col(A) = \alpha $. Viceversa, ogni tale
   matrice corrisponde a un unico termine di $ e_\lambda $.
+
+  \textbf{Monomio associato.} Il monomio prodotto dalla scelta codificata da $ A $ e':
+  \[
+    x^\alpha = \prod_j x_j^{\alpha_j}, \qquad \alpha_j = \sum_i a_{ij} = \mathrm{col}_j(A).
+  \]
+  Infatti $ x_j $ compare nel prodotto esattamente una volta per ogni riga $ i $ in cui
+  e' stata selezionata; poiche' ogni fattore $ e_{\lambda_i} $ e' elementare (ciascuna
+  variabile compare al piu' una volta per riga), il contributo totale di $ x_j $ e'
+  la somma di colonna $ \alpha_j $.
+
+  \textbf{Raggruppamento per partizione.} Due composizioni deboli $ \alpha $ e $ \alpha' $
+  producono monomi nella stessa orbita di $ S_k $ (e quindi contribuiscono alla stessa
+  funzione monomiale $ m_\mu $, con $ \mu $ la partizione ottenuta riordinando $ \alpha $
+  in ordine decrescente) se e solo se sono permutazioni l'una dell'altra.
+  Raggruppando tutti i termini di $ e_\lambda $ per la partizione $ \mu = \lambda(col(A)) $:
+  \[
+    e_\lambda
+    = \sum_{\mu \vdash n}
+      \bigl|\{\, A \in \{0,1\}^{\ell(\lambda)\times\infty} :
+        row(A) = \lambda,\ \lambda(col(A)) = \mu \,\}\bigr|\, m_\mu
+    = \sum_{\mu \vdash n} M_{\lambda,\mu}\, m_\mu.
+  \]
 }
 
 \osservazione{Interpretazione combinatoria.
@@ -327,14 +349,19 @@ zeri, si ottiene una partizione di $ n $, denotata $ \lambda(\alpha) $.
   \]
 }
 \pf{Dim}{
-  \textbf{Condizione di dominanza.} Supponiamo $ M_{\lambda,\mu} \neq 0 $, cosi' per la
-  proposizione precedente esiste una matrice $ 0$-$1 $ $ A $ con $ row(A) = \lambda $ e
-  $ col(A) = \mu $. Sia $ A' = (a'_{i,j})_{i,j \geq 1} $ la matrice $ 0$-$1 $ con
-  $ row(A') = \lambda $ e gli $ 1 $ di ogni riga giustificati a sinistra, cioe'
-  $ a'_{i,j} = 1 \iff 1 \leq j \leq \lambda_i $. Per ogni $ i $, il numero di $ 1 $
-  nelle prime $ i $ colonne di $ A' $ non e' inferiore a quello in $ A $: per
-  definizione di ordine di dominanza, $ col(A') \geq col(A) = \mu $. Ma
-  $ col(A') = \lambda' $, dunque $ \lambda' \geq \mu $.
+  \textbf{Condizione di dominanza ($M_{\lambda,\mu} = 0$ se $\mu \not\leq \lambda'$).}
+  Supponiamo per assurdo che $ \mu \not\leq \lambda' $ nell'ordine di dominanza:
+  esiste allora un indice $ k $ tale che
+  \[
+    \mu_1 + \cdots + \mu_k > \lambda'_1 + \cdots + \lambda'_k.
+  \]
+  Ma la forma di $ \lambda $ impone che la colonna $ j $ di qualsiasi matrice
+  $ 0 $-$ 1 $ con $ row(A) = \lambda $ contenga al piu' $ \lambda'_j $ uni
+  (al piu' uno per ogni riga $ i $ con $ \lambda_i \geq j $), quindi le prime
+  $ k $ colonne contengono complessivamente al piu'
+  $ \lambda'_1 + \cdots + \lambda'_k $ uni.
+  D'altra parte, se $ col(A) = \mu $, la somma dei primi $ k $ valori di colonna
+  vale $ \mu_1 + \cdots + \mu_k $: contraddizione. Dunque $ M_{\lambda,\mu} = 0 $.
 
   \textbf{Diagonale unitaria.} La matrice $ A' $ e' \emph{l'unica} matrice $ 0$-$1 $
   con $ row(A') = \lambda $ e $ col(A') = \lambda' $: gli $ 1 $ sono forzati a
@@ -371,7 +398,7 @@ zeri, si ottiene una partizione di $ n $, denotata $ \lambda(\alpha) $.
   e' triangolare superiore con $ 1 $ sulla diagonale.
 }
 
-\subsection{Omogenee}
+\subsection{Omogenee complete ($ h_\lambda $)}
 
 \dfn{Funzione simmetrica omogenea completa}{
   Per ogni $ n \geq 1 $:
@@ -480,7 +507,7 @@ zeri, si ottiene una partizione di $ n $, denotata $ \lambda(\alpha) $.
   precisarlo: per definizione $ e_{k+1} = e_{k+2} = \cdots = 0 $ (somma vuota).
 }
 
-\subsection{Potenze}
+\subsection{Somme di potenze ($ p_\lambda $)}
 
 \dfn{Funzioni simmetriche di potenza}{
   Per ogni $ n \geq 1 $:
@@ -628,6 +655,7 @@ zeri, si ottiene una partizione di $ n $, denotata $ \lambda(\alpha) $.
 }
 
 \mprop{Sviluppo di $ h_m $ ed $ e_m $ nelle potenze}{
+  \label{prop:hm-em-potenze}
   Per ogni $ m \geq 1 $:
   \[
     h_m = \sum_{\lambda \vdash m} \frac{1}{z_\lambda}\, p_\lambda \qquad \text{e} \qquad
@@ -716,9 +744,9 @@ zeri, si ottiene una partizione di $ n $, denotata $ \lambda(\alpha) $.
   \]
 }
 
-\section{Raccordo: le quattro basi e il limite $ Sym[X] $}
+\subsection{Le quattro basi e il limite $ \mathrm{Sym}[X] $}
 
-\subsection{Ricapitolo delle basi}
+\subsubsection{Ricapitolo delle basi}
 
 Abbiamo definito tre famiglie di generatori per $ \mathbb{Q}[x_1, \dots, x_k]^{S_k} $:
 \[
@@ -750,7 +778,7 @@ e quattro basi per $ Sym^n[X_k] $:
   \end{itemize}
 }
 
-\subsection{Il limite: $ Sym[X] $}
+\subsubsection{Il limite: $ \mathrm{Sym}[X] $}
 
 Fissata $ \lambda \vdash n $, la funzione $ m_\lambda(x_1, \dots, x_k) $ dipende da $ k $, ma al crescere di $ k $ si ottiene una catena di mappe compatibili
 \[
@@ -762,7 +790,9 @@ dove ogni freccia e' la specializzazione $ x_k = 0 $. Il \textbf{limite inverso}
 \]
 Possiamo lavorare con un numero infinito di variabili $ x_1, x_2, \dots $, e le basi $ \{m_\lambda\}, \{e_\lambda\}, \{h_\lambda\}, \{p_\lambda\}, \{s_\lambda\} $ restano basi anche in questo contesto.
 
-\section{La funzione di Schur come quoziente di determinanti}
+\section{Funzioni di Schur ($ s_\lambda $)}
+
+\subsection{Definizione algebrica come quoziente di determinanti}
 
 \osservazione{Dimensione di $ \mathrm{Sym}^m[X_k] $.
   \[
@@ -773,7 +803,7 @@ Possiamo lavorare con un numero infinito di variabili $ x_1, x_2, \dots $, e le 
   \]
 }
 
-\subsection{Polinomi alternanti}
+\subsubsection{Polinomi alternanti}
 
 \dfn{Polinomio alternante}{
   Un polinomio $ f \in \mathbb{Q}[x_1, \dots, x_k] $ e' \textit{alternante} se per ogni $ \sigma \in S_k $:
@@ -812,7 +842,7 @@ Possiamo lavorare con un numero infinito di variabili $ x_1, x_2, \dots $, e le 
   per ogni $ j $.
 }
 
-\subsection{Il determinante di Vandermonde}
+\subsubsection{Il determinante di Vandermonde}
 
 Il caso fondamentale e' $ \delta = (k-1, k-2, \dots, 1, 0) $:
 \[
@@ -839,7 +869,7 @@ Il caso fondamentale e' $ \delta = (k-1, k-2, \dots, 1, 0) $:
   $ f $ e' alternante $ \iff f = a_\delta \cdot g $ con $ g $ simmetrico. L'applicazione $ g \mapsto a_\delta \cdot g $ e' un \textit{isomorfismo} $ Sym[X_k] \xrightarrow{\sim} A_k $ fra simmetrici e alternanti.
 }
 
-\subsection{Definizione algebrica della funzione di Schur}
+\subsubsection{Definizione algebrica della funzione di Schur}
 
 \dfn{Funzione di Schur (algebrica)}{
   Per ogni $ \lambda \vdash n $ con $ \ell(\lambda) \leq k $, la \textit{funzione di Schur} e'
@@ -871,10 +901,20 @@ E' un polinomio simmetrico perche' numeratore e denominatore sono entrambi alter
 \pf{Dim}{
   \textbf{Passo 1.} Mostriamo che $ \{a_{\lambda + \delta} \mid \lambda \vdash n,\ \ell(\lambda) \leq k\} $ e' una base dello spazio $ A_k^{(m)} $ degli alternanti omogenei di grado $ m = n + |\delta| $.
 
-  Sia $ f = \sum_\alpha c_\alpha x^\alpha \in A_k^{(m)} $ alternante. Se $ c_\alpha \neq 0 $, allora $ \alpha_i \neq \alpha_j $ per $ i \neq j $ (altrimenti la trasposizione $ (ij) $ darebbe $ f = -f $, quindi $ f = 0 $). Gli esponenti distinti si ordinano come $ \alpha = \lambda + \delta $ per una partizione $ \lambda $. L'alternanza forza $ c_{\sigma(\alpha)} = \mathrm{sgn}(\sigma)\, c_\alpha $, quindi
+  Sia $ f = \sum_\alpha c_\alpha x^\alpha \in A_k^{(m)} $ alternante. Se $ c_\alpha \neq 0 $, allora $ \alpha_i \neq \alpha_j $ per $ i \neq j $ (altrimenti la trasposizione $ (ij) $ darebbe $ f = -f $, quindi $ f = 0 $). Gli esponenti distinti si ordinano come $ \alpha = \lambda + \delta $ per una partizione $ \lambda $.
+
+  \textbf{Riscrittura usando l'alternanza.} Per ogni $ \sigma \in S_k $, l'alternanza forza
   \[
-    f = \sum_\lambda c_{\lambda + \delta}\, a_{\lambda + \delta} .
+    c_{\sigma(\alpha)} = \mathrm{sgn}(\sigma)\, c_\alpha .
   \]
+  Quindi, raggruppando i monomi nella stessa orbita di $ S_k $:
+  \[
+    f
+    = \sum_\lambda c_{\lambda+\delta}
+      \sum_{\sigma \in S_k} \mathrm{sgn}(\sigma)\, x^{\sigma(\lambda+\delta)}
+    = \sum_\lambda c_{\lambda+\delta}\, a_{\lambda+\delta} .
+  \]
+  Questo mostra che gli $ a_{\lambda+\delta} $ generano $ A_k^{(m)} $; poiche' gli indici $ \lambda + \delta $ sono tutti distinti, sono anche linearmente indipendenti, dunque formano una base.
 
   \textbf{Passo 2.} La mappa $ \phi: Sym[X_k] \to A_k $, $ g \mapsto a_\delta \cdot g $, e' un isomorfismo che manda $ s_\lambda \mapsto a_\delta \cdot s_\lambda = a_{\lambda + \delta} $.
 
@@ -896,7 +936,7 @@ E' un polinomio simmetrico perche' numeratore e denominatore sono entrambi alter
   Il monomio $ x^{\lambda + \delta} $ appare solo in $ a_{\lambda + \delta} $ (con coefficiente 1, essendo il monomio ``di testa'' del determinante), quindi il suo coefficiente in $ a_\delta \cdot f $ e' esattamente $ c_\lambda $.
 }
 
-\section{Definizione combinatoria di Schur tramite SSYT}
+\subsection{Definizione combinatoria tramite SSYT}
 
 \dfn{Peso di un tableau e Schur combinatoria}{
   Dato un SSYT $ T $ di forma $ \lambda $ con valori in $ \{1, \dots, k\} $, il \textit{peso} e'
@@ -931,9 +971,9 @@ E' un polinomio simmetrico perche' numeratore e denominatore sono entrambi alter
 
 Le due definizioni coincidono: e' il \textit{Teorema fondamentale delle funzioni di Schur} (verra' dimostrato piu' avanti come $ s_\lambda = \widehat{s}_\lambda $).
 
-\section{Corrispondenza RSK: introduzione e algoritmo}
+\subsection{Corrispondenza RSK: introduzione e algoritmo}
 
-\subsection{Motivazione}
+\subsubsection{Motivazione}
 
 La corrispondenza RSK (Robinson--Schensted--Knuth) e' una biezione fondamentale in combinatoria. Risponde alla domanda: c'e' un modo canonico per associare tableau a matrici di interi non negativi?
 
@@ -944,7 +984,7 @@ La corrispondenza RSK (Robinson--Schensted--Knuth) e' una biezione fondamentale 
   \]
 }
 
-\subsection{Parola di lettura di una matrice}
+\subsubsection{Parola di lettura di una matrice}
 
 TODO: mi sa che noi abbiamo usato una definizione diversa. Negli appunti del GOAT D'Adderio usa la seguente def:
 
@@ -962,21 +1002,24 @@ TODO: mi sa che noi abbiamo usato una definizione diversa. Negli appunti del GOA
   \end{pmatrix} $ e' presente in $ w_A $ esattamente $ a_{ij} $ volte. Le colonne sono poi ordinate in modo tale che $ i_1 \gets i_2 \leq ... \leq i_m $ e nel caso in cui $ i_r = i_s $ (con $ r < s $) le colonne si ordinano in modo che $ j_r \leq j_s $.
 }
 
-Data una matrice $ A = (a_{ij}) $ a coefficienti in $ \mathbb{N} $, costruiamo la \textit{parola di lettura} $ w_A $: per ogni colonna $ j $ da sinistra a destra, scriviamo il valore di riga $ i $ ripetuto $ a_{ij} $ volte, scorrendo le righe dall'alto in basso.
-
 \ex{}{
   \[
-    A = \begin{pmatrix} 1 & 0 & 2 \\ 0 & 2 & 0 \\ 1 & 0 & 0 \end{pmatrix}
+  A = \begin{pmatrix}
+  1 & 0 & 2\\
+  0 & 2 & 0\\
+  1 & 1 & 0\\
+  \end{pmatrix}
   \]
-  Colonna 1: riga 1 da' 1 una volta, riga 3 da' 3 una volta $ \to 1, 3 $.
-  Colonna 2: riga 2 da' 2 due volte $ \to 2, 2 $.
-  Colonna 3: riga 1 da' 1 due volte $ \to 1, 1 $.
+  Abbiamo che la permutazione generalizzata associata e'
   \[
-    w_A = 1, 3, 2, 2, 1, 1 .
+  w_A = \begin{pmatrix}
+  1 & 1 & 1 & 2 & 2 & 3 & 3\\
+  1 & 3 & 3 & 2 & 2 & 1 & 2\\
+  \end{pmatrix}
   \]
 }
 
-\subsection{Algoritmo di inserzione: il bumping}
+\subsubsection{Algoritmo di inserzione: il bumping}
 
 L'ingrediente fondamentale e' il \textit{bumping} (scacciamento): come inserire un numero $ t $ in una riga di un SSYT preservando la struttura.
 
@@ -1009,69 +1052,74 @@ L'ingrediente fondamentale e' il \textit{bumping} (scacciamento): come inserire 
   $ 7 $ in riga 4: $ 7 < 8 $ e $ 7 < 9 $... no, $ 7 > 8 $? No. $ 7 $ si aggiunge alla fine della riga 4 dopo $ 9 $? In realta', si applica la regola: $ 7 $ si confronta col primo elemento della riga 4 ($ 8 $); $ 8 > 7 $, quindi $ 7 $ scaccia $ 8 $. $ 8 $ va in riga 5.
 }
 
-\subsection{L'algoritmo RSK}
+\subsubsection{L'algoritmo RSK}
 
-\textbf{Input.} La parola $ w_A = w_1, w_2, \dots, w_N $.
+\textbf{Input.} La parola $ w_A $.
 
-\textbf{Processo.} Manteniamo due tableau $ R $ (di \textit{inserzione}) e $ L $ (di \textit{registrazione}), entrambi inizialmente vuoti. Per ogni $ w_j $:
+\textbf{Processo.} Manteniamo due tableau $ L $ (di \textit{inserzione}) e $ R $ (di \textit{registrazione}), entrambi inizialmente vuoti. Per ogni $ \begin{pmatrix}
+i\\
+j\\
+\end{pmatrix} $ di $ w_A $ (da sx a dx):
 \begin{enumerate}
-  \item Inserisco $ w_j $ in $ R $ tramite bumping.
-  \item In $ L $, aggiungo il numero di colonna $ j $ (cioe' l'indice della parola, ovvero il valore corrispondente in $ w_A $) nella nuova cella creata da $ R $.
+  \item Inserisco $ j $ in $ L $ tramite bumping.
+  \item In $ R $, aggiungo $ i $ nella nuova cella creata da $ L $.
 \end{enumerate}
 
-\textbf{Output.} La coppia $ (R, L) $ di SSYT della stessa forma $ \lambda $.
-
+\textbf{Output.} La coppia $ (L, R) $ di SSYT della stessa forma $ \lambda $.
 \ex{Esempio completo}{
-  $ A = \begin{pmatrix} 1 & 0 & 2 \\ 0 & 2 & 0 \\ 1 & 0 & 0 \end{pmatrix} $, $ w_A = 1, 3, 2, 2, 1, 1 $.
+  $ A = \begin{pmatrix} 1 & 0 & 2 \\ 0 & 2 & 0 \\ 1 & 0 & 0 \end{pmatrix} $, $ w_A = \begin{pmatrix}
+  1 & 1 & 1 & 2 & 2 & 3\\
+  1 & 3 & 3 & 2 & 2 & 1\\
+  \end{pmatrix} $.
 
-  \textbf{Inserisco $ 1 $:}
+  \textbf{Inserisco $ (1,1) $:}
   \[
-    R = \begin{ytableau} 1 \end{ytableau}, \quad L = \begin{ytableau} 1 \end{ytableau}
+    L = \begin{ytableau} 1 \end{ytableau}, \quad R = \begin{ytableau} 1 \end{ytableau}
   \]
 
-  \textbf{Inserisco $ 3 $:} $ 3 > 1 $, si aggiunge alla fine di riga 1.
+  \textbf{Inserisco $ (1,3) $:} $ 3 > 1 $, si aggiunge alla fine di riga 1.
   \[
-    R = \begin{ytableau} 1 & 3 \end{ytableau}, \quad L = \begin{ytableau} 1 & 1 \end{ytableau}
+    L = \begin{ytableau} 1 & 3 \end{ytableau}, \quad R = \begin{ytableau} 1 & 1 \end{ytableau}
   \]
 
-  \textbf{Inserisco $ 2 $:} in riga 1 il primo $ > 2 $ e' $ 3 $; lo sostituisco e $ 3 $ va in riga 2.
+  \textbf{Inserisco $ (1,3) $:} $ 3 \geq 3 $, si aggiunge alla fine di riga 1.
   \[
-    R = \begin{ytableau} 3 \\ 1 & 2 \end{ytableau}, \quad L = \begin{ytableau} 1 \\ 1 & 1 \end{ytableau}
+    L = \begin{ytableau} 1 & 3 & 3 \end{ytableau}, \quad R = \begin{ytableau} 1 & 1 & 1 \end{ytableau}
   \]
 
-  \textbf{Inserisco $ 2 $:} attenzione, il bumping usa $ > $ stretto, quindi $ 2 $ non scaccia $ 2 $; si aggiunge in fondo a riga 1.
+  \textbf{Inserisco $ (2,2) $:} $ 2 < 3 $, scaccia.
   \[
-    R = \begin{ytableau} 3 \\ 1 & 2 & 2 \end{ytableau}, \quad L = \begin{ytableau} 1 \\ 1 & 1 & 2 \end{ytableau}
+    L = \begin{ytableau} 3\\ 1 & 2 & 3 \end{ytableau}, \quad R = \begin{ytableau} 2\\ 1 & 1 & 1 \end{ytableau}
   \]
 
-  \textbf{Inserisco $ 1 $:} in riga 1 il primo $ > 1 $ e' il primo $ 2 $; lo sostituisco e $ 2 $ va in riga 2. In riga 2 il primo $ > 2 $ e' $ 3 $; lo sostituisco e $ 3 $ va in riga 3.
+  \textbf{Inserisco $ (2,2) $:} $ 2 < 3 $, scaccia.
   \[
-    R = \begin{ytableau} 3 \\ 2 \\ 1 & 1 & 2 \end{ytableau}, \quad L = \begin{ytableau} 2 \\ 1 \\ 1 & 1 & 2 \end{ytableau}
+    L = \begin{ytableau} 3 & 3\\ 1 & 2 & 2 \end{ytableau}, \quad R = \begin{ytableau} 2 & 2\\ 1 & 1 & 1 \end{ytableau}
   \]
 
-  \textbf{Inserisco $ 1 $:} in riga 1 $ 1 \not> 1 $, quindi si aggiunge in fondo.
+  \textbf{Inserisco $ (3,1) $:} $ 1 < 2 $, scaccia, $ 2 < 3 $, scaccia.
   \[
-    R = \begin{ytableau} 3 \\ 2 \\ 1 & 1 & 1 & 2 \end{ytableau}, \quad L = \begin{ytableau} 2 \\ 1 \\ 1 & 1 & 2 & 3 \end{ytableau}
+    L = \begin{ytableau} 3\\ 2 & 3\\ 1 & 1 & 2 \end{ytableau}, \quad R = \begin{ytableau} 3\\ 2 & 2\\ 1 & 1 & 1 \end{ytableau}
   \]
 
-  Risultato: $ (R, L) $ e' una coppia di SSYT di forma $ \lambda = (4, 1, 1) $.
+  Risultato: $ (L, R) $ e' una coppia di SSYT di forma $ \lambda = (3, 2, 1) $.
 }
 
-\subsection{Osservazioni}
+\subsubsection{Osservazioni}
 
 \osservazione{
-  La corrispondenza RSK e' una biezione: da $ (R, L) $ si puo' ricostruire univocamente $ A $. L'algoritmo inverso esiste ed e' simmetrico.
+  La corrispondenza RSK e' una biezione: da $ (L, R) $ si puo' ricostruire univocamente $ A $. L'algoritmo inverso esiste ed e' simmetrico.
 }
 
 \osservazione{
-  Lungo il percorso di inserzione ci si muove sempre verso il basso, perche' l'elemento scacciato e' strettamente maggiore di quello che lo ha scacciato.
+  Lungo il percorso di inserzione ci si muove sempre verso l'alto, perche' l'elemento scacciato e' strettamente maggiore di quello che lo ha scacciato.
 }
 
 \osservazione{
   Se inserisco $ k $ in un SSYT $ T $, ottengo ancora un SSYT: l'algoritmo mantiene la struttura ad ogni passo.
 }
 
-\subsection{Perche' RSK e' importante}
+\subsubsection{Perche' RSK e' importante}
 
 \textbf{Collegamento con i polinomi di Schur.} $ s_\lambda $ conta i SSYT di forma $ \lambda $. RSK spiega perche' il prodotto
 \[
@@ -1081,9 +1129,9 @@ ha coefficienti $ c^\lambda_{\mu \nu} $ (i numeri di \textit{Littlewood--Richard
 
 \textbf{Caso speciale.} Se $ A $ e' una matrice di permutazione, RSK si riduce alla classica corrispondenza di Robinson--Schensted fra permutazioni e coppie di SYT.
 
-\section{RSK: biunivocita' e prima ricostruzione}
+\subsection{RSK: biunivocita' e prima ricostruzione}
 
-\subsection{Esercizio 8 -- Ricostruzione di $A$ data $(L,R)$}
+\subsubsection{Esercizio 8 -- Ricostruzione di $A$ data $(L,R)$}
 
 Dati $ (L,R) $ coppia di SSYT della \textit{stessa forma}, vogliamo ricostruire la $ \mathbb{N} $-matrice finita $ A $ tale che $ \mathrm{RSK}(A) = (L,R) $.
 
@@ -1111,7 +1159,7 @@ Dati $ (L,R) $ coppia di SSYT della \textit{stessa forma}, vogliamo ricostruire 
 \begin{enumerate}
   \item Trovo le caselle di $ R $ con valore $ T $ massimo.
   \item Quella aggiunta per ultima e' la \textit{piu' a destra nella riga piu' bassa} (cioe' minima per l'ordine di bumping).
-  \item Sapendo qual e' la casella aggiunta, leggo in $ L $ il numero che vi era stato inserito; il bumping inverso mi dice quale numero era stato scacciato dalla riga sopra, e cosi' via.
+  \item Sapendo qual e' la casella aggiunta, leggo in $ L $ il numero che vi era stato inserito; il bumping inverso mi dice quale numero era stato scacciato dalla riga sotto, e cosi' via.
 \end{enumerate}
 
 Avevamo gia' dimostrato (osservazioni 1--5) che RSK e' un'applicazione
@@ -1123,9 +1171,9 @@ Avevamo gia' dimostrato (osservazioni 1--5) che RSK e' un'applicazione
   Dato $ (L,R) $ SSYT della stessa forma, e' sempre possibile ricostruire $ w_A $ e quindi $ A $: ad ogni passo la casella aggiunta e' univocamente determinata dalla regola sopra.
 }
 
-\section{Forma bilineare su $ Sym[X] $}
+\subsection{Forma bilineare su $ \mathrm{Sym}[X] $}
 
-\subsection{Ripasso: matrici $ \mathbb{N} $}
+\subsubsection{Ripasso: matrici $ \mathbb{N} $}
 
 Avevamo gia' dimostrato che
 \[
@@ -1149,7 +1197,7 @@ Si fa lo stesso ragionamento con le $ h_\lambda $: ora pero' in ogni colonna pos
   $ N_{\lambda,\mu} = N_{\mu,\lambda} $: $ A \leftrightarrow A^T $ e' una biezione che scambia $ \lambda $ e $ \mu $. Lo stesso vale per $ M $.
 }
 
-\subsection{Definizione della forma bilineare}
+\subsubsection{Definizione della forma bilineare}
 
 \dfn{Forma bilineare $ \langle \cdot, \cdot \rangle $ su $ Sym[X] $}{
   $ \langle \cdot, \cdot \rangle $ e' l'unica forma bilineare tale che
@@ -1159,7 +1207,7 @@ Si fa lo stesso ragionamento con le $ h_\lambda $: ora pero' in ogni colonna pos
   Dato che $ \{m_\lambda\} $ e $ \{h_\mu\} $ sono basi, la richiesta le rende \textit{basi duali}. Ogni forma bilineare puo' essere descritta in questo modo (su un prodotto di basi).
 }
 
-\section{Identita' di Cauchy}
+\subsection{Identita' di Cauchy}
 
 \mprop{Identita' di Cauchy}{
   \[
@@ -1199,9 +1247,9 @@ Si fa lo stesso ragionamento con le $ h_\lambda $: ora pero' in ogni colonna pos
   \]
 }
 
-\section{Le $ p_\lambda $ e il prodotto scalare di Hall}
+\subsection{Le $ p_\lambda $ e il prodotto scalare di Hall}
 
-\subsection{Ripasso: $ z_\lambda $}
+\subsubsection{Ripasso: $ z_\lambda $}
 
 Avevamo definito
 \[
@@ -1260,7 +1308,7 @@ E avevamo dimostrato che
   \]
 }
 
-\section{Funzioni di Schur combinatorie $ \widehat{s}_\lambda $}
+\subsection{Funzioni di Schur combinatorie $ \widehat{s}_\lambda $}
 
 \dfn{Funzioni di Schur combinatorie}{
   \[
@@ -1269,7 +1317,7 @@ E avevamo dimostrato che
   dove $ x^T = \prod_i x_i^{\#\{i \in T\}} $. Si estende analogamente a forme skew $ \lambda/\mu $.
 }
 
-\thm{Le $ \widehat{s}_\lambda $ sono una base ortonormale di $ Sym[X] $}{}
+\thm{Le $ \widehat{s}_\lambda $ sono una base ortonormale di $ Sym[X] $}{\label{thm:schur-ortonormali}}
 \pf{Dim}{
   Dobbiamo mostrare che $ \langle \widehat{s}_\lambda, \widehat{s}_\mu \rangle = \delta_{\lambda,\mu} $. Equivalentemente (una base e' duale a se stessa $ \iff $ e' ortonormale): basta far vedere che
   \[
@@ -1278,7 +1326,7 @@ E avevamo dimostrato che
   Un monomio $ x^\alpha y^\beta $ nello sviluppo del prodotto di Cauchy si ottiene scegliendo una $ \mathbb{N} $-matrice $ A $ con $ row(A) = \alpha $ e $ col(A) = \beta $; quindi il coefficiente di $ x^\alpha y^\beta $ nel secondo membro e' il numero di tali matrici. Nel primo membro, e' il numero di coppie di SSYT $ (L,R) $ della stessa forma $ \lambda $ tali che $ type(R) = \alpha $ e $ type(L) = \beta $. Per la biezione RSK, i due numeri sono uguali.
 }
 
-\section{Numeri di Kostka}
+\subsection{Numeri di Kostka e Regola di Pieri}
 
 \dfn{Numeri di Kostka}{
   Siano $ \lambda/\mu $ una forma skew (eventualmente con $ \mu = \emptyset $) e $ \alpha \models n $ una composizione. Si pone
@@ -1314,11 +1362,12 @@ E avevamo dimostrato che
 
 \thm{}{
   \[
-    e_\mu = \sum_{\lambda \vdash |\mu|} K_{\lambda'/\mu}\, s_\lambda
+    s_\nu e_\mu = \sum_{\substack{\lambda \supseteq \nu\\ |\lambda/\nu| = |\mu|}} K_{\lambda'/\nu', \mu}\, s_\lambda
   \]
   (la somma usa $ \lambda' $, la trasposta). La dimostrazione non fa parte del programma.
 }
 
+A noi interessa di piu' il seguente corollario
 \cor{Regola di Pieri}{
   \[
     s_\nu \cdot e_n = \sum_\lambda s_\lambda
@@ -1333,7 +1382,7 @@ E avevamo dimostrato che
   \]
 }
 
-\section{Simmetria e proprieta' di $ \widehat{s}_\lambda $}
+\subsection{Simmetria e proprieta' di $ \widehat{s}_\lambda $}
 
 \mprop{Le $ \widehat{s}_\lambda $ sono simmetriche}{}
 \pf{Dim}{
@@ -1353,18 +1402,18 @@ E avevamo dimostrato che
 
 \cor{}{
   \[
-    s_{\lambda/\mu}(x) = \sum_{\nu \vdash |\lambda/\mu|} K_{\lambda/\mu, \nu}\, m_\nu(x)
+    \widehat{s}_{\lambda/\nu}(x) = \sum_{\mu \vdash |\lambda/\nu|} K_{\lambda/\nu, \mu}\, m_\mu(x)
   \]
   In particolare, per $ \mu = \emptyset $:
   \[
-    \widehat{s}_\lambda(x) = \sum_{\nu \vdash |\lambda|} K_{\lambda, \nu}\, m_\nu(x) .
+    \widehat{s}_\lambda(x) = \sum_{\mu \vdash |\lambda|} K_{\lambda, \mu}\, m_\mu(x) .
   \]
 }
 \pf{Dim}{
-  Per definizione $ \widehat{s}_{\lambda/\mu} = \sum_\alpha K_{\lambda/\mu,\alpha}\, x^\alpha $ con $ \alpha $ composizione. Per la simmetria appena dimostrata, le composizioni che differiscono per permutazione hanno lo stesso coefficiente $ K_{\lambda/\mu, \nu} $ (con $ \nu $ partizione associata), quindi raggruppando si ottengono le $ m_\nu $.
+  Per definizione $ \widehat{s}_{\lambda/\mu} = \sum_{\alpha \models |\lambda/\mu|} K_{\lambda/\mu,\alpha}\, x^\alpha $ con $ \alpha $ composizione. Per la simmetria appena dimostrata, le composizioni che differiscono per permutazione hanno lo stesso coefficiente $ K_{\lambda/\mu, \nu} $ (con $ \nu $ partizione associata), quindi raggruppando si ottengono le $ m_\nu $.
 }
 
-\subsection{Ordine di dominanza}
+\subsubsection{Ordine di dominanza}
 
 Ricordiamo che $ \mu \trianglelefteq \lambda $ se per ogni $ i \geq 1 $ vale $ \sum_{j=1}^i \mu_j \leq \sum_{j=1}^i \lambda_j $.
 
@@ -1372,7 +1421,7 @@ Ricordiamo che $ \mu \trianglelefteq \lambda $ se per ogni $ i \geq 1 $ vale $ \
   Siano $ \lambda, \mu \vdash n $. Se $ K_{\lambda,\mu} \neq 0 $ allora $ \mu \trianglelefteq \lambda $. Inoltre $ K_{\lambda,\lambda} = 1 $.
 }
 \pf{Dim}{
-  Sia $ T $ un SSYT di forma $ \lambda $ e tipo $ \mu $. In un SSYT tutti gli $ 1 $ stanno sulla prima riga (sotto violerebbero la stretta crescenza in colonna), quindi
+  Sia $ T $ un SSYT di forma $ \lambda $ e tipo $ \mu $. In un SSYT tutti gli $ 1 $ stanno sulla prima riga (sopra violerebbero la stretta crescenza in colonna), quindi
   \[
     \mu_1 = \#\{1 \in T\} \leq \lambda_1 .
   \]
@@ -1394,9 +1443,9 @@ Ricordiamo che $ \mu \trianglelefteq \lambda $ se per ogni $ i \geq 1 $ vale $ \
   Riassumendo: le $ \widehat{s}_\lambda $ con $ \lambda \vdash n $ sono una base \textit{ortonormale} di $ Sym^n[X] $.
 }
 
-\section{Sviluppi nelle $ \widehat{s}_\lambda $}
+\subsection{Sviluppi nelle $ \widehat{s}_\lambda $}
 
-\cor{}{
+\cor{}{\label{cor:hmu-kostka-schur}
   \[
     h_\mu = \sum_\lambda K_{\lambda, \mu}\, \widehat{s}_\lambda
   \]
@@ -1408,7 +1457,7 @@ Ricordiamo che $ \mu \trianglelefteq \lambda $ se per ogni $ i \geq 1 $ vale $ \
   \]
 }
 
-\cor{}{
+\cor{}{\label{cor:h1n-schur}
   \[
     h_1^n = \sum_{\lambda \vdash n} f^\lambda\, \widehat{s}_\lambda .
   \]
@@ -1417,7 +1466,7 @@ Ricordiamo che $ \mu \trianglelefteq \lambda $ se per ogni $ i \geq 1 $ vale $ \
   $ h_1^n = h_{(1^n)} $ e applicando il corollario precedente con $ \mu = (1^n) $: $ K_{\lambda, 1^n} = f^\lambda $.
 }
 
-\section{Trasposta e simmetria di RSK}
+\subsection{Trasposta e simmetria di RSK}
 
 \osservazione{(Dimostrazione lasciata a Morbidelli)
   Sia $ A $ una $ \mathbb{N} $-matrice finita e $ A \xrightarrow{RSK} (L,R) $. Allora $ A^T \xrightarrow{RSK} (R, L) $.
@@ -1440,7 +1489,7 @@ Ricordiamo che $ \mu \trianglelefteq \lambda $ se per ogni $ i \geq 1 $ vale $ \
   $ \sum_\lambda f^\lambda = 1 + 3 + 2 + 3 + 1 = 10 $. Le involuzioni di $ S_4 $: $ 6 $ trasposizioni + $ 3 $ doppie trasposizioni + $ 1 \cdot id = 10 $. Torna.
 }
 
-\section{RSK duale (RSK*)}
+\subsection{RSK duale (RSK*)}
 
 \textbf{Algoritmo.} Biezione fra $ (0,1) $-matrici finite e coppie $ (L,R) $ di tableaux della stessa forma tali che $ L' $ ed $ R $ sono SSYT (cioe' $ L $ e' SSYT trasposto: strettamente crescente in riga, debolmente crescente in colonna). Funziona nello stesso modo solo che, durante l'inserimento di un numero $ j $, si scaccia l'elemento piu' a sinistra che e' $ \leq j $.
 
@@ -1476,7 +1525,7 @@ allo stesso modo, con RSK*, si dimostra che
   Dato che vale grado per grado e in ogni grado le $ \widehat{s}_\lambda $ formano una base, i coefficienti coincidono: $ \omega(\widehat{s}_\lambda) = \widehat{s}_{\lambda'} $.
 }
 
-\section{Identificazione $ s_\lambda = \widehat{s}_\lambda $}
+\subsection{Identificazione $ s_\lambda = \widehat{s}_\lambda $}
 
 \thm{}{
   \[
@@ -1503,7 +1552,7 @@ allo stesso modo, con RSK*, si dimostra che
 }
 
 
-\section{Identita' di Jacobi-Trudi}
+\subsection{Identita' di Jacobi-Trudi}
 
 \thm{Jacobi-Trudi}{
   Sia $ \lambda = (\lambda_1, \ldots, \lambda_\ell) $ una partizione. Allora:
@@ -1520,7 +1569,7 @@ allo stesso modo, con RSK*, si dimostra che
 La seconda identita' segue dalla prima applicando $ \omega $. Dimostriamo la prima con il
 metodo di \textbf{Lindstr\"om-Gessel-Viennot} (cammini reticolari non intersecanti).
 
-\subsection{Cammini reticolari ed etichettatura}
+\subsubsection{Cammini reticolari ed etichettatura}
 
 Consideriamo cammini sul reticolo $ \mathbb{Z} \times \mathbb{Z} $:
 \[
@@ -1560,7 +1609,7 @@ dove ciascun passo $ s_i $ ha lunghezza $ 1 $ ed e' verso \textbf{Nord (N)} o \t
   weak $ k $-composizioni di $ n $.
 }
 
-\subsection{Famiglie di cammini}
+\subsubsection{Famiglie di cammini}
 
 \dfn{Famiglia di cammini}{
   Fissati punti iniziali $ u_1, \ldots, u_\ell $ e finali $ v_1, \ldots, v_\ell $, una
@@ -1590,7 +1639,7 @@ dove ciascun passo $ s_i $ ha lunghezza $ 1 $ ed e' verso \textbf{Nord (N)} o \t
   (un $ 3 $-ciclo e' una permutazione pari).
 }
 
-\subsection{Dimostrazione del teorema}
+\subsubsection{Dimostrazione del teorema}
 
 \pf{Dim}{
   La dimostrazione si articola in tre passi.
@@ -1610,8 +1659,7 @@ dove ciascun passo $ s_i $ ha lunghezza $ 1 $ ed e' verso \textbf{Nord (N)} o \t
   \begin{itemize}
     \item Se i cammini di $ \mathcal{P} $ \textit{non si intersecano}, $ \iota(\mathcal{P}) := \mathcal{P} $.
     \item Altrimenti, sia $ i $ il piu' piccolo indice con $ p_i $ intersecante un altro
-          cammino, e $ j \neq i $ il piu' piccolo con $ p_j $ intersecante $ p_i $. Sia
-          $ v_0 $ il punto di intersezione piu' a sud-ovest di $ p_i \cap p_j $. Definiamo
+      cammino, e $ j \neq i $ con $ p_j $ il primo cammino che interseca $ p_i $ nel punto $ v_0 $. Definiamo
           \[
             p_i' := u_i \xrightarrow{p_i} v_0 \xrightarrow{p_j} v_{\sigma(j)}, \qquad
             p_j' := u_j \xrightarrow{p_j} v_0 \xrightarrow{p_i} v_{\sigma(i)},
@@ -1656,9 +1704,9 @@ dove ciascun passo $ s_i $ ha lunghezza $ 1 $ ed e' verso \textbf{Nord (N)} o \t
   \]
 }
 
-\section{Regola di Murnaghan-Nakayama}
+\subsection{Regola di Murnaghan-Nakayama}
 
-\subsection{Border strip}
+\subsubsection{Border strip}
 
 \dfn{Forma connessa}{
   Una shape skew $ \lambda/\mu $ e' \textbf{connessa} se l'interno e' un sottoinsieme
@@ -1760,7 +1808,7 @@ dove ciascun passo $ s_i $ ha lunghezza $ 1 $ ed e' verso \textbf{Nord (N)} o \t
   con il calcolo per ispezione delle border strip.
 }
 
-\subsection{Border strip tableaux}
+\subsubsection{Border strip tableaux}
 
 Per moltiplicare $ s_\mu $ per $ p_\alpha = p_{\alpha_1} p_{\alpha_2} \cdots $ con $ \alpha $
 composizione debole, si itera il teorema precedente. Questo motiva la seguente definizione.
@@ -1823,7 +1871,7 @@ composizione debole, si itera il teorema precedente. Questo motiva la seguente d
   producono $ (-1)^{\mathrm{ht}(T)} $.
 }
 
-\cor{Caso $ \mu = \emptyset $}{
+\cor{Caso $ \mu = \emptyset $}{\label{cor:mn-vuoto}
   \[
     \boxed{\ p_\alpha = \sum_{\lambda \vdash |\alpha|} \chi^\lambda(\alpha)\, s_\lambda\ }
   \]
@@ -1835,15 +1883,444 @@ composizione debole, si itera il teorema precedente. Questo motiva la seguente d
   con $ \delta = (n-1, \ldots, 1, 0) $, $ n = |\alpha| $.
 }
 
-\ex{Calcolo di $ p_3 $}{
-  Applichiamo il corollario con $ \mu = \emptyset $, $ \alpha = (3) $: enumeriamo le
-  partizioni $ \lambda \vdash 3 $ tali che $ \lambda $ stessa sia una border strip.
+\ex{Calcolo di $ p_3 $ e $ p_4 $ come combinazione di Schur}{
+  Applichiamo il corollario al caso $ \mu = \emptyset $, $ \alpha = (n) $:
+  enumeriamo le partizioni $ \lambda \vdash n $ tali che $ \lambda $ stessa sia
+  una border strip (l'unico border strip tableau di tipo $ (n) $ ha un'unica
+  strip uguale a $ \lambda $).
+
+  \textbf{Caso $ n = 3 $.}
   \begin{itemize}
     \item $ \lambda = (3) $: $ \mathrm{ht} = 0 $, segno $ + $.
     \item $ \lambda = (2,1) $: $ \mathrm{ht} = 1 $, segno $ - $.
     \item $ \lambda = (1,1,1) $: $ \mathrm{ht} = 2 $, segno $ + $.
   \end{itemize}
-  Quindi: $ p_3 = s_{(3)} - s_{(2,1)} + s_{(1,1,1)} $.
+  Quindi:
+  \[
+    p_3 = s_{(3)} - s_{(2,1)} + s_{(1,1,1)}.
+  \]
+
+  \textbf{Caso $ n = 4 $.} Le partizioni $ \lambda \vdash 4 $ sono $ (4), (3,1), (2,2), (2,1,1), (1,1,1,1) $.
+  Si scartano quelle che contengono un quadrato $ 2 \times 2 $: solo $ (2,2) $ va
+  esclusa. Le rimanenti sono border strips:
+  \begin{itemize}
+    \item $ \lambda = (4) $: $ \mathrm{ht} = 0 $, segno $ + $.
+    \item $ \lambda = (3,1) $: $ \mathrm{ht} = 1 $, segno $ - $.
+    \item $ \lambda = (2,2) $: \emph{non} border strip (contiene $ 2 \times 2 $) — esclusa.
+    \item $ \lambda = (2,1,1) $: $ \mathrm{ht} = 2 $, segno $ + $.
+    \item $ \lambda = (1,1,1,1) $: $ \mathrm{ht} = 3 $, segno $ - $.
+  \end{itemize}
+  Quindi:
+  \[
+    p_4 = s_{(4)} - s_{(3,1)} + s_{(2,1,1)} - s_{(1,1,1,1)}.
+  \]
+
+  \textbf{Pattern generale.} Per ogni $ n \geq 1 $:
+  \[
+    p_n = \sum_{i=0}^{n-1} (-1)^i\, s_{(n-i,\,1^i)}
+  \]
+  (somma sui hook di taglia $ n $: l'unica famiglia di border strip in $ \lambda \vdash n $
+  e' costituita dai hook $ (n-i, 1^i) $, di altezza $ i $).
+}
+
+\section{La mappa caratteristica di Frobenius}
+
+I numeri $ \chi^\lambda(\mu) $ definiti da Murnaghan-Nakayama
+\[
+  p_\mu = \sum_{\lambda \vdash n} \chi^\lambda(\mu)\, s_\lambda \tag{$ \star $}
+\]
+non sono solo coefficienti combinatori: sono i \textbf{caratteri delle rappresentazioni
+irriducibili di $ \mathfrak{S}_n $}. Lo dimostriamo via la \emph{mappa caratteristica
+di Frobenius}, che traduce in modo isometrico ed isomorfo l'algebra dei caratteri di
+$ \mathfrak{S}_n $ nell'algebra delle funzioni simmetriche.
+
+\subsection{Esempio motivante: tavola dei caratteri di $ \mathfrak{S}_3 $}
+
+Applicando $ (\star) $ per $ n = 3 $ con tutte le $ \mu \vdash 3 $ si ottiene la
+matrice $ \chi^\lambda(\mu) $:
+\[
+  \begin{array}{c|ccc}
+    \chi^\lambda(\mu) & \mu = (1^3) & \mu = (2,1) & \mu = (3) \\ \hline
+    \lambda = (3)     & 1 & 1 & 1 \\
+    \lambda = (2,1)   & 2 & 0 & -1 \\
+    \lambda = (1^3)   & 1 & -1 & 1
+  \end{array}
+\]
+Si riconosce la tavola dei caratteri di $ \mathfrak{S}_3 $: la prima riga e' il
+carattere banale, la terza il segno, quella centrale il carattere della
+rappresentazione standard di dimensione $ 2 $.
+
+\subsection{Funzioni di classe e definizione di Frobenius}
+
+\dfn{Funzioni di classe su $ \mathfrak{S}_n $}{
+  Lo spazio
+  \[
+    CF^n := \mathcal{C}(\mathfrak{S}_n)
+    = \{\, f : \mathfrak{S}_n \to \mathbb{C} \mid f(\sigma) = f(\tau \sigma \tau^{-1})\ \forall \sigma, \tau \,\}
+  \]
+  ha dimensione $ |\mathrm{Par}(n)| $: una $ f \in CF^n $ e' determinata dai valori
+  $ f(\mu) $ con $ \mu \vdash n $ (tipo ciclico). Il prodotto scalare standard e'
+  \[
+    \langle f, g \rangle_{CF^n}
+    = \frac{1}{n!} \sum_{\sigma \in \mathfrak{S}_n} f(\sigma)\, \overline{g(\sigma)}
+    = \sum_{\mu \vdash n} \frac{f(\mu)\, \overline{g(\mu)}}{z_\mu},
+  \]
+  dato che la classe di tipo $ \mu $ ha esattamente $ n!/z_\mu $ elementi.
+}
+
+\dfn{Mappa caratteristica di Frobenius}{
+  La trasformazione lineare
+  \[
+    \mathrm{Frob} : CF^n \longrightarrow \mathrm{Sym}^n[X],
+    \qquad
+    \mathrm{Frob}(f) := \frac{1}{n!} \sum_{\sigma \in \mathfrak{S}_n} f(\sigma)\, p_{\lambda(\sigma)}
+                     = \sum_{\mu \vdash n} f(\mu)\, \frac{p_\mu}{z_\mu}.
+  \]
+  Equivalentemente, posto $ \Psi(\sigma) := p_{\lambda(\sigma)} \in \mathrm{Sym}[X] $:
+  \[
+    \mathrm{Frob}(f) = \langle f, \Psi \rangle_{\mathfrak{S}_n}.
+  \]
+}
+
+\mprop{Frobenius e' un'isometria}{\label{prop:frob-isometria}
+  Per ogni $ f, g \in CF^n $:
+  \[
+    \langle f, g \rangle_{CF^n} = \langle \mathrm{Frob}(f), \mathrm{Frob}(g) \rangle_{\mathrm{Sym}^n[X]}.
+  \]
+}
+\pf{Dim}{
+  Le $ \{p_\mu\}_{\mu \vdash n} $ sono base ortogonale con $ \langle p_\mu, p_\nu \rangle = \delta_{\mu,\nu}\, z_\mu $:
+  \[
+    \langle \mathrm{Frob}(f), \mathrm{Frob}(g) \rangle
+    = \sum_{\lambda, \mu} \frac{f(\lambda)\, \overline{g(\mu)}}{z_\lambda z_\mu}\, \langle p_\lambda, p_\mu \rangle
+    = \sum_{\lambda \vdash n} \frac{f(\lambda)\, \overline{g(\lambda)}}{z_\lambda}
+    = \langle f, g \rangle_{CF^n}.
+  \]
+}
+
+\subsection{Prodotto di induzione e struttura di anello}
+
+Vogliamo rendere $ CF := \bigoplus_{n \geq 0} CF^n $ un anello in modo che $ \mathrm{Frob} $
+sia un omomorfismo. La definizione naturale viene dall'induzione di rappresentazioni.
+
+\dfn{Prodotto puntuale e prodotto di induzione}{
+  Date $ f \in CF^m $ e $ g \in CF^n $, il \emph{prodotto puntuale}
+  $ f \times g \in \mathcal{C}(\mathfrak{S}_m \times \mathfrak{S}_n) $:
+  \[
+    (f \times g)(u, v) := f(u)\, g(v).
+  \]
+  Identificato $ \mathfrak{S}_m \times \mathfrak{S}_n \leq \mathfrak{S}_{m+n} $ (con
+  $ \mathfrak{S}_m $ che agisce su $ \{1, \dots, m\} $ e $ \mathfrak{S}_n $ su $ \{m+1, \dots, m+n\} $),
+  il \emph{prodotto di induzione} e':
+  \[
+    f \circ g := \mathrm{Ind}^{\mathfrak{S}_{m+n}}_{\mathfrak{S}_m \times \mathfrak{S}_n}(f \times g)
+    \in CF^{m+n}.
+  \]
+  Esteso per bilinearita', $ (CF, \circ) $ e' un'algebra graduata, associativa e commutativa.
+}
+
+\nt{
+  Se $ f = \chi_V $ e $ g = \chi_W $ sono caratteri di rappresentazioni di
+  $ \mathfrak{S}_m $ e $ \mathfrak{S}_n $, allora $ f \circ g $ e' il carattere di
+  $ \mathrm{Ind}^{\mathfrak{S}_{m+n}}_{\mathfrak{S}_m \times \mathfrak{S}_n}(V \otimes W) $.
+}
+
+\mprop{Frobenius e' un omomorfismo di anelli}{
+  Per ogni $ f \in CF^m $ e $ g \in CF^n $:
+  \[
+    \mathrm{Frob}(f \circ g) = \mathrm{Frob}(f) \cdot \mathrm{Frob}(g).
+  \]
+}
+\pf{Dim}{
+  Per la reciprocita' di Frobenius applicata a $ \Psi $:
+  \[
+    \mathrm{Frob}(f \circ g)
+    = \langle \mathrm{Ind}^{\mathfrak{S}_{m+n}}_{\mathfrak{S}_m \times \mathfrak{S}_n}(f \times g), \Psi \rangle_{\mathfrak{S}_{m+n}}
+    = \langle f \times g, \mathrm{Res}\, \Psi \rangle_{\mathfrak{S}_m \times \mathfrak{S}_n}.
+  \]
+  \textbf{Punto chiave.} Se $ u \in \mathfrak{S}_m $ e $ v \in \mathfrak{S}_n $ agiscono
+  su insiemi disgiunti, il tipo ciclico di $ uv $ e' la concatenazione dei tipi di
+  $ u $ e $ v $, quindi $ \Psi(uv) = \Psi(u) \cdot \Psi(v) $. Pertanto:
+  \[
+    \mathrm{Frob}(f \circ g)
+    = \frac{1}{m!\, n!} \sum_{u, v} f(u)\, g(v)\, \Psi(u)\, \Psi(v)
+    = \langle f, \Psi \rangle_{\mathfrak{S}_m} \cdot \langle g, \Psi \rangle_{\mathfrak{S}_n}
+    = \mathrm{Frob}(f) \cdot \mathrm{Frob}(g).
+  \]
+}
+
+\mprop{Frobenius e' bigettiva}{
+  $ \mathrm{Frob} : CF \to \mathrm{Sym}[X] $ e' un isomorfismo di algebre.
+}
+\pf{Dim}{
+  \textbf{Passo 1: azione sulle basi.} Per ogni $ \mu \vdash n $, sia
+  $ \alpha_\mu \in CF^n $ la funzione caratteristica della classe di coniugio di tipo $ \mu $:
+  \[
+    \alpha_\mu(\sigma) =
+    \begin{cases}
+      1 & \text{se } \lambda(\sigma) = \mu, \\
+      0 & \text{altrimenti}.
+    \end{cases}
+  \]
+  Le $ \{\alpha_\mu\}_{\mu \vdash n} $ sono per costruzione una base di $ CF^n $
+  (una funzione di classe e' determinata dai suoi valori sulle classi di coniugio,
+  in biezione con $ \mathrm{Par}(n) $).
+
+  Calcoliamo $ \mathrm{Frob}(\alpha_\mu) $. Le permutazioni $ \sigma \in \mathfrak{S}_n $
+  con tipo ciclico $ \mu $ sono esattamente $ n! / z_\mu $, e su ciascuna di esse
+  $ \alpha_\mu(\sigma) = 1 $ e $ p_{\lambda(\sigma)} = p_\mu $. Sulle altre, $ \alpha_\mu(\sigma) = 0 $.
+  Quindi:
+  \[
+    \mathrm{Frob}(\alpha_\mu)
+    = \frac{1}{n!} \sum_{\sigma \in \mathfrak{S}_n} \alpha_\mu(\sigma)\, p_{\lambda(\sigma)}
+    = \frac{1}{n!} \cdot \frac{n!}{z_\mu}\, p_\mu
+    = \frac{p_\mu}{z_\mu}.
+  \]
+
+  \textbf{Passo 2: base in base.} Le $ \{p_\mu / z_\mu\}_{\mu \vdash n} $ sono una base
+  di $ \mathrm{Sym}^n[X] $ (le $ p_\mu $ lo sono e $ z_\mu \neq 0 $). Quindi
+  $ \mathrm{Frob} : CF^n \to \mathrm{Sym}^n[X] $ manda la base $ \{\alpha_\mu\} $
+  nella base $ \{p_\mu / z_\mu\} $: in particolare e' suriettiva. Poiche'
+  $ \dim CF^n = |\mathrm{Par}(n)| = \dim \mathrm{Sym}^n[X] $, e' anche iniettiva.
+  Sommando sui gradi, $ \mathrm{Frob} : CF \to \mathrm{Sym}[X] $ e' un isomorfismo.
+}
+
+\subsection{Caratteri virtuali e reticolo $ R $}
+
+\dfn{Reticolo dei caratteri virtuali}{
+  $ R^n := \mathbb{Z}\text{-combinazioni lineari di caratteri di }\mathfrak{S}_n \subseteq CF^n $
+  (\emph{caratteri virtuali}). Si pone $ R := \bigoplus_{n \geq 0} R^n $.
+  E' un sottoanello di $ CF $ rispetto a $ \circ $: il prodotto di due caratteri di
+  rappresentazioni e' ancora un carattere (di un'induzione).
+}
+
+\subsection{La rappresentazione $ \eta^\alpha $ e $ \mathrm{Frob}(\eta^\alpha) = h_\alpha $}
+
+\mprop{Frobenius della rappresentazione banale}{
+  Per ogni $ n \geq 0 $:
+  \[
+    \mathrm{Frob}(1_{\mathfrak{S}_n}) = h_n.
+  \]
+}
+\pf{Dim}{
+  $ \mathrm{Frob}(1_{\mathfrak{S}_n}) = \sum_{\mu \vdash n} \frac{p_\mu}{z_\mu} = h_n $
+  per la Proposizione~\ref{prop:hm-em-potenze}.
+}
+
+\dfn{Sottogruppo di Young e $ \eta^\alpha $}{
+  Data una composizione $ \alpha = (\alpha_1, \dots, \alpha_\ell) \models n $:
+  \[
+    \mathfrak{S}_\alpha := \mathfrak{S}_{\alpha_1} \times \cdots \times \mathfrak{S}_{\alpha_\ell} \leq \mathfrak{S}_n,
+    \qquad
+    \eta^\alpha := \mathrm{Ind}^{\mathfrak{S}_n}_{\mathfrak{S}_\alpha}(1_{\mathfrak{S}_\alpha}).
+  \]
+  Geometricamente, $ \eta^\alpha $ e' il carattere della rappresentazione di
+  permutazione $ M^\alpha $ su $ \mathfrak{S}_n / \mathfrak{S}_\alpha $.
+  Per induzione transitiva: $ \eta^\alpha = 1_{\mathfrak{S}_{\alpha_1}} \circ \cdots \circ 1_{\mathfrak{S}_{\alpha_\ell}} $.
+}
+
+\mprop{$ \mathrm{Frob}(\eta^\alpha) = h_\alpha $}{\label{prop:frob-eta}
+  Per ogni composizione $ \alpha \models n $:
+  \[
+    \mathrm{Frob}(\eta^\alpha) = h_{\alpha_1} \cdots h_{\alpha_\ell} = h_\alpha.
+  \]
+}
+\pf{Dim}{
+  $ \mathrm{Frob} $ e' omomorfismo di anelli ed $ \eta^\alpha = 1_{\mathfrak{S}_{\alpha_1}} \circ \cdots \circ 1_{\mathfrak{S}_{\alpha_\ell}} $:
+  \[
+    \mathrm{Frob}(\eta^\alpha)
+    = \mathrm{Frob}(1_{\mathfrak{S}_{\alpha_1}}) \cdots \mathrm{Frob}(1_{\mathfrak{S}_{\alpha_\ell}})
+    = h_{\alpha_1} \cdots h_{\alpha_\ell} = h_\alpha.
+  \]
+}
+
+\cor{Frobenius e' un isomorfismo di anelli su $ R $}{
+  $ \mathrm{Frob} : R \to \mathrm{Sym}[X]_{\mathbb{Z}} $ e' un isomorfismo di anelli.
+}
+\pf{Dim}{
+  I caratteri di $ \mathfrak{S}_n $ sono interi, dunque $ \mathrm{Frob}(R^n) \subseteq \mathrm{Sym}^n[X]_{\mathbb{Z}} $.
+  Per la proposizione precedente $ \mathrm{Frob}(\eta^\alpha) = h_\alpha $ e le
+  $ h_\alpha $ generano $ \mathrm{Sym}[X]_{\mathbb{Z}} $ come $ \mathbb{Z} $-modulo,
+  quindi $ \mathrm{Frob}|_R $ e' suriettiva. L'iniettivita' segue dalla bigettivita'
+  di $ \mathrm{Frob} $ su tutto $ CF $.
+}
+
+\subsection{Definizione di $ \psi^\lambda $ via Jacobi-Trudi}
+
+\dfn{Carattere virtuale $ \psi^\lambda $}{
+  Per $ \lambda \vdash n $, l'identita' di Jacobi-Trudi $ s_\lambda = \det(h_{\lambda_i - i + j}) $
+  motiva la definizione, nell'anello $ (R, \circ) $:
+  \[
+    \psi^\lambda := \det\!\bigl( \eta^{\lambda_i - i + j} \bigr)_{i, j = 1}^{\ell(\lambda)},
+  \]
+  con $ \eta^0 = 1_{\mathfrak{S}_0} $ (unita') e $ \eta^k = 0 $ per $ k < 0 $.
+  Per costruzione $ \psi^\lambda \in R^n $ e' un carattere virtuale.
+}
+
+\mprop{$ \mathrm{Frob}(\psi^\lambda) = s_\lambda $}{\label{prop:frob-psi}
+  Applicando $ \mathrm{Frob} $ (omomorfismo di anelli) al determinante:
+  \[
+    \mathrm{Frob}(\psi^\lambda)
+    = \det\!\bigl( \mathrm{Frob}(\eta^{\lambda_i - i + j}) \bigr)
+    = \det\!\bigl( h_{\lambda_i - i + j} \bigr)
+    \stackrel{\text{J-T}}{=} s_\lambda.
+  \]
+}
+
+\subsection{Teorema centrale: i $ \chi^\lambda $ sono caratteri irriducibili}
+
+\thm{I $ \chi^\lambda $ sono i caratteri irriducibili di $ \mathfrak{S}_n $}{
+  I numeri $ \chi^\lambda(\mu) $ definiti da Murnaghan-Nakayama tramite
+  $ p_\mu = \sum_\lambda \chi^\lambda(\mu)\, s_\lambda $ sono i caratteri delle
+  rappresentazioni irriducibili di $ \mathfrak{S}_n $. Le rappresentazioni
+  irriducibili sono indicizzate da $ \lambda \vdash n $, e quella associata a $ \lambda $
+  ha dimensione $ \chi^\lambda((1^n)) = f^\lambda = \#\mathrm{SYT}(\lambda) $.
+}
+\pf{Dim}{
+  \textbf{Passo 1: $ \{\psi^\lambda\} $ ortonormale.}
+  Da $ \mathrm{Frob}(\psi^\lambda) = s_\lambda $ (Proposizione~\ref{prop:frob-psi}) e
+  dall'ortonormalita' delle Schur (Teorema~\ref{thm:schur-ortonormali}, ricordando
+  $ s_\lambda = \widehat{s}_\lambda $), per l'isometria di Frobenius
+  (Proposizione~\ref{prop:frob-isometria}):
+  \[
+    \langle \psi^\lambda, \psi^\mu \rangle_{CF^n}
+    = \langle s_\lambda, s_\mu \rangle = \delta_{\lambda, \mu}.
+  \]
+
+  \textbf{Passo 2: $ \psi^\lambda = \pm $ carattere irriducibile.}
+  Poiche' $ \psi^\lambda \in R^n $, per definizione si scrive nella base dei caratteri
+  irriducibili $ \{\chi^\rho\}_\rho $ di $ \mathfrak{S}_n $ a coefficienti interi:
+  \[
+    \psi^\lambda = \sum_\rho a_\rho\, \chi^\rho, \qquad a_\rho \in \mathbb{Z}.
+  \]
+  Dal Passo 1, $ \langle \psi^\lambda, \psi^\lambda \rangle = 1 $.
+  Calcoliamo lo stesso prodotto scalare usando bilinearita' e l'ortonormalita'
+  degli irriducibili ($ \langle \chi^\rho, \chi^{\rho'} \rangle = \delta_{\rho, \rho'} $):
+  \[
+    \langle \psi^\lambda, \psi^\lambda \rangle
+    = \Big\langle \sum_\rho a_\rho \chi^\rho,\ \sum_{\rho'} a_{\rho'} \chi^{\rho'} \Big\rangle
+    = \sum_{\rho, \rho'} a_\rho\, a_{\rho'}\, \langle \chi^\rho, \chi^{\rho'} \rangle
+    = \sum_\rho a_\rho^2.
+  \]
+  Quindi $ \sum_\rho a_\rho^2 = 1 $ con $ a_\rho \in \mathbb{Z} $: l'unica soluzione e'
+  che esattamente un $ a_{\rho_0} = \pm 1 $ e tutti gli altri sono nulli. Pertanto
+  $ \psi^\lambda = \pm \chi^{\rho_0} $ e' il carattere (al segno) di una rappresentazione
+  irriducibile.
+
+  \textbf{Passo 3: $ \psi^\lambda = \chi^\lambda $.}
+
+  \emph{(A) Confronto delle immagini tramite Frobenius.} Abbiamo due fatti:
+  \begin{itemize}
+    \item \textbf{Fatto 1} (Proposizione~\ref{prop:frob-psi}):
+    $ \mathrm{Frob}(\psi^\lambda) = s_\lambda $.
+    \item \textbf{Fatto 2} (dal Corollario~\ref{cor:mn-vuoto}, Murnaghan-Nakayama):
+    $ \mathrm{Frob}(\chi^\lambda) = s_\lambda $.
+  \end{itemize}
+  Quest'ultimo segue invertendo $ p_\mu = \sum_\lambda \chi^\lambda(\mu)\, s_\lambda $:
+  poiche' $ \{p_\mu\} $ e $ \{p_\mu / z_\mu\} $ sono basi duali, $ \langle s_\lambda, p_\mu \rangle = \chi^\lambda(\mu) $,
+  quindi
+  \[
+    s_\lambda = \sum_\mu \langle s_\lambda, p_\mu \rangle\, \frac{p_\mu}{z_\mu}
+              = \sum_\mu \chi^\lambda(\mu)\, \frac{p_\mu}{z_\mu}
+              = \mathrm{Frob}(\chi^\lambda).
+  \]
+
+  \emph{(B) Iniettivita' di Frobenius.} Dai due fatti $ \mathrm{Frob}(\psi^\lambda) = \mathrm{Frob}(\chi^\lambda) $;
+  per l'iniettivita' di $ \mathrm{Frob} $ (vedi Proposizione precedente):
+  \[
+    \psi^\lambda = \chi^\lambda.
+  \]
+
+  \emph{(C) Determinazione del segno.}  Dal Passo 2 sappiamo che
+  $ \psi^\lambda = \pm \chi^{\rho_0} $ per un irriducibile $ \chi^{\rho_0} $. Per
+  escludere il segno $ - $ valutiamo entrambi sull'identita' $ (1^n) \in \mathfrak{S}_n $:
+  \begin{itemize}
+    \item Per qualunque rappresentazione $ V $: $ \chi_V(1) = \dim V > 0 $. In particolare
+    $ \chi^{\rho_0}((1^n)) = \dim V_{\rho_0} > 0 $.
+    \item Calcoliamo $ \psi^\lambda((1^n)) $: per il Corollario~\ref{cor:h1n-schur},
+    $ h_1^n = \sum_\lambda f^\lambda\, s_\lambda $, quindi $ \langle s_\lambda, h_1^n \rangle = f^\lambda $.
+    D'altra parte $ p_{(1^n)} = p_1^n = h_1^n $, e per la formula di Frobenius
+    $ \chi^\lambda((1^n)) = \langle \chi^\lambda, \mathbb{1}_{(1^n)} \rangle\cdot z_{(1^n)} = \langle s_\lambda, p_{(1^n)} \rangle = f^\lambda > 0 $.
+    Per il punto (B), $ \psi^\lambda((1^n)) = \chi^\lambda((1^n)) = f^\lambda > 0 $.
+  \end{itemize}
+  Se fosse $ \psi^\lambda = -\chi^{\rho_0} $ avremmo $ \psi^\lambda((1^n)) = -\dim V_{\rho_0} < 0 $:
+  contraddizione. Pertanto $ \psi^\lambda = +\chi^{\rho_0} $, cioe' $ \chi^\lambda = \psi^\lambda $
+  \emph{e'} il carattere di una rappresentazione irriducibile $ V_\lambda := V_{\rho_0} $
+  di dimensione $ f^\lambda $.
+}
+
+\subsection{Il dizionario di Frobenius}
+
+\osservazione{Riepilogo della corrispondenza.
+\[
+  \begin{array}{c|c}
+    CF \text{ (caratteri di } \mathfrak{S}_n\text{)} & \mathrm{Sym}[X] \\ \hline
+    f \in CF^n & \mathrm{Frob}(f) = \sum_\mu f(\mu)\, p_\mu / z_\mu \\
+    \langle \cdot, \cdot \rangle_{CF^n} & \text{prodotto di Hall} \\
+    f \circ g \text{ (induzione)} & \mathrm{Frob}(f) \cdot \mathrm{Frob}(g) \\
+    1_{\mathfrak{S}_n} \text{ (banale)} & h_n \\
+    \eta^\alpha \text{ (perm. su } \mathfrak{S}_n / \mathfrak{S}_\alpha\text{)} & h_\alpha \\
+    \chi^\lambda = \psi^\lambda \text{ (irriducibile)} & s_\lambda \\
+    \mathrm{sgn} & e_n = s_{(1^n)} \\
+    \dim V_\lambda = \chi^\lambda((1^n)) & \langle s_\lambda, h_1^n \rangle = f^\lambda
+  \end{array}
+\]
+}
+
+\subsection{Corollari notevoli}
+
+\cor{Schur-positivita'}{
+  Se $ V $ e' una rappresentazione di $ \mathfrak{S}_n $ con carattere $ \chi_V $,
+  allora $ \mathrm{Frob}(\chi_V) $ e' \emph{Schur-positiva}:
+  \[
+    \langle \mathrm{Frob}(\chi_V), s_\lambda \rangle \in \mathbb{N} \qquad \forall\, \lambda \vdash n.
+  \]
+  Una strategia comune per dimostrare la Schur-positivita' di una funzione simmetrica
+  e' esibirla come $ \mathrm{Frob} $ di un carattere genuino.
+}
+
+\cor{Regola di Young}{
+  Sia $ V_\lambda $ l'irriducibile di $ \mathfrak{S}_n $ associata a $ \lambda \vdash n $
+  e $ M^\alpha $ la rappresentazione di permutazione su $ \mathfrak{S}_n / \mathfrak{S}_\alpha $.
+  Allora:
+  \[
+    M^\alpha \cong \bigoplus_{\lambda \vdash n} V_\lambda^{\oplus K_{\lambda, \alpha}}.
+  \]
+}
+\pf{Dim}{
+  Per la teoria classica dei caratteri (Teorema~\ref{thm:caratteri-base-CG}), le
+  molteplicita' degli irriducibili in una rappresentazione si calcolano via prodotto
+  scalare: l'enunciato equivale a
+  \[
+    \langle \eta^\alpha, \chi^\lambda \rangle = K_{\lambda, \alpha}.
+  \]
+  Applichiamo l'isometria di Frobenius (Proposizione~\ref{prop:frob-isometria}),
+  $ \mathrm{Frob}(\eta^\alpha) = h_\alpha $ (Proposizione~\ref{prop:frob-eta}),
+  $ \mathrm{Frob}(\chi^\lambda) = s_\lambda $ (Teorema centrale, Passo 3) e lo
+  sviluppo $ h_\alpha = \sum_\lambda K_{\lambda, \alpha}\, s_\lambda $
+  (Corollario~\ref{cor:hmu-kostka-schur}, ricordando $ s_\lambda = \widehat{s}_\lambda $):
+  \[
+    \langle \eta^\alpha, \chi^\lambda \rangle
+    = \langle \mathrm{Frob}(\eta^\alpha), \mathrm{Frob}(\chi^\lambda) \rangle
+    = \langle h_\alpha, s_\lambda \rangle = K_{\lambda, \alpha}.
+  \]
+}
+
+\ex{Calcolo di $ \mathrm{Frob}(\mathrm{sgn}) $}{
+  Il carattere segno di $ \mathfrak{S}_n $ ha valore $ \mathrm{sgn}(\sigma) = (-1)^{n - \ell(\lambda(\sigma))} $
+  (segno di una permutazione di tipo $ \mu $ e' $ \prod_i (-1)^{\mu_i - 1} = (-1)^{n - \ell(\mu)} $).
+  Allora:
+  \[
+    \mathrm{Frob}(\mathrm{sgn})
+    = \sum_{\mu \vdash n} (-1)^{n - \ell(\mu)}\, \frac{p_\mu}{z_\mu}.
+  \]
+  Ricordando l'azione di $ \omega $ sulle potenze, $ \omega(p_\mu) = (-1)^{n - \ell(\mu)} p_\mu $,
+  quindi:
+  \[
+    \mathrm{Frob}(\mathrm{sgn}) = \omega\!\left( \sum_{\mu \vdash n} \frac{p_\mu}{z_\mu} \right) = \omega(h_n) = e_n = s_{(1^n)}.
+  \]
+  Per il teorema centrale, $ \mathrm{sgn} = \chi^{(1^n)} $: il carattere segno e'
+  l'irriducibile associata alla colonna $ (1^n) $.
 }
 
 % \end{document}
