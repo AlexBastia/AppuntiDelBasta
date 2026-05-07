@@ -356,10 +356,10 @@ $$(\rho \otimes \pi)(g)(v \otimes u) = (\rho(g)v) \otimes (\pi(g)u)$$
 
 Nella base $\{v_i \otimes u_j\}$, la matrice di $(\rho \otimes \pi)(g)$ è il \textbf{prodotto di Kronecker} delle matrici $\rho(g)$ e $\pi(g)$.
 
-\mprop{Carattere di un prodotto tensoriale}{
+\mprop{Carattere di un prodotto tensoriale}{\label{prop:carattere-tensore}
   Date due rappresentazioni $ V, U $ con caratteri $ \chi_V, \chi_U $:
   \[
-    \chi_{V \otimes U}(g) = \chi_V(g) \cdot \chi_U(g) 
+    \chi_{V \otimes U}(g) = \chi_V(g) \cdot \chi_U(g)
   \]
 }
 \pf{Dimostrazione}{
@@ -504,9 +504,9 @@ Quindi la componente isotipica banale dello spazio degli omomorfismi da due rapp
  I caratteri $\chi_V$ sono funzioni centrali (per ciclicità della traccia). La dimensione di $\mathcal{C}(G)$ è uguale al numero di classi di coniugio di $G$, poiché una funzione centrale è determinata dai suoi valori su ciascuna classe.\\
 
  Definiamo un prodotto scalare (hermitiano dato che $ K = \mathbb{C} $) su questo spazio:
-\dfn{Prodotto hermitiano fra funzioni centrali}{
+\dfn{Prodotto hermitiano fra funzioni centrali}{\label{def:prodotto-hermitiano}
   Il prodotto hermitiano su $\mathcal{C}(G)$ è:
-  $$\langle \chi_1, \chi_2 \rangle := \frac{1}{|G|} \sum_{g \in G} \chi_1(g)\,\overline{\chi_2(g)}$$ 
+  $$\langle \chi_1, \chi_2 \rangle := \frac{1}{|G|} \sum_{g \in G} \chi_1(g)\,\overline{\chi_2(g)}$$
  }
 Si verifica che è lineare nel primo argomento, antilineare nel secondo (per via del coniugato), e definito positivo. È quindi un vero prodotto hermitiano su $\mathcal{C}(G)$.
 
@@ -558,10 +558,10 @@ $$\langle \chi_W, \chi_W \rangle = \frac{1}{6}(4\cdot1 + 0\cdot3 + 1\cdot2) = \f
 
 Detto cio', andiamo a vedere delle conseguenze di questo fatto e dell'ortogonalita' dei caratteri.
 
-\cor{Calcolo Molteplicita'}{
+\cor{Calcolo Molteplicita'}{\label{cor:molteplicita}
 Le molteplicità $k_i$ sono:
 
-$$k_i = \langle \chi_V, \chi_{V_i} \rangle$$  
+$$k_i = \langle \chi_V, \chi_{V_i} \rangle$$
 }
 \pf{Dimostrazione}{
 Per linearità del prodotto hermitiano e ortogonalità:

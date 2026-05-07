@@ -339,7 +339,7 @@ cioè $T \geq \wt{T}$, in contraddizione con $\wt{T} > T$.
 
 \section{Tabloidi e la rappresentazione $M^\lambda$}
 
-\dfn{Tabloide}{
+\dfn{Tabloide}{\label{def:tabloide}
 Il \textbf{tabloide} $\{T\}$ associato a un tableau iniettivo $T$ è l'orbita di $T$ sotto l'azione di $R(T)$. L'ordine degli elementi all'interno di ciascuna riga non ha importanza. L'azione di $S_n$ sui tabloidi è $\sigma \cdot \{T\} := \{\sigma \cdot T\}$.
 }
 
@@ -366,7 +366,7 @@ Il \textbf{tabloide} $\{T\}$ associato a un tableau iniettivo $T$ è l'orbita di
 {boxsize=normal, notabloids}
 }
 
-\dfn{Rappresentazione $M^\lambda$}{
+\dfn{Rappresentazione $M^\lambda$}{\label{def:M-lambda}
 Lo spazio vettoriale complesso $M^\lambda$ ha come base formale l'insieme di tutti i tabloidi di forma $\lambda \vdash n$, con l'azione di $S_n$ data da permutazione dei tabloidi. Si ha l'isomorfismo
 \[
 M^\lambda \cong \mathrm{Ind}_{S_\lambda}^{S_n} \mathbf{1}.
@@ -383,7 +383,7 @@ M^\lambda \cong \mathrm{Ind}_{S_\lambda}^{S_n} \mathbf{1}.
 
 \section{Simmetrizzatori di Young}
 
-\dfn{Simmetrizzatori}{
+\dfn{Simmetrizzatori}{\label{def:simmetrizzatori}
 Sia $T$ un tableau iniettivo di dimensione $n$. Si definiscono in $\mathbb{C}[S_n]$:
 \begin{enumerate}
 \item \textbf{Simmetrizzatore delle righe:} $\displaystyle a_T := \sum_{p \in R(T)} p$.
@@ -403,7 +403,7 @@ Per ogni $p \in R(T)$, $q \in C(T)$ e $\sigma \in S_n$:
 
 \section{Vettore di Specht e modulo di Specht}
 
-\dfn{Vettore di Specht}{
+\dfn{Vettore di Specht}{\label{def:vettore-specht}
 Il \textbf{vettore di Specht} associato a un tableau iniettivo $T$ di forma $\lambda$ è
 \[
 v_T := b_T \cdot \{T\} = \sum_{q \in C(T)} \mathrm{sgn}(q)\, \{q \cdot T\} \;\in M^\lambda.
@@ -450,7 +450,7 @@ v_T := b_T \cdot \{T\} = \sum_{q \in C(T)} \mathrm{sgn}(q)\, \{q \cdot T\} \;\in
 
 }
 
-\dfn{Modulo di Specht}{
+\dfn{Modulo di Specht}{\label{def:modulo-specht}
 Il \textbf{modulo di Specht} è il sottomodulo
 \[
 S^\lambda := \mathbb{C}[S_n] \cdot v_T \subseteq M^\lambda,
@@ -458,7 +458,7 @@ S^\lambda := \mathbb{C}[S_n] \cdot v_T \subseteq M^\lambda,
 generato ciclicamente da un qualsiasi vettore di Specht $v_T$ di forma $\lambda$.
 }
 
-\thm{Base standard dei moduli di Specht}{
+\thm{Base standard dei moduli di Specht}{\label{thm:base-standard-specht}
 L'insieme $\{v_T \mid T \text{ è un SYT di forma } \lambda\}$ è una base di $S^\lambda$. In particolare
 \[
 \dim S^\lambda = f^\lambda := \#\{\text{SYT di forma } \lambda\}.
@@ -800,7 +800,7 @@ Dall'ipotesi $\wt{T} > T$ (nell'ordine sui tableau iniettivi della stessa forma)
 
 \section{Classificazione delle rappresentazioni irriducibili di $S_n$}
 
-\thm{Classificazione delle rappresentazioni irriducibili di $S_n$}{
+\thm{Classificazione delle rappresentazioni irriducibili di $S_n$}{\label{thm:classificazione-specht}
 I moduli di Specht $\{S^\lambda \mid \lambda \in \mathrm{Par}(n)\}$ costituiscono un sistema completo di rappresentazioni irriducibili di $S_n$, a due a due non isomorfe.
 }
 

@@ -1,0 +1,289 @@
+% \begin{document}
+\chapter{Rappresentazioni di $ \mathfrak{S}_n $ via funzioni simmetriche}
+
+In questo capitolo applichiamo la macchina algebrica costruita nel capitolo precedente
+(funzioni simmetriche e mappa caratteristica di Frobenius) allo studio concreto delle
+rappresentazioni del gruppo simmetrico. Iniziamo con il calcolo esplicito dei moduli di
+Specht per $ \mathfrak{S}_4 $, costruiamo la tavola dei caratteri, decomponiamo prodotti
+tensoriali e introduciamo i coefficienti di Littlewood-Richardson con la relativa regola
+combinatoria.
+
+\section{Modulo di Specht: esempi concreti per $ \mathfrak{S}_4 $}
+
+Ricordando $ M^\lambda $ (Definizione~\ref{def:M-lambda}), il vettore di Specht $ v_T = b_T \cdot \{T\} $
+(Definizione~\ref{def:vettore-specht}, con $ b_T $ simmetrizzatore di colonna,
+Definizione~\ref{def:simmetrizzatori}) e il modulo di Specht
+$ S^\lambda = \mathbb{C}[\mathfrak{S}_n] \cdot v_T $ (Definizione~\ref{def:modulo-specht}),
+calcoliamo esplicitamente i moduli per $ \lambda \vdash 4 $. Per la classificazione
+(Teorema~\ref{thm:classificazione-specht}), gli $ S^\lambda $ esauriscono le rappresentazioni
+irriducibili di $ \mathfrak{S}_4 $.
+
+Le partizioni di $ 4 $ sono cinque: $ (4),\, (3,1),\, (2,2),\, (2,1,1),\, (1^4) $.
+
+\subsection{Casi banali: $ \lambda = (4) $ e $ \lambda = (1^4) $}
+
+\begin{itemize}
+  \item \textbf{$ S^{(4)} $ (banale).} $ M^{(4)} $ ha un unico tabloide $ \{1\,2\,3\,4\} $,
+  dunque $ \dim M^{(4)} = 1 $ e $ S^{(4)} = M^{(4)} $ e' la \textit{rappresentazione banale}.
+  \item \textbf{$ S^{(1^4)} $ (segno).} $ M^{(1^4)} $ ha $ 4! = 24 $ tabloidi (un tableau a
+  colonna unica e' determinato dall'ordinamento) e $ S^{(1^4)} $ e' la \textit{rappresentazione
+  segno}, di dimensione $ 1 $.
+\end{itemize}
+
+\osservazione{Per ogni $ n $: $ S^{(n)} $ e' la banale e $ S^{(1^n)} $ e' la segno.}
+
+\subsection{$ \lambda = (3,1) $: la rappresentazione standard}
+
+I tabloidi di forma $ (3,1) $ corrispondono a "scegliere quale numero $ i $ va in seconda
+riga"; chiamiamo $ x_i := \{i \mid jkl\} $ con $ \{j,k,l\} = \{1,2,3,4\} \setminus \{i\} $.
+Quindi
+\[
+  M^{(3,1)} \cong \mathbb{C}^4 = \mathbb{C} x_1 \oplus \mathbb{C} x_2 \oplus \mathbb{C} x_3 \oplus \mathbb{C} x_4,
+\]
+con $ \mathfrak{S}_4 $ che permuta gli indici.
+
+\ex{Calcolo di $ v_T $}{
+  Per $ T = \begin{ytableau} 1 \\ 2 & 3 & 4 \end{ytableau} $ (notazione francese: riga lunga
+  in basso) il gruppo colonna e' $ C(T) = \{\mathrm{id}, (1\,2)\} $, quindi
+  $ b_T = \mathrm{id} - (1\,2) $ e
+  \[
+    v_T = b_T \cdot \{T\} = \{1 \mid 234\} - \{2 \mid 134\} = x_1 - x_2.
+  \]
+  In generale $ v_T = x_i - x_j $ per qualche $ i \neq j $.
+}
+
+\mprop{$ S^{(3,1)} $ e' la rappresentazione standard}{
+  \[
+    S^{(3,1)} = \mathrm{Span}\{x_i - x_j\}
+      = \Bigl\{ (y_1, y_2, y_3, y_4) \in \mathbb{C}^4 \;\Big|\; \textstyle\sum_i y_i = 0 \Bigr\}.
+  \]
+  Per il Teorema~\ref{thm:base-standard-specht}, una base e' data dai $ v_T $ per $ T \in \mathrm{SYT}((3,1)) $:
+  $ x_2 - x_1,\ x_3 - x_1,\ x_4 - x_1 $, di dimensione $ f^{(3,1)} = 3 $.
+}
+
+\subsection{$ \lambda = (2,2) $: rappresentazione di dimensione $ 2 $}
+
+I tabloidi di forma $ (2,2) $ sono indicizzati dalla coppia (insieme di riga 1, insieme di
+riga 2): scriviamo $ x_{ij} := \{ij \mid kl\} $ con $ \{k,l\} $ il complemento. Sono
+$ \binom{4}{2} = 6 $ tabloidi distinti, $ M^{(2,2)} \cong \mathbb{C}^6 $.
+
+Gli SYT di forma $ (2,2) $ sono $ f^{(2,2)} = 2 $:
+\[
+  T = \begin{ytableau} 3 & 4 \\ 1 & 2 \end{ytableau}, \qquad
+  T' = \begin{ytableau} 2 & 4 \\ 1 & 3 \end{ytableau}.
+\]
+
+\ex{Calcolo di $ v_T $ e $ v_{T'} $}{
+  $ C(T) = \{\mathrm{id},\, (1\,3),\, (2\,4),\, (1\,3)(2\,4)\} $, quindi
+  $ b_T = \mathrm{id} - (1\,3) - (2\,4) + (1\,3)(2\,4) $ e applicato a $ \{12 \mid 34\} = x_{12} $:
+  \[
+    v_T = x_{12} - x_{23} - x_{14} + x_{34}.
+  \]
+  Analogamente, $ C(T') = \{\mathrm{id},\, (1\,2),\, (3\,4),\, (1\,2)(3\,4)\} $ e
+  \[
+    v_{T'} = x_{13} - x_{23} - x_{14} + x_{24}.
+  \]
+  Tutti gli altri $ v_T $ (per $ T $ non standard) sono combinazioni lineari di $ v_T $ e
+  $ v_{T'} $: dunque $ S^{(2,2)} = \mathbb{C} v_T \oplus \mathbb{C} v_{T'} $, di dimensione $ 2 $.
+}
+
+\subsection{$ \lambda = (2,1,1) $: standard tensor segno}
+
+Per il Teorema~\ref{thm:base-standard-specht}: $ \dim S^{(2,1,1)} = f^{(2,1,1)} = 3 $.
+
+\osservazione{In generale $ S^{\lambda'} \cong S^\lambda \otimes \mathrm{sgn} $; in particolare
+  $ S^{(2,1,1)} \cong S^{(3,1)} \otimes \mathrm{sgn} $ e' la "standard tensor segno".}
+
+\section{Tavola dei caratteri di $ \mathfrak{S}_4 $}
+
+Per il teorema centrale (Teorema~\ref{thm:chi-irriducibili}), i caratteri irriducibili di
+$ \mathfrak{S}_4 $ sono i $ \chi^\lambda $ per $ \lambda \vdash 4 $. Le classi di coniugio di
+$ \mathfrak{S}_4 $ sono indicizzate dalle partizioni di $ 4 $:
+\[
+  \begin{array}{c|c|c}
+    \text{tipo ciclico} & \text{rappresentante} & |C| \\ \hline
+    (1^4) & \mathrm{id} & 1 \\
+    (2,1,1) & \text{trasposizione} & 6 \\
+    (2,2) & \text{doppia trasp.} & 3 \\
+    (3,1) & 3\text{-ciclo} & 8 \\
+    (4) & 4\text{-ciclo} & 6
+  \end{array}
+\]
+Totale $ 1 + 6 + 3 + 8 + 6 = 24 = 4! $.
+
+Usando Murnaghan-Nakayama (Teorema~\ref{thm:murnaghan-nakayama}, oppure costruzione esplicita)
+si compila la tavola:
+\[
+  \begin{array}{c|ccccc}
+    & (1^4) & (2,1,1) & (2,2) & (3,1) & (4) \\ \hline
+    \chi^{(4)} = \mathbf{1} & 1 & 1 & 1 & 1 & 1 \\
+    \chi^{(1^4)} = \mathrm{sgn} & 1 & -1 & 1 & 1 & -1 \\
+    \chi^{(3,1)} = \mathrm{std} & 3 & 1 & -1 & 0 & -1 \\
+    \chi^{(2,1,1)} = \mathrm{std} \otimes \mathrm{sgn} & 3 & -1 & -1 & 0 & 1 \\
+    \chi^{(2,2)} & 2 & 0 & 2 & -1 & 0
+  \end{array}
+\]
+
+\ex{Verifica dell'ortogonalit\`a per $ \chi^{(3,1)} $}{
+  Per il Teorema~\ref{thm:orto-caratteri} deve valere
+  $ \langle \chi^{(3,1)}, \chi^{(3,1)} \rangle = 1 $:
+  \[
+    \langle \chi^{(3,1)}, \chi^{(3,1)} \rangle
+      = \frac{1\cdot 9 + 6\cdot 1 + 3\cdot 1 + 8\cdot 0 + 6\cdot 1}{24}
+      = \frac{24}{24} = 1. \checkmark
+  \]
+}
+
+\section{Decomposizione di $ S^{(3,1)} \otimes S^{(2,1,1)} $}
+
+\subsection{Come rappresentazione di $ \mathfrak{S}_4 $}
+
+Calcoliamo il carattere prodotto $ \chi := \chi^{(3,1)} \cdot \chi^{(2,1,1)} $ classe per classe
+(usando $ \chi_{V \otimes U} = \chi_V \cdot \chi_U $, Proposizione~\ref{prop:carattere-tensore}):
+\[
+  \begin{array}{c|cccccc}
+    \text{classe} & (1^4) & (2,1,1) & (2,2) & (3,1) & (4) \\ \hline
+    \chi^{(3,1)} & 3 & 1 & -1 & 0 & -1 \\
+    \chi^{(2,1,1)} & 3 & -1 & -1 & 0 & 1 \\
+    \chi & 9 & -1 & 1 & 0 & -1
+  \end{array}
+\]
+
+Calcoliamo le molteplicita' tramite il Corollario~\ref{cor:molteplicita}, usando il prodotto
+hermitiano della Definizione~\ref{def:prodotto-hermitiano} (i caratteri di $ \mathfrak{S}_n $
+sono reali, quindi il coniugato sparisce e raccogliamo per classi di coniugio):
+\[
+  \langle \chi, \chi^\mu \rangle = \frac{1}{24} \sum_C |C|\, \chi(C)\, \chi^\mu(C).
+\]
+\begin{align*}
+  \langle \chi, \chi^{(4)} \rangle &= \tfrac{9 - 6 + 3 + 0 - 6}{24} = 0, \\
+  \langle \chi, \chi^{(1^4)} \rangle &= \tfrac{9 + 6 + 3 + 0 + 6}{24} = 1, \\
+  \langle \chi, \chi^{(3,1)} \rangle &= \tfrac{27 - 6 - 3 + 0 + 6}{24} = 1, \\
+  \langle \chi, \chi^{(2,1,1)} \rangle &= \tfrac{27 + 6 - 3 + 0 - 6}{24} = 1, \\
+  \langle \chi, \chi^{(2,2)} \rangle &= \tfrac{18 + 0 + 6 + 0 + 0}{24} = 1.
+\end{align*}
+
+\thm{Decomposizione di $ S^{(3,1)} \otimes S^{(2,1,1)} $ in $ \mathfrak{S}_4 $}{
+  \[
+    S^{(3,1)} \otimes S^{(2,1,1)} \cong S^{(1^4)} \oplus S^{(3,1)} \oplus S^{(2,1,1)} \oplus S^{(2,2)}.
+  \]
+  Verifica delle dimensioni: $ 3 \cdot 3 = 9 = 1 + 3 + 3 + 2 $. \checkmark
+}
+
+\subsection{Come rappresentazione di $ \mathfrak{S}_8 $}
+
+\osservazione{Posso vedere $ S^{(3,1)} \otimes S^{(2,1,1)} $ non solo come rappresentazione di
+  $ \mathfrak{S}_4 $ (azione diagonale), ma anche come rappresentazione di
+  $ \mathfrak{S}_4 \times \mathfrak{S}_4 $ (azione esterna), e quindi via
+  $ \mathrm{Ind}^{\mathfrak{S}_8}_{\mathfrak{S}_4 \times \mathfrak{S}_4} $
+  (Definizione~\ref{def:rappr-indotta}) come rappresentazione di $ \mathfrak{S}_8 $. La sua
+  decomposizione in irriducibili di $ \mathfrak{S}_8 $ e' governata dai \textbf{coefficienti
+  di Littlewood-Richardson}.}
+
+\section{Coefficienti di Littlewood-Richardson}
+
+\dfn{Coefficiente di Littlewood-Richardson}{\label{def:LR}
+  Date $ \mu \vdash m $, $ \nu \vdash n $ e $ \lambda \vdash m+n $, il
+  \textit{coefficiente di Littlewood-Richardson} $ c^\lambda_{\mu,\nu} $ e' la molteplicit\`a
+  (cfr. Corollario~\ref{cor:molteplicita}) di $ S^\lambda $ in
+  \[
+    \mathrm{Ind}^{\mathfrak{S}_{m+n}}_{\mathfrak{S}_m \times \mathfrak{S}_n}\bigl( S^\mu \otimes S^\nu \bigr)
+      \cong \bigoplus_{\lambda \vdash m+n} \bigl(S^\lambda\bigr)^{\oplus c^\lambda_{\mu,\nu}}.
+  \]
+}
+
+\thm{Caratterizzazione tramite funzioni di Schur}{\label{thm:LR-schur}
+  \[
+    s_\mu \cdot s_\nu = \sum_{\lambda \vdash m+n} c^\lambda_{\mu,\nu}\, s_\lambda.
+  \]
+}
+\pf{Dim}{
+  Dal dizionario di Frobenius (\S\ref{subsec:dizionario-frobenius}),
+  $ s_\mu = \mathrm{Frob}(\chi^\mu) $ e $ s_\nu = \mathrm{Frob}(\chi^\nu) $
+  (Teorema~\ref{thm:chi-irriducibili}). Poiche' $ \mathrm{Frob} $ e' un omomorfismo d'anelli
+  rispetto al prodotto di induzione $ \circ $ (Proposizione~\ref{prop:frob-omomorfismo}):
+  \[
+    s_\mu \cdot s_\nu = \mathrm{Frob}(\chi^\mu \circ \chi^\nu)
+      = \mathrm{Frob}\bigl( \chi_{\mathrm{Ind}(S^\mu \otimes S^\nu)} \bigr).
+  \]
+  Eguagliando i coefficienti delle $ s_\lambda $ con le molteplicit\`a dei $ \chi^\lambda $
+  (Definizione~\ref{def:LR}) si ottiene l'enunciato.
+}
+
+\osservazione{Schur-positivit\`a. $ c^\lambda_{\mu,\nu} \in \mathbb{N} $ perche' sono
+  molteplicit\`a di rappresentazioni: la positivit\`a non e' affatto evidente dal solo lato
+  delle funzioni simmetriche.}
+
+\osservazione{Simmetria. $ c^\lambda_{\mu,\nu} = c^\lambda_{\nu,\mu} $: ovvio dal teorema
+  precedente (commutativit\`a di $ \mathrm{Sym}[X] $).}
+
+\mprop{Connessione con le Schur skew}{
+  \[
+    \langle s_\mu s_\nu, s_\lambda \rangle = \langle s_\nu, s_{\lambda/\mu} \rangle, \qquad
+    s_{\lambda/\mu} = \sum_\nu c^\lambda_{\mu,\nu}\, s_\nu.
+  \]
+  Quindi $ c^\lambda_{\mu,\nu} $ e' anche il coefficiente di $ s_\nu $ nello sviluppo della
+  funzione di Schur skew $ s_{\lambda/\mu} $ (cfr. Teorema~\ref{thm:LR-schur} e
+  ortonormalita' delle Schur, Teorema~\ref{thm:schur-ortonormali}).
+}
+
+\section{Regola di Littlewood-Richardson}
+
+\subsection{Parola di lettura e lattice permutations}
+
+\dfn{Parola di lettura al contrario}{
+  Sia $ T $ uno (skew) SSYT. La \textit{parola di lettura al contrario} $ w_T $ si ottiene
+  leggendo le entrate riga per riga \textit{dall'alto in basso}, e all'interno di ogni riga
+  \textit{da destra a sinistra}.
+}
+
+\dfn{Lattice permutation (ballot sequence)}{
+  Una parola $ a_1 a_2 \cdots a_m $ e' una \textit{lattice permutation} se per ogni prefisso
+  $ a_1 \cdots a_j $ e per ogni $ i \geq 1 $:
+  \[
+    \#\{ k \leq j \mid a_k = i \} \;\geq\; \#\{ k \leq j \mid a_k = i+1 \}.
+  \]
+}
+
+\nt{Intuitivamente: a ogni passo della lettura "il candidato $ i $ ha sempre almeno tanti
+  voti quanto $ i+1 $", da cui il nome.}
+
+\subsection{Il teorema}
+
+\thm{Regola di Littlewood-Richardson}{\label{thm:LR-rule}
+  Per partizioni $ \mu \subseteq \lambda $ e $ \nu $ con $ |\lambda/\mu| = |\nu| $, il
+  coefficiente $ c^\lambda_{\mu,\nu} $ (Definizione~\ref{def:LR}) si calcola come
+  \[
+    c^\lambda_{\mu,\nu} = \#\bigl\{ T \text{ SSYT di forma } \lambda/\mu \text{ e tipo } \nu
+      \mid w_T \text{ e' lattice permutation} \bigr\}.
+  \]
+  (Dimostrazione omessa: vedi Fulton, \textit{Young Tableaux}.)
+}
+
+\textbf{Schema di calcolo.}
+\begin{enumerate}
+  \item Disegnare la forma skew $ \lambda/\mu $.
+  \item Riempirla in tutti i modi possibili con $ \nu_1 $ copie di $ 1 $, $ \nu_2 $ copie di
+        $ 2 $, e cosi' via, ottenendo un SSYT (righe debolmente crescenti, colonne
+        strettamente crescenti).
+  \item Per ogni riempimento calcolare $ w_T $ e verificare se e' lattice permutation.
+  \item Contare i riempimenti ammissibili.
+\end{enumerate}
+
+\ex{$ c^{(4,4,2,1)}_{(2,1),(4,3,1)} = 2 $}{
+  Con $ \lambda = (4,4,2,1) $, $ \mu = (2,1) $, $ \nu = (4,3,1) $: i due tableau ammissibili
+  (notazione francese: riga lunga in basso) sono
+  \[
+    T_1 = \begin{ytableau} 2 \\ 1 & 1 \\ \none & 2 & 2 & 3 \\ \none & \none & 1 & 1 \end{ytableau}
+    \qquad
+    T_2 = \begin{ytableau} 1 \\ 2 & 3 \\ \none & 1 & 2 & 2 \\ \none & \none & 1 & 1 \end{ytableau}
+  \]
+  (le caselle vuote sono in $ \mu $). Ciascuno e' SSYT di forma $ \lambda/\mu $ e tipo $ \nu $,
+  e $ w_{T_i} $ e' lattice permutation.
+}
+
+\osservazione{Riferimento di approfondimento: Fulton, \textit{Young Tableaux} (Cambridge UP, 1997).
+  Tratta jeu de taquin, classi di Knuth, regola LR e formulazioni equivalenti, applicazioni
+  geometriche (variet\`a di Schubert).}
+
+% \end{document}
