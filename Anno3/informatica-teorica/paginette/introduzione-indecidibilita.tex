@@ -780,18 +780,33 @@ $ \mathcal{L}_u \in R $? No.
 
 \thm{}{$ \mathcal{L}_u \notin R $}
 \pf{Dimostrazione}{
-  Supponiamo per assurdo che $ \mathcal{L}_u \in R $, ovvero esiste $ \bar{M}_u $ che \textit{decide} $ \mathcal{L}_u $. Costruiamo la macchina $ M' $:
+  Per assurdo, sia $ \bar{M}_u $ che decide $ \mathcal{L}_u $. Costruiamo $ M' $ che su input $ w_i $:
   \begin{enumerate}
-    \item Riceve $ w_i $ in input
-    \item Copia $ w_i $ per costruire la coppia $ (M_i, w_i) $
-    \item Esegue $ \bar{M}_u $ su $ (M_i, w_i) $ e \textbf{inverte} la risposta
+    \item duplica $ w_i $ a $ (M_i, w_i) $;
+    \item esegue $ \bar{M}_u $ su $ (M_i, w_i) $ e inverte la risposta.
   \end{enumerate}
-  Analizziamo $ \mathcal{L}(M') $:
+  \begin{center}
+  \begin{tikzpicture}[
+      font=\sffamily,
+      machine/.style={draw, thick, minimum width=#1, minimum height=2.5cm, align=center},
+      arrow/.style={-Stealth, thick}
+  ]
+      \node[machine=8.5cm, minimum height=4cm, label={[font=\Large]above:$M'$}] (outer) {};
+      \node[machine=1.5cm] (dup) at ($(outer.center)+(-2cm,0)$) {dup};
+      \node[machine=1.5cm] (mb) at ($(outer.center)+(1.5cm,0)$) {$\bar{M}_u$};
+      \draw[arrow] ([xshift=-1.5cm]outer.west) -- (outer.west) node[midway, above] {$w_i$};
+      \draw[arrow] (outer.west) -- (dup.west);
+      \draw[arrow] (dup.east) -- (mb.west) node[midway, above] {$(M_i,w_i)$};
+      \draw[arrow] (mb.east) -- (outer.east) node[midway, above] {sí/no};
+      \draw[arrow] (outer.east) -- ++(2,0) node[midway, above] {no/sí};
+  \end{tikzpicture}
+  \end{center}
+  Allora:
   \begin{itemize}
-    \item $ M' $ risponde \textbf{sì} su $ w_i \iff \bar{M}_u $ risponde no $ \iff M_i \not\models w_i $
-    \item $ M' $ risponde \textbf{no} su $ w_i \iff \bar{M}_u $ risponde sì $ \iff M_i \models w_i $
+    \item $ M' $ risponde sì su $ w_i \iff \bar{M}_u $ risponde no $ \iff M_i \not\models w_i $;
+    \item $ M' $ risponde no su $ w_i \iff \bar{M}_u $ risponde sì $ \iff M_i \models w_i $.
   \end{itemize}
-  Quindi $ \mathcal{L}(M') = \{w_i \mid M_i \not\models w_i\} = \mathcal{L}_d $. Ma $ M' $ termina sempre (poiché $ \bar{M}_u $ termina sempre per ipotesi), quindi $ M' $ sarebbe un decisore per $ \mathcal{L}_d $, il che implicherebbe $ \mathcal{L}_d \in R \subseteq RE $. Contraddizione con $ \mathcal{L}_d \notin RE $.
+  Quindi $ \mathcal{L}(M') = \{w_i \mid M_i \not\models w_i\} = \mathcal{L}_d $, e $ M' $ termina sempre (perché $ \bar{M}_u $ termina sempre): $ M' $ decide $ \mathcal{L}_d $, da cui $ \mathcal{L}_d \in R \subseteq RE $. Contraddizione con $ \mathcal{L}_d \notin RE $.
 }
 
 \nt{
