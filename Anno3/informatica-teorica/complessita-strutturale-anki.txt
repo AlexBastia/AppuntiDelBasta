@@ -148,3 +148,25 @@ Perché FACTOR è improbabile essere NP-Completo?	Se FACTOR fosse NP-Completo, p
 Definisci <b>EXP</b> e <b>NEXP</b>.	$$EXP = \bigcup_{c \geq 1} DTime(2^{n^c})$$$$NEXP = \bigcup_{c \geq 1} NTime(2^{n^c})$$<br>Problemi risolvibili in tempo $2^{\text{poly}(n)}$ rispettivamente deterministico/non deterministico.
 
 Quali relazioni valgono tra le classi principali?	$$P \subseteq NP \subseteq EXP \subseteq NEXP$$<br>• $NP \subseteq EXP$: simulazione deterministica di una NTM polinomiale costa $2^{O(p(n))}$<br>• $coNP \subseteq EXP$: $EXP$ è chiusa sotto complemento<br>• <b>Separazioni dimostrate</b>: $P \subsetneq EXP$ e $NP \subsetneq NEXP$ (teorema di gerarchia temporale)<br>• Tutte le altre ($P \overset?= NP$, $EXP \overset?= NEXP$) sono aperte.
+
+Definisci <b>Reach</b> e mostra $\text{Reach} \in P$.	$$\text{Reach} = \{\langle G, s, t\rangle \mid G \text{ diretto}, \exists \text{ percorso } s \to t\}$$<br>BFS/DFS da $s$ visita ogni nodo al più una volta: costo $O(n^2)$ nella taglia del grafo.
+
+Dimostra $\text{coNP} \subseteq EXP$.	Sia $L \in coNP \Rightarrow \overline{L} \in NP \subseteq EXP$. $EXP$ è chiusa sotto complemento (basta invertire la risposta del decisore deterministico, che termina sempre), quindi $L \in EXP$.
+
+Caratterizzazione di <b>NEXP via certificati</b>.	$L \in NEXP$ sse ogni istanza sì ha un certificato di taglia <b>esponenziale</b> verificabile in tempo polinomiale in $\|x\| + \|y\|$ (non solo $\|x\|$).<br><br>Se la verifica fosse polinomiale solo in $\|x\|$, NEXP collasserebbe a un'analoga di NP. La differenza chiave: il certificato è grande, ma la verifica scala con la sua dimensione.
+
+Cosa significa che un problema è "<b>ben caratterizzato</b>"?	Sta in $NP \cap coNP$: ammette certificati polinomiali sia per i sì sia per i no.<br><br>Storicamente sono "a un passo da P": quasi tutti i problemi naturali in $NP \cap coNP$ sono finiti dimostrati in P (es. PRIMES, LP). FACTOR e Parity Games sono i candidati più famosi a stare fuori da P.
+
+Esempi notevoli di problemi in <b>$NP \cap coNP$</b>.	• <b>PRIMES</b> (pre-AKS): cert. positivo = Pratt; negativo = divisore. Ora in P.<br>• <b>LINEAR PROGRAMMING</b> (decisione): in $NP \cap coNP$ per dualità LP. In P (Khachiyan, ellissoide, 1979).<br>• <b>FACTORING</b> (decisione): in $NP \cap coNP$, non noto in P. RSA dipende da questo.<br>• <b>PARITY GAMES</b>: teoria dei giochi, in $NP \cap coNP$, non noto in P.
+
+Caratterizzazione di <b>coNP via certificati</b>.	$L \in coNP$ sse $\exists$ polinomio $p$, MdT det. $M$ tali che<br>$$x \in L \iff \forall y, |y| \leq p(|x|) : M(x,y) \text{ accetta}$$<br>Equivalentemente, $x \notin L \iff \exists y$ refuter: $y$ è un <b>controesempio</b> polinomialmente verificabile.
+
+Differenza testimoni positivi vs <b>controesempi</b> (NP vs coNP).	• <b>NP</b>: testimone positivo (∃y che attesta $x \in L$). Es: SAT (assegnamento), CLIQUE (vertici).<br>• <b>coNP</b>: controesempio/refuter (∃y che attesta $x \notin L$). Es: TAUT (assegnamento che falsifica), NON-HAM (ciclo hamiltoniano nel complemento).
+
+Idea chiave del Teorema di Gerarchia Temporale.	Più tempo $\Rightarrow$ strettamente più potenza: $DTime(f) \subsetneq DTime(g)$ se $g$ cresce "abbastanza più velocemente" di $f$ (con margine $\log$).<br><br>Conseguenza: $P \subsetneq EXP$ e $NP \subsetneq NEXP$. Sono separazioni <b>dimostrate</b>; le altre ($P \overset?= NP$, ecc.) sono aperte.
+
+Perché $P \subseteq NP \cap coNP$?	$L \in P$ con decisore $M$. Stesso $M$ con risposta invertita decide $\overline{L}$, quindi $\overline{L} \in P \subseteq NP$, cioè $L \in coNP$. Inoltre $L \in P \subseteq NP$. Quindi $L \in NP \cap coNP$.
+
+Riassunto: lemmi di complemento (IS, VC, Clique).	• <b>IS-VC</b>: $S$ IS di $G \iff V \setminus S$ VC di $G$<br>• <b>IS-Clique</b>: $S$ IS di $G \iff S$ clique di $\overline{G}$<br><br>Permettono riduzioni a costo $O(1)$ (parametro) o $O(|V|^2)$ (grafo complemento) tra i tre problemi.
+
+Strategia generale per dimostrare <b>NP-Completezza</b> di un nuovo problema $A$.	1. Mostrare $A \in NP$ (esibire certificato polinomiale + verifica)<br>2. Mostrare $A$ NP-Hard riducendosi <b>da</b> un problema $B$ già noto NP-Hard ($B \leq_P A$)<br><br>Per transitività: $\forall L \in NP.\; L \leq_P B \leq_P A$. Cook-Levin (SAT NP-Hard) è il punto di partenza storico.
