@@ -918,10 +918,26 @@ La differenza con $ \mathcal{L}_u $ è sottile: in $ \mathcal{L}_u $ la macchina
   $ HALT_\varepsilon \in RE $
 }
 \pf{Dimostrazione}{
-  La macchina $ M_{h\varepsilon} $ prende in input $ M $, simula $ M $ su $ \varepsilon $ tramite $ M_u $, e risponde sì se $ M $ si arresta. Quindi:
+  Costruiamo $ M_{h\varepsilon} $ che su input $ M $ simula $ M $ su $ \varepsilon $ tramite $ M_u $; se $ M_u $ termina, $ M_{h\varepsilon} $ risponde sì; se $ M_u $ va in loop, $ M_{h\varepsilon} $ va in loop.
+  \begin{center}
+  \begin{tikzpicture}[
+      font=\sffamily,
+      machine/.style={draw, thick, minimum width=#1, minimum height=2.5cm, align=center},
+      arrow/.style={-Stealth, thick}
+  ]
+      \node[machine=8cm, minimum height=4.5cm, label={[font=\Large]above:$M_{h\varepsilon}$}] (outer) {};
+      \node[machine=1.5cm] (inner) at ($(outer.center)+(-0.5cm,0)$) {$M_u$};
+      \draw[arrow] ([xshift=-1.5cm]outer.west) -- (outer.west) node[midway, above] {$M$};
+      \draw[arrow] (outer.west) -- ([yshift=0.3cm]inner.west) node[midway, above] {$M$};
+      \draw[arrow] ([xshift=-1.2cm,yshift=-0.3cm]inner.west) -- ([yshift=-0.3cm]inner.west) node[midway, below] {$\varepsilon$};
+      \draw[arrow] ([yshift=0.3cm]inner.east) -- ([yshift=0.3cm]outer.east) node[midway, above] {sí, no};
+      \draw[arrow] ([yshift=0.3cm]outer.east) -- ++(1.5,0) node[midway, above] {sí};
+      \draw[arrow] ([yshift=-0.3cm]inner.east) -- ++(1,-0.8) node[right] {loop};
+  \end{tikzpicture}
+  \end{center}
   \begin{itemize}
-    \item $ M \in HALT_\varepsilon \Rightarrow M_{h\varepsilon} $ risponde sì
-    \item $ M \notin HALT_\varepsilon \Rightarrow M_{h\varepsilon} $ non risponde sì
+    \item $ M \in HALT_\varepsilon \Rightarrow M_u $ termina $ \Rightarrow M_{h\varepsilon} $ risponde sì.
+    \item $ M \notin HALT_\varepsilon \Rightarrow M_u $ va in loop $ \Rightarrow M_{h\varepsilon} $ va in loop.
   \end{itemize}
 }
 
@@ -929,17 +945,32 @@ La differenza con $ \mathcal{L}_u $ è sottile: in $ \mathcal{L}_u $ la macchina
   $ HALT_\varepsilon \notin R $
 }
 \pf{Dimostrazione}{
-  Supponiamo per assurdo che esista $ M_{h\varepsilon}^* $ che decide $ HALT_\varepsilon $.  Costruiamo quindi $ M' $ su input $ (M, w) $:
+  Per assurdo, sia $ M_{h\varepsilon}^* $ che decide $ HALT_\varepsilon $. Costruiamo $ M' $ che su input $ (M, w) $:
   \begin{enumerate}
-    \item Prende $ M $ e $ w $ e restituisce $ \tilde{M}_w $: una macchina che ignora il proprio input, scrive $ w $ sul nastro e simula $ M $ su $ w $.
-    \item Esegue $ M_{h\varepsilon}^* $ su $ \tilde{M}_w $
+    \item costruisce $ \tilde{M}_w $: una MdT che ignora il proprio input, scrive $ w $ sul nastro e simula $ M $ su $ w $;
+    \item esegue $ M_{h\varepsilon}^* $ su $ \tilde{M}_w $ e ne usa la risposta.
   \end{enumerate}
-  Poiché $ \tilde{M}_w $ su $ \varepsilon $ si comporta esattamente come $ M $ su $ w $, abbiamo:
-  \begin{itemize}
-    \item $ M' $ risponde sì $ \iff M_{h\varepsilon}^* $ dice sì su $ \tilde{M}_w \iff \tilde{M}_w $ si arresta su $ \varepsilon \iff M $ si arresta su $ w $
-    \item $ M' $ risponde no altrimenti
-  \end{itemize}
-  Quindi $ M' $ decide $ HALT \Rightarrow HALT \in R $. Contraddizione.
+  \begin{center}
+  \begin{tikzpicture}[
+      font=\sffamily,
+      machine/.style={draw, thick, minimum width=#1, minimum height=2.5cm, align=center},
+      arrow/.style={-Stealth, thick}
+  ]
+      \node[machine=9cm, minimum height=4cm, label={[font=\Large]above:$M'$}] (outer) {};
+      \node[machine=1.8cm] (build) at ($(outer.center)+(-2.2cm,0)$) {build $\tilde{M}_w$};
+      \node[machine=1.8cm] (mh) at ($(outer.center)+(1.8cm,0)$) {$M_{h\varepsilon}^*$};
+      \draw[arrow] ([xshift=-1.5cm]outer.west) -- (outer.west) node[midway, above] {$(M,w)$};
+      \draw[arrow] (outer.west) -- (build.west);
+      \draw[arrow] (build.east) -- (mh.west) node[midway, above] {$\tilde{M}_w$};
+      \draw[arrow] (mh.east) -- (outer.east) node[midway, above] {sí/no};
+      \draw[arrow] (outer.east) -- ++(2,0) node[midway, above] {sí/no};
+  \end{tikzpicture}
+  \end{center}
+  Poiché $ \tilde{M}_w $ su $ \varepsilon $ si comporta come $ M $ su $ w $:
+  \[
+    M' \text{ risponde sì} \iff M_{h\varepsilon}^* \text{ dice sì su } \tilde{M}_w \iff \tilde{M}_w \text{ si arresta su } \varepsilon \iff M \text{ si arresta su } w.
+  \]
+  Quindi $ M' $ decide $ HALT $, contraddizione (poiché $ HALT \notin R $).
 }
 
 
