@@ -1659,8 +1659,7 @@ dove ciascun passo $ s_i $ ha lunghezza $ 1 $ ed e' verso \textbf{Nord (N)} o \t
   \begin{itemize}
     \item Se i cammini di $ \mathcal{P} $ \textit{non si intersecano}, $ \iota(\mathcal{P}) := \mathcal{P} $.
     \item Altrimenti, sia $ i $ il piu' piccolo indice con $ p_i $ intersecante un altro
-          cammino, e $ j \neq i $ il piu' piccolo con $ p_j $ intersecante $ p_i $. Sia
-          $ v_0 $ il punto di intersezione piu' a sud-ovest di $ p_i \cap p_j $. Definiamo
+      cammino, e $ j \neq i $ con $ p_j $ il primo cammino che interseca $ p_i $ nel punto $ v_0 $. Definiamo
           \[
             p_i' := u_i \xrightarrow{p_i} v_0 \xrightarrow{p_j} v_{\sigma(j)}, \qquad
             p_j' := u_j \xrightarrow{p_j} v_0 \xrightarrow{p_i} v_{\sigma(i)},
