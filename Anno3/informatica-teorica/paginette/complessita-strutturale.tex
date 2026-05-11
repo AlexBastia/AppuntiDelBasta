@@ -1124,6 +1124,22 @@ Ma cosa succede se invertiamo la domanda? Se invece di chiedere ``\textit{esiste
   Se $L \in P$, un algoritmo deterministico polinomiale $M$ decide $L$. Lo stesso $M$ (negando il risultato) decide $\overline{L}$ in tempo polinomiale $\Rightarrow$ $\overline{L} \in P \subseteq$ NP $\Rightarrow$ $L \in$ coNP. Analogamente $L \in$ NP.
 }
 
+\begin{center}
+\begin{tikzpicture}[thick]
+  \draw[thick] (-1.8,0) ellipse (3cm and 1.8cm);
+  \draw[thick] (1.8,0) ellipse (3cm and 1.8cm);
+  \node[font=\Large] at (-3.5, 1.4) {$NP$};
+  \node[font=\Large] at (3.5, 1.4) {$coNP$};
+  \draw[thick, fill=gray!15] (0,-0.1) ellipse (1cm and 0.6cm);
+  \node[font=\large] at (0,-0.1) {$P$};
+  \node[font=\small] at (-2.5, 0.4) {SAT};
+  \node[font=\small] at (-2.5, -0.4) {CLIQUE};
+  \node[font=\small] at (2.5, 0.4) {TAUT};
+  \node[font=\small] at (2.5, -0.4) {NON-HAM};
+  \node[font=\small] at (0, 0.9) {FACTOR};
+\end{tikzpicture}
+\end{center}
+
 \thm{$P = NP \Rightarrow NP = coNP$}{
   Se $P = NP$, allora $NP = coNP$.
 }

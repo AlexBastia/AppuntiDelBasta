@@ -85,8 +85,8 @@ $$D(\log(g(x))) = \frac{D(g(x))}{g(x)}$$
 \section{Basi dello spazio $ \mathrm{Sym}[X] $}
 
 Fissato un intero $ k \in \mathbb{N} $, consideriamo l'azione del gruppo simmetrico
-$ S_k $ su $ \mathbb{Q}[x_1, x_2, \ldots, x_k] $ per permutazione delle variabili: per
-ogni $ \sigma \in S_k $ e $ f(x_1, \ldots, x_k) \in \mathbb{Q}[x_1, \ldots, x_k] $,
+$ \mathfrak{S}_k $ su $ \mathbb{Q}[x_1, x_2, \ldots, x_k] $ per permutazione delle variabili: per
+ogni $ \sigma \in \mathfrak{S}_k $ e $ f(x_1, \ldots, x_k) \in \mathbb{Q}[x_1, \ldots, x_k] $,
 \[
   \sigma \cdot f(x_1, \ldots, x_k) := f(x_{\sigma(1)}, x_{\sigma(2)}, \ldots, x_{\sigma(k)}).
 \]
@@ -94,17 +94,17 @@ ogni $ \sigma \in S_k $ e $ f(x_1, \ldots, x_k) \in \mathbb{Q}[x_1, \ldots, x_k]
 \dfn{Anello delle funzioni simmetriche}{
   Un \textit{polinomio simmetrico} (o \textit{funzione simmetrica}) e' un elemento
   $ f \in \mathbb{Q}[x_1, \ldots, x_k] $ tale che $ \sigma \cdot f = f $ per ogni
-  $ \sigma \in S_k $. Si pone
+  $ \sigma \in \mathfrak{S}_k $. Si pone
   \[
-    \mathrm{Sym}[X_k] := \mathbb{Q}[x_1, \ldots, x_k]^{S_k}
-      = \{\, f \in \mathbb{Q}[x_1, \ldots, x_k] \mid \sigma \cdot f = f\ \forall \sigma \in S_k\,\}.
+    \mathrm{Sym}[X_k] := \mathbb{Q}[x_1, \ldots, x_k]^{\mathfrak{S}_k}
+      = \{\, f \in \mathbb{Q}[x_1, \ldots, x_k] \mid \sigma \cdot f = f\ \forall \sigma \in \mathfrak{S}_k\,\}.
   \]
   E' chiaramente un sottoanello (sottoalgebra) di $ \mathbb{Q}[x_1, \ldots, x_k] $,
   detto \textit{anello (algebra) delle funzioni simmetriche}.
 }
 
 \mprop{Decomposizione per grado}{
-  Poiche' l'azione di $ S_k $ preserva il grado totale dei monomi:
+  Poiche' l'azione di $ \mathfrak{S}_k $ preserva il grado totale dei monomi:
   \[
     \mathrm{Sym}[X_k] = \bigoplus_{n \geq 0} \mathrm{Sym}^n[X_k],
   \]
@@ -179,7 +179,7 @@ zeri, si ottiene una partizione di $ n $, denotata $ \lambda(\alpha) $.
   \[
     m_\lambda(x) := \sum_{\substack{\alpha \models n \\ \lambda(\alpha) = \lambda}} x^\alpha.
   \]
-  I monomi che vi compaiono formano un'orbita dell'azione di $ S_k $ sui monomi di
+  I monomi che vi compaiono formano un'orbita dell'azione di $ \mathfrak{S}_k $ sui monomi di
   $ \mathbb{Q}[x_1, \ldots, x_k] $: e' la somma dell'orbita di $ x^\lambda $.
 }
 
@@ -293,7 +293,7 @@ zeri, si ottiene una partizione di $ n $, denotata $ \lambda(\alpha) $.
   la somma di colonna $ \alpha_j $.
 
   \textbf{Raggruppamento per partizione.} Due composizioni deboli $ \alpha $ e $ \alpha' $
-  producono monomi nella stessa orbita di $ S_k $ (e quindi contribuiscono alla stessa
+  producono monomi nella stessa orbita di $ \mathfrak{S}_k $ (e quindi contribuiscono alla stessa
   funzione monomiale $ m_\mu $, con $ \mu $ la partizione ottenuta riordinando $ \alpha $
   in ordine decrescente) se e solo se sono permutazioni l'una dell'altra.
   Raggruppando tutti i termini di $ e_\lambda $ per la partizione $ \mu = \lambda(col(A)) $:
@@ -689,7 +689,7 @@ zeri, si ottiene una partizione di $ n $, denotata $ \lambda(\alpha) $.
 }
 
 \dfn{Tipo di ciclo}{
-  Data $ \sigma \in S_n $, il \textit{tipo di ciclo} di $ \sigma $ e' la partizione
+  Data $ \sigma \in \mathfrak{S}_n $, il \textit{tipo di ciclo} di $ \sigma $ e' la partizione
   $ \lambda(\sigma) \vdash n $ le cui parti sono le lunghezze dei cicli della decomposizione
   ciclica di $ \sigma $. Se $ \sigma $ ha $ \alpha_i $ cicli di lunghezza $ i $, allora
   $ \lambda(\sigma) = 1^{\alpha_1} 2^{\alpha_2} \cdots n^{\alpha_n} $.
@@ -699,34 +699,34 @@ zeri, si ottiene una partizione di $ n $, denotata $ \lambda(\alpha) $.
   Vale $ \mathrm{sgn}(\sigma) = (-1)^{\sum_i \alpha_i(i-1)} = (-1)^{n - \ell(\lambda(\sigma))} $.
 }
 
-\mprop{Classi di coniugio di $ S_n $}{
-  Le classi di coniugio di $ S_n $ sono indicizzate dalle partizioni $ \lambda \vdash n $:
+\mprop{Classi di coniugio di $ \mathfrak{S}_n $}{
+  Le classi di coniugio di $ \mathfrak{S}_n $ sono indicizzate dalle partizioni $ \lambda \vdash n $:
   la classe associata a $ \lambda $ e'
   \[
-    \{\sigma \in S_n \mid \lambda(\sigma) = \lambda\}.
+    \{\sigma \in \mathfrak{S}_n \mid \lambda(\sigma) = \lambda\}.
   \]
   La cardinalita' di questa classe e'
   \[
-    |\{\sigma \in S_n \mid \lambda(\sigma) = \lambda\}| = \frac{n!}{z_\lambda}.
+    |\{\sigma \in \mathfrak{S}_n \mid \lambda(\sigma) = \lambda\}| = \frac{n!}{z_\lambda}.
   \]
 }
 
-\mprop{$ h_n $ ed $ e_n $ come medie su $ S_n $}{
+\mprop{$ h_n $ ed $ e_n $ come medie su $ \mathfrak{S}_n $}{
   Per ogni $ n \in \mathbb{N} $:
   \[
-    h_n = \frac{1}{n!}\sum_{\sigma \in S_n} p_{\lambda(\sigma)} \qquad \text{e} \qquad
-    e_n = \frac{1}{n!}\sum_{\sigma \in S_n} \mathrm{sgn}(\sigma)\, p_{\lambda(\sigma)}.
+    h_n = \frac{1}{n!}\sum_{\sigma \in \mathfrak{S}_n} p_{\lambda(\sigma)} \qquad \text{e} \qquad
+    e_n = \frac{1}{n!}\sum_{\sigma \in \mathfrak{S}_n} \mathrm{sgn}(\sigma)\, p_{\lambda(\sigma)}.
   \]
 }
 \pf{Dim}{
   Dalla proposizione precedente,
-  $ p_\lambda = \frac{z_\lambda}{n!}\!\!\sum_{\substack{\sigma \in S_n\\\lambda(\sigma)=\lambda}} p_{\lambda(\sigma)} $.
+  $ p_\lambda = \frac{z_\lambda}{n!}\!\!\sum_{\substack{\sigma \in \mathfrak{S}_n\\\lambda(\sigma)=\lambda}} p_{\lambda(\sigma)} $.
   Inserendo nella prima identita':
   \[
     h_n = \sum_{\lambda \vdash n}\frac{1}{z_\lambda}\,p_\lambda
-        = \sum_{\lambda \vdash n}\frac{1}{n!}\!\!\sum_{\substack{\sigma \in S_n\\\lambda(\sigma)=\lambda}}
+        = \sum_{\lambda \vdash n}\frac{1}{n!}\!\!\sum_{\substack{\sigma \in \mathfrak{S}_n\\\lambda(\sigma)=\lambda}}
           p_{\lambda(\sigma)}
-        = \frac{1}{n!}\sum_{\sigma \in S_n} p_{\lambda(\sigma)}.
+        = \frac{1}{n!}\sum_{\sigma \in \mathfrak{S}_n} p_{\lambda(\sigma)}.
   \]
   Per $ e_n $, si usa la formula del segno nella nota precedente e si ragiona analogamente.}
 
@@ -748,7 +748,7 @@ zeri, si ottiene una partizione di $ n $, denotata $ \lambda(\alpha) $.
 
 \subsubsection{Ricapitolo delle basi}
 
-Abbiamo definito tre famiglie di generatori per $ \mathbb{Q}[x_1, \dots, x_k]^{S_k} $:
+Abbiamo definito tre famiglie di generatori per $ \mathbb{Q}[x_1, \dots, x_k]^{\mathfrak{S}_k} $:
 \[
   e_m = \sum_{i_1 < \dots < i_m} x_{i_1} \cdots x_{i_m}, \quad
   h_m = \sum_{i_1 \leq \dots \leq i_m} x_{i_1} \cdots x_{i_m}, \quad
@@ -772,9 +772,9 @@ e quattro basi per $ Sym^n[X_k] $:
 
 \osservazione{Coefficienti interi.
   \begin{itemize}
-    \item Le $ m_\lambda $ generano $ \mathbb{N}[x_1, \dots, x_k]^{S_k} $ con coefficienti in $ \mathbb{N} $.
-    \item Le $ e_\lambda $ e $ h_\lambda $ generano $ \mathbb{Z}[x_1, \dots, x_k]^{S_k} $ con coefficienti in $ \mathbb{Z} $.
-    \item Le $ p_\lambda $ generano $ \mathbb{Z}[x_1, \dots, x_k]^{S_k} $ con coefficienti in $ \mathbb{Z} $.
+    \item Le $ m_\lambda $ generano $ \mathbb{N}[x_1, \dots, x_k]^{\mathfrak{S}_k} $ con coefficienti in $ \mathbb{N} $.
+    \item Le $ e_\lambda $ e $ h_\lambda $ generano $ \mathbb{Z}[x_1, \dots, x_k]^{\mathfrak{S}_k} $ con coefficienti in $ \mathbb{Z} $.
+    \item Le $ p_\lambda $ generano $ \mathbb{Z}[x_1, \dots, x_k]^{\mathfrak{S}_k} $ con coefficienti in $ \mathbb{Z} $.
   \end{itemize}
 }
 
@@ -805,20 +805,20 @@ Possiamo lavorare con un numero infinito di variabili $ x_1, x_2, \dots $, e le 
 
 \subsubsection{Polinomi alternanti}
 
-\dfn{Polinomio alternante}{
-  Un polinomio $ f \in \mathbb{Q}[x_1, \dots, x_k] $ e' \textit{alternante} se per ogni $ \sigma \in S_k $:
+\dfn{Polinomio alternante}{\label{def:alternante}
+  Un polinomio $ f \in \mathbb{Q}[x_1, \dots, x_k] $ e' \textit{alternante} se per ogni $ \sigma \in \mathfrak{S}_k $:
   \[
     \sigma \cdot f = \mathrm{sgn}(\sigma)\, f .
   \]
 }
 
-\dfn{Polinomio $ a_\alpha $}{
-  Dato $ \alpha = (\alpha_1, \ldots, \alpha_k) \in \mathbb{N}^k $, l'azione di $ \sigma \in S_k $
+\dfn{Polinomio $ a_\alpha $}{\label{def:a-alpha}
+  Dato $ \alpha = (\alpha_1, \ldots, \alpha_k) \in \mathbb{N}^k $, l'azione di $ \sigma \in \mathfrak{S}_k $
   su un monomio e' $ \sigma(x^\alpha) := x_1^{\alpha_{\sigma(1)}} \cdots x_k^{\alpha_{\sigma(k)}} $.
   Si definisce
   \[
     a_\alpha := \det\!\bigl(x_i^{\alpha_j}\bigr)_{i,j=1}^k
-      = \sum_{\sigma \in S_k} \mathrm{sgn}(\sigma)\, \sigma(x^\alpha).
+      = \sum_{\sigma \in \mathfrak{S}_k} \mathrm{sgn}(\sigma)\, \sigma(x^\alpha).
   \]
   Per costruzione $ a_\alpha $ e' alternante; in particolare $ a_\alpha = 0 $ a meno che le
   componenti di $ \alpha $ siano tutte distinte.
@@ -855,7 +855,7 @@ Il caso fondamentale e' $ \delta = (k-1, k-2, \dots, 1, 0) $:
   \]
 }
 
-\mlenma{Fattorizzazione dei polinomi alternanti}{
+\mlenma{Fattorizzazione dei polinomi alternanti}{\label{lem:fattorizzazione-alternanti}
   Un polinomio $ f \in \mathbb{Q}[x_1,\ldots,x_k] $ e' alternante se e solo se $ f = a_\delta \cdot g $
   con $ g \in \mathrm{Sym}[X_k] $.
 }
@@ -865,13 +865,13 @@ Il caso fondamentale e' $ \delta = (k-1, k-2, \dots, 1, 0) $:
   $ (\Rightarrow) $ Se $ p $ e' alternante, per ogni coppia $ i \neq j $ la trasposizione $ (ij) $ da' $ (ij) \cdot p = -p $. Specializzando $ x_i = x_j $: $ p|_{x_i = x_j} = -p|_{x_i = x_j} $, quindi $ p|_{x_i = x_j} = 0 $, cioe' $ (x_i - x_j) \mid p $. Poiche' questi fattori sono a due a due coprimi e il loro prodotto e' $ a_\delta $, si ha $ a_\delta \mid p $.
 }
 
-\cor{}{
+\cor{}{\label{cor:iso-sym-alt}
   $ f $ e' alternante $ \iff f = a_\delta \cdot g $ con $ g $ simmetrico. L'applicazione $ g \mapsto a_\delta \cdot g $ e' un \textit{isomorfismo} $ Sym[X_k] \xrightarrow{\sim} A_k $ fra simmetrici e alternanti.
 }
 
 \subsubsection{Definizione algebrica della funzione di Schur}
 
-\dfn{Funzione di Schur (algebrica)}{
+\dfn{Funzione di Schur (algebrica)}{\label{def:schur-algebrica}
   Per ogni $ \lambda \vdash n $ con $ \ell(\lambda) \leq k $, la \textit{funzione di Schur} e'
   \[
     s_\lambda := \frac{a_{\lambda + \delta}}{a_\delta} ,
@@ -895,30 +895,43 @@ E' un polinomio simmetrico perche' numeratore e denominatore sono entrambi alter
   Con $ k = 3 $ si verifica $ s_{(2,1)} = m_{(2,1)} + 2 m_{(1,1,1)} $.
 }
 
-\thm{$ \{s_\lambda\} $ e' una base}{
-  $ \{s_\lambda \mid \lambda \vdash n,\ \ell(\lambda) \leq k\} $ e' una base di $ Sym^n[X_k] $.
+\thm{$ \{s_\lambda\} $ e' una base}{\label{thm:schur-base}
+  $ \{s_\lambda \mid \lambda \in \mathrm{Par}(n),\ \ell(\lambda) \leq k\} $ e' una base di $ Sym^n[X_k] $.
 }
 \pf{Dim}{
-  \textbf{Passo 1.} Mostriamo che $ \{a_{\lambda + \delta} \mid \lambda \vdash n,\ \ell(\lambda) \leq k\} $ e' una base dello spazio $ A_k^{(m)} $ degli alternanti omogenei di grado $ m = n + |\delta| $.
+  Si lavora sullo spazio dei polinomi alternanti $ A_k $ (Definizione~\ref{def:alternante}) anziche' direttamente su $ Sym[X_k] $. Lo spazio $ A_k $ e' graduato: $ A_k = \bigoplus_{m \geq |\delta|} A_k^{(m)} $, dove $ A_k^{(m)} $ e' lo spazio degli alternanti omogenei di grado $ m $, con $ |\delta| = k(k-1)/2 $.
 
-  Sia $ f = \sum_\alpha c_\alpha x^\alpha \in A_k^{(m)} $ alternante. Se $ c_\alpha \neq 0 $, allora $ \alpha_i \neq \alpha_j $ per $ i \neq j $ (altrimenti la trasposizione $ (ij) $ darebbe $ f = -f $, quindi $ f = 0 $). Gli esponenti distinti si ordinano come $ \alpha = \lambda + \delta $ per una partizione $ \lambda $.
-
-  \textbf{Riscrittura usando l'alternanza.} Per ogni $ \sigma \in S_k $, l'alternanza forza
+  \textbf{Passo 1: gli $ a_{\lambda+\delta} $ sono una base di $ A_k^{(m)} $.}
+  Sia $ f = \sum_\alpha c_\alpha x^\alpha \in A_k^{(m)} $ con $ m = n + |\delta| $. Se $ c_\alpha \neq 0 $ allora le componenti di $ \alpha $ sono tutte distinte: la trasposizione $ (ij) $ scambia $ \alpha_i \leftrightarrow \alpha_j $, e l'alternanza forza $ c_{(ij)\alpha} = -c_\alpha $; per $ \alpha_i = \alpha_j $ si avrebbe $ c_\alpha = -c_\alpha $, cioe' $ c_\alpha = 0 $. Riordinando in senso decrescente, ogni tale $ \alpha $ si scrive unicamente come
   \[
-    c_{\sigma(\alpha)} = \mathrm{sgn}(\sigma)\, c_\alpha .
+    \alpha = \lambda + \delta, \qquad \lambda \in \mathrm{Par}(n),\ \ell(\lambda) \leq k
   \]
-  Quindi, raggruppando i monomi nella stessa orbita di $ S_k $:
+  (cfr. la nota dopo la Definizione~\ref{def:a-alpha}). Inoltre l'alternanza impone, per ogni $ \sigma \in \mathfrak{S}_k $,
+  \[
+    c_{\sigma(\alpha)} = \mathrm{sgn}(\sigma)\, c_\alpha ,
+  \]
+  quindi raggruppando i monomi nella stessa orbita di $ \mathfrak{S}_k $:
   \[
     f
     = \sum_\lambda c_{\lambda+\delta}
-      \sum_{\sigma \in S_k} \mathrm{sgn}(\sigma)\, x^{\sigma(\lambda+\delta)}
+      \sum_{\sigma \in \mathfrak{S}_k} \mathrm{sgn}(\sigma)\, x^{\sigma(\lambda+\delta)}
     = \sum_\lambda c_{\lambda+\delta}\, a_{\lambda+\delta} .
   \]
-  Questo mostra che gli $ a_{\lambda+\delta} $ generano $ A_k^{(m)} $; poiche' gli indici $ \lambda + \delta $ sono tutti distinti, sono anche linearmente indipendenti, dunque formano una base.
+  Questo mostra che gli $ a_{\lambda+\delta} $ generano $ A_k^{(m)} $; gli indici $ \lambda+\delta $ sono distinti, dunque sono anche linearmente indipendenti e formano una base.
 
-  \textbf{Passo 2.} La mappa $ \phi: Sym[X_k] \to A_k $, $ g \mapsto a_\delta \cdot g $, e' un isomorfismo che manda $ s_\lambda \mapsto a_\delta \cdot s_\lambda = a_{\lambda + \delta} $.
+  \textbf{Passo 2: isomorfismo $ \varphi: Sym[X_k] \to A_k $.}
+  Per il Lemma~\ref{lem:fattorizzazione-alternanti} (e il Corollario~\ref{cor:iso-sym-alt}), la mappa
+  \[
+    \varphi : Sym[X_k] \longrightarrow A_k, \qquad \varphi(g) = a_\delta \cdot g
+  \]
+  e' un isomorfismo di spazi vettoriali graduati (manda $ Sym^n[X_k] $ in $ A_k^{(n+|\delta|)} $).
 
-  \textbf{Passo 3.} Poiche' $ \phi $ e' un isomorfismo e $ \{a_{\lambda + \delta}\} $ e' una base di $ A_k^{(m)} $, la preimmagine $ \{s_\lambda\} $ e' una base di $ Sym^n[X_k] $.
+  \textbf{Passo 3: conclusione.}
+  Per la Definizione~\ref{def:schur-algebrica}, $ s_\lambda = a_{\lambda+\delta} / a_\delta $, ossia
+  \[
+    \varphi(s_\lambda) = a_\delta \cdot s_\lambda = a_{\lambda+\delta} .
+  \]
+  Essendo $ \varphi $ un isomorfismo, manda basi in basi: la preimmagine della base $ \{a_{\lambda+\delta}\} $ di $ A_k^{(m)} $ (Passo 1) e' la base $ \{s_\lambda\} $ di $ Sym^n[X_k] $.
 }
 
 \cor{Estrazione dei coefficienti di Schur}{
@@ -1199,7 +1212,7 @@ Si fa lo stesso ragionamento con le $ h_\lambda $: ora pero' in ogni colonna pos
 
 \subsubsection{Definizione della forma bilineare}
 
-\dfn{Forma bilineare $ \langle \cdot, \cdot \rangle $ su $ Sym[X] $}{
+\dfn{Forma bilineare $ \langle \cdot, \cdot \rangle $ su $ Sym[X] $}{\label{def:forma-bilineare}
   $ \langle \cdot, \cdot \rangle $ e' l'unica forma bilineare tale che
   \[
     \langle m_\lambda, h_\mu \rangle = \delta_{\lambda,\mu} = \begin{cases} 1 & \text{se } \lambda = \mu \\ 0 & \text{altrimenti} \end{cases}
@@ -1310,7 +1323,7 @@ E avevamo dimostrato che
 
 \subsection{Funzioni di Schur combinatorie $ \widehat{s}_\lambda $}
 
-\dfn{Funzioni di Schur combinatorie}{
+\dfn{Funzioni di Schur combinatorie}{\label{def:schur-combinatorica}
   \[
     \widehat{s}_\lambda(x) = \sum_{T \in SSYT(\lambda)} x^T
   \]
@@ -1328,7 +1341,7 @@ E avevamo dimostrato che
 
 \subsection{Numeri di Kostka e Regola di Pieri}
 
-\dfn{Numeri di Kostka}{
+\dfn{Numeri di Kostka}{\label{def:kostka}
   Siano $ \lambda/\mu $ una forma skew (eventualmente con $ \mu = \emptyset $) e $ \alpha \models n $ una composizione. Si pone
   \[
     K_{\lambda/\mu, \alpha} = \#\{T \text{ SSYT di forma } \lambda/\mu \mid type(T) = \alpha\} .
@@ -1345,9 +1358,9 @@ E avevamo dimostrato che
   \]
 }
 \pf{Dim}{
-  Restringiamo la biezione RSK alle \textit{matrici di permutazione}: $ \sigma \in S_n $ corrisponde alla matrice $ A_\sigma $ con $ w_{A_\sigma} = \binom{1\,2\cdots n}{\sigma(1)\,\sigma(2)\cdots\sigma(n)} $. Otteniamo cosi' una biezione
+  Restringiamo la biezione RSK alle \textit{matrici di permutazione}: $ \sigma \in \mathfrak{S}_n $ corrisponde alla matrice $ A_\sigma $ con $ w_{A_\sigma} = \binom{1\,2\cdots n}{\sigma(1)\,\sigma(2)\cdots\sigma(n)} $. Otteniamo cosi' una biezione
   \[
-    S_n \xleftrightarrow{\,RSK\,} \bigsqcup_{\lambda \vdash n} SYT(\lambda) \times SYT(\lambda) ,
+    \mathfrak{S}_n \xleftrightarrow{\,RSK\,} \bigsqcup_{\lambda \vdash n} SYT(\lambda) \times SYT(\lambda) ,
   \]
   da cui $ n! = \sum_\lambda (f^\lambda)^2 $.
 }
@@ -1357,7 +1370,7 @@ E avevamo dimostrato che
   \[
     f^{(4)} = 1, \quad f^{(3,1)} = 3, \quad f^{(2,2)} = 2, \quad f^{(2,1,1)} = 3, \quad f^{(1^4)} = 1
   \]
-  e $ 1^2 + 3^2 + 2^2 + 3^2 + 1^2 = 24 = 4! $. (Ricorda: somma dei quadrati delle dimensioni degli irriducibili di $ S_4 $.)
+  e $ 1^2 + 3^2 + 2^2 + 3^2 + 1^2 = 24 = 4! $. (Ricorda: somma dei quadrati delle dimensioni degli irriducibili di $ \mathfrak{S}_4 $.)
 }
 
 \thm{}{
@@ -1384,9 +1397,9 @@ A noi interessa di piu' il seguente corollario
 
 \subsection{Simmetria e proprieta' di $ \widehat{s}_\lambda $}
 
-\mprop{Le $ \widehat{s}_\lambda $ sono simmetriche}{}
+\mprop{Le $ \widehat{s}_\lambda $ sono simmetriche}{\label{prop:schur-simmetriche}}
 \pf{Dim}{
-  Le trasposizioni adiacenti $ (i, i+1) $ generano $ S_\infty $, quindi basta mostrare $ (i, i+1) \cdot \widehat{s}_{\lambda/\mu} = \widehat{s}_{\lambda/\mu} $ (l'azione scambia $ i $ con $ i+1 $).
+  Le trasposizioni adiacenti $ (i, i+1) $ generano $ \mathfrak{S}_\infty $, quindi basta mostrare $ (i, i+1) \cdot \widehat{s}_{\lambda/\mu} = \widehat{s}_{\lambda/\mu} $ (l'azione scambia $ i $ con $ i+1 $).
 
   Costruiamo una biezione fra SSYT di forma $ \lambda/\mu $ che scambia $ \#\{i\} $ e $ \#\{i+1\} $:
   \begin{itemize}
@@ -1400,17 +1413,27 @@ A noi interessa di piu' il seguente corollario
   \end{itemize}
 }
 
-\cor{}{
+\thm{Sviluppo monomiale di $ \widehat{s}_{\lambda/\nu} $}{\label{thm:schur-comb-monomiali}
+  Siano $ \nu \subseteq \lambda $ partizioni. Allora
   \[
-    \widehat{s}_{\lambda/\nu}(x) = \sum_{\mu \vdash |\lambda/\nu|} K_{\lambda/\nu, \mu}\, m_\mu(x)
+    \widehat{s}_{\lambda/\nu}(x) = \sum_{\mu \vdash |\lambda/\nu|} K_{\lambda/\nu,\, \mu}\, m_\mu(x) .
   \]
-  In particolare, per $ \mu = \emptyset $:
+  In particolare, per $ \nu = \emptyset $:
   \[
-    \widehat{s}_\lambda(x) = \sum_{\mu \vdash |\lambda|} K_{\lambda, \mu}\, m_\mu(x) .
+    \widehat{s}_\lambda(x) = \sum_{\mu \vdash |\lambda|} K_{\lambda,\, \mu}\, m_\mu(x) .
   \]
 }
 \pf{Dim}{
-  Per definizione $ \widehat{s}_{\lambda/\mu} = \sum_{\alpha \models |\lambda/\mu|} K_{\lambda/\mu,\alpha}\, x^\alpha $ con $ \alpha $ composizione. Per la simmetria appena dimostrata, le composizioni che differiscono per permutazione hanno lo stesso coefficiente $ K_{\lambda/\mu, \nu} $ (con $ \nu $ partizione associata), quindi raggruppando si ottengono le $ m_\nu $.
+  Per la Definizione~\ref{def:schur-combinatorica} di $ \widehat{s}_{\lambda/\nu} $ e per la Definizione~\ref{def:kostka} dei numeri di Kostka, raggruppando gli SSYT per tipo:
+  \[
+    \widehat{s}_{\lambda/\nu}(x) = \sum_{T \in SSYT(\lambda/\nu)} x^T = \sum_{\alpha \models |\lambda/\nu|} K_{\lambda/\nu,\, \alpha}\, x^\alpha ,
+  \]
+  somma su composizioni deboli $ \alpha $ di $ |\lambda/\nu| $.
+
+  Per la Proposizione~\ref{prop:schur-simmetriche}, $ \widehat{s}_{\lambda/\nu} $ e' simmetrica, quindi composizioni $ \alpha $ permutate fra loro hanno lo stesso coefficiente $ K_{\lambda/\nu,\, \mu} $, con $ \mu $ la partizione ottenuta riordinando $ \alpha $ in senso decrescente. Raggruppando per orbite si formano le funzioni simmetriche monomiali $ m_\mu $:
+  \[
+    \sum_{\alpha \models |\lambda/\nu|} K_{\lambda/\nu,\, \alpha}\, x^\alpha = \sum_{\mu \vdash |\lambda/\nu|} K_{\lambda/\nu,\, \mu}\, m_\mu(x) .
+  \]
 }
 
 \subsubsection{Ordine di dominanza}
@@ -1421,17 +1444,11 @@ Ricordiamo che $ \mu \trianglelefteq \lambda $ se per ogni $ i \geq 1 $ vale $ \
   Siano $ \lambda, \mu \vdash n $. Se $ K_{\lambda,\mu} \neq 0 $ allora $ \mu \trianglelefteq \lambda $. Inoltre $ K_{\lambda,\lambda} = 1 $.
 }
 \pf{Dim}{
-  Sia $ T $ un SSYT di forma $ \lambda $ e tipo $ \mu $. In un SSYT tutti gli $ 1 $ stanno sulla prima riga (sopra violerebbero la stretta crescenza in colonna), quindi
-  \[
-    \mu_1 = \#\{1 \in T\} \leq \lambda_1 .
-  \]
-  Allo stesso modo gli $ 1 $ e i $ 2 $ devono comparire solo nelle prime due righe, quindi
-  \[
-    \mu_1 + \mu_2 \leq \lambda_1 + \lambda_2 .
-  \]
-  Cosi' via, $ \mu_1 + \dots + \mu_i \leq \lambda_1 + \dots + \lambda_i $ per ogni $ i $.
+  Sia $ T $ un SSYT di forma $ \lambda $ e tipo $ \mu $. Affermiamo che ogni entrata di valore $ \leq h $ compare nelle prime $ h $ righe: se per assurdo una cella in riga $ j > h $ contenesse un valore $ \leq h $, la colonna di quella cella conterrebbe (per stretta crescenza dal basso verso l'alto) almeno $ j $ interi positivi distinti tutti $ \leq h $, impossibile per $ j > h $.
 
-  Per $ K_{\lambda,\lambda} = 1 $: l'unico SSYT di forma $ \lambda $ e tipo $ \lambda $ e' quello in cui la riga $ i $ contiene solo $ i $ (super-standard).
+  Allora il numero di entrate $ \leq h $ in $ T $ e' $ \mu_1 + \dots + \mu_h $ (per definizione di tipo) ed e' al piu' il numero di celle nelle prime $ h $ righe, cioe' $ \lambda_1 + \dots + \lambda_h $. Quindi $ \mu_1 + \dots + \mu_h \leq \lambda_1 + \dots + \lambda_h $ per ogni $ h $, ossia $ \mu \trianglelefteq \lambda $.
+
+  Per $ K_{\lambda,\lambda} = 1 $: con $ \mu = \lambda $ le disuguaglianze diventano uguaglianze, dunque le entrate $ \leq h $ riempiono esattamente le prime $ h $ righe per ogni $ h $; ne segue che la riga $ i $ contiene solo $ i $ (tableau super-standard), unico.
 }
 
 \cor{Le $ \widehat{s}_\lambda $ sono una base di $ Sym[X] $}{}
@@ -1445,15 +1462,28 @@ Ricordiamo che $ \mu \trianglelefteq \lambda $ se per ogni $ i \geq 1 $ vale $ \
 
 \subsection{Sviluppi nelle $ \widehat{s}_\lambda $}
 
-\cor{}{\label{cor:hmu-kostka-schur}
+\cor{Sviluppo di $ h_\mu $ nelle $ \widehat{s}_\lambda $}{\label{cor:hmu-kostka-schur}
+  Per ogni partizione $ \mu $:
   \[
-    h_\mu = \sum_\lambda K_{\lambda, \mu}\, \widehat{s}_\lambda
+    h_\mu = \sum_\lambda K_{\lambda,\, \mu}\, \widehat{s}_\lambda .
   \]
 }
 \pf{Dim}{
-  Sia $ h_\mu = \sum_\lambda a_{\lambda,\mu}\, \widehat{s}_\lambda $. Per ortonormalita' delle $ \widehat{s}_\lambda $ e dualita' $ \langle h_\mu, m_\nu \rangle = \delta_{\mu,\nu} $:
+  Per il Teorema~\ref{thm:schur-ortonormali} le $ \widehat{s}_\lambda $ sono una base (ortonormale) di $ Sym[X] $, quindi
   \[
-    a_{\lambda,\mu} = \langle h_\mu, \widehat{s}_\lambda \rangle = \Big\langle h_\mu, \sum_\nu K_{\lambda,\nu} m_\nu \Big\rangle = \sum_\nu K_{\lambda,\nu}\, \delta_{\mu,\nu} = K_{\lambda,\mu} .
+    h_\mu = \sum_\lambda a_{\lambda,\mu}\, \widehat{s}_\lambda
+  \]
+  per opportuni coefficienti $ a_{\lambda,\mu} $. Sempre per l'ortonormalita',
+  \[
+    a_{\lambda,\mu} = \langle h_\mu,\, \widehat{s}_\lambda \rangle .
+  \]
+  Per il Teorema~\ref{thm:schur-comb-monomiali}, $ \widehat{s}_\lambda = \sum_\nu K_{\lambda,\nu}\, m_\nu $, quindi per bilinearita'
+  \[
+    a_{\lambda,\mu} = \Big\langle h_\mu,\, \sum_\nu K_{\lambda,\nu}\, m_\nu \Big\rangle = \sum_\nu K_{\lambda,\nu}\, \langle h_\mu,\, m_\nu \rangle .
+  \]
+  Per la Definizione~\ref{def:forma-bilineare}, $ \{h_\mu\} $ e $ \{m_\nu\} $ sono basi duali, ossia $ \langle h_\mu,\, m_\nu \rangle = \delta_{\mu,\nu} $. Quindi nella somma sopravvive solo il termine $ \nu = \mu $:
+  \[
+    a_{\lambda,\mu} = \sum_\nu K_{\lambda,\nu}\, \delta_{\mu,\nu} = K_{\lambda,\mu} .
   \]
 }
 
@@ -1463,7 +1493,11 @@ Ricordiamo che $ \mu \trianglelefteq \lambda $ se per ogni $ i \geq 1 $ vale $ \
   \]
 }
 \pf{Dim}{
-  $ h_1^n = h_{(1^n)} $ e applicando il corollario precedente con $ \mu = (1^n) $: $ K_{\lambda, 1^n} = f^\lambda $.
+  $ h_1^n = h_{(1^n)} $. Applicando il Corollario~\ref{cor:hmu-kostka-schur} con $ \mu = (1^n) $:
+  \[
+    h_1^n = \sum_\lambda K_{\lambda,\, (1^n)}\, \widehat{s}_\lambda .
+  \]
+  Per la Definizione~\ref{def:kostka}, $ K_{\lambda,\, (1^n)} $ conta gli SSYT di forma $ \lambda $ in cui ogni intero da $ 1 $ a $ n $ compare esattamente una volta, cioe' gli SYT: $ K_{\lambda,\, (1^n)} = f^\lambda $.
 }
 
 \subsection{Trasposta e simmetria di RSK}
@@ -1476,17 +1510,17 @@ Ricordiamo che $ \mu \trianglelefteq \lambda $ se per ogni $ i \geq 1 $ vale $ \
   $ A $ e' simmetrica $ \iff R = L $. Inoltre RSK ristretta e' una biezione fra $ \mathbb{N} $-matrici simmetriche con $ row(A) = \alpha $ e SSYT di tipo $ \alpha $.
 }
 
-\cor{Involuzioni di $ S_n $}{
+\cor{Involuzioni di $ \mathfrak{S}_n $}{
   \[
-    \sum_{\lambda \vdash n} f^\lambda = |\{\sigma \in S_n \mid \sigma^2 = id\}|
+    \sum_{\lambda \vdash n} f^\lambda = |\{\sigma \in \mathfrak{S}_n \mid \sigma^2 = id\}|
   \]
 }
 \pf{Dim}{
-  Le matrici di permutazione sono ortogonali, quindi $ A^{-1} = A^T $, ossia $ \sigma = \sigma^{-1} $ se e solo se $ \sigma^2 = id $. Restringendo RSK alle matrici di permutazione \textit{simmetriche} otteniamo la biezione fra involuzioni di $ S_n $ e SYT di forma $ \lambda \vdash n $.
+  Le matrici di permutazione sono ortogonali, quindi $ A^{-1} = A^T $, ossia $ \sigma = \sigma^{-1} $ se e solo se $ \sigma^2 = id $. Restringendo RSK alle matrici di permutazione \textit{simmetriche} otteniamo la biezione fra involuzioni di $ \mathfrak{S}_n $ e SYT di forma $ \lambda \vdash n $.
 }
 
 \ex{$ n = 4 $}{
-  $ \sum_\lambda f^\lambda = 1 + 3 + 2 + 3 + 1 = 10 $. Le involuzioni di $ S_4 $: $ 6 $ trasposizioni + $ 3 $ doppie trasposizioni + $ 1 \cdot id = 10 $. Torna.
+  $ \sum_\lambda f^\lambda = 1 + 3 + 2 + 3 + 1 = 10 $. Le involuzioni di $ \mathfrak{S}_4 $: $ 6 $ trasposizioni + $ 3 $ doppie trasposizioni + $ 1 \cdot id = 10 $. Torna.
 }
 
 \subsection{RSK duale (RSK*)}
@@ -1614,7 +1648,7 @@ dove ciascun passo $ s_i $ ha lunghezza $ 1 $ ed e' verso \textbf{Nord (N)} o \t
 \dfn{Famiglia di cammini}{
   Fissati punti iniziali $ u_1, \ldots, u_\ell $ e finali $ v_1, \ldots, v_\ell $, una
   \textbf{famiglia} $ \mathcal{P} = (p_1, \ldots, p_\ell) $ di cammini soddisfa, per qualche
-  $ \sigma \in S_\ell $:
+  $ \sigma \in \mathfrak{S}_\ell $:
   \[
     u_i \xrightarrow{p_i} v_{\sigma(i)} \qquad \forall\, i = 1, \ldots, \ell.
   \]
