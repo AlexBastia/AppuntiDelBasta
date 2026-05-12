@@ -153,7 +153,7 @@ Per noi sta roba e' un algoritmo, dato che la macchina di Turing, in quanto auto
 \dfn{Macchina di Turing}{
   E' la settupla
   \[
-  M = \{Q, q_0, F, \Sigma, \Gamma, b/, \delta \}
+  M = \{Q, q_0, F, \Sigma, \Gamma, \blank, \delta \}
   \]
   Dove:
   \begin{itemize}
@@ -162,7 +162,7 @@ Per noi sta roba e' un algoritmo, dato che la macchina di Turing, in quanto auto
   \item $ F $ e' l'insieme degli stati finali
   \item $ \Sigma $ e' l'insime dei simboli in input
   \item $ \Gamma $ e' l'insieme dei simboli che la macchina puo' scrivere $ \Sigma \subset \Gamma $
-  \item $ b/ $ e' il simbolo di cella vuota ("blank") $ b/ \in \Gamma $
+  \item $ \blank $ e' il simbolo di cella vuota ("blank") $ \blank \in \Gamma $
   \item $ \delta $ e' la funzione
     \[
     Q \times \Gamma \to Q \times \Gamma \times \{\gets, \to\}
@@ -610,7 +610,7 @@ Se la codifica in input non e' sensata, allora la macchina universale simula la 
 \begin{enumerate}
   \item \textbf{Inizializzazione}: $ M_u $ ricodifica $ w $ sul nastro 2 secondo lo schema dei simboli simulati. Ad esempio:
     \[
-      w = \underbrace{0}_{X_1}\underbrace{1}_{X_2}\underbrace{0}_{X_1} \quad \Longrightarrow \quad \texttt{1 0 1 0 1}
+      w = \underbrace{0}_{X_1}\underbrace{1}_{X_2}\underbrace{0}_{X_1} \quad \Longrightarrow \quad \texttt{0 1 00 1 0}
     \]
     Scrive sul nastro 3 lo stato iniziale $ q_1 = 0 $.
 

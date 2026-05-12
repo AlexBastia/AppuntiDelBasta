@@ -216,9 +216,10 @@ Proviamo a guardare un esempio di come possiamo costruire una tale funzione sull
     $ 1 $ & $ 1 $\\
     $ \# $ & $ \# $\\
     $ q_2 1 $ & $ 0 q_1 $\\
-    $ 0q_1\# $ & $ q_2 01 $\\
+    $ 0q_1\# $ & $ q_2 01\# $\\
     $ 1q_2 0 $ & $ q_3 1 0 $\\
     $ q_3 1 $ & $ q_3 $\\
+    $ 0 $ & $ 0 $\\
     $ q_3 0 $ & $ q_3 $\\
     $ q_3 \#\# $ & $ \# $
   \end{tabular}
@@ -239,7 +240,7 @@ Formalizziamo questa idea definendo una costruzione della coppia $ (R,S) $ a par
 \begin{center}
   \begin{tabular}{ll|ll}
     &$ R $ & $ S $ & \\ \hline
-    &$ \# $ & $ \# q_0 w_1...w_n $ & \\ \hline
+    &$ \# $ & $ \# q_0 w_1...w_n \#$ & \\ \hline
     $ \forall x \in \Gamma $&$ x $ & $ x $ & \\
     &$ \# $ & $ \# $ &\\ \hline
     $ \forall q \in Q \setminus F, $&$ qx $ & $ yp $ & $ \delta (q,x) = (p, y, \to) $\\
@@ -314,7 +315,7 @@ Controlliamo che $ f $ sia effettivamente la trasformazione che stavamo cercando
  
 Si consideri un piano quadrettato infinito (il primo quadrante di $\mathbb{N}\times\mathbb{N}$).
 Abbiamo un numero finito di \emph{tipi di piastrelle}, ciascuna con i quattro lati
-colorati. Una piastrella speciale $S$ (o $d_0$) deve essere posizionata nell'origine
+colorati. Una piastrella speciale $d_0$ deve essere posizionata nell'origine
 $(0,0)$.
  
 Le piastrelle possono essere affiancate \emph{solo ``a domino''}: i bordi a contatto
@@ -322,14 +323,13 @@ devono avere lo stesso colore. \textbf{Non è consentita la rotazione.}
  
 \begin{center}
 \begin{tikzpicture}
-  % Tile with labels B, C (top-left), A (right), R (bottom-right)
   \draw[thick] (0,0) rectangle (1,1);
   \draw[thick] (0,0) -- (1,1);
   \draw[thick] (1,0) -- (0,1);
-  \node at (0.25,0.75) {\small $B$};
-  \node at (0.75,0.75) {\small $C$};
-  \node at (0.75,0.25) {\small $A$};
-  \node at (0.25,0.25) {\small $R$};
+  \node at (0.50,0.75) {\small $A$};
+  \node at (0.75,0.50) {\small $B$};
+  \node at (0.50,0.25) {\small $C$};
+  \node at (0.25,0.50) {\small $D$};
   \draw[->, thick] (1.3, 0.5) -- (2.2, 0.5);
   \node[align=left] at (4.2, 0.5) {possono essere affiancate\\solo ``a domino''};
 \end{tikzpicture}
@@ -438,21 +438,13 @@ Ogni configurazione $c_i$ viene ``tradotta'' in una riga del piano.
 è possibile piastrellare tutto il piano.
  
  
-\paragraph{Colori (lati delle piastrelle).}
-I colori codificano coppie (stato, simbolo) oppure semplici simboli del nastro:
-\[
-  \underbrace{q_0\flat,\quad \flat,\quad q_1\flat,\quad \ldots}_{\text{coppie (stato, simbolo)}},
-  \qquad
-  \underbrace{\vec{q}_1,\quad \vec{q}_0,\quad \ldots}_{\text{stati con direzione}}
-\]
- 
 \paragraph{Tipi di piastrelle.}
  
 Per codificare la computazione di $M$ costruiamo $D$, $H$ e $V$ come segue. Ogni
 piastrella è un quadratino con quattro lati colorati (basso, alto, sinistra, destra).
 Usiamo la notazione diagonale:
 \[
-  \begin{tikzpicture}[baseline=-0.5ex,scale=0.5]
+  \begin{tikzpicture}[baseline=-0.5ex]
     \draw[thick] (0,0) rectangle (1,1);
     \draw[thick] (0,0)--(1,1); \draw[thick](1,0)--(0,1);
     \node[font=\tiny] at (0.5,0.15) {$\mathit{bot}$};
@@ -488,7 +480,7 @@ Costruiamo tre famiglie di piastrelle:
   si generano due piastrelle adiacenti:
  
   \begin{center}
-  \begin{tikzpicture}[scale=0.7]
+  \begin{tikzpicture}
     % left tile: bottom=(q,x), top=y, right=arrow_p
     \draw[thick] (0,0) rectangle (1.2,1.2);
     \draw[thick] (0,0)--(1.2,1.2); \draw[thick](1.2,0)--(0,1.2);
@@ -511,7 +503,7 @@ Costruiamo tre famiglie di piastrelle:
   Per ogni transizione $\delta(q, x) = (p, y, \leftarrow)$ e per ogni $z \in \Gamma$:
  
   \begin{center}
-  \begin{tikzpicture}[scale=0.7]
+  \begin{tikzpicture}
     % left tile: bottom=z, top=(p,z), right=arrow_p_left
     \draw[thick] (0,0) rectangle (1.2,1.2);
     \draw[thick] (0,0)--(1.2,1.2); \draw[thick](1.2,0)--(0,1.2);
@@ -534,7 +526,7 @@ Costruiamo tre famiglie di piastrelle:
   La piastrella speciale che forza la prima riga a contenere $c_1 = (q_0, \flat)$:
  
   \begin{center}
-  \begin{tikzpicture}[scale=0.7]
+  \begin{tikzpicture}
     \draw[thick] (0,0) rectangle (1.2,1.2);
     \draw[thick] (0,0)--(1.2,1.2); \draw[thick](1.2,0)--(0,1.2);
     \node[font=\small] at (0.6,0.25) {$(q_0,\flat)$};
@@ -546,6 +538,7 @@ Costruiamo tre famiglie di piastrelle:
   \end{center}
  
 \end{enumerate}
+
  
 \subsubsection{Correttezza della riduzione}
  
