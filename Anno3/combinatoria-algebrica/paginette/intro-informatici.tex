@@ -117,7 +117,7 @@ $$ Z(G) = \{ z \in G \mid z \cdot g = g \cdot z, \forall g \in G \} $$
 \begin{itemize}
     \item \textbf{È un sottogruppo:} L'elemento neutro $e$ commuta con tutto, quindi $e \in Z(G)$. Essendo chiuso rispetto al prodotto e all'inverso, costituisce un sottogruppo a tutti gli effetti ($Z(G) \le G$).
     \item \textbf{È un sottogruppo normale:} Poiché ogni elemento $z \in Z(G)$ commuta con tutti i $g \in G$, la coniugazione lo lascia invariato: $g z g^{-1} = z g g^{-1} = z \in Z(G)$. Di conseguenza, $Z(G) \trianglelefteq G$.
-    \item \textbf{Casi limite:} Se $G$ è abeliano, il centro coincide con tutto il gruppo ($Z(G) = G$). Se invece $Z(G) = \{e\}$, si dice che il gruppo ha centro banale (es. il gruppo simmetrico $S_n$ per $n \ge 3$).
+    \item \textbf{Casi limite:} Se $G$ è abeliano, il centro coincide con tutto il gruppo ($Z(G) = G$). Se invece $Z(G) = \{e\}$, si dice che il gruppo ha centro banale (es. il gruppo simmetrico $\mathfrak{S}_n$ per $n \ge 3$).
     \item \textbf{Applicazione in Combinatoria Algebrica:} Il centro del gruppo generale lineare $GL(V)$ è costituito esattamente dalle matrici scalari non nulle ($Z = \{\lambda I \mid \lambda \in K^\times\}$). Questo fatto è il motore logico della dimostrazione del \textbf{Lemma di Schur}.
 \end{itemize}
 }
@@ -260,11 +260,11 @@ Sotto l'operazione di composizione di funzioni, $Sym(X)$ forma un gruppo.
 }
 
 \mprop{Isomorfismo fra gruppi simmetrici}{
-    Si puo' dimostrare che gruppi simmetrici di insiemi aventi la stessa cardinalita' $n$ sono isomorfi, quindi si tende a considerare il gruppo simmetrico costituito dalle permutazioni degli interi $1,2,\dots,n$ denotato $S_n$.
+    Si puo' dimostrare che gruppi simmetrici di insiemi aventi la stessa cardinalita' $n$ sono isomorfi, quindi si tende a considerare il gruppo simmetrico costituito dalle permutazioni degli interi $1,2,\dots,n$ denotato $\mathfrak{S}_n$.
 }
 
 \thm{Classi di Coniugio del gruppo simmetrico}{
-Dato un gruppo simmetrico $S_n$, due permutazioni $\sigma, \tau \in S_n$ appartengono alla stessa \textbf{classe di coniugio} se e solo se hanno la stessa \textbf{struttura ciclica}, ovvero se presentano lo stesso numero di cicli della stessa lunghezza nella loro scomposizione in cicli disgiunti.
+Dato un gruppo simmetrico $\mathfrak{S}_n$, due permutazioni $\sigma, \tau \in \mathfrak{S}_n$ appartengono alla stessa \textbf{classe di coniugio} se e solo se hanno la stessa \textbf{struttura ciclica}, ovvero se presentano lo stesso numero di cicli della stessa lunghezza nella loro scomposizione in cicli disgiunti.
 }
 
 Un \textbf{ciclo} (o permutazione ciclica) è un tipo speciale, e molto semplice, di permutazione.
@@ -291,8 +291,8 @@ Invece di scrivere la funzione o la matrice per esteso, in algebra si usa una no
 Questa scrittura si legge tipicamente da sinistra a destra: ogni elemento viene mandato in quello alla sua destra, e l'ultimo elemento chiude il cerchio venendo rimandato al primo.
 }
 
-\ex{Cicli di $ S_5 $}{
-Consideriamo il gruppo simmetrico $S_5$, ovvero l'insieme delle permutazioni sull'insieme $X = \{1, 2, 3, 4, 5\}$. 
+\ex{Cicli di $ \mathfrak{S}_5 $}{
+Consideriamo il gruppo simmetrico $\mathfrak{S}_5$, ovvero l'insieme delle permutazioni sull'insieme $X = \{1, 2, 3, 4, 5\}$. 
 Definiamo il ciclo $\pi = (1\ 3\ 5)$.
 
 Ecco cosa fa esattamente questa permutazione quando viene applicata agli elementi di $X$:
@@ -313,16 +313,16 @@ E gli elementi $2$ e $4$? Poiché non compaiono esplicitamente tra le parentesi 
 \nt{
 \textbf{Proprietà e Relazione con le Partizioni:}
 \begin{itemize}
-    \item \textbf{Corrispondenza biunivoca:} Le classi di coniugio di $S_n$ sono in corrispondenza biunivoca con le \textbf{partizioni} dell'intero $n$. Una partizione $\lambda = (\lambda_1, \lambda_2, \dots, \lambda_k)$ tale che $\sum \lambda_i = n$ definisce univocamente una classe di coniugio.
-    \item \textbf{Numero di Rappresentazioni:} In virtù della teoria generale, il numero di rappresentazioni irriducibili distinte di $S_n$ su $\mathbb{C}$ è esattamente uguale al numero di partizioni $p(n)$.
-    \item \textbf{Esempio $S_3$ ($n=3$):} Le partizioni di 3 sono:
+    \item \textbf{Corrispondenza biunivoca:} Le classi di coniugio di $\mathfrak{S}_n$ sono in corrispondenza biunivoca con le \textbf{partizioni} dell'intero $n$. Una partizione $\lambda = (\lambda_1, \lambda_2, \dots, \lambda_k)$ tale che $\sum \lambda_i = n$ definisce univocamente una classe di coniugio.
+    \item \textbf{Numero di Rappresentazioni:} In virtù della teoria generale, il numero di rappresentazioni irriducibili distinte di $\mathfrak{S}_n$ su $\mathbb{C}$ è esattamente uguale al numero di partizioni $p(n)$.
+    \item \textbf{Esempio $\mathfrak{S}_3$ ($n=3$):} Le partizioni di 3 sono:
     \begin{itemize}
         \item $(1,1,1) \to$ Identità (cicli di lunghezza 1).
         \item $(2,1) \to$ Trasposizioni $\{(12), (13), (23)\}$.
         \item $(3) \to$ 3-cicli $\{(123), (132)\}$.
     \end{itemize}
-    \item \textbf{Rappresentazioni Notevoli:} Ogni $S_n$ possiede sempre almeno due rappresentazioni di grado 1: la \textit{banale} ($\chi(g)=1$ per ogni $g$) e la \textit{segnatura} ($\chi(g)=\text{sgn}(g)$).
-    \item \textbf{Diagrammi di Young:} Le rappresentazioni irriducibili di $S_n$ vengono classificate e costruite tramite i \textbf{Diagrammi di Young}, che sono la rappresentazione grafica delle partizioni di $n$.
+    \item \textbf{Rappresentazioni Notevoli:} Ogni $\mathfrak{S}_n$ possiede sempre almeno due rappresentazioni di grado 1: la \textit{banale} ($\chi(g)=1$ per ogni $g$) e la \textit{segnatura} ($\chi(g)=\text{sgn}(g)$).
+    \item \textbf{Diagrammi di Young:} Le rappresentazioni irriducibili di $\mathfrak{S}_n$ vengono classificate e costruite tramite i \textbf{Diagrammi di Young}, che sono la rappresentazione grafica delle partizioni di $n$.
 \end{itemize}
 }
 

@@ -696,24 +696,24 @@ $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ & $\ddots$
 \end{tabular}
 \end{center}
 
-Concentriamoci sulla \textbf{diagonale}: prendiamo il valore $ (i,i) $ per ogni $ i $, ottenendo la stringa $ D = \{0\ 1\ 0\ 1\ \cdots\} $. Definiamo $ \bar{D} $ come il suo complemento bit a bit, $ \bar{D} = \{1\ 0\ 1\ 0\ \cdots\} $.
+Sia $ D = \{0\ 1\ 0\ 1\ \cdots\} $ la \textbf{diagonale} (i valori $ (i,i) $) e $ \bar{D} = \{1\ 0\ 1\ 0\ \cdots\} $ il suo complemento bit a bit. $ \bar{D} $ è il vettore caratteristico di un linguaggio, che chiamiamo \emph{linguaggio diagonale}.
 
-$ \bar{D} $ è interpretabile come vettore caratteristico di un linguaggio. Chiamiamo $ \mathcal{L}_d $ il linguaggio il cui vettore caratteristico è $ \bar{D} $:
-\[
-  \mathcal{L}_d = \{w_i \mid M_i \not\models w_i\}
-\]
-ovvero $ \mathcal{L}_d $ contiene la $ i $-esima stringa se e solo se la $ i $-esima macchina \textit{non} la accetta.
+\dfn{Linguaggio diagonale $ \mathcal{L}_d $}{
+  \[
+    \mathcal{L}_d = \{\, w_i \mid M_i \not\models w_i \,\}.
+  \]
+  Cioè la $ i $-esima stringa appartiene a $ \mathcal{L}_d $ sse $ M_i $ \emph{non} accetta $ w_i $ (la rifiuta o va in loop).
+}
 
 \mprop{}{
-  $ \mathcal{L}_d \notin RE $
+  $ \mathcal{L}_d \notin RE $.
 }
 \pf{Dimostrazione}{
-  Supponiamo per assurdo che esista una MdT $ M_k $ tale che $ \mathcal{L}(M_k) = \mathcal{L}_d $. Chiediamoci se $ M_k $ accetta $ w_k $:
-  \begin{itemize}
-    \item Se $ M_k \models w_k $: allora $ w_k \in \mathcal{L}(M_k) = \mathcal{L}_d $, ma per definizione $ w_k \in \mathcal{L}_d \iff M_k \not\models w_k $. Contraddizione.
-    \item Se $ M_k \not\models w_k $: allora $ w_k \in \mathcal{L}_d $, quindi $ M_k $ dovrebbe accettare $ w_k $. Contraddizione.
-  \end{itemize}
-  In entrambi i casi arriviamo a una contraddizione, quindi $ \nexists $ una MdT che accetti $ \mathcal{L}_d $, ovvero $ \mathcal{L}_d \notin RE $
+  Per assurdo, sia $ M_k $ tale che $ \mathcal{L}(M_k) = \mathcal{L}_d $. Per ogni $ i $: $ M_k \models w_i \iff w_i \in \mathcal{L}_d \iff M_i \not\models w_i $. Specializzando con $ i = k $:
+  \[
+    M_k \models w_k \iff M_k \not\models w_k,
+  \]
+  contraddizione. Quindi nessuna MdT accetta $ \mathcal{L}_d $.
 }
 
 \nt{
@@ -780,18 +780,33 @@ $ \mathcal{L}_u \in R $? No.
 
 \thm{}{$ \mathcal{L}_u \notin R $}
 \pf{Dimostrazione}{
-  Supponiamo per assurdo che $ \mathcal{L}_u \in R $, ovvero esiste $ \bar{M}_u $ che \textit{decide} $ \mathcal{L}_u $. Costruiamo la macchina $ M' $:
+  Per assurdo, sia $ \bar{M}_u $ che decide $ \mathcal{L}_u $. Costruiamo $ M' $ che su input $ w_i $:
   \begin{enumerate}
-    \item Riceve $ w_i $ in input
-    \item Copia $ w_i $ per costruire la coppia $ (M_i, w_i) $
-    \item Esegue $ \bar{M}_u $ su $ (M_i, w_i) $ e \textbf{inverte} la risposta
+    \item duplica $ w_i $ a $ (M_i, w_i) $;
+    \item esegue $ \bar{M}_u $ su $ (M_i, w_i) $ e inverte la risposta.
   \end{enumerate}
-  Analizziamo $ \mathcal{L}(M') $:
+  \begin{center}
+  \begin{tikzpicture}[
+      font=\sffamily,
+      machine/.style={draw, thick, minimum width=#1, minimum height=2.5cm, align=center},
+      arrow/.style={-Stealth, thick}
+  ]
+      \node[machine=8.5cm, minimum height=4cm, label={[font=\Large]above:$M'$}] (outer) {};
+      \node[machine=1.5cm] (dup) at ($(outer.center)+(-2cm,0)$) {dup};
+      \node[machine=1.5cm] (mb) at ($(outer.center)+(1.5cm,0)$) {$\bar{M}_u$};
+      \draw[arrow] ([xshift=-1.5cm]outer.west) -- (outer.west) node[midway, above] {$w_i$};
+      \draw[arrow] (outer.west) -- (dup.west);
+      \draw[arrow] (dup.east) -- (mb.west) node[midway, above] {$(M_i,w_i)$};
+      \draw[arrow] (mb.east) -- (outer.east) node[midway, above] {sí/no};
+      \draw[arrow] (outer.east) -- ++(2,0) node[midway, above] {no/sí};
+  \end{tikzpicture}
+  \end{center}
+  Allora:
   \begin{itemize}
-    \item $ M' $ risponde \textbf{sì} su $ w_i \iff \bar{M}_u $ risponde no $ \iff M_i \not\models w_i $
-    \item $ M' $ risponde \textbf{no} su $ w_i \iff \bar{M}_u $ risponde sì $ \iff M_i \models w_i $
+    \item $ M' $ risponde sì su $ w_i \iff \bar{M}_u $ risponde no $ \iff M_i \not\models w_i $;
+    \item $ M' $ risponde no su $ w_i \iff \bar{M}_u $ risponde sì $ \iff M_i \models w_i $.
   \end{itemize}
-  Quindi $ \mathcal{L}(M') = \{w_i \mid M_i \not\models w_i\} = \mathcal{L}_d $. Ma $ M' $ termina sempre (poiché $ \bar{M}_u $ termina sempre per ipotesi), quindi $ M' $ sarebbe un decisore per $ \mathcal{L}_d $, il che implicherebbe $ \mathcal{L}_d \in R \subseteq RE $. Contraddizione con $ \mathcal{L}_d \notin RE $.
+  Quindi $ \mathcal{L}(M') = \{w_i \mid M_i \not\models w_i\} = \mathcal{L}_d $, e $ M' $ termina sempre (perché $ \bar{M}_u $ termina sempre): $ M' $ decide $ \mathcal{L}_d $, da cui $ \mathcal{L}_d \in R \subseteq RE $. Contraddizione con $ \mathcal{L}_d \notin RE $.
 }
 
 \nt{
@@ -835,10 +850,25 @@ La differenza con $ \mathcal{L}_u $ è sottile: in $ \mathcal{L}_u $ la macchina
   $ HALT \in RE $
 }
 \pf{Dimostrazione}{
-  La macchina $ M_h $ accetta $ HALT $: simula $ M $ su $ w $ tramite $ M_u $, risponde sì se $ M $ si arresta. Se $ M $ non si arresta, $ M_h $ non termina. Quindi:
+  Costruiamo $ M_h $ che su input $ (M, w) $ simula $ M $ su $ w $ tramite $ M_u $; se $ M_u $ termina (sì o no, indifferente), $ M_h $ risponde sì; se $ M_u $ va in loop, $ M_h $ va in loop.
+  \begin{center}
+  \begin{tikzpicture}[
+      font=\sffamily,
+      machine/.style={draw, thick, minimum width=#1, minimum height=2.5cm, align=center},
+      arrow/.style={-Stealth, thick}
+  ]
+      \node[machine=8cm, minimum height=4.5cm, label={[font=\Large]above:$M_h$}] (outer) {};
+      \node[machine=1.5cm, label={[font=\huge]center:$M_u$}] (inner) at ($(outer.center)+(-0.5cm,0)$) {};
+      \draw[arrow] ([xshift=-1.5cm]outer.west) -- (outer.west) node[midway, above] {$(M,w)$};
+      \draw[arrow] (outer.west) -- (inner.west);
+      \draw[arrow] ([yshift=0.3cm]inner.east) -- ([yshift=0.3cm]outer.east) node[midway, above] {sí, no};
+      \draw[arrow] ([yshift=0.3cm]outer.east) -- ++(1.5,0) node[midway, above] {sí};
+      \draw[arrow] ([yshift=-0.3cm]inner.east) -- ++(1,-0.8) node[right] {loop};
+  \end{tikzpicture}
+  \end{center}
   \begin{itemize}
-    \item $ (M, w) \in HALT \Rightarrow M_h $ risponde sì
-    \item $ (M, w) \notin HALT \Rightarrow M_h $ non risponde sì
+    \item $ (M, w) \in HALT \Rightarrow M_u $ termina $ \Rightarrow M_h $ risponde sì.
+    \item $ (M, w) \notin HALT \Rightarrow M_u $ va in loop $ \Rightarrow M_h $ va in loop, non risponde sì.
   \end{itemize}
 }
 
@@ -846,13 +876,33 @@ La differenza con $ \mathcal{L}_u $ è sottile: in $ \mathcal{L}_u $ la macchina
   $ HALT \notin R $
 }
 \pf{Dimostrazione}{
-  Supponiamo per assurdo che $ HALT \in R $, ovvero esiste $ M_h^* $ che decide $ HALT $. Costruiamo $ M' $ su input $ (M, w) $:
+  Per assurdo, sia $ M_h^* $ che decide $ HALT $. Costruiamo $ M' $ su input $ (M, w) $:
   \begin{enumerate}
-    \item Esegue $ M_h^* $ su $ (M, w) $
-    \item Se $ M_h^* $ risponde \textbf{no}: $ M $ non si ferma su $ w $, quindi $ M' $ risponde no
-    \item Se $ M_h^* $ risponde \textbf{sì}: $ M $ si ferma su $ w $, quindi $ M' $ simula $ M $ su $ w $ tramite $ M_u $ e ne usa la risposta
+    \item esegue $ M_h^* $ su $ (M, w) $;
+    \item se $ M_h^* $ risponde \textbf{no} ($ M $ non si ferma su $ w $), $ M' $ risponde no;
+    \item se $ M_h^* $ risponde \textbf{sì} ($ M $ si ferma su $ w $), $ M' $ simula $ M $ su $ w $ tramite $ M_u $ e ne usa la risposta.
   \end{enumerate}
-  In questo modo $ M' $ decide $ \mathcal{L}_u $, poiché $ M_h^* $ garantisce l'arresto anche sul ``no'' (loop $ \to $ no immediato). Quindi $ \mathcal{L}_u \in R $. Contraddizione.
+  \begin{center}
+  \begin{tikzpicture}[
+      font=\sffamily,
+      machine/.style={draw, thick, minimum width=#1, minimum height=2.5cm, align=center},
+      arrow/.style={-Stealth, thick}
+  ]
+      \node[machine=10cm, minimum height=5cm, label={[font=\Large]above:$M'$}] (outer) {};
+      \node[machine=1.5cm] (mh) at ($(outer.center)+(-2.3cm,0)$) {$M_h^*$};
+      \node[machine=1.5cm] (mu) at ($(outer.center)+(1.3cm,-0.4cm)$) {$M_u$};
+      \draw[arrow] ([xshift=-1.5cm]outer.west) -- (outer.west) node[midway, above] {$(M,w)$};
+      \draw[arrow] (outer.west) -- (mh.west);
+      \draw[arrow] ([yshift=0.4cm]mh.east) -- ++(0.5,0) |- ([yshift=1.6cm]outer.east) node[pos=0.75, above] {no};
+      \draw[arrow] ([yshift=1.6cm]outer.east) -- ++(1.5,0) node[midway, above] {no};
+      \draw[arrow] ([yshift=-0.4cm]mh.east) -- (mu.west) node[midway, above] {sí};
+      \draw[arrow] ([yshift=0.4cm]mu.east) -- ++(0.6,0) |- ([yshift=0.4cm]outer.east) node[pos=0.75, above] {sí};
+      \draw[arrow] ([yshift=0.4cm]outer.east) -- ++(1.5,0) node[midway, above] {sí};
+      \draw[arrow] ([yshift=-0.4cm]mu.east) -- ++(0.6,0) |- ([yshift=-0.8cm]outer.east) node[pos=0.75, below] {no};
+      \draw[arrow] ([yshift=-0.8cm]outer.east) -- ++(1.5,0) node[midway, below] {no};
+  \end{tikzpicture}
+  \end{center}
+  $ M' $ decide $ \mathcal{L}_u $: $ M_h^* $ garantisce l'arresto al passo 1 (anche per le istanze in cui $ M $ andrebbe in loop), quindi $ M_u $ viene chiamato solo quando $ M $ si ferma e termina sempre. Dunque $ \mathcal{L}_u \in R $, contraddizione.
 }
 
 \subsection{La variante $ HALT_\varepsilon $}
@@ -868,10 +918,26 @@ La differenza con $ \mathcal{L}_u $ è sottile: in $ \mathcal{L}_u $ la macchina
   $ HALT_\varepsilon \in RE $
 }
 \pf{Dimostrazione}{
-  La macchina $ M_{h\varepsilon} $ prende in input $ M $, simula $ M $ su $ \varepsilon $ tramite $ M_u $, e risponde sì se $ M $ si arresta. Quindi:
+  Costruiamo $ M_{h\varepsilon} $ che su input $ M $ simula $ M $ su $ \varepsilon $ tramite $ M_u $; se $ M_u $ termina, $ M_{h\varepsilon} $ risponde sì; se $ M_u $ va in loop, $ M_{h\varepsilon} $ va in loop.
+  \begin{center}
+  \begin{tikzpicture}[
+      font=\sffamily,
+      machine/.style={draw, thick, minimum width=#1, minimum height=2.5cm, align=center},
+      arrow/.style={-Stealth, thick}
+  ]
+      \node[machine=8cm, minimum height=4.5cm, label={[font=\Large]above:$M_{h\varepsilon}$}] (outer) {};
+      \node[machine=1.5cm] (inner) at ($(outer.center)+(-0.5cm,0)$) {$M_u$};
+      \draw[arrow] ([xshift=-1.5cm]outer.west) -- (outer.west) node[midway, above] {$M$};
+      \draw[arrow] (outer.west) -- ([yshift=0.3cm]inner.west) node[midway, above] {$M$};
+      \draw[arrow] ([xshift=-1.2cm,yshift=-0.3cm]inner.west) -- ([yshift=-0.3cm]inner.west) node[midway, below] {$\varepsilon$};
+      \draw[arrow] ([yshift=0.3cm]inner.east) -- ([yshift=0.3cm]outer.east) node[midway, above] {sí, no};
+      \draw[arrow] ([yshift=0.3cm]outer.east) -- ++(1.5,0) node[midway, above] {sí};
+      \draw[arrow] ([yshift=-0.3cm]inner.east) -- ++(1,-0.8) node[right] {loop};
+  \end{tikzpicture}
+  \end{center}
   \begin{itemize}
-    \item $ M \in HALT_\varepsilon \Rightarrow M_{h\varepsilon} $ risponde sì
-    \item $ M \notin HALT_\varepsilon \Rightarrow M_{h\varepsilon} $ non risponde sì
+    \item $ M \in HALT_\varepsilon \Rightarrow M_u $ termina $ \Rightarrow M_{h\varepsilon} $ risponde sì.
+    \item $ M \notin HALT_\varepsilon \Rightarrow M_u $ va in loop $ \Rightarrow M_{h\varepsilon} $ va in loop.
   \end{itemize}
 }
 
@@ -879,17 +945,32 @@ La differenza con $ \mathcal{L}_u $ è sottile: in $ \mathcal{L}_u $ la macchina
   $ HALT_\varepsilon \notin R $
 }
 \pf{Dimostrazione}{
-  Supponiamo per assurdo che esista $ M_{h\varepsilon}^* $ che decide $ HALT_\varepsilon $.  Costruiamo quindi $ M' $ su input $ (M, w) $:
+  Per assurdo, sia $ M_{h\varepsilon}^* $ che decide $ HALT_\varepsilon $. Costruiamo $ M' $ che su input $ (M, w) $:
   \begin{enumerate}
-    \item Prende $ M $ e $ w $ e restituisce $ \tilde{M}_w $: una macchina che ignora il proprio input, scrive $ w $ sul nastro e simula $ M $ su $ w $.
-    \item Esegue $ M_{h\varepsilon}^* $ su $ \tilde{M}_w $
+    \item costruisce $ \tilde{M}_w $: una MdT che ignora il proprio input, scrive $ w $ sul nastro e simula $ M $ su $ w $;
+    \item esegue $ M_{h\varepsilon}^* $ su $ \tilde{M}_w $ e ne usa la risposta.
   \end{enumerate}
-  Poiché $ \tilde{M}_w $ su $ \varepsilon $ si comporta esattamente come $ M $ su $ w $, abbiamo:
-  \begin{itemize}
-    \item $ M' $ risponde sì $ \iff M_{h\varepsilon}^* $ dice sì su $ \tilde{M}_w \iff \tilde{M}_w $ si arresta su $ \varepsilon \iff M $ si arresta su $ w $
-    \item $ M' $ risponde no altrimenti
-  \end{itemize}
-  Quindi $ M' $ decide $ HALT \Rightarrow HALT \in R $. Contraddizione.
+  \begin{center}
+  \begin{tikzpicture}[
+      font=\sffamily,
+      machine/.style={draw, thick, minimum width=#1, minimum height=2.5cm, align=center},
+      arrow/.style={-Stealth, thick}
+  ]
+      \node[machine=9cm, minimum height=4cm, label={[font=\Large]above:$M'$}] (outer) {};
+      \node[machine=1.8cm] (build) at ($(outer.center)+(-2.2cm,0)$) {build $\tilde{M}_w$};
+      \node[machine=1.8cm] (mh) at ($(outer.center)+(1.8cm,0)$) {$M_{h\varepsilon}^*$};
+      \draw[arrow] ([xshift=-1.5cm]outer.west) -- (outer.west) node[midway, above] {$(M,w)$};
+      \draw[arrow] (outer.west) -- (build.west);
+      \draw[arrow] (build.east) -- (mh.west) node[midway, above] {$\tilde{M}_w$};
+      \draw[arrow] (mh.east) -- (outer.east) node[midway, above] {sí/no};
+      \draw[arrow] (outer.east) -- ++(2,0) node[midway, above] {sí/no};
+  \end{tikzpicture}
+  \end{center}
+  Poiché $ \tilde{M}_w $ su $ \varepsilon $ si comporta come $ M $ su $ w $:
+  \[
+    M' \text{ risponde sì} \iff M_{h\varepsilon}^* \text{ dice sì su } \tilde{M}_w \iff \tilde{M}_w \text{ si arresta su } \varepsilon \iff M \text{ si arresta su } w.
+  \]
+  Quindi $ M' $ decide $ HALT $, contraddizione (poiché $ HALT \notin R $).
 }
 
 

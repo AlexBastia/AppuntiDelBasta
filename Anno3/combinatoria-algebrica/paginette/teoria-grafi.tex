@@ -1,0 +1,275 @@
+% \begin{document}
+
+\chapter{Teoria dei grafi}
+
+Riferimento principale: Stanley, \textit{Algebraic Combinatorics}.
+
+\section{Introduzione}
+
+\dfn{Grafo}{\label{def:grafo}
+  Un \textit{grafo} $ G $ e' la terna $ (V, E, \varphi) $ dove $ V $ e' un insieme finito di \textit{vertici}, $ E $ e' un insieme finito di \textit{lati} e
+  \[
+    \varphi : E \longrightarrow \left(\!\!\binom{V}{2}\!\!\right)
+  \]
+  associa ad ogni lato la coppia (non ordinata) di vertici ad esso adiacenti. Qui $ \left(\!\!\binom{V}{2}\!\!\right) $ denota il \textit{multi-insieme} di taglia $ 2 $ su $ V $: ammettiamo cioe' anche coppie del tipo $ \{v, v\} $ (\textit{loop}). Tutti i grafi che consideriamo sono \textbf{non orientati}.
+}
+
+\ex{}{
+  Per $ V = \{v_1, v_2, v_3\} $ con lati $ e_1, e_2, e_3 $ e $ \varphi(e_1) = \{v_1, v_2\} $: scriveremo brevemente $ \varphi(e_1) = v_1 v_2 $.
+}
+
+\dfn{Lato multiplo}{\label{def:lato-multiplo}
+  Se esistono lati distinti $ e_1, \ldots, e_k \in E $ con
+  \[
+    \varphi(e_1) = \cdots = \varphi(e_k) = uv ,
+  \]
+  diciamo che fra $ u $ e $ v $ c'e' un \textit{lato multiplo}.
+}
+
+\dfn{Grafo semplice}{\label{def:grafo-semplice}
+  Un grafo $ G $ si dice \textit{semplice} se non ha loops ne' lati multipli: equivalentemente, $ \varphi $ e' iniettiva e a valori in $ \binom{V}{2} $ (coppie distinte, senza ripetizione), ossia
+  \[
+    E \subseteq \binom{V}{2} .
+  \]
+}
+
+\subsection{Matrice di adiacenza e conteggio cammini}
+
+\subsubsection{La matrice $ A(G) $}
+
+\dfn{Matrice di adiacenza}{\label{def:matrice-adiacenza}
+  Sia $ G $ un grafo con vertici $ V = \{v_1, \ldots, v_p\} $. La \textit{matrice di adiacenza} $ A(G) \in \mathbb{N}^{p \times p} $ ha entrate
+  \[
+    A(G)_{ij} := \#\{\text{lati incidenti a } v_i \text{ e a } v_j\} .
+  \]
+}
+
+Proprieta' immediate:
+\begin{itemize}
+  \item $ A(G) $ e' \textbf{simmetrica} (i grafi non sono orientati);
+  \item la traccia $ \mathrm{Tr}(A(G)) = \sum_i A(G)_{ii} $ conta il numero di \textit{loops};
+  \item essendo simmetrica reale, $ A(G) $ e' \textbf{diagonalizzabile} (teorema spettrale).
+\end{itemize}
+
+\ex{}{
+  Per il grafo su $ \{v_1, \ldots, v_5\} $ con due loop su $ v_3 $, un loop su $ v_4 $, un loop su $ v_5 $, lato doppio fra $ v_1 $ e $ v_2 $, lati semplici $ v_1 v_3 $, $ v_1 v_4 $, $ v_2 v_5 $, $ v_3 v_5 $:
+  \begin{center}
+    \begin{tikzpicture}[
+      vertex/.style={circle, fill=black, inner sep=1.6pt},
+      every label/.style={inner sep=2pt},
+      thick
+    ]
+      \node[vertex, label=left:$v_3$]  (v3) at (0, 2.2) {};
+      \node[vertex, label=left:$v_1$]  (v1) at (-2.4, 0) {};
+      \node[vertex, label=below:$v_2$] (v2) at (0, 0) {};
+      \node[vertex, label=above:$v_5$] (v5) at (2.4, 0) {};
+      \node[vertex, label=right:$v_4$] (v4) at (-2.4, -1.8) {};
+
+      % Lato doppio v_1--v_2
+      \draw (v1) to[bend left=20] (v2);
+      \draw (v1) to[bend right=20] (v2);
+      % Lati semplici
+      \draw (v1) -- (v3);
+      \draw (v1) -- (v4);
+      \draw (v2) -- (v5);
+      \draw (v3) -- (v5);
+
+      % Loops
+      \draw (v3) to[out=70, in=110, looseness=14] (v3);
+      \draw (v3) to[out=45, in=135, looseness=28] (v3);
+      \draw (v4) to[out=200, in=250, looseness=15] (v4);
+      \draw (v5) to[out=-25, in=25, looseness=15] (v5);
+    \end{tikzpicture}
+  \end{center}
+  La matrice di adiacenza e':
+  \[
+    A(G) = \begin{pmatrix}
+      0 & 2 & 1 & 1 & 0 \\
+      2 & 0 & 0 & 0 & 1 \\
+      1 & 0 & 2 & 0 & 1 \\
+      1 & 0 & 0 & 1 & 0 \\
+      0 & 1 & 1 & 0 & 1
+    \end{pmatrix} .
+  \]
+  Traccia $ 0 + 0 + 2 + 1 + 1 = 4 $: ci sono in tutto $ 4 $ loop nel grafo.
+}
+
+Vedremo come autovalori di $ A(G) $ e cammini sul grafo siano strettamente collegati.
+
+\subsubsection{Potenze di $ A(G) $ e cammini}
+
+\dfn{Cammino}{\label{def:cammino}
+  Un \textit{cammino} di lunghezza $ \ell $ da $ u $ a $ v $ in $ G $ e' una sequenza
+  \[
+    v_1\, e_1\, v_2\, e_2\, \cdots\, e_\ell\, v_{\ell+1}
+  \]
+  con $ v_1 = u $, $ v_{\ell+1} = v $ e $ \varphi(e_i) = v_i v_{i+1} $ per ogni $ i $.
+}
+
+\nt{
+  Invertire l'ordine di un cammino da' un cammino fra gli stessi due vertici, di stessa lunghezza.
+}
+
+\thm{Potenze della matrice di adiacenza}{\label{thm:potenze-A}
+  Per ogni $ \ell \in \mathbb{Z}_{\geq 1} $:
+  \[
+    \bigl(A(G)^\ell\bigr)_{ij} = \#\{\text{cammini di lunghezza } \ell \text{ da } v_i \text{ a } v_j\} .
+  \]
+}
+\nt{
+  E' lo stesso principio delle \textit{catene di Markov}: le potenze della matrice di transizione contano le traiettorie di lunghezza fissata.
+}
+\pf{Dim}{
+  Per induzione su $ \ell $.
+
+  \textbf{Base ($ \ell = 1 $).} $ A(G)_{ij} $ e' per definizione il numero di lati fra $ v_i $ e $ v_j $, ovvero il numero di cammini di lunghezza $ 1 $.
+
+  \textbf{Passo induttivo.}
+  \[
+    \bigl(A(G)^{\ell+1}\bigr)_{ij}
+      = \bigl(A(G)^\ell \cdot A(G)\bigr)_{ij}
+      = \sum_{k=1}^{p} \bigl(A(G)^\ell\bigr)_{ik}\, A(G)_{kj} .
+  \]
+  Per ipotesi induttiva $ \bigl(A(G)^\ell\bigr)_{ik} $ conta i cammini di lunghezza $ \ell $ da $ v_i $ a $ v_k $, e $ A(G)_{kj} $ il numero di lati da $ v_k $ a $ v_j $. La somma su $ k $ conta tutte le concatenazioni: un cammino di lunghezza $ \ell + 1 $ da $ v_i $ a $ v_j $ si scompone univocamente come (cammino di lunghezza $ \ell $ da $ v_i $ a un intermedio $ v_k $) seguito da (un lato fra $ v_k $ e $ v_j $).
+}
+
+\subsubsection{Formula spettrale}
+
+\nt{\textbf{Ripasso (Geometria 1).} Per il teorema spettrale $ A(G) $, essendo simmetrica reale, ammette una base di autovettori $ u_1, \ldots, u_p $ \textbf{ortonormali} ($ u_i^T u_j = \delta_{ij} $). Posto $ U := (u_1 \mid \cdots \mid u_p) $:
+\[
+  U^T = U^{-1}, \qquad U^T A(G)\, U = D := \mathrm{diag}(\lambda_1, \ldots, \lambda_p) ,
+\]
+con $ \lambda_i $ autovalore di $ u_i $.}
+
+\cor{Formula spettrale per $ (A(G)^\ell)_{ij} $}{\label{cor:formula-spettrale}
+  Per ogni coppia di vertici $ v_i, v_j $ e ogni $ \ell \in \mathbb{Z}_{\geq 1} $:
+  \[
+    \bigl(A(G)^\ell\bigr)_{ij} = c_1\, \lambda_1^\ell + \cdots + c_p\, \lambda_p^\ell ,
+  \]
+  con $ c_k := u_{ik}\, u_{jk} \in \mathbb{R} $ (componenti $ i $-esima e $ j $-esima dell'autovettore $ u_k $).
+}
+\pf{Dim}{
+  Elevando a potenza $ \ell $ la diagonalizzazione (coniugio = automorfismo, quindi commuta con la potenza):
+  \[
+    U^T A(G)^\ell\, U = D^\ell = \mathrm{diag}(\lambda_1^\ell, \ldots, \lambda_p^\ell)
+    \quad\Longrightarrow\quad A(G)^\ell = U\, D^\ell\, U^T = \sum_{k=1}^{p} \lambda_k^\ell\, u_k u_k^T .
+  \]
+  L'entrata $ (i,j) $ di $ u_k u_k^T $ e' $ u_{ik}\, u_{jk} $, da cui la formula.
+}
+
+\subsubsection{Cammini chiusi e traccia}
+
+\dfn{Cammino chiuso}{\label{def:cammino-chiuso}
+  Un cammino e' \textit{chiuso} se il vertice finale coincide con quello iniziale.
+}
+
+\cor{Numero di cammini chiusi}{\label{cor:cammini-chiusi-traccia}
+  Il numero totale di cammini chiusi di lunghezza $ \ell $ in $ G $ e'
+  \[
+    f_G(\ell) := \sum_{i=1}^{p} \bigl(A(G)^\ell\bigr)_{ii} = \mathrm{Tr}\bigl(A(G)^\ell\bigr) = \sum_{k=1}^{p} \lambda_k^\ell .
+  \]
+}
+\pf{Dim}{
+  Per il Teorema~\ref{thm:potenze-A}, $ \bigl(A(G)^\ell\bigr)_{ii} $ e' il numero di cammini chiusi di lunghezza $ \ell $ basati in $ v_i $. Sommando sulle posizioni iniziali otteniamo la traccia. L'uguaglianza $ \mathrm{Tr}(A^\ell) = \sum_k \lambda_k^\ell $ segue dall'invarianza della traccia per coniugio: $ \mathrm{Tr}(A^\ell) = \mathrm{Tr}(U D^\ell U^T) = \mathrm{Tr}(D^\ell) $.
+}
+
+\subsection{Il grafo completo $ K_p $}
+
+\dfn{Grafo completo $ K_p $}{\label{def:Kp}
+  $ K_p $ e' il grafo \textit{semplice} con $ p $ vertici e un lato per ogni coppia di vertici distinti, dunque $ \binom{p}{2} $ lati totali. La sua matrice di adiacenza e'
+  \[
+    A(K_p) = J - I ,
+  \]
+  dove $ J $ e' la matrice $ p \times p $ con tutte le entrate uguali a $ 1 $ e $ I $ l'identita'.
+}
+
+\mlenma{Autovalori di $ J $}{\label{lem:autovalori-J}
+  Gli autovalori della matrice $ J \in \mathbb{R}^{p \times p} $ sono:
+  \begin{itemize}
+    \item $ p $ con molteplicita' $ 1 $ (autovettore $ (1, 1, \ldots, 1)^T $);
+    \item $ 0 $ con molteplicita' $ p - 1 $ (autospazio: vettori a somma nulla).
+  \end{itemize}
+}
+
+\mprop{Autovalori di $ A(K_p) $}{\label{prop:autovalori-Kp}
+  Gli autovalori di $ A(K_p) $ sono:
+  \begin{itemize}
+    \item $ p - 1 $ con molteplicita' $ 1 $;
+    \item $ -1 $ con molteplicita' $ p - 1 $.
+  \end{itemize}
+}
+\pf{Dim}{
+  $ v \neq 0 $ e' autovettore di $ A(K_p) = J - I $ con autovalore $ \lambda $ sse $ (J - I)v = \lambda v $, sse $ Jv = (\lambda + 1) v $. Quindi gli autovalori di $ A(K_p) $ sono quelli di $ J $ (Lemma~\ref{lem:autovalori-J}) shifted di $ -1 $: $ p \mapsto p - 1 $ e $ 0 \mapsto -1 $, con le stesse molteplicita'.
+}
+
+\cor{Cammini chiusi in $ K_p $ basati in un vertice}{\label{cor:cammini-chiusi-Kp}
+  Per ogni $ \ell \geq 1 $ e ogni vertice $ v_i $ di $ K_p $:
+  \[
+    \bigl(A(K_p)^\ell\bigr)_{ii} = \frac{1}{p}\Bigl( (p-1)^\ell + (p-1)\,(-1)^\ell \Bigr) .
+  \]
+}
+\pf{Dim}{
+  Per il Corollario~\ref{cor:cammini-chiusi-traccia} il numero totale di cammini chiusi di lunghezza $ \ell $ in $ K_p $ e'
+  \[
+    f_{K_p}(\ell) = (p-1)^\ell + \underbrace{(-1)^\ell + \cdots + (-1)^\ell}_{p - 1 \text{ volte}} = (p-1)^\ell + (p-1)\,(-1)^\ell .
+  \]
+  Per simmetria del grafo completo, ogni vertice contribuisce con lo stesso numero di cammini chiusi: basta dividere per $ p $.
+}
+
+\osservazione{
+  $ \bigl(A(K_p)^\ell\bigr)_{ii} $ coincide con il numero di successioni $ (i_1, i_2, \ldots, i_{\ell+1}) $ con $ i_j \in \{1, \ldots, p\} $, $ i_1 $ fissato, $ i_{j+1} \neq i_j $ per ogni $ j $ e $ i_{\ell+1} = i_1 $: ad ogni passo, su $ K_p $, si puo' andare a uno qualsiasi degli altri $ p - 1 $ vertici.
+}
+
+\subsubsection{Cammini non chiusi in $ K_p $: due metodi}
+
+Quanti sono i cammini di lunghezza $ \ell $ in $ K_p $ da $ v_i $ a $ v_j $ con $ j \neq i $?
+
+\paragraph{Primo metodo: totale meno chiusi.}
+
+I cammini di lunghezza $ \ell $ che partono da $ v_i $ sono $ (p-1)^\ell $: ad ogni passo si hanno $ p - 1 $ scelte (uno qualsiasi degli altri vertici). Sottraendo i chiusi (Corollario~\ref{cor:cammini-chiusi-Kp}) si ottiene il numero di cammini non chiusi che partono da $ v_i $, ripartiti uniformemente fra i $ p - 1 $ vertici di arrivo $ v_j \neq v_i $:
+\[
+  \bigl(A(K_p)^\ell\bigr)_{ij}
+    = \frac{1}{p-1}\!\left( (p-1)^\ell - \frac{(p-1)^\ell + (p-1)(-1)^\ell}{p} \right)
+    = \frac{(p-1)^\ell - (-1)^\ell}{p} .
+\]
+
+\paragraph{Secondo metodo: espansione binomiale di $ (J - I)^\ell $.}
+
+Sviluppiamo $ (J - I)^\ell $ con il binomio di Newton, valido perche' $ I $ e $ J $ commutano:
+\[
+  (J - I)^\ell = \sum_{k=0}^{\ell} (-1)^{\ell - k} \binom{\ell}{k}\, J^k .
+\]
+
+\osservazione{$ J^k = p^{k-1}\, J $ per ogni $ k \geq 1 $. Infatti $ J^2 $ ha entrata $ (i,j) $ uguale a $ \sum_h 1 \cdot 1 = p $, quindi $ J^2 = pJ $; per induzione, $ J^{k+1} = J \cdot J^k = J \cdot p^{k-1} J = p^{k-1}\, J^2 = p^k J $.}
+
+Sostituendo (e isolando il termine $ k = 0 $, cioe' $ J^0 = I $):
+\[
+  (J - I)^\ell
+    = (-1)^\ell I + \sum_{k=1}^{\ell} (-1)^{\ell - k} \binom{\ell}{k}\, p^{k-1}\, J
+    = (-1)^\ell I + \frac{1}{p}\!\left( \sum_{k=1}^{\ell} (-1)^{\ell - k} \binom{\ell}{k}\, p^k \right)\! J .
+\]
+La somma fra parentesi e' $ (p - 1)^\ell - (-1)^\ell $ (binomio di Newton applicato a $ p $ e $ -1 $, con il termine $ k = 0 $ tolto), quindi:
+\[
+  \boxed{\;(J - I)^\ell = (-1)^\ell\, I + \frac{(p-1)^\ell - (-1)^\ell}{p}\, J\;}
+\]
+L'entrata $ (i,j) $ vale dunque:
+\begin{itemize}
+  \item per $ i = j $: $ (-1)^\ell + \frac{(p-1)^\ell - (-1)^\ell}{p} = \frac{(p-1)^\ell + (p-1)(-1)^\ell}{p} $ (coerente con il Corollario~\ref{cor:cammini-chiusi-Kp});
+  \item per $ i \neq j $: $ \frac{(p-1)^\ell - (-1)^\ell}{p} $ (coerente con il primo metodo).
+\end{itemize}
+
+\osservazione{
+  Il secondo metodo e' notevole perche' fornisce la formula chiusa per $ f_G(\ell) $ \textbf{senza conoscere gli autovalori}: si lavora puramente nella sottoalgebra commutativa generata da $ I $ e $ J $.
+}
+
+\subsection{Lemma di unicita' per somme di potenze}
+
+\mlenma{Unicita' delle somme di potenze}{\label{lem:somma-potenze-unicita}
+  Siano $ \alpha_1, \ldots, \alpha_z, \beta_1, \ldots, \beta_z \in \mathbb{C} \setminus \{0\} $ tali che per ogni $ \ell \in \mathbb{Z}_{\geq 1} $:
+  \[
+    \alpha_1^\ell + \alpha_2^\ell + \cdots + \alpha_z^\ell = \beta_1^\ell + \beta_2^\ell + \cdots + \beta_z^\ell .
+  \]
+  Allora, a meno di permutazioni, $ \alpha_i = \beta_i $ per ogni $ i $.
+}
+
+% \end{document}

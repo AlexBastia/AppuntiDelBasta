@@ -46,12 +46,12 @@ Le proprieta' piu' interessanti dei caratteri sono:
   \end{enumerate}
 }
 
-\ex{Azione naturale di $ S_3 $ su $ \mathbb{C}^3 $}{
-  Sia $G = S_3$ con la rappresentazione naturale su $V = \mathbb{C}^3$ con base ${e_1, e_2, e_3}$:
+\ex{Azione naturale di $ \mathfrak{S}_3 $ su $ \mathbb{C}^3 $}{
+  Sia $G = \mathfrak{S}_3$ con la rappresentazione naturale su $V = \mathbb{C}^3$ con base ${e_1, e_2, e_3}$:
 
 $$g \cdot (x_1, x_2, x_3) = (x_{g(1)}, x_{g(2)}, x_{g(3)})$$
 
-Le classi di coniugio di $S_3$ sono tre: ${e}$, le trasposizioni ${(12),(13),(23)}$, i 3-cicli ${(123),(132)}$.\\
+Le classi di coniugio di $\mathfrak{S}_3$ sono tre: ${e}$, le trasposizioni ${(12),(13),(23)}$, i 3-cicli ${(123),(132)}$.\\
 
 Calcolo di $\chi$ per ciascuna classe:
 \begin{itemize}
@@ -356,10 +356,10 @@ $$(\rho \otimes \pi)(g)(v \otimes u) = (\rho(g)v) \otimes (\pi(g)u)$$
 
 Nella base $\{v_i \otimes u_j\}$, la matrice di $(\rho \otimes \pi)(g)$ è il \textbf{prodotto di Kronecker} delle matrici $\rho(g)$ e $\pi(g)$.
 
-\mprop{Carattere di un prodotto tensoriale}{
+\mprop{Carattere di un prodotto tensoriale}{\label{prop:carattere-tensore}
   Date due rappresentazioni $ V, U $ con caratteri $ \chi_V, \chi_U $:
   \[
-    \chi_{V \otimes U}(g) = \chi_V(g) \cdot \chi_U(g) 
+    \chi_{V \otimes U}(g) = \chi_V(g) \cdot \chi_U(g)
   \]
 }
 \pf{Dimostrazione}{
@@ -504,9 +504,9 @@ Quindi la componente isotipica banale dello spazio degli omomorfismi da due rapp
  I caratteri $\chi_V$ sono funzioni centrali (per ciclicità della traccia). La dimensione di $\mathcal{C}(G)$ è uguale al numero di classi di coniugio di $G$, poiché una funzione centrale è determinata dai suoi valori su ciascuna classe.\\
 
  Definiamo un prodotto scalare (hermitiano dato che $ K = \mathbb{C} $) su questo spazio:
-\dfn{Prodotto hermitiano fra funzioni centrali}{
+\dfn{Prodotto hermitiano fra funzioni centrali}{\label{def:prodotto-hermitiano}
   Il prodotto hermitiano su $\mathcal{C}(G)$ è:
-  $$\langle \chi_1, \chi_2 \rangle := \frac{1}{|G|} \sum_{g \in G} \chi_1(g)\,\overline{\chi_2(g)}$$ 
+  $$\langle \chi_1, \chi_2 \rangle := \frac{1}{|G|} \sum_{g \in G} \chi_1(g)\,\overline{\chi_2(g)}$$
  }
 Si verifica che è lineare nel primo argomento, antilineare nel secondo (per via del coniugato), e definito positivo. È quindi un vero prodotto hermitiano su $\mathcal{C}(G)$.
 
@@ -534,8 +534,8 @@ Catena logica \textit{limpida}
 \]
 }
 
-\ex{Verifica con $ S_3 $}{
-Prendiamo $U =$ rappresentazione banale e $W =$ rappresentazione standard di $S_3$ (dim 2). Le classi di coniugio sono $\{e\}$, $\{(12),(13),(23)\}$, $\{(123),(132)\}$ con $|C_i| = 1, 3, 2$. In un esercizio prima abbiamo calcolato i caratteri di $ U $ e $ W $ per ogni classe e, poiché i caratteri sono reali (per $S_3$), $\overline{\chi_W} = \chi_W$, possiamo calcolare il prodotto hermitiano:
+\ex{Verifica con $ \mathfrak{S}_3 $}{
+Prendiamo $U =$ rappresentazione banale e $W =$ rappresentazione standard di $\mathfrak{S}_3$ (dim 2). Le classi di coniugio sono $\{e\}$, $\{(12),(13),(23)\}$, $\{(123),(132)\}$ con $|C_i| = 1, 3, 2$. In un esercizio prima abbiamo calcolato i caratteri di $ U $ e $ W $ per ogni classe e, poiché i caratteri sono reali (per $\mathfrak{S}_3$), $\overline{\chi_W} = \chi_W$, possiamo calcolare il prodotto hermitiano:
 
 $$\langle \chi_U, \chi_W \rangle = \frac{1}{6}(1\cdot2\cdot1 + 1\cdot0\cdot3 + 1\cdot(-1)\cdot2) = \frac{1}{6}(2+0-2) = 0$$
 
@@ -558,10 +558,10 @@ $$\langle \chi_W, \chi_W \rangle = \frac{1}{6}(4\cdot1 + 0\cdot3 + 1\cdot2) = \f
 
 Detto cio', andiamo a vedere delle conseguenze di questo fatto e dell'ortogonalita' dei caratteri.
 
-\cor{Calcolo Molteplicita'}{
+\cor{Calcolo Molteplicita'}{\label{cor:molteplicita}
 Le molteplicità $k_i$ sono:
 
-$$k_i = \langle \chi_V, \chi_{V_i} \rangle$$  
+$$k_i = \langle \chi_V, \chi_{V_i} \rangle$$
 }
 \pf{Dimostrazione}{
 Per linearità del prodotto hermitiano e ortogonalità:
@@ -691,14 +691,14 @@ $(\Rightarrow)$ Se $G$ è abeliano, ogni elemento ha la propria classe di coniug
 $(\Leftarrow)$ Se tutti i $d_i = 1$, dalla struttura di $\mathbb{C}[G] \cong \mathbb{C}^{|G|}$ si deduce che $\mathbb{C}[G]$ è commutativo, quindi $G$ è abeliano.
 }
 
-\ex{Esercizio completo su $ S_3 $}{
-$S_3$ ha 3 classi di coniugio $\Rightarrow$ esattamente 3 rappresentazioni irriducibili $V_1, V_2, V_3$.
+\ex{Esercizio completo su $ \mathfrak{S}_3 $}{
+$\mathfrak{S}_3$ ha 3 classi di coniugio $\Rightarrow$ esattamente 3 rappresentazioni irriducibili $V_1, V_2, V_3$.
 
-Da Burnside: $d_1^2 + d_2^2 + d_3^2 = |S_3| = 6$, con le dimensioni note $d_1 = 1$ (banale $U$), $d_2 = 2$ (standard $W$), e quindi $d_3^2 = 6 - 1 - 4 = 1$, cioè $d_3 = 1$.
+Da Burnside: $d_1^2 + d_2^2 + d_3^2 = |\mathfrak{S}_3| = 6$, con le dimensioni note $d_1 = 1$ (banale $U$), $d_2 = 2$ (standard $W$), e quindi $d_3^2 = 6 - 1 - 4 = 1$, cioè $d_3 = 1$.
 
 
 La decomposizione della rappresentazione regolare è:
-$$\mathbb{C}[S_3] \cong U^{\oplus 1} \oplus W^{\oplus 2} \oplus X^{\oplus 1}$$
+$$\mathbb{C}[\mathfrak{S}_3] \cong U^{\oplus 1} \oplus W^{\oplus 2} \oplus X^{\oplus 1}$$
 
 Trova $ X $:
 }
@@ -808,7 +808,7 @@ Sia $ V $ uno spazio vettoriale su $ K $ di dimensione finita $ n $, con $ k \ge
   \]
 }
 
-Il gruppo simmetrico $ S_k $ agisce su $ T^k(V) $ permutando i fattori:
+Il gruppo simmetrico $ \mathfrak{S}_k $ agisce su $ T^k(V) $ permutando i fattori:
 \[
   \sigma \cdot (v_1 \otimes \cdots \otimes v_k) := v_{\sigma^{-1}(1)} \otimes \cdots \otimes v_{\sigma^{-1}(k)}
 \]

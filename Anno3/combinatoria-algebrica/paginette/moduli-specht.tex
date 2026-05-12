@@ -1,8 +1,12 @@
 % \begin{document}
-\chapter{Classificazione delle Rappresentazioni Irriducibili di $S_n$}
-L'idea e' quella di usare polinomi simmetrici (modo vecchio) e \textit{tableau} (piu' moderno) per poter descrivere le rappresentazioni irriducibili di $ S_n $ (e quindi il loro carattere) $ \forall n \in \mathbb{N} $.
+\chapter{Classificazione delle Rappresentazioni Irriducibili di $\mathfrak{S}_n$}
+L'idea e' quella di usare polinomi simmetrici (modo vecchio) e \textit{tableau} (piu' moderno) per poter descrivere le rappresentazioni irriducibili di $ \mathfrak{S}_n $ (e quindi il loro carattere) $ \forall n \in \mathbb{N} $.
 
-\section{Partizioni e Ordini}
+\section{Preliminari combinatori}
+
+\subsection{Partizioni e ordini}
+
+\subsubsection{Definizioni di base}
 \dfn{Partizione}{
   Diciamo che $ \lambda $ e' una \textit{partizione} di $ n \in \mathbb{N} $ e lo indichiamo con $ \lambda \vdash n $ se:
   \[
@@ -21,8 +25,6 @@ L'ordinamento sui lambda nella descrizione della partizione serve a fare in modo
 \ex{Partizione}{
   $(3,2,2) \vdash 7$
 }
-
-Indichiamo adesso tre relazioni d'ordine sulle partizioni:
 
 \dfn{Partizione "sghemba"}{
   La relazione totale $ \mu \subseteq \lambda $ su $ Par $ e' definita come
@@ -52,6 +54,9 @@ Indichiamo adesso tre relazioni d'ordine sulle partizioni:
   \end{center}
 }
 
+\subsubsection{Relazioni d'ordine sulle partizioni}
+Indichiamo adesso due relazioni d'ordine sulle partizioni:
+
 \dfn{Ordine dominante}{
   Relazione d'ordine su $ Par(n) $ indicata con $ \mu \leq \lambda $ ed e' definita come
   \[
@@ -78,7 +83,9 @@ Indichiamo adesso tre relazioni d'ordine sulle partizioni:
   Se $ \lambda \leq \mu $, allora $ \lambda \leq^R \mu $.
 }
 
-\section{Tableau di Young}
+\subsection{Tableau di Young}
+
+\subsubsection{Definizioni: SSYT, tableau iniettivo, SYT}
 
 \dfn{Semi-Standard Young Tableau (SSYT)}{
   Dati $\mu \subseteq \lambda$ partizioni, un \textbf{Tableau di Young Semistandard} di forma
@@ -143,9 +150,11 @@ Data una partizione $\lambda \vdash n$ con diagramma di Ferrers associato, un \t
   \]
 }
 
-L'azione naturale di $S_n$ sui tableau iniettivi di forma $\lambda$ è data da: per ogni $\sigma \in S_n$, il tableau $\sigma \cdot T$ si ottiene sostituendo ogni entrata $i$ di $T$ con $\sigma(i)$.
+\subsubsection{Azione naturale di $\mathfrak{S}_n$ e gruppi di riga/colonna}
 
-\ex{Azione naturale di $ S_n $ sui tableau}{
+L'azione naturale di $\mathfrak{S}_n$ sui tableau iniettivi di forma $\lambda$ è data da: per ogni $\sigma \in \mathfrak{S}_n$, il tableau $\sigma \cdot T$ si ottiene sostituendo ogni entrata $i$ di $T$ con $\sigma(i)$.
+
+\ex{Azione naturale di $ \mathfrak{S}_n $ sui tableau}{
   \begin{center}
     $ (1,3) $
     \begin{ytableau}
@@ -162,8 +171,8 @@ L'azione naturale di $S_n$ sui tableau iniettivi di forma $\lambda$ è data da: 
 \dfn{Gruppo di riga e gruppo di colonna}{
 Sia $T$ un tableau iniettivo di forma $\lambda = (\lambda_1, \dots, \lambda_k) \vdash n$.
 \begin{itemize}
-\item Il \textbf{gruppo di riga} $R(T) \leq S_n$ è il sottogruppo delle permutazioni che spostano le entrate di $T$ solo all'interno delle rispettive righe. Si ha $R(T) \cong S_{\lambda} := S_{\lambda_1} \times \cdots \times S_{\lambda_k}$.
-\item Il \textbf{gruppo di colonna} $C(T) \leq S_n$ è il sottogruppo delle permutazioni che spostano le entrate di $T$ solo all'interno delle rispettive colonne. Si ha $C(T) \cong S_{\lambda'}$, dove $\lambda'$ è la partizione coniugata.
+\item Il \textbf{gruppo di riga} $R(T) \leq \mathfrak{S}_n$ è il sottogruppo delle permutazioni che spostano le entrate di $T$ solo all'interno delle rispettive righe. Si ha $R(T) \cong \mathfrak{S}_{\lambda} := \mathfrak{S}_{\lambda_1} \times \cdots \times \mathfrak{S}_{\lambda_k}$.
+\item Il \textbf{gruppo di colonna} $C(T) \leq \mathfrak{S}_n$ è il sottogruppo delle permutazioni che spostano le entrate di $T$ solo all'interno delle rispettive colonne. Si ha $C(T) \cong \mathfrak{S}_{\lambda'}$, dove $\lambda'$ è la partizione coniugata.
 \end{itemize}
 }
 
@@ -174,18 +183,18 @@ Sia $T$ un tableau iniettivo di forma $\lambda = (\lambda_1, \dots, \lambda_k) \
     1&2&3
   \end{ytableau}, abbiamo che:
   \[
-    R(T) = \{g \in S_5 | g: \{123\} \to \{123\} \lor \{45\} \to \{45\}\} \cong S_3 \times S_2  
+    R(T) = \{g \in \mathfrak{S}_5 | g: \{123\} \to \{123\} \lor \{45\} \to \{45\}\} \cong \mathfrak{S}_3 \times \mathfrak{S}_2  
   \]
   e 
   \[
-    C(T) = \{g \in S_n | g: \{41\} \to \{41\} \lor \{52\} \to \{52\}\} \cong S_2 \times S_2
+    C(T) = \{g \in \mathfrak{S}_n | g: \{41\} \to \{41\} \lor \{52\} \to \{52\}\} \cong \mathfrak{S}_2 \times \mathfrak{S}_2
   \]
 }
 
-\subsection{Proprietà di coniugio}
+\subsubsection{Proprietà di coniugio}
 
 \mprop{Coniugio dei gruppi di riga e colonna}{
-Per ogni $\sigma \in S_n$ e ogni tableau iniettivo $T$:
+Per ogni $\sigma \in \mathfrak{S}_n$ e ogni tableau iniettivo $T$:
 \[
 R(\sigma \cdot T) = \sigma\, R(T)\, \sigma\inv, \qquad C(\sigma \cdot T) = \sigma\, C(T)\, \sigma\inv.
 \]
@@ -205,7 +214,7 @@ Poiché $p(y)$ sta nella stessa riga di $y$ in $T$, la sua immagine $\sigma(p(y)
 \end{enumerate}
 }
 
-\section{Lemma di partizione dei tableau}
+\subsection{Lemma di partizione dei tableau}
 
 \mlenma{Partizione dei tableau}{
 Siano $T, \wt{T}$ tableau iniettivi di forma $\lambda, \wt{\lambda} \vdash n$, con $\lambda \not>^R \wt{\lambda}$. Allora si verifica esattamente una delle seguenti:
@@ -299,7 +308,7 @@ cioè $\lambda \geq \wt{\lambda}$ nell'ordine di dominanza. Poiché l'ordine les
 Ponendo $q = q_k \cdots q_1 \in C(T)$, i tableau $qT$ e $\wt{T}$ hanno le stesse entrate in ogni riga. Esiste allora $\wt{p} \in R(\wt{T})$ con $\wt{p}\wt{T} = qT$.
 }
 
-\section{Ordine sui tableau}
+\subsection{Ordine sui tableau}
 
 \dfn{Parola di colonna}{
 La \textbf{parola di colonna} $w_{\mathrm{col}}(T)$ di un tableau $T$ è la sequenza ottenuta leggendo le entrate colonna per colonna, da sinistra a destra, dall'alto verso il basso in ciascuna colonna.
@@ -337,10 +346,12 @@ T \geq q \cdot T = \wt{p} \cdot \wt{T} \geq \wt{T}
 cioè $T \geq \wt{T}$, in contraddizione con $\wt{T} > T$.
 }
 
-\section{Tabloidi e la rappresentazione $M^\lambda$}
+\section{Costruzione del modulo di Specht}
 
-\dfn{Tabloide}{
-Il \textbf{tabloide} $\{T\}$ associato a un tableau iniettivo $T$ è l'orbita di $T$ sotto l'azione di $R(T)$. L'ordine degli elementi all'interno di ciascuna riga non ha importanza. L'azione di $S_n$ sui tabloidi è $\sigma \cdot \{T\} := \{\sigma \cdot T\}$.
+\subsection{Tabloidi e la rappresentazione $M^\lambda$}
+
+\dfn{Tabloide}{\label{def:tabloide}
+Il \textbf{tabloide} $\{T\}$ associato a un tableau iniettivo $T$ è l'orbita di $T$ sotto l'azione di $R(T)$. L'ordine degli elementi all'interno di ciascuna riga non ha importanza. L'azione di $\mathfrak{S}_n$ sui tabloidi è $\sigma \cdot \{T\} := \{\sigma \cdot T\}$.
 }
 
 \ex{Tabloide}{
@@ -366,10 +377,10 @@ Il \textbf{tabloide} $\{T\}$ associato a un tableau iniettivo $T$ è l'orbita di
 {boxsize=normal, notabloids}
 }
 
-\dfn{Rappresentazione $M^\lambda$}{
-Lo spazio vettoriale complesso $M^\lambda$ ha come base formale l'insieme di tutti i tabloidi di forma $\lambda \vdash n$, con l'azione di $S_n$ data da permutazione dei tabloidi. Si ha l'isomorfismo
+\dfn{Rappresentazione $M^\lambda$}{\label{def:M-lambda}
+Lo spazio vettoriale complesso $M^\lambda$ ha come base formale l'insieme di tutti i tabloidi di forma $\lambda \vdash n$, con l'azione di $\mathfrak{S}_n$ data da permutazione dei tabloidi. Si ha l'isomorfismo
 \[
-M^\lambda \cong \mathrm{Ind}_{S_\lambda}^{S_n} \mathbf{1}.
+M^\lambda \cong \mathrm{Ind}_{\mathfrak{S}_\lambda}^{\mathfrak{S}_n} \mathbf{1}.
 \]
 }
 
@@ -381,10 +392,10 @@ M^\lambda \cong \mathrm{Ind}_{S_\lambda}^{S_n} \mathbf{1}.
 \end{itemize}
 }
 
-\section{Simmetrizzatori di Young}
+\subsection{Simmetrizzatori di Young}
 
-\dfn{Simmetrizzatori}{
-Sia $T$ un tableau iniettivo di dimensione $n$. Si definiscono in $\mathbb{C}[S_n]$:
+\dfn{Simmetrizzatori}{\label{def:simmetrizzatori}
+Sia $T$ un tableau iniettivo di dimensione $n$. Si definiscono in $\mathbb{C}[\mathfrak{S}_n]$:
 \begin{enumerate}
 \item \textbf{Simmetrizzatore delle righe:} $\displaystyle a_T := \sum_{p \in R(T)} p$.
 \item \textbf{Simmetrizzatore delle colonne:} $\displaystyle b_T := \sum_{q \in C(T)} \mathrm{sgn}(q)\, q$.
@@ -393,7 +404,7 @@ Sia $T$ un tableau iniettivo di dimensione $n$. Si definiscono in $\mathbb{C}[S_
 }
 
 \mprop{Proprietà algebriche dei simmetrizzatori}{
-Per ogni $p \in R(T)$, $q \in C(T)$ e $\sigma \in S_n$:
+Per ogni $p \in R(T)$, $q \in C(T)$ e $\sigma \in \mathfrak{S}_n$:
 \begin{enumerate}
 \item $p\, a_T = a_T\, p = a_T$, \quad $a_T^2 = |R(T)|\, a_T$.
 \item $q\, b_T = b_T\, q = \mathrm{sgn}(q)\, b_T$, \quad $b_T^2 = |C(T)|\, b_T$.
@@ -401,9 +412,11 @@ Per ogni $p \in R(T)$, $q \in C(T)$ e $\sigma \in S_n$:
 \end{enumerate}
 }
 
-\section{Vettore di Specht e modulo di Specht}
+\subsection{Vettore di Specht e modulo di Specht}
 
-\dfn{Vettore di Specht}{
+\subsubsection{Vettore di Specht}
+
+\dfn{Vettore di Specht}{\label{def:vettore-specht}
 Il \textbf{vettore di Specht} associato a un tableau iniettivo $T$ di forma $\lambda$ è
 \[
 v_T := b_T \cdot \{T\} = \sum_{q \in C(T)} \mathrm{sgn}(q)\, \{q \cdot T\} \;\in M^\lambda.
@@ -413,7 +426,7 @@ v_T := b_T \cdot \{T\} = \sum_{q \in C(T)} \mathrm{sgn}(q)\, \{q \cdot T\} \;\in
 \mprop{Proprietà del vettore di Specht}{
 \begin{enumerate}
 \item $v_T \neq 0$ per ogni tableau iniettivo $T$.
-\item Per ogni $\sigma \in S_n$: $\sigma \cdot v_T = v_{\sigma \cdot T}$.
+\item Per ogni $\sigma \in \mathfrak{S}_n$: $\sigma \cdot v_T = v_{\sigma \cdot T}$.
 \end{enumerate}
 }
 
@@ -450,22 +463,26 @@ v_T := b_T \cdot \{T\} = \sum_{q \in C(T)} \mathrm{sgn}(q)\, \{q \cdot T\} \;\in
 
 }
 
-\dfn{Modulo di Specht}{
+\subsubsection{Modulo di Specht}
+
+\dfn{Modulo di Specht}{\label{def:modulo-specht}
 Il \textbf{modulo di Specht} è il sottomodulo
 \[
-S^\lambda := \mathbb{C}[S_n] \cdot v_T \subseteq M^\lambda,
+S^\lambda := \mathbb{C}[\mathfrak{S}_n] \cdot v_T \subseteq M^\lambda,
 \]
 generato ciclicamente da un qualsiasi vettore di Specht $v_T$ di forma $\lambda$.
 }
 
-\thm{Base standard dei moduli di Specht}{
+\subsection{Teorema della base standard (enunciato)}
+
+\thm{Base standard dei moduli di Specht}{\label{thm:base-standard-specht}
 L'insieme $\{v_T \mid T \text{ è un SYT di forma } \lambda\}$ è una base di $S^\lambda$. In particolare
 \[
 \dim S^\lambda = f^\lambda := \#\{\text{SYT di forma } \lambda\}.
 \]
 }
 
-\ex{Modulo di Specht $S^{(2,1)}$ per $S_3$}{
+\ex{Modulo di Specht $S^{(2,1)}$ per $\mathfrak{S}_3$}{
 Sia $T$ l'SYT $\begin{smallmatrix} 3\\ 1 & 2 \end{smallmatrix}$. Le colonne sono $\{1,3\}$ e $\{2\}$, quindi $C(T) = \{\id, (13)\}$.
 \[
 v_T = \{T\} - \{(13) \cdot T\} = \{1,2 \mid 3\} - \{2,3 \mid 1\}.
@@ -474,7 +491,7 @@ L'altro SYT è $T' = \begin{smallmatrix} 2\\ 1 & 3 \end{smallmatrix}$ con $C(T')
 \[
 v_{T'} = \{1,3 \mid 2\} - \{2,3 \mid 1\}.
 \]
-I vettori $v_T, v_{T'}$ sono linearmente indipendenti e formano la base standard di $S^{(2,1)}$, che è la rappresentazione standard irriducibile di $S_3$ ($\dim S^{(2,1)} = 2$), mentre $ S^{(3)} $ è la rappresentazione banale (triviale) e $ S^{(1^3)} $ è la rappresentazione segno.
+I vettori $v_T, v_{T'}$ sono linearmente indipendenti e formano la base standard di $S^{(2,1)}$, che è la rappresentazione standard irriducibile di $\mathfrak{S}_3$ ($\dim S^{(2,1)} = 2$), mentre $ S^{(3)} $ è la rappresentazione banale (triviale) e $ S^{(1^3)} $ è la rappresentazione segno.
 }
 
 \ex{}{
@@ -743,14 +760,16 @@ Per concludere la dimostrazione del teorema, serve mostrare che $\dim S^\lambda 
 }
 
 \pf{Dimostrazione del Teorema (Base Standard)}{
-  Sappiamo che $|S_n| = n! = \sum_{\lambda \vdash n} (\dim S^\lambda)^2$ (dalla decomposizione della rappresentazione regolare e dal teorema di Maschke/Wedderburn: $\mathbb{C}[S_n] \cong \bigoplus_\lambda \mathrm{End}(S^\lambda)$, prendendo le dimensioni). Dall'indipendenza lineare si ha $\dim S^\lambda \geq f^\lambda$, quindi:
+  Sappiamo che $|\mathfrak{S}_n| = n! = \sum_{\lambda \vdash n} (\dim S^\lambda)^2$ (dalla decomposizione della rappresentazione regolare e dal teorema di Maschke/Wedderburn: $\mathbb{C}[\mathfrak{S}_n] \cong \bigoplus_\lambda \mathrm{End}(S^\lambda)$, prendendo le dimensioni). Dall'indipendenza lineare si ha $\dim S^\lambda \geq f^\lambda$, quindi:
   \[
     n! = \sum_{\lambda \vdash n} (\dim S^\lambda)^2 \geq \sum_{\lambda \vdash n} (f^\lambda)^2 = n!
   \]
   La disuguaglianza e' in realta' un'uguaglianza, il che forza $\dim S^\lambda = f^\lambda$ per ogni $\lambda$. I $f^\lambda$ vettori linearmente indipendenti $\{v_T \mid T \in \mathrm{SYT}(\lambda)\}$ in uno spazio di dimensione $f^\lambda$ formano quindi una base. $\qquad\square$
 }
 
-\section{Il Lemma Tecnico}
+\section{Classificazione delle rappresentazioni irriducibili di $\mathfrak{S}_n$}
+
+\subsection{Il Lemma Tecnico}
 
 \mlenma{Il Lemma Tecnico}{
 Siano $T, \wt{T}$ tableau iniettivi di forma $\lambda, \wt{\lambda} \vdash n$, con $\lambda \not>^R \wt{\lambda}$. Allora:
@@ -798,10 +817,10 @@ Se $T, \wt{T}$ sono SYT con $\wt{T} > T$, allora $b_T\{\wt{T}\} = 0$.
 Dall'ipotesi $\wt{T} > T$ (nell'ordine sui tableau iniettivi della stessa forma) e dal fatto che entrambi sono SYT della stessa forma $\lambda$, il \textbf{Lemma di partizione dei tableau} garantisce l'alternativa: o esistono $i \neq j$ nella stessa colonna di $T$ e nella stessa riga di $\wt{T}$, oppure esiste $\wt{p} \in R(\wt{T})$, $q \in C(T)$ con $\wt{p}\wt{T} = qT$. Quest'ultima opzione è impossibile: se $\wt{p}\wt{T} = qT$ allora $\wt{T}$ e $T$ avrebbero le stesse entrate per righe (a meno di ordine), ma SYT distinti della stessa forma producono tabloidi distinti (e quindi row-set distinti per qualche riga), contraddizione. Dunque si è nel primo caso, e si applica il Caso 1 del Lemma Tecnico.
 }
 
-\section{Classificazione delle rappresentazioni irriducibili di $S_n$}
+\subsection{Il teorema di classificazione}
 
-\thm{Classificazione delle rappresentazioni irriducibili di $S_n$}{
-I moduli di Specht $\{S^\lambda \mid \lambda \in \mathrm{Par}(n)\}$ costituiscono un sistema completo di rappresentazioni irriducibili di $S_n$, a due a due non isomorfe.
+\thm{Classificazione delle rappresentazioni irriducibili di $\mathfrak{S}_n$}{\label{thm:classificazione-specht}
+I moduli di Specht $\{S^\lambda \mid \lambda \in \mathrm{Par}(n)\}$ costituiscono un sistema completo di rappresentazioni irriducibili di $\mathfrak{S}_n$, a due a due non isomorfe.
 }
 
 \pf{Dimostrazione}{
@@ -820,7 +839,7 @@ Se $\wt{\lambda} >_{\mathrm{lex}} \lambda$, il Lemma Tecnico (Caso 1) implica $b
 \]
 Essendo $\mathbb{C}\, v_T$ unidimensionale, uno dei due sommandi è nullo; supponiamo $b_T W = 0$. Allora $v_T \in b_T V$, ma $v_T$ genera ciclicamente $S^\lambda$, dunque $V = S^\lambda$.
 
-\item \textbf{Completezza.} La famiglia $\{S^\lambda\}_{\lambda \vdash n}$ è indicizzata dalle partizioni di $n$, che sono in biiezione con le classi di coniugio di $S_n$. Poiché il numero di rappresentazioni irriducibili di un gruppo finito coincide con il numero delle sue classi di coniugio, la famiglia è completa.
+\item \textbf{Completezza.} La famiglia $\{S^\lambda\}_{\lambda \vdash n}$ è indicizzata dalle partizioni di $n$, che sono in biiezione con le classi di coniugio di $\mathfrak{S}_n$. Poiché il numero di rappresentazioni irriducibili di un gruppo finito coincide con il numero delle sue classi di coniugio, la famiglia è completa.
 \end{enumerate}
 }
 
