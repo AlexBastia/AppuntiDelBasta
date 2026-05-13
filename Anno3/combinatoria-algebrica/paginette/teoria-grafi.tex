@@ -120,17 +120,16 @@ Vedremo come autovalori di $ A(G) $ e cammini sul grafo siano strettamente colle
   E' lo stesso principio delle \textit{catene di Markov}: le potenze della matrice di transizione contano le traiettorie di lunghezza fissata.
 }
 \pf{Dim}{
-  Per induzione su $ \ell $.
-
-  \textbf{Base ($ \ell = 1 $).} $ A(G)_{ij} $ e' per definizione il numero di lati fra $ v_i $ e $ v_j $, ovvero il numero di cammini di lunghezza $ 1 $.
-
-  \textbf{Passo induttivo.}
+  Conseguenza diretta della definizione di prodotto di matrici. Posto $ A := A(G) $ con entrate $ a_{rs} $, e detto $ p = |V| $ il numero di vertici di $ G $:
   \[
-    \bigl(A(G)^{\ell+1}\bigr)_{ij}
-      = \bigl(A(G)^\ell \cdot A(G)\bigr)_{ij}
-      = \sum_{k=1}^{p} \bigl(A(G)^\ell\bigr)_{ik}\, A(G)_{kj} .
+    \bigl(A^\ell\bigr)_{ij}
+      = \sum_{i_1, \ldots, i_{\ell-1} = 1}^{p} a_{i, i_1}\, a_{i_1, i_2}\, \cdots\, a_{i_{\ell-1}, j}\,.
   \]
-  Per ipotesi induttiva $ \bigl(A(G)^\ell\bigr)_{ik} $ conta i cammini di lunghezza $ \ell $ da $ v_i $ a $ v_k $, e $ A(G)_{kj} $ il numero di lati da $ v_k $ a $ v_j $. La somma su $ k $ conta tutte le concatenazioni: un cammino di lunghezza $ \ell + 1 $ da $ v_i $ a $ v_j $ si scompone univocamente come (cammino di lunghezza $ \ell $ da $ v_i $ a un intermedio $ v_k $) seguito da (un lato fra $ v_k $ e $ v_j $).
+  Fissata la sequenza di indici intermedi $ (i_1, \ldots, i_{\ell-1}) $, il prodotto $ a_{i, i_1} \cdots a_{i_{\ell-1}, j} $ vale il numero di cammini di lunghezza $ \ell $ da $ v_i $ a $ v_j $ che passano \textbf{esattamente} per la sequenza di vertici $ v_i, v_{i_1}, \ldots, v_{i_{\ell-1}}, v_j $: ci sono $ a_{i, i_1} $ scelte per il primo lato, $ a_{i_1, i_2} $ per il secondo, e cosi' via.
+
+  Sommando su tutte le sequenze di vertici intermedi si ottengono tutti i cammini di lunghezza $ \ell $ da $ v_i $ a $ v_j $.
+
+  (Per $ \ell = 1 $ non ci sono indici intermedi: $ (A^1)_{ij} = a_{ij} $ e' il numero di lati fra $ v_i $ e $ v_j $, ossia il numero di cammini di lunghezza $ 1 $.)
 }
 
 \subsubsection{Formula spettrale}
@@ -149,12 +148,23 @@ con $ \lambda_i $ autovalore di $ u_i $.}
   con $ c_k := u_{ik}\, u_{jk} \in \mathbb{R} $ (componenti $ i $-esima e $ j $-esima dell'autovettore $ u_k $).
 }
 \pf{Dim}{
-  Elevando a potenza $ \ell $ la diagonalizzazione (coniugio = automorfismo, quindi commuta con la potenza):
+  $ A(G) $ e' simmetrica reale, quindi per il teorema spettrale ammette $ p $ autovettori reali $ u_1, \ldots, u_p $ linearmente indipendenti, scelti ortonormali. Sia $ U = (u_1 \mid \cdots \mid u_p) $ la matrice con tali autovettori per colonne: $ U $ e' \textbf{ortogonale}, ossia $ U^{-1} = U^T $, e diagonalizza $ A(G) $:
   \[
-    U^T A(G)^\ell\, U = D^\ell = \mathrm{diag}(\lambda_1^\ell, \ldots, \lambda_p^\ell)
-    \quad\Longrightarrow\quad A(G)^\ell = U\, D^\ell\, U^T = \sum_{k=1}^{p} \lambda_k^\ell\, u_k u_k^T .
+    U^{-1}\, A(G)\, U = \mathrm{diag}(\lambda_1, \ldots, \lambda_p)\,.
   \]
-  L'entrata $ (i,j) $ di $ u_k u_k^T $ e' $ u_{ik}\, u_{jk} $, da cui la formula.
+  Elevando a potenza $ \ell $ entrambi i membri (i termini $ U U^{-1} $ centrali si semplificano):
+  \[
+    U^{-1}\, A(G)^\ell\, U = \mathrm{diag}(\lambda_1^\ell, \ldots, \lambda_p^\ell)\,.
+  \]
+  Moltiplicando a sinistra per $ U $ e a destra per $ U^{-1} $ si isola $ A(G)^\ell $; usando $ U^{-1} = U^T $:
+  \[
+    A(G)^\ell = U \cdot \mathrm{diag}(\lambda_1^\ell, \ldots, \lambda_p^\ell) \cdot U^T\,.
+  \]
+  L'entrata $ (i,j) $ di $ A(G)^\ell $ si ottiene moltiplicando l'entrata $ i $-esima della colonna $ k $ di $ U $ (cioe' $ u_{ik} $) per l'autovalore $ \lambda_k^\ell $ per l'entrata $ j $-esima della riga $ k $ di $ U^T $ (cioe' $ u_{jk} $), e sommando su $ k $:
+  \[
+    \bigl(A(G)^\ell\bigr)_{ij} = \sum_{k=1}^{p} u_{ik}\, \lambda_k^\ell\, u_{jk}\,.
+  \]
+  Ponendo $ c_k := u_{ik}\, u_{jk} $ si ha la tesi.
 }
 
 \subsubsection{Cammini chiusi e traccia}
@@ -181,6 +191,29 @@ con $ \lambda_i $ autovalore di $ u_i $.}
     A(K_p) = J - I ,
   \]
   dove $ J $ e' la matrice $ p \times p $ con tutte le entrate uguali a $ 1 $ e $ I $ l'identita'.
+}
+
+\ex{$ K_3 $}{
+  Il grafo completo su $ 3 $ vertici e' un triangolo: $ \binom{3}{2} = 3 $ lati.
+  \begin{center}
+    \begin{tikzpicture}[
+      vertex/.style={circle, fill=black, inner sep=1.8pt},
+      every label/.style={inner sep=2pt},
+      thick
+    ]
+      \node[vertex, label=above:$v_1$] (v1) at (90:1.4)  {};
+      \node[vertex, label={[label distance=1pt]below left:$v_2$}]  (v2) at (210:1.4) {};
+      \node[vertex, label={[label distance=1pt]below right:$v_3$}] (v3) at (330:1.4) {};
+      \draw (v1) -- (v2);
+      \draw (v2) -- (v3);
+      \draw (v3) -- (v1);
+    \end{tikzpicture}
+  \end{center}
+  Matrice di adiacenza:
+  \[
+    A(K_3) = J - I = \begin{pmatrix} 0 & 1 & 1 \\ 1 & 0 & 1 \\ 1 & 1 & 0 \end{pmatrix} .
+  \]
+  Autovalori: $ 2 $ (semplice, autovettore $ (1,1,1)^T $) e $ -1 $ (con molteplicita' $ 2 $).
 }
 
 \mlenma{Autovalori di $ J $}{\label{lem:autovalori-J}
