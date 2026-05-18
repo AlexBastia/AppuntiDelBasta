@@ -1,7 +1,7 @@
 #separator:tab
 #html:true
 #notetype:Basic
-#deck:Informatica Teorica::Complessità Strutturale
+#deck:info_teorica::complessita_strutturale
 
 Di cosa si occupa la <b>complessità strutturale</b>?	Dello studio della complessità <i>intrinseca</i> dei problemi decidibili (\(\in R\)), non di algoritmi specifici.<br><br>Domanda guida: <i>"com'è che la struttura di un problema influenza la complessità degli algoritmi che lo risolvono?"</i><br><br>Formalizzata da Hartmanis, Stearns e Lewis (1965).
 

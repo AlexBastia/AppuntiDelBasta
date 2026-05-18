@@ -1,0 +1,64 @@
+#separator:tab
+#html:true
+#notetype:Basic
+#deck:info_teorica::complessita_spaziale
+
+Perché il modello per la complessità spaziale usa un <b>nastro di input read-only</b>?	Per definire classi spaziali <b>sub-lineari</b> (es. logspace). Se l'input contasse, qualsiasi macchina occuperebbe almeno \(n\) celle.<br><br>Modello: input read-only + worktape r/w. Il vincolo di spazio si applica <b>solo al worktape</b>.
+
+Cos'è il <b>computation space</b>?	Numero di celle distinte visitate sul <b>worktape</b> durante la computazione di \(M\) su input \(w\).<br><br>Per MdTN: massimo su tutti i rami di computazione.
+
+Cos'è il <b>running space</b>?	\(M\) ha running space \(s(n)\) se per ogni \(w\), a parte un numero finito di eccezioni, il computation space su \(w\) è \(\leq s(|w|)\).<br><br>(Comportamento asintotico, come per il tempo.)
+
+Definisci <b>DSpace(s(n))</b> e <b>NSpace(s(n))</b>.	\[DSpace(s(n)) = \{L \mid \exists M \text{ det. con } \mathcal{L}(M)=L, \text{ running space } O(s(n))\}\]<br>\[NSpace(s(n)) = \{L \mid \exists N \text{ non det. con } \mathcal{L}(N)=L, \text{ running space } O(s(n))\}\]
+
+Definisci le classi <b>L</b> e <b>NL</b>.	\[L = DSpace(\log n) \qquad NL = NSpace(\log n)\]<br>Logspace = spazio sufficiente per memorizzare un numero costante di <b>puntatori/contatori</b> sull'input (\(\log n\) bit per un indice).<br><br>\(L \subseteq NL\); \(L = NL\) è aperto (analogo di P vs NP).
+
+Mostra che <b>\(L_{01} = \{0^n 1^n\} \in L\)</b>.	Due contatori in <b>binario</b> sul worktape:<br>1. \(c_0 \leftarrow\) numero di 0 iniziali<br>2. \(c_1 \leftarrow\) numero di 1 successivi<br>3. Accetta sse \(c_0 = c_1\)<br><br>Ciascun contatore \(\leq n\), in binario \(O(\log n)\) bit. Costanti contatori + costante extra \(\Rightarrow O(\log n)\).<br><br><b>Nota</b>: contatori in unario sarebbero lineari; binario è cruciale.
+
+Mostra che <b>Reach \(\in NL\)</b>.	Idea: indoviniamo <b>un passo alla volta</b>, sovrascrivendo il nodo precedente. Limitiamo a \(|V|\) passi (se esiste cammino, ne esiste uno \(\leq |V|\)).<br><br>Worktape: solo \(p\) (nodo corrente), \(p'\) (guess), \(\mathit{cnt}\) (contatore). Ciascuno \(O(\log n)\) bit \(\Rightarrow\) totale \(O(\log n)\).
+
+Perché per NL non si usa la <b>riduzione polinomiale</b>?	\(\leq_P\) sarebbe <b>troppo potente</b>: \(NL \subseteq P\), quindi una riduzione polinomiale da \(L \in NL\) potrebbe "risolvere" \(L\) direttamente durante la costruzione dell'istanza.<br><br>Serve una riduzione più debole: <b>logspace</b>.
+
+Cos'è un <b>trasduttore logspace</b>?	MdT con tre nastri:<br>• <b>Input</b>: sola lettura, bidirezionale<br>• <b>Worktape</b>: r/w, bidirezionale, spazio <b>\(O(\log n)\)</b><br>• <b>Output</b>: <b>sola scrittura</b>, <b>unidirezionale</b> (può solo avanzare)<br><br>L'output unidirezionale evita che diventi un "secondo worktape", preservando il vincolo.
+
+Definisci <b>riduzione logspace</b> \(A \leq_L B\).	Esiste \(f\) tale che:<br>1. \(f\) calcolabile da un trasduttore logspace deterministico<br>2. \(\forall w:\; w \in A \iff f(w) \in B\)<br><br>Gode delle stesse proprietà di \(\leq_P\): transitività, chiusura sotto \(L\) e \(NL\).
+
+Definisci <b>NL-completezza</b>.	\(L\) è NL-completo se:<br>1. \(L \in NL\)<br>2. \(\forall L' \in NL:\; L' \leq_L L\)<br><br>Reach è NL-completo (analogo di SAT per NP).
+
+Idea della dim. <b>Reach NL-completo</b>.	<b>Hardness</b>: per \(L \in NL\) deciso da \(M_L\) in logspace, costruiamo \(f\) logspace che mappa \(w\) a \(\langle G, s, t\rangle\) dove:<br>• Nodi di \(G\) = <b>configurazioni</b> di \(M_L\) su \(w\)<br>• Archi = relazione di transizione \(\delta\)<br><br>\(M_L\) accetta \(w\) sse esiste cammino dalla configurazione iniziale a una accettante.
+
+Qual è la <b>taglia di una configurazione</b> in NL-completezza di Reach?	Configurazione = \(\langle H_1 \mid H_2 \mid \text{worktape} \mid Q \rangle\):<br>• \(H_1\) (testina input): \(O(\log n)\) bit (indice in \(\{1,\ldots,n\}\))<br>• \(H_2\) (testina worktape): \(O(\log \log n)\)<br>• Contenuto worktape: \(O(\log n)\) su \(\Gamma\)<br>• Stato \(Q\): \(O(1)\)<br><br>Totale: \(O(\log n)\).
+
+Perché il computation graph in Reach NL-completo dà <b>\(NL \subseteq P\)</b>?	Le configurazioni sono stringhe di taglia \(O(\log n)\) \(\Rightarrow\) <b>numero totale</b> di configurazioni \(\leq 2^{O(\log n)} = n^{O(1)}\), polinomiale.<br><br>BFS deterministico su questo grafo polinomiale decide \(L\) in tempo polinomiale.
+
+Come si genera il computation graph in <b>logspace</b>?	On-the-fly, <b>uno alla volta</b>:<br>1. Fase nodi: itera tutte le stringhe di lunghezza \(O(\log n)\), scrivi in output quelle ben formate<br>2. Fase archi: itera coppie \((C_1, C_2)\), scrivi se \(C_2\) è legal successor di \(C_1\) per \(\delta\)<br>3. Fase archi verso \(v^* = t\): scrivi \((C, v^*)\) per ogni \(C\) accettante<br><br>Worktape: 2 label + contatori = \(O(\log n)\). Output cresce polinomialmente ma è write-only.
+
+Idea della dim. <b>Reach \(\in DSpace(\log^2 n)\)</b>.	<b>Ricerca binaria sul cammino</b>: <i>se esiste un path da \(s\) a \(t\) di lunghezza \(k\), esiste un nodo intermedio \(u\) tale che esistono path \(s \to u\) di lunghezza \(\lceil k/2\rceil\) e \(u \to t\) di lunghezza \(\lfloor k/2\rfloor\).</i><br><br>Chiamata iniziale: \(\textsc{Exists-path}(G, s, t, |V|)\).
+
+Analisi spaziale di <b>\(\textsc{Exists-path}\)</b>.	Ogni frame ricorsivo: \(s, t, u, k\), ciascuno \(O(\log n)\) bit \(\Rightarrow O(\log n)\) per frame.<br><br>Le due chiamate ricorsive sono <b>sequenziali</b> (non parallele) \(\Rightarrow\) profondità dello stack = \(\log_2 |V| = O(\log n)\).<br><br>Spazio totale: \(O(\log n) \cdot O(\log n) = O(\log^2 n)\).
+
+Enuncia il <b>Teorema di Savitch (1970)</b>.	Sia \(s(n) \in \Omega(\log n)\). Allora<br>\[NSpace(s(n)) \subseteq DSpace(s(n)^2)\]<br>Il non determinismo si simula deterministicamente al costo di <b>al più un quadrato</b> sullo spazio.<br><br>Casi: \(NL \subseteq DSpace(\log^2 n)\); \(NPSpace \subseteq PSpace\).
+
+Idea della dim. del <b>Teorema di Savitch</b>.	Per \(L \in NSpace(s(n))\), il <b>computation graph</b> di \(M\) su \(w\) ha \(N = O(\ell^{s(n)})\) configurazioni (con \(\ell = |\Gamma|\)). Si applica \(\textsc{Exists-path}\) on-the-fly al computation graph:<br>\[\text{spazio} = O(\log^2 N) = O(s(n)^2)\]<br>perché \(\log N = O(s(n))\).<br><br>Il grafo <b>non viene materializzato</b>: gli archi si calcolano al volo.
+
+Definisci <b>PSpace</b> e <b>NPSpace</b>.	\[PSpace = \bigcup_{c\geq 1} DSpace(n^c)\]<br>\[NPSpace = \bigcup_{c\geq 1} NSpace(n^c)\]<br>Analoghi spaziali di P e NP.
+
+Corollario di Savitch: <b>PSpace = NPSpace</b>.	Da Savitch: \(NSpace(n^c) \subseteq DSpace((n^c)^2) = DSpace(n^{2c}) \subseteq PSpace\).<br>Quindi \(NPSpace \subseteq PSpace\), e l'inclusione opposta è banale.<br><br>Per tutte le classi spaziali da poly in su, determinismo = non determinismo.
+
+Perché <b>spazio</b> si comporta meglio del <b>tempo</b> nella simulazione?	• Il <b>tempo</b>, una volta usato, è perso: simulare NTM deterministicamente costa esponenziale.<br>• Lo <b>spazio</b> si <b>riutilizza</b>: una DTM PSpace simula una NTM PSpace ritestando i rami uno alla volta, cancellando il worktape tra un tentativo e l'altro.<br><br>Lo spazio resta lo stesso; il tempo esplode ma non ha vincolo.
+
+Dimostra <b>\(L \subseteq P\)</b>.	Sia \(M\) DTM in spazio logaritmico che si arresta sempre. Le configurazioni possibili sono \(2^{O(\log n)} = n^{O(1)}\), polinomiali.<br><br>\(M\) non può passare due volte per la stessa configurazione (loop) \(\Rightarrow\) tempo polinomiale.
+
+Dimostra <b>\(NL \subseteq P\)</b>.	Reach è NL-completo: ogni \(L \in NL\) si riduce in logspace (\(\Rightarrow\) tempo polinomiale, perché \(L \subseteq P\)) a Reach.<br><br>Reach si risolve in tempo polinomiale con BFS deterministico (numero polinomiale di nodi). Componendo: \(NL \subseteq P\).
+
+Dimostra <b>\(NP \subseteq PSpace\)</b>.	Sia \(M\) NTM in tempo polinomiale: in tempo poly non può scrivere più di una quantità poly di celle \(\Rightarrow M \in NPSpace\). Per Savitch: \(NP \subseteq NPSpace = PSpace\).
+
+Dimostra <b>\(coNP \subseteq PSpace\)</b>.	\(L \in coNP \Rightarrow \overline{L} \in NP \subseteq PSpace\). PSpace è deterministica, chiusa per complemento (scambio accept/reject) \(\Rightarrow L \in PSpace\).
+
+Dimostra <b>\(PSpace \subseteq EXP\)</b>.	Una macchina in PSpace ha al più \(2^{\text{poly}(n)}\) configurazioni distinte. Se si arresta sempre, il tempo è al più \(2^{\text{poly}(n)} \in EXP\).
+
+Schema riepilogativo: <b>mappa delle classi</b>.	\[L \subseteq NL \subseteq P \subseteq NP \cup coNP \subseteq PSpace = NPSpace \subseteq EXP \subseteq NEXP\]<br>Tutte le inclusioni note. <b>Strette dimostrate</b>: \(L \subsetneq PSpace \subsetneq EXPSPACE\), \(P \subsetneq EXP\) (gerarchia spaziale/temporale). Le altre sono aperte.
+
+Cosa sono i problemi <b>P-completi</b>?	I problemi più difficili dentro P, rispetto a riduzioni <b>logspace</b>. Si congettura che non siano in L (ma non dimostrato).<br><br>Caratterizzazione informale: <b>inerentemente sequenziali</b>, cioè non parallelizzabili. I problemi in L (o più in generale in NC) sono <b>parallelizzabili</b>.
+
+Cos'è la classe <b>NC</b>?	I problemi <b>efficientemente parallelizzabili</b>. Sta tra \(L\) e \(P\):<br>\[L \subseteq NC \subseteq P\]<br>La precisa relazione tra L, NC, P è una delle frontiere aperte della teoria.

@@ -47,51 +47,59 @@ Possiamo riscrivere:
 
 Cioe' $G$ ha vertex cover di taglia minima $k$ sse esiste un VC di taglia $\leq k$ (allora il minimo e' $\leq k$) \textbf{e} non esiste un VC di taglia $\leq k-1$ (allora il minimo non e' $\leq k-1$). Combinando: il minimo e' proprio $k$.
 
-\textbf{Pseudocodice}. Se avessimo una sub-routine per VC:
-\begin{verbatim}
-min-cover(G, k) {
-    result1 = check-VC(G, k);
-    result2 = check-VC(G, k-1);
-    return result1 AND not result2;
-}
-\end{verbatim}
+Se avessimo una sub-routine $\textsc{check-VC}$ per VC:
+
+\begin{algorithm}[H]
+  \DontPrintSemicolon
+  \caption{$\textsc{min-cover}(G, k)$}
+  $r_1 \leftarrow \textsc{check-VC}(G, k)$\;
+  $r_2 \leftarrow \textsc{check-VC}(G, k-1)$\;
+  \KwRet $r_1 \wedge \neg r_2$\;
+\end{algorithm}
 
 Tempo polinomiale + 2 chiamate a un risolutore di VC. Vogliamo formalizzare il concetto di ``sub-routine''.
 
 \section{Macchine a oracolo}
 
-\dfn{MdT a oracolo}{
-  Una MdT a oracolo, denotata $M^?$, e' una MdT ordinaria che in piu' puo' fare \textbf{query} a un \textbf{oracolo} -- una scatola nera che risponde sempre, in \textbf{un solo passo}, a domande del tipo ``questa stringa appartiene al linguaggio $L$?''.
+\dfn{Oracolo}{
+  Un \textit{oracolo} per un linguaggio $A \subseteq \Sigma^*$ è un dispositivo esterno (idealmente "magico", slegato dai limiti computazionali) che, data una qualsiasi stringa $w \in \Sigma^*$, determina in modo infallibile se $w \in A$ o $w \notin A$.
 
-  Quando l'oracolo decide un linguaggio specifico $L$, scriviamo $M^L$.
+  Il modo in cui l'oracolo computa la sua risposta non è di interesse: $A$ può essere anche un linguaggio indecidibile (es. il Problema della Fermata).
 }
 
-\textbf{Architettura}. Le MdT a oracolo (deterministiche o non deterministiche) hanno:
-\begin{itemize}
-  \item \textbf{Nastri ordinari} (input, work, ecc.) come una MdT normale.
-  \item \textbf{Oracle-tape (write-only)}: nastro di sola scrittura su cui $M$ scrive la query.
-  \item Tre stati particolari:
+\dfn{Macchina di Turing a oracolo}{
+  Una \textit{Macchina di Turing a oracolo} per il linguaggio $A$, denotata $M^A$, è una MdT estesa con:
   \begin{itemize}
-    \item $q_?$: stato di interrogazione. Quando $M$ entra in $q_?$, l'oracolo legge il contenuto dell'oracle-tape e in \textbf{un solo passo} decide se quella stringa $\in L$.
-    \item $q_{\text{yes}}$: $M$ transisce qui se l'oracolo ha risposto si'.
-    \item $q_{\text{no}}$: $M$ transisce qui se l'oracolo ha risposto no.
+    \item un \textit{nastro dell'oracolo} (lettura/scrittura), su cui $M$ scrive la stringa da interrogare;
+    \item tre stati speciali:
+    \begin{itemize}
+      \item $q_{\text{query}}$ (anche $q_?$): \textit{stato di interrogazione};
+      \item $q_{\text{yes}}$: \textit{stato di risposta positiva};
+      \item $q_{\text{no}}$: \textit{stato di risposta negativa}.
+    \end{itemize}
   \end{itemize}
-\end{itemize}
-
-\textbf{Cancellazione magica}: appena ricevuta la risposta, l'oracle-tape si \textit{cancella automaticamente}. Niente tempo speso a ripulirla, pronti per la prossima query.
-
-\nt{
-  \textbf{Indipendenza dall'oracolo}. La funzione di transizione di $M$ e' definita \textbf{indipendentemente} dalla funzione di transizione dell'oracolo: $M$ non sa ``come'' l'oracolo decide, vede solo le risposte si'/no. Per questo si scrive $M^?$: la macchina e' ben definita anche prima di fissare l'oracolo. Cambiando oracolo, $M$ risolve problemi diversi pur restando ``la stessa macchina chiamante''.
 }
+
+\textbf{Meccanismo di interrogazione}. Quando $M$ scrive una stringa $w$ sul nastro dell'oracolo ed entra in $q_{\text{query}}$:
+\begin{itemize}
+  \item se $w \in A$, l'oracolo forza la transizione in $q_{\text{yes}}$;
+  \item se $w \notin A$, l'oracolo forza la transizione in $q_{\text{no}}$.
+\end{itemize}
+L'\textbf{intera query costa un singolo passo di computazione}, indipendentemente dalla complessità di $A$. Subito dopo, il nastro dell'oracolo si cancella automaticamente.
+
+Scriviamo $M^?$ quando vogliamo riferirci alla macchina senza fissare l'oracolo: la funzione di transizione di $M$ è definita \textbf{indipendentemente} dall'oracolo ($M$ vede solo le risposte sì/no).
 
 \ex{Min-cover via oracolo per VC}{
   Macchina $M$ deterministica polinomiale con oracolo per VC:
-  \begin{enumerate}
-    \item Scrivi $\langle G, k\rangle$ sull'oracle-tape. Entra in $q_?$.
-    \item Se l'oracolo dice \textbf{no}: rispondi no (se non c'e' VC di taglia $k$, il minimo e' $> k$).
-    \item Se l'oracolo dice si': scrivi $\langle G, k-1\rangle$ sull'oracle-tape. Entra in $q_?$.
-    \item Rispondi si' sse la prima query era si' e la seconda era no.
-  \end{enumerate}
+
+  \begin{algorithm}[H]
+    \DontPrintSemicolon
+    \caption{$\textsc{Min-cover}^{\textsc{VC}}(G, k)$}
+    scrivi $\langle G, k\rangle$ sull'oracle-tape; entra in $q_?$\;
+    \lIf{l'oracolo risponde \textbf{no}}{\KwRet \textsc{no} \tcp*[f]{minimo $> k$}}
+    scrivi $\langle G, k-1\rangle$ sull'oracle-tape; entra in $q_?$\;
+    \lIf{l'oracolo risponde \textbf{no}}{\KwRet \textsc{si}} \lElse{\KwRet \textsc{no}}
+  \end{algorithm}
   Tempo polinomiale, \textbf{due query} a un oracolo per un linguaggio NP-completo (VC).
 }
 
@@ -193,20 +201,83 @@ Niente ci ferma dal \textbf{iterare} la costruzione delle classi a oracolo. Poss
 
 \subsection{Relazioni fra le classi della gerarchia}
 
-\thm{$\Sigma_i^P \subseteq \Delta_{i+1}^P$}{
+\thm{}{
+  $\Sigma_i^P \subseteq \Delta_{i+1}^P$.
+}
+\pf{Dimostrazione}{
   Stesso argomento di $NP \subseteq P^{NP}$: una macchina deterministica polinomiale puo' delegare tutto all'oracolo, copiando l'input sull'oracle-tape, chiedendo all'oracolo di decidere il linguaggio in $\Sigma_i^P$ e restituendo la risposta.
+  \begin{center}
+  \begin{tikzpicture}[
+      font=\sffamily,
+      machine/.style={draw, thick, minimum width=#1, minimum height=2cm, align=center},
+      arrow/.style={-Stealth, thick}
+  ]
+      \node[machine=7cm, minimum height=3.2cm, label={[font=\large]above:$\Delta_{i+1}^P = P^{\Sigma_i^P}$}] (outer) {};
+      \node[machine=1.8cm, font=\small] (dtm) at ($(outer.center)+(-1.5cm,0)$) {DTM};
+      \node[machine=2.2cm, font=\small, fill=gray!10] (oracle) at ($(outer.center)+(1.6cm,0)$) {oracolo\\$\Sigma_i^P$};
+      \draw[arrow] ([xshift=-1cm]outer.west) -- (outer.west) node[midway, above] {$x$};
+      \draw[arrow] (outer.west) -- (dtm.west);
+      \draw[arrow] (dtm.east) -- (oracle.west) node[midway, above, font=\scriptsize] {query};
+      \draw[arrow] (oracle.east) -- (outer.east) node[midway, above, font=\scriptsize] {sí/no};
+      \draw[arrow] (outer.east) -- ++(1.2,0);
+  \end{tikzpicture}
+  \end{center}
 }
 
-\thm{$\Pi_i^P \subseteq \Delta_{i+1}^P$}{
+\thm{}{
+  $\Pi_i^P \subseteq \Delta_{i+1}^P$.
+}
+\pf{Dimostrazione}{
   Sia $L \in \Pi_i^P$, allora $\overline{L} \in \Sigma_i^P$. La macchina deterministica chiede all'oracolo per $\Sigma_i^P$ se $x \in \overline{L}$ e \textbf{inverte} la risposta. Tempo polinomiale con oracolo $\Sigma_i^P$.
+  \begin{center}
+  \begin{tikzpicture}[
+      font=\sffamily,
+      machine/.style={draw, thick, minimum width=#1, minimum height=2cm, align=center},
+      arrow/.style={-Stealth, thick}
+  ]
+      \node[machine=9cm, minimum height=3.2cm, label={[font=\large]above:$\Delta_{i+1}^P = P^{\Sigma_i^P}$}] (outer) {};
+      \node[machine=1.8cm, font=\small] (dtm) at ($(outer.center)+(-2.5cm,0)$) {DTM};
+      \node[machine=2.2cm, font=\small, fill=gray!10] (oracle) at ($(outer.center)+(0.2cm,0)$) {oracolo $\Sigma_i^P$\\(decide $\overline{L}$)};
+      \node[machine=1.2cm, font=\small, fill=red!10] (inv) at ($(outer.center)+(2.6cm,0)$) {INV};
+      \draw[arrow] ([xshift=-1cm]outer.west) -- (outer.west) node[midway, above] {$x$};
+      \draw[arrow] (outer.west) -- (dtm.west);
+      \draw[arrow] (dtm.east) -- (oracle.west) node[midway, above, font=\scriptsize] {$x \in \overline{L}$?};
+      \draw[arrow] (oracle.east) -- (inv.west);
+      \draw[arrow] (inv.east) -- (outer.east);
+      \draw[arrow] (outer.east) -- ++(1.2,0);
+  \end{tikzpicture}
+  \end{center}
 }
 
-\thm{$\Delta_i^P \subseteq \Sigma_i^P$}{
+\thm{}{
+  $\Delta_i^P \subseteq \Sigma_i^P$.
+}
+\pf{Dimostrazione}{
   Entrambe usano oracolo in $\Sigma_{i-1}^P$, ma il chiamante di $\Delta_i^P$ e' deterministico mentre quello di $\Sigma_i^P$ e' non deterministico. Una NTM e' \textbf{piu' potente} di una DTM (tutto cio' che fa una determinista lo fa anche una non determinista).
+  \begin{center}
+  \begin{tikzpicture}[
+      font=\sffamily,
+      machine/.style={draw, thick, minimum width=#1, minimum height=1.6cm, align=center},
+      arrow/.style={-Stealth, thick}
+  ]
+      \node[machine=5cm, minimum height=2.5cm, label={[font=\small]above:$\Delta_i^P = P^{\Sigma_{i-1}^P}$}] (delta) at (0,0) {};
+      \node[machine=1.4cm, font=\small] (dtm) at ($(delta.center)+(-1cm,0)$) {DTM};
+      \node[machine=1.5cm, font=\small, fill=gray!10] (od) at ($(delta.center)+(1cm,0)$) {$\Sigma_{i-1}^P$};
+      \draw[arrow] (dtm.east) -- (od.west);
+
+      \node[machine=5cm, minimum height=2.5cm, label={[font=\small]above:$\Sigma_i^P = NP^{\Sigma_{i-1}^P}$}] (sigma) at (7,0) {};
+      \node[machine=1.4cm, font=\small, fill=blue!10] (ntm) at ($(sigma.center)+(-1cm,0)$) {NTM};
+      \node[machine=1.5cm, font=\small, fill=gray!10] (os) at ($(sigma.center)+(1cm,0)$) {$\Sigma_{i-1}^P$};
+      \draw[arrow] (ntm.east) -- (os.west);
+
+      \node[font=\large] at (3.5, 0) {$\subseteq$};
+      \node[font=\scriptsize, align=center] at (3.5, -1.5) {NTM simula\\DTM};
+  \end{tikzpicture}
+  \end{center}
 }
 
-\thm{$\Delta_i^P \subseteq \Pi_i^P$}{
-  $\Delta_i^P$ e' chiusa sotto complemento.
+\thm{}{
+  $\Delta_i^P \subseteq \Pi_i^P$ ($\Delta_i^P$ e' chiusa sotto complemento).
 }
 \pf{Dimostrazione}{
   Sia $L \in \Delta_i^P = P^{\Sigma_{i-1}^P}$, deciso da $M^?$ deterministica polinomiale con oracolo $L' \in \Sigma_{i-1}^P$.
@@ -214,6 +285,24 @@ Niente ci ferma dal \textbf{iterare} la costruzione delle classi a oracolo. Poss
   Scambiando gli stati di accept/reject in $M^?$ otteniamo $M_{\text{inv}}^?$ che decide $\overline{L}$ con lo stesso oracolo. Quindi $\overline{L} \in \Delta_i^P$. Per il teorema precedente $\overline{L} \in \Sigma_i^P$, e per definizione di $\Pi_i^P = co\Sigma_i^P$ otteniamo $L \in \Pi_i^P$.
 
   L'argomento ``scambia accept/reject'' funziona solo perche' \textbf{il chiamante e' deterministico}: passa pulito attraverso una DTM, non attraverso una NTM.
+  \begin{center}
+  \begin{tikzpicture}[
+      font=\sffamily,
+      node distance=8mm,
+      box/.style={draw, thick, rounded corners, minimum width=3.4cm, minimum height=8mm, align=center, font=\small},
+      arrow/.style={-Stealth, thick}
+  ]
+      \node[box] (a) {$L \in \Delta_i^P$};
+      \node[box, below=of a] (b) {scambia accept/reject in $M^?$};
+      \node[box, below=of b] (c) {$\overline{L} \in \Delta_i^P$};
+      \node[box, below=of c] (d) {$\overline{L} \in \Sigma_i^P$ \;(thm prec.)};
+      \node[box, below=of d, fill=blue!10] (e) {$L \in co\Sigma_i^P = \Pi_i^P$};
+      \draw[arrow] (a) -- (b);
+      \draw[arrow] (b) -- (c);
+      \draw[arrow] (c) -- (d);
+      \draw[arrow] (d) -- (e);
+  \end{tikzpicture}
+  \end{center}
 }
 
 \textbf{Schema delle inclusioni}:
@@ -322,13 +411,14 @@ Per tutto il corso ci siamo focalizzati sui \textbf{problemi di decisione} (sì/
 Supponiamo di avere un \textbf{oracolo per VC} (decisionale): ``data $\langle G, k\rangle$, esiste un VC di taglia $\leq k$?''.
 
 \textbf{Algoritmo lineare}. Scandire $k$ da 1 in su:
-\begin{verbatim}
-FMin-cover-naive(G) {
-    for k = 1, 2, 3, ..., |V| {
-        if oracle-VC(<G, k>) == YES { return k; }
-    }
-}
-\end{verbatim}
+
+\begin{algorithm}[H]
+  \DontPrintSemicolon
+  \caption{$\textsc{FMin-cover-naive}^{\textsc{VC}}(G)$}
+  \For{$k = 1$ \KwTo $|V|$}{
+    \lIf{$\textsc{oracle-VC}(\langle G, k\rangle) = \textsc{yes}$}{\KwRet $k$}
+  }
+\end{algorithm}
 
 Al peggio arriviamo a $k = |V|$ (tutto $V$ e' sempre un VC), quindi facciamo al piu' $|V|$ chiamate. Tempo polinomiale $\Rightarrow$ $\text{FMin-cover} \in FP^{NP}$.
 
@@ -414,18 +504,21 @@ Vediamo un altro esempio paradigmatico: il commesso viaggiatore.
     \item Se l'oracolo risponde \textbf{si'}: esiste almeno un HC di peso $\leq \Sigma$. Procediamo allo step 3.
   \end{itemize}
 
-  \textbf{Step 3 -- Ricerca binaria}. $T^?$ esegue ricerca binaria sull'intervallo $[0, \Sigma]$ per individuare il minimo $k^*$ tale che $\langle G, k^*\rangle \in \text{TSP}$:
-  \begin{enumerate}
-    \item Mantieni due estremi $\ell = 0$, $r = \Sigma$.
-    \item Finche' $\ell < r$:
-    \begin{itemize}
-      \item Calcola $m = \lfloor (\ell + r) / 2 \rfloor$.
-      \item Query: $\langle G, m\rangle \in \text{TSP}$?
-      \item Se si': $r \leftarrow m$ (esiste HC di peso $\leq m$, il minimo sta in $[\ell, m]$).
-      \item Se no: $\ell \leftarrow m + 1$ (nessun HC di peso $\leq m$, il minimo sta in $[m+1, r]$).
-    \end{itemize}
-    \item All'uscita $\ell = r = k^*$. Scrivi $k^*$ sul nastro di output.
-  \end{enumerate}
+  \textbf{Step 3 -- Ricerca binaria}. $T^?$ esegue ricerca binaria sull'intervallo $[0, \Sigma]$ per individuare il minimo $k^*$ tale che $\langle G, k^*\rangle \in \text{TSP}$.
+
+  \begin{algorithm}[H]
+    \DontPrintSemicolon
+    \caption{Ricerca binaria di $k^*$ con oracolo $\text{TSP}$}
+    $\ell \leftarrow 0$\;
+    $r \leftarrow \Sigma$\;
+    \While{$\ell < r$}{
+      $m \leftarrow \lfloor (\ell + r) / 2 \rfloor$\;
+      query: $\langle G, m\rangle \in \text{TSP}$?\;
+      \lIf{l'oracolo risponde \textbf{si'}}{$r \leftarrow m$ \tcp*[f]{$k^* \in [\ell, m]$}}
+      \lElse{$\ell \leftarrow m + 1$ \tcp*[f]{$k^* \in [m+1, r]$}}
+    }
+    scrivi $k^* = \ell$ sul nastro di output\;
+  \end{algorithm}
 
   \textbf{Correttezza}. La ricerca binaria preserva l'invariante ``$k^* \in [\ell, r]$'', dove $k^* = \min\{k : \langle G, k\rangle \in \text{TSP}\}$. La query a $\text{TSP}$ con budget $m$ distingue esattamente se $k^* \leq m$ (oracolo si') o $k^* > m$ (oracolo no), dimezzando l'intervallo a ogni passo. Per la \textbf{monotonia} di $\text{TSP}$ rispetto a $k$ ($\langle G, k\rangle \in \text{TSP} \Rightarrow \langle G, k+1\rangle \in \text{TSP}$), la ricerca binaria converge al $k^*$ corretto.
 
@@ -444,7 +537,7 @@ Vediamo un altro esempio paradigmatico: il commesso viaggiatore.
 
   \textbf{Tempo del trasduttore}. Ogni query richiede di scrivere $\langle G, m\rangle$ sull'oracle-tape (taglia polinomiale) e leggere la risposta (1 passo). Il calcolo di $\Sigma$, l'aggiornamento degli estremi e la scrittura dell'output sono tutti polinomiali. Tempo totale polinomiale.
 
-  Quindi $T^?$ e' un trasduttore deterministico polinomiale con oracolo $\text{TSP} \in NP$ che calcola $\text{FTSP}$, cioe' $\text{FTSP} \in FP^{NP}$. \qed
+  Quindi $T^?$ e' un trasduttore deterministico polinomiale con oracolo $\text{TSP} \in NP$ che calcola $\text{FTSP}$, cioe' $\text{FTSP} \in FP^{NP}$.
 }
 
 \nt{
@@ -470,30 +563,53 @@ Come per $\text{FMin-cover}$: se $\text{FTSP} \in FP$ allora $\text{TSP} \in P$.
 
 \subsubsection{Riduzione 1: $\text{3SAT} \leq_P \text{DHC}$}
 
-\textbf{Idea}: codificare gli assegnamenti di verita' come scelte di percorso. Date $n$ variabili abbiamo $2^n$ assegnamenti $\Rightarrow$ il grafo deve avere un numero esponenziale di percorsi.
+\textbf{Idea}: codificare gli assegnamenti di verità come scelte di percorso nel grafo orientato. Date $n$ variabili abbiamo $2^n$ assegnamenti possibili, quindi il grafo deve poter offrire un numero esponenziale di cammini hamiltoniani candidati. Lo facciamo costruendo, per ogni variabile, un "binario" a due corsie: una corsia "verde" (= $\top$) e una corsia "rossa" (= $\bot$). Un HC deve scegliere una corsia per ogni variabile.
 
-Sia $\varphi = c_1 \wedge \cdots \wedge c_m$ in 3CNF su variabili $x_1, \ldots, x_n$. Assunzione: nelle clausole non appare mai un letterale e il suo negato (altrimenti la clausola e' triviale).
+Sia $\varphi = c_1 \wedge \cdots \wedge c_m$ in 3CNF su variabili $x_1, \ldots, x_n$. Assumiamo che nessuna clausola contenga sia un letterale che il suo negato (altrimenti la clausola sarebbe banalmente vera).
 
-\textbf{Costruzione di $G$}:
+\textbf{Costruzione di $G$.}
+
+\paragraph{Catena variabile.} Per ogni variabile $x_i$ costruiamo una \textit{catena} di $2m$ nodi raggruppati in $m$ coppie $(x_i^{j'}, x_i^{j''})$ per $j = 1, \ldots, m$, con due nodi $\Diamond$ alle estremità (entrata e uscita della catena). Tra ogni coppia consecutiva ci sono \textbf{due cammini orientati opposti}:
 \begin{itemize}
-  \item \textbf{Catena variabile}: per ogni $x_i$, una catena di $2m$ nodi disposti come $m$ coppie, con un nodo $\Diamond$ all'inizio e uno alla fine. Due percorsi paralleli:
-  \begin{itemize}
-    \item \textbf{archi verdi}: rappresentano $x_i = \top$ (attraversano la catena in una direzione)
-    \item \textbf{archi rossi}: rappresentano $x_i = \bot$ (direzione opposta)
-  \end{itemize}
-  \item \textbf{Concatenazione}: dal nodo iniziale $s$ partono due archi (verde/rosso) verso la catena $x_1$. I $\Diamond$ finali della catena $x_i$ si collegano agli iniziali di $x_{i+1}$. Alla fine si arriva a $t$, che si collega a $s$ chiudendo il ciclo. Risultato: $2^n$ percorsi da $s$ a $s$.
-  \item \textbf{Nodi clausola}: $m$ nodi extra $c_1, \ldots, c_m$. Per ogni occorrenza di letterale in una clausola:
-  \begin{itemize}
-    \item Se $x_i \in c_j$ (positivo): aggiungiamo archi che permettono un \textit{detour} per $c_j$ \textbf{dalla catena verde} di $x_i$.
-    \item Se $\neg x_i \in c_j$ (negativo): detour per $c_j$ \textbf{dalla catena rossa}.
-  \end{itemize}
+  \item \textbf{archi verdi} (sinistra $\to$ destra): rappresentano $x_i = \top$.
+  \item \textbf{archi rossi} (destra $\to$ sinistra): rappresentano $x_i = \bot$.
 \end{itemize}
+Un HC che entra nel $\Diamond$ di sinistra deve scegliere \textit{una sola} delle due direzioni e percorrerla fino all'altro $\Diamond$ visitando tutti i $2m$ nodi della catena.
 
-\textbf{Correttezza} ($\varphi$ soddisfacibile $\iff$ $G$ ha HC):
+\begin{center}
+  \includegraphics[width=0.85\textwidth]{img/dhc-catena-variabile.png}
+\end{center}
+
+\paragraph{Concatenazione delle catene.} I $\Diamond$ di uscita della catena $x_i$ si collegano ai $\Diamond$ di entrata della catena $x_{i+1}$. Un nodo speciale $s$ apre la prima catena, $t$ chiude l'ultima, e $t$ ritorna a $s$ chiudendo il ciclo. Si ottiene così uno "scheletro" di $2^n$ cammini hamiltoniani candidati (uno per ogni assegnamento) da $s$ a $s$.
+
+\begin{center}
+  \includegraphics[width=0.85\textwidth]{img/dhc-overview.png}
+\end{center}
+
+\paragraph{Nodi clausola e detour.} Aggiungiamo $m$ nodi extra $c_1, \ldots, c_m$, uno per clausola. Per costringere l'HC a visitare ogni $c_j$, lo "agganciamo" alle catene tramite un \textit{detour}: per ogni occorrenza di un letterale di $x_i$ nella clausola $c_j$:
 \begin{itemize}
-  \item ($\Rightarrow$) Da $\sigma \models \varphi$, costruiamo l'HC: per ogni $x_i$ percorriamo la catena verde se $\sigma(x_i) = \top$, rossa altrimenti. Quando possibile, facciamo detour sui nodi clausola. Poiche' $\sigma$ soddisfa $\varphi$, ogni $c_j$ ha almeno un letterale vero $\Rightarrow$ esiste un detour disponibile sul colore giusto per visitare $c_j$.
-  \item ($\Leftarrow$) Sia $\pi$ un HC di $G$. Si dimostra strutturalmente che dopo un detour su $c_j$ si torna alla \textit{stessa catena} (altrimenti si crea una strada chiusa). Definiamo $\sigma$: $\sigma(x_i) = \top$ se l'HC percorre la catena verde di $x_i$. Se $\pi$ visita $c_j$ via catena verde di $x_i$ allora $x_i \in c_j$ e' vero; via catena rossa di $x_i$ allora $\neg x_i \in c_j$ e' vero. In entrambi i casi $c_j$ contiene un letterale soddisfatto.
+  \item Se $x_i \in c_j$ (positivo): aggiungiamo gli archi $x_i^{j'} \to c_j \to x_i^{j''}$ (in verde, paralleli all'arco verde diretto $x_i^{j'} \to x_i^{j''}$). Cioè un HC che sta percorrendo la catena verde di $x_i$ può "deviare" su $c_j$ e tornare alla catena.
+  \begin{center}
+    \includegraphics[width=0.30\textwidth]{img/dhc-detour-positivo.png}
+  \end{center}
+  \item Se $\neg x_i \in c_j$ (negativo): aggiungiamo gli archi $x_i^{j''} \to c_j \to x_i^{j'}$ (in rosso, paralleli all'arco rosso $x_i^{j''} \to x_i^{j'}$). Cioè il detour è disponibile solo dalla catena \textbf{rossa} di $x_i$.
+  \begin{center}
+    \includegraphics[width=0.30\textwidth]{img/dhc-detour-negativo.png}
+  \end{center}
 \end{itemize}
+Il vincolo chiave: il detour su $c_j$ è percorribile solo dalla corsia "giusta" (verde se $c_j$ contiene $x_i$, rossa se contiene $\neg x_i$).
+
+\begin{center}
+  \includegraphics[width=0.65\textwidth]{img/dhc-grafo-completo.png}
+\end{center}
+
+\textbf{Correttezza} ($\varphi$ soddisfacibile $\iff$ $G$ ha HC).
+
+\emph{($\Rightarrow$)} Sia $\sigma \models \varphi$. Costruiamo l'HC scegliendo, per ogni variabile $x_i$, la catena verde se $\sigma(x_i) = \top$, quella rossa altrimenti. Restano da visitare i nodi clausola: poiché $\sigma$ soddisfa $\varphi$, ogni $c_j$ contiene almeno un letterale $\ell$ vero sotto $\sigma$. Se $\ell = x_i$ (con $\sigma(x_i)=\top$) deviamo su $c_j$ dalla catena verde di $x_i$; se $\ell = \neg x_i$ (con $\sigma(x_i)=\bot$) deviamo dalla catena rossa. In entrambi i casi il detour è disponibile sulla corsia che stiamo percorrendo. Inseriamo un detour per ogni $c_j$ in una qualunque catena su cui il letterale è soddisfatto: ogni $c_j$ viene visitato esattamente una volta, e l'HC è completo.
+
+\emph{($\Leftarrow$)} Sia $\pi$ un HC di $G$. Si dimostra che dopo un detour su $c_j$ l'HC \textbf{deve tornare alla stessa catena} su cui era entrato — altrimenti rimarrebbero nodi non visitabili e il cammino non potrebbe chiudersi. Definiamo $\sigma(x_i) = \top$ sse $\pi$ percorre la catena verde di $x_i$. Per ogni clausola $c_j$: $\pi$ visita $c_j$ tramite un detour da qualche catena di $x_i$; se è la verde, allora $x_i \in c_j$ ed è vero sotto $\sigma$; se è la rossa, allora $\neg x_i \in c_j$ ed è vero sotto $\sigma$. In entrambi i casi $c_j$ ha un letterale soddisfatto, quindi $\sigma \models \varphi$.
+
+\textbf{Costo della riduzione.} $|V| = O(nm)$ nodi (catene) + $m$ (clausole) + 2 ($s, t$) = $O(nm)$. $|E| = O(nm)$ archi. La costruzione è chiaramente polinomiale in $\|\varphi\|$.
 
 \subsubsection{Riduzione 2: $\text{DHC} \leq_P \text{HC}$}
 
