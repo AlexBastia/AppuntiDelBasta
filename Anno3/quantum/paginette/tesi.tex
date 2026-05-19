@@ -1,0 +1,64 @@
+% \begin{document}
+\chapter{Quantum Computing}
+Whereas classical computers are based on bits that can either be switched "on" or "off", quantum computers work by carefully modifying the state of a quantum system. This fundamental difference in models of computation requires a complete remodelling of the mathematical representation that describes how a computer behaves.
+
+\section{Qbits}
+Qbits, short for quantum bits, are the fundamental element of quantum information. They are implemented as a binary property of a quantum system. This means that when said property is measured, the output is either "on" or "off", just like a classical bit. The difference is that quantum superposition allows the system to be in multiple states at the same time, and when the property is observed it stochasticaly collapses into a single base state. To model this crazy behaviour, the state of a qbit $ |\psi> $ can be represented as a linear combination:
+\[
+|\psi> = c_0 |0> + c_1 |1>
+\]
+where $ |0> $ and $ |1> $ indicate the "off" and "on" states and $ c_0, c_1 \in \mathbb{C} $ such that $ |c_0|^2 $ and $ |c_1|^2 $ are the probabilities of the qbit being in the relative state when measured. The reason for using the squared modulus of complex numbers as opposed to directly using probabilities as coefficients is that this allows for addition to lower the resulting probabilities. This property is needed to correctly model quantum interference, .....
+
+So we can represent a qbit as a normalised vector in $ \mathbb{C}^2 $ with $ \begin{pmatrix}
+1\\
+0\\
+\end{pmatrix} = |0> $ and $ \begin{pmatrix}
+0\\
+1\\
+\end{pmatrix} = |1> $ as base:
+\[
+|\psi> = \begin{pmatrix}
+c_0\\
+c_1\\
+\end{pmatrix}
+\]
+\section{Multi-Qbit Systems}
+When adding a qbit to a quantum system, the number of possible base states doubles, meaning that an $ n $-qbit system's state is represented as a vector in $ \mathbb{C}^{2^n} $. Given two quantum systems, their composition is represented by the tensor product of their vector spaces. (give example and code)
+
+The state of a multi-qbit system can't be described as the product of single-qbit states, as shown by the following example:
+
+(bell pair example)
+
+This mathematical fact describes a unique quantum behaviour known as entanglement, which is when two .....
+
+\section{Quantum Gates}
+Because we're representing a quantum state as a vector, any operator that acts on qbits will be an endomorfism, and thus a linear application with an associated square matrix $ U \in M(\mathbb{C})n\times n $.
+
+As described in Shrodinger's equation (cite maybe?), a closed quantum system can only undergo unitary evolution, thus the only way we can we can manipulate our quantum state without it collapsing is through unitary matrices. A matrix is unitary if (define unitary matrix and how they're isometric)...
+
+So all possible operators that act on a closed quantum system, known as quantum gates, are isomorfic to the group of unitary matrices of size $ n $. As a result, quantum gates are limited to only reversible operations that cannot clone a qbit's state to another without collapsing the original.
+
+A set of gates is universal if, through composition, they can simulate any other quantum gate. The set of gates that will be used in this thesis is the following: (TODO: fix a gate set)
+
+\section{Quantum Circuits}
+
+A quantum program can be represented as a single unitary matrix acting on all qbits, depicted as follows:
+
+(image)
+
+where the wires represent the life span of the qbits. The single complex gate can be broken down into a composition of multiple simpler gates that are applied to a subsect of qbits, so we can deptict how the program builds the corresponding circuit sequencially:
+
+(image)
+
+We can define some structural proprerties of such a circuit:
+\begin{itemize}
+\item Gate count: 
+\item Width: 
+\item Depth:
+\end{itemize}
+
+It's possible that the construction of the circuit determined by the quantum program isn't the most efficient decomposition, given a fixed gate set, of the ?? program matrix ?? with respect to some of the circuit's properties. This means that the circuit can be optimized. There are different ways a quantum circuit can be transformed into an equivalent, more optimized, one.
+
+(describe different optimization techniques, ending with triviality conditions (the one ill use))
+
+% \end{document}
