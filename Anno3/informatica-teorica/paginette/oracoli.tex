@@ -408,10 +408,11 @@ Per tutto il corso ci siamo focalizzati sui \textbf{problemi di decisione} (sì/
 
 \subsection{$\text{FMin-cover} \in FP^{NP}$}
 
-Supponiamo di avere un \textbf{oracolo per VC} (decisionale): ``data $\langle G, k\rangle$, esiste un VC di taglia $\leq k$?''.
+\dfn{$FP^C[g(n)]$}{
+  La classe $FP^C[g(n)]$ contiene le funzioni calcolate da trasduttori deterministici polinomiali con oracolo in $C$ che fanno al piu' $g(n)$ query.
+}
 
-\textbf{Algoritmo lineare}. Scandire $k$ da 1 in su:
-
+\textbf{Soluzione naive (lineare)}. Supponiamo di avere un \textbf{oracolo per VC} (decisionale): ``data $\langle G, k\rangle$, esiste un VC di taglia $\leq k$?''. La versione più semplice scandisce $k$ da 1 in su, ritornando il primo $k$ per cui l'oracolo risponde sì:
 \begin{algorithm}[H]
   \DontPrintSemicolon
   \caption{$\textsc{FMin-cover-naive}^{\textsc{VC}}(G)$}
@@ -419,23 +420,35 @@ Supponiamo di avere un \textbf{oracolo per VC} (decisionale): ``data $\langle G,
     \lIf{$\textsc{oracle-VC}(\langle G, k\rangle) = \textsc{yes}$}{\KwRet $k$}
   }
 \end{algorithm}
+Al peggio si arriva a $k = |V|$, con $|V|$ chiamate. Tempo polinomiale, ma numero di query \emph{lineare}. Mostra che già $\text{FMin-cover} \in FP^{NP}$ in modo elementare, senza sfruttare la ricerca binaria.
 
-Al peggio arriviamo a $k = |V|$ (tutto $V$ e' sempre un VC), quindi facciamo al piu' $|V|$ chiamate. Tempo polinomiale $\Rightarrow$ $\text{FMin-cover} \in FP^{NP}$.
-
-\textbf{Algoritmo migliore: ricerca binaria}. Iniziamo con $k = n/2$:
-\begin{itemize}
-  \item Se l'oracolo dice si', il minimo sta in $[0, n/2]$.
-  \item Se dice no, il minimo sta in $[n/2, n]$.
-\end{itemize}
-Dimezziamo l'intervallo a ogni passo $\Rightarrow$ $O(\log n)$ query.
-
-\dfn{$FP^C[g(n)]$}{
-  La classe $FP^C[g(n)]$ contiene le funzioni calcolate da trasduttori deterministici polinomiali con oracolo in $C$ che fanno al piu' $g(n)$ query.
+\thm{}{
+  $\text{FMin-cover} \in FP^{NP}[O(\log n)]$.
 }
+\pf{Dimostrazione}{
+  Costruiamo un trasduttore deterministico polinomiale $T^?$ con oracolo per VC che esegue \textbf{ricerca binaria} sull'intervallo $[1, |V|]$ per trovare il minimo $k^*$ tale che $\langle G, k^*\rangle \in \text{VC}$.
 
-\[
-  \text{FMin-cover} \in FP^{NP}[O(\log n)]
-\]
+  \begin{algorithm}[H]
+    \DontPrintSemicolon
+    \caption{$\textsc{FMin-cover}^{\textsc{VC}}(G)$ via ricerca binaria}
+    $\ell \leftarrow 1$\;
+    $r \leftarrow |V|$\;
+    \While{$\ell < r$}{
+      $m \leftarrow \lfloor (\ell + r) / 2 \rfloor$\;
+      \lIf{$\textsc{oracle-VC}(\langle G, m\rangle) = \textsc{yes}$}{$r \leftarrow m$ \tcp*[f]{$k^* \in [\ell, m]$}}
+      \lElse{$\ell \leftarrow m + 1$ \tcp*[f]{$k^* \in [m+1, r]$}}
+    }
+    \KwRet $\ell$\;
+  \end{algorithm}
+
+  \textbf{Correttezza}. La ricerca binaria preserva l'invariante ``$k^* \in [\ell, r]$''. Per la \textbf{monotonia} di VC ($\langle G, k\rangle \in \text{VC} \Rightarrow \langle G, k+1\rangle \in \text{VC}$), la query con budget $m$ distingue esattamente $k^* \leq m$ (oracolo sì) da $k^* > m$ (oracolo no), dimezzando l'intervallo a ogni passo. Inoltre $k^* \leq |V|$ (l'intero $V$ è sempre un VC), quindi il valore iniziale $r = |V|$ è un upper bound valido.
+
+  \textbf{Numero di query}: $\lceil \log_2 |V| \rceil = O(\log n)$, dove $n = \|G\|$.
+
+  \textbf{Tempo del trasduttore}: ogni iterazione scrive $\langle G, m\rangle$ sull'oracle-tape (taglia polinomiale) e legge la risposta (1 passo). Aggiornamenti di $\ell, r, m$ polinomiali. Tempo totale polinomiale.
+
+  Dunque $T^?$ è un trasduttore deterministico polinomiale con oracolo $\text{VC} \in NP$ che fa $O(\log n)$ query, cioè $\text{FMin-cover} \in FP^{NP}[O(\log n)]$.
+}
 
 \subsection{Connessione fra decisione e calcolo}
 
