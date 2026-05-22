@@ -57,8 +57,43 @@ We can define some structural proprerties of such a circuit:
 \item Depth:
 \end{itemize}
 
+\section{Circuit Optimization}
 It's possible that the construction of the circuit determined by the quantum program isn't the most efficient decomposition, given a fixed gate set, of the ?? program matrix ?? with respect to some of the circuit's properties. This means that the circuit can be optimized. There are different ways a quantum circuit can be transformed into an equivalent, more optimized, one.
 
 (describe different optimization techniques, ending with triviality conditions (the one ill use))
+
+\chapter{Hoare Logic and Automated Verification}
+Formally verifying a computer program means proving its correctness, with respect to a formal specification of the programming language used, by using formal or mathematical methods. This is the strongest possible way to determine if a certain block of code works as expected or not, and because of this formal verification is used mostly in security-related applications. For the purposes of this thesis, we are interested in such techniques as they don't require running or simulating quantum code in order to reason about its properties.
+
+\section{Hoare Logic}
+Hoare Logic is an axiomatic system for formally specifying what a program does. In 1969 C.A.R. Hoare introduced the Hoare Triple, written as follows:
+\[
+\{P\}C \{Q\}
+\]
+where:
+\begin{itemize}
+  \item $ C $ is a program (or any block or single command)
+  \item $ P $ and $ Q $ are logical assertions, called conditions, describing the program's state immediatey before/after the execution of $ C $. P is known as the precondition and $ Q $ as the postcondition.
+\end{itemize}
+
+The conditions can be written using any well-defined formal logic that allows for the required descriptiveness, wich in our case is propositional logic (TODO: or first order?).
+
+We will only be interested in the \textit{partial correctness} of our program: if the code in $ C $ loops indefinetly, then the triple is considered vacously true. \textit{Total correctness} is when, given $ P $, $ C $ is guaranteed to terminate and be in state $ Q $.
+
+Hoare Logic constructs proofs by using axioms and inference rules that match with the syntactic elements of a programing language. Some of the core rules are as follows:
+\begin{itemize}
+\item \textbf{Rule of Composition}: allows sequential operations to be split into separate triples
+\item \textbf{Assignment Axiom}: ensures that the postcondition $ Q  $ holds after a variable assignment
+\item \textbf{If-Else Rule}:
+\item \textbf{While Rule}:
+\end{itemize}
+
+While Hoare Logic provides a framework for verifying proofs, given a complete set of rules and axioms, it isn't well suited for proof automation. The following section will discuss how we can do just that. 
+
+\section{Weakest Precondition Calculus}
+In order to build a verification engine based of Hoare's framework, Edgar Djikstra transformed the logic into a backward-directed deterministic function. Given a piece of code $ C $ and a postcondition $ Q  $, 
+
+\section{SMT Solvers}
+
 
 % \end{document}
