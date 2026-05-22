@@ -1,0 +1,71 @@
+\documentclass{report}
+
+\input{../LatexTemp/preamble.tex}
+\input{../LatexTemp/macros}
+\input{../LatexTemp/letterfonts}
+
+\usepackage[utf8]{inputenc}
+
+\setlength{\parindent}{0pt}
+
+\title{Esercizio: Ludoteca — Correttezza della riduzione $k$-VCOL $\leq_P$ Ludoteca}
+\author{Giovanni Palma}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section*{Costruzione della riduzione}
+
+Sia $\langle G = (V, E), k\rangle$ un'istanza di $k$-VCOL. Definiamo $f(\langle G, k\rangle) = \langle B, S, G_{\text{lud}}, p\rangle$:
+\begin{itemize}
+  \item $B = V$ (un bambino per nodo)
+  \item $S = \{s_1, \ldots, s_k\}$ ($k$ stanze, una per colore)
+  \item $G_{\text{lud}} = \{g_e : e \in E\}$ (un gioco per arco)
+  \item $p(v) = \{g_e : e \in E,\; v \in e\}$ (il bambino $v$ desidera i giochi corrispondenti agli archi incidenti)
+\end{itemize}
+
+\textbf{Proprietà di costruzione (fondamentale).} Per ogni $u, v \in V$:
+\[
+  p(u) \cap p(v) \neq \emptyset \iff \{u, v\} \in E.
+\]
+Infatti $g_e \in p(u) \cap p(v)$ sse $u, v \in e$, cioè $e = \{u, v\}$. Quindi \emph{conflitto in Ludoteca} $\iff$ \emph{adiacenza in $G$}.
+
+\section*{Correttezza}
+
+Mostriamo $\langle G, k\rangle \in k\text{-VCOL} \iff f(\langle G, k\rangle) \in \text{Ludoteca}$.
+
+\subsection*{($\Rightarrow$) $G$ $k$-colorabile $\Rightarrow$ istanza Ludoteca "sì"}
+
+Sia $c : V \to \{1, \ldots, k\}$ una $k$-colorazione valida di $G$. Definiamo l'assegnazione
+\[
+  a : B \to S, \qquad a(v) := s_{c(v)}.
+\]
+Mostriamo che $a$ è senza conflitti. Siano $u, v \in B$ con $a(u) = a(v)$:
+\[
+  a(u) = a(v) \;\Rightarrow\; s_{c(u)} = s_{c(v)} \;\Rightarrow\; c(u) = c(v) \;\overset{c \text{ valida}}{\Longrightarrow}\; \{u, v\} \notin E.
+\]
+Per la proprietà di costruzione, $\{u, v\} \notin E \Rightarrow p(u) \cap p(v) = \emptyset$. Nessun conflitto, quindi $f(\langle G, k\rangle) \in \text{Ludoteca}$. \qed
+
+\subsection*{($\Leftarrow$) istanza Ludoteca "sì" $\Rightarrow$ $G$ $k$-colorabile}
+
+Sia $a : B \to S$ assegnazione senza conflitti. Definiamo la colorazione
+\[
+  c : V \to \{1, \ldots, k\}, \qquad c(v) := i \quad \text{sse} \quad a(v) = s_i.
+\]
+Mostriamo che $c$ è una $k$-colorazione valida. Sia $\{u, v\} \in E$:
+\[
+  \{u, v\} \in E \;\Rightarrow\; g_{\{u,v\}} \in p(u) \cap p(v) \;\Rightarrow\; u, v \text{ in conflitto}.
+\]
+Poiché $a$ è senza conflitti, $a(u) \neq a(v)$, da cui $c(u) \neq c(v)$. Quindi $c$ è $k$-colorazione valida, e $\langle G, k\rangle \in k\text{-VCOL}$. \qed
+
+\section*{Calcolabilità polinomiale}
+
+$f$ scandisce $E$ (per creare i giochi) e per ogni $v \in V$ enumera gli archi incidenti (per costruire $p(v)$). Costo $O(|V| + |E|)$, polinomiale in $\|\langle G, k\rangle\|$.
+
+\section*{Conclusione}
+
+Ludoteca $\in NP$ (certificato = assegnazione $a$, verifica in $O(|B|^2 \cdot |G_{\text{lud}}|)$). $3$-VCOL è NP-completo, e abbiamo dimostrato $3\text{-VCOL} \leq_P \text{Ludoteca}$ (caso $k = 3$). Quindi \textbf{Ludoteca è NP-completo}.
+
+\end{document}

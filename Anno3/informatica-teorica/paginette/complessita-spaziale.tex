@@ -85,13 +85,19 @@ Chiaramente $L \subseteq NL$, ma non sappiamo se $L = NL$ (domanda aperta analog
   \textbf{Nota}: la scelta della base \emph{non e' accidentale}. Un contatore in unario occuperebbe $n$ celle (spazio lineare); in binario bastano $\log n$ bit. Un algoritmo logspace puo' ``ricordare'' indici e contatori sull'input, ma non il contenuto dell'input stesso.
 }
 
-\ex{$\textit{Reach} \in NL$}{
+\dfn{$\textit{Reach}$}{
   \[
     \textit{Reach} = \{ \langle G, s, t \rangle \mid G \text{ grafo orientato, esiste un cammino da } s \text{ a } t \}
   \]
-  L'algoritmo classico (BFS/DFS) decide $\textit{Reach}$ in tempo polinomiale, ma usa una coda/stack che nel caso pessimo contiene tutti i nodi $\Rightarrow$ spazio \textbf{lineare}. Mostrare $\textit{Reach} \in NL$ richiede un approccio non deterministico.
 }
-\pf{Soluzione}{
+
+L'algoritmo classico (BFS/DFS) decide $\textit{Reach}$ in tempo polinomiale, ma usa una coda/stack che nel caso pessimo contiene tutti i nodi $\Rightarrow$ spazio \textbf{lineare}. Mostrare $\textit{Reach} \in NL$ richiede un approccio non deterministico.
+
+\thm{}{
+  \label{th:reach-in-nl}
+  $\textit{Reach} \in NL$.
+}
+\pf{Dimostrazione}{
   \textbf{Idea}. Invece di memorizzare l'intero cammino, indoviniamo \textbf{un passo alla volta} e sovrascriviamo il nodo precedente. Per evitare cicli infiniti, limitiamo il numero di passi a $|V|$: se esiste un cammino, ne esiste uno di lunghezza $\leq |V|$.
 
   \begin{algorithm}[H]
@@ -176,70 +182,83 @@ Come SAT e' il problema ``canonico'' per NP (Cook-Levin), $\textit{Reach}$ gioca
   $\textit{Reach} \in NL$ e per ogni $L \in NL$, $L \leq_L \textit{Reach}$.
 }
 \pf{Dimostrazione}{
-  \textbf{Membership}: gia' vista ($\textit{Reach} \in NL$).
+  \textbf{Membership}: ovvio per il Teorema~\ref{th:reach-in-nl} ($\textit{Reach} \in NL$).
 
-  \textbf{Hardness}. Sia $L \in NL$ generico, deciso da una MdTN $M_L$ in spazio logaritmico. Costruiamo una riduzione logspace $f$ che su input $w$ produce una tripla $\langle G, s, t \rangle$ tale che:
+  \textbf{NL-arduita'}. Dobbiamo mostrare che per ogni $L \in NL$ esiste una riduzione logspace $L \leq_L \textit{Reach}$. Sia $L \in NL$ generico: per definizione esiste una MdTN $M_L$ che decide $L$ in spazio $O(\log n)$. L'idea della dimostrazione e' convertire la \emph{computazione} di $M_L$ su $w$ in un \emph{grafo}: nodi $=$ configurazioni di $M_L$, archi $=$ passi della funzione di transizione $\delta$. Cosi' un cammino in $G$ corrisponde esattamente a un ramo di computazione di $M_L$.
+
+  Dato un input $w$ di taglia $n$, il trasduttore $f$ deve produrre $\langle G, s, t\rangle$ tale che
   \[
-    w \in L \iff \text{esiste un cammino da } s \text{ a } t \text{ in } G
+    w \in L \;\iff\; \exists\; \text{cammino } s \rightsquigarrow t \text{ in } G,
   \]
+  e farlo lavorando in spazio $O(\log n)$ sul proprio worktape.
 
-  \textbf{Idea chiave}: i nodi di $G$ sono le \textbf{configurazioni} di $M_L$ su $w$; gli archi rappresentano i passi della funzione di transizione. Cosi' un cammino in $G$ corrisponde a una computazione accettante di $M_L$.
-
-  \textbf{Configurazione di $M_L$ su $w$}. Poiche' l'input e' read-only, non cambia mai: non serve ricordarlo nella configurazione. Una configurazione e' data da:
+  \textbf{Configurazione (ID) di $M_L$ su $w$.} Una \emph{configurazione} o \emph{Instantaneous Description} (ID) e' la "fotografia completa" della macchina in un istante: tutto cio' che serve per determinare il passo successivo. Per la macchina $M_L$ (con input read-only + worktape r/w + stato di controllo) un ID e' formato da \textbf{quattro componenti}:
   \begin{itemize}
-    \item $H_1$: posizione della testina sull'input, in $\{1, \ldots, n\}$ $\to$ $O(\log n)$ bit.
-    \item $H_2$: posizione della testina sul worktape, in $\{1, \ldots, O(\log n)\}$ $\to$ $O(\log \log n)$ bit.
-    \item Contenuto del worktape: stringa di lunghezza $O(\log n)$ su $\Gamma$ $\to$ $O(\log n)$ bit.
-    \item $Q$: stato corrente $\to$ $O(1)$ bit.
+    \item \textbf{Stato di controllo $q \in Q$}. $|Q|$ e' costante (fissato dal design di $M_L$, non dipende da $n$): $O(1)$ bit.
+    \item \textbf{Posizione testina input $H_1 \in \{1, \ldots, n\}$}. Un indice nell'intervallo $[1, n]$ si rappresenta in binario con $\lceil \log_2 n\rceil$ bit: $O(\log n)$ bit.
+    \item \textbf{Posizione testina worktape $H_2 \in \{1, \ldots, k \log n\}$}. Il worktape ha al piu' $k \log n$ celle (per definizione di logspace), quindi indice in $[1, k \log n]$ richiede $O(\log\log n)$ bit.
+    \item \textbf{Contenuto del worktape}. Stringa di lunghezza $k \log n$ su alfabeto $\Gamma$ (finito, $|\Gamma|$ costante): $O(\log n)$ bit.
   \end{itemize}
-  Scriviamo una configurazione come stringa $\langle H_1 \mid H_2 \mid \text{worktape} \mid Q \rangle$ di taglia $O(\log n)$.
+  Notare che \textbf{l'input $w$ non fa parte dell'ID}: e' read-only, non cambia, e $M_L$ lo "vede" sempre tramite $H_1$. Sommando le componenti:
+  \[
+    |\mathit{ID}| = O(1) + O(\log n) + O(\log\log n) + O(\log n) = O(\log n).
+  \]
+  Codifichiamo un ID come stringa $\langle q \mid H_1 \mid H_2 \mid \text{worktape}\rangle$ di lunghezza totale $O(\log n)$.
 
-  \textbf{Numero di configurazioni}: ogni configurazione ha $O(\log n)$ simboli, quindi il numero totale e' al piu' $2^{O(\log n)} = n^{O(1)}$, \textbf{polinomiale} in $n$. (E' per questo che $NL \subseteq P$: BFS deterministico su $G$ decide $L$ in tempo polinomiale.)
+  \textbf{Conseguenza fondamentale: numero polinomiale di configurazioni.} Poiche' ogni ID ha $O(\log n)$ bit, il numero totale di ID possibili e' al piu'
+  \[
+    N \leq 2^{O(\log n)} = n^{O(1)},
+  \]
+  cioe' \textbf{polinomiale} in $n$. Se il worktape fosse lineare avremmo $2^{O(n)}$ configurazioni e la riduzione sarebbe impossibile in logspace; e' proprio il limite logaritmico sullo spazio a rendere il grafo "abbastanza piccolo" da essere manipolato.
 
-  \textbf{Costruzione di $G$ in logspace}. Il trasduttore \textbf{non} puo' generare tutto $G$ sul worktape: occuperebbe spazio polinomiale. Genera invece nodi e archi \textbf{uno alla volta}, scrivendoli in output:
+  Da questo segue anche $NL \subseteq P$: con un numero polinomiale di nodi, una BFS deterministica sul grafo decide $L$ in tempo polinomiale.
 
-  \textbf{Fase 1 -- nodi}. Itera su tutte le possibili stringhe di lunghezza $O(\log n)$ (come un contatore in base $|\Gamma|$); per ciascuna verifica in loco se e' una configurazione ben formata (posizioni in range, stato valido, worktape ben formato); se si', la scrive in output. Aggiunge infine un nodo fittizio $v^*$ che fara' da $t$.
+  \textbf{Costruzione del grafo $G$.}
+  \begin{itemize}
+    \item \textbf{Nodi}: tutti gli ID di $M_L$ su $w$, piu' un nodo fittizio $v^*$.
+    \item \textbf{Archi}: $(\mathit{ID}_1, \mathit{ID}_2) \in E$ sse $\mathit{ID}_2$ e' un \emph{legal successor} di $\mathit{ID}_1$ secondo $\delta$ (cioe' $M_L$ puo' transire da $\mathit{ID}_1$ a $\mathit{ID}_2$ in un singolo passo).
+    \item \textbf{Sorgente} $s = \mathit{ID}_0$: configurazione iniziale di $M_L$ su $w$ (stato $q_0$, entrambe le testine in posizione 1, worktape vuoto).
+    \item \textbf{Pozzo} $t = v^*$: per avere un \emph{unico} nodo bersaglio, adattiamo $M_L$ affinche' prima di accettare ripulisca il worktape e porti le testine in posizione canonica; tutte le computazioni accettanti convergono cosi' a un'unica configurazione $\mathit{ID}^*$. Aggiungiamo l'arco $\mathit{ID}^* \to v^*$ (oppure, equivalentemente, $v^* = \mathit{ID}^*$).
+  \end{itemize}
 
-  \textbf{Fase 2 -- archi di transizione}. Ripulisce il worktape. Itera su tutte le coppie $(C_1, C_2)$ di stringhe candidate, ciascuna di taglia $O(\log n)$ $\Rightarrow$ coppia di taglia $O(\log n)$. Per ogni coppia verifica: $C_1$ e $C_2$ sensate? $C_2$ e' legal successor di $C_1$ secondo $\delta$? Se si', scrive in output l'arco $(C_1, C_2)$.
-
-  \textbf{Fase 3 -- archi verso $v^*$}. Ripulisce il worktape. Itera su tutte le configurazioni; per ogni $C$ con stato accettante scrive in output l'arco $(C, v^*)$.
+  \textbf{Trasduttore $f$ in spazio logaritmico.} Il grafo $G$ ha $n^{O(1)}$ nodi e $n^{O(1)}$ archi: troppo per essere materializzato sul worktape. Lo \emph{stampiamo} sul nastro di output (write-only, unidirezionale), un pezzo alla volta, mantenendo nel worktape al piu' due ID contemporaneamente:
 
   \begin{algorithm}[H]
     \DontPrintSemicolon
     \caption{Trasduttore $f$: costruzione di $\langle G, s, t\rangle$ in logspace}
-    \KwIn{Stringa $w$ (read-only), descrizione di $M_L$ con $\delta$, $Q$, $\Gamma$}
-    \KwOut{$\langle G, s, t\rangle$ sul nastro di output (write-only)}
-    $s \leftarrow$ configurazione iniziale di $M_L$ su $w$; scrivi $s$\;
+    \KwIn{Stringa $w$ (read-only), descrizione di $M_L$ ($\delta, Q, \Gamma$)}
+    \KwOut{$\langle G, s, t\rangle$ sul nastro di output}
+    scrivi $s = \mathit{ID}_0$ (configurazione iniziale di $M_L$ su $w$)\;
     \BlankLine
     \tcp{Fase 1 -- nodi}
-    \ForEach{stringa $C$ di lunghezza $O(\log n)$ su $\Gamma$}{
-      \lIf{$C$ codifica una configurazione ben formata}{scrivi $C$}
+    \tcp{$C$: stringa candidata enumerata esaustivamente; non ogni $C$ codifica un ID valido,}
+    \tcp{le candidate "nonsense" (stato non in $Q$, indici fuori range, ecc.) vengono scartate}
+    \ForEach{stringa $C$ di lunghezza $O(\log n)$ su $\Gamma \cup Q$}{
+      \lIf{$C$ codifica un ID ben formato}{scrivi $C$ come nodo}
     }
-    scrivi il nodo fittizio $v^*$\;
+    scrivi il nodo $v^*$\;
     \BlankLine
     \tcp{Fase 2 -- archi di transizione}
     ripulisci il worktape\;
-    \ForEach{coppia $(C_1, C_2)$ di stringhe di lunghezza $O(\log n)$}{
-      \lIf{$C_1, C_2$ ben formate \textbf{e} $C_2$ \emph{legal successor} di $C_1$ secondo $\delta$}{scrivi $(C_1, C_2)$}
+    \ForEach{coppia $(C_1, C_2)$ di ID candidati}{
+      \lIf{$C_1, C_2$ ben formati \textbf{e} $C_2$ \emph{legal successor} di $C_1$ secondo $\delta$}{scrivi l'arco $(C_1, C_2)$}
     }
     \BlankLine
     \tcp{Fase 3 -- archi verso $v^*$}
     ripulisci il worktape\;
-    \ForEach{configurazione $C$}{
+    \ForEach{ID $C$}{
       \lIf{$C$ ha stato accettante}{scrivi $(C, v^*)$}
     }
     $t \leftarrow v^*$\;
   \end{algorithm}
 
-  Il worktape contiene sempre al piu' due label di configurazione piu' contatori ausiliari: spazio $O(\log n)$. L'output cresce polinomialmente ma e' write-only unidirezionale, quindi non conta.
+  \textbf{Analisi spaziale.} In ogni momento il worktape contiene al piu' due ID (di taglia $O(\log n)$ ciascuno) piu' contatori ausiliari di taglia $O(\log n)$. Verificare se $C$ e' ben formato o se $C_2$ e' legal successor di $C_1$ richiede solo di leggere posizioni dell'input e applicare $\delta$ in modo deterministico, in spazio costante aggiuntivo. Totale: $O(\log n)$ sul worktape. L'output cresce polinomialmente, ma essendo write-only unidirezionale \textbf{non conta} ai fini dello spazio.
 
-  \textbf{Output finale}: $f(w) = \langle G, s, t \rangle$ dove $s$ e' la configurazione iniziale di $M_L$ su $w$ e $t = v^*$.
-
-  \textbf{Correttezza}: per costruzione,
+  \textbf{Correttezza.} Per costruzione, un cammino da $s = \mathit{ID}_0$ a $t = v^*$ in $G$ corrisponde esattamente a una sequenza di ID $\mathit{ID}_0 \to \mathit{ID}_1 \to \cdots \to \mathit{ID}^* \to v^*$ tale che ogni passo e' legittimo secondo $\delta$ e l'ultima e' accettante: cioe' a un \emph{ramo di computazione accettante} di $M_L$ su $w$. Quindi:
   \[
-    M_L \text{ accetta } w \iff \exists \text{ cammino da } s \text{ a } v^* \text{ in } G \iff \langle G, s, t \rangle \in \textit{Reach}
+    M_L \text{ accetta } w \;\iff\; \exists \text{ cammino } s \rightsquigarrow t \text{ in } G \;\iff\; \langle G, s, t\rangle \in \textit{Reach}.
   \]
-  cioe' $w \in L \iff f(w) \in \textit{Reach}$. Poiche' $L \in NL$ era generico, $\textit{Reach}$ e' NL-hard. Combinando con la membership: $\textit{Reach}$ e' NL-completo.
+  Cioe' $w \in L \iff f(w) \in \textit{Reach}$. Poiche' $L \in NL$ era generico, $\textit{Reach}$ e' NL-arduo. Combinando con la membership: $\textit{Reach}$ e' NL-completo.
 }
 
 \section{Teorema di Savitch}
@@ -406,7 +425,24 @@ Ora che abbiamo Savitch, possiamo dare una mappa abbastanza completa delle relaz
   Ogni linguaggio in $L$ e' decidibile in tempo polinomiale.
 \end{Theorem}
 \pf{Dimostrazione}{
-  Sia $M$ deterministica in spazio logaritmico, che si arresti sempre. Le possibili configurazioni attraversate sono al piu' $2^{O(\log n)} = n^{O(1)}$ -- polinomiali in $n$. Poiche' $M$ si arresta sempre, non puo' passare due volte per la stessa configurazione (sarebbe un loop). Avendo un numero polinomiale di configurazioni, il tempo e' polinomiale.
+  Sia $A \in L$ generico. Per definizione esiste una MdT deterministica $M$ che decide $A$ usando spazio sul worktape $f(n) = O(\log n)$, dove $n = |w|$.
+
+  \textbf{Conteggio delle configurazioni.} Una configurazione di $M$ su input $w$ e' identificata da:
+  \begin{itemize}
+    \item stato corrente: $|Q| = O(1)$ possibilita';
+    \item posizione testina input: $O(n)$ possibilita';
+    \item posizione testina worktape: $O(\log n)$ possibilita';
+    \item contenuto del worktape: $|\Gamma|^{O(\log n)} = 2^{O(\log n)}$ possibilita'.
+  \end{itemize}
+  Il numero totale di configurazioni possibili e' quindi limitato da
+  \[
+    O(1) \cdot O(n) \cdot O(\log n) \cdot 2^{O(\log n)} = n \cdot 2^{O(\log n)} = n^{O(1)},
+  \]
+  cioe' \textbf{polinomiale} in $n$ (sfruttando $2^{c\log n} = n^c$).
+
+  \textbf{Traduzione in tempo polinomiale.} Poiche' $M$ e' un decisore e si arresta sempre, non puo' passare due volte per la stessa configurazione (sarebbe un loop infinito). Dunque il numero di passi di $M$ e' al piu' il numero di configurazioni possibili, che e' polinomiale. Quindi $M$ termina in tempo polinomiale.
+
+  Poiche' $A$ era arbitrario in $L$, concludiamo $L \subseteq P$.
 }
 
 \thm{$NL \subseteq P$}{
@@ -420,7 +456,15 @@ Ora che abbiamo Savitch, possiamo dare una mappa abbastanza completa delle relaz
   Ogni linguaggio in $NP$ e' decidibile in spazio polinomiale.
 }
 \pf{Dimostrazione}{
-  Sia $M$ una NTM in tempo polinomiale: in tempo polinomiale non puo' scrivere piu' di una quantita' polinomiale di celle, quindi $M$ e' anche in $NPSpace$. Per Savitch: $NP \subseteq NPSpace = PSpace$.
+  Sia $L \in NP$: per definizione esiste una NTM $M$ che decide $L$ in tempo polinomiale $p(n)$. Su ogni singolo ramo di computazione $M$ compie al piu' $p(n)$ passi, quindi non puo' fisicamente visitare piu' di $p(n)$ celle sul proprio worktape. Ne segue che $M$ usa spazio polinomiale non deterministico, cioe'
+  \[
+    NP \subseteq NPSpace.
+  \]
+  Per il Teorema di Savitch (Teorema~\ref{th:savitch}), lo spazio non deterministico si simula deterministicamente al costo di un quadrato:
+  \[
+    NPSpace = NSpace(\text{poly}(n)) \subseteq DSpace(\text{poly}(n)^2) = PSpace,
+  \]
+  dato che il quadrato di un polinomio e' ancora un polinomio. Combinando: $NP \subseteq NPSpace = PSpace$.
 }
 
 \thm{$coNP \subseteq PSpace$}{
