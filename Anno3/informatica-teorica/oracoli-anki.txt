@@ -1,0 +1,72 @@
+#separator:tab
+#html:true
+#notetype:Basic
+#deck:info_teorica::oracoli_e_classi_funzionali
+
+Definisci <b>Min-cover</b>.	\[\text{Min-cover} = \{\langle G, k\rangle \mid \text{il VC minimo di } G \text{ ha taglia esattamente } k\}\]<br>Versione di ottimizzazione: <i>i VC più piccoli di \(G\) hanno esattamente \(k\) nodi?</i>
+
+Perché Min-cover non sembra stare né in <b>NP</b> né in <b>coNP</b>?	Un VC di taglia \(k\) testimonia solo l'<i>esistenza</i> di un VC di quella taglia, non la <b>minimalità</b>. Servirebbe vedere tutti gli altri VC e mostrare che sono più grandi: non un singolo certificato polinomiale.<br><br>Stessa cosa per coNP: un VC dato non dice se è minimo. Quindi serve una classe intermedia tra NP/coNP e PSpace.
+
+Come si riduce Min-cover a <b>due query VC</b>?	\[\text{Min-cover} = \{\langle G, k\rangle \mid \langle G, k\rangle \in \text{VC} \wedge \langle G, k-1\rangle \notin \text{VC}\}\]<br>1. Esiste VC di taglia \(\leq k\)? (sì)<br>2. Esiste VC di taglia \(\leq k-1\)? (no)<br><br>Tempo polinomiale + 2 chiamate a una sub-routine per VC \(\Rightarrow\) motiva il concetto di oracolo.
+
+Cos'è una <b>MdT a oracolo</b> \(M^?\)?	Una MdT ordinaria che in più può fare <b>query</b> a un <b>oracolo</b> — scatola nera che risponde sempre in <b>un solo passo</b> a domande del tipo "questa stringa \(\in L\)?".<br><br>Quando si fissa l'oracolo per \(L\), si scrive \(M^L\).
+
+Qual è l'<b>architettura</b> di una MdT a oracolo?	• Nastri ordinari (input, work, ecc.)<br>• <b>Oracle-tape</b> (sola scrittura): dove \(M\) scrive la query<br>• Tre stati speciali:<br>  – \(q_?\): stato di interrogazione (oracolo legge e risponde in 1 passo)<br>  – \(q_{\text{yes}}\): transizione se oracolo dice sì<br>  – \(q_{\text{no}}\): transizione se oracolo dice no<br><br><b>Cancellazione magica</b>: l'oracle-tape si pulisce automaticamente dopo ogni query.
+
+Cosa significa <b>indipendenza dall'oracolo</b>?	La funzione di transizione di \(M\) è definita <b>senza conoscere</b> come l'oracolo decide: \(M\) vede solo risposte sì/no.<br><br>Si scrive \(M^?\) per indicare che la macchina è ben definita prima di fissare l'oracolo. Cambiando oracolo, \(M\) risolve problemi diversi <i>pur restando la stessa macchina chiamante</i>.
+
+Definisci <b>\(P^C\)</b> e <b>\(NP^C\)</b>.	Sia \(C\) una classe di complessità.<br>• \(P^C\): linguaggi decisi in tempo polinomiale da una MdT a oracolo <b>deterministica</b> con oracolo per un \(L' \in C\).<br>• \(NP^C\): idem ma con MdT <b>non deterministica</b>.<br><br>Idea: cosa si riesce a fare in tempo polinomiale <i>se si avesse gratis</i> un oracolo per \(C\).
+
+Perché <b>Min-cover \(\in P^{NP}\)</b>?	Si decide con una MdT a oracolo deterministica polinomiale che fa 2 query a un oracolo per VC, e \(\text{VC} \in NP\).<br><br>\(P^{NP}\) è (congetturalmente) strettamente più grande di NP/coNP ma più piccola di PSpace: cattura problemi "polinomialmente difficili a parte una manciata di query NP".
+
+Dimostra <b>\(NP \subseteq P^{NP}\)</b>.	Sia \(L \in NP\). \(M^?\) deterministica polinomiale con oracolo per \(L\) stesso (che è in NP):<br>1. Copia \(w\) sull'oracle-tape<br>2. Query: "\(w \in L\)?"<br>3. Restituisci la risposta<br><br>Tempo polinomiale, una query \(\Rightarrow L \in P^{NP}\).
+
+Dimostra <b>\(coNP \subseteq P^{NP}\)</b>.	Sia \(L \in coNP \Rightarrow \overline{L} \in NP\). \(M^?\) con oracolo per \(\overline{L}\):<br>1. Copia \(w\) sull'oracle-tape<br>2. Query: "\(w \in \overline{L}\)?"<br>3. <b>Inverti</b> la risposta<br><br>Tempo polinomiale con oracolo NP \(\Rightarrow L \in P^{NP}\).
+
+Definisci la <b>gerarchia polinomiale</b>.	Insieme di classi sopra NP, definite ricorsivamente per \(i \geq 0\):<br>• Caso base: \(\Sigma_0^P = \Pi_0^P = \Delta_0^P = P\)<br>• \(\Sigma_i^P = NP^{\Sigma_{i-1}^P}\)<br>• \(\Pi_i^P = co\Sigma_i^P\)<br>• \(\Delta_{i+1}^P = P^{\Sigma_i^P}\)<br><br>\(\Sigma\): chiamante NTM. \(\Pi\): complemento. \(\Delta\): chiamante DTM.
+
+Cosa sono i <b>primi livelli</b> della gerarchia polinomiale?	• <b>Livello 0</b>: \(\Sigma_0^P = \Pi_0^P = \Delta_0^P = P\)<br>• <b>Livello 1</b>: \(\Sigma_1^P = NP\), \(\Pi_1^P = coNP\), \(\Delta_1^P = P\)<br>• <b>Livello 2</b>: \(\Sigma_2^P = NP^{NP}\), \(\Pi_2^P = coNP^{NP}\), \(\Delta_2^P = P^{NP}\) \(\leftarrow\) Min-cover qui!<br>• <b>Livello 3</b>: \(\Sigma_3^P = NP^{NP^{NP}}\), ecc.
+
+Dimostra <b>\(\Sigma_i^P \subseteq \Delta_{i+1}^P\)</b>.	Stesso argomento di \(NP \subseteq P^{NP}\): una DTM polinomiale delega tutto all'oracolo per il linguaggio in \(\Sigma_i^P\), copiando l'input e restituendo la risposta.
+
+Dimostra <b>\(\Pi_i^P \subseteq \Delta_{i+1}^P\)</b>.	Sia \(L \in \Pi_i^P \Rightarrow \overline{L} \in \Sigma_i^P\). La DTM chiede all'oracolo per \(\Sigma_i^P\) se \(x \in \overline{L}\) e <b>inverte</b> la risposta.
+
+Dimostra <b>\(\Delta_i^P \subseteq \Sigma_i^P\)</b>.	Entrambe usano oracolo in \(\Sigma_{i-1}^P\), ma il chiamante di \(\Delta_i^P\) è una DTM mentre quello di \(\Sigma_i^P\) è una NTM. Una NTM è più potente di una DTM (può simularla).
+
+Dimostra <b>\(\Delta_i^P \subseteq \Pi_i^P\)</b> (chiusura per complemento di \(\Delta_i^P\)).	Sia \(L \in \Delta_i^P\) deciso da \(M^?\) DTM con oracolo \(L' \in \Sigma_{i-1}^P\). Scambiando accept/reject di \(M^?\) si ottiene un decisore per \(\overline{L}\) con lo stesso oracolo: \(\overline{L} \in \Delta_i^P \subseteq \Sigma_i^P\), quindi \(L \in co\Sigma_i^P = \Pi_i^P\).<br><br>Funziona solo perché il chiamante è <b>deterministico</b> (lo scambio non funziona con NTM).
+
+Cos'è il <b>collasso della gerarchia</b>?	Se per qualche \(i\) vale \(\Sigma_i^P = \Pi_i^P\), allora \(\Sigma_j^P = \Sigma_i^P\) per ogni \(j \geq i\): la gerarchia <b>collassa</b> al livello \(i\).<br><br>Casi notevoli:<br>• \(NP = coNP \Rightarrow PH = NP\) (collasso a livello 1)<br>• \(P = NP \Rightarrow PH = P\) (collasso a livello 0)<br><br>Si congettura che nessun collasso avvenga.
+
+Definisci <b>PH</b> (Polynomial Hierarchy).	\[PH = \bigcup_{i \geq 0} \Sigma_i^P = \bigcup_{i \geq 0} \Pi_i^P = \bigcup_{i \geq 0} \Delta_i^P\]<br>Banalmente \(PH \subseteq PSpace\); si congettura \(PH \subsetneq PSpace\).
+
+Cos'è <b>\(\exists\forall\)-SAT</b> e a che livello sta?	\[\exists\, \vec x.\, \forall\, \vec y.\, \varphi(\vec x, \vec y)\]<br>"Esiste un \(\vec x\) tale che per ogni \(\vec y\), \(\varphi\) sia soddisfatta?"<br><br>È <b>\(\Sigma_2^P\)-completo</b>: prototipo del livello 2, come SAT lo è del livello 1.
+
+Qual è il <b>pattern</b> per il livello della gerarchia di SAT con quantificatori?	Il <b>numero di alternanze</b> di quantificatori determina il livello; il <b>primo quantificatore</b> determina \(\Sigma\) (\(\exists\)) o \(\Pi\) (\(\forall\)).<br>• \(\exists\forall\exists\)-SAT \(\to \Sigma_3^P\)-completo<br>• \(\forall\exists\forall\)-SAT \(\to \Pi_3^P\)-completo<br>• ecc.
+
+Qual è la <b>connessione di PH con i giochi</b>?	"Esiste una mia mossa tale che per ogni risposta dell'avversario, esiste una mia risposta, …, vinco?"<br>= struttura \(\exists\forall\exists\forall\cdots\)-SAT.<br><br>Strategia in \(k\) mosse \(\to 2k\) quantificatori \(\to \Sigma_{2k}^P\). Partita arbitrariamente lunga \(\to\) tutta PH, fino a PSpace.<br><br>Per questo scacchi/go generalizzati sono PSpace o EXP completi.
+
+Definisci la classe <b>FP</b>.	Classe delle <b>funzioni</b> calcolate da <i>trasduttori</i> deterministici in tempo polinomiale.<br><br>FP è il "cugino funzionale" di P:<br>• P: problemi di decisione decisi in tempo poly det<br>• FP: funzioni calcolate in tempo poly det<br><br>Le riduzioni \(\leq_P\) sono funzioni in FP.
+
+Definisci <b>FMin-cover</b>.	\[\text{FMin-cover}(G) = \min\{|V'| : V' \text{ VC di } G\}\]<br>Versione di calcolo: restituire la <b>taglia</b> del VC minimo (un numero, non sì/no).
+
+Mostra che <b>FMin-cover \(\in FP^{NP}\)</b>.	Con oracolo per VC (decisionale), scandiamo \(k = 1, 2, \ldots, |V|\) e chiediamo "esiste VC \(\leq k\)?". Il primo "sì" è la taglia minima.<br><br>Versione efficiente: <b>ricerca binaria</b> su \([0, |V|]\) \(\Rightarrow O(\log n)\) query \(\Rightarrow\) FMin-cover \(\in FP^{NP}[O(\log n)]\).
+
+Definisci <b>\(FP^C[g(n)]\)</b>.	Funzioni calcolate da trasduttori deterministici polinomiali con oracolo in \(C\) che fanno al più <b>\(g(n)\) query</b>.
+
+Dimostra <b>\(\text{FMin-cover} \in FP \Rightarrow P = NP\)</b>.	Riduciamo VC a FMin-cover:<br>1. Calcola \(m = \text{FMin-cover}(G)\) (polinomiale per ipotesi)<br>2. Rispondi sì sse \(m \leq k\)<br><br>Tutto polinomiale \(\Rightarrow \text{VC} \in P\). VC è NP-completo \(\Rightarrow P = NP\).
+
+Qual è il <b>principio generale</b> di legame decisione/calcolo?	<i>Se un problema di decisione è tosto, la sua variante di calcolo non può essere semplice.</i><br><br>Se \(L\) (decisione) è NP-completo e \(F_L\) (calcolo) \(\in FP\), allora \(L \in P\), quindi \(P = NP\). La NP-completezza decisionale dà un <b>lower bound forte</b> sulla versione di calcolo.
+
+Definisci <b>FTSP</b>, <b>TSP</b>, <b>HC</b>.	• <b>HC</b> (Hamiltonian Cycle): ciclo che visita ogni nodo esattamente una volta<br>• <b>FTSP</b>(\(G\)): costo minimo di un HC in un grafo pesato \(G\) (o default se non c'è HC)<br>• <b>TSP</b>: \(\{\langle G, k\rangle \mid G \text{ pesato ha HC di peso } \leq k\}\)<br><br>Versione decisionale di FTSP.
+
+Idea della prova <b>FTSP \(\in FP^{NP}[O(\log \|G\|)]\)</b>.	Ricerca binaria sul peso del ciclo, con oracolo per TSP.<br>1. Upper bound \(\Sigma = \sum_e \lambda(e)\) (tutti gli archi)<br>2. Test esistenza: oracolo TSP su \(\langle G, \Sigma\rangle\). Se no, restituisci default.<br>3. Ricerca binaria su \([0, \Sigma]\) per il \(k^*\) minimo.<br><br>\(\log \Sigma = O(\log |E| + \log W_{\max}) = O(\|G\|)\) (pesi in binario) \(\Rightarrow O(\|G\|)\) query.
+
+Qual è la <b>catena di riduzioni</b> per NP-completezza di TSP?	\[\text{3SAT} \leq_P \text{DHC} \leq_P \text{HC} \leq_P \text{TSP}\]<br>• <b>3SAT \(\leq_P\) DHC</b>: catene variabile (archi verdi/rossi = \(\top/\bot\)) + nodi clausola con detour<br>• <b>DHC \(\leq_P\) HC</b>: ogni nodo \(a\) in 3 nodi \(a^{\text{in}}, a^{\text{mid}}, a^{\text{out}}\)<br>• <b>HC \(\leq_P\) TSP</b>: stesso grafo, \(\lambda(e) = 1\), \(k = |V|\)
+
+Come funziona <b>3SAT \(\leq_P\) DHC</b>?	Per ogni \(x_i\): <b>catena</b> di \(2m\) nodi con archi <b>verdi</b> (\(x_i = \top\)) e <b>rossi</b> (\(x_i = \bot\)). \(2^n\) percorsi totali da \(s\) a \(s\).<br><br>Per ogni clausola \(c_j\): un nodo extra. Detour da catena verde di \(x_i\) se \(x_i \in c_j\); da catena rossa se \(\neg x_i \in c_j\).<br><br>\(\varphi\) soddisfacibile sse esiste HC che percorre catene secondo \(\sigma\) e visita ogni \(c_j\) via un letterale soddisfatto.
+
+Come funziona <b>DHC \(\leq_P\) HC</b>?	Ogni nodo \(a\) di \(G\) (orientato) diventa <b>3 nodi</b> in \(H\): \(a^{\text{in}}, a^{\text{mid}}, a^{\text{out}}\) con archi \(a^{\text{in}} - a^{\text{mid}} - a^{\text{out}}\).<br>Per ogni arco \((a \to b)\) di \(G\): arco \(a^{\text{out}} - b^{\text{in}}\) in \(H\).<br><br>\(a^{\text{mid}}\) ha solo 2 vicini \(\Rightarrow\) in qualsiasi HC di \(H\) appare come \(a^{\text{in}} - a^{\text{mid}} - a^{\text{out}}\), forzando la direzione.
+
+Come funziona <b>HC \(\leq_P\) TSP</b>?	Banale: \(H = G\), \(\lambda(e) = 1\) per ogni arco, \(k = |V|\).<br><br>Ogni HC ha esattamente \(|V|\) archi di peso 1, totale \(|V| = k\). Quindi \(G\) ha HC sse \(\langle H, k\rangle \in \text{TSP}\).
+
+Schema delle inclusioni nella <b>gerarchia polinomiale</b>.	\[P \subseteq NP \cup coNP \subseteq \Delta_2^P \subseteq \Sigma_2^P \cup \Pi_2^P \subseteq \Delta_3^P \subseteq \cdots \subseteq PH \subseteq PSpace\]<br>Tutte note. Strette: nessuna dimostrata. Il <b>fatto che non collassa</b> è congettura aperta.

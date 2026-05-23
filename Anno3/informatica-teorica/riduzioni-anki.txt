@@ -1,7 +1,7 @@
 #separator:tab
 #html:true
 #notetype:Basic
-#deck:Informatica Teorica::Riduzioni
+#deck:info_teorica::riduzioni
 
 Cos'è una <b>riduzione</b> da \(A\) a \(B\)?	Una funzione \(f\) calcolabile tale che per ogni stringa \(w\):<br>\[w \in A \iff f(w) \in B\]<br>Si scrive \(A \leq B\). Intuitivamente: \(A\) non è più difficile di \(B\) — saper risolvere \(B\) implica saper risolvere \(A\).
 

@@ -1,0 +1,177 @@
+\documentclass{report}
+
+\input{../LatexTemp/preamble.tex}
+\input{../LatexTemp/macros}
+\input{../LatexTemp/letterfonts}
+
+\usepackage[utf8]{inputenc}
+
+\setlength{\parindent}{0pt}
+
+\title{Informatica Teorica --- Esame di simulazione}
+\author{}
+\date{18 maggio 2026}
+
+\begin{document}
+
+\maketitle
+
+\vspace{1cm}
+
+\textbf{Istruzioni}: Rispondere a tutte le domande. Per ogni esercizio, presentare la riduzione formalmente (definizione di $f$, dimostrazione di correttezza in entrambe le direzioni, calcolabilità polinomiale) e concludere sulla classe di complessità del problema.
+
+\vspace{1cm}
+
+\hrule
+
+\section*{Domanda Teorica (10 punti)}
+
+\begin{enumerate}
+  \item[(a)] Definire formalmente la classe $coNP$ tramite certificati. Cosa rappresenta il certificato in un linguaggio in $coNP$?
+  \item[(b)] Enunciare e dimostrare il teorema $P \subseteq NP \cap coNP$.
+  \item[(c)] Spiegare perché si congettura che FACTOR non sia NP-completo, pur essendo un problema che non si sa risolvere in tempo polinomiale.
+\end{enumerate}
+
+\hrule
+
+\section*{Esercizio 1: Volontari (15 punti)}
+
+Considerare il seguente problema \textsc{Volontari}.
+
+Un'organizzazione non governativa deve formare una squadra di volontari per una missione internazionale. Ogni volontario parla un certo insieme di lingue. Per garantire la comunicazione, gli organizzatori richiedono che ogni coppia di volontari nella squadra condivida \textbf{almeno una lingua in comune}. L'obiettivo è formare una squadra di taglia almeno $k$.
+
+In un'istanza $I = \langle V, L, p, k\rangle$ di \textsc{Volontari}, $V$ è l'insieme dei volontari disponibili, $L$ è l'insieme delle lingue, $p : V \to 2^L$ è una funzione che a ogni volontario associa le lingue che parla (rappresentata come un insieme di liste $\ell_v$, una per ogni $v \in V$), e $k$ è un intero positivo. Un'istanza $I$ è "sì" se e solo se esiste $X \subseteq V$ tale che $|X| \geq k$ e $\forall v_1, v_2 \in X$ con $v_1 \neq v_2$, $p(v_1) \cap p(v_2) \neq \emptyset$.
+
+\begin{itemize}
+  \item Discutere la complessità del problema \textsc{Volontari} (\emph{Suggerimento}: riduzione da Clique).
+  \item Discutere la complessità del problema \textsc{Max-Volontari} di calcolare il numero massimo di volontari che possono essere inseriti in una squadra rispettando il vincolo di condivisione di lingue.
+\end{itemize}
+
+\hrule
+
+\section*{Esercizio 2: Sorveglianza (15 punti)}
+
+Considerare il seguente problema \textsc{Sorveglianza}.
+
+Un comune deve installare un sistema di sorveglianza con telecamere posizionate agli incroci stradali. Una strada è considerata "sorvegliata" se almeno uno dei suoi due incroci capolinea ha una telecamera installata. Per motivi di budget, si vuole installare al più $k$ telecamere coprendo \textbf{tutte} le strade.
+
+In un'istanza $I = \langle N, S, k\rangle$ di \textsc{Sorveglianza}, $N$ è l'insieme degli incroci, $S$ è un insieme di coppie non ordinate $\{u, v\}$ con $u, v \in N$ che rappresentano le strade, e $k$ è un intero positivo. Un'istanza $I$ è "sì" se e solo se esiste $C \subseteq N$ tale che $|C| \leq k$ e per ogni strada $\{u, v\} \in S$, $u \in C \vee v \in C$.
+
+\begin{itemize}
+  \item Discutere la complessità del problema \textsc{Sorveglianza} (\emph{Suggerimento}: riduzione da Vertex Cover).
+  \item Discutere la complessità del problema \textsc{Min-Telecamere} di calcolare il numero minimo di telecamere necessarie a sorvegliare tutte le strade.
+\end{itemize}
+
+\hrule
+
+\vspace{1cm}
+
+\textbf{Tempo}: 2 ore. \textbf{Punteggio massimo}: 40 punti.
+
+\newpage
+
+\section*{Soluzioni}
+
+\subsection*{Soluzione Domanda Teorica}
+
+\textbf{(a)} $L \in coNP$ sse esiste un polinomio $p$ e una MdT deterministica $M$ tali che
+\[
+  x \in L \iff \forall y, |y| \leq p(|x|) : M(x, y) \text{ accetta}.
+\]
+Equivalentemente: $L \in coNP \iff \overline{L} \in NP$. Il certificato $y$ è un \textbf{controesempio} (refuter): per dimostrare $x \notin L$ basta esibire una $y$ tale che $M(x, y)$ rifiuta.
+
+\textbf{(b)} Teorema: $P \subseteq NP \cap coNP$.
+
+\emph{Dim}: sia $L \in P$, deciso da una MdT deterministica polinomiale $M$. Allora $M$ è anche una MdT \emph{non} deterministica polinomiale che decide $L$ (caso particolare, un solo ramo), quindi $L \in NP$. Analogamente, la macchina $\overline{M}$ ottenuta da $M$ scambiando accept/reject decide $\overline{L}$ in tempo polinomiale deterministico $\Rightarrow \overline{L} \in P \subseteq NP \Rightarrow L \in coNP$. Quindi $L \in NP \cap coNP$.
+
+\textbf{(c)} FACTOR (versione decisionale: "$n$ ha un fattore primo $\leq k$?") è in $NP \cap coNP$:
+\begin{itemize}
+  \item In NP: certificato = un fattore primo $p \leq k$ (verifica AKS + divisione, polinomiali).
+  \item In coNP: $\overline{\text{FACTOR}} \in NP$ con certificato = fattorizzazione completa $p_1, \ldots, p_m$ (al più $\log_2 n$ fattori), verificandone primalità, prodotto e $p_i > k$.
+\end{itemize}
+Se FACTOR fosse NP-completo, allora poiché FACTOR $\in coNP$, anche tutti i problemi NP si ridurrebbero polinomialmente a un problema in coNP, da cui $NP \subseteq coNP$, e per simmetria $NP = coNP$. Quest'ultimo è considerato improbabile (più forte di $P \neq NP$): nessuno si aspetta che ogni formula non soddisfacibile abbia una "prova succinta" della sua insoddisfacibilità.
+
+\subsection*{Soluzione Esercizio 1: Volontari}
+
+\subsubsection*{NP-completezza di Volontari}
+
+\textbf{Volontari $\in NP$}: certificato = squadra $X \subseteq V$, di taglia polinomiale. Verifica: $|X| \geq k$? Per ogni coppia $v_1, v_2 \in X$, $p(v_1) \cap p(v_2) \neq \emptyset$? Costo $O(|X|^2 \cdot |L|)$, polinomiale.
+
+\textbf{Volontari NP-hard}: $\text{CLIQUE} \leq_P \text{Volontari}$.
+
+\textbf{Riduzione.} Sia $\langle G = (V_G, E_G), k\rangle$ istanza di CLIQUE. Definiamo $f(\langle G, k\rangle) = \langle V, L, p, k\rangle$:
+\begin{itemize}
+  \item $V = V_G$ (un volontario per nodo)
+  \item $L = E_G$ (una lingua per arco: $\ell_e$ per ogni $e \in E_G$)
+  \item $p(v) = \{\ell_e : e \in E_G,\; v \in e\}$ (le lingue di $v$ corrispondono agli archi incidenti)
+  \item $k' = k$ (stesso parametro)
+\end{itemize}
+
+\textbf{Proprietà di costruzione (fondamentale)}: per ogni $u, v \in V_G$,
+\[
+  p(u) \cap p(v) \neq \emptyset \iff \{u, v\} \in E_G.
+\]
+Infatti $\ell_e \in p(u) \cap p(v) \iff u, v \in e \iff e = \{u, v\}$. \emph{Condivisione di lingua $\iff$ adiacenza in $G$.}
+
+\textbf{Costo}: $|V| = |V_G|$, $|L| = |E_G|$, e $\sum_v |p(v)| = 2|E_G|$ (ogni arco contribuisce a 2 liste). Output polinomiale.
+
+\textbf{Correttezza.}
+
+$(\Rightarrow)$ Sia $K \subseteq V_G$ clique di $G$ con $|K| \geq k$. Mostriamo che $K$ è una squadra valida di Volontari. Per ogni $u, v \in K$ con $u \neq v$, $\{u, v\} \in E_G$ (perché $K$ è clique), quindi per la proprietà di costruzione $p(u) \cap p(v) \neq \emptyset$. Inoltre $|K| \geq k$. Quindi $f(\langle G, k\rangle) \in$ Volontari.
+
+$(\Leftarrow)$ Sia $X \subseteq V$ squadra valida con $|X| \geq k$. Mostriamo che $X$ è clique di $G$. Per ogni $u, v \in X$ con $u \neq v$, $p(u) \cap p(v) \neq \emptyset$, quindi per la proprietà di costruzione $\{u, v\} \in E_G$. Quindi $X$ è clique di taglia $\geq k$ in $G$, cioè $\langle G, k\rangle \in$ CLIQUE.
+
+\textbf{Conclusione}: CLIQUE è NP-completo, $\text{CLIQUE} \leq_P \text{Volontari}$, Volontari $\in NP$ $\Rightarrow$ \textbf{Volontari è NP-completo}.
+
+\subsubsection*{Max-Volontari $\in FP^{NP}$, $\notin FP$ (salvo $P = NP$)}
+
+\textsc{Max-Volontari} è la versione funzionale: input $\langle V, L, p\rangle$, output il massimo $|X|$ tale che $X$ sia una squadra valida.
+
+\textbf{Upper bound}: ricerca binaria su $k \in [1, |V|]$ con oracolo per Volontari.
+\[
+  \text{Max-Volontari} \in FP^{NP}[O(\log |V|)].
+\]
+La monotonia ($k$ valido $\Rightarrow k-1$ valido) garantisce la convergenza della ricerca binaria.
+
+\textbf{Lower bound}: se Max-Volontari $\in FP$, riduciamo Volontari a Max-Volontari calcolando $m = \text{Max-Volontari}(V, L, p)$ e rispondendo sì sse $m \geq k$. Tutto polinomiale $\Rightarrow$ Volontari $\in P$. Ma Volontari è NP-completo $\Rightarrow P = NP$.
+
+\textbf{Conclusione}: $\text{Max-Volontari} \in FP^{NP}[O(\log n)]$ e $\notin FP$ salvo $P = NP$.
+
+\subsection*{Soluzione Esercizio 2: Sorveglianza}
+
+\subsubsection*{NP-completezza di Sorveglianza}
+
+\textbf{Sorveglianza $\in NP$}: certificato = $C \subseteq N$, di taglia polinomiale. Verifica: $|C| \leq k$? Per ogni $\{u, v\} \in S$, $u \in C \vee v \in C$? Costo $O(|S| \cdot |N|)$, polinomiale.
+
+\textbf{Sorveglianza NP-hard}: $\text{VC} \leq_P \text{Sorveglianza}$.
+
+\textbf{Riduzione.} La definizione di Sorveglianza coincide \emph{letteralmente} con quella di Vertex Cover: incroci $=$ vertici, strade $=$ archi non orientati, telecamere $=$ vertex cover. Definiamo $f(\langle G = (V_G, E_G), k\rangle) = \langle N, S, k\rangle$:
+\begin{itemize}
+  \item $N = V_G$
+  \item $S = E_G$
+  \item $k' = k$
+\end{itemize}
+$f$ è l'identità a meno di rietichettatura, calcolabile in tempo lineare.
+
+\textbf{Correttezza.}
+
+$(\Rightarrow)$ Sia $C \subseteq V_G$ VC di $G$ con $|C| \leq k$. Allora $|C| \leq k$ e per ogni $\{u, v\} \in E_G = S$, $u \in C \vee v \in C$ (per def.\ VC). Quindi $C$ è un insieme valido di Sorveglianza.
+
+$(\Leftarrow)$ Sia $C \subseteq N$ valido per Sorveglianza, $|C| \leq k$. Per ogni $\{u, v\} \in S = E_G$, $u \in C \vee v \in C$, cioè $C$ è VC di $G$.
+
+\textbf{Conclusione}: VC è NP-completo, $\text{VC} \leq_P \text{Sorveglianza}$, Sorveglianza $\in NP$ $\Rightarrow$ \textbf{Sorveglianza è NP-completo}.
+
+\subsubsection*{Min-Telecamere $\in FP^{NP}$, $\notin FP$ (salvo $P = NP$)}
+
+\textsc{Min-Telecamere} è la versione funzionale: input $\langle N, S\rangle$, output il minimo $|C|$ tale che $C$ sorvegli tutte le strade.
+
+\textbf{Upper bound}: ricerca binaria su $k \in [0, |N|]$ con oracolo per Sorveglianza. La monotonia (se $k$ telecamere bastano allora $k+1$ bastano) garantisce la convergenza:
+\[
+  \text{Min-Telecamere} \in FP^{NP}[O(\log |N|)].
+\]
+
+\textbf{Lower bound}: se Min-Telecamere $\in FP$, riduciamo Sorveglianza a Min-Telecamere calcolando $m = \text{Min-Telecamere}(N, S)$ e rispondendo sì sse $m \leq k$. Polinomiale $\Rightarrow$ Sorveglianza $\in P$. Sorveglianza è NP-completo $\Rightarrow P = NP$.
+
+\textbf{Conclusione}: $\text{Min-Telecamere} \in FP^{NP}[O(\log n)]$ e $\notin FP$ salvo $P = NP$. Strutturalmente, Min-Telecamere coincide con il \textbf{numero di vertex cover minimo} del grafo $G = (N, S)$.
+
+\end{document}
