@@ -1,417 +1,176 @@
 % \begin{document}
 \chapter{Key Exchange}
-
-\section{Introduction to Cryptography}
-
-\dfn{Cryptography}{
-  Art and science of using mathematics to obscure the meaning of data by applying transformations to the data thta are impractical or impossible to reverse without the knowledge of some key
+\dfn{Key exchange}{
+  Il \textit{key exchange} e' una procedura con cui due parti $ A $ e $ B $ cooperano per ottenere una \textbf{chiave crittografica condivisa} (segreta).
 }
-
-\dfn{Cryptoanalysis}{
-  Art/science of breaking encryption without knowing the key
-}
-
-Used for:
+Perche' la cifratura \textbf{simmetrica} funzioni, le due parti devono condividere la \underline{stessa chiave}, che va protetta dall'accesso altrui; inoltre e' opportuno \textbf{cambiare spesso} la chiave, per limitare la quantita' di dati compromessi se un attaccante la scopre. Il problema si divide in due:
 \begin{itemize}
-\item \textbf{Communication}: web traffic, wireless, vpn
-  \item \textbf{Files on disk}
-  \item \textbf{User authentication}
+  \item \textbf{distribuzione di chiavi pubbliche};
+  \item \textbf{distribuzione di chiavi segrete} (symmetric key exchange), tramite un Trusted Third Party oppure tramite crittografia asimmetrica (Merkle Puzzles, Diffie-Hellman).
 \end{itemize}
 
-For secure communication, we also want to ensure no eavesdropping or tampering. Possible approaches are:
-\begin{itemize}
-\item \textbf{Steganography}: we 'hide' the existance of the message
-\item \textbf{Cryptography}: we instead hide the meaning of the message
-\end{itemize}
+\section{Distribuzione delle chiavi pubbliche}
+Una chiave pubblica $ PU_x $ va resa nota agli altri, ma in modo \textbf{autenticato} (deve essere garantito che appartenga davvero a $ x $). Quattro approcci, dal piu' debole al piu' robusto.
 
-\subsection{Encryption Terminology}
-\begin{center}
-  \includegraphics[width=0.5\textwidth]{img/2026-02-16-11-15-55.png}
-\end{center}
-
-\subsection{Goals and Protocols}
-The basic goals are:
-\begin{itemize}
-\item \textbf{Privacy}
-\item \textbf{Authenticity}
-\item \textbf{Integrity}
-\item \textbf{Non-repudiation}: no disclaming of authorship (guarantees Authenticity and Integrity)
-\end{itemize}
-
-The \textit{protocols} need to guarantee these goals by understanding:
-\begin{itemize}
-\item The parties and the context
-  \item The goals
-    \item The \textbf{trusted computing base}
-    \item The capabilities of the ... (\textbf{Threat Model})
-\end{itemize}
-
-\subsection{Kerchoff's Principle and the Threat Model}
-Important rule regarding the safety of cyber systems
-
-\thm{}{
-  The security of a protocol shouldn't assume that the underlying methods/algorithms of the encryption are secret, as only the secrecy of the keys can be guaranteed.
-
-  \textbf{Security by obscurity does not work.}
-}
-
-So the encryption functions need to remain secure even with the attacker knowing how the function works.
-
-The attacker threat model consists of:
-\begin{itemize}
-  \item Knowledge about the cipher (Kerchoff)
-\item Interaction with the messages and the protocol
-\item Interaction with the encryption algorithm
-  \begin{itemize}
-  \item \textbf{Ciphertext-only}
-  \item \textbf{Chosen-plaintext attack (CPA)}
-  \item \textbf{Chosen-ciphertext attack (CCA)}
-  \item CPA and CCA may be \textit{adaptive} (previous requests may change choices)
-  \end{itemize}
-\item Available resources (storage/computation)
-\end{itemize}
-
-\subsection{Symmetric Encryption}
-Lowkey l'abbiamo fatta gia' due volte, aggiungo solo roba che dice in piu' (sta letteralmente leggendo le slide come il guerriero)
-
-\begin{itemize}
-\item \textbf{Single-use key}: the key is regenerated for each transmitted file
-\item \textbf{Multi-use key}: the key is used with a "nonce" in order to be used for multiple transmissions
-\end{itemize}
-
-\subsection{Asymmetric Encryption}
-Private and public key. La pubblica e' salvata in una \textbf{public repo} gestita da un'autorita' trusted
-
-\subsection{Secure Communication}
-
-Una volta SSL ora TLS, poi RCS per end-to-end security (sono la stessa cosa??)
-
-\subsection{Boh}
-
-Criptography is a rigorus science that follows three main steps:
-
-\begin{itemize}
-\item Specify Threat Model
-\item Propose a construction
-\item ...
-\end{itemize}
-
-un po di storia, va veloce (manca la post-quantum criptology)
-
-vabbe' sto scrivendo tutot in italiano facciamolo in italiano
-
-la brodez sta davvero ripetendo il cifrario di Cesare....
-e' ez da battere provando tutte le chiavi (non ce ne stanno molti) -> bruteforce/exhaustive-search criptanalysis
-
-\subsubsection{Monoalphabetic cipher}
-Come chiave prende una permutazione dell'alfabeto sono $ 2^{88} $ non possiamo fare brute force
-possiamo fare criptanalysis con metodi statistici, ovvero usando la frequenza di ogni lettera
-
-\subsubsection{Affine cipher}
-Caso specifico del sub-cipher1
-
-\subsection{Stream cipher}
-in Un simmetric cipher definito su (K, P, C), con K chiave, plaintext P e ciphertext C, abbiamo che la funzione di encryption è spesso randomizzata ed è definita come E : K x P -> C e invece la 
-funzione di decryption è deterministica e tale per cui D: K x C -> P.
-
-\subsection{One-Time Pad}
-\dfn{One-Time Pad}{
-  Si definisce \textit{One-Time Pad} il seguente cifrario:
-  \begin{itemize}
-    \item Spazio delle chiavi: ${0,1}^n$ (stringhe di bit di lunghezza n)
-    \item Funzione di encryption: $E_k(m) = m \oplus k$
-    \item Funzione di decryption: $D_k(c) = c \oplus k$
-  \end{itemize}
-  Dove $k$ è la chiave e $m$ è il plaintext e \texttt{len(k) = len(m)}
-}
-Praticamente si fa lo XOR tra i bit del plaintext e quelli della chiave. In questo caso la lunghezza della key deve essere uguale a quella del plaintext.
-
-\mprop{Sulla corrtettezza dell'Otp}{
-  \[
-    D(k, E(k,m)) = k \oplus (k \oplus m) = (k \oplus k) \oplus m = 0 \oplus m = m
-  \]
-}
-
-
-pro: è mega veloce sia in encyption che in decryption brodez
-contro: deve usare chiavi lunghissime perché la key deve essere lunga come il messaggio. ma dato che questa key deve essere mandata da alice a bob in modo sicuro, allora potrebbe 
-usare sto meccanismo sicuro per mandare direttamente il messagio, quindi boh non serve a un cazzo.
-
-\subsubsection{Sicurezza del cifrario OTP}
-PEr supporre che un messaggio sia sicuro, si potrebbero usare due approcci naif:
-\begin{itemize}
-\item \textbf{L'attaccante non riesce a trovare la chiave}: Non basta. Magari non trova la chiave ma riesce a decifrare il messaggio lo stesso
-\item \textbf{L'attaccante non riesce a recuperare l'intero plaintext}: Non basta neanche. Se recupera anche solo un bit del messaggio, per molte applicazioni è già un disastro
-\end{itemize} 
-
-SI RINGRAZIA PROFONDAMENTE IL BUON CLAUDE SHANNON PER LA DEFINIZIONE DI SICUREZZA, OVVERO CHE \textit{ciphertext non deve rivelare assolutamente nessuna informazione sul plaintext}. Zero. Nulla. Neanche quante vocali ci sono, neanche la lunghezza approssimativa. Si noti la la seguente definizione:
-
-\dfn{Sicurezza perfetta secondo Shannon}{
-  Un cifrario $(E, D)$ su $(K, P, C)$ ha \textit{perfect secrecy} se $\forall m_0, m_1 \in P: len(m_0) = len(m_1)$ e $\forall c \in C$ allora:
-  \[
-    Pr[E(k, m_0) = c] = Pr[E(k, m_1) = c]
-  \]
-  Dove $k$ è la chiave
-}
+\subsection{Public announcement}
+Ognuno annuncia (broadcast) la propria chiave pubblica.
 \nt{
-  In altre parole la probabilità che il chipertext $c$ è idendica qualunque sia il messaggio cifrato. PErtanto non c'è informazione in $c$ su quale sia $m_0$ o $m_1$
+  \textbf{Debolezza}: chiunque puo' \textit{forgiare} un annuncio. Un utente puo' \textbf{fingersi} $ A $ e diffondere una chiave pubblica al posto suo. Non c'e' autenticazione dell'identita'.
 }
-Si noti il seguente teorema:
-\thm{}{Il One-Time Pad ha perfect secrecy}
 
-\pf{Dimostrazione}{
-  Sia $m$ e $c$, vogliamo calcolare $Pr[E(k,m) = c]$ dove $k$ è uniforme su $K$. 
-  
-  Tale probabilità è uguale al numero di chiavi $k\in K$ tali che $E(k,m) = c$ diviso al numero di chiavi totali $|K|$, pertanto basta dimostrare che questa probabilità è costante $\forall (m,c)$
-
-  Nell'OTP $E(k,m) = m \oplus k$ implica $k = m \oplus c$. C'è esattamente una chiave per ogni coppia $(m,c)$ che produce quel ciphertext. Il numeratore quindi è sempre 1, indipendemente da $m$ e $c$.
-
-  Pertanto si che 
-  \[
-    Pr[E(k,m) = c] = \frac{1}{|K|} \quad \forall m,c
-  \]
-  La probabilità è la stessa per qualunque messaggio
- }
-
- Si ha tuttavia una conseguenza importante
- \thm{Teorema di Shannon}{
-  La sicurezza perfetta implica che $|K| \geq |P|$
- }
+\subsection{Directory pubblica dinamica}
+Un'entita' fidata / autorita' centrale (CA) mantiene e distribuisce una directory pubblica delle chiavi. La registrazione di $ PU_x $ deve avvenire \textbf{di persona} o tramite un canale autenticato sicuro.
 \nt{
- Ovvero un cifrario ha sicurezza perfetta se e solo se la lunghezza della chiave è almeno quella del messaggio}
-
-Se volete sicurezza perfetta, pagate il prezzo di chiavi lunghissime. E questo è impraticabile su larga scala.
-
-La conseguenza pratica è drastica: dobbiamo rinunciare alla sicurezza perfetta e accontentarci di qualcosa di "meno perfetto", la sicurezza computazionale, che è comunque più che sufficiente.
-
-\subsection{Pseudo - Random Generators e Stream Ciphers}
-
-Abbiamo due fatti:
-\begin{itemize}
-  \item Il OTP è perfettamente sicuro ma richiede chiavi lunghe quanto il messaggio
-  \item La sicurezza perfetta è impossibile con chiavi corte.
-\end{itemize}
-La soluzione è è quella di rinunciare alla sicurezza perfetta e sostituiamo la chiave veramente veramente casuale con una sequenza pseudo-casuale generata da una chiave corta. Questo è l'idea degli stream cipher. Formalmente
-
-\dfn{Stram Cipher}{
-  Si definisce \textit{Stream Cipher} un sistema che mira a emulare la sicurezza del One-Time Pad in modo efficiente. A differenza dei cifrari a blocchi che operano su segmenti fissi di dati, lo stream cipher elabora il testo in chiaro bit per bit o byte per byte
-}
-Adesso si noti la seguente definizione
-\dfn{Pseudo-Random Generator (PRG)}{
-  Si definisce \textit{PRG} la seguente funzione:
-  \[
-    G:\{0,1\}^s \to \{0,1\}^n \text{ con }n>>s
-  \]
+  Resta vulnerabile: se l'avversario riesce a \textbf{ottenere/calcolare la chiave privata della directory authority}, puo' impersonare chiunque.
 }
 
-In prarica riceve in input un seed (la chiave breve, s bit) e produce una sequenza molto più lunga (n bit) che sembra casuale. Lo stream cipher usa G così
-\begin{itemize}
-  \item $E(k, m) = G(k) \oplus m$
-  \item $D(k, c) = G(k) \oplus c$
-\end{itemize}
-La chiave $k$ è breve (il seed), la sequenza $G(k)$ è lunga quanto il messaggio.
-
-\subsubsection{Tre Tipi di Generatori}
-Vale la pena distinguere tre concetti
-\dfn{TRNG (True Random Number Generator)}{
-  usa fenomeni fisici genuinamente casuali ex rumore termico, eventi radioattivi, jitter dell'orologio. Produce vera casualità, ma è lento
-}
-\dfn{PRNG (Pseudo-Random Number Generator)}{
-  algoritmo deterministico che a partire da un seed produce una sequenza lunga e statisticamente "casuale"
-}
-\nt{
-  Veloce ma deterministico, da un seed produce sempre la stessa sequenza
-}
-\dfn{PRF (Pseudo-Random Function)}{una funzione che, dato un input, produce un output pseudo-casuale}
-\nt{è una generalizzazione del PRNG}
-
-\subsubsection{Requisiti di un buon PRNG}
-Un PRNG per uso crittografico deve soddisfare due requisiti fondamentali
-\begin{itemize}
-  \item \textbf{Randomness (apparente)}: la sequenza prodotta deve superare tutti i test statistici noti — distribuzione uniforme dei bit, assenza di pattern, correlazioni basse tra bit vicini
-  \item \textbf{Unpredictability (imprevedibilità)}: dato un prefisso della sequenza, non deve esistere nessun algoritmo efficiente (in tempo polinomiale) in grado di predire il bit successivo con probabilità significativamente maggiore di $1/2$ (\textbf{next-bit test})
-\end{itemize}
-
-\subsubsection{PRNG deboli, NON USARE @ALEXBASTA, NON USARLI PERFAVORE}
-Due esempi di PRNG statisticamente accettabili ma crittograficamente insicuri
-
-\begin{itemize}
-  \item \texttt{glibc random()}: Utilizza un generatore a feedback lineare (non-linear additive feedback). conoscendo alcuni output si può calcolare facilmente il seed e predire tutti gli output futuri
-  \item \textbf{Linear Congruential Generator}:
-  Si ottiene attravero questo algoritmo \texttt{r[i] = (a · r[i-1] + b) mod p}. Semplice, veloce, ha buone proprietà statistiche, ma è matematicamente elementare da invertire: dati due output consecutivi, si trovano immediatamente a e b
-\end{itemize}
-
-\subsubsection{Un Buon PRNG: Blum Blum Shub (BBS)}
-Il BBS è un esempio di PRNG crittograficamente sicuro la cui sicurezza è ridotta a un problema matematico difficile
-
-\begin{algorithm}
-\caption{Generatore Blum Blum Shub}
-Scegli due grandi numeri primi $p$ e $q$ tali che $p \equiv q \equiv 3 \pmod{4}$\;
-Calcola $n \gets p \cdot q$\;
-Scegli un seed $s$ tale che $\gcd(s,n)=1$\;
-Calcola $X_0 \gets s^2 \bmod n$\;
-\For{$i = 1$ \KwTo $k$}{
-    $X_i \gets X_{i-1}^2 \bmod n$\;
-    $B_i \gets X_i \bmod 2$\;
-}
-\KwRet $\{B_1, B_2, \dots, B_k\}$\;
-\end{algorithm}
-
-\mprop{Sicurezza di BBS}{
-  Predire il bit successivo della sequenza BBS è computazionalmente equivalente a fattorizzare $n = p\cdot q$
-}
-
-\nt{
-  non esiste nessun algoritmo efficiente noto per fattorizzare numeri grandi pertanto BBS è crittograficamente sicuro
-}
-
-Tuttavia è relativamente lento rispetto ad altri PRNG crittografici. Per applicazioni ad alta velocità si usano altri approcci.
-
-\subsubsection{Formalizzare queste note TODO}
-
-Gli Stream Cipher: Struttura Generica
-Uno stream cipher tipico funziona così: a partire dalla chiave K e da un valore di inizializzazione IV, si mantiene uno stato interno $ s_i $ che evolve a ogni passo. A ogni passo si produce un byte del keystream $ z_i $ tramite una funzione $g(s_i)$, e lo stato avanza con una funzione $ f(s_i) $.
-Il keystream viene poi XOR-ato byte a byte con il plaintext: $ c_i = p_i \oplus z_i $.
-L'IV serve a garantire che lo stesso key K produca keystream diversi in sessioni diverse — un meccanismo simile al nonce che vedremo nei cifrari moderni.
-
-Gli Stream Cipher Non Hanno Perfect Secrecy
-Una domanda naturale: uno stream cipher può avere perfect secrecy?
-No, per definizione. La chiave k è corta (il seed), mentre il messaggio è lungo. Per il teorema di Shannon, $ |K| \geq |P| $ è necessario per la perfect secrecy — condizione violata da qualsiasi stream cipher pratico.
-Dobbiamo quindi usare una definizione diversa di sicurezza, la sicurezza computazionale: il sistema è sicuro se non esiste nessun algoritmo efficiente in grado di distinguere il keystream G(k) da una sequenza veramente casuale. La sicurezza dello stream cipher dipende interamente dalla qualità del PRG: un PRG computazionalmente indistinguibile dal random implica uno stream cipher computazionalmente sicuro.
-
-
-\subsubsection{RC4}
-
-Il RC4 (Rivest Cipher 4) è stato lo stream cipher dominante per decenni, usato in SSL/TLS per HTTPS e in WEP/WPA per le reti Wi-Fi. Oggi, tuttavia, è ufficialmente deprecato ed è considerato insicuro per qualsiasi applicazione crittografica. 
-\paragraph{Struttura}: usa un array di stato S di 256 byte (una permutazione dei valori 0-255) e una chiave di lunghezza variabile tra 8 e 2048 bit
-
-\paragraph{Fase 1}:
-\begin{algorithm}
-\caption{Inizializzazione di S}
-\For{$i = 0$ \KwTo $255$}{
-    $S[i] = i$\;
-    $T[i] = K[i \bmod \text{keylen}]$\;
-}
-$j = 0$\;
-\For{$i = 0$ \KwTo $255$}{
-    $j = (j + S[i] + T[i]) \bmod 256$\;
-    $\text{swap}(S[i], S[j])$\;
-}
-\end{algorithm}
-
-\nt{
-  Inizializza l'array di 256 byte. Prende la tua chiave segreta (che può variare da 40 a 2048 bit) e la utilizza per "mescolare" l'array
-}
-
-\paragraph{Fase 2}:
-% i, j = 0
-% while (true):
-%     i = (i + 1) mod 256
-%     j = (j + S[i]) mod 256
-%     swap(S[i], S[j])
-%     t = (S[i] + S[j]) mod 256
-%     output S[t]  ← questo byte va in XOR col plaintext
-\begin{algorithm}
-\caption{Generazione del keystream}
-$i = 0$\;
-$j = 0$\;
-\While{true}{
-    $i = (i + 1) \bmod 256$\;
-    $j = (j + S[i]) \bmod 256$\;
-    $\text{swap}(S[i], S[j])$\;
-    $t = (S[i] + S[j]) \bmod 256$\;
-    \textbf{output} $S[t]$\;
-}
-\end{algorithm}
-  
-\nt{A ogni ciclo, continua a scambiare due byte all'interno dell'array ed estrae un valore pseudo-casuale in uscita}
-
-\section{Block Ciphers}
-Lavora su blocchi di lunghezza fissa, puo' generare un po' di delay. I principali sono:
-\begin{itemize}
-  \item \textbf{DES}: $ n = 64 $ bits, $ k = 56 $ bits (ma possiamo anche dire $ 64 $, vedremo perche')
-\item \textbf{3DES}: $ n = 64 $ bits, $ k = 3 \cdot 56 = 168 $ bits
-\item \textbf{AES}: $ n = 128 $ bits, $ k = 56 $ bits
-\end{itemize}
-\begin{center}
-  \includegraphics[width=0.5\textwidth]{img/2026-02-27-11-34-33.png}
-\end{center}
-
-Il block cipher e' costruito per iterazioni:
+\subsection{Public-key authority}
+Si assume che una CA mantenga una directory dinamica delle chiavi pubbliche di tutti i partecipanti e che \underline{ognuno conosca in modo affidabile la chiave pubblica dell'autorita'} $ PU_{auth} $. Il protocollo (con timestamp $ T_i $ e nonce $ N_i $) e':
 \begin{enumerate}
-  \item Key expansion: partendo da chiave lunga, genero $ l $ sottochiavi $ k_i $ (dove $ l $ e' il numero di iterazioni)
-  \item Applico la \textbf{round function} a $ m_i $ e la sottochiave $ k_i $ per generare $ m_{i+1} $ (dove $ m_1 $ e' il plain text) 
+  \item $ A \to auth $: \quad $ Request \,\|\, T_1 $
+  \item $ auth \to A $: \quad $ E(PR_{auth}, [\, PU_b \,\|\, Request \,\|\, T_1 \,]) $
+  \item $ A \to B $: \quad $ E(PU_b, [\, ID_A \,\|\, N_1 \,]) $
+  \item $ B \to auth $: \quad $ Request \,\|\, T_2 $
+  \item $ auth \to B $: \quad $ E(PR_{auth}, [\, PU_a \,\|\, Request \,\|\, T_2 \,]) $
+  \item $ B \to A $: \quad $ E(PU_a, [\, N_1 \,\|\, N_2 \,]) $
+  \item $ A \to B $: \quad $ E(PU_b, N_2) $
+\end{enumerate}
+L'autorita' risponde cifrando con la \textbf{propria chiave privata} $ PR_{auth} $ (cosi' chiunque puo' verificarne l'origine con $ PU_{auth} $). I nonce $ N_1, N_2 $ identificano univocamente la transazione tra $ A $ e $ B $.
+\nt{
+  \textbf{Svantaggi}: l'autorita' e' un \textit{collo di bottiglia} (va interpellata per ogni chiave di ogni altro utente) e la directory di nomi/chiavi e' \textit{vulnerabile a manomissioni}.
+}
+
+\subsection{Certificati a chiave pubblica}
+\dfn{Certificato a chiave pubblica}{
+  Un \textit{certificato} consiste di una \textbf{chiave pubblica}, un \textbf{identificatore} del proprietario della chiave, e l'intero blocco \textbf{firmato da una terza parte fidata} (tipicamente una \textit{Certificate Authority}, CA). Permette di distribuire la chiave senza interpellare l'autorita' a ogni scambio.
+}
+Per il partecipante $ A $ l'autorita' emette un certificato della forma
+\[
+  C_A = E(PR_{auth}, [\, T \,\|\, ID_A \,\|\, PU_a \,])
+\]
+($ T $ timestamp, $ ID_A $ identificatore di $ A $). $ A $ puo' poi passarlo a chiunque, che lo legge e verifica con la chiave pubblica dell'autorita':
+\[
+  D(PU_{auth}, C_A) = D(PU_{auth}, E(PR_{auth}, [\, T \,\|\, ID_A \,\|\, PU_a \,])) = (\, T \,\|\, ID_A \,\|\, PU_a \,)
+\]
+Un certificato deve soddisfare:
+\begin{itemize}
+  \item chiunque puo' \textbf{leggerlo} per ricavare nome e chiave pubblica del proprietario;
+  \item chiunque puo' \textbf{verificare} che proviene dalla CA e non e' contraffatto;
+  \item \textbf{solo} la CA puo' crearlo e aggiornarlo;
+  \item chiunque puo' verificarne la \textbf{validita' temporale} (\textit{Not before} \dots \textit{Not after}).
+\end{itemize}
+\nt{
+  Lo schema universalmente adottato per il formato dei certificati e' lo standard \textbf{X.509}, usato nella maggior parte delle applicazioni di sicurezza di rete (IPsec, TLS). La firma del certificato si basa sulle \textit{firme digitali} (hash del certificato non firmato, firmato con $ PR_{auth} $; si verifica con $ PU_{auth} $), che vedremo con la crittografia a chiave pubblica.
+}
+
+\section{Distribuzione delle chiavi segrete}
+Per due parti $ A $ e $ B $, la distribuzione di una chiave segreta puo' avvenire in vari modi:
+\begin{enumerate}
+  \item $ A $ genera la chiave e la consegna \underline{fisicamente} a $ B $;
+  \item una terza parte sceglie la chiave e la consegna \underline{fisicamente} ad $ A $ e $ B $;
+  \item se $ A $ e $ B $ hanno usato di recente una chiave, una parte trasmette la nuova chiave all'altra \underline{cifrandola con la vecchia chiave};
+  \item se $ A $ e $ B $ hanno ciascuno una \underline{connessione cifrata} con una terza parte $ C $, allora $ C $ puo' consegnare la chiave sui link cifrati.
 \end{enumerate}
 
-Il problema e' che e' molto lento rispetto agli altri cifrari, cosa che AES migliora abbastanza rispetto a DES.
-
-\subsection{DES}
-L'idea core e' il \textit{Feistel Network}:
-
-Given functions $ f_1,...,f_{\text{d}}: \{0,1\}^n \to \{0,1\}^n $ (non per forza invertibili) dobbiamo costruire una funzione \textbf{invertibile} $ F: \{0,1\}^{2n} \to \{0,1\}^{2n} $
-\begin{center}
-  \includegraphics[width=0.5\textwidth]{img/2026-02-27-11-49-48.png}
-\end{center}
-Come possiamo calcolare $ R_i = L_{i-1} + f_i(R_{i-1}) $ e $ L_{i} = R_{i-1} $, allora:
-\mprop{}{
-  Per ogni $ f_1,...,f_d $, il Feistel network is \textbf{invertible}.
-}
-\pf{Dimostrazione per Costruzione}{
-  Boh lo dimostra, guarda il libr onon ssi capisce niente.
-}
-
-Per fare la decription, basta applicare lo stesso circuito in ordine opposto, WOW!
-
-La lunghezza della chiave di DES in verita' e' composta da 8 byte, ma l'ottavo bit di ognuno viene usato come parity-check
-
-\subsection{Double DES}
-Definiamo una funzione $ 2E: K^2 \times M \to M $ come $ 2E(k_1,k_2,m) = E(k_1, E(k_2, m)) $, quindi la lunghezza della chiave viene raddoppiata $ 2*56 = 112 $.
-
-Per la decription applichiamo le chiavi in ordine inverso:
+\subsection{Key management: il problema}
+Con $ n $ utenti, memorizzare le chiavi segrete reciproche e' difficile: servono $ O(n) $ chiavi per utente e
 \[
-  D(k_2, D(k_1, m))
+  \frac{n(n-1)}{2} = O(n^2) \text{ chiavi in totale}
 \]
+(ancora di piu' a livello di applicazione o processo).
 
-Ma c'e' un problema: dato $ m $ e $ c $, lo scopo e' di trovare $ (k_1,k_2) $ t.c.:
-\begin{itemize}
-  \item $ E(k_1, E(k_2,m)) $
-  \item $ E(k_2, m) = D(k_1,c) $ 
-\end{itemize}
-Che sono equivalenti. Questo ci da' l'apertura per un attacco a due parti:
+\subsection{Online Trusted Third Party (TTP)}
+Soluzione migliore: una \textbf{terza parte fidata online} (TTP). Ogni utente $ U_i $ ricorda \textbf{una sola} chiave $ k_i $, condivisa con la TTP. Quando $ U_1 $ e $ U_3 $ vogliono comunicare, la TTP fornisce loro una \textbf{session key} $ k_{13} $ (temporanea, dura quanto la connessione logica, es. una connessione TCP). Ogni utente condivide con la TTP una \textbf{master key} a lunga durata.
+\nt{
+  Esistono varianti dello schema (\textit{Key Translation}, \textit{Key Distribution}, con o senza \textit{forwarding}). Nella \textit{Key Distribution with Forwarding}: $ A \to KDC: Request $; $ KDC \to A: E(K_{ma}, K_s), E(K_{mb}, K_s) $; $ A \to B: E(K_{mb}, K_s) $; poi sessione con $ K_s $.
+}
+
+\subsection{Un protocollo giocattolo (toy protocol)}
+Alice ($ k_A $) vuole una chiave condivisa con Bob ($ k_B $); entrambi condividono la propria master key con la TTP:
 \begin{enumerate}
-  \item Creo una tablella che per ogni riga ha la tupla $ (k_i, E(k_i, m)) $ e la ordino per $ k $
-  \item Per ogni $ k $, testa se $ D(k,c) $ sta nella seconda colonna. Se c'e', allora
+  \item $ Alice \to TTP $: ``Alice vuole una chiave con Bob'';
+  \item la TTP sceglie una chiave random $ k_{AB} $ e invia ad Alice
     \[
-      E(k_i, m) = D(k,c) \implies (k_i,k) = (k_2,k_1)
+      E(k_A,\; \text{``Alice, Bob''} \,\|\, k_{AB}) \;;\quad \textit{ticket} = E(k_B,\; \text{``Alice, Bob''} \,\|\, k_{AB})
     \]
+  \item $ Alice \to Bob $: inoltra il \textit{ticket};
+  \item ora Alice e Bob condividono $ k_{AB} $.
 \end{enumerate}
-Il costo computazionale e' di
-\[
-  2^{56}log(2^{56}) + 2^{56}log(2^{56}) < 2^{63} \ll 2^{112}
-\]
-Dato che dobbiamo costruire e ordinare la tabella, poi cercare all'interno della tabella. DA STUDIARE LA METTE SEMPRE STA ROBA IN ESAME!!!!
+Se $ (E, D) $ e' un cifrario \textbf{CPA-secure}, l'eavesdropper vede $ E(k_A, \dots) $ e $ E(k_B, \dots) $ ma \textbf{non impara nulla} su $ k_{AB} $.
+\nt{
+  La TTP serve \textbf{a ogni} key exchange e \textbf{conosce tutte} le session key $ k_{AB} $. Esempio d'uso: \textbf{Kerberos} (RFC 4120), un server di autenticazione centralizzato che autentica utenti verso server e viceversa, basato \textit{esclusivamente} su cifratura simmetrica (nessuna chiave pubblica).
+}
+\nt{
+  \textbf{Insicuro contro attacchi attivi} (es. \textit{replay attack}): l'attaccante registra una sessione tra Alice e il merchant Bob (es. un ordine di un libro) e la \textbf{ripete} a Bob, che crede che Alice stia ordinando un'altra copia.
+}
 
-\subsection{Triple DES}
-Stessa roba del double, abbiamo tre chiavi, pero' e' un po' diverso
-\[
-  3E(k_1,k_2,k_3,m) = E(k_1, D(k_2, E(k_3,m)))
-\]
-E' stra lento (3 operaizoni). Se $ k_1=k_2=k_3 $ ci troviamo nel caso di DES.
+\section{Key exchange senza TTP online}
+\textbf{Domanda chiave}: si possono generare chiavi condivise \textbf{senza} una TTP online? \textbf{Si'!} E' il punto di partenza della crittografia a chiave pubblica: Merkle (1974), Diffie-Hellman (1976), RSA (1977). L'obiettivo: Alice e Bob vogliono una chiave condivisa, ignota all'eavesdropper, con sicurezza \textbf{solo contro l'intercettazione passiva} (no tampering, no message injection).
 
-Ci sta sempre il meet in the middle attack, quindi il costo e' di $ < 2^{118} $ (comunque non poco).
+\subsection{Merkle Puzzles (1974)}
+Risposta: \textit{si', ma molto inefficiente}. E' una costruzione iniziale per accordarsi su un segreto condiviso anche senza segreti in comune. Strumento principale: i \textbf{puzzle}, problemi risolvibili con ``un certo sforzo''.
+\dfn{Puzzle}{
+  Dato un cifrario simmetrico $ E(k, m) $ con $ k \in \{0,1\}^{128} $, un \textit{puzzle} e' $ E(P, \text{``message''}) $ dove la chiave e' $ P = 0^{96} \,\|\, b_1 \dots b_{32} $ (solo $ 32 $ bit incogniti). Si ``risolve'' trovando $ P $ provando tutte le $ 2^{32} $ possibilita'.
+}
+Protocollo:
+\begin{itemize}
+  \item \textbf{Alice} prepara $ 2^{32} $ puzzle: per $ i = 1, \dots, 2^{32} $ sceglie $ P_i \in \{0,1\}^{32} $ random e $ x_i, k_i \in \{0,1\}^{128} $ random (con gli $ x_i $ distinti), e pone
+    \[
+      \textit{puzzle}_i \leftarrow E(\, 0^{96} \,\|\, P_i, \; \text{``Puzzle \#''} \,\|\, x_i \,\|\, k_i \,)
+    \]
+    poi invia tutti i puzzle a Bob.
+  \item \textbf{Bob} sceglie un \textbf{puzzle a caso} e lo risolve per brute-force; ottiene $ (x_j, k_j) $, usa $ k_j $ come segreto condiviso e invia $ x_j $ ad Alice.
+  \item \textbf{Alice} cerca il puzzle con numero $ x_j $ e usa $ k_j $ come segreto condiviso.
+\end{itemize}
+\nt{
+  Costi: lavoro di Alice $ O(n) = O(2^{32}) $, lavoro di Bob $ O(n) = O(2^{32}) $, lavoro dell'\textbf{eavesdropper} $ O(n^2) = O(2^{64}) $ (deve risolvere $ \approx 2^{32} $ puzzle, perche' non sa quale ha scelto Bob). Il divario e' solo \textbf{quadratico}: poca sicurezza, ecco perche' e' inefficiente.
+}
 
-\subsection{DESX}
-Definiamo
-\[
-  EX(k_1,k_2,k_3,m) = k_1 \oplus E(k_2, m \oplus k_3)
-\]
-Facile da attaccare in tempo $ 2^{120} $
+\subsection{Il protocollo Diffie-Hellman}
+\textbf{Idea}: Alice e Bob \textbf{non} condividono alcun segreto in anticipo; si scambiano messaggi e alla fine concordano una chiave segreta $ k $, ignota all'eavesdropper.
 
+\subsubsection{Logaritmo discreto}
+\dfn{Radice primitiva}{
+  In aritmetica modulare, $ a $ e' una \textit{radice primitiva} modulo $ p $ se ogni $ g $ coprimo con $ p $ e' congruo a una potenza di $ a $ modulo $ p $. Per un primo $ p $, le potenze di una radice primitiva $ a $, cioe' $ a \bmod p, a^2 \bmod p, \dots, a^{p-1} \bmod p $, sono distinte e sono una permutazione degli interi da $ 1 $ a $ p-1 $.
+}
+\dfn{Logaritmo discreto}{
+  Per ogni intero $ b $ e una radice primitiva $ a $ del primo $ p $ esiste un unico esponente $ i $ con
+  \[
+    b \equiv a^i \pmod p, \qquad 0 \le i \le p-1
+  \]
+  L'esponente $ i $ e' il \textit{logaritmo discreto} di $ b $ in base $ a $, modulo $ p $.
+}
 
-\subsection{Attacks on block ciphers}
-Differential e' difficile su DES, ma si puo' usare il linear cryptanalysis dato che e' una cifratura iterativa. o
+\subsubsection{Il protocollo}
+Si fissano pubblicamente un grande primo $ p $ (almeno $ 2048 $ bit, $ \approx 600 $ cifre) e un intero $ g \in \{2, \dots, p-2\} $.
+\begin{itemize}
+  \item \textbf{Alice} sceglie un segreto random $ a \in \{1, \dots, p-2\} $ e invia $ g^a \bmod p $;
+  \item \textbf{Bob} sceglie un segreto random $ b \in \{1, \dots, p-2\} $ e invia $ g^b \bmod p $;
+  \item Alice calcola $ (g^b)^a \bmod p $, Bob calcola $ (g^a)^b \bmod p $.
+\end{itemize}
+\thm{Chiave condivisa di Diffie-Hellman}{
+  Alice e Bob calcolano lo stesso valore
+  \[
+    (g^b)^a \equiv g^{ab} \equiv (g^a)^b \pmod p
+  \]
+  che diventa la loro \textbf{chiave segreta condivisa} $ g^{ab} \bmod p $.
+}
 
-\subsection{AES}
-DES non e' troppo efficente
+\subsubsection{Sicurezza}
+L'eavesdropper vede $ p, g, g^a \bmod p, g^b \bmod p $: per ottenere la chiave dovrebbe calcolare $ g^{ab} \bmod p $ (problema di Diffie-Hellman), legato al \textbf{problema del logaritmo discreto}.
+\dfn{Problema del logaritmo discreto (DLP)}{
+  Dati $ g $, $ p $ e $ g^k \bmod p $, trovare $ k $. E' ritenuto \textbf{computazionalmente difficile} per $ p $ grande.
+}
+\nt{
+  Se $ p $ e' lungo $ n $ bit (almeno $ n = 2048 $ per sicurezza), il miglior algoritmo noto (\textit{General Number Field Sieve}, GNFS) ha tempo di esecuzione \textbf{sub-esponenziale} in $ n $: $ \exp\!\big(\tilde{O}(\sqrt[3]{n})\big) $.
+}
 
-%\end{document}
+\subsubsection{Insicurezza contro Man-in-the-Middle (MiTM)}
+DH e' sicuro solo contro attacchi \textbf{passivi}. Contro un attacco \textbf{attivo} (MiTM) e' insicuro: l'attaccante si interpone, sceglie segreti propri $ a', b' $ e
+\begin{itemize}
+  \item verso Bob inoltra $ A' = g^{a'} \bmod p $ al posto di $ A = g^a \bmod p $;
+  \item verso Alice inoltra $ B' = g^{b'} \bmod p $ al posto di $ B = g^b \bmod p $.
+\end{itemize}
+Risultato: Alice e l'attaccante condividono $ g^{ab'} $, l'attaccante e Bob condividono $ g^{a'b} $. L'attaccante \textbf{rilancia il traffico} leggendolo in chiaro e puo' anche \textbf{alterarlo}. Serve autenticazione (es. certificati) per difendersi.
+
+% \end{document}

@@ -1,3 +1,58 @@
 % \begin{document}
 \chapter{Modular Arithmetic}
+
+L'aritmetica modulare e' lo strumento matematico alla base di gran parte dei cifrari (affine, Hill, RSA, Diffie-Hellman, \dots). La introduciamo qui perche' serve gia' a giustificare il cifrario affine.
+
+\section{L'insieme $\mathbb{Z}_m$}
+
+\dfn{Aritmetica modulo $m$}{
+  $\mathbb{Z}_m$ e' l'insieme $\{0, 1, \dots, m-1\}$ equipaggiato con due operazioni, $+$ e $\times$. Addizione e moltiplicazione funzionano esattamente come quelle reali, con l'unica differenza che il risultato viene \textbf{ridotto modulo $m$} (si tiene il resto della divisione per $m$).
+}
+
+\ex{}{
+  Calcoliamo $11 \times 13$ in $\mathbb{Z}_{16}$. Si ha $11 \times 13 = 143$. Riduciamo modulo 16:
+  \[
+    143 = 8 \times 16 + 15 \implies 143 \bmod 16 = 15
+  \]
+  quindi $11 \times 13 = 15$ in $\mathbb{Z}_{16}$.
+}
+
+\section{Congruenza}
+
+\dfn{Congruenza modulo $n$}{
+  Due interi $a$ e $b$ si dicono \textit{congruenti modulo $n$} se $(a \bmod n) = (b \bmod n)$, e si scrive
+  \[
+    a \equiv b \pmod n
+  \]
+  Equivalentemente: la loro differenza $b - a$ e' un multiplo intero di $n$, ovvero $a$ e $b$ danno lo stesso resto quando divisi per $n$.
+}
+
+\ex{}{
+  \begin{itemize}
+    \item $73 \equiv 4 \pmod{23}$, infatti $73 = 23 \cdot 3 + 4$
+    \item $21 \equiv -9 \pmod{10}$, infatti $21 = 3 \cdot 10 - 9$
+  \end{itemize}
+}
+
+\section{Invertibilita' e $\gcd$}
+
+Per poter \textit{decifrare} un cifrario basato su una moltiplicazione modulare serve poter \textbf{invertire} l'operazione. Questo non e' sempre possibile: dipende dal $\gcd$ (massimo comun divisore, \textit{greatest common divisor}).
+
+\dfn{Coprimalita'}{
+  Due interi $a$ e $m$ si dicono \textit{coprimi} (o \textit{relatively prime}) se $\gcd(a, m) = 1$.
+}
+
+\thm{Teorema 2.1 (Stinson)}{
+  La congruenza
+  \[
+    a x \equiv b \pmod m
+  \]
+  ha un'\textbf{unica soluzione} $x \in \mathbb{Z}_m$ per ogni $b \in \mathbb{Z}_m$ se e solo se $\gcd(a, m) = 1$.
+}
+
+\nt{
+  In altre parole, la mappa $x \mapsto a x \bmod m$ e' una biiezione (e quindi invertibile) esattamente quando $a$ e $m$ sono coprimi. Se invece $\gcd(a,m) = d > 1$ la mappa non e' iniettiva: input diversi collidono sullo stesso output, e la decifratura diventa ambigua.
+
+  \textit{Fonte: Cryptography Theory and Practice, 4th ed., D. R. Stinson \& M. B. Paterson.}
+}
 % \end{document}

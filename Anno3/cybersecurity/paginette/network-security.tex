@@ -1,0 +1,198 @@
+% \begin{document}
+\chapter{Network Security}
+La parte di sicurezza di rete poggia su due insiemi di principi fondamentali: \textbf{AAA} e \textbf{CIA}.
+
+\section{Principi di sicurezza: AAA e CIA}
+
+\subsection{AAA}
+\dfn{AAA}{
+  \textbf{A}uthentication (autenticazione), \textbf{A}uthorization (autorizzazione), \textbf{A}ccounting (accreditamento/logging).
+}
+
+\subsubsection{Authentication}
+E' la capacita' di un sistema di garantire che un utente sia identificato tramite informazioni in suo possesso. Tre tipi (usabili da soli o in combinazione):
+\begin{itemize}
+  \item \textbf{Quello che si ha} (badge, smart card, \dots): autenticatore detto \textbf{token};
+  \item \textbf{Quello che si sa} (password, PIN, risposte a domande prestabilite);
+  \item \textbf{Quello che si e'} (biometria: impronte, retina, viso).
+\end{itemize}
+\nt{
+  Combinando informazioni di \textbf{tipi diversi} si ottiene la \textbf{Multifactor Authentication} (es. online banking: password \textit{(si sa)} + codice via SMS \textit{(si ha)}). Combinare piu' meccanismi dello \textbf{stesso} tipo \textit{non} aumenta la sicurezza.
+}
+\begin{center}
+  \includegraphics[width=0.75\textwidth]{img/ns-mfa}
+\end{center}
+
+\subsubsection{Authorization}
+Indica \textbf{che cosa puo' effettuare} un determinato utente. Es.: la password puo' essere cambiata solo dall'utente stesso (previa autenticazione) o da un amministratore.
+
+\subsubsection{Accounting}
+E' la procedura con cui si registrano (\textit{logging}) le operazioni effettuate da un account: es. traffico consumato dalla SIM, siti visitati, ultimo cambio password.
+
+\subsection{CIA}
+\dfn{CIA}{
+  \textbf{C}onfidentiality (confidenzialita'), \textbf{I}ntegrity (integrita'), \textbf{A}vailability (disponibilita'). Sono \textbf{indipendenti} tra loro e devono essere sempre presenti; la sicurezza di un sistema si misura su questi tre fattori.
+}
+
+\subsubsection{Confidenzialita'}
+Un messaggio e' \textbf{confidenziale} se puo' essere letto solo dal destinatario predesignato. Bisogna sempre assumere che un attaccante possa mettersi \textbf{in mezzo} alla comunicazione, spacciandosi per il destinatario col mittente e viceversa (\textbf{Man-in-the-Middle}).
+\dfn{Eavesdropping}{
+  Attacco alla confidenzialita': un attaccante nel mezzo (\textit{Eve}) cerca di \textbf{leggere/ascoltare} il messaggio destinato a un altro.
+}
+
+\subsubsection{Integrita'}
+Un messaggio e' \textbf{integro} se il destinatario e' certo del mittente e che il contenuto non e' stato alterato. Due attacchi tipici:
+\begin{itemize}
+  \item \textbf{Manipulation}: l'attaccante (\textit{Mallory}) \textbf{modifica} un messaggio in transito (es. cambia l'IBAN su una fattura);
+  \item \textbf{User impersonation / Spoofing}: Mallory \textbf{si spaccia} per il mittente e invia un messaggio.
+\end{itemize}
+
+\subsubsection{Disponibilita' (Availability)}
+E' la capacita' di un sistema di rispondere a richieste di entita' autorizzate (entro un certo tempo).
+\dfn{Denial of Service (DoS)}{
+  Attacco alla disponibilita'. Secondo il \textit{NIST SP 800-61}: ``un'azione che impedisce o degrada l'uso autorizzato di reti, sistemi o applicazioni esaurendo risorse come CPU, memoria, banda e spazio disco''.
+}
+\ex{DoS e DDoS (la prenotazione del ristorante)}{
+  Per fare DoS a un ristorante l'attaccante chiama e prenota \textbf{tutti} i coperti. Se il ristoratore non si fida di chi prenota tutto, l'attaccante chiama $ n/2 $ volte prenotando ogni volta un tavolo per 2, con un nome diverso (\textbf{spoofing}). Se il ristoratore riconosce la voce, l'attaccante \textbf{e $ n/2 $ amici} chiamano: e' un \textbf{Distributed DoS (DDoS)}.
+}
+
+\subsection{Anonimato}
+\dfn{Anonimato}{
+  Proprieta' che garantisce che un utente possa usare una risorsa o un servizio \textbf{senza rivelare la propria identita'}. Non e' in CIA (non rappresenta la sicurezza di un sistema, ma un modo di eludere l'accounting).
+}
+\nt{
+  \textbf{Spoiler}: navigando online \textbf{non} si e' anonimi. Si e' soggetti a profilazione da parte di ISP, social network, cookie traccianti, ecc.
+}
+
+\section{Internet Security}
+
+\subsection{Internet Protocol (IP)}
+L'IP identifica un host/server a livello globale. IPv4 usa indirizzi a \textbf{32 bit} (pensabili come numeri di telefono, es. \texttt{1.1.1.1}); IPv6 usa \textbf{128 bit}. Il server deve conoscere il tuo IP \textbf{pubblico} per risponderti (quindi: niente anonimato).
+\nt{
+  \textbf{IP address spoofing}: gli indirizzi \textbf{non} sono protetti da integrita'; chiunque puo' cambiare il proprio IP sorgente (come il mittente sulla busta di una lettera). Questo abilita attacchi di \textbf{riflessione}: un bot manda al server richieste con IP sorgente falsificato (quello della vittima), e il server inonda la vittima di risposte.
+}
+\begin{center}
+  \includegraphics[width=0.7\textwidth]{img/ns-ip-spoofing}
+\end{center}
+
+\subsection{Routing}
+Il pacchetto attraversa un'infrastruttura di \textbf{router} che, per definizione, sono dei \textbf{Man-in-the-Middle}.
+\begin{center}
+  \includegraphics[width=0.8\textwidth]{img/ns-routing}
+\end{center}
+
+\subsection{Transmission Control Protocol (TCP)}
+Al livello superiore i servizi sono identificati da una \textbf{porta}. Porte comuni: \textbf{22} SSH, \textbf{25} SMTP (uscita), \textbf{80} HTTP, \textbf{110} POP (entrata), \textbf{443} HTTPS.
+\begin{center}
+  \includegraphics[width=0.55\textwidth]{img/ns-tcp-stack}
+\end{center}
+TCP e' \textbf{connection-oriented}: per stabilire una connessione fa un \textbf{three-way handshake} $ SYN \to SYN\text{-}ACK \to ACK $.
+\begin{center}
+  \includegraphics[width=0.9\textwidth]{img/ns-tcp-handshake}
+\end{center}
+\dfn{SYN flooding / TCP SYN spoofing}{
+  L'attaccante invia molti $ SYN $ con IP sorgente \textbf{falsificato} e non completa mai l'handshake (niente $ ACK $ finale). Se il server accetta al massimo $ n $ connessioni half-open, dopo $ n $ ``chiamate'' va in \textbf{Denial of Service}.
+}
+\begin{center}
+  \includegraphics[width=0.7\textwidth]{img/ns-tcp-syn-spoofing}
+\end{center}
+
+\subsection{Domain Name System (DNS)}
+Il \textbf{DNS} converte nomi di dominio facili da ricordare (es. \texttt{unibo.it}) negli indirizzi IP usati dai computer: e' un registro online distribuito.
+\begin{center}
+  \includegraphics[width=0.8\textwidth]{img/ns-dns}
+\end{center}
+\ex{Typosquatting}{
+  Si compra un dominio simile a uno legittimo (es. \texttt{gmail.it} invece di \texttt{gmail.com}, o \texttt{outook.com}): chi sbaglia a digitare l'indirizzo finisce sul server dell'attaccante, che intercetta mail private \textbf{senza} nemmeno fare social engineering esplicito.
+}
+
+\subsection{Sniffing}
+\dfn{Sniffing}{
+  Forma di eavesdropping: chiunque lungo il percorso verso la destinazione puo' \textbf{catturare} il traffico. Sniffing DNS rivela i siti richiesti, sniffing TCP cosa si chiede al server, ecc.
+}
+Gli attaccanti usano \textit{sniffer} / analizzatori di pacchetti come \textbf{Wireshark} o \texttt{tcpdump}. (\textit{Security by Obscurity}: sperare che nessuno guardi non e' sicurezza.)
+
+\section{Anonimato (Anonymity)}
+
+\subsection{Anonymous remailer e proxy}
+Un \textbf{anonymous remailer} e' un server che, ricevuta una mail, la inoltra al destinatario \textbf{rimuovendo} le informazioni sul mittente (e' il concetto alla base di VPN come NordVPN). E' un esempio di \textbf{proxy}.
+\nt{
+  Problema del proxy: \textbf{ha informazioni su di te} e puo' agire da eavesdropper.
+}
+
+\subsection{Mix-based systems}
+Introdotti da \textbf{David Chaum (1981)} per e-mail anonime, poi generalizzati al traffico TCP. Usano server relay (\textbf{MIX}) per ottenere l'anonimato del \textbf{mittente} e la \textit{non-linkability} contro eavesdropper globali. Idea: i messaggi in ingresso al mix hanno aspetto (contenuto, ora) diverso da quelli in uscita.
+\dfn{MIX}{
+  Un relay \textit{store-and-forward} che opera in due fasi:
+  \begin{itemize}
+    \item \textbf{Batching}: raccoglie messaggi di lunghezza fissa da sorgenti diverse, accumulando un batch di $ n $ messaggi;
+    \item \textbf{Mixing}: trasforma crittograficamente i messaggi e li inoltra ai destinatari in ordine \textbf{casuale}.
+  \end{itemize}
+}
+Ogni mix ha una chiave pubblica; ogni mittente cifra (con randomness) usando la chiave pubblica del mix.
+\begin{center}
+  \includegraphics[width=0.78\textwidth]{img/ns-mix-example}
+\end{center}
+\nt{
+  Svantaggi dei mixnet di base: cifratura/decifratura a chiave pubblica a ogni mix sono \textbf{costose} e introducono \textbf{alta latenza} (ok per la posta, non per la navigazione Web). \textbf{Challenge}: rete anonima a \textbf{bassa latenza} $ \Rightarrow $ usare chiave pubblica solo per stabilire un \textit{circuito} con chiavi simmetriche a coppie, poi cifratura simmetrica lungo il circuito (ogni nodo si comporta da mix; l'anonimato resta anche se alcuni nodi sono compromessi).
+}
+
+\subsection{Onion routing e Tor}
+Per anonimizzare completamente il traffico si usa l'\textbf{Onion Routing} (routing ``a cipolla''). Il software \textbf{Tor} (\textit{The Onion Router}, open source dal 2002) lo implementa.
+\begin{center}
+  \includegraphics[width=0.48\textwidth]{img/ns-tor-1}
+  \includegraphics[width=0.48\textwidth]{img/ns-tor-2}
+\end{center}
+\begin{enumerate}
+  \item il client Tor di Alice ottiene la lista dei nodi Tor da un \textit{directory server};
+  \item sceglie un \textbf{percorso casuale} verso la destinazione (i link interni sono cifrati, l'ultimo salto verso il server e' in chiaro);
+  \item a una visita successiva sceglie un \textbf{nuovo} percorso casuale.
+\end{enumerate}
+\begin{center}
+  \includegraphics[width=0.55\textwidth]{img/ns-tor-3}
+\end{center}
+\dfn{Layers of encryption}{
+  Il messaggio e' cifrato a \textbf{strati}, uno per relay del circuito: ogni nodo ``sbuccia'' il proprio strato e inoltra al successivo. Con tre relay:
+  \[
+    C = E(K_{P_1}, \, E(K_{P_2}, \, E(K_{P_3}, M)))
+  \]
+}
+\begin{center}
+  \includegraphics[width=0.6\textwidth]{img/ns-tor-layers}
+\end{center}
+\begin{center}
+  \includegraphics[width=0.78\textwidth]{img/ns-tor-example}
+\end{center}
+\nt{
+  Tor e' una rete \textbf{overlay} (chiusa, dati distribuiti in forma anonima). Per uscire sulla rete ``normale'' si usano gli \textbf{Exit Node}. \textbf{Attenzione}: chi gestisce l'exit node \textbf{vede tutto il tuo traffico}; inoltre gli exit node, essendo pubblici, sono spesso bloccati dai servizi (es. banche).
+}
+
+\subsection{Tor onion services}
+Un \textbf{onion service} (es. \textit{SecureDrop} di un giornale per ricevere soffiate anonime) vive \textbf{dentro} la rete Tor. Il setup/connessione avviene in piu' passi: il servizio pubblica 3 \textbf{Introduction Point} (con un descriptor firmato) su un directory server; il client trova l'onion address, ne verifica firma e descriptor, stabilisce un \textbf{rendezvous point} e chiede un'``introduzione''; dopo le verifiche dei \textit{secret string}, si forma un circuito Tor tra client e servizio.
+\begin{center}
+  \includegraphics[width=0.46\textwidth]{img/ns-onion-service-1}
+  \includegraphics[width=0.46\textwidth]{img/ns-onion-service-9}
+\end{center}
+
+\subsection{Lato oscuro: mercati neri e dataleak}
+L'anonimato dei servizi onion ha favorito servizi illegali (compravendita di materiale illegale, hacking, ecc.); la loro affidabilita' e' sempre in dubbio (quanti sono ``esche''?). Usare Tor \textbf{non} e' di per se' illegale.
+\dfn{Dataleak}{
+  Rilascio di informazioni private di aziende/persone/oggetti (es. codice sorgente). Un dataleak di tipo \textbf{Fullz} contiene il minimo per creare conti o pagare con carta: nome, data di nascita, codice fiscale, indirizzo, telefono $ \Rightarrow $ abilita truffe/spoofing. I leak piu' comuni sono di \textbf{account e password}.
+}
+\nt{
+  Servizi come \textbf{HaveIBeenPwned} (\texttt{haveibeenpwned.com}) allertano se il tuo account compare in un leak; piattaforme come \textbf{AIL} fanno crawling della rete (e dei mercati neri) cercando stringhe specifiche.
+}
+
+\subsection{Leak di anonimato e contromisure}
+Tor non e' perfetto: alcune problematiche possono rivelare l'IP di chi accede a un servizio.
+\begin{itemize}
+  \item \textbf{Geolocalizzazione}: il browser puo' rivelare la posizione;
+  \item \textbf{DNS leak}: una richiesta DNS inviata \textbf{fuori} da Tor rivela il sito cercato;
+  \item \textbf{Side channel}: informazioni ``laterali'' (es. la dimensione esatta della finestra del browser via JavaScript) permettono di profilare con precisione.
+\end{itemize}
+\dfn{Least Privilege (privilegio minimo)}{
+  Rilasciare piu' informazioni del necessario, o poter usare piu' strumenti di quelli strettamente necessari, e' un problema di sicurezza: occorre limitare le capacita' di un software al \textbf{minimo indispensabile}.
+}
+Contromisure pratiche: il \textbf{Tor Browser} (Firefox modificato, preconfigurato per non rivelare piu' del necessario) e la distribuzione Linux \textbf{Tails} (\textit{the amnesic incognito live system}), che predispone l'intero sistema operativo per il massimo anonimato.
+
+% \end{document}

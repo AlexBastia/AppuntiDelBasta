@@ -1,0 +1,176 @@
+% \begin{document}
+\chapter{Modes of Operation}
+Un block cipher sa cifrare un \textbf{solo} blocco da $ n $ bit.
+\dfn{Mode of operation}{
+  Una \textit{mode of operation} e' una regola che descrive come applicare ripetutamente un block cipher per cifrare messaggi piu' lunghi di un singolo blocco da $ n $ bit.
+}
+Le cinque modalita' principali (NIST) sono:
+\begin{center}
+  \footnotesize
+  \begin{tabular}{|l|p{6.2cm}|p{3.8cm}|}
+    \hline
+    \textbf{Mode} & \textbf{Descrizione} & \textbf{Applicazione tipica} \\ \hline
+    \textbf{ECB} (Electronic CodeBook) & Ogni blocco e' cifrato indipendentemente con la stessa chiave. & Trasmissione sicura di valori singoli (es. una chiave). \\ \hline
+    \textbf{CBC} (Cipher Block Chaining) & L'input del cifrario e' lo XOR del blocco di plaintext col ciphertext precedente. & Trasmissione general-purpose a blocchi; autenticazione. \\ \hline
+    \textbf{CFB} (Cipher FeedBack) & Si processano $ s $ bit alla volta; il ciphertext precedente entra nel cifrario per produrre output pseudo-random, XORato col plaintext. & Trasmissione general-purpose stream-oriented; autenticazione. \\ \hline
+    \textbf{OFB} (Output FeedBack) & Come CFB, ma in input al cifrario va l'output di cifratura precedente; si usano blocchi pieni. & Stream su canale rumoroso (es. comunicazione satellitare). \\ \hline
+    \textbf{CTR} (CounTeR) & Ogni blocco di plaintext e' XORato con un \textbf{contatore cifrato}; il contatore si incrementa a ogni blocco. & General-purpose a blocchi; utile per high-speed. \\ \hline
+  \end{tabular}
+\end{center}
+
+\section{ECB — Electronic CodeBook}
+\dfn{ECB (Electronic CodeBook)}{
+  Il messaggio viene spezzato in $ N $ blocchi \textbf{indipendenti} $ (P_1, P_2, \dots, P_N) $; la \underline{stessa chiave} $ K $ cifra/decifra e ogni blocco e' cifrato \textbf{separatamente}:
+  \[
+    C_i = E(K, P_i), \qquad P_i = D(K, C_i)
+  \]
+}
+
+\subsection{Problema di sicurezza}
+ECB e' \textbf{deterministico}: lo stesso blocco produce sempre lo stesso ciphertext.
+\[
+  b_i = b_j \implies c_i = c_j
+\]
+Quindi rivela i \textbf{pattern} quando i dati si ripetono (stesso problema del cifrario di Vigenère).
+\nt{
+  L'esempio classico e' l'immagine del \textbf{pinguino Tux}: cifrata in ECB se ne riconosce ancora la sagoma (i blocchi uguali restano uguali), mentre con una modalita' randomizzata il ciphertext sembra rumore. \textbf{Non usare ECB in pratica.}
+}
+
+\section{La nozione di sicurezza}
+La domanda "ECB e' sicuro?" richiede una definizione formale di sicurezza.
+
+\subsection{Semantic security con chiave one-time (IND-EAV)}
+\textit{Ciphertext indistinguishability} sotto un attaccante \textbf{eavesdropping} (IND-EAV). Threat model: \textit{Ciphertext-only Attack}, la chiave e' usata \underline{una sola volta} e l'attaccante osserva solo il ciphertext. Si definisce un \textbf{attack game} tra un challenger (Charlie) e un avversario $ A $:
+\begin{enumerate}
+  \item Charlie sceglie $ k $ e l'algoritmo $ E $.
+  \item $ A $ sceglie due messaggi $ m_0, m_1 \in M $ con $ |m_0| = |m_1| $.
+  \item Charlie sceglie $ b \xleftarrow{R} \{0,1\} $ a caso.
+  \item Charlie invia $ c = E(k, m_b) $.
+  \item $ A $ indovina $ b' \in \{0,1\} $; \textbf{vince se $ b' = b $}.
+\end{enumerate}
+Per $ b = 0, 1 $ si definiscono gli esperimenti $ EXP(0) $ ed $ EXP(1) $ (in cui Charlie cifra rispettivamente $ m_0 $ ed $ m_1 $). Il \textbf{vantaggio} dell'avversario e' la differenza assoluta tra le due probabilita' che $ A $ produca $ b' = 1 $:
+\[
+  \mathrm{Adv}_{SS}[A, Q] := \big|\, \Pr[EXP(0) = 1] - \Pr[EXP(1) = 1] \,\big|
+\]
+\dfn{Semantic security}{
+  Un cifrario $ Q = (E, D) $ e' \textbf{semantically secure} se per ogni avversario "efficiente" $ A $ il vantaggio $ \mathrm{Adv}_{SS}[A, Q] $ e' "trascurabile" (\textit{negligible}).
+}
+\ex{Cifrario non semantically secure}{
+  Supponiamo esista un $ A $ efficiente che dal ciphertext deduce sempre il \textbf{LSB} (bit meno significativo) del plaintext. Costruiamo $ B $ che sceglie $ m_0 $ con $ LSB(m_0) = 0 $ e $ m_1 $ con $ LSB(m_1) = 1 $, gira $ A $ su $ c $ e ne restituisce l'output. Allora in $ EXP(0) $ esce sempre $ 0 $ e in $ EXP(1) $ sempre $ 1 $:
+  \[
+    \mathrm{Adv}_{SS}[B, Q] = |\,0 - 1\,| = 1
+  \]
+  che non e' trascurabile $ \Rightarrow $ $ Q $ \textbf{non} e' semantically secure.
+}
+
+\subsection{Semantic security con chiave many-time (IND-CPA)}
+La semantic security e' equivalente alla \textit{ciphertext indistinguishability under chosen plaintext attack} (IND-CPA). Qui la chiave e' usata \textbf{piu' di una volta}, quindi l'avversario vede molti ciphertext con la stessa chiave e in piu' puo' farsi cifrare messaggi a sua scelta (potere \textbf{CPA}, modellazione conservativa della realta'). L'attack game e' come prima, ma con dei round extra in cui $ A $ puo' chiedere a Charlie la cifratura di messaggi arbitrari (\textit{query: encrypt $ m $} $ \to $ \textit{reply: $ c $}) sia prima che dopo aver ricevuto il challenge. Obiettivo dell'avversario: rompere la semantic security.
+
+\section{ECB non e' semantically secure}
+\thm{}{
+  ECB \textbf{non} e' semantically secure per messaggi che contengono \textbf{piu' di un blocco} (known-plaintext attack).
+}
+\ex{Attacco a ECB}{
+  L'avversario sceglie due messaggi da due blocchi ciascuno:
+  \[
+    m_0 = \texttt{"Hello World"}, \qquad m_1 = \texttt{"Hello Hello"}
+  \]
+  Riceve $ c = (c_1, c_2) = E(k, m_b) $ e applica la regola: \textit{se $ c_1 = c_2 $ output $ 1 $, altrimenti output $ 0 $}. Per $ m_1 $ i due blocchi sono uguali $ \Rightarrow c_1 = c_2 $, per $ m_0 $ no. Quindi
+  \[
+    \mathrm{Adv}_{SS}[A, \text{ECB}] = 1
+  \]
+}
+$ \Rightarrow $ \textbf{non usare ECB}; la cifratura deve essere \textbf{randomizzata}.
+
+\section{Rendere sicura la cifratura}
+
+\subsection{Soluzione 1: Randomized encryption}
+$ E(k, m) $ diventa un \textbf{algoritmo randomizzato}: cifrare lo stesso messaggio due volte da' ciphertext \textbf{diversi} (con alta probabilita'). Conseguenza: il ciphertext deve essere \textbf{piu' lungo} del plaintext,
+\[
+  \text{CT-size} \approx \text{PT-size} + \text{(\# bit random)}
+\]
+
+\subsection{Soluzione 2: Nonce-based encryption}
+Si introduce un \textbf{nonce} $ n $ (gia' visto per gli stream cipher eStream): $ E(k, m, n) = c $ e $ D(k, c, n) = m $. Secondo il \textit{NIST SP 800-90A Rev.1} un nonce serve a costruire un seed e dare un "cuscinetto" di sicurezza; deve avere almeno \texttt{security\_strength/2} bit di entropia (oppure ripetersi non piu' spesso di una stringa random di quella lunghezza), deve essere \textbf{unico} al modulo crittografico ma \textbf{non} deve essere segreto (resta pero' un parametro critico). Puo' essere composto da:
+\begin{itemize}
+  \item un \textbf{valore random} generato ex novo ogni volta;
+  \item un \textbf{timestamp} di risoluzione sufficiente;
+  \item un \textbf{sequence number} monotono crescente;
+  \item una \textbf{combinazione} di timestamp + sequence number.
+\end{itemize}
+\nt{
+  Punti chiave: la coppia $ (k, n) $ non e' \textbf{mai} usata piu' di una volta, e il nonce \textbf{non} deve essere segreto ne' random (basta che non si ripeta per la stessa chiave). Vedi anche la definizione di \textit{nonce} data per gli stream cipher.
+}
+
+\section{CBC — Cipher Block Chaining}
+Grazie al meccanismo di \textbf{concatenamento}, CBC e' adatto a messaggi piu' lunghi di $ n $ bit ($ n = 64 $ per DES, $ 128 $ per AES) e oltre alla \textit{confidentiality} puo' servire per l'\textit{autenticazione}. Il ciphertext $ C_2 $ dipende da $ C_1 $, $ C_3 $ da $ C_2 $, ecc.
+\dfn{CBC (Cipher Block Chaining)}{
+  Ogni blocco di plaintext viene messo in XOR col ciphertext precedente prima di essere cifrato; il primo usa un \textit{Initialization Vector} $ IV $.
+  \[
+    \text{(cifratura)} \quad C_1 = E(K, P_1 \oplus IV), \qquad C_j = E(K, P_j \oplus C_{j-1}) \quad j = 2, \dots, N
+  \]
+  \[
+    \text{(decifratura)} \quad P_1 = D(K, C_1) \oplus IV, \qquad P_j = D(K, C_j) \oplus C_{j-1} \quad j = 2, \dots, N
+  \]
+}
+
+\subsection{Initialization Vector (IV)}
+L'$ IV $ deve essere \textbf{noto} sia al mittente che al ricevente ma \textbf{imprevedibile} da terzi, e va protetto da modifiche non autorizzate (es. si invia l'IV cifrato in ECB). Due metodi per generarlo:
+\begin{enumerate}
+  \item generare un blocco \textbf{random} con un RNG ($ IV \in \{0,1\}^n $);
+  \item applicare la cifratura (con la stessa chiave) a un \textbf{nonce} unico a ogni esecuzione (il nonce puo' essere un counter, un timestamp o un message number).
+\end{enumerate}
+\nt{
+  Nelle librerie reali l'IV e' fornito dall'utente: es. in OpenSSL \texttt{AES\_cbc\_encrypt(..., unsigned char *ivec, ...)}. Se l'IV non e' random va cifrato prima dell'uso, altrimenti \textbf{niente sicurezza CPA}.
+}
+
+\subsection{Attacco a CBC con IV prevedibile}
+\thm{}{
+  CBC in cui l'avversario puo' \textbf{predire} l'IV \textbf{non} e' CPA-secure.
+}
+Idea: dato $ c \leftarrow E_{CBC}(k, m) $, l'avversario predice l'$ IV^* $ del \textit{prossimo} messaggio. Sceglie $ 0 \in X $, ottiene $ c_0 = [\, IV, E(k, 0 \oplus IV) \,] $, poi sottopone $ m_0 = IV^* \oplus IV $ (e un $ m_1 \neq m_0 $). Riceve $ c = [\, IV^*, E(k, IV) \,] $ oppure $ [\, IV^*, E(k, m_1 \oplus IV^*) \,] $: se $ c[1] = c_0[1] $ deduce $ b = 0 $, altrimenti $ b = 1 $, vincendo il gioco.
+\nt{
+  E' esattamente il \textbf{bug di SSL/TLS 1.0}: l'IV del record $ \#i $ era l'ultimo blocco di ciphertext del record $ \#(i-1) $, quindi predicibile (attacco \textbf{BEAST}). L'IV deve essere imprevedibile da terzi.
+}
+
+\section{Da block cipher a stream cipher}
+Per AES, DES o qualunque block cipher la cifratura avviene su blocchi da $ n $ bit. E' pero' possibile \textit{"convertire"} un block cipher in uno \textbf{stream cipher} con tre modalita': \textbf{CFB}, \textbf{OFB}, \textbf{CTR}. Vantaggi: niente \textbf{padding} a multipli del blocco e funzionamento in \textbf{real time} (ogni carattere puo' essere cifrato e trasmesso subito).
+
+\subsection{CFB — Cipher FeedBack}
+Si processano $ s $ bit alla volta tramite uno \textbf{shift register} di $ b $ bit, inizializzato con l'IV. Siano $ MSB_s(X) $ e $ LSB_s(X) $ i $ s $ bit piu'/meno significativi di $ X $:
+\[
+  \begin{aligned}
+    I_1 &= IV \\
+    I_j &= LSB_{b-s}(I_{j-1}) \,\|\, C_{j-1} & j &= 2, \dots, N \\
+    O_j &= E(K, I_j) & j &= 1, \dots, N \\
+    C_j &= P_j \oplus MSB_s(O_j) & j &= 1, \dots, N
+  \end{aligned}
+\]
+In decifratura cambia solo l'ultima riga: $ P_j = C_j \oplus MSB_s(O_j) $ (si usa sempre la funzione di \textbf{cifratura} $ E $, mai $ D $).
+
+\subsection{OFB — Output FeedBack}
+Come CFB, ma in feedback va l'\textbf{output} del cifrario (non il ciphertext); l'IV deve essere un \textbf{nonce} (unico a ogni esecuzione). L'ultimo blocco e' lungo $ u < b $ bit.
+\[
+  \begin{aligned}
+    I_1 &= Nonce, \quad I_j = O_{j-1} \;\; (j \ge 2), \quad O_j = E(K, I_j) \\
+    C_j &= P_j \oplus O_j \;\; (j = 1, \dots, N-1), \qquad C_N^* = P_N^* \oplus MSB_u(O_N)
+  \end{aligned}
+\]
+\nt{
+  Vantaggio: gli errori di bit in trasmissione \textbf{non si propagano} (ogni $ C_j $ dipende solo dal keystream $ O_j $, non dai ciphertext precedenti). OFB ha la struttura di un tipico stream cipher.
+}
+
+\subsection{CTR — Counter}
+Ogni blocco e' XORato con un \textbf{contatore cifrato}. I contatori $ T_1, \dots, T_N $ devono essere \textbf{diversi} per ogni blocco (tipicamente si inizializza e si incrementa di $ 1 $ modulo $ 2^b $):
+\[
+  C_j = P_j \oplus E(K, T_j) \;\; (j = 1, \dots, N-1), \qquad C_N^* = P_N^* \oplus MSB_u\big(E(K, T_N)\big)
+\]
+In decifratura $ P_j = C_j \oplus E(K, T_j) $.
+\nt{
+  CTR e' \textbf{parallelizzabile} (i blocchi sono indipendenti) e quindi adatto ad applicazioni \textit{high-speed}; usa solo la funzione $ E $.
+}
+
+\section{XTS-AES (storage devices)}
+Nel $ 2010 $ il NIST ha approvato un'ulteriore modalita', \textbf{XTS-AES}, anche standard \textbf{IEEE 1619-2007} (IEEE Security in Storage Working Group, P1619). Descrive la cifratura di dati su dispositivi \textbf{sector-based} (dischi), dove il threat model prevede che l'avversario possa \textbf{accedere ai dati memorizzati}. Ha avuto ampio supporto industriale. Per cifrare un singolo blocco usa \textbf{due istanze} di AES con \textbf{due chiavi} $ Key_1 $ e $ Key_2 $: una cifra l'indice del settore $ i $ (combinato con $ \alpha^j $) producendo un tweak $ T $, che viene XORato col plaintext prima e dopo la seconda cifratura con $ Key_1 $.
+
+% \end{document}

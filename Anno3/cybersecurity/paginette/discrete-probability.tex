@@ -1,0 +1,162 @@
+% \begin{document}
+\chapter{Discrete Probability (a short reminder)}
+
+Un breve ripasso di probabilità discreta: serve per ragionare sulla sicurezza dei cifrari (es. la perfect secrecy dell'OTP e l'uniformità del keystream).
+
+\section{Distribuzione di probabilità}
+
+\dfn{Universe / Sample space}{
+  $U$ è un \textbf{insieme finito}, detto \textit{Universe} o \textit{Sample space}.
+}
+Esempi: lancio di una moneta $U = \{\text{heads}, \text{tail}\}$ (oppure $U = \{0,1\}$); lancio di un dado $U = \{1,2,3,4,5,6\}$. In crittografia spesso $U = \{0,1\}^n$.
+
+\dfn{Distribuzione di probabilità}{
+  Una \textit{distribuzione di probabilità} $P$ su $U$ è una funzione
+  \[
+    P : U \to [0,1] \qquad \text{tale che} \qquad \sum_{x \in U} P(x) = 1
+  \]
+}
+Esempi: moneta $P(\text{heads}) = P(\text{tail}) = 1/2$; dado $P(1) = \dots = P(6) = 1/6$. Oppure su $U = \{0,1\}^2 = \{00,01,10,11\}$: $P(00) = 1/2$, $P(01) = 1/8$, $P(10) = 1/4$, $P(11) = 1/8$ (somma $= 1$).
+
+\subsection{Distribuzioni particolari}
+\begin{enumerate}
+  \item \textbf{Distribuzione uniforme}: $\forall x \in U,\ P(x) = 1/|U|$.
+  \item \textbf{Point distribution} in $x_0$: $P(x_0) = 1$ e $\forall x \neq x_0,\ P(x) = 0$.
+\end{enumerate}
+\dots e molte altre.
+
+\section{Eventi}
+
+Sia $U$ un universe con distribuzione $P$.
+\dfn{Evento}{
+  Un \textit{evento} è un sottoinsieme $A \subseteq U$. La sua probabilità è
+  \[
+    \Pr[A] = \sum_{x \in A} P(x)
+  \]
+}
+\nt{ Si noti che $\Pr[U] = 1$. }
+
+\ex{Dado}{
+  $U = \{1,\dots,6\}$ uniforme, $A = \{1,3,5\}$ (numeri dispari):
+  \[
+    \Pr[A] = \tfrac16 + \tfrac16 + \tfrac16 = \tfrac12
+  \]
+}
+
+\ex{Bit meno significativi}{
+  $U = \{0,1\}^8$ con distribuzione uniforme ($P(x) = 1/2^8$ per ogni $x$). Sia
+  \[
+    A = \{\, x \in U : \mathrm{lsb}_2(x) = 11 \,\} \subseteq U
+  \]
+  (gli $x$ i cui due bit meno significativi sono \texttt{11}, cioè della forma \texttt{\_\_\_\_\_\_11}). Poiché $\Pr[A] = \frac{1}{2^8}\cdot|A|$ e $|A| = 2^6$ (i 6 bit liberi):
+  \[
+    \Pr[A] = \frac{2^6}{2^8} = \frac14
+  \]
+}
+
+\subsection{Unione di eventi}
+Dati due eventi $A_1, A_2$, anche $A_1 \cup A_2$ è un evento e:
+\[
+  \Pr[A_1 \cup A_2] = \Pr[A_1] + \Pr[A_2] - \Pr[A_1 \cap A_2]
+\]
+\mprop{Union bound}{
+  \[
+    \Pr[A_1 \cup A_2] \le \Pr[A_1] + \Pr[A_2]
+  \]
+}
+Se inoltre $A_1 \cap A_2 = \varnothing$ (eventi disgiunti) allora vale l'uguaglianza:
+\[
+  A_1 \cap A_2 = \varnothing \implies \Pr[A_1 \cup A_2] = \Pr[A_1] + \Pr[A_2]
+\]
+
+\section{Variabili aleatorie}
+
+\dfn{Variabile aleatoria}{
+  Una \textit{random variable} $X$ è una funzione $X : U \to V$. $X$ assume valori in $V$ e \textit{induce} una distribuzione su $V$.
+}
+
+\ex{Dado pari/dispari}{
+  $U = \{1,\dots,6\}$ uniforme, $X : U \to V = \{\text{``even''}, \text{``odd''}\}$ con
+  \[
+    X(2) = X(4) = X(6) = \text{``even''}, \qquad X(1) = X(3) = X(5) = \text{``odd''}
+  \]
+  Allora $\Pr[X = \text{``even''}] = \tfrac12$ e $\Pr[X = \text{``odd''}] = \tfrac12$.
+}
+
+\subsection{La variabile aleatoria uniforme}
+Sia $S$ un insieme (es. $S = \{0,1\}^n$). Scriviamo
+\[
+  X \leftarrow S
+\]
+per indicare che $X$ è una \textbf{variabile aleatoria uniforme} su $S$, cioè
+\[
+  \forall a \in S : \quad \Pr[X = a] = \frac{1}{|S|}
+\]
+
+\subsection{Algoritmi randomizzati}
+\begin{itemize}
+  \item \textbf{Algoritmo deterministico}: $y \leftarrow A(m)$, a ogni input corrisponde un unico output.
+  \item \textbf{Algoritmo randomizzato}: l'output è una variabile aleatoria $y \leftarrow A(m)$ (lo stesso input può dare output diversi, secondo una distribuzione).
+\end{itemize}
+
+\section{Indipendenza}
+
+\dfn{Eventi indipendenti}{
+  Due eventi $A$ e $B$ sono \textit{indipendenti} se
+  \[
+    \Pr[A \cap B] = \Pr[A] \cdot \Pr[B]
+  \]
+}
+\dfn{Variabili aleatorie indipendenti}{
+  Due variabili aleatorie $X, Y$ a valori in $V$ sono \textit{indipendenti} se
+  \[
+    \forall a, b \in V : \quad \Pr[X = a \text{ and } Y = b] = \Pr[X = a] \cdot \Pr[Y = b]
+  \]
+}
+
+\section{XOR e la sua proprietà fondamentale}
+
+Lo XOR di due stringhe in $\{0,1\}^n$ è la loro somma bit a bit modulo 2 ($\oplus$); $\mathrm{XOR}(X)$ indica lo xor di tutti i bit della stringa $X$ (la parità). La proprietà che lo rende utilissimo in crittografia:
+
+\thm{Proprietà fondamentale dello XOR}{
+  Siano:
+  \begin{enumerate}
+    \item $X$ una variabile aleatoria su $\{0,1\}^n$ con distribuzione \textbf{uniforme};
+    \item $Y$ una variabile aleatoria su $\{0,1\}^n$ con distribuzione \textbf{arbitraria};
+    \item $X$ e $Y$ \textbf{indipendenti}.
+  \end{enumerate}
+  Allora $Z := Y \oplus X$ è una variabile aleatoria \textbf{uniforme} su $\{0,1\}^n$.
+}
+
+\pf{Dimostrazione (per $n = 1$)}{
+  Sia $\Pr[Y=0] = p_0$ e $\Pr[Y=1] = p_1$ (con $p_0 + p_1 = 1$), mentre $X$ è uniforme: $\Pr[X=0] = \Pr[X=1] = \tfrac12$. Per indipendenza, la coppia $(X,Y)$ ha probabilità $\Pr[X=x]\cdot\Pr[Y=y]$. Allora $Z = 0$ accade quando $X = Y$:
+  \[
+    \Pr[Z = 0] = \Pr[(X,Y) = (0,0)] + \Pr[(X,Y) = (1,1)] = \frac{p_0}{2} + \frac{p_1}{2} = \frac{p_0 + p_1}{2} = \frac12
+  \]
+  Di conseguenza $\Pr[Z = 1] = \tfrac12$, quindi $Z$ è uniforme.
+}
+\nt{
+  È esattamente questa proprietà che dà la perfect secrecy all'OTP: facendo lo XOR del messaggio (distribuzione \emph{qualsiasi}) con una chiave \emph{uniforme} e indipendente, il ciphertext risulta uniforme e non rivela informazione sul plaintext.
+}
+
+\section{Il paradosso del compleanno (birthday paradox)}
+
+Siano $r_1, \dots, r_n \in U$ variabili aleatorie \textbf{independent identically distributed} (i.i.d.).
+\thm{Birthday paradox}{
+  Quando $n = 1.2 \times |U|^{1/2}$, allora
+  \[
+    \Pr[\exists\, i \neq j : r_i = r_j] \ge \frac12
+  \]
+  cioè con circa $\sqrt{|U|}$ campioni si ha una \textbf{collisione} con probabilità $\ge 1/2$.
+}
+
+\ex{Compleanni}{
+  $U = \{1,2,\dots,366\}$. Con $n = 1.2 \times \sqrt{366} \approx 23$ persone, due hanno lo stesso compleanno con probabilità $\ge 1/2$ (sorprendentemente poche!).
+}
+\ex{Spazio crittografico}{
+  $U = \{0,1\}^{128}$. Dopo aver campionato circa $2^{64}$ messaggi random da $U$, è probabile che due coincidano. Questo è il motivo per cui un valore casuale a $n$ bit "regge" solo fino a $\sim 2^{n/2}$ usi.
+}
+\nt{
+  Vedremo più avanti un esempio pratico con \textbf{WEP} (Wired Equivalent Privacy, IEEE 802.11): l'IV a 24 bit collide dopo $\sim 2^{12}$ frame per il birthday paradox (in realtà si ripete del tutto dopo $2^{24}$). La probabilità di collisione cresce ad "S" con il numero di campioni $n$ e raggiunge $1/2$ attorno a $1.2\sqrt{|U|}$.
+}
+% \end{document}

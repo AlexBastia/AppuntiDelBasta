@@ -417,6 +417,57 @@ Prima di dimostrarla, richiamiamo lo strumento algebrico chiave.
   Sia $ P_n $ il cammino con vertici $ v_1, v_2, \ldots, v_n $ e lati $ v_i v_{i+1} $. $ P_n $ e' bipartito (vertici di indice pari/dispari). Per $ n $ dispari, lo spettro e' simmetrico rispetto a $ 0 $: ci sono $ n $ autovalori con $ \lambda \leftrightarrow -\lambda $, ma $ n $ dispari forza l'esistenza di $ \lambda = 0 $ (l'unico fissato dall'involuzione).
 }
 
+\subsection{Il grafo bipartito completo $ K_{r,s} $}
+
+\dfn{Grafo bipartito completo $ K_{r,s} $}{\label{def:Krs}
+  $ K_{r,s} $ e' il grafo bipartito con partizione $ V = V_1 \sqcup V_2 $, $ |V_1| = r $, $ |V_2| = s $, e un lato fra \textbf{ogni} vertice di $ V_1 $ e \textbf{ogni} vertice di $ V_2 $ (in tutto $ rs $ lati, nessuno interno a $ V_1 $ o $ V_2 $).
+  \begin{center}
+    \begin{tikzpicture}[
+      vertex/.style={circle, fill=black, inner sep=1.6pt},
+      thick, scale=0.9
+    ]
+      \foreach \i in {1,2,3} \node[vertex] (a\i) at (0, {2-\i}) {};
+      \foreach \j in {1,2} \node[vertex] (b\j) at (2.4, {1.5-\j}) {};
+      \foreach \i in {1,2,3} \foreach \j in {1,2} \draw (a\i) -- (b\j);
+      \node at (-0.6, 0) {$ V_1 $};
+      \node at (3.0, 0) {$ V_2 $};
+    \end{tikzpicture}
+  \end{center}
+  La matrice di adiacenza, ordinando prima i vertici di $ V_1 $ e poi quelli di $ V_2 $, ha la struttura a blocchi
+  \[
+    A(K_{r,s}) = \begin{pmatrix} 0_{r \times r} & J_{r \times s} \\ J_{s \times r} & 0_{s \times s} \end{pmatrix},
+  \]
+  dove $ J $ denota blocchi di soli $ 1 $. Ha \textbf{rango $ 2 $}, dunque $ 0 $ e' autovalore con molteplicita' $ r + s - 2 $.
+}
+
+\mprop{Spettro di $ K_{r,s} $}{\label{prop:spettro-Krs}
+  Gli autovalori di $ A(K_{r,s}) $ sono:
+  \begin{itemize}
+    \item $ +\sqrt{rs} $ e $ -\sqrt{rs} $, ciascuno con molteplicita' $ 1 $;
+    \item $ 0 $ con molteplicita' $ r + s - 2 $.
+  \end{itemize}
+}
+\pf{Dim}{
+  \textbf{Conteggio dei cammini chiusi.} Per la nota sulla bipartizione $ f_{K_{r,s}}(\ell) = 0 $ se $ \ell $ e' dispari. Per $ \ell = 2m $ pari contiamo $ f_{K_{r,s}}(2m) = \mathrm{Tr}(A^{2m}) $. Osserviamo che
+  \[
+    A^2 = \begin{pmatrix} J_{r \times s} J_{s \times r} & 0 \\ 0 & J_{s \times r} J_{r \times s} \end{pmatrix} = \begin{pmatrix} s\, J_{r \times r} & 0 \\ 0 & r\, J_{s \times s} \end{pmatrix},
+  \]
+  perche' $ J_{r \times s} J_{s \times r} = s\, J_{r \times r} $ (ogni entrata e' $ \sum_{k=1}^{s} 1 = s $). Usando $ J_{r \times r}^m = r^{m-1} J_{r \times r} $:
+  \[
+    A^{2m} = \begin{pmatrix} s^m r^{m-1}\, J_{r \times r} & 0 \\ 0 & r^m s^{m-1}\, J_{s \times s} \end{pmatrix}.
+  \]
+  La traccia: il blocco superiore contribuisce $ r \cdot s^m r^{m-1} = (rs)^m $, quello inferiore $ s \cdot r^m s^{m-1} = (rs)^m $, quindi
+  \[
+    f_{K_{r,s}}(2m) = 2\,(rs)^m, \qquad \text{ossia} \qquad f_{K_{r,s}}(\ell) = \begin{cases} 2\,(rs)^{\ell/2} & \ell \text{ pari}, \\ 0 & \ell \text{ dispari}. \end{cases}
+  \]
+
+  \textbf{Estrazione degli autovalori.} Detti $ \lambda_1, \ldots, \lambda_{r+s} $ gli autovalori, $ \sum_i \lambda_i^\ell = f_{K_{r,s}}(\ell) $. Poiche' $ A(K_{r,s}) $ ha rango $ 2 $, almeno $ r + s - 2 $ autovalori sono nulli; siano $ \lambda_1, \lambda_2 $ i (al piu') due non nulli. Allora per ogni $ \ell $:
+  \[
+    \lambda_1^\ell + \lambda_2^\ell = 2\,(rs)^{\ell/2} = (\sqrt{rs})^\ell + (-\sqrt{rs})^\ell
+  \]
+  (l'ultima uguaglianza vale perche' per $ \ell $ dispari entrambi i membri sono nulli, per $ \ell $ pari entrambi valgono $ 2(rs)^{\ell/2} $). Per il Lemma di unicita' delle somme di potenze (Lemma~\ref{lem:somma-potenze-unicita}), $ \{\lambda_1, \lambda_2\} = \{\sqrt{rs}, -\sqrt{rs}\} $. Lo spettro e' dunque $ \pm\sqrt{rs} $ (semplici) e $ 0 $ con molteplicita' $ r + s - 2 $ --- coerente con la simmetria dei grafi bipartiti (Proposizione~\ref{prop:spettro-bipartito}).
+}
+
 
 \section{Il cubo $ n $-dimensionale $ C_n $}
 
@@ -586,6 +637,555 @@ Prima di dimostrarla, richiamiamo lo strumento algebrico chiave.
     \lambda_u = (n - \omega(u)) - \omega(u) = n - 2\, \omega(u)\,.
   \]
   Al variare di $ u \in \mathbb{Z}_2^n $, $ \omega(u) $ assume i valori $ 0, 1, \ldots, n $, e $ \#\{u \mid \omega(u) = k\} = \binom{n}{k} $.
+}
+
+
+\section{Operatori di convoluzione su gruppi abeliani finiti}
+
+L'idea alla base della trasformata di Radon $ \Phi_P $ su $ C_n $ (Definizione~\ref{def:radon}) si generalizza a un qualsiasi gruppo abeliano finito $ G $: i caratteri di $ G $ giocano il ruolo dei $ \chi_u $ del cubo e diagonalizzano simultaneamente un'intera famiglia di operatori, gli \textit{operatori di convoluzione}. Il cubo $ C_n $ con la sua trasformata di Radon e' allora un caso particolare di questa costruzione, ottenuto per $ G = \mathbb{Z}_2^n $ e $ \Gamma = \{e_1, \ldots, e_n\} $.
+
+\subsection{Operatori di traslazione e di convoluzione}
+
+\dfn{Spazio delle funzioni e operatori di traslazione}{\label{def:traslazione}
+  Sia $ G $ un gruppo abeliano finito (additivo). Lo spazio delle funzioni complesse su $ G $ e'
+  \[
+    V := \{g : G \to \mathbb{C}\}\,,
+  \]
+  uno spazio vettoriale complesso di dimensione $ |G| $. Per ogni $ a \in G $ definiamo l'\textit{operatore di traslazione} $ T_a : V \to V $ come
+  \[
+    T_a(g)(x) := g(x + a)\,.
+  \]
+}
+
+\nt{
+  $ T_a $ e' lineare. Per ogni $ a, b \in G $ vale $ T_a\, T_b = T_{a + b} $ (associativita' della somma in $ G $), e poiche' $ G $ e' \textbf{abeliano}:
+  \[
+    T_a\, T_b = T_{a + b} = T_{b + a} = T_b\, T_a\,.
+  \]
+  I $ T_a $ commutano fra loro: l'algebra che generano e' commutativa.
+}
+
+\dfn{Operatore di convoluzione}{\label{def:convoluzione}
+  Dati coefficienti $ \{c_a\}_{a \in G} \subseteq \mathbb{C} $, l'\textit{operatore di convoluzione} associato e'
+  \[
+    A := \sum_{a \in G} c_a\, T_a \,:\, V \longrightarrow V\,.
+  \]
+  Caso particolare: fissato un sottoinsieme $ \Gamma \subseteq G $ e prendendo
+  \[
+    c_a = \begin{cases} 1 & \text{se } a \in \Gamma\,, \\ 0 & \text{altrimenti,} \end{cases}
+  \]
+  si recupera la trasformata di Radon discreta $ \Phi_\Gamma $ (Definizione~\ref{def:radon}, qui per un qualsiasi gruppo $ G $).
+}
+
+\osservazione{
+  Il nome \textit{convoluzione} viene dalla formula $ A(g)(x) = \sum_{a \in G} c_a\, g(x + a) $, che e' la convoluzione discreta di $ g $ con la funzione $ a \mapsto c_a $.
+}
+
+\subsection{Caratteri di un gruppo abeliano finito}
+
+\dfn{Carattere}{\label{def:carattere-generale}
+  Un \textit{carattere} del gruppo abeliano finito $ G $ e' un omomorfismo di gruppi
+  \[
+    \chi : (G, +) \longrightarrow (\mathbb{C}^\times, \cdot)\,,
+  \]
+  ossia $ \chi(a + b) = \chi(a)\, \chi(b) $ per ogni $ a, b \in G $.
+}
+
+\nt{
+  Poiche' ogni $ a \in G $ ha ordine finito, $ \chi(a) $ e' radice dell'unita': l'immagine di un carattere e' contenuta in $ S^1 = \{z \in \mathbb{C} : |z| = 1\} $. Inoltre, essendo $ G $ abeliano, tutti i caratteri irriducibili di $ G $ hanno dimensione $ 1 $ (sono cioe' i caratteri nel senso classico). Denotiamo
+  \[
+    \widehat{G} := \{\chi : G \to \mathbb{C}^\times \mid \chi \text{ omomorfismo}\}\,;
+  \]
+  $ \widehat{G} $ e' un gruppo abeliano (prodotto puntuale) e
+  \[
+    |\widehat{G}| = |G|\,,
+  \]
+  perche' $ |G| = \sum_{\chi \text{ irr.}} \chi(1)^2 $ e per $ G $ abeliano $ \chi(1) = 1 $ per ogni $ \chi $.
+}
+
+\ex{Caratteri di $ C_n = \mathbb{Z}_2^n $}{
+  Per il cubo, i caratteri sono i $ \chi_u(v) = (-1)^{u \cdot v} $ con $ u \in \mathbb{Z}_2^n $ (Definizione~\ref{def:caratteri-cubo}): sono $ 2^n $ omomorfismi distinti, dunque tutti e soli i caratteri di $ \mathbb{Z}_2^n $. In questo caso particolare i valori sono in $ \{\pm 1\} \subset \mathbb{R} $, e non in $ \mathbb{C} $ propriamente.
+}
+
+\subsection{Diagonalizzazione simultanea}
+
+\mprop{Caratteri come autovettori di $ T_a $}{\label{prop:Ta-diag}
+  Per ogni $ a \in G $ e ogni carattere $ \chi $ di $ G $:
+  \[
+    T_a(\chi) = \chi(a)\, \chi\,.
+  \]
+  In particolare $ \chi $ e' autovettore di $ T_a $ con autovalore $ \chi(a) $.
+}
+\pf{Dim}{
+  Per ogni $ x \in G $:
+  \[
+    T_a(\chi)(x) = \chi(x + a) = \chi(x)\, \chi(a) = \chi(a)\, \chi(x)\,,
+  \]
+  usando che $ \chi $ e' omomorfismo. Dunque $ T_a(\chi) = \chi(a)\, \chi $ come elementi di $ V $.
+}
+
+\thm{Diagonalizzazione simultanea (versione generale del Teorema~\ref{thm:radon-diag})}{\label{thm:diag-gen}
+  Sia $ G $ abeliano finito e $ A = \sum_{a \in G} c_a\, T_a $ un operatore di convoluzione. Ogni carattere $ \chi $ di $ G $ e' autovettore di $ A $ con autovalore
+  \[
+    \lambda_\chi = \sum_{a \in G} c_a\, \chi(a)\,.
+  \]
+  I $ |G| $ caratteri di $ G $ formano una base di $ V $ che diagonalizza simultaneamente \textbf{tutti} gli operatori di convoluzione. In particolare, per la trasformata di Radon $ \Phi_\Gamma $ (caso $ c_a = \mathbb{1}_\Gamma(a) $):
+  \[
+    \lambda_\chi = \sum_{a \in \Gamma} \chi(a)\,.
+  \]
+}
+\pf{Dim}{
+  Per linearita' di $ A $ e per la Proposizione~\ref{prop:Ta-diag}:
+  \[
+    A(\chi) = \sum_{a \in G} c_a\, T_a(\chi) = \sum_{a \in G} c_a\, \chi(a)\, \chi = \Bigl(\sum_{a \in G} c_a\, \chi(a)\Bigr)\, \chi\,.
+  \]
+  I $ |G| = |\widehat{G}| $ caratteri di $ G $ sono linearmente indipendenti (relazioni di ortogonalita' dei caratteri) e $ \dim V = |G| $, dunque formano una base di $ V $.
+}
+
+\osservazione{
+  Il Teorema~\ref{thm:radon-diag} per il cubo si recupera prendendo $ G = \mathbb{Z}_2^n $ e $ \Gamma = \{e_1, \ldots, e_n\} $: i caratteri sono i $ \chi_u(v) = (-1)^{u \cdot v} $ e l'autovalore associato e'
+  \[
+    \lambda_{\chi_u} = \sum_{w \in \Gamma} \chi_u(w) = \sum_{i=1}^{n} (-1)^{u_i} = n - 2\, \omega(u)\,,
+  \]
+  in accordo con il Corollario~\ref{cor:spettro-cubo}.
+}
+
+\subsection{Formula esplicita per i cammini nel cubo}
+
+Combinando lo spettro di $ A(C_n) $ (Corollario~\ref{cor:spettro-cubo}) con la formula spettrale per le potenze (Corollario~\ref{cor:formula-spettrale}), otteniamo una formula chiusa per il numero di cammini fra due vertici qualsiasi del cubo.
+
+\cor{Numero di cammini in $ C_n $}{\label{cor:cammini-cubo}
+  Siano $ u, v \in \mathbb{Z}_2^n $ con $ \omega(u + v) = k $. Il numero di cammini di lunghezza $ \ell $ in $ C_n $ da $ u $ a $ v $ e':
+  \[
+    \bigl(A(C_n)^\ell\bigr)_{u, v}
+      = \frac{1}{2^n} \sum_{i = 0}^{n} \sum_{j = 0}^{k} (-1)^j \binom{k}{j} \binom{n - k}{i - j}\, (n - 2 i)^\ell\,,
+  \]
+  con la convenzione $ \binom{n - k}{i - j} = 0 $ se $ j > i $ o $ i - j > n - k $.
+}
+
+\osservazione{
+  La formula dipende da $ u, v $ solo attraverso $ k = \omega(u + v) $, ossia il numero di coordinate in cui $ u $ e $ v $ differiscono (\textit{distanza di Hamming}). Coerentemente: il cubo $ C_n $ e' vertex-transitive e il numero di cammini di lunghezza $ \ell $ fra due vertici dipende solo dalla loro distanza.
+}
+
+\pf{Dim}{
+  \textbf{Strategia.} Applichiamo la formula spettrale (Corollario~\ref{cor:formula-spettrale}): se $ \{\widehat{E}_w\}_{w \in C_n} $ e' una base \textbf{ortonormale} di autovettori di $ A(C_n) $ con autovalori $ \{\mu_w\} $, allora
+  \[
+    \bigl(A(C_n)^\ell\bigr)_{u, v} = \sum_{w \in C_n} (\widehat{E}_w)_u\, (\widehat{E}_w)_v\, \mu_w^\ell\,,
+  \]
+  dove $ (\widehat{E}_w)_u $ e' la componente $ u $-esima di $ \widehat{E}_w $ (la coordinata sul vettore $ u $ della base canonica $ \{\delta_u\} $).
+
+  \textbf{Ortonormalizzazione.} Dal Corollario~\ref{cor:spettro-cubo}, $ E_w = \sum_{v \in C_n} (-1)^{w \cdot v}\, v $ e' un autovettore di autovalore $ \mu_w = n - 2\, \omega(w) $. La sua norma al quadrato e'
+  \[
+    |E_w|^2 = \sum_{v \in C_n} \bigl((-1)^{w \cdot v}\bigr)^2 = \sum_{v \in C_n} 1 = 2^n\,,
+  \]
+  quindi $ \widehat{E}_w := \tfrac{1}{2^{n/2}}\, E_w $ ha norma $ 1 $, e
+  \[
+    (\widehat{E}_w)_u = \tfrac{1}{2^{n/2}}\, (-1)^{u \cdot w}\,.
+  \]
+
+  \textbf{Sostituzione nella formula spettrale.}
+  \[
+    \bigl(A(C_n)^\ell\bigr)_{u, v}
+      = \sum_{w \in C_n} \tfrac{(-1)^{u \cdot w}}{2^{n/2}} \cdot \tfrac{(-1)^{v \cdot w}}{2^{n/2}} \cdot (n - 2\, \omega(w))^\ell
+      = \frac{1}{2^n} \sum_{w \in C_n} (-1)^{(u + v) \cdot w}\, (n - 2\, \omega(w))^\ell\,.
+  \]
+
+  \textbf{Raggruppamento dei termini.} Indicizziamo i $ w \in C_n $ in base a:
+  \begin{itemize}
+    \item $ i := \omega(w) \in \{0, 1, \ldots, n\} $ — il peso di $ w $;
+    \item $ j := \#\{r \mid w_r = 1 \text{ e } (u + v)_r = 1\} \in \{0, 1, \ldots, k\} $ — il numero di indici in cui $ w $ e $ u + v $ hanno entrambi un $ 1 $.
+  \end{itemize}
+  Allora $ (u + v) \cdot w \equiv j \pmod 2 $ (somma in $ \mathbb{Z}_2 $ delle coordinate in comune), dunque $ (-1)^{(u + v) \cdot w} = (-1)^j $. E i $ w $ con $ \omega(w) = i $ e tutti gli stessi valori di $ (n - 2i)^\ell $ contribuiscono tutti uguale, quindi possiamo raggruppare.
+
+  Contiamo gli $ w $ con una coppia $ (i, j) $ fissata. Pensiamo a $ w $ come al sottoinsieme dei suoi indici uguali a $ 1 $: dobbiamo scegliere
+  \begin{itemize}
+    \item $ j $ indici fra i $ k $ dove $ u + v $ vale $ 1 $: $ \binom{k}{j} $ scelte;
+    \item $ i - j $ indici fra gli $ n - k $ dove $ u + v $ vale $ 0 $: $ \binom{n - k}{i - j} $ scelte (zero se $ j > i $).
+  \end{itemize}
+  In totale $ \binom{k}{j}\binom{n - k}{i - j} $ vettori $ w $. Sommando:
+  \[
+    \bigl(A(C_n)^\ell\bigr)_{u, v}
+      = \frac{1}{2^n} \sum_{i = 0}^{n} \sum_{j = 0}^{k} (-1)^j \binom{k}{j} \binom{n - k}{i - j}\, (n - 2 i)^\ell\,.
+  \]
+}
+
+\osservazione{
+  \textbf{Caso $ k = 0 $ (cammini chiusi):} $ u = v $, $ \omega(u + v) = 0 $, la somma su $ j $ collassa al solo $ j = 0 $:
+  \[
+    \bigl(A(C_n)^\ell\bigr)_{u, u} = \frac{1}{2^n} \sum_{i = 0}^{n} \binom{n}{i}\, (n - 2 i)^\ell\,,
+  \]
+  indipendente dal vertice $ u $ (come deve essere per simmetria). Sommando su $ u $ si recupera $ f_{C_n}(\ell) = \sum_{i=0}^{n} \binom{n}{i}\, (n - 2 i)^\ell $, in accordo con il Corollario~\ref{cor:cammini-chiusi-traccia}.
+}
+
+\subsection{Il ciclo come grafo di Cayley di $ \mathbb{Z}/n\mathbb{Z} $}
+
+Sia il cubo $ C_n $ sia il ciclo nascono dalla stessa costruzione: un \textit{grafo di Cayley} su un gruppo abeliano, in cui la trasformata di Radon coincide con l'operatore di adiacenza e i caratteri ne diagonalizzano la matrice.
+
+\dfn{Ciclo $ \mathrm{Cic}_n $}{\label{def:ciclo}
+  Sia $ G = \mathbb{Z}/n\mathbb{Z} $. Il \textit{ciclo} su $ n $ vertici e' il grafo $ \mathrm{Cic}_n $ con:
+  \begin{itemize}
+    \item vertici $ V = \mathbb{Z}/n\mathbb{Z} = \{0, 1, \ldots, n-1\} $;
+    \item un lato fra $ i $ e $ j $ sse $ i - j \in \{1, n-1\} = \{\pm 1\} \pmod n $.
+  \end{itemize}
+  E' il grafo di Cayley $ \mathrm{Cay}(\mathbb{Z}/n\mathbb{Z}, \Delta) $ con insieme di connessione $ \Delta = \{1, n-1\} $ (simmetrico). Ogni vertice ha grado $ 2 $; il grafo e' un poligono di $ n $ lati. (Da non confondere col cubo $ C_n $ del~\S3.)
+}
+
+\nt{
+  Come per il cubo (Corollario~\ref{cor:spettro-cubo}), la matrice di $ \Phi_\Delta $ rispetto alla base $ \{\delta_u\}_{u \in \mathbb{Z}/n\mathbb{Z}} $ e' esattamente la matrice di adiacenza $ A(\mathrm{Cic}_n) $: infatti
+  \[
+    \Phi_\Delta(\delta_u)(x) = \delta_u(x + 1) + \delta_u(x - 1) = \delta_{u-1}(x) + \delta_{u+1}(x)\,,
+  \]
+  cioe' $ \Phi_\Delta(\delta_u) = \delta_{u-1} + \delta_{u+1} $: la colonna $ u $ ha un $ 1 $ in posizione $ u \pm 1 $, come $ A(\mathrm{Cic}_n) $. La matrice e' \textbf{circolante} (cfr.\ \S6.3).
+}
+
+\cor{Spettro del ciclo $ \mathrm{Cic}_n $}{\label{cor:spettro-ciclo}
+  Sia $ \omega := e^{2\pi i / n} $. I caratteri di $ \mathbb{Z}/n\mathbb{Z} $ sono $ \chi_j(a) = \omega^{j a} $ ($ j = 0, \ldots, n-1 $). Gli autovettori di $ A(\mathrm{Cic}_n) $ sono i caratteri $ \chi_j $, con autovalore
+  \[
+    \lambda_j = \sum_{a \in \Delta} \chi_j(a) = \omega^{j} + \omega^{j(n-1)} = \omega^j + \omega^{-j} = 2\cos\!\Bigl(\frac{2\pi j}{n}\Bigr)\,, \qquad j = 0, 1, \ldots, n-1\,.
+  \]
+}
+\pf{Dim}{
+  Applichiamo il Teorema~\ref{thm:diag-gen} con $ G = \mathbb{Z}/n\mathbb{Z} $ e $ \Gamma = \Delta = \{1, n-1\} $: ogni carattere $ \chi_j $ e' autovettore di $ \Phi_\Delta = A(\mathrm{Cic}_n) $ con autovalore $ \sum_{a \in \Delta} \chi_j(a) $. Calcolando, $ \chi_j(1) = \omega^j $ e $ \chi_j(n-1) = \omega^{j(n-1)} = \omega^{-j} $ (poiche' $ \omega^{jn} = 1 $). Infine $ \omega^j + \omega^{-j} = 2\cos(2\pi j / n) $ per la formula di Eulero.
+}
+
+\osservazione{
+  Lo spettro $ \{2\cos(2\pi j/n)\}_{j=0}^{n-1} $ e' reale (come deve, $ A $ simmetrica) e simmetrico rispetto a $ 0 $ solo quando $ n $ e' pari (i.e.\ quando $ \mathrm{Cic}_n $ e' bipartito). L'autovalore massimo e' $ \lambda_0 = 2 $ (il grado), con autovettore costante $ \chi_0 \equiv 1 $.
+}
+
+
+\section{Lemma delle strette di mano e cammini euleriani}
+
+\subsection{Grado e lemma delle strette di mano}
+
+\dfn{Grado di un vertice}{\label{def:grado}
+  Sia $ G = (V, E, \varphi) $ un grafo e $ v \in V $. Il \textit{grado} di $ v $ e'
+  \[
+    \deg(v) := \#\{\text{estremi dei lati di } E \text{ incidenti a } v\}\,,
+  \]
+  contando ogni loop in $ v $ \textbf{due volte} (un loop in $ v $ ha entrambi gli estremi in $ v $).
+}
+
+\mlenma{Lemma delle strette di mano}{\label{lem:strette-mano}
+  Per ogni grafo finito $ G = (V, E, \varphi) $:
+  \[
+    \sum_{v \in V} \deg(v) = 2\, |E|\,.
+  \]
+}
+\pf{Dim}{
+  Ogni lato $ e \in E $ ha esattamente due estremi (eventualmente coincidenti se $ e $ e' un loop): contribuisce dunque due volte alla somma a sinistra. Sommando su tutti i lati:
+  \[
+    \sum_{v \in V} \deg(v) = \sum_{e \in E} 2 = 2|E|\,.
+  \]
+}
+
+\thm{Parita' dei vertici di grado dispari}{\label{thm:parita-grado-dispari}
+  In ogni grafo finito, il numero di vertici di grado dispari e' pari.
+}
+\pf{Dim}{
+  Sia $ V_1 := \{v \in V \mid \deg(v) \text{ dispari}\} $ e $ V_2 := \{v \in V \mid \deg(v) \text{ pari}\} $, $ V = V_1 \sqcup V_2 $. Dal Lemma~\ref{lem:strette-mano}:
+  \[
+    \underbrace{\sum_{v \in V_1} \deg(v)}_{\text{addendi dispari}} + \underbrace{\sum_{v \in V_2} \deg(v)}_{\text{pari}} = 2|E| \quad \text{(pari)}\,.
+  \]
+  Il secondo addendo a sinistra e' pari (somma di numeri pari) e il totale e' pari, quindi $ \sum_{v \in V_1} \deg(v) $ e' pari. Una somma di numeri dispari e' pari sse il numero di addendi e' pari: dunque $ |V_1| $ e' pari.
+}
+
+\ex{Esercizio (la festa)}{
+  Ad una festa con $ 51 $ invitati, dimostrare che esiste almeno una persona che conosce un numero \textbf{pari} di altri invitati.
+
+  \textit{Soluzione.} Costruiamo il grafo $ G $ con vertici = invitati e un lato fra $ u $ e $ v $ sse $ u $ e $ v $ si conoscono (relazione simmetrica). Allora $ \deg(v) $ = numero di persone che $ v $ conosce. Per il Teorema~\ref{thm:parita-grado-dispari} il numero di vertici di grado dispari e' pari; ma $ |V| = 51 $ e' dispari, quindi almeno un vertice ha grado pari.
+}
+
+\subsection{Cammini euleriani}
+
+\dfn{Cammino euleriano}{\label{def:cammino-euleriano}
+  Un \textit{cammino euleriano} in un grafo connesso $ G $ e' un cammino che attraversa ogni lato di $ G $ \textbf{esattamente una volta}. E' detto \textit{chiuso} se il vertice di partenza coincide con quello di arrivo.
+}
+
+\thm{Teorema di Eulero sui cammini euleriani}{\label{thm:eulero-cammini}
+  Sia $ G $ un grafo connesso. Allora:
+  \begin{itemize}
+    \item \textbf{(a)} se $ G $ ha piu' di $ 2 $ vertici di grado dispari, allora $ G $ \textbf{non} ammette cammini euleriani;
+    \item \textbf{(b)} se $ G $ ha esattamente $ 2 $ vertici di grado dispari, allora $ G $ ammette un cammino euleriano, ed ogni tale cammino inizia in uno dei due vertici di grado dispari e termina nell'altro;
+    \item \textbf{(c)} se $ G $ non ha vertici di grado dispari (tutti pari), allora $ G $ ammette un cammino euleriano, ed ogni tale cammino e' chiuso.
+  \end{itemize}
+}
+
+\nt{
+  Per il Teorema~\ref{thm:parita-grado-dispari} il numero di vertici di grado dispari e' sempre pari, quindi i casi (a), (b), (c) coprono tutte le possibilita' (0, 2, oppure $ \geq 4 $ vertici di grado dispari).
+}
+
+\pf{Dim (parte necessaria: (a) e le seconde parti di (b), (c))}{
+  Supponiamo che $ G $ ammetta un cammino euleriano $ \gamma $. Sia $ v $ un vertice di $ G $: ogni volta che $ \gamma $ attraversa $ v $ (senza esservi estremo) consuma esattamente $ 2 $ lati incidenti a $ v $ (uno in entrata, uno in uscita); inoltre $ \gamma $, in quanto cammino, ha due estremi.
+
+  Distinguiamo:
+  \begin{itemize}
+    \item Se $ v $ \textbf{non} e' estremo di $ \gamma $: tutti i lati incidenti a $ v $ sono consumati a coppie, dunque $ \deg(v) $ e' \textbf{pari}.
+    \item Se $ v $ e' estremo di $ \gamma $ (vertice iniziale o finale): il cammino consuma un numero dispari di lati incidenti a $ v $ (le coppie del transito piu' uno solitario per l'estremo), dunque $ \deg(v) $ e' \textbf{dispari} --- a meno che $ v $ sia sia estremo iniziale che finale, nel qual caso $ \gamma $ e' chiuso e $ \deg(v) $ torna pari.
+  \end{itemize}
+
+  In particolare, un vertice di grado dispari deve essere estremo di $ \gamma $ (ed estremo solitario, non doppio). Ma un cammino ha al piu' $ 2 $ estremi distinti, quindi:
+  \begin{itemize}
+    \item $ G $ ha al piu' $ 2 $ vertici di grado dispari $ \Rightarrow $ (a);
+    \item se $ G $ ne ha esattamente $ 2 $, $ \gamma $ inizia in uno e termina nell'altro $ \Rightarrow $ seconda parte di (b);
+    \item se $ G $ non ne ha, $ \gamma $ deve cominciare e finire nello stesso vertice $ \Rightarrow $ seconda parte di (c).
+  \end{itemize}
+
+  Resta da dimostrare la \textbf{sufficienza}: l'esistenza del cammino nei casi (b) e (c).
+}
+
+\pf{Dim (parte sufficiente: esistenza, caso (c) e riduzione di (b))}{
+  \textbf{Caso (c): tutti i gradi pari.} Sia $ W $ un cammino \textbf{chiuso} di lunghezza \textbf{massima} fra quelli che percorrono ogni lato al piu' una volta (esiste perche' i lati sono finiti). Affermiamo che $ W $ e' euleriano.
+
+  Per assurdo, supponiamo che esista un lato $ e $ non percorso da $ W $.
+
+  \textit{Passo 1: esiste un lato non in $ W $ incidente a un vertice di $ W $.} Sia $ v $ un vertice di $ W $. Poiche' $ G $ e' connesso, c'e' un cammino da un estremo di $ e $ a $ v $; sia $ u $ il \textbf{primo} vertice di tale cammino che appartiene a $ W $. Il lato del cammino che arriva in $ u $ proviene da un vertice fuori da $ W $, quindi non e' un lato di $ W $: e' un lato non percorso, incidente a $ u \in W $.
+
+  \begin{center}
+    \begin{tikzpicture}[
+      vertex/.style={circle, fill=black, inner sep=1.5pt},
+      uvert/.style={circle, fill=blue!65!black, inner sep=2.2pt},
+      thick, scale=1.0
+    ]
+      % cammino chiuso W (esagono)
+      \node[vertex] (v2) at (30:1.6) {};
+      \node[vertex] (v3) at (150:1.6) {};
+      \node[vertex] (v4) at (210:1.6) {};
+      \node[vertex] (v5) at (270:1.6) {};
+      \node[vertex] (v6) at (330:1.6) {};
+      \node[uvert, label={[blue!65!black]right:$u$}] (u) at (90:1.6) {};
+      \draw (u) -- (v2) -- (v6) -- (v5) -- (v4) -- (v3) -- (u);
+      \node at (0,0) {$W$};
+      % lati non percorsi (rossi): cammino da e fino a u
+      \node[vertex, label={[font=\footnotesize]left:$p$}] (p) at (-0.95, 2.8) {};
+      \node[vertex, label={[font=\footnotesize]above:$y$}] (y) at (-2.15, 3.25) {};
+      \node[vertex, label={[font=\footnotesize]below:$z$}] (z) at (-3.3, 2.7) {};
+      \draw[red, thick] (u) -- (p);
+      \draw[red, thick, dashed] (p) -- (y);
+      \draw[red, thick] (y) -- (z);
+      \node[red, font=\footnotesize] at (-2.95, 3.25) {$e$};
+    \end{tikzpicture}
+  \end{center}
+  {\footnotesize\textit{Il cammino (tratteggiato) dall'estremo di $ e $ verso $ W $ entra per la prima volta in $ u $; il lato $ p\,u $ (rosso) e' non percorso e incidente a $ u \in W $.}}
+
+  \textit{Passo 2: costruzione di un cammino chiuso piu' lungo.} Riscriviamo $ W $ come cammino chiuso basato in $ u $ (rotazione ciclica). Partendo da $ u $ lungo il lato non percorso, costruiamo un nuovo cammino $ W' $ usando solo lati non in $ W $: ogni volta che entriamo in un vertice tramite un lato nuovo, il numero di lati nuovi gia' usati in quel vertice e' dispari, e poiche' \textbf{tutti i gradi sono pari} resta almeno un lato nuovo per uscire. Il cammino $ W' $ non puo' bloccarsi se non tornando in $ u $: dunque $ W' $ e' chiuso e basato in $ u $.
+
+  Concatenando $ W $ con $ W' $ otteniamo un cammino chiuso che percorre ogni lato al piu' una volta ed e' \textbf{strettamente piu' lungo} di $ W $: contraddizione con la massimalita'. Dunque $ W $ percorre tutti i lati, ed e' euleriano e chiuso.
+
+  \begin{center}
+    \begin{tikzpicture}[
+      vertex/.style={circle, fill=black, inner sep=1.5pt},
+      uvert/.style={circle, fill=blue!65!black, inner sep=2.2pt},
+      thick, scale=1.0
+    ]
+      % W (grigio, gia' percorso)
+      \node[vertex] (v2) at (30:1.6) {};
+      \node[vertex] (v3) at (150:1.6) {};
+      \node[vertex] (v4) at (210:1.6) {};
+      \node[vertex] (v5) at (270:1.6) {};
+      \node[vertex] (v6) at (330:1.6) {};
+      \node[uvert, label={[blue!65!black]below:$u$}] (u) at (90:1.6) {};
+      \draw[gray] (u) -- (v2) -- (v6) -- (v5) -- (v4) -- (v3) -- (u);
+      \node[gray] at (0,0) {$W$};
+      % W' (rosso, lati nuovi) attaccato in u
+      \node[vertex] (a) at (1.15, 2.8) {};
+      \node[vertex] (b) at (0, 3.75) {};
+      \node[vertex] (c) at (-1.15, 2.8) {};
+      \draw[red, thick] (u) -- (a) -- (b) -- (c) -- (u);
+      \node[red] at (0, 2.9) {$W'$};
+    \end{tikzpicture}
+  \end{center}
+  {\footnotesize\textit{Da $ u $ si costruisce il cammino chiuso $ W' $ (rosso) di soli lati nuovi; la concatenazione $ W W' $ e' chiusa e piu' lunga di $ W $.}}
+
+  \textbf{Caso (b): esattamente $ 2 $ vertici di grado dispari $ x, y $.} Aggiungiamo un lato virtuale $ xy $: ora tutti i gradi sono pari e (caso (c)) esiste un cammino euleriano chiuso. Rimuovendo il lato virtuale si ottiene un cammino euleriano (aperto) da $ x $ a $ y $.
+}
+
+
+\section{Algebra del gruppo e determinante di Dedekind}
+
+\subsection{Identificazione $ V = \mathbb{C}[G] $}
+
+Per legare gli operatori di convoluzione alla struttura algebrica del gruppo, identifichiamo $ V $ con l'\textit{algebra del gruppo} $ \mathbb{C}[G] $.
+
+\dfn{Algebra del gruppo}{\label{def:algebra-gruppo}
+  $ \mathbb{C}[G] $ e' lo spazio vettoriale complesso con base $ \{a : a \in G\} $ (indicizzata dagli elementi di $ G $), munito del prodotto bilineare definito sui basi da $ a \cdot b := a + b $ ed esteso per bilinearita'. Identifichiamo $ V $ con $ \mathbb{C}[G] $ via
+  \[
+    a \;\longleftrightarrow\; \delta_a\,,
+  \]
+  ossia $ g = \sum_{a \in G} g(a)\, a \in \mathbb{C}[G] $ corrisponde a $ g = \sum_{a \in G} g(a)\, \delta_a \in V $.
+}
+
+\mprop{Azione di $ T_b $ sulla base $ \{\delta_a\} $}{\label{prop:Tb-deltaa}
+  Per ogni $ a, b \in G $:
+  \[
+    T_b(\delta_a) = \delta_{a - b}\,, \qquad T_{-b}(\delta_a) = \delta_{a + b}\,.
+  \]
+}
+\pf{Dim}{
+  $ T_b(\delta_a)(x) = \delta_a(x + b) $ vale $ 1 $ sse $ x + b = a $, cioe' $ x = a - b $; vale $ 0 $ altrimenti. Dunque $ T_b(\delta_a) = \delta_{a - b} $. Sostituendo $ b \to -b $ si ottiene la seconda formula.
+}
+
+\mprop{Moltiplicazione a sinistra in $ \mathbb{C}[G] $ = convoluzione}{\label{prop:left-mult-conv}
+  Sia $ v = \sum_{b \in G} c_b \cdot b \in \mathbb{C}[G] $. L'operatore $ V \to V $ di \textbf{moltiplicazione a sinistra} per $ v $ in $ \mathbb{C}[G] $ coincide con l'operatore di convoluzione
+  \[
+    T_v := \sum_{b \in G} c_b\, T_{-b}\,.
+  \]
+}
+\pf{Dim}{
+  Per linearita', basta verificare l'identita' sui basi. Moltiplicando a sinistra per $ v $:
+  \[
+    v \cdot \delta_a = \Bigl(\sum_b c_b\, b\Bigr) \cdot a = \sum_b c_b\, (b + a) = \sum_b c_b\, \delta_{a + b}\,.
+  \]
+  D'altra parte, per la Proposizione~\ref{prop:Tb-deltaa}:
+  \[
+    T_v(\delta_a) = \sum_b c_b\, T_{-b}(\delta_a) = \sum_b c_b\, \delta_{a + b}\,.
+  \]
+}
+
+\nt{
+  Per il Teorema~\ref{thm:diag-gen} (con $ c_a \to c_{-a} $ per via dell'indice $ -b $) l'autovalore di $ T_v $ sul carattere $ \chi $ e':
+  \[
+    \lambda_\chi(v) = \sum_{b \in G} c_b\, \chi(-b)\,.
+  \]
+}
+
+\subsection{Determinante di Dedekind}
+
+L'osservazione chiave: la matrice di $ T_v $ rispetto alla base $ \{\delta_a\}_{a \in G} $ ha entrate $ c_{g - h} $ in posizione $ (g, h) $. Variando i $ c_b $, otteniamo un \textbf{polinomio} nelle $ |G| $ indeterminate $ \{c_b\} $.
+
+\dfn{Matrice di Dedekind $ M(G) $}{\label{def:matrice-dedekind}
+  Sia $ G $ un gruppo abeliano finito e $ \{X_a\}_{a \in G} $ una famiglia di indeterminate indicizzate dagli elementi di $ G $. La \textit{matrice di Dedekind} $ M(G) $ ha righe e colonne indicizzate da $ G $ e per ogni $ g, h \in G $:
+  \[
+    M(G)_{g, h} := X_{g - h}\,.
+  \]
+}
+
+\ex{$ G = \mathbb{Z}/3\mathbb{Z} = \{0, 1, 2\} $}{
+  Calcolando $ X_{-1} = X_2 $ e $ X_{-2} = X_1 $:
+  \[
+    M(G)
+    = \begin{pmatrix}
+      X_{0 - 0} & X_{0 - 1} & X_{0 - 2} \\
+      X_{1 - 0} & X_{1 - 1} & X_{1 - 2} \\
+      X_{2 - 0} & X_{2 - 1} & X_{2 - 2}
+    \end{pmatrix}
+    = \begin{pmatrix}
+      X_0 & X_2 & X_1 \\
+      X_1 & X_0 & X_2 \\
+      X_2 & X_1 & X_0
+    \end{pmatrix}\,.
+  \]
+  La trasposta $ M(G)^T $ e' la \textbf{matrice circolante standard}:
+  \[
+    M(G)^T = \begin{pmatrix}
+      X_0 & X_1 & X_2 \\
+      X_2 & X_0 & X_1 \\
+      X_1 & X_2 & X_0
+    \end{pmatrix}\,,
+  \]
+  in cui ogni riga e' lo shift ciclico della precedente. $ \det M(G) = \det M(G)^T $: i due determinanti coincidono.
+}
+
+\thm{Teorema di Dedekind sul determinante di gruppo}{\label{thm:dedekind}
+  Sia $ G $ un gruppo abeliano finito. Vale l'identita' polinomiale
+  \[
+    \Delta(G) := \det M(G) = \prod_{\chi \in \widehat{G}} \Bigl(\sum_{b \in G} \chi(b)\, X_b\Bigr)\,. \tag{$\star$}
+  \]
+  In particolare $ \Delta(G) $ si \textbf{fattorizza in fattori lineari} nelle $ X_b $ (sul campo dei caratteri).
+}
+
+\pf{Dim}{
+  \textbf{Passo 1: lettura operatoriale di $ M(G) $.} Fissiamo $ c_b \in \mathbb{C} $ per ogni $ b \in G $ e poniamo $ v := \sum_b c_b \cdot b \in \mathbb{C}[G] $. Per la Proposizione~\ref{prop:left-mult-conv}, la matrice di $ T_v $ rispetto a $ \{\delta_a\} $ ha entrata $ c_{g - h} $ in posizione $ (g, h) $:
+  \[
+    [T_v]_{g, h} = c_{g - h} = M(G)_{g, h}\,\bigl|_{X_a \mapsto c_a}\,.
+  \]
+  Quindi
+  \[
+    \det M(G)\bigl|_{X_a \mapsto c_a} = \det T_v\,.
+  \]
+
+  \textbf{Passo 2: calcolo del determinante via autovalori.} Per il Teorema~\ref{thm:diag-gen} e la Proposizione~\ref{prop:left-mult-conv}, $ T_v $ e' diagonalizzabile con autovalori
+  \[
+    \lambda_\chi = \sum_{b \in G} c_b\, \chi(-b)\,, \qquad \chi \in \widehat{G}\,.
+  \]
+  Il determinante e' il prodotto degli autovalori:
+  \[
+    \det T_v = \prod_{\chi \in \widehat{G}} \Bigl(\sum_{b \in G} c_b\, \chi(-b)\Bigr)\,. \tag{$\star\star$}
+  \]
+
+  \textbf{Passo 3: $ \chi(-b) $ diventa $ \chi(b) $.} Per ogni $ \chi $ vale $ \overline{\chi(b)} = \chi(b)^{-1} = \chi(-b) $, perche' $ \chi(b) \in S^1 $ (e' radice dell'unita'). Dunque $ \overline{\chi} : b \mapsto \chi(-b) $ e' essa stessa un carattere. L'applicazione $ \chi \mapsto \overline{\chi} $ e' una \textbf{biiezione} di $ \widehat{G} $ in se' (e' un'involuzione), quindi il prodotto rimane invariato:
+  \[
+    \prod_{\chi \in \widehat{G}} \Bigl(\sum_b c_b\, \chi(-b)\Bigr)
+      = \prod_{\chi \in \widehat{G}} \Bigl(\sum_b c_b\, \overline{\chi}(b)\Bigr)
+      = \prod_{\chi \in \widehat{G}} \Bigl(\sum_b c_b\, \chi(b)\Bigr)\,.
+  \]
+
+  \textbf{Passo 4: identita' polinomiale.} I due membri di $(\star)$ sono polinomi nelle indeterminate $ \{X_b\}_{b \in G} $. Per i passi precedenti, assumono lo stesso valore per ogni scelta numerica $ X_b = c_b \in \mathbb{C} $. Due polinomi in piu' variabili su un campo infinito che coincidono come funzioni sono uguali, dunque $(\star)$ vale come identita' fra polinomi.
+}
+
+\pf{Dim alternativa (via il Teorema Fondamentale della Teoria delle Rappresentazioni)}{
+  Stanley cita questo teorema soprattutto per il suo interesse storico, come precursore della moderna teoria dei caratteri. Unendo le proprieta' dei determinanti di gruppo con il Teorema Fondamentale della Teoria delle Rappresentazioni (cfr.\ \texttt{fondamenti-rappr.tex}) si ottiene una dimostrazione piu' concettuale.
+
+  \textbf{Setup.} Consideriamo l'algebra gruppale $ \mathbb{C}[G] $ (Definizione~\ref{def:algebra-gruppo}). Per il Teorema Fondamentale, $ \mathbb{C}[G] $ e' isomorfa come algebra a una somma diretta di algebre di matrici
+  \[
+    \mathbb{C}[G] \;\cong\; \bigoplus_{C} M_{n_C}(\mathbb{C})\,,
+  \]
+  dove $ C $ varia fra le classi di coniugio di $ G $ ed $ n_C $ e' la dimensione della rappresentazione irriducibile associata. L'isomorfismo che realizza la decomposizione e' la \textbf{Trasformata di Fourier} $ \mathcal{F} $.
+
+  \textbf{Semplificazione nel caso abeliano.} Poiche' $ G $ e' abeliano:
+  \begin{itemize}
+    \item ogni classe di coniugio e' un singoletto, quindi indicizziamo per elementi del gruppo, ovvero — equivalentemente, per dualita' — per caratteri irriducibili;
+    \item tutte le rappresentazioni irriducibili hanno dimensione $ n_C = 1 $.
+  \end{itemize}
+  L'isomorfismo si semplifica drasticamente in:
+  \[
+    \mathcal{F} \,:\, \mathbb{C}[G] \;\stackrel{\sim}{\longrightarrow}\; \bigoplus_{\chi \in \widehat{G}} \mathbb{C}\,. \tag{$\dagger$}
+  \]
+
+  \textbf{Lettura operatoriale di $ M(G) $.} Sia $ v = \sum_{b \in G} X_b \cdot b $ un elemento generico di $ \mathbb{C}[G] $ (con le $ X_b $ trattate come indeterminate). Per la Proposizione~\ref{prop:left-mult-conv}, $ M(G) $ e' \textbf{esattamente} la matrice dell'operatore $ T_v $ di moltiplicazione a sinistra per $ v $, scritta nella base $ \{\delta_a\}_{a \in G} $.
+
+  \textbf{Immagine via Fourier.} Calcoliamo l'immagine di $ v $ tramite $ \mathcal{F} $. Sulla componente associata al carattere $ \chi $, $ v $ agisce per moltiplicazione come lo scalare $ \sum_{b \in G} X_b\, \chi(b) $ (e' il valore di $ v $ visto come funzione su $ \widehat{G} $):
+  \[
+    \mathcal{F}(v) = \bigoplus_{\chi \in \widehat{G}} \Bigl(\sum_{b \in G} X_b\, \chi(b)\Bigr)\,.
+  \]
+
+  \textbf{Determinante.} L'isomorfismo $ \mathcal{F} $ e' di algebre: preserva il prodotto. In particolare il determinante dell'operatore di moltiplicazione a sinistra per $ v $ in $ \mathbb{C}[G] $ (che e' $ \det M(G) $) coincide con il determinante della moltiplicazione per $ \mathcal{F}(v) $ nello spazio trasformato $ \bigoplus_\chi \mathbb{C} $.
+
+  Quest'ultimo spazio e' somma diretta di componenti unidimensionali: la matrice di moltiplicazione per $ \mathcal{F}(v) $ e' \textbf{diagonale}, con $ \sum_b X_b\, \chi(b) $ sull'entrata indicizzata da $ \chi $. Il determinante e' il prodotto degli elementi diagonali:
+  \[
+    \det M(G) = \det \mathcal{F}(v) = \prod_{\chi \in \widehat{G}} \Bigl(\sum_{b \in G} \chi(b)\, X_b\Bigr)\,. \qed
+  \]
+}
+
+\nt{
+  Questa lettura algebrica spiega anche, a posteriori, l'estensione di Frobenius (vedi sotto): in un gruppo \textbf{non} abeliano la decomposizione di Wedderburn $ \mathbb{C}[G] \cong \bigoplus_\rho M_{d_\rho}(\mathbb{C}) $ ha blocchi di dimensione $ d_\rho > 1 $, e il determinante della moltiplicazione su un blocco $ M_{d_\rho}(\mathbb{C}) $ non e' lineare ma e' un polinomio di grado $ d_\rho $ elevato alla $ d_\rho $-esima potenza. Nel caso abeliano $ d_\rho = 1 $ per ogni $ \rho $ e si ritrovano fattori lineari.
+}
+
+\nt{
+  \textbf{Estensione di Frobenius.} Per $ G $ \textbf{non} abeliano, Frobenius generalizzo' il risultato: con la matrice $ (X_{g h^{-1}})_{g, h \in G} $ vale
+  \[
+    \Delta(G) = \det(X_{g h^{-1}}) = \prod_{\rho \in \widehat{G}_{\text{irr}}} \det\!\Bigl(\sum_{g \in G} X_g\, \rho(g)\Bigr)^{d_\rho}\,,
+  \]
+  dove $ \widehat{G}_{\text{irr}} $ e' l'insieme delle rappresentazioni irriducibili di $ G $ e $ d_\rho $ e' il grado di $ \rho $. Per $ G $ abeliano tutte le rappresentazioni irriducibili sono $ 1 $-dim e $ d_\rho = 1 $: si ritrova $(\star)$.
+}
+
+\mprop{(Frobenius)}{\label{prop:frobenius-isom}
+  Due gruppi finiti con lo stesso determinante di gruppo $ \Delta $ sono isomorfi.
+}
+
+\subsection{Il determinante circolante}
+
+\ex{$ G = \mathbb{Z}/n\mathbb{Z} $: formula esplicita}{\label{ex:circolante}
+  Sia $ \omega := e^{2\pi i / n} $ radice $ n $-esima primitiva dell'unita'. I caratteri di $ G = \mathbb{Z}/n\mathbb{Z} $ sono i morfismi $ \chi_k : G \to \mathbb{C}^\times $ individuati da $ \chi_k(1) = \omega^k $, ovvero
+  \[
+    \chi_k(j) = \omega^{j k}\,, \qquad k \in \{0, 1, \ldots, n - 1\}\,;
+  \]
+  sono $ n = |G| $ in tutto (conferma $ |\widehat{G}| = |G| $). Applicando il Teorema~\ref{thm:dedekind}:
+  \[
+    \Delta(\mathbb{Z}/n\mathbb{Z})
+      = \prod_{k = 0}^{n - 1} \sum_{j = 0}^{n - 1} \chi_k(j)\, X_j
+      = \prod_{k = 0}^{n - 1} \Bigl(\sum_{j = 0}^{n - 1} \omega^{j k}\, X_j\Bigr)\,.
+  \]
+  E' la celebre formula per il \textbf{determinante della matrice circolante}.
 }
 
 % \end{document}

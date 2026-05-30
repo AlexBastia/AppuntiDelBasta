@@ -1,3 +1,325 @@
 % \begin{document}
 \chapter{Access Control}
+
+\section{Autenticazione e autorizzazione}
+\dfn{Autenticazione}{
+  Proprieta' di un sistema di garantire che un utente possa essere \textbf{identificato} tramite informazioni in suo possesso. Le identificazioni possono essere di tre tipi (usati da soli o in combinazione):
+  \begin{itemize}
+    \item \textbf{Quello che si ha} (badge, smart card, \dots) — detto \textit{token}.
+    \item \textbf{Quello che si sa} (password, PIN, risposte a domande prestabilite).
+    \item \textbf{Quello che si e'} (riconoscimento tramite impronte digitali, retina, viso).
+  \end{itemize}
+}
+Una volta autenticati i soggetti, il problema successivo e' l'\textbf{autorizzazione} o controllo degli accessi.
+
+\section{Controllo degli accessi (Access Control)}
+Il controllo degli accessi e' un elemento centrale della sicurezza informatica; i suoi obiettivi sono:
+\begin{itemize}
+  \item impedire a utenti \textbf{non autorizzati} di accedere alle risorse;
+  \item impedire agli utenti legittimi di accedere alle risorse in modo \textbf{non autorizzato};
+  \item consentire agli utenti legittimi di accedere alle risorse in modo \textbf{autorizzato}.
+\end{itemize}
+
+\dfn{Controllo degli accessi}{
+  Insieme di politiche e meccanismi che servono a decidere se un particolare soggetto ha il permesso di eseguire determinate operazioni su determinati oggetti. Gli elementi base sono:
+  \begin{itemize}
+    \item \textbf{soggetto}: un'entita' in grado di accedere agli oggetti;
+    \item \textbf{oggetto}: una risorsa a cui e' necessario controllare l'accesso;
+    \item \textbf{diritto di accesso}: descrive il modo in cui un soggetto puo' accedere a un oggetto.
+  \end{itemize}
+}
+La \textbf{politica} di controllo degli accessi stabilisce quali tipi di accesso sono consentiti, in quali circostanze e da chi.
+
+\subsection{Tipi di politiche}
+\begin{enumerate}
+  \item \textbf{DAC} — Discretionary Access Control (Controllo discrezionale)
+  \item \textbf{MAC} — Mandatory Access Control (Controllo obbligatorio)
+  \item \textbf{RBAC} — Role-Based Access Control (Controllo basato sui ruoli)
+\end{enumerate}
+
+\section{DAC — Discretionary Access Control}
+\dfn{DAC}{
+  L'accesso e' basato sull'\textbf{identita' dei soggetti} e su \textbf{regole di accesso} che stabiliscono cosa i soggetti possono (o non possono) fare su quali oggetti. E' \textit{discrezionale} perche' i soggetti \textbf{decidono loro} di concedere (o negare) l'accesso ad altri soggetti.
+}
+
+\subsection{Matrice di accesso}
+Un approccio generale al DAC e' quello di una \textbf{matrice di accesso}: le righe sono i soggetti, le colonne gli oggetti, e ogni cella contiene i diritti di accesso.
+
+\begin{center}
+  \footnotesize
+  \begin{tabular}{|l|c|c|c|c|}
+    \hline
+    & \textbf{File 1} & \textbf{File 2} & \textbf{File 3} & \textbf{File 4} \\ \hline
+    \textbf{User A} & Own, Read, Write & & Own, Read, Write & \\ \hline
+    \textbf{User B} & Read & Own, Read, Write & Write & Read \\ \hline
+    \textbf{User C} & Read, Write & Read & & Own, Read, Write \\ \hline
+  \end{tabular}
+\end{center}
+
+La matrice puo' essere rappresentata in due modi equivalenti:
+\begin{itemize}
+  \item \textbf{ACL} (Access Control List): si codificano le \textbf{colonne} — per ogni oggetto, la lista dei soggetti autorizzati e dei relativi diritti.
+  \item \textbf{Capability}: si codificano le \textbf{righe} — per ogni soggetto, la lista degli oggetti a cui ha accesso e con quali diritti.
+\end{itemize}
+
+\section{MAC — Mandatory Access Control}
+\dfn{MAC}{
+  L'accesso e' basato sul confronto delle \textbf{etichette di sicurezza} (\textit{security labels}, che indicano quanto sono sensibili o critici gli oggetti) con le \textbf{autorizzazioni di sicurezza} (\textit{security clearances}) dei soggetti. E' \textit{obbligatorio} perche' le etichette e i nulla osta sono impostati dal \textbf{sistema} e non possono essere modificati dai soggetti.
+}
+I primi sistemi MAC erano basati sul modello \textbf{Bell-LaPadula} (BLP). Su Linux esistono diverse implementazioni: SeLinux, Tomoyo, SMACK, \dots \\
+E' facile pensare a questi sistemi pensando alla segregazione delle applicazioni Android: Telegram non puo' vedere i messaggi di WhatsApp.
+
+\section{RBAC — Role-Based Access Control}
+\dfn{RBAC}{
+  L'accesso e' basato sui \textbf{ruoli} che i soggetti hanno all'interno del sistema e su \textbf{regole} che stabiliscono quali accessi sono consentiti ai soggetti in determinati ruoli. Agli utenti vengono assegnati ruoli diversi, in modo statico o dinamico, in base alle loro responsabilita'.
+}
+La matrice di accesso in RBAC associa gli utenti ai ruoli (non direttamente agli oggetti). Ogni voce e' vuota o contrassegnata (l'utente e' o non e' in quel ruolo). Un singolo utente puo' avere piu' ruoli; piu' utenti possono condividere un singolo ruolo.
+
+\section{Principi fondamentali per le politiche di sicurezza}
+\begin{enumerate}
+  \item \textbf{Open design} (\textit{No security by obscurity}): la sicurezza non dovrebbe dipendere dall'ignoranza dei potenziali avversari riguardo ai meccanismi di protezione, bensi' dalla segretezza di chiavi o password specifiche. Analogo al principio di Kerckhoffs.
+  \item \textbf{Economy of mechanism} (\textit{as simple as possible}): semplificare la progettazione e l'implementazione dei meccanismi di sicurezza riduce le possibilita' di errori. Interfacce piu' semplici tra moduli di sicurezza riducono la superficie di attacco.
+  \item \textbf{Fail-safe defaults}: a meno che a un soggetto non venga concesso esplicitamente l'accesso a un oggetto, gli dovrebbe essere \textbf{negato}. Il default e' il divieto.
+  \item \textbf{Complete mediation} (reference monitor): non e' possibile accedere direttamente agli oggetti; \textbf{tutti} gli accessi devono passare per il meccanismo di controllo.
+  \item \textbf{Least privilege}: i soggetti dispongono dei \textbf{privilegi di accesso minimi} necessari per effettuare le operazioni necessarie per quella fase di esecuzione.
+\end{enumerate}
+
+\subsection{Least Privilege in dettaglio}
+Il principio di least privilege:
+\begin{itemize}
+  \item Limita i danni che possono derivare da un incidente o da un errore.
+  \item Limita il numero di programmi privilegiati.
+  \item Aiuta nel debug e aumenta la sicurezza.
+  \item Consente l'isolamento dei sotto-sistemi critici.
+\end{itemize}
+Il privilegio minimo e' imposto attraverso un reference monitor che implementa una \textbf{completa mediazione}: ogni accesso a ogni oggetto viene controllato.
+
+In RBAC: ogni ruolo dovrebbe disporre del set minimo di diritti di accesso necessari per quel ruolo. A un utente viene assegnato il ruolo che gli consente di svolgere solo le attivita' necessarie; piu' utenti con lo stesso ruolo godono dello stesso set minimo.
+
+\section{Sicurezza dei sistemi}
+La sicurezza dei sistemi differisce da quella delle reti per tre aspetti:
+\begin{itemize}
+  \item Possibilita' di avere un ente certificato nel mezzo (il Sistema Operativo).
+  \item I sistemi possono essere singolo o multi-utente.
+  \item Possibilita' di divisione dei privilegi.
+\end{itemize}
+E' la superficie su cui agiscono i \textbf{malware locali}.
+
+\dfn{Privilege escalation}{
+  La possibilita' di ottenere piu' privilegi sul sistema sfruttando una falla, un errore di configurazione di un software applicativo o di un sistema operativo. Esempi: installare programmi, leggere informazioni private o modificare configurazioni del sistema.
+}
+\dfn{Arbitrary Code Execution (ACE)}{
+  Il primo passo per il privilege escalation e' l'esecuzione arbitraria di codice. Puo' essere perpetrata:
+  \begin{itemize}
+    \item installando software;
+    \item facendo girare software;
+    \item sfruttando vulnerabilita' in grado di dirottare il funzionamento dei programmi.
+  \end{itemize}
+}
+
+\section{UNIX e il filesystem}
+\nt{In UNIX (piu' o meno!) \textbf{tutto e' un file}. Avendo controllo su un file si puo' ottenere controllo su quello che rappresenta (es.\ \texttt{/dev/snd/*} per l'audio).}
+
+\subsection{Struttura del filesystem Linux}
+Il filesystem si compone di una radice (\texttt{/}) dalla quale il sistema si dirama come un albero:
+
+\begin{center}
+  \footnotesize
+  \begin{tabular}{|l|p{9cm}|}
+    \hline
+    \texttt{/} & The root filesystem \\ \hline
+    \texttt{/proc} & (pseudo) Process virtual infrastructure (es.\ \texttt{/proc/1/cmdline}). \\ \hline
+    \texttt{/sys} & (pseudo) System virtual infrastructure (es.\ \texttt{/sys/class/leds}). \\ \hline
+    \texttt{/dev} & (pseudo) Device drivers file interface (es.\ \texttt{/dev/sda}). \\ \hline
+    \texttt{/run} & (pseudo) Contains run-time information. \\ \hline
+    \texttt{/etc} & Configuration directory. \\ \hline
+    \texttt{/tmp} & Temporary directory, volatile, usually mounted in RAM. \\ \hline
+    \texttt{/root} & Root's home. \\ \hline
+    \texttt{/bin} & Binaries. \\ \hline
+    \texttt{/lib} & Libraries. \\ \hline
+    \texttt{/sbin} & System Binaries. \\ \hline
+    \texttt{/usr} & User binaries. \\ \hline
+    \texttt{/var} & Log, cache, and structured personal files (es.\ mailboxes). \\ \hline
+    \texttt{/home} & Users' directories. \\ \hline
+    \texttt{/mnt} & External mountpoint. \\ \hline
+    \texttt{/opt} & Optional softwares. \\ \hline
+  \end{tabular}
+\end{center}
+
+\subsection{Il file \texttt{/etc/passwd}}
+Il file \texttt{/etc/passwd} tiene traccia di ogni utente registrato che ha accesso al sistema. E' separato da due punti (\texttt{:}) e contiene, in ordine: nome utente, password crittografata, UID, GID, nome completo (GECOS), directory home, shell di login.
+
+Esempio:
+\begin{verbatim}
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+\end{verbatim}
+
+I permessi di \texttt{/etc/passwd} sono \texttt{-rw-r--r--} (leggibile da tutti, scrivibile solo da root).
+
+\subsection{Il file \texttt{/etc/group}}
+Analogamente, \texttt{/etc/group} associa ad ogni gruppo un GID:
+\begin{verbatim}
+root:x:0:
+daemon:x:1:
+\end{verbatim}
+
+\section{ACL in Linux}
+\dfn{Access Control List (ACL)}{
+  Il sistema mantiene le informazioni di accesso ai file tramite una tabella soggetto/oggetto. Ogni riga e' un soggetto; ogni colonna e' un oggetto; le celle contengono i diritti (\texttt{R}, \texttt{W}, \texttt{X}).
+}
+Unix/Linux (senza le estensioni POSIX ACL) dichiara \textbf{3 soggetti} per ogni file:
+\begin{itemize}
+  \item \textbf{user}: il proprietario del file;
+  \item \textbf{group}: il gruppo proprietario del file;
+  \item \textbf{other}: tutti gli altri.
+\end{itemize}
+
+Il sistema in modalita' DAC analizza (in questo ordine): UID del processo e proprietario del file; GID del processo e gruppo del file; \dots
+\nt{
+  Questo puo' generare complicanze contro-intuitive: l'utente appartiene a un gruppo che non puo' leggere il file, ma e' il suo proprietario e il proprietario non puo' leggere il file.
+}
+
+\subsection{Il super utente}
+Il super utente privilegiato del sistema e' quello che puo' svolgere ogni operazione a partire dalla radice del file system. Si chiama \textbf{root} in Linux/UNIX e \textbf{SYSTEM} in Windows.
+
+\section{Capabilities}
+\dfn{Capability}{
+  Un \textbf{token} o \textbf{biglietto} in grado di rappresentare un determinato oggetto sul quale si ha l'accesso. La capability specifica gli oggetti e le operazioni autorizzati per un particolare utente. Ogni utente dispone di un numero di ticket e puo' essere autorizzato a prestarli o cederli ad altri.
+}
+Esempi di capability: i cookie web (identificatori che indicano a quale sessione e' associata una comunicazione), i file aperti.
+
+A seguito di una system call \texttt{open}, viene ritornato un identificativo univoco detto \textbf{file descriptor} che il sistema operativo usa per indicare il file aperto. L'integrita' del ticket deve essere protetta (solitamente dal SO); il ticket deve essere \textbf{irrefutabile}.
+
+Le capability possono essere supportate da sistemi crittografici (cookie) o da segmentazione a livello di sistema operativo (file descriptor).
+
+\nt{
+  Unix utilizza un sistema \textbf{misto}: ACL per i file non aperti; Capability (file descriptor, socket, \dots) per i file aperti.
+
+  Differenza riassuntiva:
+  \begin{itemize}
+    \item \textbf{ACL}: codifica le \textit{colonne} della matrice (per ogni oggetto, chi vi accede).
+    \item \textbf{Capability}: codifica le \textit{righe} della matrice (per ogni soggetto, a cosa accede).
+  \end{itemize}
+}
+
+\section{Modelli di flusso delle informazioni}
+
+\subsection{Bell-LaPadula (BLP)}
+\dfn{Modello Bell-LaPadula}{
+  Modello formale per il controllo degli accessi sviluppato negli anni '70 (Bell e LaPadula, 1973--1976) per le esigenze del Dipartimento della Difesa USA. Si concentra sulla \textbf{confidenzialita'} dei dati e sull'accesso a informazioni classificate (a differenza del modello BIBA, che descrive regole per la protezione dell'integrita').
+
+  Ad ogni soggetto e ad ogni oggetto viene assegnata una \textbf{classe di sicurezza} (livello). Nella formulazione base le classi formano una gerarchia rigida. Esempio — schema militare statunitense (dal piu' alto al piu' basso):
+  \begin{enumerate}
+    \item top secret
+    \item secret
+    \item confidential
+    \item restricted
+    \item unclassified
+  \end{enumerate}
+}
+
+Le regole di flusso sono:
+\begin{itemize}
+  \item \textbf{No read up}: un soggetto puo' leggere solo oggetti a livelli di sicurezza \textbf{minori o uguali} al suo.
+  \item \textbf{No write down}: un soggetto puo' scrivere solo oggetti a livelli di sicurezza \textbf{pari o maggiori} al suo.
+\end{itemize}
+Il flusso delle informazioni e' \textbf{dal basso verso l'alto} e non viceversa. Acronimo: \textbf{WURD} (Write-Up Read-Down).
+
+\ex{Bell-LaPadula}{
+  Tre livelli: Top-Secret, Secret, Public. Alice e' a livello Secret. Alice \textbf{puo'} leggere documenti Secret e Public (read-down), e scrivere documenti Secret e Top-Secret (write-up). Alice \textbf{non puo'} scrivere documenti pubblici (write-down) ne' leggere documenti top-secret (read-up).
+}
+
+\subsection{Modello Biba}
+\dfn{Modello Biba}{
+  Modello \textbf{duale} a Bell-LaPadula, usato per la protezione dell'\textbf{integrita'} dei dati (non della confidenzialita'). Le regole sono invertite:
+  \begin{itemize}
+    \item Un soggetto puo' \textbf{scrivere} oggetti a livelli di sicurezza \textbf{minori o uguali} al suo.
+    \item Un soggetto puo' \textbf{leggere} oggetti a livelli di sicurezza \textbf{pari o maggiori} al suo.
+  \end{itemize}
+  Flusso: \textbf{dall'alto verso il basso}. Acronimo: \textbf{WDRU} (Write-Down Read-Up). Nel mondo Windows prende il nome di \textit{Integrity Level} (IL).
+}
+
+\ex{Modello Biba}{
+  Tre livelli: Capitano, Tenente, Carabiniere Scelto. Alice e' a livello Tenente. Alice \textbf{puo'} leggere documenti rilasciati da Tenenti e Capitani (read-up), e scrivere documenti per Tenenti e Carabinieri Scelti (write-down). In questo modo Alice non puo' dare ordini a un suo superiore.
+}
+
+\section{Permessi Linux}
+
+\subsection{chmod}
+E' possibile modificare i permessi associati a un file tramite il comando \texttt{chmod} (\textit{change file modes or Access Control Lists}):
+\begin{center}
+  \texttt{chmod [who] <+/-> <permissions> <file1> [file2] \dots}
+\end{center}
+dove \texttt{who} puo' essere \texttt{u} (user), \texttt{g} (group), \texttt{o} (other), \texttt{a} (all); il simbolo \texttt{+}/\texttt{-} aggiunge/rimuove il permesso; i permessi sono \texttt{r} (read), \texttt{w} (write), \texttt{x} (execute).
+
+\texttt{chmod} supporta anche la notazione \textbf{ottale}: ogni permesso e' un bit:
+\begin{itemize}
+  \item bit 0 (valore \texttt{1}): \textbf{execute} — possibilita' di eseguire il file.
+  \item bit 1 (valore \texttt{2}): \textbf{write} — possibilita' di scrivere il file.
+  \item bit 2 (valore \texttt{4}): \textbf{read} — possibilita' di leggere il file.
+\end{itemize}
+I tre gruppi (user, group, other) danno tre cifre ottali. Es.\ \texttt{chmod 755} = \texttt{rwxr-xr-x}.
+
+\nt{
+  Impostare \texttt{777} significa regalare il file a tutti (other: read, write, execute). \textbf{Non farlo su file sensibili.}
+}
+
+\subsubsection{Permessi sulle directory}
+Sulle \textbf{cartelle} i permessi hanno un significato leggermente diverso:
+\begin{itemize}
+  \item \textbf{execute} (bit 0): possibilita' di \textbf{entrare} in una cartella (\texttt{cd}).
+  \item \textbf{write} (bit 1): possibilita' di \textbf{eliminare i file} contenuti in una cartella --- anche quelli non propri su cui non si ha permesso di scrittura!
+  \item \textbf{read} (bit 2): possibilita' di \textbf{leggere il contenuto} (elenco dei file) di una cartella.
+\end{itemize}
+\ex{Security by obscurity con le directory}{
+  \texttt{chmod 711 test/} assegna alla cartella \texttt{test/}: execute per tutti (si puo' entrare e accedere ai file se si conosce il nome), ma \textbf{niente read} per group/other (non si puo' fare \texttt{ls}). Chi non conosce il nome dei file non puo' scoprirli. E' un caso di \textit{security by obscurity} — utile come strato aggiuntivo, non come unica difesa.
+}
+
+\subsection{chown e chgrp}
+E' possibile cambiare il proprietario (o il gruppo) di appartenenza di un file:
+\begin{itemize}
+  \item \texttt{chown [OPTION] OWNER[:GROUP] FILE} — cambia user e group proprietario.
+  \item \texttt{chgrp [OPTION] GROUP FILE} — cambia solo il gruppo.
+\end{itemize}
+\nt{Solo \textbf{root} (normalmente) puo' regalare i file agli altri.}
+
+\subsection{Gruppi}
+Un utente puo' appartenere a \textbf{piu' gruppi}. I gruppi vengono usati (ma non solo) per controllare accessi a file di device driver (\texttt{/dev}), audio, video, stampante, dischi esterni, ecc.
+
+\section{Permessi speciali}
+Esistono 3 permessi speciali, salvati nei bit piu' significativi dei metadati del file:
+
+\subsection{setuid}
+Un file con il bit \textbf{setuid} viene eseguito con i \textbf{permessi del proprietario} del file, anziche' come utente principale.
+\ex{setuid su \texttt{passwd}}{
+  \texttt{/usr/bin/passwd} ha i permessi \texttt{-rwsr-xr-x} con proprietario \texttt{root}. L'utente \texttt{pippo} puo' eseguire \texttt{passwd} e cambiare la propria password, che e' memorizzata in \texttt{/etc/shadow} (file scrivibile solo da root): il processo gira temporaneamente con i permessi di root grazie a setuid.
+}
+
+\subsection{setgid}
+Un file \textbf{setgid} eseguito da un utente gira con il \textbf{gruppo di appartenenza} del file. Su una cartella con setgid, i file creati al suo interno ereditano il gruppo della cartella (utile per mantenere il gruppo corretto per tutti i file in una cartella condivisa).
+
+\subsection{Sticky bit}
+Lo \textbf{sticky bit} su una cartella permette l'eliminazione dei file al suo interno solo al loro \textbf{owner}, anche se la cartella ha permesso di scrittura per tutti (es.\ \texttt{/tmp/}). Lo sticky bit su un \textbf{file} e' ignorato e deprecato.
+
+\nt{
+  Se un eseguibile con \textbf{setuid} o \textbf{setgid} appartiene a root, un altro utente potrebbe abusarne per ottenere l'accesso all'utente root. Molti eseguibili con questo bit impostati possono essere sfruttati per ottenere l'accesso a root. \textbf{ESTREMAMENTE PERICOLOSO!!!}
+}
+
+\section{Attacchi ai permessi speciali}
+
+\subsection{PATH hijacking}
+Consideriamo un file setuid che internamente chiama \texttt{system("whoami")}. Il sistema eseguira' il comando \texttt{whoami} con i privilegi dell'utente indicato. \texttt{whoami} e' un comando shell, che puo' essere \textbf{dirottato} modificando il \texttt{PATH}:
+\begin{verbatim}
+PATH=. ./vulnprogram
+\end{verbatim}
+Se nella directory corrente esiste un file chiamato \texttt{whoami} con contenuto arbitrario, il sistema lo eseguira' \textit{al posto} di \texttt{/usr/bin/whoami}, con i privilegi elevati del programma setuid.
+
+\subsection{sudo e privilege elevation}
+Il comando \texttt{sudo} esegue comandi con privilegi elevati e controlla la password dell'utente tramite un framework chiamato \textbf{PAM}.
+
+\ex{CVE-2023-22809 — sudoedit}{
+  In Sudo versioni 1.8.0--1.9.12p1, la funzionalita' \texttt{sudoedit} (\texttt{-e}) gestisce in modo scorretto gli argomenti extra passati nelle variabili d'ambiente \texttt{SUDO\_EDITOR}, \texttt{VISUAL} ed \texttt{EDITOR}. Cio' permette a un attaccante locale di aggiungere voci arbitrarie alla lista dei file da processare, portando a privilege escalation. Il problema esiste perche' un editor specificato dall'utente puo' contenere un argomento \texttt{--} che vanifica un meccanismo di protezione (es.\ \texttt{EDITOR="vim -- /path/to/extra/file"}). Severity CVSS 3.x: \textbf{7.8 HIGH}.
+}
+
 % \end{document}

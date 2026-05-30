@@ -1,0 +1,496 @@
+% \begin{document}
+\chapter{Block Ciphers}
+Lavora su blocchi di lunghezza fissa, puo' generare un po' di delay.
+\dfn{Block cipher}{
+  Un \textit{block cipher} e' una coppia di funzioni $ (E, D) $ che mappano un blocco di $ n $ bit in un blocco di $ n $ bit usando una chiave di $ k $ bit:
+  \[
+    E: \{0,1\}^k \times \{0,1\}^n \to \{0,1\}^n, \qquad D: \{0,1\}^k \times \{0,1\}^n \to \{0,1\}^n
+  \]
+  con $ D(k, E(k, m)) = m $ per ogni chiave $ k $ e ogni blocco $ m $.
+}
+I principali sono:
+\begin{itemize}
+  \item \textbf{DES}: $ n = 64 $ bits ($ 8 $ byte), $ k = 56 $ bits (ma possiamo anche dire $ 64 $, vedremo perche')
+\item \textbf{3DES}: $ n = 64 $ bits, $ k = 3 \cdot 56 = 168 $ bits
+\item \textbf{AES}: $ n = 128 $ bits, $ k = 128, 192, 256 $ bits
+\end{itemize}
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2026-02-27-11-34-33.png}
+\end{center}
+
+Il block cipher e' costruito per iterazioni:
+\begin{enumerate}
+  \item Key expansion: partendo da chiave lunga, genero $ l $ sottochiavi $ k_i $ (dove $ l $ e' il numero di iterazioni)
+  \item Applico la \textbf{round function} a $ m_i $ e alla sottochiave $ k_i $ per generare $ m_{i+1} $ (dove $ m_1 $ e' il plain text)
+\end{enumerate}
+\dfn{Round function}{
+  La \textit{round function} $ R(k_i, m_i) = m_{i+1} $ e' la trasformazione applicata a ogni iterazione, che combina lo stato corrente $ m_i $ con la sottochiave $ k_i $.
+}
+Il numero di iterazioni dipende dal cifrario: \textbf{DES} ($ l = 16 $), \textbf{3DES} ($ l = 48 $) e \textbf{AES-128} ($ l = 10 $).
+
+Il problema e' che e' molto lento rispetto agli altri cifrari, cosa che AES migliora abbastanza rispetto a DES.
+
+\section{Performance dei cifrari}
+Benchmark con la libreria \textbf{Crypto++ 5.6.0} (open-source, scritta da Wei Dai) su AMD Opteron 2.2 GHz (Linux):
+\begin{center}
+  \begin{tabular}{llr}
+    \hline
+    \textbf{Cipher} & \textbf{Block/key size} & \textbf{Speed (MB/sec)} \\
+    \hline
+    RC4 \textit{(stream)}        & --       & 126 \\
+    Salsa20/12 \textit{(stream)} & --       & 643 \\
+    Sosemanuk \textit{(stream)}  & --       & 727 \\
+    3DES \textit{(block)}        & 64/168   & 13  \\
+    AES-128 \textit{(block)}     & 128/128  & 109 \\
+    \hline
+  \end{tabular}
+\end{center}
+\nt{
+  Gli stream cipher sono in genere piu' veloci dei block cipher; tra i block cipher, AES e' nettamente piu' veloce di 3DES.
+}
+
+\section{DES}
+
+\subsection{Storia}
+\begin{itemize}
+  \item \textbf{Primi anni '70}: \textbf{Horst Feistel} progetta \textit{Lucifer} all'IBM (key-length $ = 128 $ bit, block-length $ = 128 $ bit).
+  \item \textbf{1973}: l'NBS (National Bureau of Standards, oggi NIST) richiede proposte per un block cipher; IBM presenta una \underline{variante di Lucifer}.
+  \item \textbf{1976}: l'NBS adotta \textbf{DES} come standard federale, con key-length $ = \mathbf{56} $ bit e block-length $ = \mathbf{64} $ bit.
+  \item \textbf{1997}: DES viene rotto con ricerca esaustiva (\textit{brute-force attack}) $ \Rightarrow $ problema delle chiavi corte ($ 56 $ bit!).
+  \item \textbf{2000}: il NIST adotta \textit{Rijndael} come AES, per rimpiazzare DES.
+\end{itemize}
+
+\subsection{Feistel Network}
+L'idea core e' il \textit{Feistel Network}.
+\dfn{Feistel network}{
+  Date funzioni $ f_1,\dots,f_{d}: \{0,1\}^n \to \{0,1\}^n $ (\textbf{non} per forza invertibili), il \textit{Feistel network} costruisce una funzione \textbf{invertibile} $ F: \{0,1\}^{2n} \to \{0,1\}^{2n} $ iterando, su input diviso in due meta' $ (L_{i-1}, R_{i-1}) $:
+  \[
+    R_i = f_i(R_{i-1}) \oplus L_{i-1}, \qquad L_i = R_{i-1}
+  \]
+}
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2026-02-27-11-49-48.png}
+\end{center}
+\mprop{}{
+  Per ogni scelta (anche \textbf{arbitraria}) di $ f_1,\dots,f_d $, il Feistel network $ F $ e' \textbf{invertibile}.
+}
+\pf{Dimostrazione (per costruzione dell'inversa)}{
+  Vogliamo ricavare $ (L_{i-1}, R_{i-1}) $ da $ (L_i, R_i) $. Dalle due equazioni del round:
+  \begin{itemize}
+    \item da $ L_i = R_{i-1} $ otteniamo subito $ R_{i-1} = L_i $;
+    \item da $ R_i = f_i(R_{i-1}) \oplus L_{i-1} = f_i(L_i) \oplus L_{i-1} $ otteniamo $ L_{i-1} = f_i(L_i) \oplus R_i $.
+  \end{itemize}
+  Verifica: $ f_i(L_i) \oplus R_i = f_i(L_i) \oplus f_i(L_i) \oplus L_{i-1} = L_{i-1} $. L'inversa esiste \textbf{anche se le $ f_i $ non sono invertibili}: basta poterle valutare in avanti.
+}
+
+\nt{
+  Il circuito di \textbf{decifratura} e' essenzialmente lo stesso, con le funzioni applicate in ordine inverso $ f_d, \dots, f_1 $ (WOW!). E' un metodo generale per costruire funzioni invertibili (block cipher) a partire da funzioni arbitrarie, usato in molti block cipher \dots \textit{ma non in AES}.
+}
+
+\subsection{Struttura a 16 round}
+DES e' un Feistel network a \textbf{16 round} con $ f_1,\dots,f_{16}: \{0,1\}^{32} \to \{0,1\}^{32} $ dove $ f_i(x) = F(k_i, x) $ e $ k_i $ e' una \textbf{sottochiave} (una selezione permutata di bit della chiave $ k $). Lo schema completo e':
+\[
+  \text{input } 64 \text{ bit} \;\to\; IP \;\to\; \text{16 round Feistel} \;\to\; IP^{-1} \;\to\; \text{output } 64 \text{ bit}
+\]
+dove $ IP $ e' la \textit{Initial Permutation}. La chiave master e' di $ 56 $ bit, ma ogni sottochiave $ k_i $ usata nei round e' di $ 48 $ bit. Per \textbf{invertire} (decifrare) si usano le sottochiavi in ordine inverso.
+
+\subsection{Lunghezza della chiave e parity bit}
+Nella specifica DES la chiave e' lunga $ 64 $ bit ($ 8 $ byte): in ogni byte l'\textbf{ottavo bit} e' un \textbf{parity-check bit}, ottenuto come XOR dei $ 7 $ bit precedenti (parita' pari/dispari). I bit utili sono quindi $ 8 \times 7 = 56 $: ecco perche' la chiave "vera" e' di $ 56 $ bit.
+
+\subsection{Key schedule (generazione di $K_1,\dots,K_{16}$)}
+Dalla chiave a $ 64 $ bit (parity inclusi) si generano le 16 sottochiavi a $ 48 $ bit:
+\begin{enumerate}
+  \item Si applica \textbf{PC-1} (\textit{Permuted Choice 1}) che scarta gli $ 8 $ parity bit e produce due meta' da $ 28 $ bit: $ C_0 $ e $ D_0 $.
+  \item Ad ogni round si fanno dei \textbf{left shift} ciclici: $ C_i = LS_i(C_{i-1}) $, $ D_i = LS_i(D_{i-1}) $.
+  \item Si applica \textbf{PC-2} (\textit{Permuted Choice 2}) che da $ C_i D_i $ (56 bit) seleziona la sottochiave $ K_i = PC\text{-}2(C_i D_i) $ di $ 48 $ bit.
+\end{enumerate}
+Lo shift e' di \textit{una} posizione se $ i \in \{1, 2, 9, 16\} $, di \textit{due} posizioni altrimenti.
+\nt{
+  Le matrici PC-1 e PC-2 sono fissate dallo standard. I parity bit (cioe' i bit $ 8, 16, 24, 32, 40, 48, 56, 64 $) non compaiono in PC-1.
+}
+\begin{center}
+  \footnotesize
+  \textbf{PC-1} (output 56 bit: 28 a sinistra, 28 a destra)\\[2pt]
+  \begin{tabular}{|c|c|c|c|c|c|c|}
+    \hline
+    \multicolumn{7}{|c|}{\textit{Left}} \\ \hline
+    57 & 49 & 41 & 33 & 25 & 17 & 9 \\ \hline
+    1 & 58 & 50 & 42 & 34 & 26 & 18 \\ \hline
+    10 & 2 & 59 & 51 & 43 & 35 & 27 \\ \hline
+    19 & 11 & 3 & 60 & 52 & 44 & 36 \\ \hline
+    \multicolumn{7}{|c|}{\textit{Right}} \\ \hline
+    63 & 55 & 47 & 39 & 31 & 23 & 15 \\ \hline
+    7 & 62 & 54 & 46 & 38 & 30 & 22 \\ \hline
+    14 & 6 & 61 & 53 & 45 & 37 & 29 \\ \hline
+    21 & 13 & 5 & 28 & 20 & 12 & 4 \\ \hline
+  \end{tabular}
+  \qquad
+  \textbf{PC-2} (output 48 bit)\\[2pt]
+  \begin{tabular}{|c|c|c|c|c|c|c|c|}
+    \hline
+    14 & 17 & 11 & 24 & 1 & 5 & 3 & 28 \\ \hline
+    15 & 6 & 21 & 10 & 23 & 19 & 12 & 4 \\ \hline
+    26 & 8 & 16 & 7 & 27 & 20 & 13 & 2 \\ \hline
+    41 & 52 & 31 & 37 & 47 & 55 & 30 & 40 \\ \hline
+    51 & 45 & 33 & 48 & 44 & 49 & 39 & 56 \\ \hline
+    34 & 53 & 46 & 42 & 50 & 36 & 29 & 32 \\ \hline
+  \end{tabular}
+\end{center}
+
+\subsection{Weak keys}
+DES usa $ 16 $ sottochiavi da $ 48 $ bit generate dalla chiave master a $ 56 $ bit ($ 64 $ coi parity).
+\dfn{Weak key}{
+  Una \textit{weak key} e' una chiave che fa generare la \textbf{stessa sottochiave} in piu' di un round.
+}
+Il risultato e' una \textbf{riduzione della complessita' e della sicurezza} del cifrario. Le weak key si possono evitare in fase di generazione della chiave. DES ha $ 4 $ weak key (in esadecimale):
+\begin{itemize}
+  \item \texttt{01010101 01010101}
+  \item \texttt{FEFEFEFE FEFEFEFE}
+  \item \texttt{E0E0E0E0 F1F1F1F1}
+  \item \texttt{1F1F1F1F 0E0E0E0E}
+\end{itemize}
+
+\subsection{Initial Permutation (IP) e la sua inversa}
+$ IP $ e $ IP^{-1} $ sono permutazioni fisse dei $ 64 $ bit. Si presentano come tabelle solo per comodita': in realta' sono un \textbf{vettore}, non una matrice (la cella $ j $-esima indica da quale bit dell'input prendere il bit $ j $-esimo dell'output).
+\begin{center}
+  \footnotesize
+  \textbf{IP} \hspace{4em} \textbf{$IP^{-1}$}\\[2pt]
+  \begin{tabular}{|c|c|c|c|c|c|c|c|}
+    \hline
+    58 & 50 & 42 & 34 & 26 & 18 & 10 & 2 \\ \hline
+    60 & 52 & 44 & 36 & 28 & 20 & 12 & 4 \\ \hline
+    62 & 54 & 46 & 38 & 30 & 22 & 14 & 6 \\ \hline
+    64 & 56 & 48 & 40 & 32 & 24 & 16 & 8 \\ \hline
+    57 & 49 & 41 & 33 & 25 & 17 & 9 & 1 \\ \hline
+    59 & 51 & 43 & 35 & 27 & 19 & 11 & 3 \\ \hline
+    61 & 53 & 45 & 37 & 29 & 21 & 13 & 5 \\ \hline
+    63 & 55 & 47 & 39 & 31 & 23 & 15 & 7 \\ \hline
+  \end{tabular}
+  \qquad
+  \begin{tabular}{|c|c|c|c|c|c|c|c|}
+    \hline
+    40 & 8 & 48 & 16 & 56 & 24 & 64 & 32 \\ \hline
+    39 & 7 & 47 & 15 & 55 & 23 & 63 & 31 \\ \hline
+    38 & 6 & 46 & 14 & 54 & 22 & 62 & 30 \\ \hline
+    37 & 5 & 45 & 13 & 53 & 21 & 61 & 29 \\ \hline
+    36 & 4 & 44 & 12 & 52 & 20 & 60 & 28 \\ \hline
+    35 & 3 & 43 & 11 & 51 & 19 & 59 & 27 \\ \hline
+    34 & 2 & 42 & 10 & 50 & 18 & 58 & 26 \\ \hline
+    33 & 1 & 41 & 9 & 49 & 17 & 57 & 25 \\ \hline
+  \end{tabular}
+\end{center}
+
+\subsection{La funzione di round $f$}
+La funzione $ f_i(x) = F(k_i, x) $ prende in input $ x $ di $ 32 $ bit e la sottochiave $ k_i $ di $ 48 $ bit:
+\begin{enumerate}
+  \item \textbf{Expansion $ E $}: $ x $ (32 bit) viene espanso a $ 48 $ bit (alcuni bit vengono replicati e spostati).
+  \item \textbf{XOR}: si calcola $ E(x) \oplus k_i $ (48 bit).
+  \item \textbf{S-box}: il risultato si divide in $ 8 $ gruppi da $ 6 $ bit, ciascuno passa in una \textbf{S-box} $ S_j: \{0,1\}^6 \to \{0,1\}^4 $; in output $ 8 \times 4 = 32 $ bit.
+  \item \textbf{Permutation $ P $}: i $ 32 $ bit vengono permutati dalla \textit{permutation box} $ P $.
+\end{enumerate}
+\begin{center}
+  \footnotesize
+  \textbf{Expansion Permutation (E)} \hspace{2em} \textbf{Permutation Function (P)}\\[2pt]
+  \begin{tabular}{|c|c|c|c|c|c|}
+    \hline
+    32 & 1 & 2 & 3 & 4 & 5 \\ \hline
+    4 & 5 & 6 & 7 & 8 & 9 \\ \hline
+    8 & 9 & 10 & 11 & 12 & 13 \\ \hline
+    12 & 13 & 14 & 15 & 16 & 17 \\ \hline
+    16 & 17 & 18 & 19 & 20 & 21 \\ \hline
+    20 & 21 & 22 & 23 & 24 & 25 \\ \hline
+    24 & 25 & 26 & 27 & 28 & 29 \\ \hline
+    28 & 29 & 30 & 31 & 32 & 1 \\ \hline
+  \end{tabular}
+  \qquad
+  \begin{tabular}{|c|c|c|c|c|c|c|c|}
+    \hline
+    16 & 7 & 20 & 21 & 29 & 12 & 28 & 17 \\ \hline
+    1 & 15 & 23 & 26 & 5 & 18 & 31 & 10 \\ \hline
+    2 & 8 & 24 & 14 & 32 & 27 & 3 & 9 \\ \hline
+    19 & 13 & 30 & 6 & 22 & 11 & 4 & 25 \\ \hline
+  \end{tabular}
+\end{center}
+
+\subsection{Le S-box}
+Ogni S-box e' una funzione $ \{0,1\}^6 \to \{0,1\}^4 $ implementata come \textbf{look-up table}. Dei $ 6 $ bit di input:
+\begin{itemize}
+  \item i due bit \textbf{esterni} (primo e ultimo) selezionano la \textbf{riga} ($ 0 $--$ 3 $);
+  \item i quattro bit \textbf{centrali} selezionano la \textbf{colonna} ($ 0 $--$ 15 $).
+\end{itemize}
+\ex{Uso di $S_5$}{
+  Calcoliamo $ S_5(011011) $. I bit esterni sono $ 0\underline{\phantom{1101}}1 = 01 = $ riga $ 1 $; i bit centrali sono $ \underline{1101} = 13 = $ colonna $ 13 $. La tabella di $ S_5 $ in (riga 1, colonna 13) vale $ 9 = 1001 $, quindi $ S_5(011011) \to 1001 $.
+}
+\begin{center}
+  \footnotesize
+  \textbf{$S_5$}\\[2pt]
+  \begin{tabular}{|c|*{16}{c|}}
+    \hline
+    \textbf{r$\backslash$c} & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 \\ \hline
+    0 & 2 & 12 & 4 & 1 & 7 & 10 & 11 & 6 & 8 & 5 & 3 & 15 & 13 & 0 & 14 & 9 \\ \hline
+    1 & 14 & 11 & 2 & 12 & 4 & 7 & 13 & 1 & 5 & 0 & 15 & 10 & 3 & 9 & 8 & 6 \\ \hline
+    2 & 4 & 2 & 1 & 11 & 10 & 13 & 7 & 8 & 15 & 9 & 12 & 5 & 6 & 3 & 0 & 14 \\ \hline
+    3 & 11 & 8 & 12 & 7 & 1 & 14 & 2 & 13 & 6 & 15 & 0 & 9 & 10 & 4 & 5 & 3 \\ \hline
+  \end{tabular}
+\end{center}
+
+\subsubsection{Scelta delle S-box e della P-box}
+Sceglierle a caso darebbe un cifrario \textbf{insicuro} (key recovery dopo circa $ 2^{24} $ output). Si seguono quindi diverse regole:
+\begin{itemize}
+  \item nessun bit di output deve essere vicino a una \textbf{funzione lineare} dei bit di input;
+  \item le S-box sono mappe \textbf{4-to-1} ($ 4 $ preimmagini per ogni output);
+  \item matematicamente una S-box e' una \textit{funzione booleana vettoriale non lineare}.
+\end{itemize}
+
+\subsection{Avalanche effect}
+\dfn{Avalanche effect}{
+  Proprieta' desiderabile di ogni algoritmo di cifratura: un \textbf{piccolo cambiamento} nel plaintext o nella chiave deve produrre un cambiamento \textbf{significativo} nel ciphertext. In particolare, cambiare un solo bit del plaintext (o della chiave) deve cambiare \textit{molti} bit del ciphertext.
+}
+Se il cambiamento fosse piccolo, si potrebbe sfruttare per ridurre lo spazio di plaintext/chiavi da esplorare.
+
+\section{Ricerca esaustiva su DES}
+Lo spazio chiavi di DES e' $ 2^{56} $, troppo piccolo. La tabella riporta il tempo medio per una ricerca esaustiva:
+\begin{center}
+  \footnotesize
+  \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    \textbf{Key size} & \textbf{Cipher} & \textbf{N. chiavi} & \textbf{Tempo a $ 10^9 $ dec/s} & \textbf{Tempo a $ 10^{13} $ dec/s} \\ \hline
+    56  & DES        & $ 2^{56} \approx 7.2 \times 10^{16} $ & $ 2^{55} $ ns $ = 1.125 $ anni & $ 1 $ ora \\ \hline
+    128 & AES        & $ 2^{128} \approx 3.4 \times 10^{38} $ & $ 5.3 \times 10^{21} $ anni & $ 5.3 \times 10^{17} $ anni \\ \hline
+    168 & Triple DES & $ 2^{168} \approx 3.7 \times 10^{50} $ & $ 5.8 \times 10^{33} $ anni & $ 5.8 \times 10^{29} $ anni \\ \hline
+    192 & AES        & $ 2^{192} \approx 6.3 \times 10^{57} $ & $ 9.8 \times 10^{40} $ anni & $ 9.8 \times 10^{36} $ anni \\ \hline
+    256 & AES        & $ 2^{256} \approx 1.2 \times 10^{77} $ & $ 1.8 \times 10^{60} $ anni & $ 1.8 \times 10^{56} $ anni \\ \hline
+    $ 26! $ & Monoalfabetico & $ 4 \times 10^{26} $ & $ 6.3 \times 10^{9} $ anni & $ 6.3 \times 10^{6} $ anni \\ \hline
+  \end{tabular}
+\end{center}
+
+\subsection{DES challenge}
+Dato $ msg = $ ``\texttt{The unknown messages are: XXXX \dots}'' diviso in blocchi da $ 8 $ byte e cifrato con la stessa chiave $ k $, lo scopo e' trovare $ k \in \{0,1\}^{56} $ t.c. $ DES(k, m_i) = c_i $ per $ i = 1, 2, 3 $ e decifrare $ c_4, c_5, \dots $ La storia degli attacchi:
+\begin{itemize}
+  \item \textbf{1997}: ricerca distribuita su Internet (progetto \textbf{DESCHALL}), 78.000 volontari $ \to $ \textbf{3 mesi} (96 giorni). La soluzione era: \textit{``Strong cryptography makes the world a safer place''}.
+  \item \textbf{1998}: macchina \textbf{EFF} (Electronic Frontiers Foundation, \textit{Deep Crack}) $ \to $ \textbf{3 giorni} (costo $ 250 $K\$).
+  \item \textbf{1999}: ricerca combinata (Deep Crack + distributed.net) $ \to $ \textbf{22 ore}.
+  \item \textbf{2006}: \textbf{COPACOBANA} (120 FPGA) $ \to $ \textbf{7 giorni} (costo $ 10 $K\$).
+\end{itemize}
+$ \Rightarrow $ i cifrari a $ 56 $ bit \textbf{non vanno usati}: una chiave a $ 56 $ bit e' troppo corta.
+
+\section{Rafforzare DES contro la ricerca esaustiva}
+Due metodi:
+\begin{itemize}
+  \item \textbf{Metodo 1}: cifrature \underline{multiple} con chiavi \underline{diverse} (Double DES, \textbf{Triple-DES}, \dots).
+  \item \textbf{Metodo 2}: \textbf{DESX}.
+\end{itemize}
+Sono costruzioni generali, applicabili anche ad altri block cipher.
+
+\subsection{Double DES}
+Definiamo una funzione $ 2E: K^2 \times M \to M $ come $ 2E(k_1,k_2,m) = E(k_1, E(k_2, m)) $, quindi la lunghezza della chiave viene raddoppiata $ 2*56 = 112 $.
+
+Per la decription applichiamo le chiavi in ordine inverso:
+\[
+  D(k_2, D(k_1, m))
+\]
+
+Ma c'e' un problema: dato $ m $ e $ c $, lo scopo e' di trovare $ (k_1,k_2) $ t.c.:
+\begin{itemize}
+  \item $ E(k_1, E(k_2,m)) $
+  \item $ E(k_2, m) = D(k_1,c) $ 
+\end{itemize}
+Che sono equivalenti.
+\dfn{Meet in the Middle Attack}{
+  Attacco a una cifratura composta $ E(k_1, E(k_2, m)) $: invece di provare tutte le $ 2^{2 \cdot 56} $ coppie di chiavi, si sfrutta l'uguaglianza $ E(k_2, m) = D(k_1, c) $ tabulando un lato e cercando l'altro, riducendo il tempo da $ 2^{112} $ a circa $ 2^{57} $ (a costo di $ 2^{56} $ di spazio).
+}
+Questo ci da' l'apertura per il Meet in the Middle Attack, che si svolge in due step:
+\begin{enumerate}
+  \item \textbf{Step 1}: creo una tabella che per ogni riga ha la tupla $ (k_i, E(k_i, m)) $ (sono $ 2^{56} $ entry) e la ordino sulla seconda colonna.
+  \item \textbf{Step 2}: per ogni $ k \in \{0,1\}^{56} $ testo se $ D(k,c) $ sta nella seconda colonna. Se c'e', allora
+    \[
+      E(k_i, m) = D(k,c) \implies (k_i,k) = (k_2,k_1)
+    \]
+\end{enumerate}
+Il costo computazionale e' di
+\[
+  \underbrace{2^{56}\log(2^{56})}_{\text{build + sort}} + \underbrace{2^{56}\log(2^{56})}_{\text{search}} < 2^{63} \ll 2^{112}
+\]
+(prima costruire e ordinare la tabella, poi cercarci dentro), mentre lo \textbf{spazio} richiesto e' $ \approx 2^{56} $. Quindi 2DES \textbf{non} offre $ 112 $ bit di sicurezza: e' poco piu' forte di DES singolo. DA STUDIARE LA METTE SEMPRE STA ROBA IN ESAME!!!!
+
+\subsection{Triple DES}
+Stessa roba del double, abbiamo tre chiavi, pero' e' un po' diverso
+\[
+  3E(k_1,k_2,k_3,m) = E(k_1, D(k_2, E(k_3,m)))
+\]
+\begin{itemize}
+  \item key length $ = 3 \times 56 = \mathbf{168} $ bit;
+  \item e' \textbf{stra lento} (3 operazioni, $ 3 \times $ piu' lento di DES);
+  \item se $ k_1 = k_2 = k_3 $ ci troviamo nel caso di DES singolo (retrocompatibilita').
+\end{itemize}
+Ci sta sempre il \textbf{meet in the middle attack} (versione \textit{homework}): si spezza in $ E(k_3,\cdot) $ da un lato e $ D(k_2, E(k_1, \cdot)) $ dall'altro, ottenendo
+\[
+  \text{Time} = \underbrace{2^{56}\log(2^{56})}_{\text{build + sort}} + \underbrace{2^{112}\log(2^{56})}_{\text{search}} < 2^{118}, \qquad \text{space} \approx 2^{56}
+\]
+quindi costo $ < 2^{118} $ (comunque non poco).
+
+\subsection{DESX}
+Definiamo
+\[
+  EX(k_1,k_2,k_3,m) = k_1 \oplus E(k_2, m \oplus k_3)
+\]
+La key-length e' $ 64 + 56 + 64 = 184 $ bit, ma c'e' un attacco facile in tempo $ 2^{64+56} = 2^{120} $.
+\nt{
+  Attenzione: usare solo lo XOR esterno $ k_1 \oplus E(k_2, m) $ \textbf{oppure} solo quello interno $ E(k_2, m \oplus k_1) $ e' \textbf{insicuro}: il cifrario resta debole quanto $ E $ rispetto alla ricerca esaustiva. Servono \textbf{entrambi} gli XOR.
+}
+
+\section{Altri attacchi sui block cipher}
+
+\subsection{Differential cryptanalysis (Biham-Shamir)}
+\dfn{Differential cryptanalysis}{
+  E' un \textit{chosen plaintext attack}: l'attaccante conosce un certo numero di coppie (plaintext, ciphertext) e confronta lo \textbf{XOR di due plaintext} con lo \textbf{XOR dei due ciphertext} corrispondenti:
+  \[
+    \Delta_P = P_1 \oplus P_2, \qquad \Delta_C = C_1 \oplus C_2
+  \]
+}
+La distribuzione dei $ \Delta_C $ dato $ \Delta_P $ puo' rivelare informazioni sulla chiave (certi bit). Trovati alcuni bit, si usa la \textit{brute-force/exhaustive search} per i rimanenti.
+\nt{
+  Sorprendentemente DES \textbf{resiste} alla differential cryptanalysis: gli autori la conoscevano gia' e progettarono le S-box apposta per resistervi. Contro DES a $ 8 $ round servono $ 2^{38} $ coppie note (pochi minuti su un PC), contro i $ 16 $ round servono $ 2^{47} $ chosen plaintext. In pratica \textbf{non e' efficace} contro DES.
+}
+
+\subsection{Linear cryptanalysis (Matsui)}
+Descritto nel $ 1993 $ da M. Matsui (Mitsubishi Electric). Invece di cercare punti isolati in cui il cifrario si comporta come qualcosa di piu' semplice, prova a \textit{costruire un'approssimazione (lineare) del block cipher nel suo complesso}. E' uno dei due attacchi piu' usati sui block cipher (l'altro e' la differential), e si applica ai cifrari iterativi. Matsui ($ 1993/1994 $) mostro' che DES si rompe con:
+\begin{itemize}
+  \item $ 8 $ round: $ 2^{21} $ known plaintext;
+  \item $ 16 $ round: $ 2^{43} $ known plaintext ($ 40 $ giorni per generare le coppie + $ 10 $ giorni per trovare la chiave).
+\end{itemize}
+\nt{
+  L'attacco non ha implicazioni pratiche: richiede troppe coppie. La \textit{ricerca esaustiva resta l'attacco piu' efficace} contro DES.
+}
+
+\subsection{Attacchi all'implementazione}
+Non attaccano l'algoritmo ma la sua realizzazione fisica:
+\begin{enumerate}
+  \item \textbf{Side channel attack}: si misura il \textbf{tempo} o la \textbf{potenza} consumata durante enc/dec (es. su una smartcard si vedono i $ 16 $ round nel grafico della corrente).
+  \item \textbf{Fault attack}: errori indotti nel calcolo dell'ultimo round espongono la chiave segreta $ k $.
+\end{enumerate}
+$ \Rightarrow $ \textbf{non implementare da soli le primitive crittografiche}.
+
+\section{AES}
+DES non e' troppo efficiente e ha la chiave troppo corta: serve un rimpiazzo.
+
+\subsection{Il processo di standardizzazione}
+\begin{itemize}
+  \item \textbf{1997}: il \textbf{NIST} pubblica una request for proposals. Obiettivo: rimpiazzare DES per cifratura sia governativa che privata; l'algoritmo deve essere un block cipher a chiave simmetrica con block size $ \ge 128 $ bit e key size $ 128, 192, 256 $ bit.
+  \item \textbf{1998}: il NIST seleziona $ 15 $ candidati.
+  \item \textbf{1999}: il NIST sceglie $ 5 $ finalisti.
+  \item \textbf{2000}: il NIST sceglie \textbf{Rijndael} come AES (progettato in Belgio da Joan Daemen e Vincent Rijmen). Key size $ 128, 192, 256 $ bit; block size $ 128 $ bit.
+\end{itemize}
+AES e' diventato il cifrario simmetrico piu' usato.
+
+\subsection{Caratteristiche e parametri}
+\begin{itemize}
+  \item \underline{Non} e' un cifrario di Feistel.
+  \item Progettato per essere efficiente sia in \underline{hardware} che in \underline{software}.
+  \item E' un block cipher \textit{iterativo}: block size $ 128 $ bit (anche $ 192/256 $), key length $ 128, 192, 256 $ bit, numero di round $ 10, 12 $ o $ 14 $ (dipende dalla lunghezza della chiave), key scheduling con $ 44, 52 $ o $ 60 $ sottochiavi da $ 32 $ bit ($ 4 $ byte).
+\end{itemize}
+Con $ Nb = 4 $ word ($ 1 $ word $ = 32 $ bit) per il blocco:
+\begin{center}
+  \begin{tabular}{|l|c|c|c|}
+    \hline
+    & \textbf{Key length ($Nk$)} & \textbf{Block size ($Nb$)} & \textbf{N. round ($Nr$)} \\ \hline
+    AES-128 & 4 & 4 & 10 \\ \hline
+    AES-192 & 6 & 4 & 12 \\ \hline
+    AES-256 & 8 & 4 & 14 \\ \hline
+  \end{tabular}
+\end{center}
+\nt{
+  Lo spazio chiavi e' enorme: $ 2^{128} \approx 3.4 \times 10^{38} $ chiavi (un PC che prova $ 2^{55} $ chiavi/sec impiegherebbe $ \approx 149.000 $ miliardi di anni), $ 2^{192} \approx 6.2 \times 10^{57} $, $ 2^{256} \approx 1.1 \times 10^{77} $. Probabilmente AES restera' sicuro per almeno $ 20 $ anni.
+}
+
+\subsection{Substitution-Permutation Network (SPN)}
+A differenza di DES (Feistel), AES e' una \textbf{Substitution-Permutation Network}: ogni round e' fatto da un \textbf{substitution layer} (le S-box) seguito da un \textbf{permutation layer}, con uno XOR della sottochiave. Per decifrare bisogna \textbf{invertire ogni step} (non basta riusare lo stesso circuito come in Feistel).
+
+\subsection{Il processo di cifratura}
+Lo \textbf{State} e' una matrice quadrata $ 4 \times 4 $ di byte ($ 16 $ byte $ = 128 $ bit). La chiave (16 byte) viene espansa in $ 44 $ word. Lo schema:
+\begin{enumerate}
+  \item trasformazione iniziale: \textbf{AddRoundKey} con la round-0 key;
+  \item $ Nr - 1 $ round "pieni", ciascuno con $ 4 $ trasformazioni (SubBytes, ShiftRows, MixColumns, AddRoundKey);
+  \item ultimo round: SubBytes, ShiftRows, AddRoundKey (\textbf{senza MixColumns}).
+\end{enumerate}
+\begin{algorithm}
+\caption{Cifratura AES}
+\KwIn{plaintext $ m $ ($ 16 $ byte), chiave $ k $; numero di round $ Nr \in \{10,12,14\}$}
+\KwOut{ciphertext $ c $ ($ 16 $ byte)}
+$ w \gets \text{KeyExpansion}(k) $\;
+$ \text{State} \gets m $\;
+$ \text{State} \gets \text{AddRoundKey}(\text{State}, w_0) $\;
+\For{$ r = 1 $ \KwTo $ Nr - 1 $}{
+    $ \text{State} \gets \text{SubBytes}(\text{State}) $\;
+    $ \text{State} \gets \text{ShiftRows}(\text{State}) $\;
+    $ \text{State} \gets \text{MixColumns}(\text{State}) $\;
+    $ \text{State} \gets \text{AddRoundKey}(\text{State}, w_r) $\;
+}
+$ \text{State} \gets \text{SubBytes}(\text{State}) $\;
+$ \text{State} \gets \text{ShiftRows}(\text{State}) $\;
+$ \text{State} \gets \text{AddRoundKey}(\text{State}, w_{Nr}) $\tcp*{ultimo round: niente MixColumns}
+\KwRet $ c \gets \text{State} $\;
+\end{algorithm}
+
+\subsection{La round function}
+Ogni round (tranne l'ultimo) e' una composizione uniforme e parallela di $ 4 $ step:
+\begin{itemize}
+  \item \textbf{SubBytes} (ByteSub): sostituzione byte-per-byte tramite una S-box, ossia $ A[i,j] = S[A[i,j]] $. E' una tabella di $ 256 $ byte (facilmente calcolabile).
+  \item \textbf{ShiftRows}: permutazione che fa uno shift ciclico delle ultime tre righe dello State (riga $ 0 $ ferma, riga $ 1 $ shift di $ 1 $, riga $ 2 $ di $ 2 $, riga $ 3 $ di $ 3 $, verso sinistra).
+  \item \textbf{MixColumns}: sostituzione che opera sulle colonne usando l'aritmetica del campo di Galois $ GF(2^8) $.
+  \item \textbf{AddRoundKey}: XOR bit-a-bit con una porzione della chiave espansa.
+\end{itemize}
+
+\subsection{La S-box di AES}
+La S-box di AES mappa $ 1 $ byte in $ 1 $ byte: i $ 4 $ bit piu' a sinistra del byte danno la \textbf{riga}, i $ 4 $ piu' a destra la \textbf{colonna}; riga e colonna indicizzano la tabella per ottenere l'output a $ 8 $ bit. Esiste anche la \textbf{inverse S-box} per decifrare.
+\ex{Sostituzione del byte $\{95\}$}{
+  Il valore esadecimale $ \{95\} $ indicizza riga $ 9 $, colonna $ 5 $ della S-box, che contiene $ \{2A\} $. Quindi l'input $ \{95\} $ viene mappato nell'output $ \{2A\} $.
+}
+\begin{center}
+  \scriptsize
+  \textbf{AES S-box} (valori in esadecimale)\\[2pt]
+  \begin{tabular}{|c|*{16}{c}|}
+    \hline
+    & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & A & B & C & D & E & F \\ \hline
+    0 & 63 & 7C & 77 & 7B & F2 & 6B & 6F & C5 & 30 & 01 & 67 & 2B & FE & D7 & AB & 76 \\
+    1 & CA & 82 & C9 & 7D & FA & 59 & 47 & F0 & AD & D4 & A2 & AF & 9C & A4 & 72 & C0 \\
+    2 & B7 & FD & 93 & 26 & 36 & 3F & F7 & CC & 34 & A5 & E5 & F1 & 71 & D8 & 31 & 15 \\
+    3 & 04 & C7 & 23 & C3 & 18 & 96 & 05 & 9A & 07 & 12 & 80 & E2 & EB & 27 & B2 & 75 \\
+    4 & 09 & 83 & 2C & 1A & 1B & 6E & 5A & A0 & 52 & 3B & D6 & B3 & 29 & E3 & 2F & 84 \\
+    5 & 53 & D1 & 00 & ED & 20 & FC & B1 & 5B & 6A & CB & BE & 39 & 4A & 4C & 58 & CF \\
+    6 & D0 & EF & AA & FB & 43 & 4D & 33 & 85 & 45 & F9 & 02 & 7F & 50 & 3C & 9F & A8 \\
+    7 & 51 & A3 & 40 & 8F & 92 & 9D & 38 & F5 & BC & B6 & DA & 21 & 10 & FF & F3 & D2 \\
+    8 & CD & 0C & 13 & EC & 5F & 97 & 44 & 17 & C4 & A7 & 7E & 3D & 64 & 5D & 19 & 73 \\
+    9 & 60 & 81 & 4F & DC & 22 & \textbf{2A} & 90 & 88 & 46 & EE & B8 & 14 & DE & 5E & 0B & DB \\
+    A & E0 & 32 & 3A & 0A & 49 & 06 & 24 & 5C & C2 & D3 & AC & 62 & 91 & 95 & E4 & 79 \\
+    B & E7 & C8 & 37 & 6D & 8D & D5 & 4E & A9 & 6C & 56 & F4 & EA & 65 & 7A & AE & 08 \\
+    C & BA & 78 & 25 & 2E & 1C & A6 & B4 & C6 & E8 & DD & 74 & 1F & 4B & BD & 8B & 8A \\
+    D & 70 & 3E & B5 & 66 & 48 & 03 & F6 & 0E & 61 & 35 & 57 & B9 & 86 & C1 & 1D & 9E \\
+    E & E1 & F8 & 98 & 11 & 69 & D9 & 8E & 94 & 9B & 1E & 87 & E9 & CE & 55 & 28 & DF \\
+    F & 8C & A1 & 89 & 0D & BF & E6 & 42 & 68 & 41 & 99 & 2D & 0F & B0 & 54 & BB & 16 \\ \hline
+  \end{tabular}
+\end{center}
+
+\subsection{Sicurezza e attacchi}
+AES non ha attacchi pratici noti. I migliori risultati teorici sono:
+\begin{itemize}
+  \item \textbf{best key recovery}: solo $ 4 $ volte meglio della ricerca esaustiva [Bogdanov, Khovratovich, Rechberger, 2011];
+  \item \textbf{related key attack} su AES-256 [Biryukov, Khovratovich, 2009]: date $ 2^{99} $ coppie input/output da $ 4 $ chiavi correlate, si recuperano le chiavi in tempo $ \approx 2^{99} $.
+\end{itemize}
+
+\section{Ricerca esaustiva: quante coppie servono?}
+\textbf{Goal}: date poche coppie input/output $ (m_i, c_i = E(k, m_i)) $, trovare la chiave $ k $. Ma con poche coppie, la chiave trovata e' \textit{unica}?
+\thm{Lemma (DES come ideal cipher)}{
+  Supponiamo che DES sia un \textit{ideal cipher} ($ 2^{56} $ funzioni invertibili casuali $ \Pi_1, \dots, \Pi_{2^{56}}: \{0,1\}^{64} \to \{0,1\}^{64} $). Allora per ogni coppia $ (m, c) $ esiste \textbf{al massimo una} chiave $ k $ tale che $ c = DES(k, m) $, con probabilita' $ \ge 1 - \tfrac{1}{256} \approx 99.5\% $.
+}
+\pf{Dimostrazione}{
+  \[
+    \Pr[\exists\, k' \neq k : c = DES(k,m) = DES(k',m)] \le \sum_{k' \in \{0,1\}^{56}} \Pr[DES(k,m) = DES(k',m)] \le 2^{56} \cdot \frac{1}{2^{64}} = \frac{1}{2^8} = \frac{1}{256}
+  \]
+}
+Con \textbf{due} coppie DES la probabilita' di unicita' sale a $ \approx 1 - \tfrac{1}{2^{71}} $; per AES-128, con due coppie, $ \approx 1 - \tfrac{1}{2^{128}} $.
+\nt{
+  $ \Rightarrow $ \textbf{due} coppie input/output bastano per la ricerca esaustiva della chiave.
+}
+
+% \end{document}

@@ -1,0 +1,557 @@
+% \begin{document}
+\chapter{Introduzione e Cifrari Simmetrici}
+
+\section{Introduction to Cryptography}
+
+\dfn{Cryptography}{
+  Art and science of using mathematics to obscure the meaning of data by applying transformations to the data thta are impractical or impossible to reverse without the knowledge of some key
+}
+
+\dfn{Cryptoanalysis}{
+  Art/science of breaking encryption without knowing the key
+}
+
+Used for:
+\begin{itemize}
+\item \textbf{Communication}: web traffic, wireless, vpn
+  \item \textbf{Files on disk}
+  \item \textbf{User authentication}
+\end{itemize}
+
+For secure communication, we also want to ensure no eavesdropping or tampering. Possible approaches are:
+\begin{itemize}
+\item \textbf{Steganography}: we 'hide' the existance of the message
+\item \textbf{Cryptography}: we instead hide the meaning of the message
+\end{itemize}
+
+\subsection{Encryption Terminology}
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/2026-02-16-11-15-55.png}
+\end{center}
+
+\subsection{Goals and Protocols}
+The basic goals are:
+\begin{itemize}
+\item \textbf{Privacy}
+\item \textbf{Authenticity}
+\item \textbf{Integrity}
+\item \textbf{Non-repudiation}: no disclaming of authorship (guarantees Authenticity and Integrity)
+\end{itemize}
+
+The \textit{protocols} need to guarantee these goals by understanding:
+\begin{itemize}
+\item The parties and the context
+  \item The goals
+    \item The \textbf{trusted computing base}
+    \item The capabilities of the ... (\textbf{Threat Model})
+\end{itemize}
+
+\subsection{Kerchoff's Principle and the Threat Model}
+Important rule regarding the safety of cyber systems
+
+\thm{}{
+  The security of a protocol shouldn't assume that the underlying methods/algorithms of the encryption are secret, as only the secrecy of the keys can be guaranteed.
+
+  \textbf{Security by obscurity does not work.}
+}
+
+So the encryption functions need to remain secure even with the attacker knowing how the function works.
+
+The attacker threat model consists of:
+\begin{itemize}
+  \item Knowledge about the cipher (Kerchoff)
+\item Interaction with the messages and the protocol
+\item Interaction with the encryption algorithm
+  \begin{itemize}
+  \item \textbf{Ciphertext-only}
+  \item \textbf{Chosen-plaintext attack (CPA)}
+  \item \textbf{Chosen-ciphertext attack (CCA)}
+  \item CPA and CCA may be \textit{adaptive} (previous requests may change choices)
+  \end{itemize}
+\item Available resources (storage/computation)
+\end{itemize}
+
+\subsection{Symmetric Encryption}
+Lowkey l'abbiamo fatta gia' due volte, aggiungo solo roba che dice in piu' (sta letteralmente leggendo le slide come il guerriero)
+
+\begin{itemize}
+\item \textbf{Single-use key}: the key is regenerated for each transmitted file
+\item \textbf{Multi-use key}: the key is used with a "nonce" in order to be used for multiple transmissions
+\end{itemize}
+
+\subsection{Asymmetric Encryption}
+Private and public key. La pubblica e' salvata in una \textbf{public repo} gestita da un'autorita' trusted
+
+\subsection{Secure Communication}
+
+Una volta SSL ora TLS, poi RCS per end-to-end security (sono la stessa cosa??). Es. su Internet il protocollo \textbf{TLS} (Transport Layer Security, predecessore: \textbf{SSL}) fornisce data encryption, data origin authentication e message integrity. Funziona in due fasi: (1) \textit{secret key establishment} (si sceglie/condivide una chiave segreta comune), (2) \textit{secure communication} con confidentiality e integrity.
+
+\subsection{But crypto can do much more}
+Oltre alla comunicazione sicura, la crittografia abilita anche:
+\begin{itemize}
+  \item \textbf{Secure messaging} tra mobile (es. Rich Communication Services, RCS).
+  \item \textbf{Digital signatures}: la firma di una stessa persona \textit{cambia} a seconda del documento (a differenza di una firma autografa); si usa crittografia asimmetrica (servono due chiavi).
+  \item \textbf{Anonymous communication}: MIX networks, Onion routing / TOR (Bob si chiede "con chi ho appena parlato?").
+\end{itemize}
+
+\nt{
+  \textbf{Things to remember.} La crittografia \underline{E'}: uno strumento potentissimo, base di molti meccanismi di sicurezza. La crittografia \underline{NON E'}: la soluzione a tutti i problemi di sicurezza; affidabile a meno che non sia implementata e usata correttamente; qualcosa che dovresti provare a inventarti da solo (esistono moltissimi esempi di design ad-hoc rotti).
+}
+
+\section{Cifrari classici}
+
+Criptography is a rigorus science that follows three main steps:
+
+\begin{itemize}
+\item Specify Threat Model
+\item Propose a construction
+\item ...
+\end{itemize}
+
+un po di storia, va veloce (manca la post-quantum criptology)
+
+vabbe' sto scrivendo tutot in italiano facciamolo in italiano
+
+la brodez sta davvero ripetendo il cifrario di Cesare....
+
+\subsection{Cifrario di Cesare / Shift cipher}
+La chiave e' un numero $k$ (per Cesare $k=3$): per cifrare si "shifta" ogni lettera di $k$ posizioni a destra, per decifrare si shifta indietro (a sinistra) di $k$. E' un \textbf{cifrario a sostituzione}.
+
+\textbf{Vista matematica.} Sia $P = C = K = \mathbb{Z}_{26}$ (le 26 lettere $A,\dots,Z$ viste come $0,\dots,25$). Per $k \in K$, $0 \le k \le 25$:
+\[
+  e_k(p) = p + k \bmod 26 \qquad d_k(c) = c - k \bmod 26
+\]
+
+\ex{Shift con $k = 11$}{
+  plaintext $=$ \texttt{CRYPTOGRAPHYISFUN}, $k = 11$:
+  \begin{itemize}
+    \item $C \to 2$; \quad $2 + 11 \bmod 26 = 13 \to N$
+    \item $R \to 17$; \quad $17 + 11 \bmod 26 = 2 \to C$
+    \item $\dots$
+    \item $N \to 13$; \quad $13 + 11 \bmod 26 = 24 \to Y$
+  \end{itemize}
+  ciphertext $=$ \texttt{NCJAVZRCLASJTDQFY}. (Di solito spazi e punteggiatura vengono eliminati.)
+}
+
+\textbf{Sicurezza.} Lo spazio delle chiavi e' minuscolo ($\le 26$ chiavi), quindi e' banale da battere con una ricerca esaustiva (\textbf{brute force} / exhaustive-search cryptanalysis): si provano tutte le 25 chiavi ($k=0$ e' l'identita') finche' la decifratura "ha senso" (\textit{makes sense}). Una volta trovato $k$, decifrare e' immediato.
+
+\subsection{Monoalphabetic substitution cipher}
+La chiave e' una \textbf{permutazione} $\pi$ dell'alfabeto $\Sigma = \{A, B, C, \dots, Z\}$. Per cifrare, ogni lettera $X$ del plaintext viene sostituita con $\pi(X)$; per decifrare si applica $\pi^{-1}(Y)$ a ogni lettera $Y$ del ciphertext.
+
+Lo spazio delle chiavi ha dimensione $|\mathcal{K}| = 26! \approx 2^{88}$: troppo grande per il brute force.
+
+\textbf{Ma:} la sostituzione monoalfabetica \textit{preserva le caratteristiche statistiche della lingua}, quindi e' vulnerabile alla \textbf{frequency analysis} (Al-Kindi, $\approx 800$ d.C.). Le idee:
+\begin{enumerate}
+  \item Frequenza delle singole lettere. In inglese le piu' comuni sono \texttt{e} ($12.7\%$), \texttt{t} ($9.1\%$), \texttt{a} ($8.1\%$).
+  \item Frequenza dei \textbf{digrammi} (coppie): \texttt{th, he, in, er, an, re, \dots}
+  \item Frequenza dei \textbf{trigrammi}: \texttt{the, ing, and, \dots}
+\end{enumerate}
+Si contano le occorrenze di caratteri/combinazioni nel ciphertext, si cercano pattern e ripetizioni, e si sostituiscono i caratteri cifrati con i loro probabili equivalenti in chiaro. Esempio: se nel ciphertext la lettera piu' frequente e' \texttt{B}, probabilmente $B \to E$; il digramma piu' frequente $\to$ \texttt{IN}; il trigramma piu' frequente $\to$ \texttt{THE}; ecc.
+
+\subsection{Affine cipher}
+Un altro caso speciale della sostituzione e' il \textbf{cifrario affine}, in cui la funzione di cifratura ha la forma
+\[
+  e(x) = a x + b \bmod 26, \qquad a, b \in \mathbb{Z}_{26}
+\]
+Per $a = 1$ ci si riduce allo shift cipher.
+
+\textbf{Quando e' decifrabile?} La decifratura e' possibile sse la funzione affine e' \textit{iniettiva}: per ogni $y \in \mathbb{Z}_{26}$ vogliamo che la congruenza $a x + b \equiv y \pmod{26}$ abbia un'unica soluzione in $x$. Questo equivale a $a x \equiv y - b \pmod{26}$, e poiche' $y - b$ spazia su tutto $\mathbb{Z}_{26}$ al variare di $y$, basta studiare
+\[
+  a x \equiv y \pmod{26}
+\]
+Per il Teorema 2.1 (vedi il capitolo \textit{Modular Arithmetic}) questa ha soluzione unica per ogni $y$ \textbf{sse $\gcd(a, 26) = 1$} (cioe' $a$ e $26$ coprimi).
+
+\ex{Chiave non valida}{
+  Se $\gcd(a, 26) = d > 1$ il cifrario non e' valido. Es. $\gcd(4, 26) = 2$: la funzione $e(x) = 4x + 7 \bmod 26$ NON e' una cifratura valida perche' non iniettiva. Infatti \texttt{'a'} e \texttt{'n'} cifrano entrambe in \texttt{H} (in generale $x$ e $x+13$ collidono):
+  \[
+    \texttt{affinecrypt('a',4,7)} = \texttt{affinecrypt('n',4,7)} = \texttt{'H'}
+  \]
+}
+
+\subsection{Vigen\`ere cipher}
+(Blaise de Vigen\`ere, XVI sec.) E' un cifrario \textbf{polialfabetico}: risolve la debolezza principale dei monoalfabetici, in cui ogni lettera del ciphertext corrisponde sempre alla stessa (unica) lettera del plaintext.
+
+\textbf{Setup.} Dato un intero positivo $m$, con $P = C = (\mathbb{Z}_{26})^m$ e chiave $K = (k_1, k_2, \dots, k_m)$ una \textit{keyword} di lunghezza $m$:
+\begin{itemize}
+  \item \textbf{Encryption}: $e_k(p_1, \dots, p_m) = (p_1 + k_1, \; p_2 + k_2, \; \dots, \; p_m + k_m) \bmod 26$
+  \item \textbf{Decryption}: $d_k(c_1, \dots, c_m) = (c_1 - k_1, \; c_2 - k_2, \; \dots, \; c_m - k_m) \bmod 26$
+\end{itemize}
+La keyword viene ripetuta ciclicamente lungo tutto il messaggio.
+
+\ex{keyword \texttt{CRYPTO} ($m = 6$)}{
+  \[
+  \begin{array}{c|cccccccccccc}
+    k & C & R & Y & P & T & O & C & R & Y & P & T & O \\
+    m & W & H & A & T & A & N & I & C & E & D & A & Y \\
+    \hline
+    c & Y & Y & Y & I & T & B & K & T & C & S & T & M
+  \end{array}
+  \]
+  (somma posizione per posizione mod 26)
+}
+
+\textbf{Cryptanalysis (come romperlo).} E' di fatto una \textit{collezione di $m$ shift cipher} (uno per ogni posizione modulo $m$). Una stessa lettera del ciphertext puo' corrispondere a piu' lettere del plaintext (es. \texttt{Y Y Y} $\Leftrightarrow$ \texttt{W H A}), quindi la frequency analysis diretta e' piu' difficile. Procedura:
+\begin{enumerate}
+  \item Indovinare la lunghezza $m$ della chiave (es. \textbf{Kasiski test}, Friedrich Kasiski 1863; Charles Babbage $\approx 1854$).
+  \item Dividere il ciphertext in $m$ sotto-sequenze, ognuna cifrata con un singolo shift cipher.
+  \item Applicare la frequency analysis su ciascuna. (Es. se in una sotto-sequenza la lettera piu' comune e' \texttt{G}, probabilmente \texttt{G} $\to$ \texttt{E}, quindi la lettera di chiave e' $k_i = G - E = C$, da $c_i = m_i + k_i \Rightarrow k_i = c_i - m_i$.)
+\end{enumerate}
+
+\subsection{Hill cipher}
+(1929, Lester S. Hill.) Generalizza la sostituzione usando \textbf{matrici}. Sia $m \ge 2$, $P = C = (\mathbb{Z}_{26})^m$ e
+\[
+  \mathcal{K} = \{\text{matrici } m \times m \text{ invertibili su } \mathbb{Z}_{26}\}
+\]
+Per una chiave $K$:
+\[
+  e_K(x) = x K \qquad d_K(y) = y K^{-1}
+\]
+con tutte le operazioni in $\mathbb{Z}_{26}$. In forma estesa, il vettore riga $y = (y_1, \dots, y_m)$ si ottiene moltiplicando il vettore riga $x = (x_1, \dots, x_m)$ per la matrice $K = (k_{i,j})$.
+
+\ex{$m = 2$}{
+  \[
+    (y_1, y_2) = (x_1, x_2) \begin{pmatrix} 11 & 8 \\ 3 & 7 \end{pmatrix}
+    \quad\Longleftrightarrow\quad
+    \begin{cases} y_1 = (11 x_1 + 3 x_2) \bmod 26 \\ y_2 = (8 x_1 + 7 x_2) \bmod 26 \end{cases}
+  \]
+}
+
+\subsection{Rotor machines (1870--1943)}
+Il Vigen\`ere si rompe una volta trovata la lunghezza della chiave. Come avere una chiave \textit{molto} piu' lunga? Idea:
+\begin{itemize}
+  \item \textbf{Multiple rounds} di sostituzione: cifrare significa mappare una lettera molte volte.
+  \item Cablaggio meccanico/elettrico per automatizzare cifratura e decifratura.
+\end{itemize}
+Una macchina e' fatta di piu' cilindri (\textbf{rotori}) che rimappano le lettere piu' volte; i rotori ruotano a ogni battitura, cambiando la sostituzione a ogni carattere.
+\begin{itemize}
+  \item \textbf{Hebern machine}: esempio iniziale a \textit{singolo rotore}.
+  \item \textbf{Enigma}: la piu' famosa, con 3--5 rotori piu' un \textit{reflector}.
+\end{itemize}
+
+\section{Cifrari a flusso (Stream cipher)}
+in Un simmetric cipher definito su (K, P, C), con K chiave, plaintext P e ciphertext C, abbiamo che la funzione di encryption è spesso randomizzata ed è definita come E : K x P -> C e invece la 
+funzione di decryption è deterministica e tale per cui D: K x C -> P.
+
+\subsection{Operazione di base: XOR}
+Lo XOR di due stringhe in $\{0,1\}^n$ è la loro somma bit a bit modulo 2 ($\oplus$):
+\[
+  0\oplus 0 = 0, \quad 0 \oplus 1 = 1, \quad 1 \oplus 0 = 1, \quad 1 \oplus 1 = 0
+\]
+\nt{
+  Proprietà che useremo di continuo: $k \oplus k = 0$ e $x \oplus 0 = x$ (sono quelle alla base della correttezza dell'OTP). La notazione $\mathrm{XOR}(X)$ può indicare lo xor di \emph{tutti} i bit di $X$ (la parità): es. $X = 00100011 \Rightarrow \mathrm{XOR}(X) = 1$.
+}
+
+\section{One-Time Pad}
+\dfn{One-Time Pad (Gilbert S. Vernam, 1917, Bell Labs)}{
+  Si definisce \textit{One-Time Pad} il seguente cifrario:
+  \begin{itemize}
+    \item Spazio delle chiavi: ${0,1}^n$ (stringhe di bit di lunghezza n)
+    \item Funzione di encryption: $E_k(m) = m \oplus k$
+    \item Funzione di decryption: $D_k(c) = c \oplus k$
+  \end{itemize}
+  Dove $k$ è la chiave e $m$ è il plaintext e \texttt{len(k) = len(m)}
+}
+Praticamente si fa lo XOR tra i bit del plaintext e quelli della chiave. In questo caso la lunghezza della key deve essere uguale a quella del plaintext.
+\nt{
+  Due condizioni \emph{cruciali} per la sicurezza: la chiave $k$ deve essere \textbf{random} (distribuzione \textit{uniforme} su $K$) e va usata \textbf{una sola volta} (\textit{one-time}). Vedremo negli attacchi cosa succede se si violano.
+}
+
+\mprop{Sulla corrtettezza dell'Otp}{
+  \[
+    D(k, E(k,m)) = k \oplus (k \oplus m) = (k \oplus k) \oplus m = 0 \oplus m = m
+  \]
+}
+
+
+pro: è mega veloce sia in encyption che in decryption brodez
+contro: deve usare chiavi lunghissime perché la key deve essere lunga come il messaggio. ma dato che questa key deve essere mandata da alice a bob in modo sicuro, allora potrebbe 
+usare sto meccanismo sicuro per mandare direttamente il messagio, quindi boh non serve a un cazzo.
+
+\subsection{Sicurezza del cifrario OTP}
+PEr supporre che un messaggio sia sicuro, si potrebbero usare due approcci naif:
+\begin{itemize}
+\item \textbf{Tentativo \#1 — l'attaccante non riesce a trovare la chiave}: Non basta. Controesempio: il cifrario $E(k,m) = m$ (che ignora la chiave) soddisferebbe questo requisito pur essendo del tutto insicuro — la chiave non si trova semplicemente perché non serve.
+\item \textbf{Tentativo \#2 — l'attaccante non riesce a recuperare l'\emph{intero} plaintext}: Non basta neanche. Controesempio: $E(k,\, m_0 \| m_1) = m_0 \| (k \oplus m_1)$ lascia $m_0$ completamente in chiaro. Se l'attaccante recupera anche solo una parte del messaggio, per molte applicazioni è già un disastro.
+\end{itemize}
+
+SI RINGRAZIA PROFONDAMENTE IL BUON CLAUDE SHANNON PER LA DEFINIZIONE DI SICUREZZA, OVVERO CHE \textit{ciphertext non deve rivelare assolutamente nessuna informazione sul plaintext}. Zero. Nulla. Neanche quante vocali ci sono, neanche la lunghezza approssimativa. Si noti la la seguente definizione:
+
+\dfn{Sicurezza perfetta secondo Shannon}{
+  Un cifrario $(E, D)$ su $(K, P, C)$ ha \textit{perfect secrecy} se $\forall m_0, m_1 \in P: len(m_0) = len(m_1)$ e $\forall c \in C$ allora:
+  \[
+    Pr[E(k, m_0) = c] = Pr[E(k, m_1) = c]
+  \]
+  Dove $k$ è la chiave
+}
+\nt{
+  In altre parole la probabilità che il chipertext $c$ è idendica qualunque sia il messaggio cifrato. PErtanto non c'è informazione in $c$ su quale sia $m_0$ o $m_1$. Questa definizione (Shannon, 1949) non fa \emph{nessuna} assunzione computazionale sull'attaccante: per questo si chiama anche \textit{unconditional security} / \textit{perfect security} (l'avversario più potente immaginabile non impara nulla del plaintext dal ciphertext $\Rightarrow$ nessun ciphertext-only attack).
+}
+Si noti il seguente teorema:
+\thm{}{Il One-Time Pad ha perfect secrecy}
+
+\pf{Dimostrazione}{
+  Sia $m$ e $c$, vogliamo calcolare $Pr[E(k,m) = c]$ dove $k$ è uniforme su $K$. 
+  
+  Tale probabilità è uguale al numero di chiavi $k\in K$ tali che $E(k,m) = c$ diviso al numero di chiavi totali $|K|$, pertanto basta dimostrare che questa probabilità è costante $\forall (m,c)$
+
+  Nell'OTP $E(k,m) = m \oplus k$ implica $k = m \oplus c$. C'è esattamente una chiave per ogni coppia $(m,c)$ che produce quel ciphertext. Il numeratore quindi è sempre 1, indipendemente da $m$ e $c$.
+
+  Pertanto si che 
+  \[
+    Pr[E(k,m) = c] = \frac{1}{|K|} \quad \forall m,c
+  \]
+  La probabilità è la stessa per qualunque messaggio
+ }
+
+ Si ha tuttavia una conseguenza importante
+ \thm{Teorema di Shannon}{
+  La sicurezza perfetta implica che $|K| \geq |P|$
+ }
+\nt{
+ Ovvero un cifrario ha sicurezza perfetta se e solo se la lunghezza della chiave è almeno quella del messaggio}
+
+Se volete sicurezza perfetta, pagate il prezzo di chiavi lunghissime. E questo è impraticabile su larga scala.
+
+La conseguenza pratica è drastica: dobbiamo rinunciare alla sicurezza perfetta e accontentarci di qualcosa di "meno perfetto", la sicurezza computazionale, che è comunque più che sufficiente.
+
+\section{Pseudo-Random Generators (PRG)}
+
+Abbiamo due fatti:
+\begin{itemize}
+  \item Il OTP è perfettamente sicuro ma richiede chiavi lunghe quanto il messaggio
+  \item La sicurezza perfetta è impossibile con chiavi corte.
+\end{itemize}
+La soluzione è è quella di rinunciare alla sicurezza perfetta e sostituiamo la chiave veramente veramente casuale con una sequenza pseudo-casuale generata da una chiave corta. Questo è l'idea degli stream cipher. Formalmente
+
+\dfn{Stram Cipher}{
+  Si definisce \textit{Stream Cipher} un sistema che mira a emulare la sicurezza del One-Time Pad in modo efficiente. A differenza dei cifrari a blocchi che operano su segmenti fissi di dati, lo stream cipher elabora il testo in chiaro bit per bit o byte per byte
+}
+Adesso si noti la seguente definizione
+\dfn{Pseudo-Random Generator (PRG)}{
+  Si definisce \textit{PRG} la seguente funzione:
+  \[
+    G:\{0,1\}^s \to \{0,1\}^n \text{ con }n>>s
+  \]
+}
+
+In prarica riceve in input un seed (la chiave breve, s bit) e produce una sequenza molto più lunga (n bit) che sembra casuale. Lo stream cipher usa G così
+\begin{itemize}
+  \item $E(k, m) = G(k) \oplus m$
+  \item $D(k, c) = G(k) \oplus c$
+\end{itemize}
+La chiave $k$ è breve (il seed), la sequenza $G(k)$ è lunga quanto il messaggio.
+
+\subsection{Tre Tipi di Generatori}
+Vale la pena distinguere tre concetti
+\dfn{TRNG (True Random Number Generator)}{
+  usa fenomeni fisici genuinamente casuali ex rumore termico, eventi radioattivi, jitter dell'orologio. Produce vera casualità, ma è lento
+}
+\dfn{PRNG (Pseudo-Random Number Generator)}{
+  algoritmo deterministico che a partire da un seed produce una sequenza lunga e statisticamente "casuale"
+}
+\nt{
+  Veloce ma deterministico, da un seed produce sempre la stessa sequenza
+}
+\dfn{PRF (Pseudo-Random Function)}{una funzione che, dato un input, produce un output pseudo-casuale}
+\nt{è una generalizzazione del PRNG}
+
+\subsection{Requisiti di un buon PRNG}
+Un PRNG per uso crittografico deve soddisfare due requisiti fondamentali
+\begin{itemize}
+  \item \textbf{Randomness (apparente)}: la sequenza prodotta deve superare tutti i test statistici noti — distribuzione uniforme dei bit, assenza di pattern, correlazioni basse tra bit vicini
+  \item \textbf{Unpredictability (imprevedibilità)}: dato un prefisso della sequenza, non deve esistere nessun algoritmo efficiente (in tempo polinomiale) in grado di predire il bit successivo con probabilità significativamente maggiore di $1/2$ (\textbf{next-bit test})
+\end{itemize}
+
+\textbf{Requisiti sul seed.} Dato che il PRNG è \underline{deterministico}, tutta la sicurezza si scarica sul seed:
+\begin{itemize}
+  \item per uso crittografico il seed deve essere \textbf{sicuro} (imprevedibile);
+  \item il seed stesso deve essere un numero random o pseudo-random;
+  \item tipicamente il seed è generato da un \textbf{TRNG} (a partire da una entropy source) e poi dato in pasto al PRNG.
+\end{itemize}
+\nt{
+  Requisito minimo: la lunghezza $s$ del seed deve essere \textbf{sufficientemente grande}, così che una ricerca esaustiva sui $2^s$ seed possibili sia infeasible per l'attaccante.
+}
+
+\subsection{PRNG deboli da non usare}
+Due esempi di PRNG statisticamente accettabili ma crittograficamente insicuri
+
+\begin{itemize}
+  \item \texttt{glibc random()}: Utilizza un generatore a feedback lineare (non-linear additive feedback). conoscendo alcuni output si può calcolare facilmente il seed e predire tutti gli output futuri
+  \item \textbf{Linear Congruential Generator}:
+  Si ottiene attravero questo algoritmo \texttt{r[i] = (a · r[i-1] + b) mod p}. Semplice, veloce, ha buone proprietà statistiche, ma è matematicamente elementare da invertire: dati due output consecutivi, si trovano immediatamente a e b
+\end{itemize}
+
+\subsection{Un buon PRNG: Blum Blum Shub (BBS)}
+Il BBS è un esempio di PRNG crittograficamente sicuro la cui sicurezza è ridotta a un problema matematico difficile
+
+\begin{algorithm}
+\caption{Generatore Blum Blum Shub}
+Scegli due grandi numeri primi $p$ e $q$ tali che $p \equiv q \equiv 3 \pmod{4}$\;
+Calcola $n \gets p \cdot q$\;
+Scegli un seed $s$ tale che $\gcd(s,n)=1$\;
+Calcola $X_0 \gets s^2 \bmod n$\;
+\For{$i = 1$ \KwTo $k$}{
+    $X_i \gets X_{i-1}^2 \bmod n$\;
+    $B_i \gets X_i \bmod 2$\;
+}
+\KwRet $\{B_1, B_2, \dots, B_k\}$\;
+\end{algorithm}
+
+\mprop{Sicurezza di BBS}{
+  Predire il bit successivo della sequenza BBS è computazionalmente equivalente a fattorizzare $n = p\cdot q$
+}
+
+\nt{
+  non esiste nessun algoritmo efficiente noto per fattorizzare numeri grandi pertanto BBS è crittograficamente sicuro
+}
+
+Tuttavia è relativamente lento rispetto ad altri PRNG crittografici. Per applicazioni ad alta velocità si usano altri approcci.
+
+\subsection{Struttura generica e sicurezza computazionale}
+
+Gli Stream Cipher: Struttura Generica
+Uno stream cipher tipico funziona così: a partire dalla chiave K e da un valore di inizializzazione IV, si mantiene uno stato interno $ s_i $ che evolve a ogni passo. A ogni passo si produce un byte del keystream $ z_i $ tramite una funzione $g(s_i)$, e lo stato avanza con una funzione $ f(s_i) $.
+Il keystream viene poi XOR-ato byte a byte con il plaintext: $ c_i = p_i \oplus z_i $.
+L'IV serve a garantire che lo stesso key K produca keystream diversi in sessioni diverse — un meccanismo simile al nonce che vedremo nei cifrari moderni.
+
+Gli Stream Cipher Non Hanno Perfect Secrecy
+Una domanda naturale: uno stream cipher può avere perfect secrecy?
+No, per definizione. La chiave k è corta (il seed), mentre il messaggio è lungo. Per il teorema di Shannon, $ |K| \geq |P| $ è necessario per la perfect secrecy — condizione violata da qualsiasi stream cipher pratico.
+Dobbiamo quindi usare una definizione diversa di sicurezza, la sicurezza computazionale: il sistema è sicuro se non esiste nessun algoritmo efficiente in grado di distinguere il keystream G(k) da una sequenza veramente casuale. La sicurezza dello stream cipher dipende interamente dalla qualità del PRG: un PRG computazionalmente indistinguibile dal random implica uno stream cipher computazionalmente sicuro.
+
+
+\subsection{RC4}
+
+Il RC4 (Rivest Cipher 4) è stato lo stream cipher dominante per decenni, usato in SSL/TLS per HTTPS e in WEP/WPA per le reti Wi-Fi. Oggi, tuttavia, è ufficialmente deprecato ed è considerato insicuro per qualsiasi applicazione crittografica. 
+\paragraph{Struttura}: usa un array di stato S di 256 byte (una permutazione dei valori 0-255) e una chiave di lunghezza variabile tra 8 e 2048 bit
+
+\paragraph{Fase 1}:
+\begin{algorithm}
+\caption{Inizializzazione di S}
+\For{$i = 0$ \KwTo $255$}{
+    $S[i] = i$\;
+    $T[i] = K[i \bmod \text{keylen}]$\;
+}
+$j = 0$\;
+\For{$i = 0$ \KwTo $255$}{
+    $j = (j + S[i] + T[i]) \bmod 256$\;
+    $\text{swap}(S[i], S[j])$\;
+}
+\end{algorithm}
+
+\nt{
+  Inizializza l'array di 256 byte. Prende la tua chiave segreta (che può variare da 40 a 2048 bit) e la utilizza per "mescolare" l'array
+}
+
+\paragraph{Fase 2}:
+% i, j = 0
+% while (true):
+%     i = (i + 1) mod 256
+%     j = (j + S[i]) mod 256
+%     swap(S[i], S[j])
+%     t = (S[i] + S[j]) mod 256
+%     output S[t]  ← questo byte va in XOR col plaintext
+\begin{algorithm}
+\caption{Generazione del keystream}
+$i = 0$\;
+$j = 0$\;
+\While{true}{
+    $i = (i + 1) \bmod 256$\;
+    $j = (j + S[i]) \bmod 256$\;
+    $\text{swap}(S[i], S[j])$\;
+    $t = (S[i] + S[j]) \bmod 256$\;
+    \textbf{output} $S[t]$\;
+}
+\end{algorithm}
+  
+\nt{A ogni ciclo, continua a scambiare due byte all'interno dell'array ed estrae un valore pseudo-casuale in uscita}
+
+\subsection{Sicurezza di RC4: debolezze}
+RC4 ha diverse debolezze note che lo hanno reso deprecato:
+\begin{enumerate}
+  \item \textbf{Bias nell'output iniziale}: anche assumendo un setup \emph{perfetto} (permutazione uniforme tra le $256!$ possibili), Mantin e Shamir (\textit{A practical attack on broadcast RC4}, FSE 2001) hanno mostrato che l'output è sbilanciato: $\Pr[\text{2° byte} = 0] = 2/256 = 1/128$ (il doppio dell'atteso). Rimedio: scartare i primi $n$ byte del keystream $\Rightarrow$ \textbf{RC4-drop[n]}.
+  \item \textbf{Bias sui digrammi} (Fluhrer e McGrew, \textit{Statistical analysis of the alleged RC4 keystream generator}, FSE 2000): $\Pr[(0,0)] = 1/256^2 + 1/256^3$.
+  \item \textbf{Related-key attacks}: alla base dell'attacco a WEP (vedi sotto).
+\end{enumerate}
+
+\subsection{Stream cipher moderni: eStream (nonce-based)}
+I progetti del portfolio \textbf{eStream} introducono un \textbf{nonce} nel PRG:
+\[
+  \mathrm{PRG}: \{0,1\}^s \times R \to \{0,1\}^n \qquad n \gg s
+\]
+dove il primo argomento è il \textit{seed} e il secondo è il \textbf{nonce} $r$.
+\dfn{Nonce}{
+  Un \textit{nonce} è un valore che non si ripete per una data chiave: la coppia $(k, r)$ non viene mai usata più di una volta.
+}
+\nt{
+  Questo permette di \textbf{riusare la chiave} $k$ finché cambia il nonce $r$ — risolve il problema dell'OTP/stream cipher di dover cambiare chiave a ogni messaggio.
+}
+La cifratura diventa:
+\[
+  E(k, m, r) = m \oplus \mathrm{PRG}(k, r)
+\]
+Esempi moderni: \textbf{Salsa20} e \textbf{ChaCha20}.
+
+\section{Attacchi su OTP e Stream Cipher}
+Lo stream cipher (e l'OTP) hanno due debolezze fondamentali se usati male: \textbf{riuso della chiave} e \textbf{mancanza di integrità}.
+
+\subsection{Attacco 1: Two-Time Pad}
+\textbf{Mai usare la stessa chiave dello stream cipher più di una volta!} Supponiamo che Alice cifri due messaggi con la \emph{stessa} $k$:
+\[
+  c_1 = m_1 \oplus \mathrm{PRG}(k) \qquad c_2 = m_2 \oplus \mathrm{PRG}(k)
+\]
+L'attaccante (eavesdropper) calcola:
+\[
+  c_1 \oplus c_2 = (m_1 \oplus \mathrm{PRG}(k)) \oplus (m_2 \oplus \mathrm{PRG}(k)) = m_1 \oplus m_2
+\]
+Il keystream si cancella! E c'è \textbf{abbastanza ridondanza} in inglese e nella codifica ASCII che, da $m_1 \oplus m_2$, si riescono a recuperare sia $m_1$ che $m_2$.
+\nt{
+  \textbf{Venona project} (1941--1980): la NSA americana riuscì a decifrare messaggi sovietici degli anni '40 proprio perché i sovietici \emph{riusavano} le chiavi nello schema one-time pad.
+}
+
+\subsubsection{Esempi reali di riuso della chiave}
+\begin{itemize}
+  \item \textbf{MS-PPTP} (Windows NT, Point-to-Point Tunneling Protocol): client e server usavano la \emph{stessa} chiave per entrambe le direzioni. I messaggi client$\to$server $[m_1\|m_2\|m_3]$ e server$\to$client $[s_1\|s_2\|s_3]$ erano cifrati con lo stesso $\mathrm{PRG}(k)$ $\Rightarrow$ two-time pad. \textbf{Servono chiavi diverse per C$\to$S e S$\to$C.}
+  \item \textbf{802.11b WEP} (con RC4): la chiave di frame è $\mathrm{PRG}(IV \| k)$ dove $k$ è una \textbf{long-term key} e $IV$ è un Initialization Vector di soli \textbf{24 bit}. Problemi:
+  \begin{itemize}
+    \item l'$IV$ si ripete dopo $2^{24} \approx$ 16M frame (e su alcune schede si resetta a 0 dopo un power cycle);
+    \item le chiavi per frame consecutivi $(1\|k), (2\|k), \dots$ sono \textbf{molto correlate} (related keys), e RC4 non è sicuro con chiavi così correlate. Attacco FMS (2001) recupera $k$ dopo $\sim 10^6$ frame; attacchi recenti $\sim 40\,000$ frame.
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{Una costruzione migliore}
+Invece di concatenare $IV \| k$, si espande $\mathrm{PRG}(k)$ una sola volta e si ricavano le chiavi per i singoli frame da segmenti diversi dell'output $\Rightarrow$ ogni frame ha una chiave pseudo-random (non correlata). Soluzione ancora migliore: usare un metodo di cifratura più forte, come in \textbf{WPA2}.
+
+\subsubsection{Riassunto Two-Time Pad}
+\textbf{Mai} riusare la chiave di uno stream cipher. In pratica:
+\begin{itemize}
+  \item \textbf{Traffico di rete}: si negozia una nuova chiave per ogni sessione (es. TLS), con una sotto-chiave per C$\to$S e una per S$\to$C.
+  \item \textbf{Disk encryption}: di solito \emph{non} si usa uno stream cipher ma un block cipher.
+\end{itemize}
+
+\subsection{Attacco 2: nessuna integrità (OTP è malleabile)}
+L'OTP (e lo stream cipher) garantisce confidenzialità ma \textbf{non} integrità: è \textit{malleabile}. Le modifiche al ciphertext non vengono rilevate e hanno un effetto \textbf{prevedibile} sul plaintext.
+
+Sia $c = k \oplus m$. L'attaccante intercetta $c$ e inoltra $c^* = c \oplus p$. Bob decifra:
+\[
+  k \oplus c^* = k \oplus c \oplus p = k \oplus k \oplus m \oplus p = m \oplus p
+\]
+Quindi l'attaccante applica al plaintext una modifica $p$ a sua scelta, senza conoscere $m$ né $k$.
+
+\ex{Flip di un bit (sì/no)}{
+  Alice risponde sì ($1$) o no ($0$) a un invito, cifrando con OTP. L'attaccante non recupera la risposta, ma può \textbf{ribaltarla} applicando $\oplus 1$ al ciphertext: se $m = 0$, allora $k \oplus (c \oplus 1) = 0 \oplus 1 = 1$; se $m = 1$, diventa $0$.
+}
+
+\ex{Da \texttt{Alice} a \texttt{Maria}}{
+  Il messaggio è ``\texttt{From Alice}''. L'attaccante vuole cambiare \texttt{Alice} in \texttt{Maria}. Conoscendo (o indovinando) la posizione del campo, calcola
+  \[
+    c^* = c \oplus (\texttt{Alice} \oplus \texttt{Maria})
+  \]
+  e Bob decifra $D(k, c^*) = \texttt{Maria}$:
+  \[
+    k \oplus c^* = k \oplus k \oplus \texttt{Alice} \oplus \texttt{Alice} \oplus \texttt{Maria} = \texttt{Maria}
+  \]
+  Si pensi al numero di conto in un bonifico\dots
+}
+
+%\end{document}

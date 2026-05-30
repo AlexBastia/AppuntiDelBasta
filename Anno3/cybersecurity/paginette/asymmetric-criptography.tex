@@ -1,3 +1,261 @@
 % \begin{document}
-\chapter{Asymmetric Criptography}
+\chapter{Asymmetric Cryptography}
+
+\section{Dai cifrari simmetrici a quelli asimmetrici}
+In un cifrario \textbf{simmetrico} (3DES, AES) Alice e Bob usano la \textbf{stessa} chiave segreta per cifrare e decifrare.
+\begin{center}
+  \includegraphics[width=0.85\textwidth]{img/pkc-symmetric-cipher}
+\end{center}
+Problemi:
+\begin{itemize}
+  \item per comunicare in modo sicuro devono gia' \textbf{condividere una chiave} (e se non si sono mai incontrati?);
+  \item Alice deve tenere $ M $ chiavi diverse per comunicare con $ M $ persone diverse.
+\end{itemize}
+\nt{
+  Da qui la domanda: due parti \textbf{senza} chiave segreta condivisa possono comunicare in modo sicuro? La risposta porta alla \textbf{crittografia asimmetrica}.
+}
+
+\section{Crittografia asimmetrica: principi}
+\dfn{Crittografia asimmetrica}{
+  Ogni utente genera una \textbf{coppia di chiavi}: una viene messa in un registro pubblico (la \textbf{chiave pubblica}, $ PU $), l'altra resta segreta (la \textbf{chiave privata}, $ PR $). Ogni utente mantiene inoltre una collezione di chiavi pubbliche altrui.
+}
+\begin{center}
+  \includegraphics[width=0.9\textwidth]{img/pkc-asymmetric-overview}
+\end{center}
+Le due chiavi sono diverse ma \textbf{collegate}, e a seconda di quale si usa per cifrare si ottengono due scenari:
+\[
+  \begin{aligned}
+    E(\textit{private-key}_{Alice}, m) = c, \quad & D(\textit{public-key}_{Alice}, c) = m && \text{(autenticazione)}\\
+    E(\textit{public-key}_{Alice}, m) = c, \quad & D(\textit{private-key}_{Alice}, c) = m && \text{(confidenzialita')}
+  \end{aligned}
+\]
+
+\subsection{Confidenzialita'}
+Alice cifra con la \textbf{chiave pubblica di Bob}; solo Bob, con la sua \textbf{chiave privata}, puo' decifrare.
+\begin{center}
+  \includegraphics[width=0.78\textwidth]{img/pkc-confidentiality}
+\end{center}
+\begin{center}
+  \includegraphics[width=0.9\textwidth]{img/pkc-asymmetric-encryption}
+\end{center}
+\nt{
+  \textbf{Warning}: la chiave pubblica di Bob deve essere \textbf{autentica} (e' il problema risolto dai certificati, visto nel capitolo \textit{Key Exchange}).
+}
+
+\subsection{Autenticazione}
+Alice cifra con la \textbf{propria chiave privata}; chiunque puo' decifrare con la sua chiave pubblica, ottenendo la garanzia che il messaggio viene davvero da Alice (e' la base delle firme digitali).
+\begin{center}
+  \includegraphics[width=0.78\textwidth]{img/pkc-authentication}
+\end{center}
+
+\subsection{Differenze con la crittografia simmetrica}
+\begin{itemize}
+  \item la chiave pubblica e' diversa (ma collegata) dalla privata;
+  \item e' \textbf{infeasible} per un attaccante ricavare la privata dalla pubblica;
+  \item \textbf{non} serve distribuire una chiave segreta condivisa in anticipo;
+  \item serve \textbf{una sola} coppia di chiavi per ogni utente (non piu' $ O(n^2) $ chiavi).
+\end{itemize}
+
+\section{Public-key encryption: definizione formale}
+\begin{center}
+  \includegraphics[width=0.8\textwidth]{img/pkc-pubkey-ED}
+\end{center}
+\dfn{Sistema di cifratura a chiave pubblica}{
+  E' una tripla di algoritmi $ (G, E, D) $:
+  \begin{itemize}
+    \item $ G() $: algoritmo \textbf{randomizzato} che produce una coppia di chiavi $ (p_k, s_k) $;
+    \item $ E(p_k, m) $: algoritmo \textbf{randomizzato} che prende $ m \in M $ e produce un ciphertext $ c \in C $;
+    \item $ D(s_k, c) $: algoritmo \textbf{deterministico} che prende $ c \in C $ e produce $ m \in M $.
+  \end{itemize}
+  \textbf{Consistenza}: per ogni $ (p_k, s_k) $ prodotta da $ G $ e per ogni $ m \in M $: $ \; D(s_k, E(p_k, m)) = m $.
+}
+
+\section{Trapdoor one-way functions}
+\dfn{Trapdoor one-way function}{
+  Una funzione \textit{facile} da calcolare in una direzione e \textit{infeasible} nell'altra, a meno di conoscere un'informazione aggiuntiva (una ``chiave'', la \textbf{trapdoor}); con quell'informazione l'inversa si calcola in tempo polinomiale. E' una famiglia di funzioni invertibili $ f_k $ tali che:
+  \[
+    \begin{aligned}
+      Y &= f_k(X) && \text{facile, se } k, X \text{ noti}\\
+      X &= f_k^{-1}(Y) && \text{facile, se } k, Y \text{ noti}\\
+      X &= f_k^{-1}(Y) && \text{infeasible, se } Y \text{ noto ma } k \text{ ignoto}
+    \end{aligned}
+  \]
+}
+Formalmente una trapdoor function $ X \to Y $ e' una tripla $ (G, F, F^{-1}) $: $ G() $ produce $ (p_k, s_k) $; $ F(p_k, \cdot): X \to Y $; $ F^{-1}(s_k, \cdot): Y \to X $ inverte $ F $, con $ F^{-1}(s_k, F(p_k, x)) = x $.
+\dfn{Secure TDF}{
+  $ (G, F, F^{-1}) $ e' \textbf{sicura} se $ F(p_k, \cdot) $ e' \textit{one-way}: si puo' valutare ma non invertire \underline{senza} $ s_k $. Cioe' per ogni avversario efficiente $ A $:
+  \[
+    \mathrm{Adv}_{OW}[A, F] = \Pr[\, x = x' \,] < \text{negligible}
+  \]
+}
+\begin{center}
+  \includegraphics[width=0.8\textwidth]{img/pkc-secure-tdf-game}
+\end{center}
+
+\subsection{Funzioni hash}
+\dfn{Funzione hash one-way}{
+  Una funzione $ H(\cdot) $ che prende un input $ m $ di lunghezza arbitraria e produce un output $ H(m) $ di lunghezza \textbf{fissa} $ L $ (es. MD5 $ L = 128 $, SHA-1 $ L = 160 $, SHA-256 $ L = 256 $ bit).
+}
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/pkc-hash-function}
+\end{center}
+Proprieta' di una buona hash:
+\begin{enumerate}
+  \item \textbf{Easy to evaluate}: veloce da calcolare;
+  \item \textbf{Hard to reverse}: dato $ h $, infeasible trovare $ m $ con $ H(m) = h $ (one-way / pre-image resistance);
+  \item \textbf{Hard to find collisions}: infeasible trovare $ m_1 \neq m_2 $ con $ H(m_1) = H(m_2) $;
+  \item un piccolo cambiamento nel messaggio cambia l'hash in modo \textbf{estensivo} (effetto valanga).
+\end{enumerate}
+
+\subsection{Uso scorretto di una TDF}
+\nt{
+  \textbf{Mai} cifrare applicando $ F $ direttamente al plaintext: $ E(p_k, m) = F(p_k, m) $. Sarebbe \textbf{deterministico} $ \Rightarrow $ non semantically secure, e soggetto a molti attacchi. La TDF va usata dentro uno schema randomizzato.
+}
+
+\section{RSA}
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{img/pkc-rsa-inventors}
+\end{center}
+Una delle prime risposte pratiche alla sfida di Diffie-Hellman, sviluppata da \textbf{R}on Rivest, \textbf{A}di Shamir e Len \textbf{A}dleman (MIT, 1977), basata su proprieta' dei \textbf{numeri primi} e sulla \textbf{teoria dei numeri}. Primo annuncio: \textit{Scientific American}, agosto 1977. Usatissima: SSL/TLS (certificati e key-exchange), e-mail e file system sicuri.
+
+\subsection{Richiami: aritmetica modulo composti}
+Sia $ N = p \cdot q $ con $ p, q $ primi, $ p, q \approx N^{1/2} $. $ \mathbb{Z}_N = \{0, 1, \dots, N-1\} $ e $ \mathbb{Z}_N^* $ e' l'insieme degli elementi invertibili.
+\thm{Fatti}{
+  \begin{itemize}
+    \item $ x \in \mathbb{Z}_N $ e' invertibile $ \iff \gcd(x, N) = 1 $;
+    \item $ |\mathbb{Z}_N^*| = \phi(N) = (p-1)(q-1) = N - p - q + 1 $ (funzione di Eulero);
+    \item \textbf{Teorema di Eulero}: $ \forall x \in \mathbb{Z}_N^* : \; x^{\phi(N)} = 1 $ in $ \mathbb{Z}_N $.
+  \end{itemize}
+}
+
+\subsection{La trapdoor permutation RSA}
+\dfn{RSA}{
+  $ G() $: scegli due primi random $ p, q \approx 1024 $ bit, poni $ N = pq $; scegli $ e, d $ (con $ 1 < e < \phi(N) $) tali che $ e \cdot d \equiv 1 \pmod{\phi(N)} $. Output: chiave pubblica $ p_k = (N, e) $, chiave privata $ s_k = (N, d) $.
+  \[
+    F(p_k, x): \mathbb{Z}_N^* \to \mathbb{Z}_N^*, \quad y = \mathrm{RSA}(x) = x^e \!\!\pmod N
+  \]
+}
+\thm{Correttezza}{
+  $ F^{-1}(s_k, y) = y^d $ inverte $ F $:
+  \[
+    y^d = (x^e)^d = x^{ed} = x^{k\phi(N) + 1} = \big(x^{\phi(N)}\big)^k \cdot x = 1^k \cdot x = x
+  \]
+  (si e' usato $ ed = k\phi(N) + 1 $ e il teorema di Eulero).
+}
+
+\subsection{Esempio numerico}
+\ex{RSA con numeri piccoli}{
+  \textbf{Bob (generazione chiavi)}: $ p = 5, q = 11 \Rightarrow n = 55 $, $ \phi(n) = 4 \cdot 10 = 40 $; sceglie $ e = 3 $ ($ \gcd(3, 40) = 1 $) e calcola $ d = 27 $ ($ 3 \cdot 27 = 81 \equiv 1 \bmod 40 $). Chiave pubblica $ (3, 55) $, privata $ 27 $.
+
+  \textbf{Alice (cifratura)} di $ m = 13 $: $ \; c = m^e \bmod n = 13^3 \bmod 55 = 2197 \bmod 55 = 52 $.
+
+  \textbf{Bob (decifratura)}: $ \; m = c^d \bmod n = 52^{27} \bmod 55 = 13 $.
+}
+
+\subsection{Assunzione RSA e sicurezza}
+\dfn{RSA assumption}{
+  RSA e' una permutazione one-way: per ogni algoritmo efficiente $ A $
+  \[
+    \Pr\big[\, A(N, e, y) = y^{1/e} \,\big] < \text{negligible}
+  \]
+  con $ p, q $ primi random a $ n $ bit, $ N = pq $, $ y $ random in $ \mathbb{Z}_N^* $.
+}
+Per invertire RSA senza $ d $ l'attaccante deve calcolare $ x $ da $ c = x^e \bmod N $, cioe' le \textbf{radici $ e $-esime} modulo $ N $. Il miglior algoritmo noto: (1) \textbf{fattorizzare} $ N $ \textit{(difficile!)}, (2) calcolare le radici $ e $-esime modulo $ p $ e $ q $ \textit{(facile)}. La sicurezza di RSA poggia quindi sulla difficolta' della \textbf{fattorizzazione}.
+
+\subsection{Textbook RSA e' insicuro}
+\nt{
+  Il \textit{textbook RSA} (cifra $ c \leftarrow m^e $, decifra $ c^d \to m $) e' \textbf{insicuro}: deterministico $ \Rightarrow $ non semantically secure, e con molti attacchi noti. \textbf{La trapdoor permutation RSA non e' uno schema di cifratura!}
+}
+\begin{center}
+  \includegraphics[width=0.85\textwidth]{img/pkc-textbook-rsa-attack}
+\end{center}
+\ex{Attacco a textbook RSA (meet-in-the-middle)}{
+  In un handshake, il browser manda $ c = \mathrm{RSA}(k) = k^e $ con session key $ k $ a $ 64 $ bit. Se $ k = k_1 \cdot k_2 $ con $ k_1, k_2 < 2^{34} $ (probabile $ \approx 20\% $), allora $ c / k_1^e = k_2^e $ in $ \mathbb{Z}_N $. Si costruisce la tabella $ c/1^e, c/2^e, \dots, c/2^{34 e} $ (tempo $ 2^{34} $) e poi per $ k_2 = 0, \dots, 2^{34} $ si testa se $ k_2^e $ e' in tabella. Tempo totale $ \approx 2^{40} \ll 2^{64} $.
+}
+\textbf{Uso corretto (ISO)}: $ E(p_k, m) $: scegli $ x $ random in $ \mathbb{Z}_N $, calcola $ y \leftarrow \mathrm{RSA}(x) = x^e $ e $ k \leftarrow H(x) $; output $ (y, E_s(k, m)) $ con $ (E_s, D_s) $ cifrario simmetrico autenticato. $ D(s_k, (y, c)) $: ricava $ k = H(\mathrm{RSA}^{-1}(y)) $ e decifra $ c $.
+
+\subsection{RSA in pratica}
+\begin{itemize}
+  \item \textbf{Esponente pubblico piccolo} (per cifrare in fretta): valore minimo $ e = 3 $ (perche' non $ 2 $? $ \phi(N) $ e' pari, quindi $ \gcd(2, \phi(N)) \neq 1 $); valore raccomandato $ e = 65537 = 2^{16} + 1 $ ($ \to 17 $ moltiplicazioni). RSA e' \textbf{asimmetrico}: cifratura veloce, decifratura lenta.
+  \item \textbf{Mai} usare un $ d $ piccolo per velocizzare la decifratura: Wiener (1987) $ d < N^{0.25} \Rightarrow $ insicuro; Boneh-Durfee (1998) $ d < N^{0.292} \Rightarrow $ insicuro (la privata si ricava da $ (N, e) $).
+  \item \textbf{Lunghezze chiavi} (sicurezza comparabile al simmetrico):
+\end{itemize}
+\begin{center}
+  \begin{tabular}{cc}
+    \hline
+    \textbf{Cipher key-size} & \textbf{RSA modulus $ N $} \\
+    \hline
+    80 bit  & 1024 bit \\
+    128 bit & 3072 bit \\
+    256 bit (AES) & 15360 bit \\
+    \hline
+  \end{tabular}
+\end{center}
+\nt{
+  \textbf{Attacchi all'implementazione}: timing attack [Kocher 1996], power attack [Kocher 1999], fault attack [Pellegrini 2010] (tutti possono esporre $ d $ mentre si calcola $ c^d \bmod N $). Difesa comune: controllare l'output ($ \approx 10\% $ di rallentamento).
+}
+\nt{
+  \textbf{RSA Key Generation Trouble} [Heninger et al. / Lenstra et al.]: con poca entropia all'avvio, piu' dispositivi generano lo \textbf{stesso} $ p $ (ma $ q $ diversi); allora per due chiavi $ N_1, N_2 $ si ha $ \gcd(N_1, N_2) = p $, e si fattorizza! L'esperimento ha fattorizzato lo $ 0.4\% $ delle chiavi HTTPS pubbliche. Lezione: assicurarsi che l'RNG sia ben inizializzato.
+}
+
+\section{Firme digitali (Digital Signatures)}
+Si usa lo scenario di \textbf{autenticazione}: si firma con la chiave \textbf{privata}, si verifica con la \textbf{pubblica}.
+\begin{center}
+  \includegraphics[width=0.85\textwidth]{img/pkc-digital-signature}
+\end{center}
+Bob vuole che Alice sia certa che il messaggio $ M $ viene da lui: calcola un hash $ h = H(M) $ (es. SHA-512), e da $ h $ + la sua chiave privata genera la firma $ S $; invia $ (M, S) $. Alice verifica con la chiave pubblica di Bob.
+
+\subsection{Firma basata su RSA}
+\begin{center}
+  \includegraphics[width=0.9\textwidth]{img/pkc-digital-signature-rsa}
+\end{center}
+Bob firma $ m $ con la propria privata $ d $: $ \; s = \mathrm{RSA}^{-1}(m) = m^d \bmod n $. Un verificatore (Cathy) calcola $ t = \mathrm{RSA}(s) = s^e \bmod n $ con la pubblica di Bob e \textbf{accetta se $ t = m $}.
+\ex{Firma RSA con numeri piccoli}{
+  Chiavi come prima ($ n = 55, e = 3, d = 27 $). Bob firma $ m = 19 $: $ \; s = 19^{27} \bmod 55 = 24 $; invia $ (m, s) = (19, 24) $. Cathy verifica: $ \; t = 24^3 \bmod 55 = 19 = m \Rightarrow $ firma genuina.
+}
+
+\subsection{Documenti lunghi: hash-then-sign}
+Un documento deve essere un intero in $ [0, n) $. Per firmare documenti lunghi si fa \textbf{prima l'hash} e si firma l'hash (corto):
+\begin{center}
+  \includegraphics[width=0.9\textwidth]{img/pkc-digital-signature-long}
+\end{center}
+
+\subsection{Proprieta'}
+Una firma digitale e':
+\begin{itemize}
+  \item \textbf{unforgeable} (non falsificabile, ``ci vorrebbe un miliardo di anni'');
+  \item \textbf{undeniable} dal firmatario (non ripudio);
+  \item \textbf{universalmente verificabile} (il verificatore non ha bisogno di chiavi proprie, ne' pubbliche ne' private);
+  \item \textbf{diversa da documento a documento}.
+\end{itemize}
+
+\section{Altri cryptosystem asimmetrici}
+
+\subsection{ElGamal}
+Schema di cifratura costruito sul protocollo Diffie-Hellman.
+\begin{itemize}
+  \item \textbf{Key generation} (Bob): sceglie un primo $ p $ e $ g $ radice primitiva modulo $ p $; un esponente random $ a \in [0, p-2] $; calcola $ A = g^a \bmod p $. Pubblica $ (p, g, A) $, privata $ a $.
+  \item \textbf{Cifratura} di $ m $ (Alice): sceglie $ b \in [0, p-2] $ random; calcola $ B = g^b \bmod p $ e $ c = A^b \, m \bmod p $; ciphertext $ (B, c) $.
+  \item \textbf{Decifratura} (Bob): calcola $ x = p - 1 - a $ e $ m = B^x \, c \bmod p $.
+\end{itemize}
+\nt{
+  E' \textbf{randomizzato}; svantaggio: \textbf{message expansion} (il ciphertext e' lungo il doppio del plaintext). Sicurezza legata alla difficolta' del logaritmo discreto.
+}
+
+\subsection{Rabin}
+\begin{itemize}
+  \item \textbf{Key generation} (Bob): due primi grandi distinti $ p, q $ con $ p \equiv q \equiv 3 \pmod 4 $ (rende la decifratura piu' efficiente); $ n = pq $. Pubblica $ n $, privata $ (p, q) $.
+  \item \textbf{Cifratura}: $ c = m^2 \bmod n $.
+  \item \textbf{Decifratura} (via CRT): $ m_p = c^{(p+1)/4} \bmod p $, $ m_q = c^{(q+1)/4} \bmod q $; si trovano $ y_p, y_q $ con $ y_p p + y_q q = 1 $ (Euclide); $ r = (y_p p\, m_q + y_q q\, m_p) \bmod n $ e $ s = (y_p p\, m_q - y_q q\, m_p) \bmod n $; uno tra $ r, -r, s, -s $ e' il messaggio $ m $.
+\end{itemize}
+\nt{
+  Cifratura piu' efficiente di RSA. Vantaggio teorico: recuperare $ m $ da $ (c, n) $ e' \textbf{provabilmente equivalente a fattorizzare} (non noto per RSA). Svantaggio: la decifratura da' 4 candidati.
+}
+
+\subsection{Elliptic Curve Cryptography (ECC)}
+Crittografia basata sulle curve ellittiche: a parita' di sicurezza usa chiavi molto piu' corte di RSA. La tabella NIST SP 800-57 confronta le dimensioni delle chiavi a parita' di sforzo computazionale per la crittanalisi:
+\begin{center}
+  \includegraphics[width=0.9\textwidth]{img/pkc-nist-key-sizes}
+\end{center}
+
 % \end{document}
