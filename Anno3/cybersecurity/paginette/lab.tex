@@ -1,0 +1,201 @@
+% \begin{document}
+\chapter{Lab}
+
+\section{Lab 1 — Inverso moltiplicativo, esponenziazione modulare, RSA}
+Argomenti: inverso moltiplicativo, esponenziazione modulare e il crittosistema \textbf{RSA}.
+Algoritmi di riferimento: Euclideo (6.1), Euclideo Esteso (6.2), Inverso Moltiplicativo (6.3), Square-and-Multiply (6.5) --- vedi Sezione~\ref{sec:lab1-algo}.
+
+\subsection{Algoritmo Euclideo e coefficienti di Bezout}
+\ex{GCD (1/2)}{
+  Calcolare $\gcd(1759, 550)$ tramite l'algoritmo euclideo e trovare interi $ s, t $ tali che
+  \[
+    1759\,s + 550\,t = \gcd(1759, 550).
+  \]
+}
+\ex{GCD (2/2)}{
+  Calcolare $\gcd(57, 93)$ e trovare interi $ s, t $ tali che
+  \[
+    57\,s + 93\,t = \gcd(57, 93).
+  \]
+}
+
+\subsection{Inverso moltiplicativo}
+\ex{Inverso moltiplicativo (Alg.\ 6.3)}{
+  Calcolare i seguenti inversi moltiplicativi:
+  \begin{enumerate}[label=(\alph*)]
+    \item $17^{-1} \bmod 101$
+    \item $357^{-1} \bmod 1234$
+    \item $3125^{-1} \bmod 9987$
+  \end{enumerate}
+}
+
+\subsection{Il crittosistema RSA}
+\ex{RSA --- primo esempio completo}{
+  Bob sceglie i primi $ p = 101 $ e $ q = 113 $. Allora:
+  \[
+    n = pq = 11413, \qquad \varphi(n) = 100 \times 112 = 11200 = 2^6 \cdot 5^2 \cdot 7.
+  \]
+  Un intero $ b $ e' usabile come \textbf{esponente di cifratura} se e solo se $\gcd(\varphi(n), b) = 1$ (cioe' $ b $ non divisibile per 2, 5 o 7). Bob sceglie $ b = 3533 $ e pubblica $(n, b) = (11413, 3533)$.
+  \begin{enumerate}[label=(\alph*)]
+    \item \textbf{Verificare} che $\gcd(11200, 3533) = 1$ usando l'algoritmo euclideo (Alg.\ 6.1).
+    \item \textbf{Calcolare} l'esponente segreto $ a = 3533^{-1} \bmod 11200$ usando l'Alg.\ 6.3.
+    \item Alice cifra il plaintext $ m = 9726 $; il ciphertext e' $c = 9726^{3533} \bmod 11413$.
+          \textbf{Calcolare} $ c $ con l'algoritmo Square-and-Multiply (Alg.\ 6.5).
+    \item Bob decifra: $ m = c^a \bmod n$.
+  \end{enumerate}
+}
+\ex{RSA --- secondo esempio}{
+  Vedi l'esempio piccolo RSA (slide \#33--35 della Lecture 6).
+}
+\ex{RSA Signature --- terzo esempio}{
+  Vedi l'esempio piccolo di firma RSA (slide \#52--54 della Lecture 6).
+}
+
+\section{Algoritmi di riferimento}
+\label{sec:lab1-algo}
+
+\subsection{Algoritmo 6.1 — Euclidean Algorithm}
+
+\begin{algorithm}[H]
+\caption{Euclidean Algorithm$(a, b)$ \quad --- \quad Computation of $\gcd(a,b)$}
+$r_0 \leftarrow a$\;
+$r_1 \leftarrow b$\;
+$m \leftarrow 1$\;
+\While{$r_m \neq 0$}{
+  $q_m \leftarrow \lfloor r_{m-1} / r_m \rfloor$\;
+  $r_{m+1} \leftarrow r_{m-1} - q_m r_m$\;
+  $m \leftarrow m + 1$\;
+}
+$m \leftarrow m - 1$\;
+\KwRet $(q_1, \ldots, q_m;\; r_m)$ \tcp*{$r_m = \gcd(a, b)$}
+\end{algorithm}
+
+\subsection{Algoritmo 6.2 — Extended Euclidean Algorithm}
+Calcola $\gcd(a, b)$ e i coefficienti di Bezout $ s, t $ con $sa + tb = \gcd(a,b)$.
+
+\begin{algorithm}[H]
+\caption{Extended Euclidean Algorithm$(a, b)$}
+$a_0 \leftarrow a$;\quad $b_0 \leftarrow b$;\quad $t_0 \leftarrow 0$;\quad $t \leftarrow 1$;\quad $s_0 \leftarrow 1$;\quad $s \leftarrow 0$\;
+$q \leftarrow \lfloor a_0 / b_0 \rfloor$;\quad $r \leftarrow a_0 - q b_0$\;
+\While{$r > 0$}{
+  $\mathit{temp} \leftarrow t_0 - qt$;\quad $t_0 \leftarrow t$;\quad $t \leftarrow \mathit{temp}$\;
+  $\mathit{temp} \leftarrow s_0 - qs$;\quad $s_0 \leftarrow s$;\quad $s \leftarrow \mathit{temp}$\;
+  $a_0 \leftarrow b_0$;\quad $b_0 \leftarrow r$\;
+  $q \leftarrow \lfloor a_0 / b_0 \rfloor$;\quad $r \leftarrow a_0 - q b_0$\;
+}
+$r \leftarrow b_0$\;
+\KwRet $(r,\, s,\, t)$ \tcp*{$r = \gcd(a,b)$, $sa + tb = r$}
+\end{algorithm}
+
+\subsection{Algoritmo 6.3 — Multiplicative Inverse}
+Calcola $b^{-1} \bmod a$. Variante dell'Euclideo Esteso con riduzione mod $a$ ad ogni passo.
+
+\begin{algorithm}[H]
+\caption{Multiplicative Inverse$(a, b)$ \quad --- \quad Computation of $b^{-1} \bmod a$}
+$a_0 \leftarrow a$;\quad $b_0 \leftarrow b$;\quad $t_0 \leftarrow 0$;\quad $t \leftarrow 1$\;
+$q \leftarrow \lfloor a_0 / b_0 \rfloor$;\quad $r \leftarrow a_0 - q b_0$\;
+\While{$r > 0$}{
+  $\mathit{temp} \leftarrow (t_0 - qt) \bmod a$;\quad $t_0 \leftarrow t$;\quad $t \leftarrow \mathit{temp}$\;
+  $a_0 \leftarrow b_0$;\quad $b_0 \leftarrow r$\;
+  $q \leftarrow \lfloor a_0 / b_0 \rfloor$;\quad $r \leftarrow a_0 - q b_0$\;
+}
+\If{$b_0 \neq 1$}{
+  $b$ non ha inverso modulo $a$\;
+}
+\Else{
+  \KwRet $(t)$\;
+}
+\end{algorithm}
+
+\subsection{Algoritmo 6.5 — Square-and-Multiply}
+Calcola $x^c \bmod n$ in $O(\log c)$ moltiplicazioni invece di $O(c)$.
+Qui $ \ell $ e' la lunghezza in bit di $ c $, e $ c_i $ e' il bit in posizione $ i $ ($ c_{\ell-1} $ = bit piu' significativo).
+
+\begin{algorithm}[H]
+\caption{Square-and-Multiply$(x, c, n)$ \quad --- \quad Computation of $x^c \bmod n$}
+$z \leftarrow 1$\;
+\For{$i \leftarrow \ell - 1$ \KwTo $0$ (decrescente)}{
+  $z \leftarrow z^2 \bmod n$\;
+  \If{$c_i = 1$}{
+    $z \leftarrow (z \times x) \bmod n$\;
+  }
+}
+\KwRet $(z)$\;
+\end{algorithm}
+
+
+\section{Lab 2 — Ethical Hacking, VAPT e Hidden Services}
+
+\subsection{Ethical Hacking}
+\dfn{Hacker}{
+  Una persona esperta in tecnologia dell'informazione che \textbf{usa le proprie conoscenze tecniche per raggiungere un obiettivo o superare un ostacolo} all'interno di un sistema informatizzato tramite mezzi non standard. (fonte: Wikipedia)
+}
+Il termine "hacker" di per se' non e' ne' positivo ne' negativo: dipende dal lato che si sceglie.
+\begin{itemize}
+  \item \textbf{White hat} (ethical hacker): aiuta aziende, organizzazioni e sviluppatori a identificare e divulgare responsabilmente le vulnerabilita' prima che gli attaccanti le sfruttino. Opera tramite \textbf{bug bounty programs} o come professionista assunto per condurre \textbf{VAPT}.
+  \item \textbf{Black hat}: sfrutta le vulnerabilita' a scopo malevolo, senza autorizzazione.
+\end{itemize}
+
+\dfn{Bug Bounty Program}{
+  Programma con cui un'organizzazione offre una \textbf{ricompensa} agli hacker che trovano e segnalano responsabilmente bug di sicurezza non divulgati. Piattaforme principali: HackerOne, Bugcrowd.
+}
+\ex{Apple Security Bounty}{
+  Esempio di scala di premi per tipo di vulnerabilita':
+  \begin{center}
+    \footnotesize
+    \begin{tabular}{|l|l|l|}
+      \hline
+      \textbf{Categoria} & \textbf{Argomento} & \textbf{Reward} \\ \hline
+      Device attack via physical access & Lock Screen bypass & \$5k--\$100k \\ \hline
+      & User data extraction & \$5k--\$250k \\ \hline
+      Device attack via user-installed app & Unauthorized access to sensitive data & \$5k--\$100k \\ \hline
+      & Elevation of privilege & \$5k--\$150k \\ \hline
+      Network attack w/ user interaction & One-click unauthorized access & \$5k--\$150k \\ \hline
+      & One-click + elevation of privilege & \$5k--\$250k \\ \hline
+      Network attack w/o user interaction & Zero-click radio to kernel & \$5k--\$500k \\ \hline
+      & Zero-click kernel code execution & \$100k--\$1M \\ \hline
+    \end{tabular}
+  \end{center}
+}
+\nt{
+  In alternativa ai bug bounty, esiste il mercato grigio/nero delle vulnerabilita'. Il \textbf{Zerodium Exploit Acquisition Program} acquista exploit 0-day per rivenderli a governi e agenzie: per desktop/server si va fino a \$1M (Win RCE zero-click); per mobile fino a \$2.5M (Android FCP zero-click). E' legalmente e eticamente controverso.
+}
+
+\subsection{VAPT — Vulnerability Assessment and Penetration Testing}
+\dfn{VAPT}{
+  Metodologia di sicurezza informatica che combina due fasi distinte:
+  \begin{enumerate}
+    \item \textbf{Vulnerability Assessment}: identificazione, quantificazione e classificazione delle vulnerabilita' presenti nel sistema tramite strumenti automatizzati e tecniche manuali.
+    \item \textbf{Penetration Testing}: fase attiva in cui esperti (ethical hackers) tentano di sfruttare le vulnerabilita' identificate per penetrare nel sistema, simulando un attacco reale.
+  \end{enumerate}
+}
+Il processo VAPT si articola in cinque fasi sequenziali:
+\begin{enumerate}
+  \item \textbf{Scope and plan}: definire i limiti del test e gli obiettivi.
+  \item \textbf{Information gathering}: raccogliere informazioni sul target.
+  \item \textbf{Vulnerability analysis}: identificare e analizzare le vulnerabilita'.
+  \item \textbf{Exploitation}: tentare di sfruttare le vulnerabilita'.
+  \item \textbf{Reporting}: documentare i risultati e proporre mitigazioni.
+\end{enumerate}
+
+\subsection{Come acquisire esperienza}
+\begin{itemize}
+  \item Attaccare VM deliberatamente vulnerabili (es.\ Metasploitable, VulnHub, HackTheBox).
+  \item Partecipare a \textbf{CTF} (Capture The Flag), come CyberChallenge.it.
+  \item \textbf{MAI} su target reali senza autorizzazione esplicita.
+\end{itemize}
+
+\subsection{Hidden Services e Onion Routing}
+\dfn{Onion Routing}{
+  I dati vengono cifrati a \textbf{strati multipli} (come una cipolla). Il traffico web passa attraverso una serie di nodi di rete detti \textbf{onion nodes/routers}: ogni nodo "sbuccia" uno strato di cifratura finche' i dati raggiungono la destinazione finale, completamente decifrati.
+}
+
+\dfn{TOR (The Onion Router)}{
+  Browser che trasmette dati cifrati anonimamente attraverso tre livelli (\textit{entry node} -- \textit{middle node} -- \textit{exit node}) di proxy internazionali che costituiscono il \textbf{circuito Tor}. Per garantire l'anonimato, \textbf{ogni middle node conosce solo l'identita' del nodo precedente e di quello successivo}, senza sapere chi e' il mittente originale o la destinazione finale.
+}
+
+\nt{
+  TOR puo' nascondere l'indirizzo IP e l'attivita' di navigazione tramite la cifratura multistrato, ma \textbf{non esiste anonimato online perfetto}. Si puo' essere identificati se si accede a un account personale o si forniscono dati a un sito web durante la sessione TOR.
+}
+
+% \end{document}

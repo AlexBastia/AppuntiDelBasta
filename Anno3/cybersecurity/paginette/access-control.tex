@@ -62,6 +62,45 @@ La matrice puo' essere rappresentata in due modi equivalenti:
   \item \textbf{Capability}: si codificano le \textbf{righe} — per ogni soggetto, la lista degli oggetti a cui ha accesso e con quali diritti.
 \end{itemize}
 
+\subsection{Notazione formale}
+Sia $ S $ l'insieme dei \textbf{soggetti}, $ O $ l'insieme degli \textbf{oggetti} (gli oggetti possono essere attivi e agire anche da soggetti), e $ \alpha $ l'insieme dei \textbf{diritti di accesso} che i soggetti hanno sugli oggetti.
+
+\dfn{Protection domain}{
+  Un \textbf{dominio di protezione} e' un insieme di oggetti con i relativi diritti di accesso. Formalmente e' un insieme di coppie:
+  \[
+    \langle \texttt{object},\; \texttt{set\_of\_access\_rights} \rangle
+  \]
+  I soggetti sono associati a un dominio di protezione in cui operano. L'associazione puo' essere \textbf{statica} (il dominio non cambia) o \textbf{dinamica} (il dominio puo' cambiare a runtime).
+}
+
+\ex{Kernel mode vs User mode}{
+  "Kernel mode" e "user mode" sono due \textbf{domini di protezione} che controllano l'accesso alla memoria principale. Normalmente i processi operano in user mode; quando eseguono una system call passano in kernel mode e acquisiscono i privilegi necessari. E' un esempio di associazione \textbf{dinamica} tra soggetto e dominio.
+}
+
+\subsection{Matrice di accesso — modello formale}
+\dfn{Access Control Matrix}{
+  Una matrice $ M $ con i \textbf{domini} come righe e gli \textbf{oggetti} come colonne. La cella $ M(i,j) $ contiene l'insieme dei diritti di accesso $ \alpha $ che il dominio $ D_i $ ha sull'oggetto $ O_j $. Quando viene creato un nuovo oggetto si aggiunge una nuova colonna; il contenuto e' deciso dal creatore.
+}
+
+\subsubsection*{Il diritto "switch" e il least privilege}
+\ex{Dictionary problem}{
+  Utente $ A $ (dominio $ D_2 $) modifica $ \mathit{File}_2 $; utente $ B $ (dominio $ D_3 $) modifica $ \mathit{File}_3 $. Entrambi attivano un correttore ortografico basato su $ \mathit{File}_4 $, un dizionario proprietario che non deve poter essere copiato. Se si danno diritti \textit{read} diretti su $ \mathit{File}_4 $, $ A $ e $ B $ potrebbero copiarlo.
+
+  Soluzione: introdurre un dominio $ D_4 $ che puo' \textbf{solo} leggere $ \mathit{File}_4 $, e aggiungere il diritto \textbf{switch}: $ D_2 $ e $ D_3 $ possono passare a $ D_4 $, ma non hanno piu' accesso diretto a $ \mathit{File}_4 $. Lo "switch" non solo cambia dominio ma copia i diritti del dominio sorgente in quello destinazione; poiche' piu' utenti possono passare allo stesso $ D_4 $, si creano istanze logicamente distinte. Questo meccanismo implementa il \textbf{principio di least privilege}.
+}
+
+\subsubsection*{Implementazione della matrice}
+\begin{center}
+  \footnotesize
+  \begin{tabular}{|l|p{4.5cm}|p{4.5cm}|}
+    \hline
+    \textbf{Approccio} & \textbf{Vantaggi} & \textbf{Svantaggi} \\ \hline
+    Tabella globale & Semplice da implementare & Tabella enorme; difficile da mantenere in sistemi dinamici \\ \hline
+    ACL (per colonna) & Revoca facile (si aggiorna la lista dell'oggetto); controllo di accesso basato sull'identita' & Efficienza minore per accessi ripetuti \\ \hline
+    Capability (per riga) & Accesso efficiente (la capability e' gia' in mano al processo) & Revoca difficile (i diritti sono distribuiti ai processi) \\ \hline
+  \end{tabular}
+\end{center}
+
 \section{MAC — Mandatory Access Control}
 \dfn{MAC}{
   L'accesso e' basato sul confronto delle \textbf{etichette di sicurezza} (\textit{security labels}, che indicano quanto sono sensibili o critici gli oggetti) con le \textbf{autorizzazioni di sicurezza} (\textit{security clearances}) dei soggetti. E' \textit{obbligatorio} perche' le etichette e i nulla osta sono impostati dal \textbf{sistema} e non possono essere modificati dai soggetti.
@@ -203,6 +242,70 @@ Le capability possono essere supportate da sistemi crittografici (cookie) o da s
   \end{itemize}
 }
 
+\subsection{Requisiti del meccanismo di capability}
+Perche' il meccanismo di capability funzioni, si deve garantire che:
+\begin{itemize}
+  \item i processi \textbf{non possano forgiare} capability false;
+  \item il reference monitor sia in grado di \textbf{riconoscere} se una capability e' falsa o autentica;
+  \item i processi possano essere autorizzati o meno a \textbf{copiare o trasferire} le proprie capability.
+\end{itemize}
+
+\subsection{Implementazione con crittografia a chiave pubblica}
+Le capability possono essere implementate tramite \textbf{crittografia a chiave pubblica}. I processi ricevono capability nella forma di triple:
+\[
+  \langle \texttt{object},\; \texttt{access\_rights\_for\_object},\; \texttt{unique\_code} \rangle
+\]
+firmate con la \textbf{chiave privata dell'oggetto}. I processi possono memorizzare e osservare le capability ma \textbf{non modificarle}, poiche' non posseggono la chiave privata per ri-firmarle (analogia con i certificati X.509).
+
+Quando un processo vuole accedere a una risorsa, presenta la capability che detiene per quell'oggetto. L'oggetto (reference monitor) verifica:
+\begin{enumerate}
+  \item la \textbf{firma} digitale;
+  \item il \textbf{nome} dell'oggetto;
+  \item il \textbf{codice di controllo} (unique\_code);
+  \item che l'accesso richiesto sia \textbf{permesso} dai diritti elencati nella capability.
+\end{enumerate}
+La capability puo' essere \textit{copiata} e \textit{trasferita} a un altro processo, ma \textbf{non modificata}.
+
+\subsection{Revoca dei diritti di accesso}
+La revoca puo' essere classificata lungo quattro dimensioni:
+\begin{itemize}
+  \item \textbf{immediata} o \textbf{ritardata};
+  \item \textbf{selettiva} (solo alcuni soggetti) o \textbf{generale} (tutti);
+  \item \textbf{parziale} (alcuni diritti) o \textbf{totale} (tutti i diritti);
+  \item \textbf{temporanea} o \textbf{permanente}.
+\end{itemize}
+
+\textbf{Revoca in sistemi ACL}: \textit{facile} — e' sufficiente aggiornare i diritti nella lista associata all'oggetto.
+
+\textbf{Revoca in sistemi capability}: \textit{difficile} — i diritti non sono all'oggetto ma distribuiti ai processi come capability; localizzarli puo' essere difficile o impossibile. Due approcci:
+\begin{itemize}
+  \item \textbf{Capability a scadenza} (\textit{time-limited}): ogni capability ha una "data di scadenza" dopo la quale va rinnovata. Non rinnovandola si ottiene una revoca (ritardata).
+  \item \textbf{Capability indirette}: le capability non puntano direttamente agli oggetti ma a voci di una tabella intermedia che punta agli oggetti. Modificando la voce nella tabella si ottiene una revoca (immediata).
+\end{itemize}
+
+\section{Hybrid access control}
+I sistemi reali non sono \textit{puramente} ACL-based ne' \textit{puramente} capability-based, ma \textbf{ibridi}:
+
+\begin{center}
+  \footnotesize
+  \begin{tabular}{|l|l|}
+    \hline
+    \textbf{Funzionalita'} & \textbf{Meccanismo} \\ \hline
+    Controllo accesso basato sull'identita' & ACL \\ \hline
+    Facilita' di revoca & ACL \\ \hline
+    Efficienza di accesso & Capability \\ \hline
+  \end{tabular}
+\end{center}
+
+\subsection{UNIX come esempio di sistema ibrido}
+La system call \texttt{open()} implementa il lato \textbf{ACL}:
+\begin{verbatim}
+int open(const char *pathname, int flags);
+\end{verbatim}
+dove \texttt{flags} e' \texttt{O\_RDONLY}, \texttt{O\_WRONLY} o \texttt{O\_RDWR}. Al momento della chiamata, il kernel verifica che il file esista e che l'accesso richiesto sia permesso per l'\textbf{effective-user-id} e l'\textbf{effective-group-id} del processo. Se il controllo ha successo, ritorna un intero chiamato \textbf{file descriptor}.
+
+Il file descriptor e' un indice nella \textbf{File Descriptor Table} mantenuta dal kernel. La File Descriptor Table e' una lista di \textbf{capability}: il processo puo' usarle (puntarvi) ma non modificarle. Le successive chiamate \texttt{read()} e \texttt{write()} usano il file descriptor \textbf{senza ulteriori controlli ACL}. In questo modo il costo di verifica dell'accesso (che richiede letture su disco) e' pagato \textbf{una volta sola} e ammortizzato su migliaia di operazioni di I/O.
+
 \section{Modelli di flusso delle informazioni}
 
 \subsection{Bell-LaPadula (BLP)}
@@ -290,10 +393,36 @@ Un utente puo' appartenere a \textbf{piu' gruppi}. I gruppi vengono usati (ma no
 \section{Permessi speciali}
 Esistono 3 permessi speciali, salvati nei bit piu' significativi dei metadati del file:
 
+\subsection{Real, effective e saved user ID}
+Ogni processo ha \textbf{tre} coppie di identificatori:
+
+\dfn{Real user/group ID}{
+  \textbf{real-user-id} e \textbf{real-group-id}: identificano l'utente e il gruppo che hanno lanciato il processo. Vengono letti dal file \texttt{/etc/passwd} e \textbf{non cambiano} durante l'esecuzione del processo. Ogni processo creato eredita il real-user-id e real-group-id dell'utente. Quando un processo crea un nuovo file, proprietario e gruppo sono impostati al real-user-id e real-group-id del processo.
+}
+
+\dfn{Effective user/group ID}{
+  \textbf{effective-user-id} e \textbf{effective-group-id}: sono quelli usati per \textbf{determinare i diritti di accesso} quando il processo interagisce con il filesystem. Normalmente coincidono con i real ID, ma possono cambiare dinamicamente tramite il meccanismo \textbf{setuid}.
+}
+
+\dfn{Saved user/group ID}{
+  \textbf{saved-user-id} e \textbf{saved-group-id}: contengono copie degli effective ID al momento in cui un programma setuid viene eseguito. Permettono al processo di \textbf{tornare} al proprio effective user/group id precedente una volta terminata l'esecuzione del programma setuid.
+}
+
+Normalmente: effective-user-id $ = $ real-user-id e effective-group-id $ = $ real-group-id.
+
+\subsection{Il problema di \texttt{/etc/passwd} e la soluzione setuid}
+Un utente dovrebbe poter cambiare \textbf{la propria} password, ma non vedere o modificare quelle altrui. In UNIX pero' i permessi sono alla granularita' dell'\textbf{intero file}, non dei singoli record (righe di \texttt{/etc/passwd}). Non e' quindi possibile definire permessi per singola riga. L'unica alternativa senza setuid sarebbe dare a tutti read/write su \texttt{/etc/passwd} — chiunque potrebbe leggere o modificare la password di chiunque altro. La soluzione e' il meccanismo \textbf{setuid}.
+
 \subsection{setuid}
-Un file con il bit \textbf{setuid} viene eseguito con i \textbf{permessi del proprietario} del file, anziche' come utente principale.
+Un file con il bit \textbf{setuid} viene eseguito con i \textbf{permessi del proprietario} del file, anziche' come utente principale. Meccanismo preciso al momento dell'esecuzione di un file con setuid:
+\begin{enumerate}
+  \item \textit{saved-user-id} $ \leftarrow $ \textit{effective-user-id} (salvo il vecchio effective)
+  \item \textit{effective-user-id} $ \leftarrow $ user-id del proprietario del file
+\end{enumerate}
+I nuovi permessi restano in vigore \textbf{solo durante l'esecuzione}; al termine, il processo torna al saved-user-id. Questo permette a un processo di cambiare dominio di protezione \textbf{dinamicamente}, implementando il principio di least privilege.
+
 \ex{setuid su \texttt{passwd}}{
-  \texttt{/usr/bin/passwd} ha i permessi \texttt{-rwsr-xr-x} con proprietario \texttt{root}. L'utente \texttt{pippo} puo' eseguire \texttt{passwd} e cambiare la propria password, che e' memorizzata in \texttt{/etc/shadow} (file scrivibile solo da root): il processo gira temporaneamente con i permessi di root grazie a setuid.
+  \texttt{/usr/bin/passwd} ha i permessi \texttt{-rwsr-xr-x} con proprietario \texttt{root} e \texttt{/etc/passwd} ha permessi \texttt{rw-------} (solo root). Quando un utente qualsiasi esegue \texttt{passwd}: l'\textit{effective-user-id} del processo diventa \texttt{root}, quindi il processo \textbf{puo'} scrivere \texttt{/etc/passwd} — ma solo dopo aver eseguito tutti i controlli implementati da \texttt{/bin/passwd} (verifica identita', validazione nuova password, ecc.). L'utente non ottiene accesso diretto al file.
 }
 
 \subsection{setgid}
