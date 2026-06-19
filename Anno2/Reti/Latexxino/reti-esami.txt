@@ -1,0 +1,54 @@
+#separator:tab
+#html:true
+#notetype:Basic
+#deck:Reti di Calcolatori::Esami L3 L4 Applicazione
+
+#deck:Reti di Calcolatori::Esami L3 L4 Applicazione::L3_Rete
+
+<b>VLSM — Esercizio tipo</b>: dati host A(490), A1(155), B(35), B1(12), rete /22. Dimensionare le sottoreti.	<b>Procedimento:</b><br>1. Ordina decrescente: A(490) → /23, A1(155) → /24, B(35) → /26, B1(12) → /28<br>2. Figlio parte da inizio padre; fratello subito dopo broadcast del precedente<br>3. Calcola netmask da bit host: k=⌈log₂(hosts)⌉ → lunghezza prefisso = 32−k<br><b>Esempio N=133.99.240.0/22:</b> A=/23 (133.99.240.0), A1=/24 (133.99.240.0), B=/26 (133.99.242.0), B1=/28 (133.99.242.0)
+
+<b>Router e Broadcast — Formula rapida</b>	Dato un host e maschera, trova il router della rete:<br>1. Converti host e maschera in binario<br>2. Host AND netmask = network address<br>3. Network OR (NOT netmask) = broadcast<br>4. Router = broadcast − 1<br><b>Es.:</b> host 211.128.77.15, mask /24 → network 211.128.77.0, broadcast 211.128.77.255, router 211.128.77.254
+
+<b>Netmask /N dato numero di host per sottorete</b>	Dati N host utili in una sottorete:<br>1. Calcola bit host: k = ⌈log₂(N+2)⌉ (N utili + network + broadcast)<br>2. Prefisso = 32 − k<br><b>Es.:</b> 17 host → k=⌈log₂19⌉=5 → /27 (256/32=8 sottoreti da /27)
+
+<b>OSPF vs BGP — Differenze esame</b>	<b>OSPF:</b> IGP, Link-State, all'interno di un AS, Dijkstra, ottimizza prestazioni, protocollo 89<br><b>BGP:</b> EGP, Path Vector, tra AS, TCP 179, implementa politiche commerciali<br>Selezione BGP: Local preference → AS-PATH corto → NEXT-HOP vicino<br>Domanda: "Quale usi intra-AS?" → OSPF; "inter-AS?" → BGP
+
+<b>Dijkstra vs Bellman-Ford esame</b>	<b>Dijkstra:</b> O(n²), converge in 1 passata, ma oscillazioni se costi dipendono dal traffico<br><b>Bellman-Ford:</b> O(n×m), distribuito (DV scambia solo con vicini), "bad news travels slow" (count-to-infinity)<br>Poisoned Reverse mitiga count-to-infinity a 2 nodi<br>Domanda: "Guasto nel link XY. Bellman-Ford converge quanto veloce?" → lento, O(n) round
+
+<b>Firewall Stateless vs Stateful esame</b>	<b>Stateless:</b> esamina pacchetti isolati (IP src/dst, porta, flags). Vulnerabile: ammette ACK=1 verso porta 80 senza connessione<br><b>Stateful:</b> traccia stato TCP (SYN → ESTABLISHED → FIN). ACK accettato solo in connessioni attive<br>Domanda: "Come attacco un firewall stateless?" → SYN ACK spoofed verso una porta aperta
+
+#deck:Reti di Calcolatori::Esami L3 L4 Applicazione::L4_Trasporto
+
+<b>TCP — Three-Way Handshake esame</b>	1. Client → Server: <b>SYN</b> (seq=x)<br>2. Server → Client: <b>SYN-ACK</b> (seq=y, ack=x+1)<br>3. Client → Server: <b>ACK</b> (seq=x+1, ack=y+1)<br>Domanda tipo: "Se il server non invia SYN-ACK, il client farà cosa?" → timeout → ritrasmissione SYN
+
+<b>Congestion Control — Slow Start vs Congestion Avoidance</b>	<b>Slow Start:</b> cwnd raddoppia ogni RTT (esponenziale) finché non raggiunge ssthresh<br><b>Congestion Avoidance:</b> cwnd cresce di 1 MSS ogni RTT (lineare)<br><b>Perdita:</b> timeout → cwnd=1, ricominci; 3 dupack → cwnd/=2 (Fast Retransmit)<br>Domanda: "Se ssthresh=32KB e perdita all'RTT 2, quanto è cwnd?" → esponenziale: 1→2→4 KB, perdita → cwnd=1 o 2 KB (fast recovery)
+
+<b>TCP — Sliding Window e pipelining esame</b>	La finestra consente di inviare N pacchetti senza aspettare un ACK per ciascuno.<br><b>Vantaggio:</b> utilizzo efficiente del link, non aspettare RTT tra pacchetti<br><b>Esempio:</b> RTT=100 ms, MSS=1000 byte → senza finestra: 10 Kbps; con finestra=65KB → 5 Mbps<br>Domanda: "Perché il throughput è limitato dalla finestra?" → max = finestra/RTT
+
+#deck:Reti di Calcolatori::Esami L3 L4 Applicazione::L5_Applicazione
+
+<b>HTTP — Stateless + Connessioni Persistenti esame</b>	<b>Stateless:</b> server non ricorda lo stato tra richieste<br><b>Non-persistente (HTTP/1.0):</b> 1 richiesta = 1 connessione TCP = 2 RTT overhead<br><b>Persistente (HTTP/1.1):</b> N richieste sulla stessa TCP = 1 RTT + (N-1)×0<br><b>Domanda tipo:</b> "Client richiede 10 oggetti. Con/senza persistente?" → senza: 10×2 RTT; con: 1 RTT (primo) + 9 immediati
+
+<b>HTTP — Conditional GET e cache</b>	<b>Cache invia:</b> GET ... If-modified-since: [data]<br><b>Server risponde:</b> 304 Not Modified (no body, risparmia banda) oppure 200 OK con oggetto aggiornato<br><b>Domanda:</b> "Con hit rate 50%, quanto scende il traffico?" → teorico: no cache=carico pieno; con cache e conditional GET: si carica meno (solo delta)
+
+<b>DNS — Gerarchia risoluzione iterativa esame</b>	1. Client → Local DNS: "Chi è www.example.com?"<br>2. Local → Root: Root risponde "Chiedi TLD .com server"<br>3. Local → TLD: TLD risponde "Chiedi authoritative example.com"<br>4. Local → Auth: Auth risponde con IP<br>5. Local → Client: Risposta finale<br><b>Caching:</b> ogni risposta memorizzata con TTL, non ripetuta subito
+
+<b>DNS — Attacchi: Poisoning e Amplification</b>	<b>Poisoning:</b> intercettare query, inviare reply fake, entry va in cache dei resolver<br><b>Amplification:</b> attaccante invia query con IP sorgente = vittima; risposte DNS (grandi) sommergono vittima<br><b>Difesa:</b> DNSSEC (firma su risposte), rate limiting su query identiche
+
+#deck:Reti di Calcolatori::Esami L3 L4 Applicazione::Wireless_Esami
+
+<b>Wireless — Modulazione: quale schema per bit rate richiesto?</b>	Dati: N sub-carrier OFDM, Symbol Rate, bit rate richiesto<br><b>Formula:</b> BR = N × SR × b (b=bit/simbolo)<br>Ricava: b_min = BR / (N × SR), scegli lo schema PSK/QAM con b ≥ b_min e minimo (massima robustezza)<br><b>Es.:</b> 18 sub-carrier, SR=500k, serve 13.5 Mbps → b=1.5 → serve QPSK (b=2), non BPSK (b=1)
+
+<b>Wireless — Link Budget: il sistema comunica?</b>	<b>Condizione:</b> Prx ≥ RS (received power ≥ receiver sensitivity)<br>Link Budget LB = Ptx + Gtx + Grx − PL<br>Se LB ≥ RS → comunica; LB < RS → no<br>PL = 36.6 + 20 log₁₀(fMHz) + 20 log₁₀(dm) con f in MHz, d in km<br>Domanda: "A quale distanza il sistema funziona ancora?" → inverti PL per distanza max
+
+<b>Wireless — Zona di Fresnel esame</b>	<b>Formula:</b> r₁₀₀% = 72.2 × √(d_an / (f_GHz))<br>dove d_an è distanza tra antenne (km), f in GHz<br><b>Significato:</b> se un ostacolo (albero/edificio) penetra > 60% di questo raggio, il segnale si degrada<br><b>Domanda tipo:</b> "Un ostacolo è a 10 m di altezza sull'asse diretto. È problema?" → calcola r₁₀₀%, se altezza ostacolo > 0.6r → sì
+
+#deck:Reti di Calcolatori::Esami L3 L4 Applicazione::Crittografia_Esami
+
+<b>Crittografia — Alice firma M e la spedisce a Bob</b>	<b>Schema:</b> Alice → Bob: M, K_SA(HASH(M))<br>Bob verifica: K_PA(firma) = HASH(M) ?<br><b>Proprietà:</b> <br>• <b>Autenticità:</b> firma verificabile solo con K_PA (Alice l'ha firmato)<br>• <b>Integrità:</b> se M modificato, HASH non combacia<br>• <b>Non-ripudio:</b> Alice non può negare di aver mandato M
+
+<b>Crittografia — Nonce R per anti-replay</b>	<b>Problema:</b> Trudy intercetta msg(M, firma), lo ritrasmette, Bob lo accetta di nuovo<br><b>Soluzione:</b> Alice include nonce R fresco nell'hash: K_SA(HASH(M, R))<br>Bob accetta solo se R è nuovo/non visto.<br>Perché R deve stare <b>dentro</b> la firma? Perché se fuori, Trudy lo sostituisce senza invalidare la firma
+
+<b>Crittografia — Schema con garanzie multiple (Alice-Bob-Charlie)</b>	Se Alice manda m1 a Bob e m2 a Charlie, e entrambi devono ricevere garantito:<br><b>Schema:</b><br>Alice → Bob: m1, K_PB(m1, K_SA(HASH(m1)))<br>Alice → Charlie: m2, K_PC(m2, K_SA(HASH(m2)))<br><b>Garanzie:</b> confidenzialità (cifratura per destinatario), mittente (firma Alice), integrità (hash)
+
+<b>Crittografia — Attacchi Trudy: come mitigarli?</b>	<b>Replay:</b> nonce/timestamp dentro firma<br><b>DoS/Cancellazione:</b> ack + ritrasmissione<br><b>Spoofing:</b> firma digitale<br><b>Analisi traffico:</b> crittografare non solo payload, anche metadati (chi parla con chi, quando, quanto)<br>Domanda: "Quale attacco riesce ancora?" → dipende dallo schema

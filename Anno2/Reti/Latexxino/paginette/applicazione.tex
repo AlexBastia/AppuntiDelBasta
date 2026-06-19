@@ -26,6 +26,13 @@ In questo modello, non esiste un server centrale sempre attivo. La comunicazione
     \item I peer sono connessi in modo intermittente e possono cambiare indirizzo IP, rendendo la gestione del sistema più complessa rispetto al modello client-server.
 \end{itemize}
 
+\begin{center}
+    \includegraphics[width=11cm]{img/client_server_arch.png}
+\end{center}
+\begin{center}
+    \includegraphics[width=11cm]{img/p2p_arch.png}
+\end{center}
+
 \subsection{Comunicazione tra Processi}
 A un livello più basso, la comunicazione di rete avviene tra \textbf{processi} (programmi in esecuzione su un host).
 \begin{itemize}
@@ -47,6 +54,9 @@ I processi si scambiano messaggi attraverso un'interfaccia software chiamata \te
     \item \textbf{Sopra il socket} (livello applicazione): controllato dallo \textbf{sviluppatore} dell'applicazione.
     \item \textbf{Sotto il socket} (trasporto, rete, link, fisico): controllato dal \textbf{sistema operativo}.
 \end{itemize}
+\begin{center}
+    \includegraphics[width=11cm]{img/socket_diagram.png}
+\end{center}
 
 \paragraph{Indirizzamento dei Processi}
 Per identificare univocamente un processo su Internet, non basta l'indirizzo IP dell'host (un numero a \textbf{32 bit}), poiché su un singolo host possono essere in esecuzione molti processi contemporaneamente. L'identificativo completo è quindi la coppia: (\textbf{indirizzo IP}, \textbf{numero di porta}).
@@ -158,6 +168,9 @@ Ogni pagina web è composta da un \textbf{file HTML di base} (che convenzionalme
 }
 
 HTTP è un protocollo client-server. Il client è un \textbf{browser}: un'applicazione utente che interpreta il formato HTML delle pagine web e le visualizza. Il server invia gli oggetti in risposta alle richieste. HTTP utilizza TCP come protocollo di trasporto, tipicamente sulla porta 80.
+\begin{center}
+    \includegraphics[width=11cm]{img/http_overview.png}
+\end{center}
 
 \dfn{Protocollo Stateless}{
     HTTP è un protocollo \textbf{stateless} (senza stato), il che significa che il server non conserva alcuna informazione sulle richieste passate di un client. Ogni richiesta è trattata in modo indipendente. Mantenere uno stato renderebbe i server molto più complessi e difficili da gestire in caso di crash.
@@ -169,6 +182,10 @@ Esistono due modalità con cui HTTP gestisce le connessioni TCP sottostanti.
     \item \textbf{HTTP Non-persistente}: Utilizza una connessione TCP separata per ogni oggetto. Se una pagina contiene 1 file HTML e 10 immagini, vengono aperte e chiuse 11 connessioni TCP. Questo approccio è molto inefficiente, poiché ogni connessione richiede tempo per essere stabilita (almeno un RTT). Il tempo totale di risposta per un oggetto è di circa \textbf{2 RTT + tempo di trasmissione del file}.
     \item \textbf{HTTP Persistente (default in HTTP/1.1)}: Permette di scaricare più oggetti attraverso la stessa connessione TCP, che viene mantenuta aperta dal server dopo aver inviato una risposta. Questo riduce drasticamente il ritardo e l'overhead, richiedendo potenzialmente un solo RTT per tutti gli oggetti referenziati dopo il setup iniziale della connessione.
 \end{itemize}
+
+\dfn{RTT (Round-Trip Time)}{
+    Il \textbf{RTT} è il tempo che impiega un piccolo pacchetto per andare dal client al server e tornare indietro. Nel caso non-persistente, il \textbf{tempo di risposta} per un oggetto è: \textbf{1 RTT} per stabilire la connessione TCP $+$ \textbf{1 RTT} per la richiesta HTTP e l'arrivo dei primi byte della risposta $+$ il \textbf{tempo di trasmissione} del file, da cui il totale di circa $2\text{ RTT} + \text{tempo di trasmissione}$.
+}
 
 \subsection{Messaggi HTTP}
 HTTP definisce due tipi di messaggi, entrambi in formato ASCII leggibile dall'uomo: richiesta e risposta.
@@ -186,9 +203,11 @@ I metodi HTTP principali sono:
     \item \textbf{GET}: Richiede una risorsa. I parametri possono essere passati direttamente nell'URL (es. `.../animalsearch?monkeys\&banana`).
     \item \textbf{POST}: Invia dati al server affinché li processi (es. i dati di un form), includendoli nell'entity body del messaggio.
     \item \textbf{HEAD}: Come GET, ma chiede al server di non inviare l'oggetto, ma solo gli header. Utile per verificare la data di ultima modifica senza scaricare il file.
-    \item \textbf{PUT}: Carica un file sul server, specificato nell'URL.
+    \item \textbf{PUT}: Carica un file sul server nel path specificato dall'URL.
     \item \textbf{DELETE}: Cancella il file specificato nell'URL.
 \end{itemize}
+
+\nt{La disponibilità dei metodi dipende dalla versione del protocollo: \textbf{HTTP/1.0} prevede solo \textbf{GET}, \textbf{POST} e \textbf{HEAD}; \textbf{HTTP/1.1} aggiunge \textbf{PUT} (per caricare un file nel path dell'URL) e \textbf{DELETE}.}
 
 \paragraph{Messaggio di Risposta HTTP}
 Anche questo è composto da tre parti:
@@ -204,7 +223,68 @@ Alcuni codici di stato comuni:
     \item `301 Moved Permanently`: L'oggetto è stato spostato permanentemente a un nuovo URL.
     \item `400 Bad Request`: Il server non ha compreso la richiesta.
     \item `404 Not Found`: L'oggetto richiesto non è stato trovato sul server.
+    \item `505 HTTP Version Not Supported`: La versione di HTTP usata nella richiesta non è supportata dal server.
 \end{itemize}
+
+\subsection{Cookie HTTP}
+HTTP è stateless, ma molti siti hanno bisogno di riconoscere gli utenti e mantenere uno stato tra una richiesta e l'altra (es. login, carrelli della spesa). Per ottenere questo risultato senza modificare la natura stateless del protocollo si usano i \textbf{cookie}. La tecnologia dei cookie è composta da \textbf{quattro componenti}:
+\begin{enumerate}
+    \item Una header line \textbf{`Set-cookie:`} nel messaggio di risposta HTTP del server.
+    \item Una header line \textbf{`Cookie:`} nei successivi messaggi di richiesta HTTP del client.
+    \item Un \textbf{file cookie} mantenuto sull'host dell'utente e gestito dal \textbf{browser}.
+    \item Un \textbf{database back-end} presso il sito web.
+\end{enumerate}
+
+\ex{Susan visita Amazon}{
+    \begin{enumerate}
+        \item Susan, sempre dallo stesso PC, contatta per la prima volta un sito di e-commerce (es. Amazon).
+        \item Quando la richiesta iniziale arriva, il sito crea un \textbf{ID univoco} e una voce nel proprio database back-end associata a quell'ID.
+        \item Il server risponde alla richiesta di Susan includendo l'header \texttt{Set-cookie: 1678}.
+        \item Il browser di Susan memorizza l'ID 1678 nel suo file cookie.
+        \item In tutte le richieste successive verso quel sito, il browser invia l'header \texttt{Cookie: 1678}, permettendo al sito di eseguire \textbf{azioni cookie-specifiche} (riconoscere l'utente, recuperare il suo carrello, ecc.).
+        \item Lo stato \textbf{persiste tra le sessioni}: anche se Susan chiude il browser e torna giorni dopo, il file cookie le permette di essere riconosciuta.
+    \end{enumerate}
+}
+
+I cookie possono essere usati per: \textbf{autorizzazione}, \textbf{carrelli della spesa}, \textbf{raccomandazioni} di prodotti e mantenimento dello \textbf{stato di sessione} (es. webmail). Hanno però importanti \textbf{implicazioni sulla privacy}: permettono ai siti di tracciare il comportamento degli utenti e, combinati con informazioni fornite dall'utente stesso, di associare l'identità reale alla cronologia di navigazione.
+
+\begin{center}
+    \includegraphics[width=11cm]{img/cookie_state.png}
+\end{center}
+
+\subsection{Web Cache (Proxy Server)}
+Una \textbf{web cache}, o \textbf{proxy server}, è un'entità di rete che soddisfa le richieste HTTP \textbf{al posto del server di origine}. L'obiettivo è ridurre il traffico e i tempi di risposta. Funziona così:
+\begin{itemize}
+    \item Il browser è configurato per inviare \textbf{tutte} le richieste HTTP alla cache.
+    \item Se la cache possiede l'oggetto richiesto, lo restituisce direttamente al client.
+    \item Altrimenti, la cache richiede l'oggetto al server di origine, lo memorizza e poi lo restituisce al client.
+\end{itemize}
+
+\nt{La web cache agisce \textbf{sia da client} (quando richiede l'oggetto al server di origine) \textbf{sia da server} (quando risponde al browser). Di norma viene installata dall'\textbf{ISP} (universitario, aziendale, residenziale). Riduce il tempo di risposta per le richieste dei client e, soprattutto, riduce il traffico sul link di accesso dell'istituzione verso Internet.}
+
+\ex{Convenienza di una web cache}{
+    Supponiamo: dimensione media degli oggetti $= 100$ Kbit; frequenza media delle richieste dei browser $= 15$/s; link di accesso dell'istituzione verso Internet $= 1.54$ Mbps; LAN interna $= 1$ Gbps; RTT dal router istituzionale al server di origine $= 2$ s.
+
+    \textbf{Senza cache}: l'intensità di traffico sul link di accesso è $\frac{15 \cdot 100\text{ Kbit}}{1.54\text{ Mbps}} \approx 0.97$, cioè un \textbf{utilizzo del 99\%}. A utilizzi così vicini a 1 i ritardi di coda crescono enormemente (code che tendono all'infinito), rendendo l'esperienza utente pessima.
+
+    \textbf{Con cache} (hit rate $= 0.4$): solo il \textbf{60\%} delle richieste passa dal link di accesso. L'utilizzo scende a $\frac{0.6 \cdot 15 \cdot 100\text{ Kbit}}{1.54\text{ Mbps}} = \frac{0.9}{1.54} \approx 0.58$, con ritardi di coda trascurabili. Il ritardo totale è circa $0.6 \cdot 2\text{ s} + 0.4 \cdot (\text{ritardo LAN}) \approx 1.2$ s. Installare una cache è molto più \textbf{economico} che potenziare il link di accesso (es. portarlo a 154 Mbps).
+}
+
+\begin{center}
+    \includegraphics[width=11cm]{img/web_cache.png}
+\end{center}
+
+\subsection{Conditional GET}
+La web cache deve evitare di re-inviare un oggetto che il client ha già aggiornato in cache, ma allo stesso tempo deve garantire che l'oggetto non sia obsoleto. A questo serve il \textbf{Conditional GET}:
+\begin{itemize}
+    \item La cache (client) include nella richiesta l'header \textbf{`If-modified-since: <data>`}, specificando la data dell'ultima versione che possiede.
+    \item Se l'oggetto \textbf{non è stato modificato}, il server risponde con \textbf{`304 Not Modified`}, senza corpo del messaggio (risparmiando banda).
+    \item Se l'oggetto \textbf{è stato modificato}, il server risponde con \textbf{`200 OK`} includendo i dati aggiornati.
+\end{itemize}
+
+\begin{center}
+    \includegraphics[width=10cm]{img/conditional_get.png}
+\end{center}
 
 ---
 \section{Posta Elettronica (E-mail)}
@@ -222,6 +302,17 @@ SMTP è il protocollo standard per l'invio di email, definito nell'RFC 2821.
     \item La comunicazione avviene tramite comandi e risposte in formato testo ASCII, in modo simile a HTTP.
     \item Il trasferimento di un messaggio avviene in tre fasi: \textbf{handshaking} (presentazione), \textbf{trasferimento} dei messaggi e \textbf{chiusura} della connessione.
     \item I messaggi devono essere codificati in ASCII a 7 bit.
+    \item SMTP usa \textbf{connessioni persistenti}: più messaggi possono essere inviati sulla stessa connessione TCP. La fine del corpo di un messaggio è segnalata dalla sequenza \textbf{`CRLF.CRLF`} (una riga contenente un solo punto).
+\end{itemize}
+
+\nt{\textbf{Confronto HTTP vs SMTP.} Entrambi trasferiscono file tra host e usano comandi/risposte ASCII. Le differenze principali: HTTP è di tipo \textbf{pull} (il client tira gli oggetti dal server), mentre SMTP è di tipo \textbf{push} (il server mittente spinge il messaggio verso il server ricevente). Inoltre HTTP trasmette \textbf{un oggetto per ogni messaggio} di risposta, mentre SMTP può inserire \textbf{più oggetti in un unico messaggio} multipart.}
+
+\subsection{Formato dei Messaggi (RFC 822)}
+È importante distinguere il \textbf{formato del messaggio} di posta (definito dall'\textbf{RFC 822}) dal \textbf{protocollo} SMTP che lo trasporta. Il messaggio è composto da:
+\begin{itemize}
+    \item Le \textbf{header lines}: \textbf{`To:`}, \textbf{`From:`}, \textbf{`Subject:`}. Queste righe fanno parte del messaggio vero e proprio e sono \textbf{diverse} dai comandi SMTP \texttt{MAIL FROM:} e \texttt{RCPT TO:}, che invece servono al trasferimento tra server.
+    \item Una \textbf{riga vuota} che separa gli header dal corpo.
+    \item Il \textbf{body} (corpo), costituito da soli caratteri ASCII.
 \end{itemize}
 
 \ex{Invio di una mail da Alice a Bob}{
@@ -238,7 +329,11 @@ SMTP è il protocollo standard per l'invio di email, definito nell'RFC 2821.
 \subsection{Protocolli di Accesso alla Posta: POP3 e IMAP}
 Come visto nell'esempio, SMTP si occupa di far arrivare il messaggio al server del destinatario, ma non di come il destinatario lo preleva. Per quest'ultima fase, sono necessari protocolli di accesso alla posta.
 \begin{itemize}
-    \item \textbf{POP3 (Post Office Protocol 3)}: È un protocollo molto semplice che permette a un utente di autenticarsi e scaricare i messaggi dalla sua mailbox. La modalità di default è "download and delete": i messaggi vengono spostati dal server al client locale e cancellati dal server. È stateless tra le sessioni.
+    \item \textbf{POP3 (Post Office Protocol 3)}: È un protocollo molto semplice che permette a un utente di autenticarsi e scaricare i messaggi dalla sua mailbox. La modalità di default è "download and delete": i messaggi vengono spostati dal server al client locale e cancellati dal server. È stateless tra le sessioni. La sessione POP3 si articola in due fasi:
+    \begin{itemize}
+        \item \textbf{Fase di autorizzazione}: il client invia i comandi \texttt{user <username>} e \texttt{pass <password>}; il server risponde con \texttt{+OK} in caso di successo o \texttt{-ERR} in caso di errore.
+        \item \textbf{Fase di transazione}: il client usa \texttt{list} (elenca i messaggi e le loro dimensioni), \texttt{retr <n>} (scarica il messaggio $n$), \texttt{dele <n>} (marca il messaggio $n$ per la cancellazione) e \texttt{quit} (chiude la sessione applicando le cancellazioni).
+    \end{itemize}
     \item \textbf{IMAP (Internet Mail Access Protocol)}: È un protocollo più complesso e potente. I messaggi rimangono sempre sul server, e il client li manipola a distanza. Permette di organizzare la posta in cartelle e mantiene lo stato tra una sessione e l'altra (es. quali messaggi sono stati letti). È la scelta ideale per chi accede alla posta da più dispositivi diversi.
     \item \textbf{HTTP}: I servizi di webmail (Gmail, Outlook.com) usano HTTP come protocollo di accesso. L'utente interagisce con un browser, e il web server del servizio di posta agisce da client IMAP/POP per accedere alla mailbox per conto dell'utente.
 \end{itemize}
@@ -274,6 +369,32 @@ Il processo di risoluzione può avvenire in due modi:
 \end{itemize}
 Per rendere il sistema efficiente, il \textbf{caching} è fondamentale. Ogni volta che un server DNS riceve una mappatura, la memorizza in una cache locale per un certo periodo di tempo (definito dal valore \textbf{TTL - Time To Live}). In questo modo, le richieste successive per lo stesso nome possono essere risolte istantaneamente, senza dover interrogare di nuovo l'intera gerarchia.
 
+\subsection{Resource Records (RR)}
+Il database distribuito del DNS memorizza le informazioni sotto forma di \textbf{Resource Record}. Ogni RR è una quadrupla \textbf{(name, value, type, ttl)}, dove il significato di \texttt{name} e \texttt{value} dipende dal campo \texttt{type}:
+\begin{itemize}
+    \item \textbf{Tipo A}: \texttt{name} è un hostname, \texttt{value} è il suo indirizzo IP. È il record di traduzione base nome-IP.
+    \item \textbf{Tipo NS}: \texttt{name} è un dominio (es. \texttt{foo.com}), \texttt{value} è l'hostname del \textbf{name server autoritativo} per quel dominio.
+    \item \textbf{Tipo CNAME}: \texttt{name} è un alias, \texttt{value} è il \textbf{nome canonico} (reale) dell'host.
+    \item \textbf{Tipo MX}: \texttt{value} è il nome del \textbf{mailserver} associato a \texttt{name}.
+\end{itemize}
+
+\subsection{Formato dei Messaggi DNS}
+Le query e le reply hanno lo \textbf{stesso formato} di messaggio. La struttura comprende:
+\begin{itemize}
+    \item \textbf{Identification} (16 bit): numero che identifica la query; la reply usa lo stesso numero per essere associata alla query corretta.
+    \item \textbf{Flags}: indicano se il messaggio è una query o una reply, se la \textit{recursion} è desiderata (\textit{recursion desired}) e disponibile (\textit{recursion available}), e se la risposta è \textit{authoritative}.
+    \item Sezioni \textbf{questions} (nome e tipo della query), \textbf{answers} (gli RR di risposta), \textbf{authority} (record dei server autoritativi) e \textbf{additional} (informazioni utili aggiuntive).
+\end{itemize}
+
+\subsection{Attacchi al DNS}
+Essendo un'infrastruttura critica, il DNS è bersaglio di diversi tipi di attacco:
+\begin{itemize}
+    \item \textbf{Attacchi DDoS}: bombardare di traffico i server root o i server TLD per renderli irraggiungibili (finora poco efficaci grazie al caching e alla ridondanza).
+    \item \textbf{Man-in-the-middle / redirect}: intercettare le query e reindirizzare la vittima verso server malevoli.
+    \item \textbf{DNS poisoning}: intercettare le query e inviare reply false (\textit{spoofed}) che vengono poi \textbf{messe in cache} dal resolver, inquinandolo e dirottando gli utenti.
+    \item \textbf{Uso del DNS per DDoS}: sfruttare i server DNS come amplificatori, inviando query con indirizzo sorgente \textbf{falsificato} (quello della vittima); le risposte, più grandi delle richieste, sommergono la vittima (\textit{amplification attack}).
+\end{itemize}
+
 ---
 
 \section{Applicazioni Peer-to-Peer (P2P)}
@@ -292,17 +413,32 @@ L'efficienza del P2P, specialmente nella distribuzione di file di grandi dimensi
 \subsection{Caso di Studio: BitTorrent}
 BitTorrent è un popolare protocollo di file-sharing P2P.
 \begin{itemize}
-    \item Il file è diviso in piccoli pezzi (\textbf{chunks}). L'insieme dei peer che si scambiano i chunk di un file è chiamato \textbf{torrent}.
+    \item Il file è diviso in piccoli pezzi (\textbf{chunks}), tipicamente da \textbf{256 Kb} ciascuno. L'insieme dei peer che si scambiano i chunk di un file è chiamato \textbf{torrent}.
     \item Un server centrale, detto \textbf{tracker}, non distribuisce il file, ma si limita a tenere traccia dei peer che partecipano al torrent.
     \item Quando un nuovo peer si unisce, contatta il tracker per ottenere una lista di altri peer. Inizia quindi a scaricare i chunk che gli mancano e, contemporaneamente, a caricare i chunk che già possiede verso altri.
     \item \textbf{Strategia di richiesta}: Per massimizzare la disponibilità, un peer richiede prioritariamente i chunk più \textbf{rari} tra i suoi vicini.
-    \item \textbf{Strategia di invio (Tit-for-Tat)}: Per incentivare la condivisione, un peer dà priorità di upload a quei peer che gli stanno fornendo dati alla velocità più alta. Questo crea un meccanismo meritocratico: più contribuisci, più velocemente scarichi.
+    \item \textbf{Strategia di invio (Tit-for-Tat)}: Per incentivare la condivisione, un peer (es. Alice) invia chunk ai \textbf{4 peer} che le stanno fornendo dati alla velocità più alta; tutti gli altri vengono \textbf{"choked"} (non ricevono dati). Questi top-4 vengono \textbf{ri-valutati ogni 10 secondi}. Inoltre, ogni \textbf{30 secondi}, Alice sceglie a caso un altro peer e ricomincia a inviargli dati (\textbf{"optimistically unchoke"}): se quel peer si rivela un buon partner, può entrare a far parte dei top-4. Questo crea un meccanismo meritocratico: più contribuisci, più velocemente scarichi.
 \end{itemize}
+
+\nt{Il termine \textbf{churn} indica il continuo entrare e uscire dei peer dal torrent: i peer si uniscono e abbandonano dinamicamente, e il sistema deve gestire questa instabilità della popolazione.}
 
 ---
 
 \section{Video Streaming e Content Distribution Networks (CDN)}
 Lo streaming video costituisce la maggior parte del traffico Internet. Distribuire video a milioni di utenti presenta enormi sfide di scalabilità e di gestione dell'eterogeneità degli utenti (connessioni veloci, lente, mobili, ecc.).
+
+\subsection{Codifica Video (Video Coding)}
+Un \textbf{video} è una sequenza di immagini visualizzate a un rate costante (ad esempio \textbf{24 immagini/s}). Per ridurre la grande quantità di dati si applicano tecniche di compressione che sfruttano due tipi di ridondanza:
+\begin{itemize}
+    \item \textbf{Coding spaziale}: comprime la ridondanza \textit{interna} a una singola immagine (es. una regione tutta dello stesso colore può essere descritta in modo compatto).
+    \item \textbf{Coding temporale}: invece di inviare ogni frame per intero, codifica solo le \textbf{differenze} rispetto al frame precedente.
+\end{itemize}
+La codifica può produrre due tipi di flusso:
+\begin{itemize}
+    \item \textbf{CBR (Constant Bit Rate)}: il rate di codifica è fisso nel tempo.
+    \item \textbf{VBR (Variable Bit Rate)}: il rate varia in base al livello di ridondanza spaziale/temporale del momento.
+\end{itemize}
+Esempi di standard: \textbf{MPEG1} (CD-ROM) a 1.5 Mbps, \textbf{MPEG2} (DVD) a 3--6 Mbps, \textbf{MPEG4} (per Internet) sotto 1 Mbps.
 
 \subsection{DASH (Dynamic, Adaptive Streaming over HTTP)}
 DASH è la tecnologia standard per lo streaming video.
@@ -328,6 +464,29 @@ Quando un utente richiede un video:
     \item L'utente riceve il video dal server CDN locale, con una latenza molto più bassa e prestazioni migliori.
 \end{enumerate}
 Le CDN riducono drasticamente il ritardo per gli utenti, il traffico sulle dorsali Internet e il carico sui server di origine.
+
+\paragraph{Strategie di posizionamento dei server CDN}
+Esistono due filosofie opposte per collocare i server di una CDN:
+\begin{itemize}
+    \item \textbf{Enter deep}: spingere i server CDN in profondità in \textbf{molte} access network, il più vicino possibile agli utenti finali. Si ottiene una latenza molto bassa, ma con un gran numero di cluster da gestire (strategia usata, ad esempio, da \textbf{Akamai}).
+    \item \textbf{Bring home}: collocare \textbf{pochi cluster più grandi} nei \textbf{POP (Point of Presence)} vicino (ma non dentro) alle access network. È più semplice da gestire, a costo di una latenza leggermente maggiore (strategia usata, ad esempio, da \textbf{Limelight}).
+\end{itemize}
+
+\paragraph{OTT (Over The Top)}
+Le CDN operano \textbf{"over the top"}: sfruttano l'Internet pubblica senza alcun controllo sulle sue condizioni. Questo solleva tre sfide principali:
+\begin{enumerate}
+    \item Da \textbf{quale nodo CDN} servire un dato client.
+    \item Cosa fare in caso di \textbf{congestione} della rete tra client e nodo.
+    \item \textbf{Quale contenuto} replicare in \textbf{quale nodo}.
+\end{enumerate}
+
+\ex{Case study: Netflix}{
+    \begin{itemize}
+        \item Netflix usa il cloud \textbf{Amazon} per le funzioni di \textbf{accounting} (registrazione, pagamenti) e per l'\textbf{upload} delle diverse versioni (qualità) di ogni video verso i server CDN.
+        \item Quando l'utente sceglie un film, gli viene fornito un \textbf{manifest} con gli URL dei chunk disponibili.
+        \item Il client effettua poi lo \textbf{streaming DASH} dal nodo CDN appropriato, adattando la qualità alla banda disponibile.
+    \end{itemize}
+}
 
 ---
 

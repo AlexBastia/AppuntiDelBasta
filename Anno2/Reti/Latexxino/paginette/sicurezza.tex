@@ -179,6 +179,10 @@ Il DES utilizza la tecnica del \textbf{Cipher Block Chaining (CBC)}: il messaggi
 
 Per aumentarne la sicurezza, è stato introdotto il \textbf{3DES (Triple DES)}, che applica l'algoritmo DES tre volte consecutive con tre chiavi diverse, portando la dimensione effettiva della chiave a 168 bit e rendendo gli attacchi a forza bruta computazionalmente impraticabili.
 
+\begin{center}
+    \includegraphics[width=10cm]{img/des_operation.png}
+\end{center}
+
 \subsubsection{AES (Advanced Encryption Standard)}
 L'AES è lo standard attuale che ha sostituito il DES. Come il DES, è un cifrario a blocchi, ma è più robusto e flessibile:
 \begin{itemize}
@@ -204,6 +208,28 @@ Questo sistema si basa su \textbf{funzioni matematiche unidirezionali (one-way)}
 
 \nt{\textbf{Attenzione ai messaggi corti}: se il messaggio $m$ è composto da pochi bit, un attaccante che intercetta $K_B^+(m)$ può fare brute force provando a cifrare tutti i possibili messaggi corti con $K_B^+$ (che è pubblica) e confrontarli. La soluzione è aggiungere bit di \textbf{padding} al messaggio prima della cifratura, aumentandone la lunghezza effettiva.}
 
+\subsubsection{Prerequisito: Aritmetica Modulare}
+L'algoritmo RSA si basa sull'aritmetica modulare. Il \textbf{modulo} di $x$ rispetto a $n$ è il resto della divisione intera:
+$$x \bmod n = \text{resto di } x / n$$
+
+Valgono le seguenti proprietà (che permettono di fare i calcoli \textit{passo per passo} senza mai lavorare con numeri enormi):
+\begin{align*}
+    [(a \bmod n) + (b \bmod n)] \bmod n &= (a+b) \bmod n \\
+    [(a \bmod n) - (b \bmod n)] \bmod n &= (a-b) \bmod n \\
+    [(a \bmod n) \cdot (b \bmod n)] \bmod n &= (a \cdot b) \bmod n
+\end{align*}
+
+Ne consegue la proprietà fondamentale usata in RSA:
+$$(a \bmod n)^d \bmod n = a^d \bmod n$$
+
+\ex{Esempio di aritmetica modulare}{
+    Con $x=14$, $n=10$, $d=2$:
+    \begin{itemize}
+        \item $(x \bmod n)^d \bmod n = 4^2 \bmod 10 = 16 \bmod 10 = 6$
+        \item $x^d \bmod n = 14^2 \bmod 10 = 196 \bmod 10 = 6$ \quad \checkmark
+    \end{itemize}
+}
+
 \subsubsection{Algoritmo RSA (Rivest, Shamir, Adelson)}
 L'algoritmo RSA è l'implementazione più nota della crittografia a chiave pubblica. La sua sicurezza si basa sulla difficoltà di fattorizzare un numero intero che è il prodotto di due numeri primi molto grandi.
 
@@ -226,6 +252,24 @@ Per poter applicare le operazioni matematiche, un messaggio $m$ viene prima conv
 La magia matematica assicura che $m = (m^e \pmod n)^d \pmod n$. La sicurezza risiede nel fatto che, pur conoscendo la chiave pubblica $(n, e)$, è computazionalmente infattibile determinare la chiave privata $d$ senza conoscere i fattori primi $p$ e $q$ di $n$.
 
 \nt{Una proprietà fondamentale di RSA è che le operazioni possono essere invertite: $K_B^+(K_B^-(m)) = m$. Cifrare con la chiave privata e decifrare con quella pubblica è alla base delle \textbf{firme digitali}, usate per garantire l'autenticità.}
+
+\ex{Esempio numerico di RSA}{
+    Scegliamo due numeri primi piccoli (a scopo didattico): $p = 5$ e $q = 7$. Allora:
+    \begin{itemize}
+        \item $n = p \cdot q = 35$
+        \item $z = (p-1)(q-1) = 4 \cdot 6 = 24$
+        \item Scegliamo $e = 5$ (coprimo con $24$, cioè senza fattori comuni).
+        \item Calcoliamo $d = 29$, perché $e \cdot d \bmod z = 5 \cdot 29 \bmod 24 = 145 \bmod 24 = 1$.
+    \end{itemize}
+    Vogliamo cifrare la lettera \texttt{l}, che convertiamo nel numero $m = 12$:
+    \begin{itemize}
+        \item \textbf{Cifratura}: $c = m^e \bmod n = 12^5 \bmod 35 = 17$
+        \item \textbf{Decifratura}: $m = c^d \bmod n = 17^{29} \bmod 35 = 12$ \quad \checkmark
+    \end{itemize}
+    Ritroviamo il messaggio originale $m = 12$, cioè la lettera \texttt{l}.
+}
+
+\nt{RSA è almeno \textbf{100 volte più lento} di DES (e degli algoritmi simmetrici in generale). Per questo motivo, nella pratica, RSA non viene usato per cifrare grandi quantità di dati, ma solo per \textbf{scambiare una chiave simmetrica di sessione}, che poi verrà usata con un cifrario simmetrico veloce.}
 
 \subsection{L'approccio ibrido: le chiavi di sessione}
 
@@ -275,6 +319,31 @@ Poiché cifrare un intero messaggio con RSA è lento, non si firma il messaggio,
 
 \dfn{Funzione Hash Crittografica}{
     Un algoritmo matematico (es. MD5, SHA-1) che prende in input un messaggio di lunghezza arbitraria e produce un output di lunghezza fissa (es. 128 o 160 bit), detto \textbf{hash} o \textbf{message digest}. Deve essere computazionalmente impossibile trovare due messaggi diversi che producano lo stesso hash.
+}
+
+I principali algoritmi di hash crittografico sono:
+\begin{itemize}
+    \item \textbf{MD5}: produce un digest di \textbf{128 bit} (standardizzato nella RFC 1321).
+    \item \textbf{SHA-1}: produce un digest di \textbf{160 bit} (standardizzato dal NIST in FIPS PUB 180-1).
+\end{itemize}
+
+\paragraph{Il checksum Internet come hash "debole"}
+Il \textbf{checksum Internet} (16 bit) possiede alcune proprietà di una funzione hash: produce un riassunto di lunghezza fissa del messaggio (il digest) ed è many-to-one (più messaggi possono dare lo stesso checksum). Tuttavia \textbf{non è una buona funzione hash crittografica}, perché è facilissimo trovare due messaggi diversi con lo stesso checksum.
+
+\ex{Collisione nel checksum Internet}{
+    I due messaggi seguenti, pur avendo un contenuto diverso, producono lo \textbf{stesso checksum Internet}:
+    \begin{center}
+        \begin{tabular}{|c|c|}
+            \hline
+            \textbf{Messaggio} & \textbf{Rappresentazione ASCII} \\
+            \hline
+            \texttt{IOU1\ 00.9\ 9BOB} & I O U 1 \dots \\
+            \hline
+            \texttt{IOU9\ 00.1\ 9BOB} & I O U 9 \dots \\
+            \hline
+        \end{tabular}
+    \end{center}
+    Trudy potrebbe sostituire il primo messaggio (``ti devo 1 dollaro'') con il secondo (``ti devo 9 dollari'') senza che il checksum cambi. Questo mostra perché una funzione hash crittografica deve \textbf{resistere alle collisioni}: deve essere computazionalmente infattibile trovare due messaggi distinti con lo stesso digest.
 }
 
 Il processo di firma digitale diventa:
@@ -358,6 +427,69 @@ L'handshake è il cuore di SSL e stabilisce la connessione sicura. In sintesi:
     \item La fase si conclude con lo scambio di messaggi `Finished`, cifrati con le nuove chiavi, che confermano che l'handshake è avvenuto correttamente e senza manomissioni.
 \end{enumerate}
 
+\subsection{Le quattro fasi di SSL}
+In modo più dettagliato, una sessione SSL si articola in \textbf{quattro fasi}:
+\begin{enumerate}
+    \item \textbf{Handshake}: client e server si autenticano e concordano gli algoritmi.
+    \item \textbf{Key derivation}: si derivano le chiavi di sessione dal segreto condiviso.
+    \item \textbf{Data transfer}: i dati applicativi vengono trasferiti in modo protetto.
+    \item \textbf{Connection closure}: la connessione viene chiusa in modo sicuro.
+\end{enumerate}
+
+\subsubsection{Key derivation}
+Sarebbe un grave errore riutilizzare la \textbf{stessa chiave} per scopi diversi. Per questo, da un unico \textbf{master secret} (ottenuto dal pre-master secret e dai nonce), una \textbf{KDF (Key Derivation Function)} deriva \textbf{4 chiavi diverse}:
+\begin{itemize}
+    \item $K_c$: chiave di cifratura per i dati che vanno da \textbf{client a server}.
+    \item $M_c$: chiave del MAC per i dati che vanno da \textbf{client a server}.
+    \item $K_s$: chiave di cifratura per i dati che vanno da \textbf{server a client}.
+    \item $M_s$: chiave del MAC per i dati che vanno da \textbf{server a client}.
+\end{itemize}
+Oltre a queste, si derivano anche gli \textbf{initialization vector (IV)} per il client e per il server.
+
+\subsubsection{Cipher suite}
+\dfn{Cipher suite}{
+    Una \textbf{cipher suite} è la combinazione di un algoritmo a \textbf{chiave pubblica} + un algoritmo a \textbf{chiave simmetrica} + un algoritmo di \textbf{MAC} che client e server concordano di usare durante l'handshake.
+}
+I cifrari simmetrici comunemente supportati sono \textbf{DES, 3DES, RC2, RC4}; per la chiave pubblica si usa tipicamente \textbf{RSA}.
+
+\subsubsection{Sequence number e protezione dal replay}
+Per proteggersi da attacchi di \textbf{replay} e di \textbf{riordino} dei record, SSL include un \textbf{sequence number} dentro il calcolo del MAC:
+$$\text{MAC} = \text{MAC}(M_x,\ \text{sequence} \,\|\, \text{data})$$
+dove $M_x$ è la chiave MAC della direzione considerata. Si noti che \textbf{non esiste un campo sequence number esplicito} nel record: il numero di sequenza è "incorporato" nel MAC. Per evitare invece che un intero record venga riprodotto in una connessione successiva, si usano \textbf{nonce diversi per ogni connessione}.
+
+\subsubsection{Truncation attack}
+Un attaccante potrebbe forgiare un segmento TCP di \textbf{chiusura} (FIN) per troncare la comunicazione, facendo credere a una delle parti che l'altra abbia terminato. La soluzione è introdurre i \textbf{record types}:
+\begin{itemize}
+    \item \textbf{type 0}: record di dati.
+    \item \textbf{type 1}: record di chiusura (closure).
+\end{itemize}
+Il tipo viene incluso nel MAC, che diventa:
+$$\text{MAC} = \text{MAC}(M_x,\ \text{sequence} \,\|\, \text{type} \,\|\, \text{data})$$
+In questo modo un attaccante non può forgiare un record di chiusura senza conoscere la chiave MAC.
+
+\subsubsection{Handshake reale e protezione dal downgrade}
+Nell'handshake reale, alla fine della negoziazione, client e server si scambiano ciascuno un \textbf{MAC di TUTTI i messaggi di handshake} scambiati fino a quel momento. Questo impedisce a un \textbf{Man-in-the-Middle} di manomettere la lista degli algoritmi proposti (ad esempio per forzare l'uso di algoritmi più deboli): un attacco di questo tipo è detto \textbf{downgrade attack}, e viene sventato perché qualsiasi alterazione dei messaggi farebbe fallire la verifica del MAC finale.
+
+\subsubsection{Formato del record SSL}
+Ogni record SSL ha la seguente struttura:
+\begin{center}
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        \multicolumn{3}{|c|}{\textbf{Header}} & \multicolumn{2}{c|}{\textbf{Corpo (cifrato)}} \\
+        \hline
+        content type & version & length & data & MAC \\
+        (1 byte) & (2 byte) & & & \\
+        \hline
+    \end{tabular}
+\end{center}
+\begin{itemize}
+    \item \textbf{content type}: 1 byte.
+    \item \textbf{version}: 2 byte.
+    \item \textbf{length}: lunghezza del record.
+    \item Il blocco \textbf{data + MAC} viene cifrato insieme.
+\end{itemize}
+Il \textbf{fragment} massimo trasportabile in un record è di $2^{14}$ byte (circa 16 KB).
+
 \section{Sicurezza a Livello Rete: IPsec}
 SSL/TLS è ottimo per proteggere singole applicazioni, ma cosa succede se si vuole fornire una "copertura di sicurezza" generale a tutto il traffico che esce da un host o da un'intera rete? A questo scopo, si opera a un livello più basso, il Livello 3, con il protocollo \textbf{IPsec}.
 
@@ -396,6 +528,77 @@ A differenza di IP, che è connectionless, IPsec è \textbf{connection-oriented}
 }
 
 La configurazione manuale delle SA è impraticabile in reti complesse. Per questo, si utilizza il protocollo \textbf{IKE (Internet Key Exchange)} per negoziare e stabilire le SA in modo automatico e sicuro.
+
+\subsubsection{Contenuto di una SA}
+Una Security Association è identificata e descritta dai seguenti parametri:
+\begin{itemize}
+    \item \textbf{SPI (Security Parameter Index)}: identificatore a \textbf{32 bit} della SA.
+    \item Interfaccia (indirizzo) \textbf{sorgente} della SA.
+    \item Interfaccia (indirizzo) di \textbf{destinazione} della SA.
+    \item \textbf{Tipo di cifratura} (es. 3DES-CBC).
+    \item \textbf{Chiave di cifratura}.
+    \item \textbf{Tipo di integrity check} (es. HMAC-MD5).
+    \item \textbf{Chiave di autenticazione}.
+\end{itemize}
+
+\subsubsection{SAD e SPD}
+\dfn{SAD (Security Association Database)}{
+    Il \textbf{SAD} è la struttura dati che mantiene lo \textbf{stato di tutte le SA} attive in un endpoint IPsec. Con $n$ peer servono $2 + 2n$ SA.
+}
+In ricezione, l'endpoint estrae lo \textbf{SPI} dal datagramma in arrivo e lo usa come indice per accedere alla SAD e recuperare i parametri della SA corrispondente.
+
+\dfn{SPD (Security Policy Database)}{
+    Il \textbf{SPD} è la struttura dati che dice \textbf{COSA} fare con un datagramma in arrivo o in uscita (va protetto con IPsec? quale SA usare?).
+}
+
+\nt{La distinzione fondamentale è: lo \textbf{SPD} dice \textbf{COSA} fare con un datagramma, mentre la \textbf{SAD} dice \textbf{COME} farlo (con quali algoritmi e chiavi).}
+
+\subsubsection{Datagramma ESP (Tunnel Mode)}
+In modalità tunnel con il protocollo ESP, il datagramma IPsec ha la seguente struttura:
+\begin{center}
+    \begin{tabular}{|c|c|c|c|c|c|}
+        \hline
+        new IP & ESP header & original IP & payload & ESP trailer & ESP auth \\
+        header & (SPI, Seq\#) & header & & (padding, & (MAC) \\
+        & & & & pad length, & \\
+        & & & & next header) & \\
+        \hline
+    \end{tabular}
+\end{center}
+\begin{itemize}
+    \item La parte \textbf{cifrata} va dall'\textbf{original IP header} fino all'\textbf{ESP trailer}.
+    \item La parte \textbf{autenticata} (la cosiddetta ``\textit{enchilada}'') va dall'\textbf{ESP header} fino all'\textbf{ESP trailer}.
+    \item L'\textbf{ESP header} contiene lo \textbf{SPI} e il \textbf{sequence number} (usato per la protezione anti-replay).
+\end{itemize}
+La costruzione del datagramma nel router di bordo $R1$ avviene così:
+\begin{enumerate}
+    \item Appende l'\textbf{ESP trailer} al datagramma IP originale.
+    \item \textbf{Cifra} il risultato (original IP header + payload + ESP trailer).
+    \item Antepone l'\textbf{ESP header}.
+    \item Calcola il \textbf{MAC} sull'intera enchilada (ESP header $\to$ ESP trailer).
+    \item Appende il MAC (\textbf{ESP auth}).
+    \item Antepone il \textbf{nuovo header IP}.
+\end{enumerate}
+
+\begin{center}
+    \includegraphics[width=12cm]{img/ipsec_esp_datagram.png}
+\end{center}
+
+\subsubsection{IKE (Internet Key Exchange)}
+Il \textbf{keying manuale} (configurare a mano le chiavi delle SA) \textbf{non scala}: si pensi a una VPN con centinaia di endpoint. Per questo si usa \textbf{IKE}, che automatizza la negoziazione delle SA. IKE autentica i peer tramite:
+\begin{itemize}
+    \item \textbf{PSK (Pre-Shared Key)}: un segreto condiviso a priori.
+    \item \textbf{PKI (certificati)}: infrastruttura a chiave pubblica.
+\end{itemize}
+IKE opera in \textbf{due fasi}:
+\begin{itemize}
+    \item \textbf{Phase 1}: stabilisce una \textbf{IKE SA} (o ISAKMP SA) \textbf{bidirezionale}, usata per proteggere le successive negoziazioni. Ha due modalità:
+    \begin{itemize}
+        \item \textbf{Aggressive mode}: usa meno messaggi (più veloce).
+        \item \textbf{Main mode}: offre la \textbf{identity protection} (protezione dell'identità dei peer).
+    \end{itemize}
+    \item \textbf{Phase 2}: negozia la coppia di \textbf{IPsec SA} (una per direzione) usate per proteggere il traffico dati vero e proprio.
+\end{itemize}
 \section{Mettere in Sicurezza le LAN Wireless (IEEE 802.11)}
 Le reti wireless presentano sfide di sicurezza uniche, poiché il loro mezzo trasmissivo (le onde radio) è intrinsecamente aperto e accessibile a chiunque si trovi nel raggio di copertura, rendendo l'intercettazione molto più semplice rispetto a una rete cablata.
 
@@ -413,6 +616,48 @@ Le sue debolezze fatali sono:
 
 Queste falle hanno reso il WEP completamente insicuro e obsoleto.
 
+\subsubsection{Dettagli del funzionamento di WEP}
+La chiave in input a RC4 è formata da:
+$$\underbrace{\text{chiave segreta (104 bit)}}_{\text{condivisa}} + \underbrace{\text{IV (24 bit)}}_{\text{per pacchetto}} = \text{chiave da 128 bit}$$
+RC4, usato come \textbf{PRNG (Pseudo Random Number Generator)}, espande questa chiave in un keystream $k_s$. La cifratura è quella di uno \textbf{stream cipher}, bit per bit (o byte per byte):
+\begin{itemize}
+    \item Cifratura: $c(i) = k_s(i) \oplus m(i)$
+    \item Decifratura: $m(i) = k_s(i) \oplus c(i)$
+\end{itemize}
+Per l'integrità, WEP calcola un \textbf{ICV (Integrity Check Value)}, che è un \textbf{CRC di 4 byte} sui dati; l'ICV viene cifrato insieme ai dati. Inoltre si usa un \textbf{keyID di 8 bit}. Il formato del payload è:
+\begin{center}
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        \textbf{IV} & \textbf{KeyID} & \textbf{data} & \textbf{ICV} \\
+        \hline
+        \multicolumn{2}{|c|}{(in chiaro)} & \multicolumn{2}{c|}{(cifrati)} \\
+        \hline
+    \end{tabular}
+\end{center}
+IV e KeyID viaggiano in chiaro; data e ICV sono cifrati. WEP è \textbf{self-synchronizing}: ogni pacchetto è cifrato in modo indipendente dagli altri.
+
+\begin{center}
+    \includegraphics[width=11cm]{img/wep_protocol.png}
+\end{center}
+
+\subsubsection{Autenticazione WEP}
+L'autenticazione WEP avviene \textbf{prima dell'association} (l'AP segnala il supporto a WEP nel \textbf{beacon frame}) e segue uno schema challenge-response:
+\begin{enumerate}
+    \item Il client invia una \textbf{authentication request}.
+    \item L'AP risponde con un \textbf{nonce} (128 byte).
+    \item Il client \textbf{cifra il nonce} con la chiave condivisa e lo rimanda all'AP.
+    \item L'AP decifra: se il valore decifrato coincide con il nonce inviato, l'autenticazione ha \textbf{successo}.
+\end{enumerate}
+
+\subsubsection{Attacco di IV-reuse}
+Sfruttando il riutilizzo dell'IV, Trudy può ricostruire il keystream:
+\begin{enumerate}
+    \item Trudy induce Alice a cifrare un \textbf{plaintext noto} $d_1 d_2 \dots$ (ad esempio facendole inviare un'e-mail di cui conosce il contenuto).
+    \item Osserva sul canale i ciphertext $c_i = d_i \oplus k_i$.
+    \item Conoscendo sia $c_i$ che $d_i$, ricava il keystream: $k_i = c_i \oplus d_i$ per quel particolare IV.
+    \item Al \textbf{successivo riutilizzo dello stesso IV}, Trudy usa il keystream $k_i$ già noto per decifrare i nuovi pacchetti.
+\end{enumerate}
+
 \subsection{802.11i (WPA2/WPA3): la Sicurezza Moderna}
 Per rimediare alle falle del WEP, è stato introdotto lo standard \textbf{IEEE 802.11i}, commercialmente noto come \textbf{WPA2} (e il suo successore \textbf{WPA3}). Questo standard fornisce un meccanismo di sicurezza robusto, che include:
 \begin{itemize}
@@ -421,6 +666,22 @@ Per rimediare alle falle del WEP, è stato introdotto lo standard \textbf{IEEE 8
 \end{itemize}
 
 In un ambiente aziendale, l'autenticazione non è gestita direttamente dall'Access Point (AP), ma viene delegata a un \textbf{Authentication Server (AS)} separato. Il processo avviene in più fasi, durante le quali il client (STA) e il server di autenticazione si autenticano a vicenda e derivano in modo sicuro una gerarchia di chiavi temporanee utilizzate per cifrare i dati della sessione.
+
+\subsubsection{Le quattro fasi di 802.11i}
+Le sigle in gioco sono: \textbf{AP} = access point, \textbf{STA} = client (station), \textbf{AS} = authentication server. Il funzionamento si articola in \textbf{quattro fasi}:
+\begin{enumerate}
+    \item \textbf{Discovery}: STA e AP scoprono le reciproche \textbf{capabilities di sicurezza} (algoritmi supportati, ecc.).
+    \item \textbf{Autenticazione mutua}: STA e AS si \textbf{autenticano a vicenda} e generano insieme la \textbf{Master Key (MK)}. In questa fase l'AP funge da semplice \textbf{pass-through} (instrada i messaggi senza interpretarli).
+    \item \textbf{Derivazione della PMK}: la STA deriva la \textbf{Pairwise Master Key (PMK)} dalla MK; l'AS deriva la \textbf{stessa} PMK e la \textbf{invia all'AP}.
+    \item \textbf{Derivazione della TK}: STA e AP, a partire dalla PMK condivisa, derivano la \textbf{Temporal Key (TK)} usata per la cifratura e l'integrità dei dati della sessione.
+\end{enumerate}
+
+\subsubsection{EAP (Extensible Authentication Protocol)}
+L'autenticazione in 802.11i usa il protocollo \textbf{EAP}, che opera \textbf{end-to-end} tra il dispositivo mobile e l'AS. I tratti del percorso usano protocolli diversi:
+\begin{itemize}
+    \item \textbf{mobile $\leftrightarrow$ AP}: EAP incapsulato su LAN, detto \textbf{EAPoL (EAP over LAN)}.
+    \item \textbf{AP $\leftrightarrow$ AS}: protocollo \textbf{RADIUS} su \textbf{UDP}.
+\end{itemize}
 
 \section{Sicurezza Operativa: Firewall e IDS}
 Oltre alla crittografia, la sicurezza di una rete si basa su strumenti operativi che ne controllano i confini e ne monitorano il traffico.
@@ -567,6 +828,38 @@ Un firewall stateful tiene traccia di ogni connessione TCP attiva e controlla le
     \item \textbf{Setup}: Il firewall rileva il pacchetto SYN iniziale, segnalando l'inizio di una connessione
     \item \textbf{Trasferimento dati}: I pacchetti con ACK vengono accettati solo se appartengono a una connessione già avviata
     \item \textbf{Chiusura}: Quando un pacchetto FIN o un timeout segna la fine di una connessione, il firewall non accetta più pacchetti fino a che non se apre un altro
+\end{itemize}
+
+In pratica, la ACL del firewall stateful aggiunge una colonna \textbf{``check connection''}: quando questa colonna è impostata, il firewall deve verificare la \textbf{connection state table} prima di ammettere il pacchetto.
+
+\ex{Stateless vs stateful}{
+    Un pacchetto con il flag \textbf{ACK} impostato e diretto alla \textbf{porta 80}, in assenza di una connessione TCP stabilita:
+    \begin{itemize}
+        \item Verrebbe \textbf{ammesso} da un filtro \textbf{stateless} (che vede solo ACK=1 verso porta 80 e lo crede traffico di ritorno legittimo).
+        \item Verrebbe \textbf{bloccato} da un filtro \textbf{stateful}, perché non corrisponde ad alcuna connessione presente nella connection state table.
+    \end{itemize}
+}
+
+\subsection{Application Gateway}
+\dfn{Application Gateway}{
+    Un \textbf{application gateway} (o proxy firewall) è un intermediario che opera a livello applicazione: filtra i pacchetti basandosi non solo sui campi IP/TCP, ma anche sui \textbf{dati applicativi}.
+}
+
+Prendiamo come esempio un gateway per il servizio \textbf{telnet}:
+\begin{enumerate}
+    \item \textbf{Tutti} gli utenti telnet sono obbligati a passare attraverso il gateway.
+    \item Per gli utenti \textbf{autorizzati}, il gateway apre la connessione verso l'host di destinazione e fa da \textbf{relay} fra le due estremità.
+    \item Il \textbf{router} blocca tutte le connessioni telnet che \textbf{non} sono originate dal gateway.
+\end{enumerate}
+
+\subsubsection{Limiti dei firewall}
+I firewall non sono una soluzione perfetta e presentano vari limiti:
+\begin{itemize}
+    \item \textbf{IP spoofing}: il router non può sapere con certezza se i dati provengono davvero dalla sorgente dichiarata nell'header.
+    \item Ogni applicazione che richiede un trattamento speciale necessita del \textbf{proprio gateway} dedicato.
+    \item Il \textbf{client deve sapere come contattare il gateway} (ad esempio, configurare l'IP del proxy nel browser).
+    \item Per il traffico \textbf{UDP} si adotta spesso una policy ``\textbf{all or nothing}'' (tutto o niente), perché è più difficile gestirne lo stato.
+    \item Esiste sempre un \textbf{trade-off} fra grado di comunicazione consentita e livello di sicurezza.
 \end{itemize}
 
 

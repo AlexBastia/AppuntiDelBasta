@@ -27,6 +27,13 @@ Le due funzioni fondamentali del livello di rete sono:
     \end{itemize}
 }
 
+\begin{center}
+    \includegraphics[width=11cm]{img/pre-router_control_plane.png}
+\end{center}
+\begin{center}
+    \includegraphics[width=11cm]{img/centralized_control_plane.png}
+\end{center}
+
 \nt{Il router \textbf{non} memorizza la tabella di instradamento (quella è del control plane); il router legge l'header del pacchetto e sceglie l'instradamento sulla porta corretta consultando la tabella di inoltro (forwarding table), che è locale.}
 
 \subsection{Modello di Servizio della Rete}
@@ -40,15 +47,15 @@ Il modello di servizio della rete definisce le garanzie offerte al canale che tr
 
 \begin{table}[h]
 \centering
-\begin{tabularx}{\textwidth}{|X|X|c|c|c|c|}
+\begin{tabularx}{\textwidth}{|X|X|c|c|c|c|X|}
 \hline
-\textbf{Architettura} & \textbf{Modello} & \textbf{Banda} & \textbf{Perdita} & \textbf{Ordine} & \textbf{Timing} \\
+\textbf{Architettura} & \textbf{Modello} & \textbf{Banda} & \textbf{Perdita} & \textbf{Ordine} & \textbf{Timing} & \textbf{Congest.} \\
 \hline
-Internet & Best effort & nessuna & no & no & no \\
-ATM & CBR (Constant Bit Rate) & costante & sì & sì & sì \\
-ATM & VBR (Variable Bit Rate) & garantita & sì & sì & sì \\
-ATM & ABR (Asynchronous Bit Rate) & minima garantita & no & sì & no \\
-ATM & UBR (Unspecified Bit Rate) & nessuna & no & sì & no \\
+Internet & Best effort & nessuna & no & no & no & no (inferita via perdita) \\
+ATM & CBR & costante & sì & sì & sì & no congestione \\
+ATM & VBR & garantita & sì & sì & sì & no congestione \\
+ATM & ABR & minima garantita & no & sì & no & sì \\
+ATM & UBR & nessuna & no & sì & no & no \\
 \hline
 \end{tabularx}
 \caption{Modelli di servizio del livello di rete}
@@ -68,6 +75,10 @@ Un router ha un'architettura interna composta da quattro componenti principali:
     \item \textbf{Porte di uscita (Output ports)}: gestiscono il buffering e la trasmissione dei pacchetti.
     \item \textbf{Routing processor}: esegue il software del control plane (algoritmi di routing) su scala dei millisecondi. Determina la porta di uscita comunicando con le input ports.
 \end{enumerate}
+
+\begin{center}
+    \includegraphics[width=12cm]{img/router_architecture.png}
+\end{center}
 
 \nt{Le porte di uscita sono determinate dall'instradamento deciso dal \textbf{Routing Processor} (o dal remote controller in SDN). I router possono avere più porte di uscita a seconda di quante interfacce di rete sono implementate.}
 
@@ -154,6 +165,10 @@ Il datagramma viene trasferito dalla memoria della porta di ingresso alla memori
 \paragraph{3. Switching via Crossbar (Interconnection Network)}
 Una \textbf{crossbar} è una griglia di connessioni che permette di decidere il percorso individuale di ogni pacchetto. \textbf{Vantaggio}: cammini paralleli — è possibile trasferire più pacchetti contemporaneamente su percorsi indipendenti. È la soluzione più performante e scalabile.
 
+\begin{center}
+    \includegraphics[width=12cm]{img/switching_fabrics.png}
+\end{center}
+
 \subsection{Queueing e Perdita di Pacchetti}
 
 Le code si formano sia nelle porte di ingresso che in quelle di uscita quando il tasso di arrivo dei pacchetti supera la capacità della switching fabric o della porta di uscita.
@@ -161,6 +176,21 @@ Le code si formano sia nelle porte di ingresso che in quelle di uscita quando il
 \begin{itemize}
     \item \textbf{Input queueing}: se la switching fabric è più lenta delle porte di ingresso, si formano code. Problema del \textbf{Head-of-Line (HOL) blocking}: un pacchetto in testa alla coda blocca altri pacchetti in attesa anche se le loro porte di uscita sono libere.
     \item \textbf{Output queueing}: se il tasso di switch supera la line speed della porta di uscita, i pacchetti si accodano. Quando il buffer è pieno, i pacchetti vengono \textbf{scartati} (packet loss).
+\end{itemize}
+
+\subsection{Disciplina di Accodamento (Scheduling)}
+Quando una porta di uscita ha una coda di pacchetti, deve decidere \textit{quale} pacchetto trasmettere per primo: questa è la \textbf{disciplina di scheduling}. Le principali sono:
+
+\begin{itemize}
+    \item \textbf{FIFO (First-In-First-Out)}: i pacchetti vengono serviti nell'ordine di arrivo. Quando la coda è piena occorre una \textbf{discard policy} per decidere quale scartare:
+    \begin{itemize}
+        \item \textbf{tail drop}: scarta il pacchetto in arrivo;
+        \item \textbf{priority drop}: scarta in base alla priorità;
+        \item \textbf{random drop}: scarta un pacchetto a caso.
+    \end{itemize}
+    \item \textbf{Priority scheduling}: i pacchetti sono divisi in \textbf{classi}, ognuna con una propria coda. Si serve sempre per primo un pacchetto della classe a \textbf{priorità più alta} che abbia pacchetti in attesa.
+    \item \textbf{Round Robin}: scansione \textbf{ciclica} delle code di classe, trasmettendo (al più) un pacchetto per classe a ogni giro.
+    \item \textbf{Weighted Fair Queuing (WFQ)}: generalizzazione del Round Robin in cui ogni classe riceve una \textbf{quota di servizio pesata}, ovvero una frazione della banda proporzionale al proprio peso.
 \end{itemize}
 
 % ---
@@ -244,6 +274,35 @@ Un host ha tipicamente un'interfaccia; un router ne ha più d'una (una per ogni 
     \end{itemize}
 }
 
+\paragraph{Aggregazione di Route e Route Più Specifiche}
+Gli indirizzi vengono assegnati gerarchicamente: \textbf{ICANN} assegna blocchi di indirizzi ai provider (ISP), che a loro volta li suddividono tra le organizzazioni clienti. Un ISP può quindi pubblicizzare verso il resto di Internet un \textbf{unico prefisso aggregato}, anziché molti prefissi separati, riducendo la dimensione delle tabelle di routing (\textbf{address aggregation}).
+
+\ex{Aggregazione di route}{
+    Un ISP riceve il blocco \texttt{200.23.16.0/20} e lo suddivide tra le sue organizzazioni:
+    \begin{center}
+    \begin{tabular}{|l|c|}
+    \hline
+    \textbf{Organizzazione} & \textbf{Blocco} \\
+    \hline
+    Org0 & \texttt{200.23.16.0/23} \\
+    Org1 & \texttt{200.23.18.0/23} \\
+    Org2 & \texttt{200.23.20.0/23} \\
+    \dots & \dots \\
+    \hline
+    \end{tabular}
+    \end{center}
+    L'ISP pubblicizza all'esterno il solo prefisso aggregato \texttt{200.23.16.0/20}: "mandate verso di me tutto ciò che inizia con \texttt{200.23.16.0/20}".
+}
+
+\ex{Route più specifica}{
+    Supponiamo che Org1 cambi ISP, passando da ISPs-R-Us a un altro provider, ma \textit{mantenga} i propri indirizzi \texttt{200.23.18.0/23}. Ora due ISP pubblicizzano percorsi che includono quel blocco:
+    \begin{itemize}
+        \item l'ISP originale annuncia ancora l'aggregato \texttt{200.23.16.0/20};
+        \item il nuovo ISP annuncia la \textbf{route più specifica} \texttt{200.23.18.0/23}.
+    \end{itemize}
+    Per la regola del \textbf{longest prefix matching}, il prefisso più lungo (\texttt{/23}) ha la precedenza sull'aggregato (\texttt{/20}): il traffico per Org1 viene correttamente instradato verso il nuovo ISP.
+}
+
 \paragraph{Indirizzi Speciali}
 \begin{itemize}
     \item \textbf{Broadcast}: tutti i bit dell'host a 1 (es. \texttt{255.255.255.255} per broadcast globale, o \texttt{x.x.x.255} per broadcast di subnet).
@@ -268,6 +327,22 @@ Il processo DHCP avviene in quattro passi (\textit{DORA}):
 
 \nt{DHCP permette anche il \textbf{rilascio} dell'indirizzo quando l'host si disconnette. Possibile attacco: facendo spoofing del MAC address, un attaccante può apparire come una scheda di rete nuova e spammare richieste DHCP in broadcast fino a esaurire gli IP disponibili (\textit{DHCP starvation}). Può essere fermato solo tramite autenticazione.}
 
+\paragraph{Dettagli del Protocollo DHCP}
+DHCP è un protocollo applicativo che viaggia su \textbf{UDP}, usando la porta \textbf{67} per il server e la porta \textbf{68} per il client. Poiché all'inizio il client non ha ancora un indirizzo IP, i messaggi viaggiano in \textbf{broadcast}:
+\begin{itemize}
+    \item Indirizzo IP sorgente: \texttt{0.0.0.0} (il client non ha ancora un IP).
+    \item Indirizzo IP destinazione: \texttt{255.255.255.255} (broadcast).
+    \item MAC destinazione: \texttt{FF:FF:FF:FF:FF:FF} (broadcast a livello data link).
+\end{itemize}
+Campi rilevanti dei messaggi DHCP:
+\begin{itemize}
+    \item \textbf{yiaddr} (\textit{your IP address}): l'indirizzo IP che il server propone/assegna al client.
+    \item \textbf{transaction ID}: identificatore che permette al client di associare le risposte alle proprie richieste (più server possono rispondere).
+    \item \textbf{lease}: l'assegnazione ha un \textbf{lifetime} (durata) oltre il quale va rinnovata.
+\end{itemize}
+
+\nt{Oltre all'indirizzo IP, DHCP restituisce al client altre informazioni di configurazione essenziali: l'indirizzo del \textbf{first-hop router} (default gateway), il \textbf{nome e l'indirizzo IP del server DNS} e la \textbf{network mask} (per riconoscere la porzione di rete dell'indirizzo).}
+
 \subsection{NAT: Network Address Translation}
 
 \dfn{NAT (Network Address Translation)}{
@@ -286,6 +361,15 @@ Il NAT usa una \textbf{tabella di traduzione NAT} che mappa coppie (IP privato, 
 
 \nt{Il NAT è controverso: viola il principio end-to-end di Internet (un router non dovrebbe modificare i pacchetti). Tuttavia risolve il problema dell'esaurimento degli indirizzi IPv4 e fornisce un certo grado di sicurezza (gli host interni non sono direttamente raggiungibili dall'esterno).}
 
+\paragraph{NAT: Numeri e Problemi}
+Il campo \textbf{porta} ha dimensione di \textbf{16 bit}: questo permette al router NAT di gestire circa \textbf{60.000} connessioni simultanee con un solo indirizzo IP pubblico (una porta NAT diversa per ogni connessione).
+
+\dfn{NAT Traversal}{
+    Il problema di come un client \textbf{esterno} possa connettersi a un server collocato \textbf{dietro un NAT}. Poiché l'IP interno del server non è raggiungibile dall'esterno e la mappatura NAT viene tipicamente creata dal traffico in uscita, l'instaurazione di connessioni entranti è problematica. È particolarmente rilevante per le applicazioni \textbf{P2P}, in cui ogni peer deve poter ricevere connessioni.
+}
+
+\nt{Argomenti \textbf{contro} il NAT: i router dovrebbero processare i pacchetti solo fino al livello 3 (rete), mentre il NAT deve guardare anche le porte (livello trasporto); inoltre il NAT viola l'\textbf{argomento end-to-end}, secondo cui la complessità e le funzioni applicative andrebbero collocate agli estremi della rete, non nel mezzo.}
+
 \subsection{IPv6}
 
 IPv6 è stato sviluppato per risolvere l'esaurimento degli indirizzi IPv4 e introduce diverse migliorie:
@@ -294,11 +378,27 @@ IPv6 è stato sviluppato per risolvere l'esaurimento degli indirizzi IPv4 e intr
     \item \textbf{Indirizzi a 128 bit}: spazio di indirizzamento enormemente più grande ($2^{128}$ indirizzi).
     \item \textbf{Header fisso da 40 byte}: formato semplificato e fisso, più efficiente da processare.
     \item \textbf{Nessuna frammentazione}: i router \textit{non} frammentano; se il pacchetto è troppo grande, lo scartano.
-    \item \textbf{Flow label}: campo che identifica un "flusso" di pacchetti (es. per QoS). Usato per la prioritizzazione del traffico.
-    \item \textbf{Etichetta di flusso}: indica già la porta di destinazione, dato che per ogni flusso il router IPv6 salva la porta in una tabella separata.
+    \item \textbf{Flow label}: campo che identifica un "flusso" di pacchetti per cui si desidera un trattamento speciale (es. per QoS o prioritizzazione del traffico).
     \item \textbf{Nessun checksum}: rimosso per velocizzare il processing (già presente nel livello trasporto e data link).
     \item \textbf{Nessun campo Options nell'header fisso}: le opzioni sono gestite tramite header di estensione (next header chaining).
 \end{itemize}
+
+\nt{\textbf{Attenzione (correzione)}: il \textbf{flow label} \textit{non} indica la porta di destinazione. Identifica un \textit{flusso} di pacchetti per cui si vuole un trattamento speciale, ma il concetto stesso di "flow" non è ben definito a livello rete (la sua semantica precisa non è standardizzata). Il livello rete non conosce le porte: quelle appartengono al livello trasporto.}
+
+\paragraph{Formato dell'Header IPv6}
+L'header IPv6 ha dimensione \textbf{fissa di 40 byte} ed è composto dai seguenti campi:
+\begin{itemize}
+    \item \textbf{Version} (4 bit): versione del protocollo (6).
+    \item \textbf{Priority / Traffic Class} (8 bit): classe di traffico per la prioritizzazione tra i pacchetti di un flusso.
+    \item \textbf{Flow Label} (20 bit): identifica un flusso di pacchetti che richiede un trattamento speciale.
+    \item \textbf{Payload Length} (16 bit): lunghezza in byte del payload che segue l'header fisso.
+    \item \textbf{Next Header} (8 bit): indica il protocollo del livello superiore \textit{oppure} il primo header di estensione (le opzioni stanno \textbf{fuori} dall'header fisso).
+    \item \textbf{Hop Limit} (8 bit): equivalente del TTL di IPv4; decrementato a ogni hop.
+    \item \textbf{Source Address} (128 bit): indirizzo del mittente.
+    \item \textbf{Destination Address} (128 bit): indirizzo del destinatario.
+\end{itemize}
+
+\nt{Le \textbf{opzioni} non sono parte dell'header fisso ma vengono indicate dal campo \textbf{Next Header} e collocate dopo di esso (next header chaining). Esiste inoltre una versione di ICMP per IPv6, \textbf{ICMPv6}, con nuovi tipi di messaggio: ad esempio "Packet Too Big" (usato perché i router IPv6 non frammentano).}
 
 \paragraph{Tunneling IPv4-IPv6}
 La transizione da IPv4 a IPv6 avviene gradualmente. La tecnica del \textbf{tunneling} permette di far viaggiare datagrammi IPv6 all'interno di datagrammi IPv4 attraverso la rete legacy: il datagramma IPv6 viene incapsulato nel payload di un datagramma IPv4.
@@ -328,6 +428,64 @@ Mentre il forwarding tradizionale usa solo l'indirizzo di destinazione IP, il \t
 
 \nt{Il forwarding generalizzato permette di implementare in un unico paradigma funzionalità che tradizionalmente richiedevano dispositivi separati: router, firewall, load balancer, NAT. Questo è il vantaggio principale delle reti SDN.}
 
+\subsection{La Tabella Match-Action di OpenFlow}
+In OpenFlow il \textbf{match} può essere effettuato su un'ampia gamma di campi degli header, appartenenti a tre livelli diversi:
+\begin{itemize}
+    \item \textbf{Livello link}: Switch Port (porta di ingresso), VLAN ID, MAC src, MAC dst, Eth type.
+    \item \textbf{Livello rete}: IP src, IP dst, IP proto.
+    \item \textbf{Livello trasporto}: TCP/UDP sport (porta sorgente), TCP/UDP dport (porta destinazione).
+\end{itemize}
+
+Ogni entry della flow table è composta da:
+$$\textbf{Rule (match)} \;+\; \textbf{Action} \;+\; \textbf{Stats} \;+\; \textbf{Priority}$$
+dove gli \textbf{Stats} sono contatori (numero di pacchetti, numero di byte che hanno fatto match con la regola) e la \textbf{Priority} disambigua quando più regole corrispondono. Le \textbf{5 azioni} possibili sono:
+\begin{enumerate}
+    \item \textbf{Forward}: inoltra il pacchetto su una o più porte di uscita.
+    \item \textbf{Encapsulate \& forward al controller}: incapsula e invia il pacchetto al controller.
+    \item \textbf{Drop}: scarta il pacchetto.
+    \item \textbf{Send to normal pipeline}: passa il pacchetto al normale processing (es. forwarding L2/L3 tradizionale).
+    \item \textbf{Modify fields}: riscrive uno o più campi dell'header.
+\end{enumerate}
+
+\ex{Esempi di entry OpenFlow}{
+    L'asterisco \texttt{*} è una \textbf{wildcard} (qualsiasi valore):
+    \begin{center}
+    \begin{tabular}{|l|l|l|}
+    \hline
+    \textbf{Funzione} & \textbf{Match} & \textbf{Action} \\
+    \hline
+    Forwarding dest-based & IP Dst=\texttt{51.6.0.8}, resto \texttt{*} & forward(port6) \\
+    Firewall (blocco SSH) & TCP dport=\texttt{22}, resto \texttt{*} & drop \\
+    Switch L2 & MAC src=\texttt{22:A7:23:11:E1:02} & forward(port3) \\
+    \hline
+    \end{tabular}
+    \end{center}
+    In uno scenario \textbf{multi-switch}, il match può includere anche la \textbf{porta di ingresso} (ingress port), permettendo di trattare diversamente i pacchetti in base a dove entrano nello switch.
+}
+
+\begin{center}
+    \includegraphics[width=12cm]{img/openflow_examples.png}
+\end{center}
+
+\subsection{Il Protocollo OpenFlow: Messaggi Controller$\leftrightarrow$Switch}
+La comunicazione tra controller e switch avviene su \textbf{TCP} (con cifratura opzionale). I messaggi si dividono in tre classi:
+\begin{itemize}
+    \item \textbf{Controller-to-switch}: inviati dal controller verso lo switch.
+    \begin{itemize}
+        \item \textbf{features}: il controller interroga lo switch sulle sue capacità.
+        \item \textbf{configure}: imposta/legge parametri di configurazione dello switch.
+        \item \textbf{modify-state}: aggiunge, elimina o modifica le flow entry (\textit{add/delete/modify}).
+        \item \textbf{packet-out}: il controller invia un pacchetto da emettere su una porta dello switch.
+    \end{itemize}
+    \item \textbf{Asincroni (switch-to-controller)}: generati spontaneamente dallo switch.
+    \begin{itemize}
+        \item \textbf{packet-in}: lo switch inoltra al controller un pacchetto (es. nessuna regola corrispondente).
+        \item \textbf{flow-removed}: notifica la rimozione di una flow entry (es. per timeout).
+        \item \textbf{port-status}: notifica un cambiamento di stato di una porta (es. link caduto).
+    \end{itemize}
+    \item \textbf{Simmetrici}: possono essere inviati da entrambi i lati (es. messaggi di hello, echo).
+\end{itemize}
+
 % ---
 
 \chapter{Il Livello Rete: Il Piano di Controllo (Control Plane)}
@@ -345,7 +503,20 @@ Come visto in precedenza, il control plane può essere implementato in due modi:
 In questa sezione ci concentreremo sul primo approccio, quello tradizionale, che è alla base dei protocolli storici di Internet.
 
 \section{Algoritmi di Routing}
-Per un algoritmo di routing, la rete è un \textbf{grafo}, dove i nodi sono i router e gli archi sono i link fisici tra di essi. A ogni arco è associato un \textbf{costo}, che può rappresentare la distanza, il ritardo, o essere inversamente proporzionale alla banda. L'obiettivo dell'algoritmo è trovare il percorso a costo minimo tra una sorgente e una destinazione.
+Per un algoritmo di routing, la rete viene modellata come un \textbf{grafo} $G = (N, E)$, dove $N$ è l'insieme dei router (nodi) ed $E$ è l'insieme dei link (archi) che li collegano.
+
+\dfn{Costo di un link e di un cammino}{
+    Il costo $c(x,x')$ di un arco $(x,x') \in E$ può rappresentare la latenza, l'inverso della banda o il grado di congestione. Per convenzione, $c(x,x') = \infty$ se $x$ e $x'$ non sono vicini diretti. Il \textbf{costo di un cammino} $(x_1, x_2, \ldots, x_p)$ è:
+    $$c(x_1,x_2) + c(x_2,x_3) + \cdots + c(x_{p-1},x_p)$$
+    L'obiettivo di ogni algoritmo di routing è trovare il \textbf{cammino a costo minimo} tra sorgente e destinazione.
+}
+
+\begin{center}
+    \includegraphics[width=11cm]{img/graph_abstraction.png}
+\end{center}
+\begin{center}
+    \includegraphics[width=11cm]{img/graph_costs.png}
+\end{center}
 
 \subsection{Classificazione degli Algoritmi di Routing}
 Gli algoritmi di routing si classificano principalmente secondo due criteri:
@@ -372,21 +543,50 @@ L'approccio Link-State si basa su un principio semplice: "informa tutti di tutto
 \end{enumerate}
 
 \paragraph{L'Algoritmo di Dijkstra}
-L'algoritmo di Dijkstra calcola, da un nodo sorgente `u`, l'albero dei cammini minimi verso tutti gli altri nodi del grafo. Procede in modo iterativo: a ogni passo, aggiunge all'insieme dei nodi `N'` di cui si conosce il percorso definitivo, il nodo `w` non ancora in `N'` che ha il costo minimo attuale. Successivamente, aggiorna i costi di tutti i vicini di `w`.
+L'algoritmo di Dijkstra calcola, da un nodo sorgente $u$, l'albero dei cammini minimi verso tutti gli altri nodi. Usa la seguente notazione: $c(x,y)$ = costo del link $(x,y)$; $D(v)$ = costo attuale del cammino da $u$ a $v$; $p(v)$ = predecessore di $v$ sul cammino minimo; $N'$ = insieme dei nodi di cui il cammino minimo è definitivamente noto.
 
-\ex{Esempio di Dijkstra}{
-    Dato il grafo seguente, calcoliamo i percorsi a costo minimo a partire dal nodo `u`.
+\begin{verbatim}
+Inizializzazione:
+  N' = {u}
+  per ogni nodo v:
+    se v adiacente a u: D(v) = c(u,v)
+    altrimenti:          D(v) = inf
 
-    % \begin{center}
-    %     \includegraphics[width=9cm]{img/Dijkstra's algorithm example graph}
-    % \end{center}
+Loop (fino a quando tutti i nodi sono in N'):
+  trova w non in N' tale che D(w) sia minimo
+  aggiungi w a N'
+  per ogni v adiacente a w e non in N':
+    D(v) = min( D(v), D(w) + c(w,v) )
+\end{verbatim}
 
-    L'algoritmo procede per passi, aggiornando la tabella dei costi. Alla fine, il risultato per il nodo `u` sarà la seguente tabella di forwarding:
+\ex{Esempio di Dijkstra (grafo u-v-w-x-y-z, slide 5-9)}{
+    Grafo: costi $c(u,v)=2$, $c(u,x)=1$, $c(u,w)=5$, $c(v,w)=3$, $c(x,w)=3$, $c(x,y)=1$, $c(w,y)=1$, $c(w,z)=5$, $c(y,z)=2$.
+
+    \begin{center}
+    \begin{tabular}{|c|c|cc|cc|cc|cc|cc|}
+        \hline
+        \textbf{Step} & \textbf{N'} & \multicolumn{2}{c|}{\textbf{D(v),p(v)}} & \multicolumn{2}{c|}{\textbf{D(w),p(w)}} & \multicolumn{2}{c|}{\textbf{D(x),p(x)}} & \multicolumn{2}{c|}{\textbf{D(y),p(y)}} & \multicolumn{2}{c|}{\textbf{D(z),p(z)}} \\
+        \hline
+        0 & u   & 2 & u & 5 & u & 1 & u & $\infty$ & — & $\infty$ & — \\
+        1 & ux  & 2 & u & 4 & x & — & — & 2 & x & $\infty$ & — \\
+        2 & uxy & 2 & u & 3 & y & — & — & — & — & 4 & y \\
+        3 & uxyv& — & — & 3 & y & — & — & — & — & 4 & y \\
+        4 & uxyvw& — & — & — & — & — & — & — & — & 4 & y \\
+        5 & uxyvwz& — & — & — & — & — & — & — & — & — & — \\
+        \hline
+    \end{tabular}
+    \end{center}
+
+    \begin{center}
+        \includegraphics[width=12cm]{img/dijkstra_example.png}
+    \end{center}
+
+    Il risultato è la seguente \textbf{tabella di forwarding} per il nodo $u$ (si risale all'arco uscente da $u$ tracciando i predecessori):
 
     \begin{center}
         \begin{tabular}{|c|c|}
             \hline
-            \textbf{destination} & \textbf{link} \\ \hline
+            \textbf{Destinazione} & \textbf{Link uscente da u} \\ \hline
             v & (u,v) \\ \hline
             x & (u,x) \\ \hline
             y & (u,x) \\ \hline
@@ -395,8 +595,19 @@ L'algoritmo di Dijkstra calcola, da un nodo sorgente `u`, l'albero dei cammini m
         \end{tabular}
     \end{center}
 
-    Questo significa che per raggiungere `y`, `w` o `z`, `u` deve prima inviare il pacchetto al suo vicino `x`.
+    \begin{center}
+        \includegraphics[width=10cm]{img/dijkstra_forwarding.png}
+    \end{center}
 }
+
+\paragraph{Complessità e Oscillazioni}
+\textbf{Complessità}: con $n$ nodi, il loop verifica tutti i nodi non ancora in $N'$: in totale $n(n+1)/2$ confronti $\Rightarrow O(n^2)$. Con strutture heap si può arrivare a $O(n \log n)$.
+
+\textbf{Oscillazioni}: se il costo di un link è proporzionale al traffico che lo percorre, l'algoritmo LS può causare oscillazioni — il routing cambia, il traffico si sposta, i costi cambiano, il routing cambia di nuovo. Per attenuare il problema si può randomizzare il momento in cui i router inviano i link-state broadcast.
+
+\begin{center}
+    \includegraphics[width=13cm]{img/dijkstra_oscillations.png}
+\end{center}
 
 \subsection{Algoritmi Distance-Vector (DV)}
 L'approccio Distance-Vector è decentralizzato e si basa sul principio "informa solo i tuoi vicini". Ogni router conosce molto poco della rete, ma collabora con i vicini per costruire una visione globale.
@@ -405,6 +616,21 @@ L'algoritmo si basa sull'equazione di \textbf{Bellman-Ford}:
 $$ d_x(y) = \min_{v} \{ c(x,v) + d_v(y) \} $$
 
 In parole: il costo minimo per andare da `x` a `y` è il minimo, calcolato su tutti i vicini `v` di `x`, della somma tra il costo per raggiungere il vicino `v` ($c(x,v)$) e il costo che `v` dichiara di avere per raggiungere `y` ($d_v(y)$).
+
+\ex{Calcolo di Bellman-Ford}{
+    Supponiamo che il nodo $u$ abbia tre vicini $x,w,v$ e che essi dichiarino le seguenti distanze verso $z$: $d_v(z)=5$, $d_x(z)=3$, $d_w(z)=3$. Con costi dei link $c(u,x)=1$, $c(u,v)=2$, $c(u,w)=5$:
+    $$d_u(z) = \min\{\,c(u,v)+d_v(z),\; c(u,x)+d_x(z),\; c(u,w)+d_w(z)\,\} = \min\{2+5,\; 1+3,\; 5+3\} = 4$$
+    Il \textbf{next hop} verso $z$ è il vicino che realizza il minimo, cioè $x$: la entry della tabella di forwarding per la destinazione $z$ punta al link $(u,x)$.
+}
+
+\ex{Distance-Vector su una rete a 3 nodi}{
+    Rete con tre nodi $x,y,z$ e costi $c(x,y)=2$, $c(x,z)=7$, $c(y,z)=1$. Le stime di $x$ verso le altre destinazioni, applicando Bellman-Ford sui suoi vicini $y$ e $z$ (che dichiarano $d_y(z)=1$, $d_z(y)=1$, $d_y(y)=0$, $d_z(z)=0$):
+    \begin{align*}
+        D_x(y) &= \min\{\,c(x,y)+0,\; c(x,z)+d_z(y)\,\} = \min\{2+0,\; 7+1\} = 2 \\
+        D_x(z) &= \min\{\,c(x,y)+d_y(z),\; c(x,z)+0\,\} = \min\{2+1,\; 7+0\} = 3
+    \end{align*}
+    Dunque $x$ raggiunge $z$ \textit{non} direttamente (costo 7) ma passando per $y$ (costo $2+1=3$).
+}
 
 Il processo è iterativo:
 \begin{enumerate}
@@ -417,7 +643,23 @@ Il processo è iterativo:
 Questo processo continua finché le stime non convergono ai valori reali.
 
 \paragraph{Problemi del DV: Count-to-Infinity}
-Un grosso svantaggio degli algoritmi DV è il problema del "count-to-infinity". Mentre le "buone notizie" (la scoperta di un percorso migliore con costo inferiore) si propagano velocemente, le "cattive notizie" (un aumento del costo di un link o un guasto) si propagano molto lentamente. In caso di guasto, i router possono entrare in un loop in cui si scambiano informazioni di routing errate, facendo crescere il costo di un percorso verso l'infinito prima di rendersi conto che la destinazione non è più raggiungibile.
+Un grosso svantaggio degli algoritmi DV è il problema del "count-to-infinity", riassunto dallo slogan: \textbf{"good news travels fast, bad news travels slow"}. Mentre le "buone notizie" (la scoperta di un percorso migliore con costo inferiore) si propagano velocemente, le "cattive notizie" (un aumento del costo di un link o un guasto) si propagano molto lentamente. In caso di guasto, i router possono entrare in un loop in cui si scambiano informazioni di routing errate, facendo crescere il costo di un percorso lentamente prima di rendersi conto della situazione reale.
+
+\ex{Count-to-infinity}{
+    Rete con tre nodi $x,y,z$ e costi $c(x,y)=4$, $c(y,z)=1$, $c(x,z)=50$. Inizialmente $y$ raggiunge $x$ direttamente con costo 4, e $z$ raggiunge $x$ passando per $y$ con costo $1+4=5$.
+
+    Supponiamo ora che il costo del link salga: $c(x,y)$ passa da $4$ a $60$. Quando $y$ rileva l'aumento, calcola la nuova distanza verso $x$ ma "vede" che $z$ dichiara $d_z(x)=5$, quindi crede di poter raggiungere $x$ via $z$ a costo $1+5=6$, ignorando che quel percorso di $z$ passa proprio per $y$. Si crea un \textbf{loop di routing}: $y$ e $z$ si rimpallano stime errate, incrementandole lentamente di poco a ogni iterazione ($6, 7, 8, \dots$). Servono \textbf{molte iterazioni} (circa $44$) prima che le stime salgano abbastanza ($\sim 51$) da rendere conveniente il link diretto $c(x,z)=50$, e il sistema si stabilizzi.
+}
+
+\begin{center}
+    \includegraphics[width=11cm]{img/count_to_infinity.png}
+\end{center}
+
+\dfn{Poisoned Reverse}{
+    Una tecnica per mitigare il count-to-infinity. Se il nodo $Z$ instrada verso $X$ \textbf{passando per $Y$}, allora $Z$ dichiara a $Y$ che la propria distanza verso $X$ è $\infty$ (cioè "mente" a $Y$). In questo modo $Y$ non sarà mai tentato di instradare verso $X$ passando per $Z$, evitando il loop a due nodi.
+}
+
+\nt{Il poisoned reverse \textbf{non risolve} i loop che coinvolgono \textbf{3 o più nodi}: in quei casi il problema del count-to-infinity può ripresentarsi.}
 
 \subsection{Confronto tra LS e DV}
 \begin{itemize}
@@ -453,9 +695,27 @@ I router al confine di un AS, che si connettono ad altri AS, sono chiamati \text
 
 Per migliorare ulteriormente la scalabilità all'interno di AS molto grandi, OSPF può essere strutturato gerarchicamente, suddividendo l'AS in \textbf{aree}. I router all'interno di un'area conoscono solo la topologia della propria area, riducendo così il sovraccarico di comunicazione e di calcolo.
 
-% \begin{center}
-%     \includegraphics[width=10cm]{img/Hierarchical OSPF diagram}
-% \end{center}
+\paragraph{OSPF Gerarchico (Aree)}
+OSPF gerarchico adotta una struttura a \textbf{due livelli}: le \textbf{aree locali} e un'area speciale detta \textbf{backbone}. Le caratteristiche principali sono:
+\begin{itemize}
+    \item Le \textbf{link-state advertisement} (i messaggi che diffondono lo stato dei link) circolano \textbf{solo all'interno dell'area} in cui sono generate: non vengono diffuse all'intero AS.
+    \item Ogni nodo conosce la \textbf{topologia dettagliata} solo della propria area; verso le reti di altre aree conosce soltanto la \textbf{direzione} (lo shortest path), non l'intera topologia.
+    \item Il \textbf{backbone} interconnette tutte le aree: il traffico tra aree diverse deve passare per il backbone.
+\end{itemize}
+
+In questa struttura si distinguono diversi \textbf{tipi di router}:
+\begin{itemize}
+    \item \textbf{Internal router}: router interamente contenuto in una singola area.
+    \item \textbf{Area Border Router (ABR)}: router al confine di un'area; \textbf{riassume} le distanze verso le reti della propria area e le pubblicizza alle altre aree (tramite il backbone).
+    \item \textbf{Backbone router}: router la cui attività OSPF è limitata al backbone.
+    \item \textbf{Boundary router}: router che si connette verso \textbf{altri AS} (instradamento inter-AS).
+\end{itemize}
+
+\nt{Altre caratteristiche di OSPF: i messaggi sono trasportati \textbf{direttamente su IP} (numero di protocollo \textbf{89}), non su TCP o UDP; supporta il \textbf{multicast} tramite l'estensione \textbf{MOSPF}; consente di definire \textbf{metriche di costo diverse per TOS} differenti (es. un costo per il traffico best-effort, un altro per quello real-time). Il protocollo \textbf{IS-IS} è quasi identico a OSPF.}
+
+\begin{center}
+    \includegraphics[width=10cm]{img/ospf_hierarchical.png}
+\end{center}
 
 \section{Routing Inter-AS: il Protocollo BGP}
 Mentre protocolli come OSPF gestiscono in modo efficiente il routing \textit{all'interno} di un singolo Sistema Autonomo (AS), è necessario un protocollo diverso per gestire il routing \textit{tra} AS differenti. Questo compito è affidato al BGP.
@@ -479,6 +739,30 @@ A differenza di OSPF, BGP non si basa sul costo dei link, ma è un protocollo \t
 \end{itemize}
 
 La caratteristica più importante di BGP è che la selezione delle rotte è guidata dalla \textbf{policy}. Un provider può decidere, ad esempio, di non far transitare traffico tra due altri provider attraverso la propria rete (perché non ne trarrebbe alcun guadagno). Questa policy viene implementata semplicemente scegliendo di non ri-pubblicizzare certe rotte ai propri vicini.
+
+\subsection{Messaggi BGP e Attributi}
+Le sessioni BGP usano il protocollo \textbf{TCP} sulla porta \textbf{179}. Esistono \textbf{4 tipi di messaggi}:
+\begin{itemize}
+    \item \textbf{OPEN}: apre la connessione TCP con il peer BGP e ne autentica l'identità.
+    \item \textbf{UPDATE}: pubblicizza un nuovo path (rotta) oppure ritira uno o più path vecchi.
+    \item \textbf{KEEPALIVE}: mantiene viva la connessione in assenza di UPDATE; funge anche da ACK del messaggio OPEN.
+    \item \textbf{NOTIFICATION}: segnala errori sul messaggio precedente; viene usato anche per chiudere la connessione.
+\end{itemize}
+
+Una rotta pubblicizzata in un UPDATE è composta da un \textbf{prefisso} di destinazione più una serie di \textbf{attributi} (\textbf{prefisso + attributi = route}). I due attributi fondamentali sono:
+\begin{itemize}
+    \item \textbf{AS-PATH}: la lista degli AS attraversati per raggiungere il prefisso. Serve anche a prevenire i loop.
+    \item \textbf{NEXT-HOP}: l'indirizzo del router \textit{interno all'AS} che costituisce il primo passo verso l'AS del next hop (cioè verso l'inizio dell'AS-PATH pubblicizzato).
+\end{itemize}
+
+\subsection{BGP Route Selection}
+Quando un router conosce \textbf{più rotte} verso la stessa destinazione, ne sceglie una applicando in ordine i seguenti criteri (al primo che discrimina, ci si ferma):
+\begin{enumerate}
+    \item \textbf{Local preference}: valore deciso per \textbf{policy} dall'amministratore dell'AS (criterio prioritario).
+    \item \textbf{AS-PATH più corto}: si preferisce la rotta che attraversa il minor numero di AS.
+    \item \textbf{NEXT-HOP più vicino} (\textbf{hot-potato routing}): si preferisce il next-hop con il costo interno (es. OSPF) più basso.
+    \item \textbf{Criteri aggiuntivi}: ulteriori regole di spareggio.
+\end{enumerate}
 
 \ex{Hot Potato Routing}{
     Una comune politica di routing in BGP è l'hot potato routing. Se un router all'interno di un AS ha più possibili uscite per raggiungere una destinazione esterna, sceglierà l'uscita che ha il costo \textit{interno} (calcolato con OSPF) più basso. In pratica, cerca di "liberarsi" del pacchetto il più velocemente possibile, passandolo a un altro AS, anche se questo potrebbe non corrispondere al percorso globale più breve per il pacchetto stesso.
@@ -524,12 +808,37 @@ Un messaggio ICMP è definito da un campo `Type` e un campo `Code` che ne specif
     \item \textbf{Time Exceeded (Type 11)}: Inviato da un router quando scarta un pacchetto perché il suo campo TTL ha raggiunto zero. È il meccanismo alla base di \textbf{traceroute}.
 \end{itemize}
 
+\nt{Un messaggio ICMP contiene il campo \textbf{type}, il campo \textbf{code} e i \textbf{primi 8 byte} del datagramma IP che ha causato l'errore (utili al mittente per capire a quale pacchetto si riferisce il messaggio di errore).}
+
+\paragraph{Tabella dei codici ICMP}
+\begin{center}
+\begin{tabular}{|c|c|l|}
+\hline
+\textbf{Type} & \textbf{Code} & \textbf{Significato} \\
+\hline
+0  & 0 & echo reply (risposta al ping) \\
+3  & 0 & network unreachable \\
+3  & 1 & host unreachable \\
+3  & 2 & protocol unreachable \\
+3  & 3 & port unreachable \\
+3  & 6 & network unknown \\
+3  & 7 & host unknown \\
+4  & 0 & source quench (congestion, deprecato) \\
+8  & 0 & echo request (ping) \\
+9  & 0 & route advertisement \\
+10 & 0 & router discovery \\
+11 & 0 & TTL expired \\
+12 & 0 & bad IP header \\
+\hline
+\end{tabular}
+\end{center}
+
 \ex{Funzionamento di Traceroute}{
-    Traceroute scopre i router su un percorso inviando una serie di pacchetti (tipicamente UDP) verso la destinazione:
+    Traceroute scopre i router su un percorso inviando una serie di pacchetti (tipicamente UDP) verso la destinazione. Per ogni valore di TTL invia \textbf{3 probe}, così da misurare \textbf{3 RTT} (round-trip time) per ciascun hop:
     \begin{enumerate}
-        \item Il primo pacchetto viene inviato con un TTL=1. Il primo router lungo il percorso lo scarta e invia indietro un ICMP `Time Exceeded`.
-        \item Il secondo pacchetto viene inviato con TTL=2. Il secondo router lo scarta e invia indietro un ICMP.
-        \item Il processo continua, aumentando il TTL di uno a ogni passo, fino a quando i pacchetti non raggiungono la destinazione finale.
-        \item L'host di destinazione, ricevendo un pacchetto UDP destinato a una porta non in uso, risponde con un ICMP `Destination Port Unreachable`, segnalando la fine del tracciamento.
+        \item I primi 3 pacchetti vengono inviati con TTL=1. Il primo router lungo il percorso li scarta e invia indietro un ICMP `Time Exceeded` (\textbf{type 11, code 0}); dal tempo di risposta si ricavano i 3 RTT.
+        \item I successivi 3 pacchetti vengono inviati con TTL=2. Il secondo router li scarta e risponde allo stesso modo.
+        \item Il processo continua, aumentando il TTL di uno a ogni passo, fino a quando i pacchetti raggiungono la destinazione finale.
+        \item I pacchetti sono diretti a una porta UDP \textbf{"improbabile"} (non in uso). Così l'host di destinazione, ricevendoli, risponde con un ICMP \textbf{port unreachable (type 3, code 3)}, segnalando a traceroute la fine del tracciamento.
     \end{enumerate}
 }

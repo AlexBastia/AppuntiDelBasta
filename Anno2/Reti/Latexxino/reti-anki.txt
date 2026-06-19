@@ -1,0 +1,332 @@
+#separator:tab
+#html:true
+#notetype:Basic
+#deck:Reti di Calcolatori::Wireless
+
+Formula del <b>link budget</b>	\(P_{rx} = P_{tx} + G_{tx} + G_{rx} - \text{PL}\)<br>tutto in dBm / dBi / dB.<br><br>Condizione per comunicare: \(P_{rx} \geq RS\)<br>Con margine meteo avverso: \(P_{rx} \geq RS + \text{FOM}\)
+
+Cos'è la <b>Receiver Sensitivity (RS)</b>?	La potenza minima (in dBm) che il ricevitore riesce a decodificare.<br>È sempre <b>negativa</b>: es. −97 dBm ≈ 0.2 nW.<br><br>Se \(P_{rx} < RS\) → segnale sotto soglia → nessuna comunicazione.
+
+Cos'è il <b>Fade Operating Margin (FOM)</b>? Quando serve ≥ 10 dB?	Margine di sicurezza aggiunto sopra RS per tollerare attenuazioni impreviste.<br>\[P_{rx} \geq RS + \text{FOM}\]<br>FOM ≥ <b>10 dB</b> in condizioni meteo avverse (nebbia, pioggia).
+
+Formula del <b>path loss free-space</b> (in miglia)	\[\text{PL} = 36.6 + 20\log_{10}(f_{\text{MHz}}) + 20\log_{10}(d_{\text{mi}})\]
+
+Conversione <b>mW → dBm</b>: formula e metodo rapido	Formula esatta: \(P_{\text{dBm}} = 10\log_{10}(P_{\text{mW}})\)<br><br>Metodo rapido (partendo da 0 dBm = 1 mW):<br>• \(\times 2 \Rightarrow +3\ \text{dB}\)<br>• \(\times 10 \Rightarrow +10\ \text{dB}\)
+
+Quanto valgono in dBm: <b>20 mW? 25 mW? 32 mW?</b>	• 20 mW = 10 mW × 2 → 10 + 3 = <b>13 dBm</b><br>• 25 mW → \(10\log_{10}25 = 13.98\) ≈ <b>14 dBm</b><br>• 32 mW = \(2^5\) mW → 5 × (+3) = <b>15 dBm</b>
+
+Enuncia la <b>regola dei 6 dB</b> e dimostrala	Raddoppiare la distanza T–R → path loss aumenta di <b>6 dB</b>.<br><br>Dim: \[\Delta\text{PL} = 20\log_{10}(2d) - 20\log_{10}(d) = 20\log_{10}2 \approx 6.02\ \text{dB}\]
+
+Sistema con FOM = 10 dB a distanza d. Funziona a distanza <b>2d</b>?	<b>Sì.</b> Distanza doppia costa +6 dB di path loss → FOM residuo = 10 − 6 = <b>4 dB</b>.<br>Poiché 4 dB > 0 il segnale è ancora sopra RS: la comunicazione regge ma con meno margine.
+
+Cos'è la <b>zona di Fresnel</b>?	L'ellissoide attorno alla linea T–R all'interno del quale i percorsi deviati contribuiscono <b>costruttivamente</b> al segnale.<br><br>Se un ostacolo penetra nella zona anche senza bloccare la linea visiva → il segnale si degrada.
+
+Quanta percentuale della <b>prima zona di Fresnel</b> deve essere libera?	Almeno il <b>60%</b> della prima zona deve essere libero da ostacoli.
+
+Formula del <b>raggio zona di Fresnel al 100%</b>	\[r = 72.2 \times \sqrt{\dfrac{d_{\text{mi}}}{4 \cdot f_{\text{GHz}}}}\quad\text{[feet]}\]<br>Converti in metri: × 0.305<br><br><b>Attenzione:</b> il risultato è in <b>metri</b>, non centimetri.
+
+A frequenza alta la zona di Fresnel è più larga o più stretta?	Più <b>stretta</b>: frequenza alta → λ piccola → ellissoide compatto.<br>(Ma il path loss base è più alto ad alta frequenza.)
+
+Come si calcola lo <b>sfasamento</b> tra due percorsi radio?	\[\text{sfasamento} = \frac{\Delta d}{\lambda}\quad\text{(in lunghezze d'onda)}\]<br>• \(\Delta d / \lambda\) intero → interferenza <b>costruttiva</b><br>• \(\Delta d / \lambda = 0.5\) → <b>180°</b> → interferenza <b>distruttiva</b>
+
+Formula della <b>lunghezza d'onda</b>	\[\lambda = \frac{c}{f} = \frac{3\times10^8\ \text{m/s}}{f\ \text{Hz}}\]
+
+Differenza di percorso = <b>1.5λ</b> → interferenza costruttiva o distruttiva?	1λ → fase invariata; +0.5λ → <b>180° di sfasamento</b>.<br><br>I segnali arrivano in <b>opposizione di fase</b> → si annullano → interferenza <b>distruttiva</b>.
+
+Aumentare la potenza trasmissiva risolve l'<b>interferenza distruttiva</b> da multipath?	<b>No.</b> Entrambi i segnali (diretto e rimbalzato) crescono proporzionalmente → si annullano comunque.<br>L'interferenza distruttiva dipende dalla <b>geometria</b> (Δd/λ), non dalla potenza.
+
+Esame 2022 — LoS = 29 m, segnale rimbalza a 90° dopo 21 m. Calcola il percorso rimbalzato e lo sfasamento. (f = 37.5 MHz)	Triangolo retto in B:<br>\[BR = \sqrt{29^2 - 21^2} = \sqrt{400} = 20\ \text{m}\]<br>Percorso rimbalzato = 21 + 20 = <b>41 m</b>, Δd = 41 − 29 = 12 m<br><br>\[\lambda = \frac{3\times10^8}{37.5\times10^6} = 8\ \text{m}\]<br>\[\frac{\Delta d}{\lambda} = \frac{12}{8} = 1.5\ \lambda \Rightarrow \text{interferenza distruttiva}\]
+
+Tabella <b>bit/simbolo</b> delle modulazioni principali	BPSK → 1 bit/sym<br>QPSK → 2 bit/sym<br>8-PSK → 3 bit/sym<br>QAM-16 → 4 bit/sym<br>QAM-64 → 6 bit/sym<br><br>Regola: N simboli → \(\log_2 N\) bit/simbolo
+
+Formula del <b>bit rate</b> da symbol rate e modulazione; e con OFDM	\[\text{Bit rate} = \text{SR} \times \text{bit/simbolo}\]<br>Con OFDM:<br>\[\text{Bit rate totale} = N_{\text{sub}} \times \text{SR} \times \text{bit/simbolo}\]
+
+Differenza tra <b>QPSK</b> e <b>QAM-16</b>	<b>QPSK</b>: 4 simboli, 2 bit/sym — varia solo la <b>fase</b> → robusto al rumore di ampiezza.<br><br><b>QAM-16</b>: 16 simboli, 4 bit/sym — varia <b>fase E ampiezza</b> → più efficiente spettralmente, ma più sensibile al rumore.
+
+Quale modulazione è <b>meno resistente</b> all'interferenza radio? Perché?	<b>ASK</b>. Codifica l'informazione nell'<b>ampiezza</b> del segnale, e il rumore radio agisce principalmente sull'ampiezza.<br><br>Ordine robustezza crescente: ASK &lt; QAM &lt; PSK ≈ FSK
+
+Come si sceglie la modulazione PSK di <b>costo minimo</b> per un bit rate richiesto su canale OFDM?	1) SR totale = \(N_{\text{sub}} \times \text{SR}\)<br>2) bit/sym minimi = \(\lceil R_{\min} / \text{SR}_{\text{tot}} \rceil\)<br>3) Scegli il PSK con il <b>minor numero di simboli</b> che soddisfa il requisito<br><br>Meno simboli = costellazione più spaziosa = più robusto agli errori.
+
+Esame 2023-05-26 — OFDM 18 sub-carrier, SR=500k sym/s, file 54 Mbit, max 4 s. Quale PSK? Quanto tempo?	SR tot = 18 × 500k = 9M sym/s<br>\(R_{\min} = 54\text{M}/4 = 13.5\ \text{Mbps}\) → b ≥ 1.5 → serve b=2 → <b>QPSK</b><br><br>Bit rate effettivo = 9M × 2 = 18 Mbps<br>\[T = 54\text{M}/18\text{M} = \mathbf{3\ \text{s}}\]
+
+Esame 2023-07-21 — QPSK, SR=500k sym/s, file 16 Mbit. Tempo senza parità?	Bit rate = 500k × 2 = 1 Mbps<br>\[T = \frac{16\,000\,000}{1\,000\,000} = \mathbf{16\ \text{s}}\]
+
+Matrice di parità 16×16: overhead e impatto sul tempo di trasmissione	256 bit di dati → +16 bit parità righe + 16 bit parità colonne = <b>32 bit overhead</b><br><br>Ratio: 288/256 = 1.125 → trasmissione +<b>12.5%</b> più lunga<br>Esempio: 16 s → 16 × 1.125 = <b>18 s</b>
+
+Cos'è il <b>periodo di vulnerabilità</b> di un frame? Confronto Ethernet vs WiFi	Finestra temporale durante la quale una trasmissione può essere distrutta da un'altra stazione che inizia.<br><br>• <b>Ethernet (CSMA/CD)</b>: solo il tempo di propagazione τ (microsecondi)<br>• <b>WiFi (CSMA/CA)</b>: l'intera durata del frame (no collision detection)
+
+Perché in WiFi <b>non si può fare collision detection</b>?	La radio è <b>half-duplex</b>: mentre si trasmette, il proprio segnale copre qualsiasi segnale in arrivo → impossibile sentire una collisione in corso.
+
+A cosa serve <b>RTS/CTS</b> in 802.11?	Riduce il periodo di vulnerabilità: invece di esporre il frame dati lungo, si espone solo il frame <b>RTS</b> (piccolo).<br>Le stazioni che sentono il <b>CTS</b> tacciono per tutta la durata → protegge il frame lungo dalle collisioni.
+
+Esame 2022 #7 — 5 miglia, f=1.9 GHz, G_tx=G_rx=7 dBi, RS=−97 dBm. Calcola la <b>potenza minima</b> per comunicare in nebbia (FOM ≥ 10 dB).	PL = 36.6 + 20log(1900) + 20log(5) = 36.6 + 65.6 + 14.0 = <b>116.2 dB</b><br><br>\(P_{rx} = P_{tx} + 7 + 7 - 116.2 = P_{tx} - 102.2\)<br><br>Condizione: \(P_{tx} - 102.2 \geq -97 + 10 \Rightarrow P_{tx} \geq 15.2\ \text{dBm}\)<br><br>\(15\ \text{dBm} = 2^5\ \text{mW} \approx \mathbf{32\ \text{mW}}\)
+
+Esame 2022 #7 — Calcola il <b>raggio zona di Fresnel al 100%</b> (d=5 mi, f=1.9 GHz)	\[r = 72.2 \times \sqrt{\frac{5}{4 \times 1.9}} = 72.2 \times \sqrt{0.658} \approx 58.6\ \text{feet}\]<br>\[58.6 \times 0.305 \approx \mathbf{17.9\ \text{m}}\]<br><br><b>Attenzione:</b> il risultato è in <b>metri</b>.
+
+Esame 2025 #10 — IRPO=20 mW, PL=110 dB, RS: −87 dBm per 40 Mbps. Trova il <b>guadagno antenna totale</b> necessario.	\(P_{tx} = 20\ \text{mW} = 13\ \text{dBm}\)<br><br>\(P_{rx} = 13 + G - 110 = G - 97\)<br><br>Serve \(P_{rx} \geq -87\):<br>\[G - 97 \geq -87 \Rightarrow G \geq \mathbf{+10\ \text{dBi}}\]<br>(5 dBi per antenna se identiche)
+
+Esame 2023-05-26 #10 — 25 mW, +8 dBi, +3 dBi, PL=80 dB a 1 miglio, RS=−75 dBm. Qual è il <b>bitrate</b>? E a 1/3 di miglio?	\(P_{tx} = 25\ \text{mW} \approx 14\ \text{dBm}\)<br>\(\text{LB} = 14 + 8 + 3 - 80 + 75 = +20\ \text{dB} \Rightarrow \mathbf{8\ \text{Mbps}}\)<br><br>A 1/3 miglio: \(\Delta\text{PL} = 20\log_{10}(1/3) \approx -9.5\ \text{dB}\)<br>LB = 20 + 9.5 = 29.5 dB → \(\mathbf{16\ \text{Mbps}}\)
+
+#deck:Reti di Calcolatori::Subnetting
+
+Come trovo il <b>router</b> della rete che contiene un host, data la maschera?	1) AND tra host e maschera → <b>network address</b><br>2) Bit host tutti a 1 → <b>broadcast</b><br>3) Router = broadcast − 1<br><br>Lavora ottetto per ottetto; il confine è dove la maschera smette di essere 255.
+
+Come calcolo il <b>broadcast</b> dall'ottetto di confine?	Nell'ottetto di confine: tieni fissi i bit di rete (dalla maschera), metti a <b>1 tutti i bit host</b>.<br><br>Esempio: host = 187, maschera = 240 = <tt>1111|0000</tt><br>187 AND 240 = 176 = <tt>1011|0000</tt> → broadcast = <tt>1011|1111</tt> = 191
+
+Maschere in decimale: <b>/17, /20, /21, /24, /25, /26, /27, /28</b>	/17 → 255.255.128.0<br>/20 → 255.255.240.0<br>/21 → 255.255.248.0<br>/24 → 255.255.255.0<br>/25 → 255.255.255.128<br>/26 → 255.255.255.192<br>/27 → 255.255.255.224<br>/28 → 255.255.255.240
+
+Convenzione Bononi — regola <b>figlio vs fratello</b> nel VLSM gerarchico	<b>Figlio</b> (es. A1 ⊂ A): inizia allo <b>stesso indirizzo</b> del padre, prefisso più lungo.<br><br><b>Fratello</b> (es. B dopo A): inizia subito dopo l'intero blocco del precedente.<br>broadcast_prev + 1 = network, + 2 = first host.
+
+Convenzione Bononi — <b>default gateway</b> di una sottorete	Il router del <b>genitore</b> nella gerarchia.<br><br>Es: dg di A = router di N; dg di A1 = router di A; dg di B = router di N.
+
+Come <b>dimensiono</b> una sottorete dato il numero di host?	Trova il minimo k tale che \(2^k \geq \text{host} + 2\) (network e broadcast occupano 2 indirizzi).<br>\[\text{prefisso} = 32 - k\]<br><br>Esempio: 490 host → \(2^9 = 512 \geq 492\) → k=9 → <b>/23</b>
+
+Esame 2021/2022 — host <tt>131.118.X.Y</tt>, maschera <b>/17</b>. Come trovo il router?	/17 = 255.255.128.0 → confine al 3° ottetto (bit 7).<br>Se ottetto ≥ 128 → bit di rete = 1 → blocco 128–255 → router = <b>131.118.255.254</b><br>Se ottetto < 128 → blocco 0–127 → router = <b>131.118.127.254</b>
+
+Esame 2023-05-26 — host <tt>54.205.211.33</tt>, maschera <b>/13</b> (255.248.0.0). Router e broadcast?	/13: maschera = <tt>11111|000</tt> al 2° ottetto.<br>205 AND 248 = <tt>11001|000</tt> = 200 → network <tt>54.200.0.0</tt><br>broadcast: <tt>11001|111</tt> = 207 → <tt>54.207.255.255</tt><br><b>Router = 54.207.255.254</b>
+
+Esame 2025 — host <tt>112.80.187.11</tt>, maschera <b>/20</b> (255.255.240.0). Router?	/20: confine al 3° ottetto, 4 bit host.<br>187 = <tt>1011|1011</tt> AND 240 = <tt>1111|0000</tt> → network ottetto = 176<br>broadcast ottetto = <tt>1011|1111</tt> = 191 → broadcast <tt>112.80.191.255</tt><br><b>Router = 112.80.191.254</b>
+
+#deck:Reti di Calcolatori::Crittografia
+
+Notazione: cosa fanno <b>\(K_{SA}[\cdot]\)</b> e <b>\(K_{PA}[\cdot]\)</b>?	\(K_{SA}[\cdot]\) = cifra con la <b>chiave privata</b> di Alice = <b>firma digitale</b> (solo Alice può farlo)<br><br>\(K_{PA}[\cdot]\) = cifra con la <b>chiave pubblica</b> di Alice = solo Alice può decifrare (con \(K_{SA}\))
+
+Perché per messaggi grandi si firma l'<b>hash</b> e non M direttamente?	La cifratura asimmetrica è <b>costosa</b>. HASH(M) ha dimensione fissa e piccola → \(K_{SA}(\text{HASH}(M))\) è efficiente.<br><br>Regola d'oro: <b>l'asimmetrico tocca solo cose piccole</b> (hash o chiave di sessione).
+
+Come garantire <b>privacy</b> su un messaggio M grande?	<b>Cifratura ibrida:</b><br>\[K_{PB}(K_s),\quad K_s(M)\]<br>Chiave di sessione \(K_s\) (simmetrica, casuale) cifrata con la pubblica di Bob; M cifrato con \(K_s\) (simmetrico = veloce).
+
+Come garantire il <b>non-Replay</b>?	Includere un <b>nonce</b> fresco \(R\) (o timestamp) all'interno del payload <b>firmato</b>.<br>Il destinatario verifica che R non sia già stato usato.<br><br><b>Attenzione:</b> R deve stare <b>dentro</b> la firma, non fuori (altrimenti Trudy può sostituirlo).
+
+Come garantire il <b>non-ripudio della ricezione</b> (Bob non può negare di aver ricevuto M)?	Bob invia ACK firmato:<br>\[K_{SB}[\text{HASH}(M)]\]<br>Alice verifica con \(K_{PB}\) → prova che Bob ha ricevuto esattamente M.
+
+Schema completo — M1 grande (<b>non ripudiabilità</b>, no privacy) + m2 piccolo (<b>mittente + privacy + non-Replay</b>)	Alice → Bob: \(M1,\ K_{SA}(\text{HASH}(M1)),\ R\)<br>Bob → Alice: \(K_{PA}\!\bigl[m2,\ R,\ K_{SB}(\text{HASH}(m2, R))\bigr]\)<br><br>M1 in chiaro + firma su hash (efficiente). m2 cifrato per Alice, firmato da Bob, nonce anti-replay.
+
+Come difendersi dall'attacco a <b>forza bruta</b> su piccolo spazio di valori (es. numeri primi ≤ 100)?	Aggiungere un <b>nonce/sale casuale</b> \(R\) dentro la busta cifrata.<br>Trudy non può precalcolare i ciphertext senza conoscere R → spazio dei candidati esplode.
+
+Come nascondere <b>N</b> (numero totale di messaggi) a Trudy?	Continuare a inviare <b>decoy</b> (pacchetti fittizi firmati con \(K_{SA}\)) anche dopo l'ultimo messaggio reale.<br>Il flag "ultimo" è cifrato dentro il payload → Trudy non sa quando finiscono i messaggi veri.<br><br>I decoy devono essere <b>firmati</b>: altrimenti Trudy inietta i propri.
+
+Esame 2020 — Alice→Bob: <b>mittente + privacy + non-ripudio della ricezione</b>. Schema completo.	Alice → Bob: \(\;K_{PB}\bigl[M,\ K_{SA}(\text{HASH}(M))\bigr]\)<br>Bob decifra, verifica la firma.<br>Bob → Alice (ACK): \(\;K_{SB}[\text{HASH}(M)]\)<br><br>Privacy: \(K_{PB}\). Mittente: \(K_{SA}\). Non-ripudio ricezione: ACK firmato da Bob.
+
+Esame 2023-07-21 — Alice invia N messaggi segreti \(m_1\dots m_N\) (N sconosciuto). Garanzie: privacy, ordine, integrità, N segreto. Schema?	Per ogni pacchetto \(i\) (più decoy oltre N):<br>\[P_i = K_{PB}\!\bigl[m_i,\ i,\ \texttt{flag\_ultimo},\ K_{SA}(\text{HASH}(m_i, i, \texttt{flag\_ultimo}))\bigr]\]<br>Bob: decifra, verifica firma (scarta non-firmati), ordina per \(i\), scarta \(i > N\) dopo il flag.<br>Decoy nascondono N; firma blocca le iniezioni di Trudy.
+
+Esame 2024 — Alice e Bob si scambiano numeri primi \(a_1, a_2, b_1, b_2\) (tutti ≤ 100). Garanzie: mittente, integrità, privacy, no forza bruta, no replay.	Alice → Bob: \(K_{PB}\bigl[a_1, a_2, R_A, K_{SA}(\text{HASH}(a_1, a_2, R_A))\bigr]\)<br>Bob → Alice: \(K_{PA}\bigl[b_1, b_2, R_B, K_{SB}(\text{HASH}(b_1, b_2, R_B))\bigr]\)<br><br>Il nonce \(R\) casuale rompe la forza bruta sullo spazio piccolo dei primi ≤ 100.
+
+Esame 2025 — M grande, <b>non ripudiabilità + non falsificazione</b>, no privacy, anti-replay. Schema efficiente.	Alice → Bob: \(M,\ T,\ K_{SA}(\text{HASH}(M, T))\)<br>Bob: verifica \(K_{PA}(\text{firma}) \overset{?}{=} \text{HASH}(M,T)\); controlla T fresco.<br><br>M in chiaro (no privacy richiesta). Firma su hash (M grande → efficiente). Timestamp T = anti-replay.
+
+Differenza tra <b>non ripudiabilità</b> e <b>garanzia del mittente</b>	Entrambe usano la firma \(K_{SA}(\text{HASH}(M))\), ma:<br>• <b>Garanzia mittente</b>: Bob sa che solo Alice ha potuto spedire.<br>• <b>Non ripudiabilità</b>: Alice non può in seguito negare di aver spedito (la firma è prova pubblica verificabile da chiunque con \(K_{PA}\)).
+
+Perché il nonce \(R\) deve stare <b>dentro</b> la firma e non fuori?	Se R fosse fuori dalla firma, Trudy potrebbe sostituirlo con un R diverso senza invalidare la firma → potrebbe far accettare un replay con un nonce fresco.<br>Dentro la firma: qualsiasi modifica invalida \(K_{SA}(\text{HASH}(\ldots, R))\).
+
+#deck:Reti di Calcolatori::Introduzione
+
+Cos'è una <b>Rete di Calcolatori</b>?	Un insieme di dispositivi <b>autonomi e interconnessi</b> in grado di scambiare informazioni.<br>L'autonomia è cruciale: ogni host svolge compiti in modo indipendente, senza controllo centralizzato.
+
+Differenza tra <b>PAN, LAN, MAN, WAN</b>	<b>PAN</b>: Personal Area Network — entro una stanza (es. Bluetooth)<br><b>LAN</b>: Local — edificio/campus, ~100-200 m<br><b>MAN</b>: Metropolitan — città, decine di km<br><b>WAN</b>: Wide — nazioni/continenti<br><b>Internet</b>: RETE delle RETI — tutto interconnesso
+
+Cos'è la <b>Bandwidth</b>? Cos'è la <b>Latency</b>? Cos'è il <b>Jitter</b>?	<b>Bandwidth</b>: quantità di dati trasmissibili al secondo (bit/s) — "diametro del tubo"<br><b>Latency</b>: tempo di transito dal mittente al destinatario — "lunghezza del tubo"<br><b>Jitter</b>: variazione statistica del ritardo. Critico per streaming; si mitiga col buffer di ricezione.
+
+<b>Hub</b> vs <b>Switch</b>: differenze	<b>Hub</b> (Livello 1): propaga il segnale a <b>tutte</b> le porte → dominio di collisione condiviso<br><b>Switch</b> (Livello 2): legge MAC di destinazione, inoltra <b>solo sulla porta corretta</b> → riduce collisioni, permette comunicazioni parallele
+
+<b>Commutazione di Circuito</b> vs <b>Commutazione di Pacchetto</b>	<b>Circuito</b>: percorso fisico dedicato e riservato prima della trasmissione. Pro: bassa latenza fissa, no collisioni. Contro: spreco risorse, costo per tempo.<br><b>Pacchetto</b>: dati divisi in pacchetti indipendenti, canale condiviso. Pro: uso efficiente. Contro: ritardo variabile (jitter), nessuna garanzia di consegna.
+
+Modello <b>ISO/OSI</b>: elenca i 7 livelli	7. <b>Applicazione</b> (HTTP, SMTP)<br>6. <b>Presentazione</b> (encoding, Big/Little Endian)<br>5. <b>Sessione</b> (gestione dialogo)<br>4. <b>Trasporto</b> (TCP/UDP, end-to-end)<br>3. <b>Rete</b> (IP, routing)<br>2. <b>Data Link</b> (MAC, frame, errori hop-by-hop)<br>1. <b>Fisico</b> (bit → segnali)
+
+<b>Stack TCP/IP</b>: quanti livelli? Come mappa con OSI?	<b>5 livelli</b>: Fisico / Data Link / Rete / Trasporto / Applicazione<br>Il livello Applicazione TCP/IP fonde i livelli 5, 6, 7 dell'OSI (Sessione, Presentazione, Applicazione).
+
+Cos'è l'<b>incapsulamento</b>? Nomi delle PDU per livello	In trasmissione, ogni livello aggiunge un <b>header</b> ai dati del livello superiore.<br><b>Segmento</b>: Livello Trasporto (TCP/UDP)<br><b>Pacchetto/Datagramma</b>: Livello Rete (IP)<br><b>Frame</b>: Livello Data Link (MAC)
+
+<b>TCP</b> vs <b>UDP</b>: quando si usa ciascuno?	<b>TCP</b>: orientato alla connessione (3-way handshake), affidabile (ACK + ritrasmissione), controllo di flusso e congestione. Per file transfer, web, email.<br><b>UDP</b>: connectionless, best-effort, veloce, no garanzie. Per streaming, gaming, DNS.
+
+<b>Repeater/Hub</b>, <b>Bridge/Switch</b>, <b>Router</b>: a quale livello?	<b>Repeater/Hub</b>: Livello 1 — rigenera il segnale fisico<br><b>Bridge/Switch</b>: Livello 2 — legge indirizzi MAC, connette segmenti LAN<br><b>Router</b>: Livello 3 — legge indirizzi IP, connette reti diverse e instrada pacchetti
+
+<b>Token Ring</b>: come funziona? Svantaggio critico	Solo chi possiede il <b>token</b> (pacchetto speciale circolante) può trasmettere.<br>Garanzia: <b>assenza di collisioni</b>.<br><b>Svantaggio critico</b>: se il token si perde o si corrompe, nessun host può trasmettere → rete paralizzata.
+
+Cos'è l'<b>indirizzo MAC</b>?	Indirizzo fisico a <b>48 bit</b> (6 byte), univoco al mondo, assegnato dal costruttore alla scheda di rete. Non modificabile.<br>Usato al Livello 2 per indirizzamento locale.<br>MAC broadcast = <b>FF:FF:FF:FF:FF:FF</b>
+
+Problemi del <b>canale ad accesso multiplo</b>	Un canale condiviso da tutti i dispositivi (tutti ricevono ogni trasmissione).<br>Problemi: (1) <b>rischio collisione</b> se due trasmettono insieme; (2) necessità di <b>arbitraggio</b>; (3) <b>indirizzamento</b> MAC per identificare il destinatario.
+
+Affidabilità <b>hop-by-hop</b> (Livello 2) vs <b>end-to-end</b> (Livello 4)	<b>Livello 2</b>: ACK solo al nodo successivo; se fallisce dopo Max Retry → notifica al Livello 3.<br><b>Livello 4 (TCP)</b>: unica vera affidabilità end-to-end — garantisce che tutti i segmenti arrivino corretti e in ordine dal mittente originale al destinatario finale, indipendentemente da quanti hop intermedi falliscano.
+
+Cos'è la <b>congestione di rete</b>?	Si verifica quando un router riceve pacchetti a velocità superiore a quella con cui può inoltrarli.<br>Le code si riempiono e i pacchetti in arrivo vengono <b>scartati (dropped)</b>, causando perdita di dati.
+
+#deck:Reti di Calcolatori::Internetworking
+
+Cos'è <b>ARP</b> e come funziona?	<b>ARP (Address Resolution Protocol)</b>: traduce indirizzo IP → indirizzo MAC sulla LAN.<br>A invia <b>ARP request in broadcast</b>: "Chi ha IP X?"<br>B (con IP X) risponde con il proprio MAC (ARP reply).<br>A memorizza nella sua <b>tabella ARP</b> per usi futuri.
+
+<b>DHCP</b>: cos'è e passi DORA	Protocollo che assegna automaticamente IP, netmask, default gateway, server DNS.<br><b>D</b>iscover (client → broadcast) → <b>O</b>ffer (server propone IP) → <b>R</b>equest (client conferma scelta) → <b>A</b>CK (server conferma assegnazione)<br>Usa UDP: porta <b>67</b> (server), porta <b>68</b> (client).
+
+<b>DNS</b>: struttura gerarchica e risoluzione	Gerarchia: Root DNS → TLD (.com, .it, …) → Authoritative DNS<br><b>Iterativa</b>: il Local DNS server fa tutte le interrogazioni, riceve referimenti e procede.<br><b>Ricorsiva</b>: il server interrogato trova la risposta per conto del richiedente (più carico in alto).<br><b>Caching</b> con TTL evita query ripetute.
+
+Record DNS: <b>A, NS, CNAME, MX</b>	<b>A</b>: hostname → indirizzo IP<br><b>NS</b>: dominio → hostname del name server autoritativo<br><b>CNAME</b>: alias → nome canonico<br><b>MX</b>: dominio → hostname del mail server
+
+<b>TCP Three-Way Handshake</b>	1. Client → Server: <b>SYN</b><br>2. Server → Client: <b>SYN-ACK</b><br>3. Client → Server: <b>ACK</b><br>→ connessione stabilita, scambio dati può iniziare.
+
+<b>Sliding Window TCP</b>: cos'è? Congestion control	La finestra permette di inviare più pacchetti senza attendere un ACK per ciascuno.<br><b>Slow Start</b>: cwnd raddoppia ogni RTT (crescita esponenziale)<br>Raggiunta ssthresh → <b>Congestion Avoidance</b> (crescita lineare)<br>Perdita via timeout: cwnd=1, ricomincia. Via 3 dupack: Fast Retransmit (cwnd dimezzata).
+
+Classi di indirizzi <b>IPv4</b>: A, B, C	<b>A</b>: bit iniziale 0 → 1 byte rete, 3 byte host (~16M host/rete)<br><b>B</b>: bit iniziali 10 → 2 byte rete, 2 byte host (~65K host/rete)<br><b>C</b>: bit iniziali 110 → 3 byte rete, 1 byte host (254 host/rete)
+
+Cos'è il <b>NAT</b> e come funziona?	<b>NAT (Network Address Translation)</b>: il router sostituisce IP privati interni con il proprio IP pubblico.<br>Mantiene una tabella (IP_privato, porta) ↔ (IP_pubblico, porta_NAT).<br>Con 16 bit porta → ~<b>60.000 connessioni simultanee</b> con 1 solo IP pubblico.
+
+<b>IPv6</b>: principali differenze da IPv4	Indirizzi a <b>128 bit</b> (~3.4×10³⁸ indirizzi)<br>Header fisso da <b>40 byte</b><br><b>Nessuna frammentazione</b> dai router (solo dall'host sorgente → ICMPv6 "Packet Too Big")<br><b>Nessun checksum</b> nell'header fisso<br>Campo <b>Flow Label</b> (20 bit) per trattamento speciale di flussi
+
+Cos'è il <b>Tunnelling</b> IPv4-IPv6?	Tecnica per far viaggiare datagrammi IPv6 all'interno di datagrammi IPv4 attraverso porzioni legacy di Internet. Il datagramma IPv6 viene incapsulato nel payload di un datagramma IPv4.
+
+<b>ICMP</b>: cos'è? Come funzionano ping e traceroute?	<b>ICMP</b>: protocollo di supporto al Livello 3 per messaggi di controllo ed errori, incapsulato in IP.<br><b>ping</b>: Echo Request (type 8) → Echo Reply (type 0) → misura RTT.<br><b>traceroute</b>: pacchetti con TTL=1,2,3,… → ogni router che scarta (TTL=0) invia Time Exceeded (type 11) → rivela il percorso.
+
+<b>Well-Known Ports</b> principali	HTTP: <b>80</b> | HTTPS: <b>443</b> | SMTP: <b>25</b> | DNS: <b>53</b> (UDP) | FTP: <b>21</b> | Telnet: <b>23</b> | BGP: <b>179</b> (TCP) | DHCP server: <b>67</b>, client: <b>68</b>
+
+Cos'è un <b>Socket</b>?	Un socket è l'endpoint di una comunicazione, identificato dalla coppia (<b>Indirizzo IP</b>, <b>Numero di Porta</b>).<br>Il numero di porta (16 bit) distingue tra diverse applicazioni in esecuzione sullo stesso host.
+
+#deck:Reti di Calcolatori::Applicazione
+
+<b>HTTP</b>: stateless, connessioni persistenti vs non-persistenti	<b>Stateless</b>: il server non ricorda richieste precedenti (ogni richiesta è indipendente).<br><b>Non-persistente</b>: una connessione TCP per ogni oggetto → 2 RTT + trasmissione per oggetto.<br><b>Persistente</b> (HTTP/1.1 default): più oggetti sulla stessa connessione TCP → riduce latenza.
+
+Metodi HTTP e codici di stato principali	Metodi: <b>GET</b> (richiesta), <b>POST</b> (invia dati nel body), <b>HEAD</b> (solo header), <b>PUT</b> (upload), <b>DELETE</b> (HTTP/1.1)<br>Codici: <b>200</b> OK | <b>301</b> Moved Permanently | <b>304</b> Not Modified | <b>400</b> Bad Request | <b>404</b> Not Found | <b>505</b> HTTP Version Not Supported
+
+Come funzionano i <b>Cookie HTTP</b>? 4 componenti	1. Header <b>Set-cookie:</b> nella risposta del server<br>2. Header <b>Cookie:</b> nelle successive richieste del client<br>3. <b>File cookie</b> sul browser dell'utente<br>4. <b>Database back-end</b> sul sito web<br>Permettono stato tra sessioni (login, carrello). Implicazione privacy: tracciamento utente.
+
+Cos'è il <b>Conditional GET</b>?	La web cache include <b>If-modified-since: [data]</b> nella richiesta.<br>Oggetto NON modificato → server risponde <b>304 Not Modified</b> (nessun body → risparmia banda).<br>Oggetto modificato → server risponde <b>200 OK</b> con dati aggiornati.
+
+<b>Web Cache (Proxy)</b>: come funziona e vantaggi	Soddisfa richieste HTTP senza contattare il server di origine se ha l'oggetto in cache.<br>Riduce traffico sul link di accesso e latenza per l'utente.<br>Es. con hit rate 0.4: utilizzo link scende da ~99% a ~58% → nessuna coda.
+
+<b>SMTP</b> vs <b>HTTP</b>: differenze chiave	<b>SMTP</b>: tipo <b>push</b>, porta 25 TCP, solo ASCII 7 bit, connessioni persistenti, più oggetti per messaggio, fine = CRLF.CRLF<br><b>HTTP</b>: tipo <b>pull</b>, porta 80 TCP, un oggetto per messaggio di risposta
+
+<b>POP3</b> vs <b>IMAP</b>	<b>POP3</b>: download-and-delete (messaggi sul client locale), stateless tra sessioni, semplice.<br><b>IMAP</b>: messaggi sempre sul server, organizzazione in cartelle, stato mantenuto tra sessioni → ideale per accesso da più dispositivi.
+
+<b>BitTorrent</b>: strategia di richiesta e invio chunk	<b>Richiesta</b>: priorità ai chunk più <b>rari</b> tra i vicini (maximizza disponibilità futura)<br><b>Invio (Tit-for-Tat)</b>: invia ai 4 peer che ti forniscono dati più velocemente; rivalutati ogni 10s; ogni 30s "optimistically unchoke" un peer casuale.
+
+<b>DASH</b>: cos'è e come funziona?	<b>DASH (Dynamic Adaptive Streaming over HTTP)</b>: il video è diviso in chunk pre-codificato a diverse qualità. Un file manifesto contiene gli URL di tutte le versioni di tutti i chunk.<br>Il <b>client</b> misura la banda disponibile e sceglie la qualità del prossimo chunk adattandosi dinamicamente.
+
+<b>CDN</b>: Enter Deep vs Bring Home	<b>Enter deep</b>: tanti server CDN nelle access network, vicini agli utenti → bassa latenza, più cluster da gestire (es. Akamai)<br><b>Bring home</b>: pochi cluster grandi nei POP → più semplice, latenza leggermente maggiore (es. Limelight)
+
+<b>DNS poisoning</b> e <b>amplification attack</b>	<b>Poisoning</b>: intercettare query DNS e inviare reply false che vengono messe in cache dai resolver, dirottando gli utenti su server malevoli.<br><b>Amplification</b>: inviare query con IP sorgente falsificato (della vittima); le risposte DNS (più grandi delle richieste) sommergono la vittima.
+
+<b>Client-Server</b> vs <b>P2P</b>: scalabilità	<b>C-S</b>: il server deve caricare N copie → tempo cresce <b>linearmente</b> con N.<br><b>P2P</b>: la capacità upload totale = server + tutti i peer → cresce con N → scala <b>molto più efficiente</b>. Ogni nuovo peer porta domanda E capacità (<b>auto-scalabilità</b>).
+
+<b>Codifica Video</b>: CBR vs VBR; coding spaziale vs temporale	<b>CBR</b>: bit rate fisso nel tempo<br><b>VBR</b>: bit rate variabile in base alla ridondanza<br><b>Coding spaziale</b>: comprime ridondanza interna a un frame<br><b>Coding temporale</b>: codifica solo le differenze tra frame consecutivi
+
+#deck:Reti di Calcolatori::Rete
+
+<b>Data Plane</b> vs <b>Control Plane</b>	<b>Data Plane</b>: funzione locale per-router, in hardware (nanosecondi) → forwarding di ogni pacchetto verso la porta di uscita corretta consultando la tabella di forwarding.<br><b>Control Plane</b>: logica di rete, in software (millisecondi) → calcola e aggiorna le tabelle di forwarding tramite algoritmi di routing.
+
+<b>Longest Prefix Matching</b>: regola e implementazione	Nella tabella di forwarding, si usa il <b>prefisso più lungo</b> che corrisponde all'indirizzo di destinazione IP.<br>Es. se un indirizzo fa match con /20 e /23, si usa l'interfaccia del /23 (più specifico).<br>Implementato su <b>TCAM</b> (Ternary Content Addressable Memory): lookup in un solo ciclo di clock.
+
+Tipi di <b>Switching Fabric</b>	<b>Via Memoria</b>: CPU copia nella RAM → lento (2 attraversamenti bus)<br><b>Via Bus</b>: bus condiviso → un flusso alla volta (es. Cisco 5600: 32 Gbps)<br><b>Via Crossbar</b>: griglia di connessioni → percorsi paralleli simultanei → più scalabile
+
+<b>Head-of-Line (HOL) Blocking</b>	Problema nelle code di ingresso: un pacchetto in testa alla coda <b>blocca altri pacchetti in attesa</b> anche se le loro porte di uscita sono libere → perdita di throughput.
+
+Discipline di <b>scheduling</b> nelle code di uscita	<b>FIFO</b>: ordine di arrivo; <i>tail drop / priority drop / random drop</i> quando piena<br><b>Priority</b>: sempre servita prima la classe più prioritaria<br><b>Round Robin</b>: scansione ciclica delle code di classe<br><b>WFQ</b>: ogni classe riceve una quota di banda proporzionale al suo peso
+
+<b>Frammentazione IP</b>: campi coinvolti e chi riassembla	MTU = dimensione max del frame a Livello 2. Se il datagramma è più grande, viene frammentato.<br><b>Identifier</b>: stesso in tutti i frammenti dello stesso datagramma<br><b>Fragment Offset</b>: posizione in unità di 8 byte<br><b>More Fragments (MF)</b>: 1 per tutti tranne l'ultimo<br>Riassembla: il <b>destinatario finale</b>.
+
+Algoritmo di <b>Dijkstra</b>: complessità e problema oscillazioni	Complessità: <b>O(n²)</b> base, O(n log n) con heap.<br><b>Oscillazioni</b>: se il costo dei link dipende dal traffico, il routing cambia, il traffico si sposta, i costi cambiano di nuovo. Soluzione: randomizzare il momento dei link-state broadcast.
+
+<b>Bellman-Ford</b> e Distance Vector	Formula: \(d_x(y) = \min_v \{c(x,v) + d_v(y)\}\)<br>Costo minimo da x a y = min su tutti i vicini v di (costo link a v) + (distanza dichiarata da v verso y).<br>Ogni router scambia il proprio DV <b>solo con i vicini</b> in modo iterativo.
+
+<b>Count-to-Infinity</b> e Poisoned Reverse	Problema DV: "good news travels fast, bad news travels slow". Un guasto fa sì che i router si rimpallino stime errate crescenti.<br><b>Poisoned Reverse</b>: se Z raggiunge X passando per Y, Z dichiara a Y distanza ∞ verso X → evita loop a 2 nodi. Non risolve loop a 3+ nodi.
+
+<b>OSPF</b>: tipo e caratteristiche	<b>OSPF (Open Shortest Path First)</b>: protocollo IGP (intra-AS), tipo <b>Link-State</b>.<br>Ogni router ottiene mappa completa dell'AS ed esegue <b>Dijkstra</b>.<br>Trasportato direttamente su IP (protocollo 89). Supporta autenticazione.<br><b>Gerarchico</b>: aree locali + backbone → scalabile in AS grandi.
+
+<b>BGP</b>: cos'è, tipo di protocollo, selezione rotte	<b>BGP (Border Gateway Protocol)</b>: protocollo EGP inter-AS, usa TCP porta 179. La "colla" di Internet.<br>Tipo <b>Path Vector</b>: pubblicizza l'intero AS-PATH. Previene loop scartando rotte con il proprio AS.<br>Selezione: 1° <b>Local preference</b> (policy), 2° AS-PATH più corto, 3° NEXT-HOP più vicino (hot-potato routing).
+
+<b>SDN</b> e <b>OpenFlow</b>: concetti chiave	<b>SDN</b>: separa data plane (switch) da control plane (controller centralizzato).<br><b>OpenFlow</b>: protocollo controller-switch. Flow table con regole <b>match + action</b>: match su qualsiasi campo header (IP src/dst, porta, MAC, VLAN, porta ingresso) → azione (forward, drop, modify, send to controller).<br>Un unico paradigma sostituisce router, firewall, NAT, load balancer.
+
+<b>Sistema Autonomo (AS)</b>, IGP vs EGP	<b>AS</b>: insieme di router sotto un'unica amministrazione con politica di routing comune.<br><b>IGP (Intra-AS)</b>: ottimizza le prestazioni all'interno dell'AS (es. OSPF, RIP).<br><b>EGP (Inter-AS)</b>: gestisce politiche commerciali tra AS diversi (es. BGP).<br>Router al confine di un AS = <b>gateway router</b>.
+
+Tipi di router in <b>OSPF gerarchico</b>	<b>Internal router</b>: dentro una sola area<br><b>Area Border Router (ABR)</b>: al confine di un'area, riassume e pubblicizza rotte verso il backbone<br><b>Backbone router</b>: dentro il backbone (area 0)<br><b>Boundary router</b>: connette ad altri AS (inter-AS routing)
+
+<b>NAT Traversal</b>: problema e SDN come soluzione	Il NAT viola il principio end-to-end: un host esterno non può iniziare una connessione verso un host dietro NAT (l'IP interno non è raggiungibile dall'esterno).<br>Particolarmente problematico per P2P.<br>SDN/OpenFlow può implementare NAT in modo flessibile con regole match+action.
+
+#deck:Reti di Calcolatori::Sicurezza
+
+<b>SSL/TLS</b>: a quale livello opera? Cosa fornisce?	Opera al <b>Livello Applicazione</b> (tra applicazione e TCP).<br>Fornisce: <b>cifratura</b> (confidenzialità), <b>integrità</b> (MAC), <b>autenticazione</b> (certificati digitali).<br>Base di HTTPS. TLS è la versione standardizzata moderna di SSL.
+
+Le <b>4 fasi di SSL</b>	1. <b>Handshake</b>: autenticazione e accordo sugli algoritmi<br>2. <b>Key Derivation</b>: derivazione di 4 chiavi dal master secret tramite KDF<br>3. <b>Data Transfer</b>: ogni record cifrato + MAC per integrità<br>4. <b>Connection Closure</b>: chiusura sicura con record di tipo "closure"
+
+Perché SSL usa <b>4 chiavi diverse</b> invece di una sola?	Per evitare il riuso della stessa chiave per scopi diversi. Da un master secret, una KDF deriva:<br><b>Kc</b>: cifratura client→server<br><b>Mc</b>: MAC client→server<br><b>Ks</b>: cifratura server→client<br><b>Ms</b>: MAC server→client
+
+Cos'è un <b>downgrade attack</b> e come lo previene SSL?	Un MitM modifica la lista degli algoritmi proposti nell'handshake per forzare l'uso di algoritmi deboli.<br>SSL previene: alla fine dell'handshake client e server si scambiano un <b>MAC di tutti i messaggi di handshake</b> → qualsiasi alterazione fa fallire la verifica del MAC finale.
+
+<b>IPsec</b>: AH vs ESP, Transport mode vs Tunnel mode	<b>AH</b>: autenticazione + integrità, <b>NO</b> cifratura<br><b>ESP</b>: autenticazione + integrità + <b>cifratura</b> (più usato)<br><b>Transport mode</b>: cifra solo il payload IP → tra due host<br><b>Tunnel mode</b>: cifra l'intero pacchetto IP originale + nuovo header → per VPN tra router
+
+<b>WEP</b>: perché è insicuro?	IV a soli <b>24 bit</b> → riutilizzo garantito in breve tempo su reti trafficate<br>IV trasmesso in <b>chiaro</b> → l'attaccante rileva il riutilizzo<br>Con plaintext noto: ricava keystream → decifra tutti i pacchetti con lo stesso IV<br>→ WEP è completamente obsoleto e non sicuro.
+
+<b>802.11i (WPA2)</b>: le 4 fasi	1. <b>Discovery</b>: STA e AP scoprono le capabilities di sicurezza<br>2. <b>Autenticazione mutua</b>: STA e Authentication Server si autenticano, generano Master Key (MK); AP fa da pass-through<br>3. <b>PMK</b>: STA e AS derivano la Pairwise Master Key; AS la invia all'AP<br>4. <b>TK</b>: STA e AP derivano la Temporal Key per cifratura della sessione
+
+<b>Firewall Stateless</b> vs <b>Stateful</b>	<b>Stateless</b>: esamina ogni pacchetto isolatamente (IP src/dst, porta, flag TCP). Problema: ammette pacchetti ACK=1 verso porta 80 anche senza connessione stabilita → vulnerabile.<br><b>Stateful</b>: traccia lo stato delle connessioni TCP attive. Ammette ACK solo se appartiene a una connessione già avviata → più sicuro.
+
+<b>Application Gateway</b> (Proxy Firewall)	Opera a <b>Livello 7</b>: filtra in base ai dati applicativi, non solo agli header IP/TCP.<br>Es. per Telnet: tutti passano dal gateway, che fa relay solo per utenti autorizzati; il router blocca connessioni non originate dal gateway.<br>Più sicuro ma più lento e complesso.
+
+Cos'è un <b>IDS</b> e come funziona?	<b>IDS (Intrusion Detection System)</b>: monitora il traffico per <b>rilevare</b> (non bloccare) attività malevole.<br>Tecniche: <b>Deep Packet Inspection</b> (firma di virus nel payload); <b>Analisi correlata</b> (pattern su più pacchetti: port scan, DoS distribuito).<br>Spesso affiancato ai firewall per difesa a più livelli.
+
+Tipi di attacchi di <b>Trudy</b> (l'intruder)	<b>Eavesdropping</b>: intercettazione passiva<br><b>Inserimento attivo</b>: inserisce messaggi falsi<br><b>Spoofing/Impersonation</b>: falsifica indirizzo sorgente<br><b>Hijacking</b>: prende controllo di una connessione<br><b>DoS/DDoS</b>: sovraccarica le risorse del servizio
+
+Crittografia <b>simmetrica</b> vs <b>asimmetrica</b>	<b>Simmetrica</b> (es. AES, DES): stessa chiave per cifrare e decifrare. Veloce. Problema: scambio sicuro della chiave.<br><b>Asimmetrica</b> (es. RSA): coppia chiave pubblica (K+, per cifrare) / chiave privata (K−, per decifrare). Lenta (~100× più di AES). Risolve il problema della distribuzione della chiave.
+
+<b>RSA</b>: su cosa si basa la sicurezza? Generazione chiavi	Sicurezza: difficoltà di <b>fattorizzare</b> n = p×q (prodotto di due grandi numeri primi).<br>1. Scegli p, q primi grandi<br>2. n = p×q, z = (p-1)(q-1)<br>3. Scegli e coprimo con z<br>4. Trova d tale che ed mod z = 1<br>Chiave pubblica: (n, e) | Chiave privata: (n, d)<br>Cifratura: c = m^e mod n | Decifratura: m = c^d mod n
+
+Cos'è una <b>firma digitale</b>? Schema con hash	Garantisce autenticità, integrità e non ripudio.<br>1. Bob calcola H(m) → hash del messaggio<br>2. Bob cifra con la propria chiave privata: K⁻_B(H(m)) = <b>firma</b><br>3. Alice riceve m + firma; ricalcola H(m) e decifra la firma con K⁺_B<br>4. Se coincidono → messaggio autentico e integro
+
+#deck:Reti di Calcolatori::L3_L4_Applicazione_Esami
+
+<b>VLSM — Esercizio tipo</b>: dati host A(490), A1(155), B(35), B1(12), rete /22. Dimensionare le sottoreti.	<b>Procedimento:</b><br>1. Ordina decrescente: A(490) → /23, A1(155) → /24, B(35) → /26, B1(12) → /28<br>2. Figlio parte da inizio padre; fratello subito dopo broadcast del precedente<br>3. Calcola netmask da bit host: k=⌈log₂(hosts)⌉ → lunghezza prefisso = 32−k<br><b>Esempio N=133.99.240.0/22:</b> A=/23 (133.99.240.0), A1=/24 (133.99.240.0), B=/26 (133.99.242.0), B1=/28 (133.99.242.0)
+
+<b>Router e Broadcast — Formula rapida</b>	Dato un host e maschera, trova il router della rete:<br>1. Converti host e maschera in binario<br>2. Host AND netmask = network address<br>3. Network OR (NOT netmask) = broadcast<br>4. Router = broadcast − 1<br><b>Es.:</b> host 211.128.77.15, mask /24 → network 211.128.77.0, broadcast 211.128.77.255, router 211.128.77.254
+
+<b>Netmask /N dato numero di host per sottorete</b>	Dati N host utili in una sottorete:<br>1. Calcola bit host: k = ⌈log₂(N+2)⌉ (N utili + network + broadcast)<br>2. Prefisso = 32 − k<br><b>Es.:</b> 17 host → k=⌈log₂19⌉=5 → /27 (256/32=8 sottoreti da /27)
+
+<b>TCP — Three-Way Handshake esame</b>	1. Client → Server: <b>SYN</b> (seq=x)<br>2. Server → Client: <b>SYN-ACK</b> (seq=y, ack=x+1)<br>3. Client → Server: <b>ACK</b> (seq=x+1, ack=y+1)<br>Domanda tipo: "Se il server non invia SYN-ACK, il client farà cosa?" → timeout → ritrasmissione SYN
+
+<b>Congestion Control — Slow Start vs Congestion Avoidance</b>	<b>Slow Start:</b> cwnd raddoppia ogni RTT (esponenziale) finché non raggiunge ssthresh<br><b>Congestion Avoidance:</b> cwnd cresce di 1 MSS ogni RTT (lineare)<br><b>Perdita:</b> timeout → cwnd=1, ricominci; 3 dupack → cwnd/=2 (Fast Retransmit)<br>Domanda: "Se ssthresh=32KB e perdita all'RTT 2, quanto è cwnd?" → esponenziale: 1→2→4 KB, perdita → cwnd=1 o 2 KB (fast recovery)
+
+<b>Wireless — Modulazione: quale schema per bit rate richiesto?</b>	Dati: N sub-carrier OFDM, Symbol Rate, bit rate richiesto<br><b>Formula:</b> BR = N × SR × b (b=bit/simbolo)<br>Ricava: b_min = BR / (N × SR), scegli lo schema PSK/QAM con b ≥ b_min e minimo (massima robustezza)<br><b>Es.:</b> 18 sub-carrier, SR=500k, serve 13.5 Mbps → b=1.5 → serve QPSK (b=2), non BPSK (b=1)
+
+<b>Wireless — Link Budget: il sistema comunica?</b>	<b>Condizione:</b> Prx ≥ RS (received power ≥ receiver sensitivity)<br>Link Budget LB = Ptx + Gtx + Grx − PL<br>Se LB ≥ RS → comunica; LB < RS → no<br>PL = 36.6 + 20 log₁₀(fMHz) + 20 log₁₀(dm) con f in MHz, d in km<br>Domanda: "A quale distanza il sistema funziona ancora?" → inverti PL per distanza max
+
+<b>Wireless — Zona di Fresnel esame</b>	<b>Formula:</b> r₁₀₀% = 72.2 × √(d_an / (f_GHz))<br>dove d_an è distanza tra antenne (km), f in GHz<br><b>Significato:</b> se un ostacolo (albero/edificio) penetra > 60% di questo raggio, il segnale si degrada<br><b>Domanda tipo:</b> "Un ostacolo è a 10 m di altezza sull'asse diretto. È problema?" → calcola r₁₀₀%, se altezza ostacolo > 0.6r → sì
+
+<b>Crittografia — Alice firma M e la spedisce a Bob</b>	<b>Schema:</b> Alice → Bob: M, K_SA(HASH(M))<br>Bob verifica: K_PA(firma) = HASH(M) ?<br><b>Proprietà:</b> <br>• <b>Autenticità:</b> firma verificabile solo con K_PA (Alice l'ha firmato)<br>• <b>Integrità:</b> se M modificato, HASH non combacia<br>• <b>Non-ripudio:</b> Alice non può negare di aver mandato M
+
+<b>Crittografia — Nonce R per anti-replay</b>	<b>Problema:</b> Trudy intercetta msg(M, firma), lo ritrasmette, Bob lo accetta di nuovo<br><b>Soluzione:</b> Alice include nonce R fresco nell'hash: K_SA(HASH(M, R))<br>Bob accetta solo se R è nuovo/non visto.<br>Perché R deve stare <b>dentro</b> la firma? Perché se fuori, Trudy lo sostituisce senza invalidare la firma
+
+<b>Crittografia — Schema con garanzie multiple (Alice-Bob-Charlie)</b>	Se Alice manda m1 a Bob e m2 a Charlie, e entrambi devono ricevere garantito:<br><b>Schema:</b><br>Alice → Bob: m1, K_PB(m1, K_SA(HASH(m1)))<br>Alice → Charlie: m2, K_PC(m2, K_SA(HASH(m2)))<br><b>Garanzie:</b> confidenzialità (cifratura per destinatario), mittente (firma Alice), integrità (hash)
+
+<b>Crittografia — Attacchi Trudy: come mitigarli?</b>	<b>Replay:</b> nonce/timestamp dentro firma<br><b>DoS/Cancellazione:</b> ack + ritrasmissione<br><b>Spoofing:</b> firma digitale<br><b>Analisi traffico:</b> crittografare non solo payload, anche metadati (chi parla con chi, quando, quanto)<br>Domanda: "Quale attacco riesce ancora?" → dipende dallo schema
+
+<b>HTTP — Stateless + Connessioni Persistenti esame</b>	<b>Stateless:</b> server non ricorda lo stato tra richieste<br><b>Non-persistente (HTTP/1.0):</b> 1 richiesta = 1 connessione TCP = 2 RTT overhead<br><b>Persistente (HTTP/1.1):</b> N richieste sulla stessa TCP = 1 RTT + (N-1)×0<br><b>Domanda tipo:</b> "Client richiede 10 oggetti. Con/senza persistente?" → senza: 10×2 RTT; con: 1 RTT (primo) + 9 immediati
+
+<b>HTTP — Conditional GET e cache</b>	<b>Cache invia:</b> GET ... If-modified-since: [data]<br><b>Server risponde:</b> 304 Not Modified (no body, risparmia banda) oppure 200 OK con oggetto aggiornato<br><b>Domanda:</b> "Con hit rate 50%, quanto scende il traffico?" → teorico: no cache=carico pieno; con cache e conditional GET: si carica meno (solo delta)
+
+<b>DNS — Gerarchia risoluzione iterativa esame</b>	1. Client → Local DNS: "Chi è www.example.com?"<br>2. Local → Root: Root risponde "Chiedi TLD .com server"<br>3. Local → TLD: TLD risponde "Chiedi authoritative example.com"<br>4. Local → Auth: Auth risponde con IP<br>5. Local → Client: Risposta finale<br><b>Caching:</b> ogni risposta memorizzata con TTL, non ripetuta subito
+
+<b>DNS — Attacchi: Poisoning e Amplification</b>	<b>Poisoning:</b> intercettare query, inviare reply fake, entry va in cache dei resolver<br><b>Amplification:</b> attaccante invia query con IP sorgente = vittima; risposte DNS (grandi) sommergono vittima<br><b>Difesa:</b> DNSSEC (firma su risposte), rate limiting su query identiche
+
+<b>OSPF vs BGP — Differenze esame</b>	<b>OSPF:</b> IGP, Link-State, all'interno di un AS, Dijkstra, ottimizza prestazioni, protocollo 89<br><b>BGP:</b> EGP, Path Vector, tra AS, TCP 179, implementa politiche commerciali<br>Selezione BGP: Local preference → AS-PATH corto → NEXT-HOP vicino<br>Domanda: "Quale usi intra-AS?" → OSPF; "inter-AS?" → BGP
+
+<b>Dijkstra vs Bellman-Ford esame</b>	<b>Dijkstra:</b> O(n²), converge in 1 passata, ma oscillazioni se costi dipendono dal traffico<br><b>Bellman-Ford:</b> O(n×m), distribuito (DV scambia solo con vicini), "bad news travels slow" (count-to-infinity)<br>Poisoned Reverse mitiga count-to-infinity a 2 nodi<br>Domanda: "Guasto nel link XY. Bellman-Ford converge quanto veloce?" → lento, O(n) round
+
+<b>Firewall Stateless vs Stateful esame</b>	<b>Stateless:</b> esamina pacchetti isolati (IP src/dst, porta, flags). Vulnerabile: ammette ACK=1 verso porta 80 senza connessione<br><b>Stateful:</b> traccia stato TCP (SYN → ESTABLISHED → FIN). ACK accettato solo in connessioni attive<br>Domanda: "Come attacco un firewall stateless?" → SYN ACK spoofed verso una porta aperta
+
+#deck:Reti di Calcolatori::WirelessRouting
+
+Cos'è una <b>MANET</b>? Perché il routing è diverso?	<b>MANET (Mobile Ad Hoc Network)</b>: rete di host wireless mobili senza infrastruttura preesistente. Le rotte attraversano più hop.<br>Differenze: mobilità causa frequente rottura/creazione di link; nuovi criteri = <b>stabilità della rotta</b> e <b>consumo energetico</b>.
+
+<b>Flooding</b> nelle MANET: vantaggi e svantaggi	S invia in broadcast a tutti i vicini; ogni nodo lo ri-trasmette se prima volta. Numeri di sequenza evitano duplicati.<br><b>Pro</b>: semplice; utile per traffico sporadico; più cammini verso D.<br><b>Contro</b>: overhead enorme; broadcast 802.11 non affidabile (no ACK) → possibili collisioni al destinatario.
+
+<b>DSR (Dynamic Source Routing)</b>: principio e fasi	Protocollo <b>reattivo</b> (on-demand) con <b>source routing</b>: la rotta completa è nell'header del pacchetto.<br><b>Route Discovery</b>: S inonda la rete con RREQ; ogni nodo appende il proprio ID.<br><b>Route Reply</b>: D risponde con RREP contenente la rotta accumulata (invertita se link bidirezionali).<br><b>Route Caching</b>: ogni nodo memorizza le rotte apprese, anche origliando.
+
+<b>AODV</b> vs <b>DSR</b>: differenze chiave	<b>DSR</b>: rotta nell'header del pacchetto (header grandi); più rotte per destinazione; nodi intermedi rispondono spesso dalla cache.<br><b>AODV</b>: tabelle di routing nei nodi (header piccoli, solo next-hop); rotte scadono se inutilizzate (active\_route\_timeout); usa Destination Sequence Number per garanzia freschezza.
+
+<b>OLSR</b> e Multipoint Relays (MPR)	Protocollo <b>proattivo</b> link-state ottimizzato.<br>Ogni nodo seleziona un sottoinsieme di vicini come <b>MPR</b>: solo gli MPR ri-trasmettono le informazioni di stato → riduce i broadcast ridondanti.<br>Le rotte calcolate usano come nodi intermedi solo gli MPR.
+
+<b>LAR (Location-Aided Routing)</b>	Usa informazioni di posizione (GPS) per limitare il flood di RREQ.<br><b>Expected Zone</b>: cerchio di raggio r = (t₁-t₀)×v_stima attorno all'ultima posizione nota di D.<br><b>Request Zone</b>: regione contenente Expected Zone e mittente S → solo i nodi dentro questa zona inoltrano l'RREQ.
+
+<b>Mobile IP</b>: Home Agent e Foreign Agent	L'<b>Home Agent (HA)</b> risiede nella rete di casa di X. Quando X si sposta, un <b>Foreign Agent (FA)</b> gli assegna un <i>care-of address</i> e informa l'HA.<br>L'HA incapsula (tunnel) i pacchetti per X e li inoltra al FA corrente.<br>Problema: triangolazione (tutto il traffico passa per l'HA). Soluzione: aggiornare l'HA con il FA corrente.
+
+Perché <b>TCP soffre sulle reti wireless</b>?	TCP interpreta ogni perdita come <b>congestione</b> e riduce la finestra.<br>Ma nel wireless le perdite sono spesso dovute a <b>errori del canale</b> (fading, rumore) o <b>rotte spezzate</b> dalla mobilità — non a congestione.<br>La riduzione della finestra è inutile e penalizza gravemente il throughput.
+
+Differenza tra protocolli di routing <b>proattivi</b> e <b>reattivi</b>	<b>Proattivi</b>: rotte sempre aggiornate indipendentemente dal traffico (es. OLSR). Pro: bassa latenza di scoperta. Contro: overhead continuo.<br><b>Reattivi</b>: rotte scoperte solo quando servono (es. DSR, AODV). Pro: basso overhead. Contro: latenza iniziale di scoperta.<br>Quale è meglio dipende dai pattern di traffico e mobilità.
+
+<b>DCF</b> vs <b>PCF</b> in 802.11	<b>DCF</b>: Distributed Coordination Function — obbligatoria, basata sulla contesa, usa CSMA/CA + backoff. Servizio best-effort.<br><b>PCF</b>: Point Coordination Function — opzionale, centralizzata, l'AP fa polling a turno → nessuna collisione, soft QoS (garanzie di banda e ritardo).
+
+<b>IFS</b> in 802.11: SIFS, PIFS, DIFS	Intervalli di attesa obbligatori che definiscono le priorità (chi aspetta meno ha priorità più alta):<br><b>SIFS</b> (più breve, priorità massima): per ACK, CTS in risposta a RTS<br><b>PIFS</b>: per l'Access Point (modalità PCF)<br><b>DIFS</b> (più lungo): per nuove trasmissioni dati in DCF

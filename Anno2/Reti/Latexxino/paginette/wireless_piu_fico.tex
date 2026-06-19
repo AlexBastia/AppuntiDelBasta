@@ -147,3 +147,17 @@ Per adattarsi al livello di congestione della rete, la dimensione della Contenti
 \end{itemize}
 
 Questo meccanismo, noto come \textbf{Binary Exponential Backoff}, aumenta esponenzialmente l'intervallo da cui viene estratto il contatore casuale, "sparpagliando" maggiormente nel tempo i tentativi di ritrasmissione e riducendo la probabilità di ulteriori collisioni.
+
+In termini quantitativi, il tempo di backoff all'$i$-esimo tentativo è
+$$ \text{BackoffTime}(i) = \big(CW_i \cdot \text{random}()\big) \cdot \text{SlotTime}, $$
+dove $\text{random}() \in [0,1]$ e la finestra $CW_i$ raddoppia (più precisamente $2^{i+2}-1$) a ogni collisione, fino al valore massimo:
+
+\begin{center}
+\begin{tabular}{c|ccccccc}
+    Tentativo $i$ & 1 & 2 & 3 & 4 & 5 & 6 & 7 \\
+    \hline
+    $CW_i$ & 15 & 31 & 63 & 127 & 255 & 511 & 1023 \\
+\end{tabular}
+\end{center}
+
+\nt{Poiché in 802.11 non c'è Collision Detection, una collisione occupa il canale per l'\emph{intera} durata del pacchetto più lungo coinvolto: $\text{collision length} = \max\{L_A, L_B, L_C, \dots\}$, dove $L_X$ sono le lunghezze dei pacchetti collidenti. È questa l'inefficienza che il backoff cerca di prevenire.}

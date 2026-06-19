@@ -69,6 +69,10 @@ Per un utente, le prestazioni di una rete sono definite principalmente da due in
     \nt{Continuando l'analogia, il ritardo è il tempo che i dati impiegano per percorrere l'intera lunghezza del tubo.}
 \end{itemize}
 
+\begin{center}
+    \includegraphics[width=12cm]{img/jitter_diagram.png}
+\end{center}
+
 \ex{Capacità vs. Ritardo}{
     Immaginiamo di dover trasferire una grande quantità di dati (es. 1 Terabyte) da Milano a Roma.
     \begin{itemize}
@@ -107,9 +111,9 @@ Per connettere un calcolatore a una rete sono necessari componenti hardware e so
 
 \nt{La standardizzazione di connettori, schede e protocolli è ciò che garantisce la compatibilità e l'interoperabilità, permettendo a dispositivi di produttori diversi di comunicare senza problemi.}
 
-% \begin{center}
-%     \includegraphics[width=12cm]{img/componenti_rete.png}
-% \end{center}
+\begin{center}
+    \includegraphics[width=12cm]{img/componenti_rete.png}
+\end{center}
 
 \section{Collegamenti e Infrastrutture di Rete}
 
@@ -132,6 +136,10 @@ Esistono diversi schemi di connessione (infrastrutture):
     \item \textbf{Partizione di Rete}: Si verifica quando, a seguito di un guasto, la rete si divide in due o più sottogruppi di host isolati, incapaci di comunicare tra loro.
 \end{itemize}
 
+\begin{center}
+    \includegraphics[width=12cm]{img/infrastrutture_rete.png}
+\end{center}
+
 \nt{Per comunicare, è necessario identificare univocamente ogni scheda di rete. A questo scopo, ogni scheda possiede un indirizzo fisico unico al mondo, chiamato indirizzo \textbf{MAC (Media Access Control)}, lungo 48 bit (6 byte).}
 
 \section{Topologie di Rete}
@@ -148,6 +156,10 @@ Le principali topologie sono:
     \item \textbf{Albero (Tree)}: È una struttura gerarchica, simile a una stella estesa, dove un nodo centrale si collega ad altri nodi che, a loro volta, possono fungere da centro per altri dispositivi.
     \item \textbf{Maglia (Mesh)}: È una topologia complessa e non strutturata, tipica delle grandi reti (come Internet), dove i nodi hanno connessioni multiple e ridondanti, creando un grafo complesso.
 \end{itemize}
+
+\begin{center}
+    \includegraphics[width=12cm]{img/topologie_rete.png}
+\end{center}
 
 \subsection{Dettagli sulla Topologia ad Anello e a Stella}
 
@@ -369,13 +381,13 @@ Le reti sono costruite collegando segmenti e reti diverse tramite dispositivi sp
 \begin{itemize}
     \item \textbf{Repeater e Hub (Livello 1 - Fisico)}:
     \begin{itemize}
-        \item \textbf{Repeater}: Un dispositivo a due porte che riceve un segnale, lo "ripulisce", lo amplifica e lo ritrasmette, estendendo la lunghezza massima di un segmento di rete.
+        \item \textbf{Repeater}: Un dispositivo a due porte che riceve un segnale, lo "ripulisce", lo amplifica e lo ritrasmette, estendendo la lunghezza massima di un segmento di rete. Serve perché un singolo segmento Ethernet è limitato a circa \textbf{100-200 metri}: oltre questa distanza il segnale si attenua troppo per essere decodificato correttamente, e il repeater permette di superare tale limite rigenerandolo.
         \item \textbf{Hub}: Un repeater multiporta, funge da punto di connessione centrale per una topologia a stella. Trasmette ogni pacchetto ricevuto a tutte le altre porte.
     \end{itemize}
     \item \textbf{Bridge e Switch (Livello 2 - Data Link)}:
     \begin{itemize}
         \item \textbf{Bridge}: Connette due segmenti di rete (che possono usare tecnologie MAC diverse, es. Ethernet e Token Ring) per formare una singola LAN. Legge gli indirizzi MAC e può tradurre i frame da un formato all'altro.
-        \item \textbf{Switch}: Un bridge multiporta e più evoluto. Impara quali indirizzi MAC sono raggiungibili su ciascuna delle sue porte e inoltra i frame in modo selettivo solo sulla porta corretta, riducendo il traffico e le collisioni.
+        \item \textbf{Switch}: Un bridge multiporta e più evoluto. Impara quali indirizzi MAC sono raggiungibili su ciascuna delle sue porte e inoltra i frame in modo selettivo solo sulla porta corretta, riducendo il traffico e le collisioni. Rispetto a un bridge (che connette tipicamente due soli segmenti), uno switch è in grado di connettere \textbf{molti più segmenti}, fino a circa \textbf{10-12}.
     \end{itemize}
     \item \textbf{Router (Livello 3 - Rete)}:
     \begin{itemize}
@@ -400,8 +412,66 @@ Le reti sono costruite collegando segmenti e reti diverse tramite dispositivi sp
 %     \includegraphics[width=13cm]{img/rete_locale_complessa.png}
 % \end{center}
 
+\section{Una Visione Unitaria: ad Ogni Livello la Rete Cambia Natura}
+Un modo molto efficace per comprendere l'architettura a livelli è osservare come, salendo lungo lo stack, cambi il \textbf{concetto stesso di "rete"}: ogni livello vede e tratta la rete in modo diverso, costruendo astrazioni sempre più ricche su quelle inferiori.
+\begin{itemize}
+    \item \textbf{Livello Fisico (1)}: la rete è semplicemente un \textbf{segmento}, ovvero un mezzo condiviso costituito da un'unica tecnologia comune. A questo livello si definiscono solo le regole per \textbf{codificare e trasmettere} i bit sul mezzo.
+    \item \textbf{Livello MAC/LLC (2)}: la rete diventa una \textbf{rete locale (LAN)}, capace di integrare mezzi e tecnologie diversi (più segmenti collegati tra loro). Qui si introducono le regole per gli \textbf{indirizzi} (MAC), per l'\textbf{accesso al mezzo} e per la \textbf{gestione degli errori}.
+    \item \textbf{Livello Rete (3)}: la rete diventa una \textbf{collezione di reti} (reti di reti, organizzate in sottoreti), con struttura \textbf{gerarchica}. Compaiono i \textbf{router}, che instradano i pacchetti. Il servizio offerto è \textbf{connectionless}: i pacchetti possono andare persi o arrivare in disordine.
+    \item \textbf{Livello Trasporto (4)}: si \textbf{ripristina} un servizio orientato alla connessione, recuperando la consegna \textbf{ordinata e completa} dei dati e aggiungendo il \textbf{controllo della congestione}. È qui che Internet diventa una "rete di reti affidabile", costruita sopra lo stack TCP/IP.
+    \item \textbf{Livello Applicazione (7)}: a questo punto la rete "\textbf{funziona}" ed è semplicemente a disposizione delle applicazioni dell'utente, che ne usano i servizi senza preoccuparsi dei dettagli sottostanti.
+\end{itemize}
+
 \chapter{Analisi Dettagliata dei Livelli}
+
+\section{Il Livello 1: Codifica Digitale dei Dati}
+All'interno di un calcolatore i dati sono rappresentati come sequenze di \textbf{bit}, ossia cifre binarie che valgono $0$ oppure $1$. Tuttavia, sul mezzo fisico non viaggiano "numeri": viaggiano segnali analogici (variazioni di tensione elettrica, impulsi luminosi, onde radio). Il compito del Livello Fisico è quindi tradurre i bit in segnali e viceversa.
+
+\dfn{Codifica e Decodifica}{
+    In fase di \textbf{trasmissione}, la scheda di rete \textbf{codifica} i dati digitali, traducendo ogni bit in un opportuno segnale analogico (elettrico, ottico o radio) da immettere sul mezzo. In fase di \textbf{ricezione}, la scheda di rete \textbf{decodifica}, interpretando il segnale analogico in arrivo e ricostruendo i bit originali, un bit dopo l'altro.
+}
+
+\nt{Le tecniche di codifica sono progettate per essere robuste al rumore e \textbf{riducono} la probabilità di errore, ma non la eliminano del tutto: un certo numero di bit può comunque essere ricevuto in modo errato.}
+
+\subsection{Velocità di Propagazione e Capacità del Canale}
+Un equivoco molto diffuso è pensare che, su una rete più "veloce", i bit "viaggino più rapidamente". Questo è falso.
+
+\thm{Velocità di propagazione costante}{
+    Tutti i segnali elettromagnetici (elettrici, ottici, radio) si propagano sul mezzo alla \textbf{stessa velocità fisica}, prossima alla velocità della luce (circa $300.000$ km/s). Di conseguenza, \textbf{non} ha alcun senso affermare che i bit di una certa rete "viaggiano più veloci" di quelli di un'altra: la velocità di propagazione è la stessa per tutti.
+}
+
+Ciò che distingue una rete più o meno performante non è quindi la velocità di propagazione, bensì la \textbf{capacità} del canale, cioè il massimo numero di bit al secondo che è possibile trasmettere.
+
+\dfn{Capacità e tempo di codifica}{
+    La capacità di un canale dipende dal \textbf{tempo necessario a codificare ciascun bit} sul mezzo, non dalla velocità con cui il segnale si propaga. Un canale più capiente impiega \textbf{meno tempo} per rappresentare ogni singolo bit, e riesce quindi a farne entrare di più nello stesso intervallo di tempo.
+}
+
+\ex{Confronto tra due canali}{
+    Si considerino due canali sullo stesso identico mezzo fisico:
+    \begin{itemize}
+        \item Canale A: capacità di $10$ bit/s.
+        \item Canale B: capacità di $20$ bit/s.
+    \end{itemize}
+    Il canale B ha capacità \textbf{doppia} rispetto ad A: nello stesso secondo trasmette il doppio dei bit. Ciononostante, i segnali sui due canali si propagano esattamente alla stessa velocità. La differenza non sta in "quanto corrono" i bit, ma in quanto tempo serve per codificarne ciascuno sul mezzo.
+}
+
 \section{Il Livello 2: Accesso al Mezzo (MAC/LLC)}
+
+\subsection{Il Segmento di Rete Locale}
+\dfn{Segmento di Rete Locale}{
+    Un \textbf{segmento di rete locale} è un mezzo condiviso ad \textbf{accesso multiplo}: tutte le schede di rete connesse al segmento \textbf{ricevono fisicamente ogni trasmissione} che vi transita. Tuttavia, una scheda \textbf{accetta} un frame (cioè lo passa ai livelli superiori) \textbf{solo se} l'indirizzo MAC del destinatario contenuto nel frame coincide con il proprio indirizzo MAC; in caso contrario lo scarta silenziosamente.
+}
+
+\nt{È questo il motivo per cui ogni frame deve trasportare l'indirizzo MAC del destinatario: il mezzo è condiviso e "fisicamente" sentito da tutti, quindi serve un modo per stabilire a chi sia effettivamente rivolto il messaggio.}
+
+\subsection{Struttura del Frame}
+Il frame è l'unità di dati del Livello 2 ed è organizzato in tre parti fondamentali:
+\begin{itemize}
+    \item \textbf{Testa (header)}: contiene l'\textbf{indirizzo MAC del destinatario} e l'\textbf{indirizzo MAC del mittente}, necessari per l'indirizzamento sul segmento condiviso.
+    \item \textbf{Centro (dati)}: i \textbf{dati veri e propri}, ossia tutto ciò che è stato incapsulato dai livelli superiori (pacchetto IP e relativo contenuto).
+    \item \textbf{Coda (trailer)}: un campo di bit dedicato al \textbf{controllo degli errori}, che permette al destinatario di rilevare se durante la trasmissione qualche bit sia stato alterato.
+\end{itemize}
+
 \subsection{Rendere il Canale Affidabile}
 Il livello fisico è intrinsecamente inaffidabile: i segnali possono essere corrotti dal rumore. Il compito del livello Data Link è di mascherare questa inaffidabilità e fornire al livello superiore l'illusione di un canale privo di errori, almeno su un singolo collegamento.
 Un protocollo semplice per ottenere ciò è basato su conferme e ritrasmissioni:
@@ -436,3 +506,61 @@ I protocolli di accesso al mezzo definiscono le regole per l'arbitraggio.
     \item \textbf{Token Ring (Accesso Controllato)}: Usato in topologie ad anello. Evita completamente le collisioni garantendo che solo chi possiede il "testimone" (token) possa trasmettere. Questo garantisce prestazioni prevedibili e una qualità del servizio (QoS) controllabile.
 \end{itemize}
 \nt{Il teorema dei "Due Generali" nella teoria dei sistemi distribuiti dimostra formalmente che in una rete inaffidabile è impossibile per due entità raggiungere un accordo con certezza al 100\% in un tempo finito. Questo evidenzia perché i protocolli di rete si basano su meccanismi di ritrasmissione e timeout, che forniscono un'affidabilità pratica ma non una garanzia matematica assoluta.}
+
+\subsection{Trama minima e distanza massima in CSMA/CD}
+Il \textit{collision detection} impone un vincolo nascosto ma fondamentale: per
+accorgersi di una collisione, una stazione deve essere \textbf{ancora in
+trasmissione} quando il segnale della collisione le torna indietro.
+
+Consideriamo il caso peggiore: due stazioni agli estremi opposti del cavo, a
+distanza $d$, con velocità di propagazione $v \approx 2\times10^8$ m/s (quindi
+ritardo di propagazione di sola andata $T_{prop}=d/v$). La stazione $A$ inizia a
+trasmettere; un istante prima che il suo segnale arrivi a $B$, anche $B$ percepisce
+il canale libero e parte $\Rightarrow$ collisione vicino a $B$. La "notizia" della
+collisione deve poi tornare fino ad $A$: quindi $A$ se ne accorge solo dopo il
+\textbf{round-trip} $2\,T_{prop}$.
+
+\dfn{Vincolo fondamentale del CSMA/CD}{
+Il tempo per trasmettere la trama \textbf{più piccola} deve essere $\ge$ del tempo
+di andata e ritorno sul mezzo:
+\[
+T_{trasm}^{\min} \;=\; \frac{L_{\min}}{C} \;\ge\; 2\,T_{prop} \;=\; \frac{2d}{v}.
+\]
+Se la trama è troppo corta, $A$ finisce di trasmettere \emph{prima} che le torni la
+collisione: crede di aver spedito bene, ma i dati erano corrotti
+(\textbf{collisione tardiva non rilevata}) e il CSMA/CD fallisce.
+}
+
+Da qui nascono due numeri-chiave dell'Ethernet classico (10 Mbps):
+\begin{itemize}
+    \item \textbf{dimensione minima della trama}: $L_{\min}=64$ byte $=512$ bit
+    (se i dati sono meno, si riempie con il \textit{padding});
+    \item \textbf{slot time} (durata di quella trama minima, cioè il budget di
+    round-trip):
+    \[
+    \text{slot time} = \frac{512\ \text{bit}}{10\ \text{Mbit/s}} = 51{,}2\ \mu s .
+    \]
+\end{itemize}
+Questo fissa il \textbf{diametro massimo} del dominio di collisione: imponendo
+$2d/v \le 51{,}2\ \mu s$ si ottengono circa $5$ km teorici, ridotti dallo standard a
+$\sim\!\mathbf{2{,}5}$ \textbf{km} per tenere conto dei ritardi dei ripetitori e di
+un margine di sicurezza (regola \textbf{5-4-3}: max 5 segmenti, 4 ripetitori, 3
+popolati tra due stazioni).
+
+\ex{Perché a 10 km l'Ethernet condiviso non funziona}{
+A $d=10$ km il round-trip vale
+\[
+2\,T_{prop} = \frac{2\cdot10\,000}{2\times10^8} = 100\ \mu s \;>\; 51{,}2\ \mu s,
+\]
+quindi una stazione finisce la trama minima \emph{prima} di poter rilevare la
+collisione $\Rightarrow$ CSMA/CD rotto. \textbf{Non} è un problema di attenuazione
+(quella si risolve coi ripetitori): aggiungere hub/ripetitori \emph{peggiora} le
+cose, perché mantengono un \emph{unico} dominio di collisione e aggiungono ritardo.
+}
+
+\nt{Il vincolo sparisce con gli \textbf{switch} e i collegamenti
+\textbf{full-duplex punto-punto}: con un solo dispositivo a ciascun capo e coppie
+separate per TX e RX \emph{non ci sono collisioni}, quindi il CSMA/CD non serve e
+cade il limite dello slot time. È così che l'Ethernet \textbf{su fibra} (es.\
+1000BASE-LX10, 10GBASE-LR) raggiunge i 10 km: la distanza torna a dipendere solo dal
+budget ottico (l'attenuazione), non dalla rilevazione delle collisioni.}

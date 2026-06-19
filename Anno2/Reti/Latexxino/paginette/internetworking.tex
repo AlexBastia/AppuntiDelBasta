@@ -17,9 +17,9 @@ La soluzione è un'astrazione gerarchica gestita al Livello 3:
         \item \textbf{Routing (Instradamento)}: È il processo più complesso e intelligente con cui i router costruiscono e mantengono aggiornate le loro tabelle di instradamento. Questo viene fatto tramite \textbf{protocolli di routing} che permettono ai router di scambiarsi informazioni sulla topologia della rete.
     \end{itemize}
 }
-% \begin{center}
-%     \includegraphics[width=13cm]{img/internetworking_abstraction.png}
-% \end{center}
+\begin{center}
+    \includegraphics[width=13cm]{img/internetworking_abstraction.png}
+\end{center}
 
 \section{Il Protocollo Internet (IP)}
 Il protocollo cardine del livello rete su Internet è l'\textbf{Internet Protocol (IP)}. I suoi compiti principali sono:
@@ -31,6 +31,89 @@ Il protocollo cardine del livello rete su Internet è l'\textbf{Internet Protoco
 \end{itemize}
 
 \nt{Il protocollo IP esiste in due versioni principali: \textbf{IPv4}, che utilizza indirizzi a 32 bit ed è ancora largamente diffuso, e \textbf{IPv6}, la nuova versione con indirizzi a 128 bit, introdotta per superare i limiti di IPv4.}
+
+\begin{center}
+    \includegraphics[width=11cm]{img/ip_stack.png}
+\end{center}
+
+\subsection{Aritmetica Binaria di Base}
+Per capire l'indirizzamento IP e il subnetting è indispensabile saper convertire i numeri tra le diverse basi (binaria, decimale, ottale, esadecimale) e operare a livello di bit.
+
+\dfn{Algoritmo della divisione (decimale $\to$ binario)}{
+    Per convertire un numero decimale in un'altra base si \textbf{divide ripetutamente il numero per la base}, si accumulano i \textbf{resti} e si legge il risultato dai resti \textbf{dall'ultimo al primo} (cioè dal più significativo al meno significativo).
+}
+
+\ex{Conversione di $45$ in binario}{
+    Si divide ripetutamente per $2$ leggendo i resti dal basso verso l'alto:
+    \begin{center}
+    \begin{tabular}{lcl}
+    \hline
+    Divisione & Quoziente & Resto \\
+    \hline
+    $45/2$ & $22$ & $1$ \\
+    $22/2$ & $11$ & $0$ \\
+    $11/2$ & $5$  & $1$ \\
+    $5/2$  & $2$  & $1$ \\
+    $2/2$  & $1$  & $0$ \\
+    $1/2$  & $0$  & $1$ \\
+    \hline
+    \end{tabular}
+    \end{center}
+    Leggendo i resti dall'ultimo al primo: $45 = 101101_2$.
+}
+
+\dfn{Funzione Valore (binario $\to$ decimale)}{
+    Il valore decimale di un numero in una certa base si ottiene come
+    \[
+        v = \sum_{i=0}^{N-1} b_i \cdot \text{BASE}^i,
+    \]
+    dove $i$ è la \textbf{posizione della cifra a partire da destra} (la cifra meno significativa ha $i=0$) e $b_i$ è la cifra in posizione $i$.
+}
+
+\ex{Valore di $101101_2$}{
+    Si sommano le potenze di $2$ corrispondenti alle posizioni con bit $1$ (posizioni $0,2,3,5$ da destra):
+    \[
+        101101_2 = 2^0 + 2^2 + 2^3 + 2^5 = 1 + 4 + 8 + 32 = 45.
+    \]
+}
+
+\nt{Il \textbf{numero di bit necessari} per rappresentare un numero $n$ è $\lceil \log_2(n) \rceil$. Esempio: $14917 = 11101001000101_2$ richiede $14$ bit, poiché $2^{13} = 8192 \le 14917 < 16384 = 2^{14}$.}
+
+\dfn{Conversione in ottale ed esadecimale}{
+    Lo stesso algoritmo della divisione vale per qualsiasi base: si divide ripetutamente per $8$ (ottale) o per $16$ (esadecimale). Le cifre esadecimali sono $0,1,2,\dots,9,\text{A},\text{B},\text{C},\text{D},\text{E},\text{F}$ (dove $\text{A}=10,\dots,\text{F}=15$).
+}
+
+\ex{Conversione di $275$}{
+    \[
+        275 = 423_8 = 113_{16}.
+    \]
+    In ottale: $275 = 4\cdot 8^2 + 2\cdot 8 + 3 = 256 + 16 + 3$. In esadecimale: $275 = 1\cdot 16^2 + 1\cdot 16 + 3 = 256 + 16 + 3$.
+}
+
+\nt{\textbf{Scorciatoia binario $\leftrightarrow$ base $2^k$.} Per convertire da binario a una base potenza di due, si \textbf{raggruppano i bit in gruppi di $k$ partendo da destra} e si traduce ogni gruppo. Per l'ottale $k=3$, per l'esadecimale $k=4$. Esempio: $4\text{AFD}_{16} = 0100\;1010\;1111\;1101_2$.}
+
+\subsection{Operatori Booleani Bit-a-Bit}
+Per calcolare l'indirizzo di rete a partire da un IP e da una netmask, si usano gli operatori logici applicati \textbf{bit per bit}.
+\begin{center}
+\begin{tabular}{cc|cccc}
+\hline
+$a$ & $b$ & AND & OR & XOR & NAND \\
+\hline
+$0$ & $0$ & $0$ & $0$ & $0$ & $1$ \\
+$0$ & $1$ & $0$ & $1$ & $1$ & $1$ \\
+$1$ & $0$ & $0$ & $1$ & $1$ & $1$ \\
+$1$ & $1$ & $1$ & $1$ & $0$ & $0$ \\
+\hline
+\end{tabular}
+\end{center}
+\begin{itemize}
+    \item \textbf{AND}: dà $1$ solo se entrambi i bit sono $1$ ($1\cdot 1 \to 1$); è l'operatore usato per ``mascherare''.
+    \item \textbf{OR}: dà $1$ se almeno uno dei due bit è $1$.
+    \item \textbf{XOR}: dà $1$ se i bit \textbf{differiscono} (utile per confronti e crittografia).
+    \item \textbf{NAND}: è la negazione dell'AND (dà $0$ solo quando entrambi sono $1$).
+\end{itemize}
+
+\nt{\textbf{Indirizzo di rete tramite AND.} Eseguendo \texttt{IP AND netmask} bit per bit si ottiene l'\textbf{indirizzo di rete/sottorete}: l'AND con la maschera \textbf{azzera tutti i bit della parte host} (quelli a $0$ nella netmask) e lascia inalterati i bit di rete (quelli a $1$).}
 
 \subsection{Indirizzamento IPv4}
 Un indirizzo IPv4 è una sequenza di 32 bit, convenzionalmente scritta come quattro numeri decimali (ognuno da 0 a 255) separati da un punto. Esempio: `130.136.25.1`.
@@ -52,9 +135,9 @@ L'indirizzamento originale di IPv4 suddivideva lo spazio degli indirizzi in clas
     \item \textbf{Classe B}: Indirizzi che iniziano con i bit `10`. Usano i primi due byte per il \textit{network number} e i restanti due per l'\textit{host number}. Permettono di avere più reti (circa 16.000) con un numero considerevole di host ciascuna (circa 65.000).
     \item \textbf{Classe C}: Indirizzi che iniziano con i bit `110`. Usano i primi tre byte per il \textit{network number} e l'ultimo per l'\textit{host number}. Permettono di avere moltissime reti (oltre 2 milioni), ma ognuna con un numero limitato di host (254). Sono tipiche per piccole e medie imprese.
 \end{itemize}
-% \begin{center}
-%     \includegraphics[width=12cm]{img/ipv4_address_classes.png}
-% \end{center}
+\begin{center}
+    \includegraphics[width=12cm]{img/ipv4_address_classes.png}
+\end{center}
 
 \subsection{Sottoreti (Subnetting)}
 Le classi di indirizzi si sono rivelate troppo rigide. Una grande organizzazione a cui veniva assegnata una rete di classe B poteva trovarsi a dover gestire 65.000 host in un'unica rete locale, con enormi problemi di traffico e amministrazione. La soluzione è il \textbf{subnetting}.
@@ -76,7 +159,45 @@ Le classi di indirizzi si sono rivelate troppo rigide. Una grande organizzazione
     \end{itemize}
 }
 
+\ex{Netmask per $N$ sottoreti (procedura passo-passo)}{
+    Si vuole suddividere la rete di classe B `130.136.0.0` (che ha $16$ bit di host) in \textbf{8 sottoreti}.
+    \begin{enumerate}
+        \item \textbf{Bit da rubare}: per distinguere $8$ sottoreti servono $\log_2 8 = 3$ bit, da ``rubare'' alla parte host.
+        \item \textbf{Bit host rimanenti}: $16 - 3 = 13$ bit, cioè $2^{13} = 8192$ host per sottorete.
+        \item \textbf{Costruzione della maschera}: i $3$ bit rubati sono i più significativi del 3\textsuperscript{o} ottetto: $11100000 = 224$. La \textbf{Netmask} è quindi `255.255.224.0`, cioè \textbf{/19}.
+    \end{enumerate}
+    \textbf{Verifica di appartenenza.} L'host `130.136.169.4` ha $169 = 10101001$; eseguendo l'AND con $11100000$ si ottiene $10100000 = 160 \Rightarrow$ \textbf{sottorete 5} (`130.136.160.0`). La destinazione `130.136.160.11` ha $160 = 10100000$, che con l'AND dà ancora $160 \Rightarrow$ \textbf{stessa sottorete 5}. I due host stanno quindi sulla \textbf{stessa LAN}: la comunicazione è diretta e \textbf{non passa dal default router}.
+
+    \medskip
+    \textbf{Punto didattico.} L'appartenenza dipende dalla netmask: se la cambiassimo in \textbf{/21} (`255.255.248.0`, cioè $11111000$ nel 3\textsuperscript{o} ottetto), allora $169 \text{ AND } 248 = 168$ mentre $160 \text{ AND } 248 = 160$: gli \emph{stessi} due host cadrebbero in \textbf{sottoreti diverse} e il traffico dovrebbe passare per il router.
+}
+
+\nt{\textbf{Validità di una netmask.} Una netmask è valida \textbf{solo} se è una sequenza \textbf{contigua di $1$ seguita da una sequenza di $0$} (i bit di rete devono precedere senza interruzioni quelli host). Esempi \textbf{validi}: `255.128.0.0`, `248.0.0.0`, `255.254.0.0`. Esempi \textbf{NON validi}: `255.255.128.128` (= $\dots10000000.10000000$, gli $1$ non sono contigui), `255.192.192.0`.}
+
+\nt{\textbf{Indirizzi riservati e frazioni di classe C.} In ogni (sotto)rete due indirizzi non sono assegnabili agli host: quello con \textbf{tutti i bit host a $0$} è l'\textbf{indirizzo di rete}, quello con \textbf{tutti i bit host a $1$} è il \textbf{broadcast}. Per una classe C (24 bit di rete) le possibili suddivisioni dell'ultimo ottetto sono:}
+\begin{center}
+\begin{tabular}{llll}
+\hline
+Prefisso & Netmask (4\textsuperscript{o} ott.) & Frazione di classe C & Host utili \\
+\hline
+/25 & `255.255.255.128` & 1/2  & $126$ \\
+/26 & `255.255.255.192` & 1/4  & $62$ \\
+/27 & `255.255.255.224` & 1/8  & $30$ \\
+/28 & `255.255.255.240` & 1/16 & $14$ \\
+/29 & `255.255.255.248` & 1/32 & $6$ \\
+/30 & `255.255.255.252` & 1/64 & $2$ \\
+/31 & `255.255.255.254` & degenere & $0$ \\
+/32 & `255.255.255.255` & il calcolatore stesso & --- \\
+\hline
+\end{tabular}
+\end{center}
+\nt{Analogamente, `255.255.128.0` (/17) è \textbf{metà di una classe B}, con $2^{15} - 2$ host utili.}
+
 \nt{Ogni host, per poter comunicare, deve essere configurato con tre parametri fondamentali: il proprio indirizzo IP, la netmask della sua sottorete e l'indirizzo IP del suo \textbf{default router} (o gateway), ovvero il router a cui inviare tutti i pacchetti destinati a reti esterne.}
+
+\begin{center}
+    \includegraphics[width=12cm]{img/subnetting_example.png}
+\end{center}
 
 \section{Instradamento e Protocolli di Supporto}
 \subsection{Forwarding: il Viaggio di un Pacchetto}
@@ -93,6 +214,10 @@ Il processo di forwarding si basa su decisioni prese hop-by-hop da ogni router.
         \item Infine, il router `130.136.2.254` consegna il pacchetto direttamente all'host di destinazione `130.136.2.33` sulla sua rete locale.
     \end{enumerate}
 }
+
+\begin{center}
+    \includegraphics[width=13cm]{img/forwarding_example.png}
+\end{center}
 
 \subsection{Protocollo ICMP}
 \dfn{ICMP (Internet Control Message Protocol)}{

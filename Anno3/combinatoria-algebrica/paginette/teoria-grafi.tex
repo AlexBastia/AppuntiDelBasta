@@ -1188,4 +1188,188 @@ L'osservazione chiave: la matrice di $ T_v $ rispetto alla base $ \{\delta_a\}_{
   E' la celebre formula per il \textbf{determinante della matrice circolante}.
 }
 
+
+\section{Alberi e teorema di Cayley}
+
+\subsection{Definizione e caratterizzazioni}
+
+\dfn{Albero}{\label{def:albero}
+  Un \textit{albero} e' un grafo $ G $ che e':
+  \begin{enumerate}
+    \item \textbf{connesso};
+    \item \textbf{privo di cicli} (in particolare privo di loop).
+  \end{enumerate}
+}
+
+\mprop{Caratterizzazioni equivalenti di albero}{\label{prop:caratterizzazioni-albero}
+  Per un grafo $ G $ sono equivalenti:
+  \begin{enumerate}
+    \item $ G $ e' un albero;
+    \item $ G $ e' connesso e cancellando un qualsiasi lato lo si disconnette;
+    \item $ G $ e' privo di cicli e aggiungendo un qualsiasi lato (fra due vertici non adiacenti) si crea un ciclo.
+  \end{enumerate}
+}
+\pf{Dim}{
+  \textbf{$ (1) \Rightarrow (2) $.} $ G $ e' connesso per ipotesi. Sia $ e $ un lato di estremi $ u, v $ e supponiamo per assurdo che $ G - e $ resti connesso: allora esiste un cammino da $ u $ a $ v $ che non usa $ e $, e aggiungendo $ e $ si ottiene un ciclo --- contro l'ipotesi che $ G $ sia aciclico.
+
+  \textbf{$ (2) \Rightarrow (1) $.} $ G $ e' connesso per ipotesi; resta da vedere che e' aciclico. Se $ G $ contenesse un ciclo, cancellando un lato $ e $ \textbf{appartenente al ciclo} il grafo resterebbe connesso (i due estremi di $ e $ restano collegati dal resto del ciclo), contro l'ipotesi $ (2) $.
+
+  \textbf{$ (1) \Leftrightarrow (3) $.} Esercizio (analogo: l'aciclicita' e' $ (1) $; la connessione equivale a poter sempre chiudere un ciclo aggiungendo un lato).
+}
+
+\subsection{Foglie}
+
+\dfn{Foglia}{\label{def:foglia}
+  Un vertice di grado $ 1 $ si dice \textit{foglia}.
+}
+
+\nt{
+  In questa sezione i cammini sono \textbf{semplici} (non ripetono lati): $ v_0\, e_1\, v_1\, e_2\, v_2 \cdots e_k\, v_k $ con $ e_{i+1} \neq e_i $.
+}
+
+\mprop{Esistenza di foglie}{\label{prop:esistenza-foglia}
+  Un albero con almeno due vertici ha almeno una foglia. (Anzi, almeno due.)
+}
+\pf{Dim}{
+  Consideriamo un cammino semplice $ v_0\, e_1\, v_1 \cdots e_k\, v_k $ che parte da un vertice qualsiasi ed e' \textbf{massimale} (non prolungabile). L'estremo $ v_k $ ha grado $ 1 $: se avesse grado $ \geq 2 $ ci sarebbe un lato incidente a $ v_k $ diverso da $ e_k $, e poiche' $ G $ e' aciclico tale lato porterebbe a un vertice \textbf{nuovo} $ v_{k+1} \neq v_0, \ldots, v_{k-1} $ (altrimenti si formerebbe un ciclo), permettendo di prolungare --- assurdo. Dunque $ v_k $ e' una foglia.
+
+  Inoltre $ v_k \neq v_0 $ (altrimenti $ G $ avrebbe un ciclo): partendo da $ v_k $ e ripetendo il ragionamento dall'altro capo si trova una seconda foglia.
+}
+
+\subsection{Procedura di costruzione e conteggio dei lati}
+
+\dfn{Procedura di crescita}{\label{def:procedura-crescita}
+  Si costruisce un grafo cosi':
+  \begin{itemize}
+    \item si parte da un singolo nodo;
+    \item ad ogni passo si disegna un nodo \textbf{nuovo} e lo si collega con un lato a un nodo gia' esistente.
+  \end{itemize}
+}
+
+\mprop{La procedura genera tutti e soli gli alberi}{\label{prop:procedura-alberi}
+  Con la procedura di crescita (Definizione~\ref{def:procedura-crescita}) si ottiene un albero, e ogni albero e' ottenibile in questo modo.
+}
+\pf{Dim}{
+  \textbf{($ \Rightarrow $) Ogni grafo costruito e' un albero.} Per induzione su $ n = \#\{\text{vertici}\} $. Caso $ n = 1 $: ovvio. Sia $ G $ ottenuto da $ G_{n-1} $ aggiungendo un vertice $ v $ collegato a $ u \in G_{n-1} $.
+  \begin{itemize}
+    \item \textbf{Connesso:} due vertici $ w, z $ di $ G $ o appartengono entrambi a $ G_{n-1} $ (connesso per ipotesi induttiva), oppure uno e' $ v $, e allora ci si collega tramite $ u $.
+    \item \textbf{Aciclico:} un eventuale ciclo non puo' passare per $ v $ (grado $ 1 $ per costruzione), ne' essere contenuto in $ G_{n-1} $ (aciclico per ipotesi induttiva).
+  \end{itemize}
+
+  \textbf{($ \Leftarrow $) Ogni albero e' ottenibile.} Per induzione sul numero di nodi. Dato un albero $ G $ con $ n \geq 2 $ vertici, per la Proposizione~\ref{prop:esistenza-foglia} esiste una foglia $ v $; sia $ G_{n-1} $ il grafo ottenuto cancellando $ v $ e l'unico lato $ e $ ad esso incidente. $ G_{n-1} $ e' ancora un albero (su $ n-1 $ vertici), quindi per ipotesi induttiva e' ottenibile con la procedura; applicando un ultimo passo (aggiunta di $ v $ tramite $ e $) si ottiene $ G $.
+}
+
+\cor{Numero di lati di un albero}{\label{cor:lati-albero}
+  Ogni albero con $ n $ vertici ha esattamente $ n - 1 $ lati.
+}
+\pf{Dim}{
+  Per la Proposizione~\ref{prop:procedura-alberi} l'albero si costruisce partendo da $ 1 $ nodo e $ 0 $ lati, aggiungendo $ n - 1 $ volte un nodo e un lato: in totale $ n - 1 $ lati.
+}
+
+\subsection{Alberi radicati}
+
+\dfn{Albero radicato, padre, figli}{\label{def:albero-radicato}
+  Un \textit{albero radicato} $ (G, r) $ e' un albero con un vertice distinto $ r $ detto \textit{radice}. Per ogni $ v \neq r $ esiste un unico cammino semplice da $ r $ a $ v $ (perche' $ G $ e' un albero): il vertice immediatamente precedente $ v $ su tale cammino si dice \textit{padre} di $ v $; i vertici adiacenti a $ v $ diversi dal padre si dicono \textit{figli} di $ v $.
+}
+
+\mprop{Unicita' del padre}{\label{prop:unicita-padre}
+  In un albero radicato, ogni $ v \neq r $ ha un \textbf{unico} padre.
+}
+\pf{Dim}{
+  Se $ p_1 \neq p_2 $ fossero due padri di $ v $, si avrebbero due cammini distinti da $ r $ a $ v $ (uno via $ p_1 $, l'altro via $ p_2 $), contro l'unicita' del cammino in un albero.
+}
+
+\subsection{Teorema di Cayley e codice di Prüfer}
+
+\thm{Teorema di Cayley}{\label{thm:cayley}
+  Il numero di alberi \textbf{etichettati} su $ n \geq 2 $ vertici (insieme dei vertici $ \{1, 2, \ldots, n\} $) e'
+  \[
+    \#\{\text{alberi etichettati su } n \text{ vertici}\} = n^{\,n-2}\,.
+  \]
+}
+
+\nt{
+  Valori piccoli: $ n = 2 \mapsto 2^0 = 1 $; $ n = 3 \mapsto 3^1 = 3 $; $ n = 4 \mapsto 4^2 = 16 $.
+}
+
+La dimostrazione esibisce una \textbf{biiezione} fra gli alberi etichettati su $ \{1, \ldots, n\} $ e le sequenze (stringhe) di lunghezza $ n - 2 $ a valori in $ \{1, \ldots, n\} $, che sono $ n^{n-2} $. Tale biiezione e' il \textbf{codice di Prüfer}.
+
+\dfn{Codifica di Prüfer}{\label{def:prufer-cod}
+  Dato un albero etichettato $ G $ su $ \{1, \ldots, n\} $, si costruisce la stringa $ (x_1, \ldots, x_{n-2}) $ ripetendo $ n - 2 $ volte:
+  \begin{enumerate}
+    \item sia $ y $ la \textbf{foglia di etichetta minima} del grafo corrente;
+    \item si pone $ x_i := $ (unico) vertice adiacente a $ y $ (il suo "padre");
+    \item si cancella $ y $ (e il suo lato) dal grafo.
+  \end{enumerate}
+  Dopo $ n - 2 $ passi restano $ 2 $ vertici: ci si ferma.
+}
+
+\ex{Codifica di un albero su $ 6 $ vertici}{\label{ex:prufer}
+  Consideriamo l'albero con lati $ \{1,4\}, \{2,4\}, \{3,4\}, \{4,5\}, \{5,6\} $:
+  \begin{center}
+    \begin{tikzpicture}[
+      vertex/.style={circle, draw, inner sep=1.4pt, font=\footnotesize},
+      thick, scale=1.0
+    ]
+      \node[vertex] (4) at (0,0) {$4$};
+      \node[vertex] (1) at (-1.4, 1) {$1$};
+      \node[vertex] (2) at (-1.4, 0) {$2$};
+      \node[vertex] (3) at (-1.4, -1) {$3$};
+      \node[vertex] (5) at (1.6, 0) {$5$};
+      \node[vertex] (6) at (3.0, 0) {$6$};
+      \draw (4) -- (1); \draw (4) -- (2); \draw (4) -- (3);
+      \draw (4) -- (5); \draw (5) -- (6);
+    \end{tikzpicture}
+  \end{center}
+  Eseguiamo la codifica (foglia minima $ \to $ vicino):
+  \begin{center}
+  \begin{tabular}{c|c|c}
+    foglia minima $ y $ & vicino $ x_i $ & resto \\ \hline
+    $ 1 $ & $ 4 $ & $ \{2,4\},\{3,4\},\{4,5\},\{5,6\} $ \\
+    $ 2 $ & $ 4 $ & $ \{3,4\},\{4,5\},\{5,6\} $ \\
+    $ 3 $ & $ 4 $ & $ \{4,5\},\{5,6\} $ \\
+    $ 4 $ & $ 5 $ & $ \{5,6\} $ \\
+  \end{tabular}
+  \end{center}
+  Restano i vertici $ 5, 6 $. Il codice di Prüfer e' $ \boxed{(4, 4, 4, 5)} $, di lunghezza $ n - 2 = 4 $.
+}
+
+\nt{
+  \textbf{Frequenza nel codice.} Ogni vertice $ v $ compare nel codice \textbf{esattamente $ \deg(v) - 1 $ volte}. In particolare le \textbf{foglie} (grado $ 1 $) \textbf{non compaiono}. Nell'esempio: $ 4 $ ha grado $ 4 $ e compare $ 3 $ volte; $ 5 $ ha grado $ 2 $ e compare $ 1 $ volta.
+}
+
+\dfn{Decodifica di Prüfer}{\label{def:prufer-decod}
+  Data una stringa $ (x_1, \ldots, x_{n-2}) $ con $ x_i \in \{1, \ldots, n\} $, si ricostruisce l'albero cosi'. Sia $ U_1 := \{1, \ldots, n\} $. Per $ i = 1, \ldots, n-2 $:
+  \begin{enumerate}
+    \item sia $ y_i $ la \textbf{piu' piccola etichetta in $ U_i $ che non compare} in $ (x_i, x_{i+1}, \ldots, x_{n-2}) $;
+    \item si aggiunge il lato $ \{y_i, x_i\} $;
+    \item si pone $ U_{i+1} := U_i \setminus \{y_i\} $.
+  \end{enumerate}
+  Al termine $ U_{n-1} $ contiene esattamente $ 2 $ etichette: si aggiunge il lato fra di esse.
+}
+
+\ex{Decodifica di $ (4,4,4,5) $}{
+  $ U_1 = \{1,2,3,4,5,6\} $.
+  \begin{center}
+  \begin{tabular}{c|c|c|c}
+    $ i $ & coda $ (x_i, \ldots, x_4) $ & $ y_i $ (min non in coda) & lato \\ \hline
+    $ 1 $ & $ (4,4,4,5) $ & $ 1 $ & $ \{1,4\} $ \\
+    $ 2 $ & $ (4,4,5) $   & $ 2 $ & $ \{2,4\} $ \\
+    $ 3 $ & $ (4,5) $     & $ 3 $ & $ \{3,4\} $ \\
+    $ 4 $ & $ (5) $       & $ 4 $ & $ \{4,5\} $ \\
+  \end{tabular}
+  \end{center}
+  Resta $ U_5 = \{5, 6\} $: si aggiunge $ \{5,6\} $. Si riottiene l'albero di partenza dell'Esempio~\ref{ex:prufer}.
+}
+
+\pf{Dim del Teorema di Cayley}{
+  Mostriamo che la codifica (Definizione~\ref{def:prufer-cod}) e' una \textbf{biiezione} fra alberi etichettati su $ \{1, \ldots, n\} $ e stringhe $ \{1, \ldots, n\}^{n-2} $; poiche' queste ultime sono $ n^{n-2} $, segue la tesi.
+
+  \textbf{Buona definizione e cardinalita' a ogni passo.} Nella decodifica, ad ogni passo $ i $ l'insieme $ U_i $ ha cardinalita' $ n - i + 1 $; la coda $ (x_i, \ldots, x_{n-2}) $ contiene al piu' $ n - 1 - i $ etichette distinte, dunque esiste sempre almeno una etichetta di $ U_i $ che non vi compare (e quindi un $ y_i $ ben definito). Ad ogni sequenza la decodifica associa un grafo con $ n $ vertici e $ n - 1 $ lati.
+
+  \textbf{Il grafo decodificato e' un albero.} Ha $ n - 1 $ lati; basta mostrare che e' \textbf{aciclico} (un grafo aciclico con $ n $ vertici e $ n-1 $ lati e' un albero, cfr.\ Corollario~\ref{cor:lati-albero}). Ad ogni passo $ y_i $ viene rimosso da $ U $ e non comparira' piu' come estremo "nuovo": il lato $ \{y_i, x_i\} $ collega $ y_i $ (che non riapparira') al resto, quindi non si chiude mai un ciclo.
+
+  \textbf{Inversa l'una dell'altra.} Codifica e decodifica sono procedure inverse: ad ogni passo la foglia minima rimossa dalla codifica coincide con il $ y_i $ scelto dalla decodifica (la piu' piccola etichetta non ancora usata e non presente nella coda residua del codice). Dunque la codifica e' iniettiva e suriettiva.
+}
+
 % \end{document}
