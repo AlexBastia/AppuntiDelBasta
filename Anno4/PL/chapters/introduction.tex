@@ -1,0 +1,60 @@
+% \begin{document}
+\chapter{Introduction and Mathematical Preliminaries}
+
+Binary relations, functions (total/partial), operational semantics
+
+Derivation tree of an arithmetic expression using the inference rules. (slide 2)
+
+\dfn{Multi-step evaluation}{
+  Binary relation indicated with $ \to^* $ which is the reflexive and transitive closure of the small-step evaluation.
+}
+
+Note that the transitive rule is a single step and a multi step, although it can be proved that it allows concatenation of single stepps.
+
+Properties of programs
+\begin{itemize}
+\item Determinism: suppose that for any given configuration, if this can step in different ways these are equal
+  \item Termination: evaluation terminates. Formally, for the multi step there is a configuration that it can multi step to without other possible steps.
+    \item Soundness: if we run a program long enough we should get a final integer, but it's not ture because stores are partial function and if a variable isn't defined we're cooked.
+\end{itemize}
+
+\dfn{Free Variables}{
+  Given the function $ fvs(e) $ defined inductively as:
+  % \begin{align*}
+  %
+  % \end{align*}
+}
+
+Note that in $ x \coloneq x + 1; y \coloneq x $ we still need to add $ x $ to the free variables because it's in the rhs of the first assignment. 
+
+\dfn{Well-Formedness}{
+  Example of an early type system. All the variables that $ e $ refers to have values in $ \sigma $.
+}
+
+Two properties that imply soundness:
+
+\mlenma{Progress}{
+  
+}
+
+\mlenma{Preservation}{
+
+}
+
+with these lenmas and termination we can show that a well-formaed configuration is sound.
+
+A bit of maths before the proof
+
+\dfn{Inductive Set}{
+
+}
+
+We have used inductive setts with the inductive rules (remember that $ \to $ is a relation, so a set of tuples) and BNF grammar, free-variables and multistep. Another example is the natural numbers using the successor definition.
+
+If we want to prove something about an inductive set (that can be infinite by closing under the inductive rules) we can use the induction principle.
+
+The base cases are all the axioms.
+
+Sometimes the properties are defined over multiple inductive setts, so we need to chose one. 
+
+% \end{document}

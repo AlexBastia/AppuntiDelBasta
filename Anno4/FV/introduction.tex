@@ -1,0 +1,80 @@
+% \begin{document}
+\chapter{Introduction}
+
+\dfn{Transition System}{
+
+}
+Transition Systems -> basically DFA with possibly infinite states
+
+There can be multiple initial states, and there can be multiple error states. The other states are called "good" $ G \subseteq S \setminus E $.
+
+\dfn{Trace}{
+  Alternating sequence of states and labels st at every step the two states and label between is in the relation.
+}
+A trace always starts from an initial state. A state is reachable if there is a trace that ends in it.
+
+If the set of states if \textbf{finite}, it's possible to compute the reachable states using a graph search algo.
+
+We can abstract a relation without using labels (note that it can become non-deterministic).
+
+\dfn{Composition of relations}{
+  We say x and z are \textbf{related}.
+}
+
+\dfn{Diagonal relation}{
+  Relation to the same state
+}
+
+\dfn{Reflexive-transitive closure}{
+  \[
+  r_1^* = \cup_{n \geq 0}r_1^n
+  \]
+}
+
+\dfn{Image under relation}{
+  \[
+    r_1[X] = \{..\}
+  \]
+}
+
+WE can define a function that 
+
+\dfn{post function}{
+
+}
+
+\thm{Reachable states using post}{
+  \[
+    \cup_{n \geq 0}\text{post}^n(I) = \text{REach}(M)
+  \]
+}
+\pf{}{
+  swap quantifiers
+}
+
+In reasoning abt safety
+
+\dfn{Invariant}{
+Any superset of reachable states
+\[
+  \text{Reach}(M) \subseteq P
+\]
+}
+$ P $ is a property satified by all reachable states.
+
+\dfn{Inductive Invariant}{
+  An invariant that we can check step-by-step. It contains all initial states and we cannot leave by taking stepps.
+}
+
+A way to find that $ P $ is an invariant is to find an inductive invariant that is inside $ P $.
+
+In complicated programms, the set of reachable states can be hard to precicely calculate. So we use Inductive invariants to approximate them.
+
+\mprop{}{
+  The smallest inductive invariant is the set of reachable states.
+}
+
+
+
+
+% \end{document}

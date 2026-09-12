@@ -1,0 +1,29 @@
+\documentclass{report}
+
+\input{../LatexTemp/preamble.tex}
+\input{../LatexTemp/macros}
+\input{../LatexTemp/letterfonts}
+
+\usepackage[utf8]{inputenc}
+\usepackage{fontawesome}
+
+\setlength{\parindent}{0pt}
+
+\title{\Huge{Algorithms 2}\\Appunti}
+\author{\huge{Alex "Morbidelli WhatsApp" Basta}}
+\date{}
+\pagenumbering{gobble}
+
+\begin{document}
+
+\maketitle
+\newpage% or \cleardoublepage
+% \pdfbookmark[<level>]{<title>}{<dest>}
+\pdfbookmark[section]{\contentsname}{toc}
+\tableofcontents
+
+\pagebreak
+
+\include{chapters/introduction}
+
+\end{document}
