@@ -1,0 +1,19 @@
+x := 0;
+y := 0;
+while x < 10 do {
+  x := x + 1;
+  if (x = 2) or (x = 4) then {
+    continue
+  } else {
+    skip
+  };
+  if x > 5 then {
+    break
+  } else {
+    skip
+  };
+  y := y + x
+};
+test x = 6;
+test y = 9;
+print y

@@ -1,0 +1,239 @@
+% \begin{document}
+\section{Large-step Operational Semantics}
+
+In the last lecture we defined a semantics for our language of arithmetic expressions using a
+small-step evaluation relation $\to \subseteq \mathbf{Config} \times \mathbf{Config}$ (and its
+reflexive and transitive closure $\to^*$). In this lecture we will explore an alternative
+approach---\emph{large-step} operational semantics---which yields the final result of
+evaluating an expression directly.
+
+Defining a large-step semantics boils down to specifying a relation $\Downarrow$ that captures
+the evaluation of an expression. The $\Downarrow$ relation has the following type:
+\[
+\Downarrow \; \subseteq \; (\mathbf{Store} \times \mathbf{Exp}) \times (\mathbf{Store} \times
+\mathbf{Int}).
+\]
+We write $\langle \sigma, e \rangle \Downarrow \langle \sigma', n \rangle$ to indicate that
+$((\sigma, e), (\sigma', n)) \in {\Downarrow}$. In other words, the expression $e$ with store
+$\sigma$ evaluates in one big step to the final store $\sigma'$ and integer $n$.
+
+We define the relation $\Downarrow$ inductively, using inference rules:
+\[
+\frac{}{\langle \sigma, n \rangle \Downarrow \langle \sigma, n \rangle} \; \text{INT}
+\qquad
+\frac{n = \sigma(x)}{\langle \sigma, x \rangle \Downarrow \langle \sigma, n \rangle} \;
+\text{VAR}
+\]
+\nt{
+Note that in the big step semantics, we need an inference rule for every valid configuration, hence the \textsc{INT} rule.
+}
+\[
+\frac{\langle \sigma, e_1 \rangle \Downarrow \langle \sigma', n_1 \rangle \qquad \langle
+\sigma', e_2 \rangle \Downarrow \langle \sigma'', n_2 \rangle \qquad n = n_1 + n_2}{\langle
+\sigma, e_1 + e_2 \rangle \Downarrow \langle \sigma'', n \rangle} \; \text{ADD}
+\]
+\[
+\frac{\langle \sigma, e_1 \rangle \Downarrow \langle \sigma', n_1 \rangle \qquad \langle
+\sigma', e_2 \rangle \Downarrow \langle \sigma'', n_2 \rangle \qquad n = n_1 \times n_2}{\langle
+\sigma, e_1 * e_2 \rangle \Downarrow \langle \sigma'', n \rangle} \; \text{MUL}
+\]
+\[
+\frac{\langle \sigma, e_1 \rangle \Downarrow \langle \sigma', n_1 \rangle \qquad \langle
+\sigma'[x \mapsto n_1], e_2 \rangle \Downarrow \langle \sigma'', n_2 \rangle}{\langle \sigma, x
+:= e_1 ; e_2 \rangle \Downarrow \langle \sigma'', n_2 \rangle} \; \text{ASSGN}
+\]
+
+\ex{Big-step proof}{
+To illustrate the use of these rules, consider the following proof tree, which shows that
+evaluating $\langle \sigma, \mathit{foo} := 3 ; \mathit{foo} * \mathit{bar} \rangle$ using a
+store $\sigma$ such that $\sigma(\mathit{bar}) = 7$ yields $\sigma' = \sigma[\mathit{foo}
+\mapsto 3]$ and $21$ as a result:
+\[
+\cfrac{
+\cfrac{}{\langle \sigma, 3 \rangle \Downarrow \langle \sigma, 3 \rangle} \; \text{INT}
+\qquad
+\cfrac{
+\cfrac{}{\langle \sigma', \mathit{foo} \rangle \Downarrow \langle \sigma', 3 \rangle} \;
+\text{VAR}
+\qquad
+\cfrac{}{\langle \sigma', \mathit{bar} \rangle \Downarrow \langle \sigma', 7 \rangle} \;
+\text{VAR}
+}{\langle \sigma', \mathit{foo} * \mathit{bar} \rangle \Downarrow \langle \sigma', 21
+\rangle} \; \text{MUL}
+}{\langle \sigma, \mathit{foo} := 3 ; \mathit{foo} * \mathit{bar} \rangle \Downarrow \langle
+\sigma', 21 \rangle} \; \text{ASSGN}
+\]
+
+A closer look to this structure reveals the relation between small step and large-step
+evaluation: a depth-first traversal of the large-step proof tree yields the sequence of
+one-step transitions in small-step evaluation.}
+
+\nt{
+  Big step semantics don't capture the computational intricacys (if not well-formed it's undefined instead of blocking), and it strugles with concurrency. For this reason it can be used toghether with small step for the critical parts.
+}
+
+\nt{
+  Also, small step semantics can be used to precysely count computation ticks (cslib 4 lean) for tighter complexity bounds.
+}
+
+\section{Equivalence of semantics}
+
+A natural question to ask is whether the small-step and large-step semantics are equivalent.
+The next theorem answers this question affirmatively.
+
+\thm{Equivalence of semantics}{
+For all expressions $e$, stores $\sigma$ and $\sigma'$, and integers $n$ we have:
+\[
+\langle \sigma, e \rangle \Downarrow \langle \sigma', n \rangle \quad \text{if and only if}
+\quad \langle \sigma, e \rangle \to^* \langle \sigma', n \rangle
+\]
+}
+
+
+To streamline the proof, we will work with the following definition of the multi-step
+relation:
+\[
+\frac{}{\langle \sigma, e \rangle \to^* \langle \sigma, e \rangle} \; \text{REFL}
+\qquad
+\frac{\langle \sigma, e \rangle \to \langle \sigma', e' \rangle \qquad \langle \sigma', e'
+\rangle \to^* \langle \sigma'', e'' \rangle}{\langle \sigma, e \rangle \to^* \langle \sigma'',
+e'' \rangle} \; \text{TRANS}
+\]
+
+\pf{Proof Sketch}{
+We show each direction separately.
+
+\medskip
+\noindent$\boldsymbol{\implies}$\textbf{:} We want to prove that the following property $P$
+holds for all expressions $e \in \mathbf{Exp}$:
+\[
+P(e) \triangleq \forall \sigma, \sigma' \in \mathbf{Store}.\ \forall n \in \mathbf{Int}.\
+\langle \sigma, e \rangle \Downarrow \langle \sigma', n \rangle \implies \langle \sigma, e
+\rangle \to^* \langle \sigma', n \rangle
+\]
+We proceed by structural induction on $e$. We have to consider each of the possible axioms and
+inference rules for constructing an expression.
+
+\medskip
+\noindent\textbf{Case $e = x$:} Assume that $\langle \sigma, x \rangle \Downarrow \langle
+\sigma', n \rangle$. That is, there is some derivation in the large-step operational semantics
+whose conclusion is $\langle \sigma, x \rangle \Downarrow \langle \sigma, n \rangle$. There is
+only one rule whose conclusion matches the configuration $\langle \sigma, x \rangle$: the
+large-step rule \textsc{Var}. Thus, we have $n = \sigma(x)$ and $\sigma' = \sigma$. By the
+small-step rule \textsc{Var}, we also have $\langle \sigma, x \rangle \to \langle \sigma, n
+\rangle$. By the \textsc{Refl} and \textsc{Trans} rules, we conclude that $\langle \sigma, x
+\rangle \to^* \langle \sigma, n \rangle$, which finishes the case.
+
+\medskip
+\noindent\textbf{Case $e = n$:} Assume that $\langle \sigma, n \rangle \Downarrow \langle
+\sigma', n' \rangle$. There is only one rule whose conclusion matches $\langle \sigma, n
+\rangle$: the large-step rule \textsc{Int}. Thus, we have $n' = n$ and $\sigma' = \sigma$ and so
+$\langle \sigma, n \rangle \to^* \langle \sigma, n \rangle$ by the \textsc{Refl} rule.
+
+\medskip
+\noindent\textbf{Case $e = e_1 + e_2$:} This is an inductive case. We want to prove that if
+$P(e_1)$ and $P(e_2)$ hold, then $P(e)$ also holds. Let's write out $P(e_1)$, $P(e_2)$, and
+$P(e)$ explicitly.
+\[
+P(e_1) = \forall n, \sigma, \sigma'.\ \langle \sigma, e_1 \rangle \Downarrow \langle \sigma', n
+\rangle \implies \langle \sigma, e_1 \rangle \to^* \langle \sigma', n \rangle
+\]
+\[
+P(e_2) = \forall n, \sigma, \sigma'.\ \langle \sigma, e_2 \rangle \Downarrow \langle \sigma', n
+\rangle \implies \langle \sigma, e_2 \rangle \to^* \langle \sigma', n \rangle
+\]
+\[
+P(e) = \forall n, \sigma, \sigma'.\ \langle \sigma, e_1 + e_2 \rangle \Downarrow \langle
+\sigma', n \rangle \implies \langle \sigma, e_1 + e_2 \rangle \to^* \langle \sigma', n \rangle
+\]
+Assume that $P(e_1)$ and $P(e_2)$ hold. Also assume that there exist $\sigma$, $\sigma'$ and
+$n$ such that $\langle \sigma, e_1 + e_2 \rangle \Downarrow \langle \sigma', n \rangle$. We need
+to show that $\langle \sigma, e_1 + e_2 \rangle \to^* \langle \sigma', n \rangle$.
+
+We assumed that $\langle \sigma, e_1 + e_2 \rangle \Downarrow \langle \sigma', n \rangle$. This
+means that there is some derivation whose conclusion is $\langle \sigma, e_1 + e_2 \rangle
+\Downarrow \langle \sigma', n \rangle$. By inspection, we see that only one rule has a
+conclusion of this form: the \textsc{Add} rule. Thus, the last rule used in the derivation was
+\textsc{Add} and it must be the case that $\langle \sigma, e_1 \rangle \Downarrow \langle
+\sigma'', n_1 \rangle$ and $\langle \sigma'', e_2 \rangle \Downarrow \langle \sigma', n_2
+\rangle$ hold for some $n_1$ and $n_2$ with $n = n_1 + n_2$.
+
+By the induction hypothesis $P(e_1)$, as $\langle \sigma, e_1 \rangle \Downarrow \langle
+\sigma'', n_1 \rangle$, we must have $\langle \sigma, e_1 \rangle \to^* \langle \sigma'', n_1
+\rangle$. Likewise, by induction hypothesis $P(e_2)$, we have $\langle \sigma'', e_2 \rangle
+\to^* \langle \sigma', n_2 \rangle$. By Lemma~1 below, we have,
+\[
+\langle \sigma, e_1 + e_2 \rangle \to^* \langle \sigma'', n_1 + e_2 \rangle,
+\]
+and by another application of Lemma~1 we have:
+\[
+\langle \sigma'', n_1 + e_2 \rangle \to^* \langle \sigma', n_1 + n_2 \rangle
+\]
+Then, using the small-step \textsc{Add} rule and the multi-step \textsc{Trans} rule, we have:
+\[
+\cfrac{
+\cfrac{n = n_1 + n_2}{\langle \sigma', n_1 + n_2 \rangle \to \langle \sigma', n \rangle} \;
+\text{ADD}
+\qquad
+\cfrac{}{\langle \sigma', n \rangle \to^* \langle \sigma', n \rangle} \; \text{REFL}
+}{\langle \sigma', n_1 + n_2 \rangle \to^* \langle \sigma', n \rangle} \; \text{TRANS}
+\]
+Finally, by two applications of Lemma~2, we obtain $\langle \sigma, e_1 + e_2 \rangle \to^*
+\langle \sigma', n \rangle$, which finishes the case.
+
+\medskip
+\noindent\textbf{Case $e = e_1 * e_2$.} Similar to case for $e_1 + e_2$ above.
+
+\medskip
+\noindent\textbf{Case $e = x := e_1; e_2$.} Omitted. Try it as an exercise.
+
+\medskip
+\noindent$\boldsymbol{\impliedby}$\textbf{:} We proceed by induction on the derivation of
+$\langle \sigma, e \rangle \to^* \langle \sigma', n \rangle$ with a case analysis on the last
+rule used.
+
+\medskip
+\noindent\textbf{Case \textsc{Refl}:} Then $e = n$ and $\sigma' = \sigma$. We immediately have
+$\langle \sigma, n \rangle \Downarrow \langle \sigma, n \rangle$ by the large-step rule
+\textsc{Int}.
+
+\medskip
+\noindent\textbf{Case \textsc{Trans}:} Then $\langle \sigma, e \rangle \to \langle \sigma'',
+e'' \rangle$ and $\langle \sigma'', e'' \rangle \to^* \langle \sigma', n \rangle$. In this
+case, the induction hypothesis gives $\langle \sigma'', e'' \rangle \Downarrow \langle \sigma',
+n \rangle$. The result follows from Lemma~3 below.
+}
+
+\mlenma{}{
+If $\langle \sigma, e \rangle \to^* \langle \sigma', n \rangle$, then the following hold:
+\begin{itemize}
+    \item $\langle \sigma, e + e_2 \rangle \to^* \langle \sigma', n + e_2 \rangle$
+    \item $\langle \sigma, e * e_2 \rangle \to^* \langle \sigma', n * e_2 \rangle$
+    \item $\langle \sigma, n_1 + e \rangle \to^* \langle \sigma', n_1 + n \rangle$
+    \item $\langle \sigma, n_1 * e \rangle \to^* \langle \sigma', n_1 * n \rangle$
+    \item $\langle \sigma, x := e ; e_2 \rangle \to^* \langle \sigma', x := n ; e_2 \rangle$
+\end{itemize}
+}
+\pf{}{
+Omitted; try it as an exercise.
+}
+
+\mlenma{}{
+If $\langle \sigma, e \rangle \to^* \langle \sigma', e' \rangle$ and $\langle \sigma', e'
+\rangle \to^* \langle \sigma'', e'' \rangle$, then $\langle \sigma, e \rangle \to^* \langle
+\sigma'', e'' \rangle$.
+}
+\mlenma{}{
+Omitted; try it as an exercise.
+}
+
+\mlenma{}{
+If $\langle \sigma, e \rangle \to \langle \sigma'', e'' \rangle$ and $\langle \sigma'', e''
+\rangle \Downarrow \langle \sigma', n \rangle$, then $\langle \sigma, e \rangle \Downarrow
+\langle \sigma', n \rangle$.
+}
+\begin{proof}
+Omitted; try it as an exercise.
+\end{proof}
+
+% \end{document}

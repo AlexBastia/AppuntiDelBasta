@@ -1,0 +1,11 @@
+x := 10;
+test x = 10;
+y := x + 5;
+test y = 15;
+z := y - 10;
+test z = 5;
+a := z * 4;
+test a = 20;
+b := (x + y * z) - a;
+test b = 65;
+print b
