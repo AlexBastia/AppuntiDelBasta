@@ -1,0 +1,45 @@
+\documentclass{report}
+
+\input{../LatexTemp/preamble.tex}
+\input{../LatexTemp/macros}
+\input{../LatexTemp/letterfonts}
+
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{listings}
+
+% --- stile per i sorgenti R ---
+\lstset{
+  language=R,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue!70!black}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  columns=fullflexible,
+  breaklines=true,
+  showstringspaces=false,
+  frame=leftline,
+  framesep=6pt,
+  rulecolor=\color{black!30},
+  xleftmargin=10pt,
+}
+
+\setlength{\parindent}{0pt}
+
+\title{\Huge{Statistics for Artificial Intelligence}\\Appunti}
+\author{\huge{Giovanni "Qua' Qua' dancer" Palma}}
+\date{}
+\pagenumbering{gobble}
+
+\begin{document}
+
+\maketitle
+\newpage
+\pdfbookmark[section]{\contentsname}{toc}
+\tableofcontents
+
+\pagebreak
+
+% --- Modulo 2 ---
+\include{paginette/pca}
+
+\end{document}
