@@ -1,0 +1,7 @@
+n := 2;
+while (n > 0) do {
+  n := n - 1;
+  print n;
+  continue;
+  break
+}

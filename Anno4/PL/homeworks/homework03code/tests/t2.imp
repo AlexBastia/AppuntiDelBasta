@@ -1,0 +1,11 @@
+x := 5;
+y := 10;
+test x <= y;
+test y >= x;
+test x != y;
+test y > x;
+test not (x = y);
+test (x = 5) and (y = 10);
+test (x = 99) or (y = 10);
+test not ((x = 99) and (y = 10));
+print y

@@ -1,0 +1,14 @@
+i := 0;
+sum := 0;
+while i < 5 do {
+  i := i + 1;
+  if i = 3 then {
+    continue
+  } else {
+    skip
+  };
+  sum := sum + i
+};
+test i = 5;
+test sum = 12;
+print sum

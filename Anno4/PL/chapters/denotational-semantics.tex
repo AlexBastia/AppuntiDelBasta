@@ -1,0 +1,294 @@
+% \begin{document}
+
+\chapter{Denotational Semantics}
+
+We have now seen two operational models for programming languages: small-step and large-step.
+In this lecture, we consider a different semantic model, called \emph{denotational semantics}.
+
+The idea in denotational semantics is to express the meaning of a program as the mathematical
+function that expresses what the program computes. We can think of an IMP program $c$ as a
+function from stores to stores: given an initial store, the program produces a final store. For
+example, the program $\mathit{foo} := \mathit{bar} + 1$ can be thought of as a function that
+when given an input store $\sigma$, produces a final store $\sigma'$ that is identical to
+$\sigma$ except that it maps $\mathit{foo}$ to the integer $\sigma(\mathit{bar}) + 1$; that is,
+$\sigma' = \sigma[\mathit{foo} \mapsto \sigma(\mathit{bar}) + 1]$. We will model programs as
+functions from input stores to output stores. As opposed to operational models, which tell us
+\emph{how} programs execute, the denotational model shows us \emph{what} programs compute.
+
+\section{A Denotational Semantics for IMP}
+
+For each program $c$, we write $\mathcal{C}[\![c]\!]$ for the \emph{denotation} of $c$, that
+is, the mathematical function that $c$ represents:
+\[
+\mathcal{C}[\![c]\!] : \mathbf{Store} \rightharpoonup \mathbf{Store}.
+\]
+Note that $\mathcal{C}[\![c]\!]$ is actually a partial function (as opposed to a total
+function), both because the store may not be defined on the free variables of the program and
+because the program may not terminate for certain input stores. The function
+$\mathcal{C}[\![c]\!]$ is not defined for non-terminating programs as they have no
+corresponding output stores.
+
+We will write $\mathcal{C}[\![c]\!]\sigma$ for the result of applying the function
+$\mathcal{C}[\![c]\!]$ to the store $\sigma$. That is, if $f$ is the function that
+$\mathcal{C}[\![c]\!]$ denotes, then we write $\mathcal{C}[\![c]\!]\sigma$ to mean the same
+thing as $f(\sigma)$.
+
+We must also model expressions as functions, this time from stores to the values they
+represent. We will write $\mathcal{A}[\![a]\!]$ for the denotation of arithmetic expression
+$a$, and $\mathcal{B}[\![b]\!]$ for the denotation of boolean expression $b$.
+\[
+\mathcal{A}[\![a]\!] : \mathbf{Store} \rightharpoonup \mathbf{Int}
+\qquad
+\mathcal{B}[\![b]\!] : \mathbf{Store} \rightharpoonup \{\mathbf{true}, \mathbf{false}\}
+\]
+
+Now we want to define these functions. To make it easier to write down these definitions, we
+will describe (partial) functions using sets of pairs. More precisely, we will represent a
+partial map $f : A \rightharpoonup B$ as a set of pairs $F = \{(a, b) \mid a \in A \text{ and }
+b = f(a) \in B\}$ such that, for each $a \in A$, there is at most one pair of the form $(a,
+\underline{\ \ })$ in the set. Hence $(a, b) \in F$ is the same as $b = f(a)$.
+
+We can now define denotations for IMP. We start with the denotations of expressions:
+\begin{align*}
+\mathcal{A}[\![n]\!] &= \{(\sigma, n)\} \\
+\mathcal{A}[\![x]\!] &= \{(\sigma, \sigma(x))\} \\
+\mathcal{A}[\![a_1 + a_2]\!] &= \{(\sigma, n) \mid (\sigma, n_1) \in \mathcal{A}[\![a_1]\!]
+\wedge (\sigma, n_2) \in \mathcal{A}[\![a_2]\!] \wedge n = n_1 + n_2\}
+\end{align*}
+\begin{align*}
+\mathcal{B}[\![\mathbf{true}]\!] &= \{(\sigma, \mathbf{true})\} \\
+\mathcal{B}[\![\mathbf{false}]\!] &= \{(\sigma, \mathbf{false})\} \\
+\mathcal{B}[\![a_1 < a_2]\!] &= \{(\sigma, \mathbf{true}) \mid (\sigma, n_1) \in
+\mathcal{A}[\![a_1]\!] \wedge (\sigma, n_2) \in \mathcal{A}[\![a_2]\!] \wedge n_1 < n_2\} \\
+&\quad \cup \{(\sigma, \mathbf{false}) \mid (\sigma, n_1) \in \mathcal{A}[\![a_1]\!] \wedge
+(\sigma, n_2) \in \mathcal{A}[\![a_2]\!] \wedge n_1 \geq n_2\}
+\end{align*}
+
+The denotations for commands are as follows:
+\begin{align*}
+\mathcal{C}[\![\mathbf{skip}]\!] &= \{(\sigma, \sigma)\} \\
+\mathcal{C}[\![x := a]\!] &= \{(\sigma, \sigma[x \mapsto n]) \mid (\sigma, n) \in
+\mathcal{A}[\![a]\!]\} \\
+\mathcal{C}[\![c_1; c_2]\!] &= \{(\sigma, \sigma') \mid \exists \sigma''.\ ((\sigma, \sigma'')
+\in \mathcal{C}[\![c_1]\!] \wedge (\sigma'', \sigma') \in \mathcal{C}[\![c_2]\!])\}
+\end{align*}
+
+All these can be expressed in function-style notation too.\\
+
+\nt{
+  If the denotation of $ \sigma $ under $ b $ is undefined, then the function should also be undefined, hence the case completeness.
+}
+
+Note that $\mathcal{C}[\![c_1; c_2]\!] = \mathcal{C}[\![c_2]\!] \circ \mathcal{C}[\![c_1]\!]$,
+where $\circ$ is the composition of relations, defined as follows: if $R_1 \subseteq A \times
+B$ and $R_2 \subseteq B \times C$ then $R_2 \circ R_1 \subseteq A \times C$ is $R_2 \circ R_1 =
+\{(a, c) \mid \exists b \in B.\ (a, b) \in R_1 \wedge (b, c) \in R_2\}$. If
+$\mathcal{C}[\![c_1]\!]$ and $\mathcal{C}[\![c_2]\!]$ are total functions, then $\circ$ is
+function composition.
+
+\begin{align*}
+\mathcal{C}[\![\mathbf{if}\ b\ \mathbf{then}\ c_1\ \mathbf{else}\ c_2]\!] &= \{(\sigma,
+\sigma') \mid (\sigma, \mathbf{true}) \in \mathcal{B}[\![b]\!] \wedge (\sigma, \sigma') \in
+\mathcal{C}[\![c_1]\!]\} \\
+&\quad \cup \{(\sigma, \sigma') \mid (\sigma, \mathbf{false}) \in \mathcal{B}[\![b]\!] \wedge
+(\sigma, \sigma') \in \mathcal{C}[\![c_2]\!]\}
+\end{align*}
+
+\begin{align*}
+\mathcal{C}[\![\mathbf{while}\ b\ \mathbf{do}\ c]\!] &= \{(\sigma, \sigma) \mid (\sigma,
+\mathbf{false}) \in \mathcal{B}[\![b]\!]\} \\
+&\quad \cup \{(\sigma, \sigma') \mid (\sigma, \mathbf{true}) \in \mathcal{B}[\![b]\!] \wedge
+\exists \sigma''.\ ((\sigma, \sigma'') \in \mathcal{C}[\![c]\!] \wedge (\sigma'', \sigma') \in
+\mathcal{C}[\![\mathbf{while}\ b\ \mathbf{do}\ c]\!])\}
+\end{align*}
+
+But now we have a problem: the last ``definition'' is not really a definition because it
+expresses $\mathcal{C}[\![\mathbf{while}\ b\ \mathbf{do}\ c]\!]$ in terms of itself! This is not
+a definition but a recursive equation. What we want is the solution to this equation.
+
+\nt{
+  The second invocation of while isn't completely circular because the state changes.
+}
+
+\section{Fixed Points}
+
+We gave a recursive equation that the function $\mathcal{C}[\![\mathbf{while}\ b\ \mathbf{do}\
+c]\!]$ must satisfy. To understand some of the issues involved, let's consider a simpler
+example. Consider the following equation for a function $f : \mathbb{N} \to \mathbb{N}$.
+\begin{equation}
+f(x) =
+\begin{cases}
+0 & \text{if } x = 0 \\
+f(x - 1) + 2x - 1 & \text{otherwise}
+\end{cases}
+\end{equation}
+This is not a definition for $f$, but rather an equation that we want $f$ to satisfy. What
+function, or functions, satisfy this equation for $f$? The only solution to this equation is
+the function $f(x) = x^2$.
+
+In general, there may be no solutions for a recursive equation (e.g., there are no functions $g
+: \mathbb{N} \to \mathbb{N}$ that satisfy the recursive equation $g(x) = g(x) + 1$), or multiple
+solutions (e.g., find two functions $g : \mathbb{R} \to \mathbb{R}$ that satisfy $g(x) = 4
+\times g(\frac{x}{2})$).
+
+We can compute solutions to such equations by building successive approximations. Each
+approximation is closer and closer to the solution. To solve the recursive equation for $f$, we
+start with the partial function $f_0 = \emptyset$ (i.e., $f_0$ is the empty relation; it is a
+partial function with the empty set for its domain). We compute successive approximations
+using the recursive equation.
+\begin{align*}
+f_0 &= \emptyset \\
+f_1 &=
+\begin{cases}
+0 & \text{if } x = 0 \\
+f_0(x - 1) + 2x - 1 & \text{otherwise}
+\end{cases}
+\; = \{(0, 0)\} \\
+f_2 &=
+\begin{cases}
+0 & \text{if } x = 0 \\
+f_1(x - 1) + 2x - 1 & \text{otherwise}
+\end{cases}
+\; = \{(0, 0), (1, 1)\} \\
+f_3 &=
+\begin{cases}
+0 & \text{if } x = 0 \\
+f_2(x - 1) + 2x - 1 & \text{otherwise}
+\end{cases}
+\; = \{(0, 0), (1, 1), (2, 4)\} \\
+&\ \ \vdots
+\end{align*}
+This sequence of successive approximations $f_i$ gradually builds the function $f(x) = x^2$.
+
+We can model this process of successive approximations using a higher-order function $F$ that
+takes one approximation $f_k$ and returns the next approximation $f_{k+1}$:
+\[
+F : (\mathbb{N} \rightharpoonup \mathbb{N}) \to (\mathbb{N} \rightharpoonup \mathbb{N})
+\]
+where
+\[
+(F(f))(x) =
+\begin{cases}
+0 & \text{if } x = 0 \\
+f(x - 1) + 2x - 1 & \text{otherwise}
+\end{cases}
+\]
+
+A solution to the recursive equation~(1) is a function $f$ such that $f = F(f)$. In general,
+given a function $F : A \to A$, we have that $a \in A$ is a \emph{fixed point} of $F$ if $F(a) =
+a$. We also write $a = \operatorname{fix}(F)$ to indicate that $a$ is a least fixed point of
+$F$.
+
+So the solution to the recursive equation~(1) is a fixed-point of the higher-order function
+$F$. We can compute this fixed point iteratively, starting with $f_0 = \emptyset$ and at each
+iteration computing $f_{k+1} = F(f_k)$. The fixed point is the limit of this process:
+\begin{align*}
+f &= \operatorname{fix}(F) \\
+&= f_0 \cup f_1 \cup f_2 \cup f_3 \cup \ldots \\
+&= \emptyset \cup F(\emptyset) \cup F(F(\emptyset)) \cup F(F(F(\emptyset))) \cup \ldots \\
+&= \bigcup_{i \geq 0} F^i(\emptyset)
+\end{align*}
+
+\section{Denotation for Loops}
+
+We can now write the correct denotation case for while loops as the fixed point of a
+higher-order function:
+\[
+\mathcal{C}[\![\mathbf{while}\ b\ \mathbf{do}\ c]\!] = \operatorname{fix}(F)
+\]
+where
+\[
+F(f) = \{(\sigma, \sigma) \mid (\sigma, \mathbf{false}) \in \mathcal{B}[\![b]\!]\} \cup
+\{(\sigma, \sigma') \mid (\sigma, \mathbf{true}) \in \mathcal{B}[\![b]\!] \wedge \exists
+\sigma''.\ (\sigma, \sigma'') \in \mathcal{C}[\![c]\!] \wedge (\sigma'', \sigma') \in f\}
+\]
+
+\section{Kleene's Fixed Point Theorem}
+
+Next we'll prove Kleene's fixpoint theorem, which shows that the fixed point used to define the
+semantics of while commands exists.
+
+\dfn{Scott Continuity}{
+A function $F$ from $U$ to $U$ is said to be \emph{Scott-continuous} if for every chain $X_1
+\subseteq X_2 \subseteq \ldots$ we have $F(\bigcup_i X_i) = \bigcup_i F(X_i)$.
+}
+
+It is not hard to show that if $F$ is Scott continuous, then it is also \emph{monotonic}---that
+is, $X \subseteq Y$ implies $F(X) \subseteq F(Y)$. The proof of this fact is left as an
+exercise.
+
+\thm{Kleene Fixpoint}{
+Let $F$ be a Scott-continuous function. The least fixed point of $F$ is $\bigcup_i F^i
+(\emptyset)$.
+}
+
+\pf{}{
+Let $X = \bigcup_i F^i(\emptyset)$.
+
+First, we will prove that $X$ is a fixed point of $F$---that is, $F(X) = X$. We calculate as
+follows:
+\begin{align*}
+F(X) &= F\left(\bigcup_i F^i(\emptyset)\right) & \text{By definition of } X \\
+&= \bigcup_i F(F^i(\emptyset)) & \text{By Scott continuity} \\
+&= \bigcup_i F^{i+1}(\emptyset) \\
+&= \emptyset \cup \bigcup_i F^{i+1}(\emptyset) \\
+&= F^0(\emptyset) \cup \bigcup_i F^{i+1}(\emptyset) \\
+&= \bigcup_i F^i(\emptyset) \\
+&= X
+\end{align*}
+
+Second, we will show that $X$ is the least fixed point of $F$. Suppose that $Y$ is some other
+arbitrary fixed point of $F$.
+
+By induction, we can easily show that $F^i(\emptyset) \subseteq Y$ for all $i$. For the base
+case, $i$ is $0$ and we trivially have $F^0(\emptyset) = \emptyset \subseteq Y$. For the
+inductive case, we assume that $F^i(\emptyset) \subseteq Y$ and prove that $F^{i+1}(\emptyset)
+\subseteq Y$. By our inductive hypothesis and the fact that $F$ is monotone, we have that
+$F(F^i(\emptyset)) \subseteq F(Y)$. As $Y$ is a fixed point we also have $F(Y) = Y$ and so
+$F^{i+1}(\emptyset) \subseteq Y$.
+
+Then, since every element of the chain
+\[
+F^0(\emptyset) \subseteq F^1(\emptyset) \subseteq \ldots
+\]
+is a subset of $Y$, immediately we have that their union, $X = \bigcup_i F^i(\emptyset)
+\subseteq Y$. Hence, $X$ is the least (with respect to $\subseteq$) fixed point of $F$.
+}
+
+\section{Reasoning using Denotational Semantics}
+
+One of the main advantages of using denotational semantics compared to operational semantics
+is that proofs of equivalence can be carried out directly by simply calculating the denotations
+of programs and then arguing that they are identical. This is in contrast to operational
+techniques, where one must reason explicitly about low-level transitions and derivations
+involving ad hoc abstract machines.
+
+As an example, to show that $\mathbf{skip}; c$ and $c; \mathbf{skip}$ are equivalent, we can
+calculate as follows,
+\begin{align*}
+\mathcal{C}[\![\mathbf{skip}; c]\!] &= \{(\sigma, \sigma'') \mid \exists \sigma'.\ (\sigma,
+\sigma') \in \mathcal{C}[\![\mathbf{skip}]\!] \wedge (\sigma', \sigma'') \in \mathcal{C}[\![c]\!]\} \\
+&= \{(\sigma, \sigma'') \mid (\sigma, \sigma'') \in \mathcal{C}[\![c]\!]\} \\
+&= \{(\sigma, \sigma'') \mid \exists \sigma'.\ (\sigma, \sigma') \in \mathcal{C}[\![c]\!] \wedge
+(\sigma', \sigma'') \in \mathcal{C}[\![\mathbf{skip}]\!]\} \\
+&= \mathcal{C}[\![c; \mathbf{skip}]\!]
+\end{align*}
+using standard facts about partial functions, relations, and sets as convenient in the proof
+itself.
+
+Next, consider the command $\mathcal{C}[\![\mathbf{while}\ \mathbf{false}\ \mathbf{do}\ c]\!]$.
+By the definition of the denotational semantics, this is equal to $\operatorname{fix}(F)$ where
+\[
+F(f) = \{(\sigma, \sigma) \mid (\sigma, \mathbf{false}) \in \mathcal{B}[\![b]\!]\} \cup
+\{(\sigma, \sigma'') \mid (\sigma, \mathbf{true}) \in \mathcal{B}[\![b]\!] \wedge (\sigma,
+\sigma') \in \mathcal{C}[\![c]\!] \wedge (\sigma', \sigma'') \in f\}
+\]
+By the Kleene fixpoint theorem we have that $\operatorname{fix}(F) = \bigcup_i F^i(\emptyset)$.
+It is straightforward to show by induction that since the guard is false, for all $i$ we have
+$F^i(\emptyset) = \{(\sigma, \sigma)\}$. It follows that $\operatorname{fix}(F) = \{(\sigma,
+\sigma)\}$, which is just $\mathcal{C}[\![\mathbf{skip}]\!]$.
+
+As an exercise, calculate $\mathcal{C}[\![\mathbf{while}\ \mathbf{true}\ \mathbf{do}\
+\mathbf{skip}]\!]$ using the same technique.
+
+% \end{document}
