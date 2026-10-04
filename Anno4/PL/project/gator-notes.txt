@@ -1,0 +1,19 @@
+- geometric types for avoiding incorrect construction
+- compiles to OpenGL shading -> this could be the difference
+- helps with different coordinate systems, mainly for 3d, which are world, model and view
+
+type = (coordinate system, geometric object, coordinate scheme)
+scheme<system>.object
+frame model has dimension 3; (with implicit base vectors)
+
+- transformation graph to automatically convert vectors to different coordinate systems
+- Note: transformation correctness in not ensured, but path independence is enforced (necessary condition is that the transformation graph commutes) -> this requires that transformations be between equidimensional frames
+
+- Type inference
+- Parametric polymorphism for frames and types
+- overloading of functions
+- as! for unsafe casting (forgoes the type system check)
+
+
+
+
