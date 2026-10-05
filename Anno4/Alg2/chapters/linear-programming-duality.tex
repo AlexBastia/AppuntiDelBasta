@@ -1,0 +1,221 @@
+% \begin{document}
+\section{Duality}
+\subsection{Intuition}
+
+Consider the following linear program:
+\begin{center}
+\begin{tabular}{lll}
+  Minimize    & $7x_1+3x_2$ & \\
+  Subject to: & $x_1+x_2\ge 2,$  & $/\cdot y_1$\\
+              & $3x_1+x_2\ge 4,$ & $/\cdot y_2$\\
+              & $x_1,x_2\ge 0.$  &
+\end{tabular}
+\end{center}
+
+We are looking for the optimal solution $\mathrm{OPT}$ to this LP. To find the solution we may ask
+two types of questions (to find the upper and lower bound on $\mathrm{OPT}$). Is there a solution
+of cost $\le 10$? (Is $\mathrm{OPT}\le 10$?) An answer to this type of questions is quite simple;
+we just find a feasible solution to the LP with objective function $\le 10$ e.g.\ $x_1=x_2=1$. Is
+there no better solution? (Is $\mathrm{OPT}\ge 10$?) Observe that we can bound the objective
+function value using constraints that every feasible solution satisfies. From the first constraint
+we get
+\[
+  7x_1+3x_2\ge x_1+x_2\ge 2.
+\]
+Thus $\mathrm{OPT}\ge 2$. Similarly from the second constraint we get $\mathrm{OPT}\ge 4$. To make
+a better lower bound we will need to be more clever. Let's take a linear combination of the
+constraints with coefficients $y_1,y_2$ correspondingly. $y_1,y_2$ should be non-negative because
+multiplying a constraint by negative number would flip the inequality. By taking $y_1=1$, $y_2=2$
+we obtain
+\[
+  7x_1+3x_2\ge(x_1+x_2)+2(3x_1+x_2)\ge 2+2\cdot 4=10.
+\]
+For each constraint of the given LP we associate a dual variable $y_i$ denoting the weight of the
+$i$-th constraint. What kind of variables can we take to get a valid lower bound? How should we
+pick coefficients to maximize lower bound for $\mathrm{OPT}$? First of all we are interested in
+lower-bounding the objective function. Thus linear combination of primal constraints cannot
+exceed primal objective function. As mentioned earlier $y_i\ge 0$. In this way we get the
+following (dual) linear program for $y_1,y_2$:
+\begin{center}
+\begin{tabular}{lll}
+  Maximize    & $2y_1+4y_2$ & (lower bound as tight as possible)\\
+  Subject to: & $y_1+3y_2\le 7,$ & (coefficient of $x_1$)\\
+              & $y_1+y_2\le 3,$  & (coefficient of $x_2$)\\
+              & $y_1,y_2\ge 0.$  &
+\end{tabular}
+\end{center}
+Let's try now to formalize this approach.
+
+\subsection{General case}
+
+Consider the following linear program with $n$ variables $x_i$ for $i\in[1,n]$ and $m$
+constraints:
+\begin{center}
+\begin{tabular}{ll}
+  Minimize    & $\displaystyle\sum_{i=1}^n c_i x_i$\\[8pt]
+  Subject to: & $\displaystyle\sum_{i=1}^n A_{ji}x_i\ge b_j\quad\forall j=1,\ldots,m,$\\[8pt]
+              & $x\ge 0.$
+\end{tabular}
+\end{center}
+Then, the dual program has $m$ variables $y_j$ for $j\in[1,m]$ and $n$ constraints:
+\begin{center}
+\begin{tabular}{ll}
+  Maximize    & $\displaystyle\sum_{j=1}^m b_j y_j$\\[8pt]
+  Subject to: & $\displaystyle\sum_{j=1}^m A_{ji}y_j\le c_i\quad\forall i=1,\ldots,n,$\\[8pt]
+              & $y\ge 0.$
+\end{tabular}
+\end{center}
+Each variable $y_j$ in the dual program corresponds to the weight of one of constraints from the
+primal LP. We have $n$ constraints in the dual, one for every primal variable $x_i$.
+
+\paragraph{Remark} We showed how to produce dual program for minimization problem. Similar
+approach works also for maximization problems. Also every maximization problem can be reduced to
+a minimization one. We replace $x_i$ with $-x_i$ in constraints and objective function obtaining
+minimization problem.
+
+\paragraph{Remark} One can verify that if we take the dual of the dual problem, we get back to the
+primal problem, as we should expect. Finding the dual linear program is an automatic procedure.
+
+\subsection{Duality Theorems}
+
+Let's focus now on the solutions of both LPs. In our example optimal solutions to primal and dual
+problems coincided. We now present two theorems that connect primal and dual solutions.
+\label{thm:weak}
+\thm{Weak Duality}{
+If $x$ is primal-feasible (meaning that $x$ is a feasible solution to the primal problem) and $y$
+is dual-feasible, then
+\[
+  \sum_{i=1}^n c_i x_i\ \ge\ \sum_{j=1}^m b_j y_j.
+\]
+}
+
+\pf{}{
+Let's rewrite the right hand side
+\[
+  \sum_{j=1}^m b_j y_j\ \le\ \sum_{j=1}^m\sum_{i=1}^n A_{ji}x_i y_j
+  \ =\ \sum_{i=1}^n\Big(\sum_{j=1}^m A_{ji}y_j\Big)x_i\ \le\ \sum_{i=1}^n c_i x_i.
+\]
+Here we used the fact that $x,y\ge 0$ for the inequalities.
+}
+
+This theorem tells us that every dual-feasible solution is a lower bound to any primal solution.
+This is intuitive: every primal feasible solution satisfies primal constraints, dual feasible
+solution gives us a way of lower bounding primal solution using primal constraints. Moreover from
+Weak Duality we can conclude that optimal solution to primal program is lower bounded by optimal
+solution to dual program. In fact optimal solutions to primal and duals linear programs coincide,
+leading to the following theorem.
+\label{thm:strong}
+\thm{Strong Duality}{
+If $x$ is an optimal primal solution and $y$ is an optimal dual solution, then
+\[
+  \sum_{i=1}^n c_i x_i=\sum_{j=1}^m b_j y_j.
+\]
+Furthermore, if the primal problem is unbounded, then the dual problem is infeasible and
+analogously if the dual is unbounded, the primal is infeasible.
+}
+
+We omit the proof of strong duality for now but I encourage you to understand one of the many
+proofs!
+
+\subsection{Example: Maximum cardinality matching and Vertex Cover on Bipartite Graphs}
+
+Let $G=(A\cup B,E)$ be a bipartite graph and let $M$ be a matching. Let $x_e$ be a variable
+corresponding to taking edge $e\in M$. We want to maximize the cardinality of $M$ while assuring
+that every vertex has at most one neighboring edge belonging to $M$. Writing those conditions in a
+form of LP gives us:
+\begin{center}
+\begin{tabular}{ll}
+  Maximize    & $\displaystyle\sum_{e\in E}x_e$\\[8pt]
+  Subject to: & $\displaystyle\sum_{e=(a,b)\in E}x_e\le 1\quad\forall a\in A,$\\[8pt]
+              & $\displaystyle\sum_{e=(a,b)\in E}x_e\le 1\quad\forall b\in B,$\\[8pt]
+              & $x_e\ge 0.$
+\end{tabular}
+\end{center}
+Thus the dual program looks like this:
+\begin{center}
+\begin{tabular}{ll}
+  Minimize    & $\displaystyle\sum_{v\in A\cup B}y_v$\\[8pt]
+  Subject to: & $y_a+y_b\ge 1\quad\text{for }(a,b)\in E,$\\[4pt]
+              & $y_v\ge 0.$
+\end{tabular}
+\end{center}
+One can easily notice that this LP is vertex cover relaxation. By weak-duality, we have that
+$|M|\le|C|$ for any matching $M$ and vertex cover $C$. Moreover, since both the primal and the
+dual are integral for bipartite graphs, strong LP-duality implies K\"onig's theorem:
+
+\thm{K\"onig 1931}{
+Let $M^\star$ be a maximum cardinality matching and $C^\star$ be a minimum vertex cover of a
+bipartite graph. Then
+\[
+  |M^\star|=|C^\star|.
+\]
+}
+
+Another well-known duality that is also a special case of LP-duality is the max-flow $=$ min-cut
+theorem.
+
+\subsection{Complementarity Slackness}
+
+Strong duality gives an important relationship between primal and dual optimal solutions.
+\label{thm:cs}
+\thm{}{
+Let $x\in\mathbb{R}^n$ be a feasible solution to the primal and let $y\in\mathbb{R}^m$ be a
+feasible solution to the dual. Then
+\[
+  x,y \text{ are both optimal solutions}
+  \iff
+  \begin{cases}
+    x_i>0\ \Rightarrow\ c_i=\displaystyle\sum_{j=1}^m A_{ji}y_j & \forall i=1,\ldots,n,\\[10pt]
+    y_j>0\ \Rightarrow\ b_j=\displaystyle\sum_{i=1}^n A_{ji}x_i & \forall j=1,\ldots,m.
+  \end{cases}
+\]
+}
+
+\pf{}{
+We will apply the strong duality theorem to the weak duality theorem proof.
+
+\medskip
+\noindent$\Rightarrow$\quad Let $x$ be the optimal primal solution. From the weak duality theorem
+proof, we have that
+\begin{equation}\label{eq:chain}
+  \sum_{j=1}^m b_j y_j\ \le\ \sum_{j=1}^m\sum_{i=1}^n A_{ji}x_i y_j
+  \ =\ \sum_{i=1}^n\Big(\sum_{j=1}^m A_{ji}y_j\Big)x_i\ \le\ \sum_{i=1}^n c_i x_i.
+\end{equation}
+Here we used the fact that $x,y\ge 0$. On the other hand by the strong duality theorem
+\[
+  \sum_{j=1}^m b_j y_j=\sum_{i=1}^n c_i x_i.
+\]
+So in~\eqref{eq:chain} there are equalities everywhere. Thus
+\[
+  \sum_{i=1}^n c_i x_i=\sum_{i=1}^n\Big(\sum_{j=1}^m A_{ji}y_j\Big)x_i
+  \ \Rightarrow\ 
+  c_i x_i=\Big(\sum_{j=1}^m A_{ji}y_j\Big)x_i\quad\text{for } i=1,\ldots,n.
+\]
+And finally for every $x_i$, $i=1,\ldots,n$:
+\[
+  x_i\neq 0,\ \ c_i x_i=\Big(\sum_{j=1}^m A_{ji}y_j\Big)x_i
+  \ \Rightarrow\ 
+  c_i=\Big(\sum_{j=1}^m A_{ji}y_j\Big).
+\]
+
+\medskip
+\noindent$\Leftarrow$\quad Similarly to the previous part we know that:
+\begin{align*}
+  x_i c_i &= \Big(\sum_{j=1}^m A_{ji}y_j\Big)x_i && \forall i=1,\ldots,n,\\
+  y_j b_j &= \Big(\sum_{i=1}^n A_{ji}x_i\Big)y_j && \forall j=1,\ldots,m.
+\end{align*}
+Thus
+\[
+  \sum_{j=1}^m b_j y_j=\sum_{j=1}^m\sum_{i=1}^n A_{ji}x_i y_j
+  =\sum_{i=1}^n\Big(\sum_{j=1}^m A_{ji}y_j\Big)x_i=\sum_{i=1}^n c_i x_i.
+\]
+The above equality is equivalent to $x,y$ being optimal solutions to the primal and the dual
+linear programs, respectively. Indeed for feasible solution $x^\star$ to the primal we have by
+weak duality
+\[
+  \sum_{i=1}^n c_i x^\star_i\ \ge\ \sum_{j=1}^m b_j y_j=\sum_{i=1}^n c_i x_i.
+\]
+Thus $x$ is an optimal solution to the primal program and similarly $y$ is an optimal solution to
+the dual.
+}
+% \end{document}
