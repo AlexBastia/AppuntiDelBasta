@@ -10,9 +10,11 @@ that the smallest of these upper bounds be equal to the size of the largest matc
 duality concept that will be very important in this subject. In this case, the dual problem will
 be a famous combinatorial optimization problem: \emph{vertex cover}.
 
-\paragraph{Vertex cover:} A vertex cover is a set $C$ of vertices so that all edges $e$ of $E$ are
-incident to at least one edge in $C$. In other words, there is no edge completely contained in
+\dfn{Vertex cover}{
+A vertex cover is a set $C$ of vertices so that all edges $e$ of $E$ are
+incident to at least one vertex in $C$. In other words, there is no edge completely contained in
 $V\setminus C$.
+}
 
 We clearly have the following:
 \[
@@ -27,8 +29,11 @@ graphs:
 
 \label{thm:konig}
 \thm{K\"onig 1931}{
-For any bipartite graph, the maximum size of a matching is equal to the minimum size of a vertex
-cover.
+Let $M^\star$ be a maximum cardinality matching and $C^\star$ be a minimum vertex cover of a
+bipartite graph. Then
+\[
+  |M^\star|=|C^\star|.
+\]
 }
 
 The proof of this theorem will be algorithmic. It will give an efficient algorithm for both
@@ -109,7 +114,14 @@ The definition of an augmenting path motivates the following algorithm:
 
 \ex{Exercise}{
 Devise an efficient algorithm for finding an augmenting path $P$ (if one exists). What is the
-total running time of the \AugAlg{}?
+total running time of the \AugAlg{}?\\
+
+Possible algo:
+\begin{enumerate}
+\item Create a directed graph where the edges in $ M $ go from $ B $ to $ A $ and the others are reversed. Connect a new vertex $ s  $ to all vertexes in $ A $ and all vertexes in $ B $ to a new vertex $ t $.
+\item Run a BFS from $ s  $ to $ t $ on this new graph.
+\item If $ t $ is reachable, the path (mins $ s \to A $ and $ B \to t $) is augmenting. Else, no augmenting path exists.
+\end{enumerate}
 }
 
 We now prove that \AugAlg{} indeed finds a maximum matching.

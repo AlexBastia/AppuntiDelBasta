@@ -1,0 +1,464 @@
+% \begin{document}
+\chapter{The Multiplicative Weights Algorithm}
+
+This section is basically taken verbatim from the excellent lecture notes\footnote{This section
+corresponds to Lecture 16 in the course, which was scribed by Shiva Kaul} by Anupam Gupta available
+here (together with a lot of other interesting information):
+\url{https://www.cs.cmu.edu/afs/cs.cmu.edu/academic/class/15859-f11/www/}
+
+Multiplicative weights is a retronym for the simple iterative rule that underlies modular,
+iterative algorithms for solving LPs and SDPs (semidefinite programs).\footnote{See Lecture 17 in
+the course linked earlier} The Multiplicative Weights Algorithm is known by diferent names in the
+various fields where it was (re)discovered. Check out the survey by Arora, Hazan and Kale [3]; our
+discussion will be based on their treatment. Due to its broad appeal, we will consider
+multiplicative weights in more generality than is needed for solving LPs and SDPs. In this
+lecture, we'll introduce some strategies for playing a prediction game.
+
+\section{Naive Implementations}
+
+\subsection{Warmup: Prediction with Expert Advice}
+
+The following sequential game is played between an omniscient Adversary and an Aggregator who is
+advised by $N$ experts. Special cases of this game include predicting if it will rain tomorrow, or
+if the stock market will go up or down.
+
+\bigskip
+\noindent\fbox{\parbox{0.95\textwidth}{
+\textbf{Strategy 1} Prediction with Expert Advice
+\begin{enumerate}[leftmargin=2em,label=\arabic*:,itemsep=1pt]
+  \item \textbf{for} $t=1\ldots T$ \textbf{do}
+  \item \hspace{1em}Each expert $i\in[N]$ advises either YES or NO
+  \item \hspace{1em}Aggregator predicts either YES or NO
+  \item \hspace{1em}Adversary, with knowledge of the expert advice and Aggregator's prediction,
+    decides the YES/NO outcome.
+  \item \hspace{1em}Aggregator observes the outcome and suffers if his prediction was incorrect.
+  \item \textbf{end for}
+\end{enumerate}
+}}
+\bigskip
+
+Naturally, Aggregator wants to make as few mistakes as possible. Since the experts may be unhelpful
+and the outcomes may be capricious, Aggregator can hope only for a relative performance guarantee.
+In particular, Aggregator hopes to do as well as the best single expert in
+hindsight.\footnote{The excess number of mistakes is called (external) \emph{regret}} In order to
+do so, Aggregator must track which experts are helpful. We will consider a few tracking
+strategies. Almost every other aspect of the game -- that advise is aggregated into a single value,
+that this value is binary, and even that the game is sequential -- is not relevant; we will
+generalize or eliminate these aspects.
+
+If there is a perfect expert, then an obvious strategy is to dismiss experts who are not perfect.
+With the remaining experts, take a majority vote. Whenever the Aggregator makes a mistake, at least
+half of the remaining experts are dismissed, so Aggregator makes at most
+$\log N$ mistakes.\footnote{We will use $\log$ to denote the binary logarithm} We can use the same
+strategy even when there isn't a perfect expert, if we restart after every expert has been
+eliminated. If the best expert has made $M$ mistakes by time $T$, then Aggregator has restarted at
+most $M+1$ times, so it has made at most $(M+1)\cdot\log N$ mistakes. This bound is rather poor
+since it depends multiplicatively on $M$.
+
+\subsection{Fewer Mistakes with Weighted Majority}
+
+We may obtain an additive mistake bound by softening our strategy: instead of dismissing experts
+who erred, discount their advice. This leads to the Weighted Majority Algorithm of Littlestone and
+Warmuth [4]. Assign each expert $i$ a weight $w_i^{(1)}$ initialized to $1$. Then for every $t$,
+predict YES/NO based on the weighted majority vote and halve the mistaken experts' weights after
+observing the outcome. The game strategy then becomes:
+
+\bigskip
+\noindent\fbox{\parbox{0.95\textwidth}{
+\textbf{Strategy 2} Prediction with Weighted Majority
+\begin{enumerate}[leftmargin=2em,label=\arabic*:,itemsep=1pt]
+  \item Initialize $w^{(1)}=(w^{(1)}_1,\ldots,w^{(1)}_N)$ to be a vector of 1's
+  \item \textbf{for} $t=1\ldots T$ \textbf{do}
+  \item \hspace{1em}Each expert $i\in[N]$ advises either YES or NO
+  \item \hspace{1em}Aggregator predicts either YES or NO based on a weighted majority vote using
+    $w^{(t)}$
+  \item \hspace{1em}Adversary, with knowledge of the expert advice and Aggregator's prediction,
+    decides the YES/NO outcome.
+  \item \hspace{1em}Aggregator observes the outcome and for every mistaken expert $i$, set
+    $w_i^{(t+1)}\leftarrow w_i^{(t)}/2$
+  \item \textbf{end for}
+\end{enumerate}
+}}
+\bigskip
+\label{claim:wm}
+\clm{}{}{
+For any sequence of outcomes, duration $T$, let $\MWM$ be the number of mistakes that the Weighted
+Majority strategy makes, and $M_i$ be the number of mistakes that expert $i$ makes. Then
+\[
+  \MWM\le 2.41\cdot(M_i+\log N)
+\]
+}
+
+\pf{}{
+Let
+\[
+  \Phi^{(t)}=\sum_{i\in[N]}w_i^{(t)}
+\]
+be a `potential' function. Observe that:
+\begin{itemize}
+  \item By definition, we have $\Phi^{(1)}=N$
+  \item Also by definition, $\left(\frac12\right)^{M_i}\le\Phi^{(T+1)}$
+  \item At any time $\tau$ when WM errs, at least half of the weight gets halved:
+    $\Phi^{(\tau+1)}\le\frac34\Phi^{(\tau)}$
+\end{itemize}
+This implies
+\[
+  \Phi^{(T+1)}\le\left(\frac34\right)^{\MWM}\Phi^{(1)}
+\]
+Combining these facts yields
+\[
+  \left(\frac12\right)^{M_i}\le\left(\frac34\right)^{\MWM}N
+\]
+Taking the base-$2$ logarithm of both sides,
+\[
+  -M_i\le\log N+\log\left(\frac34\right)\MWM
+\]
+so
+\[
+  \MWM\le\underbrace{\frac{1}{\log(4/3)}}_{\approx 2.41}(M_i+\log N)
+\]
+}
+
+The leading constant is a consequence of our arbitrary choice to halve the weights. We can optimize
+$\varepsilon$ in the update rule
+\[
+  w_i^{(t+1)}\leftarrow w_i^{(t)}/(1+\varepsilon)
+\]
+then using the WM strategy we may achieve
+\[
+  \MWM\le 2(1+\varepsilon)\big(M_i+O(\log N/\varepsilon)\big)
+\]
+
+\section{Randomized Strategies}
+
+In the exercises, you proved that there are instances for which weighted majority does twice as many
+mistakes as the best expert! This is undesirable. To overcome this limitation, we will allow the
+aggregator to play a random strategy instead of always making a deterministic prediction (that the
+adversary then uses to create bad instances). A side note is that this is often a general strategy:
+randomization is often very good to limit the effect of adversaries.
+
+Allowing for randomized strategies leads to the following game with $T$ days and $N$ experts:
+
+\medskip
+\noindent For $t=1,\ldots,T$:
+\begin{enumerate}
+  \item Each expert $i\in[N]$ gives some advice.
+  \item Allocator picks some distribution $\vp^{(t)}=\big(p_1^{(t)},\ldots,p_N^{(t)}\big)$ over the
+    experts.
+  \item Adversary, with knowledge of the expert advice and $\vp^{(t)}$, determines a cost vector
+    $\vm^{(t)}=\big(m_1^{(t)},\ldots,m_N^{(t)}\big)\in[-1,1]^N$.
+  \item Allocator observes the cost vector and suffers
+    $\vp^{(t)}\cdot\vm^{(t)}=\sum_{i\in[N]}p_i^{(t)}m_i^{(t)}$.
+\end{enumerate}
+
+Note that in the above game, we have abstracted away the given advice and in fact Step 1 is not
+important. At each day $t$, the goal is to find a distribution $\vp^{(t)}$ over the experts so as to
+minimize the suffering (the cost). For each day $t$, the adversary decides that the cost of
+following the $i$'th expert's advice is $m_i^{(t)}$. Here, we have generalized the cost to be
+anything in $[-1,1]$ instead of only counting the number of mistakes. (A negative number means that
+it was profitable to follow that expert's advice.)
+
+As we play a randomized strategy, the expected cost incurred at day $t$ is thus
+\[
+  \sum_{i\in[N]}\Pr[\text{aggregator follows expert } i \text{ at day } t]\cdot m_i^{(t)}
+  =\sum_{i\in[N]}p_i^{(t)}m_i^{(t)}=:\vp^{(t)}\cdot\vm^{(t)}.
+\]
+The ultimate goal is to design a strategy that does as well as the best expert. That is, we wish to
+find a strategy such that for every $i\in[N]$
+\[
+  \underbrace{\sum_{t=1}^T\vp^{(t)}\cdot\vm^{(t)}}_{\text{our loss}}
+  \ \le\ \underbrace{\sum_{t=1}^T m_i^{(t)}}_{\text{loss of best expert}}
+  +\ \text{(small error terms)}.
+\]
+The \emph{Hedge} strategy that we explain in the next section accomplishes this.
+
+\ex{}{
+A natural example of the above situation is when you investment money. You have the option to
+choose between say 4 different funds provided by Postfinance, UBS, Credit Suisse, and Banque
+cantonal. The probability $\vp^{(t)}$ vector that you choose at day $t$ then corresponds to what
+fraction of your investment goes to the different funds. The goal is to update these fractions so as
+to make as much money as the best of the 4 options over the long run. Here the penalties (cost or
+profit) $\vm^{(t)}$ that you observe reflect the performance of the different investments.
+}
+
+It is quite remarkable that you can do (almost) as good as the best possible option by doing
+rebalancing. HOWEVER, the caveat ``almost'' assumes that you live a very long life. For a small $T$,
+the guarantees get slightly worse.
+
+\section{The Hedge strategy}
+
+We now explain and analyze the Hedge strategy for the setting introduced in the last section. It is
+parameterized by the ``learning parameter'' $\varepsilon>0$:
+\begin{itemize}
+  \item Initially, assign each expert $i$ a weight $w_i^{(1)}$ of $1$. (All experts are equally
+    trustworthy in the beginning.)
+\end{itemize}
+At each time $t$:
+\begin{itemize}
+  \item Pick the distribution $p_i^{(t)}=w_i^{(t)}/\Phi^{(t)}$ where
+    $\Phi^{(t)}=\sum_{i\in[N]}w_i^{(t)}$.
+  \item After observing the cost vector, set $w_i^{(t+1)}=w_i^{(t)}\cdot e^{-\varepsilon\cdot m_i^{(t)}}$.
+\end{itemize}
+The difference between Hedge and the so-called Multiplicative Weight Update method is the
+weight-update $w_i^{(t+1)}=w_i^{(t)}\cdot e^{-\varepsilon\cdot m_i^{(t)}}$ instead of
+$w_i^{(t+1)}=w_i^{(t)}\cdot(1-\varepsilon\cdot m_i^{(t)})$. Both methods have similar guarantees:
+
+\label{thm:hedge}
+\thm{}{
+Suppose $\varepsilon\le 1$ and for $t\in[T]$, $\vp^{(t)}$ is picked by Hedge. Then for any expert $i$,
+\[
+  \sum_{t=1}^T\vp^{(t)}\cdot\vm^{(t)}\ \le\ \sum_{t=1}^T m_i^{(t)}+\frac{\ln N}{\varepsilon}+\varepsilon T.
+\]
+}
+
+Note that in the above theorem, $i$ can be chosen to be the best expert and thus Hedge does as well
+as the best expert plus some small error terms.
+
+\begin{proof}
+Similar to the analysis of the weighted majority strategy, the proof goes by analyzing the potential
+$\Phi^{t}=\sum_{i\in[N]}w_i^{(t)}$.
+
+\medskip
+\noindent\textbf{Lower bound on $\Phi^{(T+1)}$:} We lower bound the final potential as a function of
+$i$'s performance:
+\[
+  \Phi^{(T+1)}=\sum_{j\in[N]}w_j^{(T+1)}\ \ge\ w_i^{(T+1)}=\exp\Big(-\varepsilon\sum_{t=1}^T m_i^{(t)}\Big),
+\]
+where the last equality follows from that the initial weight of $i$ was one and every day $t$ his
+weight was updated by $e^{-\varepsilon m_i^{(t)}}$.
+
+\medskip
+\noindent\textbf{Upper bound on $\Phi^{(T+1)}$:} We upper bound the final potential in terms of the
+total cost Hedge suffered. By definition,
+\[
+  \Phi^{(t+1)}=\sum_{j\in[N]}w_j^{(t+1)}=\sum_{j\in[N]}w_j^{(t)}\cdot\exp\big(-\varepsilon m_j^{(t)}\big).
+\]
+The exponentiated term is in $[-1,1]$. Since $e^x\le 1+x+x^2$ for $x\in[-1,1]$ (do a Taylor
+expansion),
+\begin{align*}
+  \sum_{j\in[N]}w_j^{(t)}\cdot\exp\big(-\varepsilon m_j^{(t)}\big)
+  &\le\sum_{j\in[N]}w_j^{(t)}\Big(1-\varepsilon m_j^{(t)}+\varepsilon^2\big(m_j^{(t)}\big)^2\Big)\\
+  &\le\sum_{j\in[N]}w_j^{(t)}\Big(1-\varepsilon m_j^{(t)}+\varepsilon^2\Big) &&\text{(since } (m_j^{(t)})^2\le 1)\\
+  &=\sum_{j\in[N]}w_j^{(t)}(1+\varepsilon^2)-\varepsilon\sum_{j\in[N]}w_j^{(t)}m_j^{(t)}\\
+  &=\Phi^{(t)}(1+\varepsilon^2)-\varepsilon\sum_{j\in[N]}\Phi^{(t)}p_j^{(t)}m_j^{(t)} &&\text{(since } \Phi^{(t)}p_j^{(t)}=w_j^{(t)})\\
+  &=\Phi^{(t)}\Big(1+\varepsilon^2-\varepsilon\,\vp^{(t)}\vm^{(t)}\Big)\\
+  &\le\Phi^{(t)}\cdot\exp\Big(\varepsilon^2-\varepsilon\,\vp^{(t)}\vm^{(t)}\Big) &&\text{(since } 1+x\le e^x).
+\end{align*}
+We therefore have
+\begin{align*}
+  \Phi^{(T+1)}&\le\Phi^{(T)}\cdot\exp\Big(\varepsilon^2-\varepsilon\,\vp^{(T)}\vm^{(T)}\Big)\\
+  &\le\Phi^{(T-1)}\cdot\exp\Big(\varepsilon^2-\varepsilon\,\vp^{(T-1)}\vm^{(T-1)}\Big)\cdot\exp\Big(\varepsilon^2-\varepsilon\,\vp^{(T)}\vm^{(T)}\Big)\\
+  &\ \ \vdots\\
+  &\le\Phi^{(1)}\cdot\exp\Big(\varepsilon^2T-\varepsilon\sum_{t=1}^T\vp^{(t)}\vm^{(t)}\Big)\\
+  &=N\cdot\exp\Big(\varepsilon^2T-\varepsilon\sum_{t=1}^T\vp^{(t)}\vm^{(t)}\Big),
+\end{align*}
+where for the equality we used that $\Phi^{(1)}=N$ since each expert was initialized with a weight of
+$1$.
+
+The above bounds give us
+\[
+  \exp\Big(-\varepsilon\sum_{t=1}^T m_i^{(t)}\Big)\ \le\ \Phi^{(T+1)}\ \le\
+  N\cdot\exp\Big(\varepsilon^2T-\varepsilon\sum_{t=1}^T\vp^{(t)}\vm^{(t)}\Big).
+\]
+Taking (natural) logarithms,
+\[
+  -\varepsilon\sum_{t=1}^T m_i^{(t)}\ \le\ \ln(N)+\varepsilon^2T-\varepsilon\sum_{t=1}^T\vp^{(t)}\vm^{(t)}
+\]
+and the final result follows by dividing by $\varepsilon$ and rearranging the terms.
+\end{proof}
+
+\paragraph{Remark} The above proof may seem messy with all the inequalities. However, it follows a
+standard ``framework'': upper and lower bound the potential function. These Multiplicative Weight
+Update type of algorithms are most often analyzed using this potential argument. Once you know that
+cool argument, the analysis is almost automatic modulo some rewriting.
+
+For the application of solving covering LPs, it will be convenient to consider the average cost
+incurred per day. We also generalize so that the cost vector can take values in $[-\rho,\rho]^N$
+where $\rho$ is called the ``width''. The proof is the same by scaling and we get the following
+corollary:
+
+\label{cor:hedge}
+\cor{}{
+Suppose $\varepsilon\le 1$ and for $t\in[T]$, $\vp^{(t)}$ is picked by Hedge and cost vectors satisfy
+$\vm^{(t)}\in[-\rho,\rho]^N$. If $T\ge(4\rho^2\ln N)/\varepsilon^2$, then for any expert $i$:
+\[
+  \frac1T\sum_{t=1}^T\vp^{(t)}\cdot\vm^{(t)}\ \le\ \frac1T\sum_{t=1}^T m_i^{(t)}+2\varepsilon.
+\]
+}
+
+\section{Hedging for LPs}
+
+We now turn to a nice application of the Hedge method to that of solving covering LPs. We start by
+defining these LPs.
+
+\subsection{Covering LPs}
+
+\dfn{Covering Linear Program}{
+A linear program of the form:
+\begin{align*}
+  \text{minimize}\quad & \sum_{j=1}^n c_j x_j\\
+  \text{subject to}\quad & Ax\ge b\\
+  & 1\ge x_j\ge 0\quad\forall j
+\end{align*}
+is a \emph{covering linear program} if
+\[
+  A\in\mathbb{R}_+^{m\times n},\quad b\in\mathbb{R}_+^m\quad\text{and}\quad c\in\mathbb{R}_+^n
+\]
+}
+
+This definition simply ensures that all the coefficients of the constraints and of the objective
+function are non-negative. Notice that both the set cover relaxation and the vertex cover
+relaxation that we saw in class were covering LPs.
+
+Let us now introduce an example of a covering LP that we will reuse later:
+\begin{align}
+  \text{minimize}\quad & x_1+2x_2 \tag{1}\\
+  \text{subject to}\quad & x_1+3x_2\ge 2\nonumber\\
+  & 2x_1+x_2\ge 1\nonumber\\
+  & 1\ge x_1,x_2\ge 0\nonumber
+\end{align}
+
+\subsection{General idea}
+
+The idea of using the Hedge method for linear programming is to associate an expert with each
+constraint of the LP. In other words, the Hedge method will maintain a weight distribution over the
+set of constraints of a linear problem to solve, and to iteratively update those weights in a
+multiplicative manner based on the cost function at each step/day. Of course we need to define the
+cost function in a smart way later but let us first define the notion of an oracle and then give a
+small instructive example.
+
+Initially, the Hedge method will give a weight $w_i^{(1)}=1$ for every constraint/expert
+$i=1,\ldots,m$ (the number $m$ of constraints now equals the number of experts). And at each day
+$t$, it will maintain a convex combination $\vp^{(t)}$ of the constraints (that is defined in terms
+of the weights). Using such a convex combination $\vp$, a natural easier LP with a single
+constraint is obtained by summing up all the constraints according to $\vp$. Any optimal solution
+of the original LP is also a solution of this reduced problem, so the new problem will have at most
+the same cost as the previous one. We define an oracle for solving this reduced problem:
+
+\dfn{}{
+An oracle that, given $\vp=(p_1,\ldots,p_m)\ge 0$ such that $\sum_{i=1}^m p_i=1$, outputs an
+optimal solution $x^*$ to the following reduced linear problem:
+\begin{align*}
+  \text{minimize}\quad & \sum_{j=1}^n c_j x_j\\
+  \text{subject to}\quad & \Big(\sum_{i=1}^m p_i A_i\Big)\cdot x\ \ge\ \sum_{i=1}^m p_i b_i\\
+  & 1\ge x\ge 0
+\end{align*}
+}
+
+This linear problem is in practice much easier to solve than the original one and we can design a
+simple greedy algorithm for the oracle.
+
+For concreteness, let us consider a small example. If we apply the method we described to our
+example~(1), we have two initials weights $w_1=w_2=1$ and thus $p_1=p_2=\frac12$, and we sum all
+the constraints:
+\begin{align*}
+  & p_1(x_1+3x_2)+p_2(2x_1+x_2)\ge p_1\cdot 2+p_2\cdot 1\ \Leftrightarrow\\
+  & 1.5x_1+2x_2\ge 1.5\\
+  & 1\ge x_1,x_2\ge 0
+\end{align*}
+By using the oracle, an optimal solution to this reduced problem is $x_1=1$, $x_2=0$ of cost $1$.
+But is this a feasible solution to our original problem? By checking the constraints of the
+original LP:
+\begin{align*}
+  2x_1+x_2&=2\ge 1 && \text{OK}\\
+  x_1+3x_2&=1<2 && \text{not OK}
+\end{align*}
+We will need to go back to the original problem and increase the weights of the unsatisfied
+constraints to give them more importance and decrease the weights of the satisfied constraint. We
+will perform these updates (as done by Hedge) multiplicatively that we describe in detail in
+Section 4.4. We first describe how to implement the oracle in general.
+
+\subsection{Implementation of the oracle}
+
+The oracle is given an objective function $\text{minimize}\sum_{i=1}^n c_i x_i$ and only one
+constraint that we can rewrite as $\sum_{i=1}^n d_i x_i\ge b$ (which is the weighted sum of all
+constraints). We also have $1\ge x_i\ge 0\ \forall i$ and $c_i,d_i\ge 0\ \forall i$ since it is a
+covering problem.
+
+The idea is to assign the maximum value (namely $1$) to the variables that have the highest ratio
+constraint coefficient/objective coefficient. That way we will satisfy the constraint as fast as
+possible while maintaining a small objective function. Then assign zero to the other variables and
+possibly an intermediate value for the variable that is at the limit to make the constraint
+satisfied. This is very similar to the most ``bang-for-the-buck'' greedy and it is the solution to
+fractional knapsack. Formally:
+\begin{itemize}
+  \item Sort and relabel all variables $x_i$ so that $d_1/c_1\ge d_2/c_2\ge\ldots\ge d_n/c_n$.
+  \item Let $k=\min\{j:\sum_{i=1}^j d_i\ge b\}$ and $\ell=b-\sum_{i=1}^{k-1}d_i$.
+  \item Set $x_i:=1$ for $i=1,\ldots,k-1$.
+  \item Set $x_k:=\ell/d_k$.
+  \item Set $x_i:=0$ for $i=k+1,\ldots,n$.
+\end{itemize}
+We have,
+\[
+  \sum_{i=1}^n d_i x_i=\sum_{i=1}^{k-1}d_i x_i+d_k x_k+\sum_{i=k+1}^n d_i x_i=\sum_{i=1}^{k-1}d_i+\ell=b
+\]
+Therefore the constraint is exactly satisfied. By the ordering of the variables, this ensures that
+we minimize the objective function as required. Having implemented the oracle, we proceed to
+formally define the Hedge algorithm for linear programming.
+
+\subsection{Hedge algorithm for covering LPs}
+
+As already explained, we associate an expert to each constraint of the covering LP. In addition, as
+hinted above, we wish to increase the weight of unsatisfied constraints and decrease the weight of
+satisfied constraints (in a smooth manner depending on the size of the violation or the slack). The
+Hedge algorithm for covering LPs thus becomes:
+\begin{itemize}
+  \item Assign each constraint $i$ a weight $w_i^{(1)}$ initialized to $1$.
+\end{itemize}
+At each time $t$:
+\begin{itemize}
+  \item Pick the distribution $p_i^{(t)}=w_i^{(t)}/\Phi^{(t)}$ where $\Phi^{(t)}=\sum_{i\in[N]}w_i^{(t)}$.
+  \item Now we define the cost vector instead of the adversary as follows:
+  \begin{itemize}
+    \item Let $x^{(t)}$ be the solution returned by the oracle on the LP obtained by using the
+      convex combination $\vp^{(t)}$ of constraints. Notice that cost of $x^{(t)}$, i.e.,
+      $c^{\top}x^{(t)}$, is at most the cost of an optimal solution to the original LP.
+    \item Define the cost of constraint $i$ as
+      \[
+        m_i^{(t)}=\sum_{j=1}^n A_{ij}x_j-b_i=A_i x-b_i.
+      \]
+  \end{itemize}
+  Notice that we have a positive cost if the constraint is satisfied (so the weight will be
+  decreased by Hedge) and a negative cost if it is violated (so the weight will be increased by
+  Hedge).
+  \item After observing the cost vector, set $w_i^{(t+1)}=w_i^{(t)}\cdot e^{-\varepsilon\cdot m_i^{(t)}}$.
+\end{itemize}
+\textbf{Output:} the average $\bar x=\frac1T\sum_{t=1}^T x^{(t)}$ of the constructed solutions.
+
+\paragraph{Analysis.} Since the analysis for the Hedge algorithm works with an adversarial
+construction of the cost vectors, it definitely holds for the cost vectors we constructed. Let
+\[
+  \rho=\max_{1\le i\le m}\{\max(b_i,\,A_i\mathbf{1}-b_i)\},
+\]
+be (an upper bound on) the width of our constructed cost vectors. By Corollary 3, we thus have for
+$\varepsilon\in[0,1]$, $T\ge(4\rho^2\ln m)/\varepsilon^2$ and any constraint $i$ that
+\begin{equation}\tag{2}
+  \frac1T\sum_{t=1}^T\vp^{(t)}\cdot\vm^{(t)}\ \le\ \frac1T\sum_{t=1}^T m_i^{(t)}+2\varepsilon.
+\end{equation}
+Let us first consider the left-hand-side of the above expression. We have that
+\[
+  \sum_{t=1}^T\vp^{(t)}\cdot\vm^{(t)}=\sum_{t=1}^T\Big(\sum_i p_i^{(t)}\cdot m_i^{(t)}\Big)
+  =\sum_{t=1}^T\Big(\underbrace{\sum_i p_i^{(t)}\cdot\big(A_i x^{(t)}-b_i\big)}_{(*)}\Big)
+\]
+which is non-negative because $(*)$ is non-negative for every $t$ since the oracle outputs a
+feasible solution. Using that the left-hand-side of~(2) is non-negative, we get
+\[
+  -2\varepsilon\ \le\ \frac1T\sum_{t=1}^T m_i^{(t)}=\frac1T\sum_{t=1}^T\big(A_i x^{(t)}-b_i\big)=A_i\bar x-b_i
+\]
+which implies that
+\[
+  A_i\bar x\ \ge\ b_i-2\varepsilon,
+\]
+for every constraint $i$. So our solution $\bar x$ is almost feasible. Moreover the cost
+$c^{\top}\bar x=c^{\top}\big(\frac1T\sum_{t\in[T]}x^{(t)}\big)$ is at most the cost of an optimal
+solution to the original LP since each $x^{(t)}$ has no higher cost than an optimal solution (by the
+properties of the oracle).
+
+\paragraph{Setting the parameters for solving the set cover relaxation.} For set cover we have that
+$\rho\le n$ and therefore, it is sufficient to set $T=(4n^2\ln m)/\varepsilon^2$ (this can in fact
+be improved by a better analysis to $\approx n\ln m/\varepsilon^2$). This gives a solution $\bar x$
+that satisfies $\sum_{e\in S}x_e\ge 1-2\varepsilon$ for every set $S$ and the cost of $\bar x$ is at
+most that of an optimal LP solution. We can obtain a feasible (approximately optimal) solution by
+simply defining $x^*=\frac{1}{1-2\varepsilon}\bar x$.
+
+% \end{document}

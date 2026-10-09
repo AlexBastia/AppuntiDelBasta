@@ -1,0 +1,86 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{enumitem}
+
+% ---- Semantics notation ----
+\newcommand{\Exp}{\mathit{Exp}}
+\newcommand{\Com}{\mathit{Com}}
+\newcommand{\Store}{\mathit{Store}}
+\newcommand{\conf}[2]{\langle #1, #2 \rangle}
+\newcommand{\step}{\longrightarrow}
+\newcommand{\steps}{\longrightarrow^{*}}
+\newcommand{\nostep}{\not\longrightarrow}
+
+\newcommand{\Case}[1]{\medskip\noindent\underline{\textbf{Case #1}}\smallskip\par}
+
+% inference rule helper
+\newcommand{\infrule}[2]{%
+  \begin{array}{c}
+    #1 \\ \hline #2
+  \end{array}%
+}
+\newcommand{\infruleside}[3]{%
+  \begin{array}{c}
+    #1 \\ \hline #2
+  \end{array}\quad #3%
+}
+
+\title{Homework 4}
+\author{Alex Bastianini}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{1)}
+\begin{enumerate}
+\item When $ c $ doesn't terminate or errors out.
+\item If $ \models P \implies Q $.
+\item When $ c $ terminates.
+\end{enumerate}
+
+\section*{2)}
+\[
+\infrule{ \{P \land b\} c \{Q\}\quad \{P \land \lnot b\} \text{ skip } \{Q\}}{ \{P\} \text{if } b \text{ then } c \{Q\}}
+\]
+
+We have proven during the exercise session that \texttt{if b then c} $ \sim $ \texttt{if b then c else skip}. Because the proposed rule is simply a special case of the Hoare rule applied to the equivalent command, it is sound. We could also further simplify the second condition to $ \models P \land \lnot b \implies Q $ using the \textsc{Skip} and \textsc{Consequence} rules.
+
+\section*{3)}
+\begin{enumerate}
+  \item $ (z = m \land m \leq n) \lor (z = n \land n \leq m) $
+  \item $ [(z = m - x \land m \leq n \land x \leq y) \lor (z = n - y \land n \leq m \land y \leq x)] \land x \geq 0 \land y \geq 0 $
+\end{enumerate}
+
+\section*{4)}
+\[
+\begin{array}{l}
+\{ \mathrm{x} = i \land \mathrm{y} = j \land 0 \le i \} \implies \\
+\{ \mathrm{x} \geq 0 \land \mathrm{y} = j \land 0 = (i-\mathrm{x}) \times j \}\\
+\mathrm{z} := 0; \\
+  \{ \mathrm{x} \geq 0 \land \mathrm{y} = j \land \mathrm{z} = (i-\mathrm{x}) \times j \}\\
+\mathbf{while} \; (\mathrm{x} > 0) \; \mathbf{do} \; ( \\
+  \{ \mathrm{x} \geq 0 \land \mathrm{y} = j \land \mathrm{z} = (i-\mathrm{x}) \times j \land \mathrm{x} > 0 \} \implies\\
+  \{ \mathrm{x} - 1 \geq 0 \land \mathrm{y} = j \land \mathrm{z} + \mathrm{y} = (i-\mathrm{x} + 1) \times j \}\\
+\quad \mathrm{z} := \mathrm{z} + \mathrm{y}; \\
+  \{ \mathrm{x} - 1 \geq 0 \land \mathrm{y} = j \land \mathrm{z} = (i-\mathrm{x} + 1) \times j \}\\
+\quad \mathrm{x} := \mathrm{x} - 1 \\
+  \{ \mathrm{x} \geq 0 \land \mathrm{y} = j \land \mathrm{z} = (i-\mathrm{x}) \times j\}\\
+); \\
+  \{\mathrm{x} \geq 0 \land \mathrm{y} = j \land \mathrm{z} = (i-\mathrm{x}) \times j \land \lnot (\mathrm{x} > 0)\} \implies \\
+\{ \mathrm{x} = 0 \land 0 = 0 \land \mathrm{z} = i \times j \}\\
+\mathrm{y} := 0 \\
+\{ \mathrm{x} = 0 \land \mathrm{y} = 0 \land \mathrm{z} = i \times j \}
+\end{array}
+\]
+\section*{5)}
+If we define $ I \triangleq (b \implies P) \land (\lnot b \implies Q) $, we can rewrite the rule using logical equivelences as follows
+\[
+  \infrule{\vdash \{I \land b\} c \{I\}}{\vdash \{I\} \text{while } b \text{ do } c \{I \land \lnot b\} }
+\]
+which is the classic \textsc{While} Hoare rule. Because Hoare rules are relatively complete, the equivalent \textsc{While-Alt} rule is too.
+
+\end{document}

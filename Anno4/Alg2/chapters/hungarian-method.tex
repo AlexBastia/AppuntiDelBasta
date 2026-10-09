@@ -41,7 +41,7 @@ following equivalent linear program:
 For each $a\in A$, we then associate a variable $u_a^+$ to the first constraint for $a$
 ($\sum_{b\in B:(a,b)\in E}x_{ab}\ge 1$) and $u_a^-$ to the second constraint for $a$
 ($-\sum_{b\in B:(a,b)\in E}x_{ab}\ge -1$). Similarly, we have variables $v_b^+$ and $v_b^-$ for
-each $b\in B$. These variables take the same role as the $y$-variables in Section~??: the dual has
+each $b\in B$. These variables take the same role as the $y$-variables: the dual has
 a variable for each constraint in the primal. We now have that the dual equals
 \begin{center}
 \begin{tabular}{ll}
@@ -139,7 +139,7 @@ Consider the following instance of the min-cost perfect matching problem:
 \end{center}
 
 The thin edges have cost $1$, whereas the thick edge has cost $2$. The Hungarian algorithm will
-use Lemma~\ref{lem:restated} in the following way: we will maintain a dual solution $u,v$ that is
+use Lemma~\ref{lem:cs} in the following way: we will maintain a dual solution $u,v$ that is
 feasible at all times. Then, for a fixed dual solution, the lemma tells us that our perfect
 matching is only allowed to contain edges that are \emph{tight}, i.e., edges $e=(a,b)$ for which
 $u_a+v_b=c(e)$. This reduces our problem to finding any perfect matching in the subgraph
@@ -172,16 +172,21 @@ $u_1=u_2=u_3=1$. The set $E_0$ of tight edges is thus:
 We then try to find a perfect matching in this graph using e.g.\ the augmenting path algorithm we
 saw in Lecture 3. However, the considered graph has no perfect matching! This is because we
 started with a poor lower bound (dual solution). So we will use the fact that there is no perfect
-matching to improve our dual solution. We make use of Hall's condition, which you will prove in
-the exercise session:
+matching to improve our dual solution. We make use of Hall's condition:
 \label{thm:hall}
 \thm{Hall's Theorem}{
 An $n$-by-$n$ bipartite graph $G=(A\cup B,E_0)$ has a perfect matching if and only if
-$|S|\le|N(S)|$ for all $S\subseteq A$.
+$|S|\le|N(S)|$ for all $S\subseteq A$, where:
+\[
+N(S)=\{b\in B:\text{there is an } a\in S \text{ such that } (a,b)\in E_0\}
+\]
 }
 
-Here $N(S)=\{b\in B:\text{there is an } a\in S \text{ such that } (a,b)\in E_0\}$ denotes the
-neighborhood of the vertices in $S$.
+\pf{}{
+  Lasciata a DarioIlDistruttore
+}
+
+Here $N(S)$ denotes the neighborhood of the vertices in $S$.
 
 In the above example, we have $S=\{1,2\}$ and $N(S)=\{4\}$, which violates Hall's condition (and
 thus there is no perfect matching). We now use the set $S$ to improve our dual lower bound.
@@ -215,21 +220,16 @@ solution is now
 \end{center}
 
 Our (augmenting-path) algorithm will now find a perfect matching in this graph, which is optimal
-by Lemma~\ref{lem:restated} from last lecture, restated below
-\label{lem:restated}
-\mlenma{}{
-A perfect matching $M$ is of minimum cost iff there is a feasible dual solution $u,v$ such that
-$u_a+v_b=c(e)$ for every $e=(a,b)\in M$.
-}
+by Lemma~\ref{lem:cs}.\\
 
 In summary, our algorithm always maintains a dual feasible solution. We then solve the unweighted
-perfect matching problem on the edges allowed by Lemma~\ref{lem:restated}. In the case of failure,
+perfect matching problem on the edges allowed by Lemma~\ref{lem:cs}. In the case of failure,
 we update the dual lower bound to a strictly better lower bound and repeat.
 
 \subsubsection*{Formal description}
 
 \textbf{Idea:} Maintain a feasible dual solution $(u,v)$. Try to construct a feasible primal
-solution that satisfies complementarity slackness (Lemma~\ref{lem:restated}) and is thus optimal.
+solution that satisfies complementarity slackness (Lemma~\ref{lem:cs}) and is thus optimal.
 
 \medskip
 \noindent\textbf{Algorithm:}
