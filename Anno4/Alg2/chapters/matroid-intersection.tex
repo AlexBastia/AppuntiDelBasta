@@ -71,16 +71,12 @@ the bipartite matching problem that share several similarities with the general 
 
 \subsection{Examples}
 
-This section is basically taken verbatim from the excellent lecture notes by Michel Goemans
-available here (together with a lot of other interesting information):
-\url{http://www-math.mit.edu/~goemans/18433S09/matroid-intersect-notes.pdf}
+From \url{http://www-math.mit.edu/~goemans/18433S09/matroid-intersect-notes.pdf}
 
 \subsubsection{Bipartite Matching}
 
 We already mentioned that the bipartite matching problem is an example of matroid intersection.
-To see this, consider a bipartite graph $G=(V,E)$ with bipartition $(A,B)$, i.e., the vertices $V$
-are partitioned into two disjoint sets $A$ and $B$ such that every edge is between a vertex in $A$
-and a vertex in $B$.
+To see this, consider a bipartite graph $G=(V,E)$ with bipartition $(A,B)$.
 
 Let $\M_A$ be a partition matroid with ground set $E$ where the partition $E$ is given by
 $E=\bigcup\{\delta(v): v\in A\}$ where $\delta(v)$ denotes the edges incident to $v$. Notice that
@@ -147,6 +143,4 @@ independent in both $\M_1$ and $\M_2$ and of cardinality $|V|-1$ (so that it is 
 matroids) is an $r$-arborescence. Indeed, such a $T$ being a spanning tree in $G$ has a unique path
 between $r$ and any vertex $v$; this path must be directed from the root $r$ since otherwise we
 would have either an arc incoming to $r$ or two arcs incoming to the same vertex.
-
-
 % \end{document}

@@ -68,13 +68,13 @@ Then, the dual program has $m$ variables $y_j$ for $j\in[1,m]$ and $n$ constrain
 Each variable $y_j$ in the dual program corresponds to the weight of one of constraints from the
 primal LP. We have $n$ constraints in the dual, one for every primal variable $x_i$.
 
-\paragraph{Remark} We showed how to produce dual program for minimization problem. Similar
+\nt{We showed how to produce dual program for minimization problem. Similar
 approach works also for maximization problems. Also every maximization problem can be reduced to
 a minimization one. We replace $x_i$ with $-x_i$ in constraints and objective function obtaining
-minimization problem.
+minimization problem.}
 
-\paragraph{Remark} One can verify that if we take the dual of the dual problem, we get back to the
-primal problem, as we should expect. Finding the dual linear program is an automatic procedure.
+\nt{One can verify that if we take the dual of the dual problem, we get back to the
+primal problem, as we should expect. Finding the dual linear program is an automatic procedure.}
 
 \subsection{Duality Theorems}
 
@@ -141,15 +141,8 @@ Thus the dual program looks like this:
 \end{center}
 One can easily notice that this LP is vertex cover relaxation. By weak-duality, we have that
 $|M|\le|C|$ for any matching $M$ and vertex cover $C$. Moreover, since both the primal and the
-dual are integral for bipartite graphs, strong LP-duality implies K\"onig's theorem:
+dual are integral for bipartite graphs, strong LP-duality implies K\"onig's theorem \ref{thm:konig}.\\
 
-\thm{K\"onig 1931}{
-Let $M^\star$ be a maximum cardinality matching and $C^\star$ be a minimum vertex cover of a
-bipartite graph. Then
-\[
-  |M^\star|=|C^\star|.
-\]
-}
 
 Another well-known duality that is also a special case of LP-duality is the max-flow $=$ min-cut
 theorem.

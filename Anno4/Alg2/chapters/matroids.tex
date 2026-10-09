@@ -58,7 +58,7 @@ known as Kruskal's algorithm (named after its inventor).
 
 \paragraph{Runtime analysis.}
 Steps 3--4 can be implemented in almost linear time using the \textsc{Union-Find} (also called
-\textsc{Disjoint-Set}) data structure that I hope you have seen during your Bachelor studies.
+\textsc{Disjoint-Set}) data structure.
 The running time is thus dominated by the sorting of Step 1. Using e.g.\ Merge-Sort this step
 runs in time $\Theta(|E|\log|E|)$. The total running time is thus $\Theta(|E|\log|E|)$.
 
@@ -82,9 +82,9 @@ is acyclic.
 
 \medskip
 The key property follows from that an acyclic graph with $k$ edges has $n-k$
-components.\footnote{It is a good exercise to prove this using induction!} Thus the graph
+components (provable by induction on $ k $). Thus the graph
 $(V,A)$ has fewer components than $(V,B)$ and so at least one edge $e\in A$ must connect two
-different components of $(V,B)$. It follows that $e\notin B$ and that $B+e$ is acyclic.
+different components of $(V,B)$. It follows that $e\notin B$ and that $B+e$ is acyclic.\\
 
 Having proved the key property, we conclude as follows. Since $w(e)\ge w(t_p)>w(s_p)$, $e$
 should have been selected when it was considered.
@@ -160,6 +160,8 @@ With the more abstract notation of matroids, the basic greedy algorithm becomes
 }}
 \bigskip
 
+So \Greedy{} returns the maximum cardinality set in $ \mathcal{I} $ that has maximum weight.
+
 The concept of matroids was defined so as to enable the correctness analysis of the basic greedy
 algorithm. Perhaps more surprisingly, it is if and only if.
 
@@ -180,8 +182,8 @@ so that \Greedy{} does not return a maximum weight base.
 
 \pf{}{
 If $(E,\mathcal{I})$ is not a matroid, then it violates at least one of the two axioms.
-
-First suppose $\mathcal{I}$ is not a downward-closed family of sets, i.e., it violates (I1).
+\begin{itemize}
+\item First suppose $\mathcal{I}$ is not a downward-closed family of sets, i.e., it violates (I1).
 Therefore, there exist two sets $S\subset T$ such that $S\notin\mathcal{I}$ and $T\in\mathcal{I}$.
 Consider the following weights:
 \[
@@ -199,7 +201,7 @@ select at most $T\setminus S$. So the weight of the independent set that the alg
 at most $2|S_1|+|T\setminus S|$ which is less than $w(T)$ so it is not a maximum weight independent
 set.
 
-Second suppose that the extension axiom is violated (but downwardness is satisfied). In particular,
+\item Second suppose that the extension axiom is violated (but downwardness is satisfied). In particular,
 let $S,T\in\mathcal{I}$ be two independent sets such that $|S|<|T|$, and for all $i\in T\setminus S$,
 $S+i\notin\mathcal{I}$. Now use the following weights
 \[
@@ -212,6 +214,8 @@ $S+i\notin\mathcal{I}$. Now use the following weights
 \]
 Because of downwardness the algorithm would select all elements in $S$ and return an independent
 set of value $|S|+1/2$ where as the optimal set would have value at least $|T|>|S|+1/2$.
+\end{itemize}
+
 }
 
 \subsection{Examples of matroids}\label{sec:examples}
@@ -242,6 +246,8 @@ columns indexed by $X$. Define $\mathcal{I}$ by
   \mathcal{I}=\{X\subseteq E: \operatorname{rank}(A_X)=|X|\}.
 \]
 
+So $ \mathcal{I} $ is the set of all \textit{linearly independent} subsets of the column vectors.
+
 \subsubsection{Truncated matroid}
 
 A truncated matroid $M_k=(E,\mathcal{I}_k)$ is defined from a matroid $M=(E,\mathcal{I})$ such that
@@ -259,5 +265,28 @@ The same reasoning can verify (I2): if $A,B\in\mathcal{I}_k$ and $|B|>|A|$, then
 $|A|\le k-1$. We know that (I2) holds for $M$, so the inclusion of $\mathcal{I}_k$ in $\mathcal{I}$
 tells us that $\exists e\in B\setminus A$ such that $A+e\in\mathcal{I}$. The fact that
 $|A+e|\le k-1+1=k$ allows us to conclude.
+
+\nt{
+  This tells us that the intermediate stepps of \Greedy{} are still bases of the truncation of the original matroid.
+}
+
+\subsubsection{Half a Bipartite Matching}
+Given a bibartite graph $ G = (A \cup B, E) $, let $ (A, \mathcal{I}) $ be the matroid s.t.
+\[
+  \mathcal{I} = \{A' \subseteq A : G \text{ has a matching s.t. every vertex in } A \text{ is matched}\}
+\]
+
+\subsubsection{Laminar Matroid}
+Consider a family $ \mathcal{F} $ of subsets of the ground set $ E $ that satisfies $ \forall X, Y \in \mathcal{F} $:
+\begin{itemize}
+\item $ X \cap Y = \emptyset $
+\item $ X \subseteq Y $
+\item $ Y \subseteq X $
+\end{itemize}
+For any positive integers $ \{k_X\}_{X \in \mathcal{F}} $ (one for each set in $ \mathcal{F} $) we have that
+$ \mathcal{M} = (E, \mathcal{I}) $ is a matroid, where
+\[
+  \mathcal{I} = \{S \subseteq E : |S \cap X| \leq k_X \quad \forall X \in \mathcal{F}\} .
+\]
 
 % \end{document}
