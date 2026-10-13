@@ -287,7 +287,7 @@ $\vm^{(t)}\in[-\rho,\rho]^N$. If $T\ge(4\rho^2\ln N)/\varepsilon^2$, then for an
 }
 
 \section{Hedging for LPs}
-
+\label{sec:hedglp}
 We now turn to a nice application of the Hedge method to that of solving covering LPs. We start by
 defining these LPs.
 
@@ -311,12 +311,15 @@ function are non-negative. Notice that both the set cover relaxation and the ver
 relaxation that we saw in class were covering LPs.
 
 Let us now introduce an example of a covering LP that we will reuse later:
+\label{ex:cov}
+\ex{Covering LP}{
 \begin{align}
   \text{minimize}\quad & x_1+2x_2 \tag{1}\\
   \text{subject to}\quad & x_1+3x_2\ge 2\nonumber\\
   & 2x_1+x_2\ge 1\nonumber\\
   & 1\ge x_1,x_2\ge 0\nonumber
 \end{align}
+}
 
 \subsection{General idea}
 
@@ -335,7 +338,7 @@ constraint is obtained by summing up all the constraints according to $\vp$. Any
 of the original LP is also a solution of this reduced problem, so the new problem will have at most
 the same cost as the previous one. We define an oracle for solving this reduced problem:
 
-\dfn{}{
+\dfn{Oracle for Reduced Linear Problem}{
 An oracle that, given $\vp=(p_1,\ldots,p_m)\ge 0$ such that $\sum_{i=1}^m p_i=1$, outputs an
 optimal solution $x^*$ to the following reduced linear problem:
 \begin{align*}
@@ -348,8 +351,10 @@ optimal solution $x^*$ to the following reduced linear problem:
 This linear problem is in practice much easier to solve than the original one and we can design a
 simple greedy algorithm for the oracle.
 
-For concreteness, let us consider a small example. If we apply the method we described to our
-example~(1), we have two initials weights $w_1=w_2=1$ and thus $p_1=p_2=\frac12$, and we sum all
+For concreteness, let us consider a small example. 
+\ex{Reduced LP}{
+If we apply the method we described to our
+example~\ref{ex:cov}, we have two initials weights $w_1=w_2=1$ and thus $p_1=p_2=\frac12$, and we sum all
 the constraints:
 \begin{align*}
   & p_1(x_1+3x_2)+p_2(2x_1+x_2)\ge p_1\cdot 2+p_2\cdot 1\ \Leftrightarrow\\
@@ -363,10 +368,10 @@ original LP:
   2x_1+x_2&=2\ge 1 && \text{OK}\\
   x_1+3x_2&=1<2 && \text{not OK}
 \end{align*}
+}
 We will need to go back to the original problem and increase the weights of the unsatisfied
 constraints to give them more importance and decrease the weights of the satisfied constraint. We
-will perform these updates (as done by Hedge) multiplicatively that we describe in detail in
-Section 4.4. We first describe how to implement the oracle in general.
+will perform these updates (as done by Hedge) multiplicatively that we describe in detail later. We first describe how to implement the oracle in general.
 
 \subsection{Implementation of the oracle}
 
