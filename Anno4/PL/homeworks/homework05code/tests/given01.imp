@@ -1,0 +1,5 @@
+@ x = $m and y = $n @
+t := x;
+x := y;
+y := t
+@ y = $m and x = $n @
