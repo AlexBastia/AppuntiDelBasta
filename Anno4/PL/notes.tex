@@ -6,6 +6,32 @@
 
 \usepackage[utf8]{inputenc}
 \usepackage{fontawesome}
+\usetikzlibrary{positioning,arrows.meta}
+
+\newcommand{\kw}[1]{\mathbf{#1}}
+\newcommand{\pto}{\hookrightarrow}                 % e1 |-> e2 (heap cell, "points to")
+\newcommand{\sep}{\mathbin{\star}}                 % separating conjunction
+\newcommand{\hand}{\mathbin{\wedge\!\!\wedge}}     % heap-assertion "and"
+\newcommand{\hor}{\mathbin{\vee\!\!\vee}}          % heap-assertion "or"
+\newcommand{\entails}{\Rrightarrow}
+\newcommand{\emp}{\mathrm{emp}}
+\newcommand{\fv}{\mathrm{fv}}
+\newcommand{\modv}{\mathrm{mod}}
+\newcommand{\err}{\mathrm{err}}
+\newcommand{\pure}[1]{[#1]}
+\newcommand{\ev}[1]{\langle #1\rangle}
+\newcommand{\triple}[3]{\{#1\}\ #2\ \{#3\}}
+\newcommand{\rn}[1]{\textsc{#1}}
+\newcommand{\infr}[3]{\dfrac{#1}{#2}\ \rn{#3}}      % inference rule with name on the right
+\newcommand{\sem}{\mathrel{\Downarrow}}
+\newcommand{\ld}{\mathbin{::}}
+\newcommand{\wand}{\mathbin{-\!\!\star}}           % magic wand
+\newcommand{\app}{\mathbin{+\!\!+}}                 % list append
+\newcommand{\nd}[3]{#1{:}\langle #2\mid #3\rangle}  % node abbreviation p:<v | q>
+\newcommand{\lseg}{\mathrm{lseg}}
+\newcommand{\lst}{\mathrm{list}}
+\newcommand{\wpre}{\mathrm{wp}}
+
 
 \setlength{\parindent}{0pt}
 
@@ -24,11 +50,13 @@
 
 \pagebreak
 
-\include{chapters/introduction}
+\include{chapters/operational-semantics}
 \include{chapters/large-step-semantics}
-\include{chapters/lecture04}
+\include{chapters/IMP}
 \include{chapters/denotational-semantics}
 \include{chapters/axiomatic-semantics}
 \include{chapters/axiomatic-semantics2}
+\include{chapters/test}
+\include{chapters/test2}
 
 \end{document}
