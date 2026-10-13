@@ -1,0 +1,9 @@
+(executable
+ (name main)
+ (libraries z3)
+ ; Report warnings, but do not treat them as errors.
+ (flags (:standard -warn-error -a)))
+
+(ocamllex lexer)
+
+(ocamlyacc parser)

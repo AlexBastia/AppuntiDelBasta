@@ -236,6 +236,7 @@ optimum can only be better.
 
 That sounds good, but we should also worry about feasibility:
 
+\label{clm:unsatConst}
 \clm{}{}{
 The probability that a constraint remains unsatisfied after a single execution of Step 3 is at
 most $\frac1e$.
@@ -251,7 +252,7 @@ $x_1+x_2+\cdots+x_k\ge 1$. Then,
   &= e^{-\sum_{i=1}^k x^*_i}\nonumber\\
   &\le e^{-1}
 \end{align}
-where (3) follows from the inequality $1-x\le e^{-x}$ and (4) from the fact that
+where (3.1) follows from the inequality $1-x\le e^{-x}$ and (3.2) from the fact that
 $\sum_i x^*_i\ge 1$.
 }
 
@@ -260,7 +261,7 @@ The output $C$ is a feasible solution with probability at least $1-\frac{1}{n^{d
 }
 
 \pf{}{
-Using claim, we find that the probability that a given constraint is unsatisfied after
+  Using claim \ref{clm:unsatConst}, we find that the probability that a given constraint is unsatisfied after
 $d\cdot\ln(n)$ executions of step 3 is at most
 \[
   \Big(\frac1e\Big)^{d\cdot\ln(n)}=\frac{1}{n^d}
