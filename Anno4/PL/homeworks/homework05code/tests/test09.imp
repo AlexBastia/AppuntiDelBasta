@@ -1,0 +1,7 @@
+@ y = 0 @
+x := 1;
+@ y = 0 and x = 1 @
+y := x * 2;
+@ y = x + x and x > 0 @
+skip
+@ y > x @

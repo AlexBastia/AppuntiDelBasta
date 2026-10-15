@@ -1,0 +1,15 @@
+@ true @
+if x < 0 then {
+  a := -1 * x
+} else {
+  a := x
+};
+@ ((x >= 0) implies (a = x)) and ((x < 0) implies (a = -1 * x)) @
+z := 0;
+i := 0;
+while i < a do
+  @ (x >= 0 implies a = x) and (x < 0 implies a = -1 * x) and i <= a and z = 2 * i @ {
+  z := z + 2;
+  i := i + 1
+}
+@ (x >= 0 implies z = 2 * x) and (x < 0 implies z = -2 * x) @

@@ -1,0 +1,11 @@
+1) Skip: modus ponens.
+2) Assign: assigning a variable to another variable correctly changes the its value.
+3) Print: the value of a variable doesn't change when printed.
+4) Test: after 'test' it can be assumed that the boolean expression holds.
+5) If: correct division into two paths.
+6) While: decrementing a number until it is equal to another results in a state in which the two numbers are equal.
+          This shows that we assume termination (partial correctness).
+7) Sequencing (without midpoint assertions): commands are examined sequentially and in the correct order.
+8) While: multiplication invariant
+9) Sequencing (with midpoint assertions): works with correct assertions and assignments
+10) While and If: dobule absolute value of a number 

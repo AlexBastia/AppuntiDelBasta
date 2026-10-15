@@ -1,0 +1,562 @@
+% \begin{document}
+
+\chapter{Lambda Calculus}
+
+Lambda calculus (or $\lambda$-calculus) was introduced by Alonzo Church in the 1930s, and developed
+with his students Stephen Kleene and J.\ Barkley Rosser, to describe functions in an unambiguous
+and compact manner. Many real languages are based on the lambda calculus, including Lisp, Scheme,
+Haskell, and ML. A key characteristic of these languages is that functions are values, just like
+integers and booleans are values: functions can be used as arguments to functions, and can be
+returned from functions.
+
+The name ``lambda calculus'' comes from the use of the Greek letter lambda ($\lambda$) in function
+definitions. (The letter lambda has no significance.) ``Calculus'' means a method of calculating
+by the symbolic manipulation of expressions.
+
+Intuitively, a function is a rule for determining a value from an argument. Some examples of
+functions in mathematics are
+\begin{align*}
+  f(x)&=x^3\\
+  g(y)&=y^3-2y^2+5y-6.
+\end{align*}
+
+\section{Syntax}
+
+The pure $\lambda$-calculus contains just function definitions (called \emph{abstractions}),
+variables, and function application (i.e., applying a function to an argument). If we add
+additional data types and operations (such as integers and addition), we have an \emph{applied}
+$\lambda$-calculus. In the following text, we will sometimes assume that we have integers and
+addition in order to give more intuitive examples.
+
+The syntax of the pure $\lambda$-calculus is defined as follows.
+\[
+  \begin{array}{lcp{0.3\textwidth}r}
+    e\ ::=\ x & & & \text{variable}\\
+    \quad\mid\ \lambda x.\,e & & & \text{abstraction}\\
+    \quad\mid\ e_1\ e_2 & & & \text{application}
+  \end{array}
+\]
+An abstraction $\lambda x.\,e$ is a function: variable $x$ is the \emph{argument}, and expression
+$e$ is the \emph{body} of the function. Note that the function $\lambda x.\,e$ doesn't have a name.
+Assuming we have integers and arithmetic operations, the expression $\lambda x.\,x^2$ is a function
+that takes an argument $x$ and returns the square of $x$.
+
+An application $e_1\ e_2$ requires that $e_1$ is (or evaluates to) a function, and then applies the
+function to the expression $e_2$. For example, $(\lambda x.\,x^2)\ 5$ is, intuitively, equal to
+$25$, the result of applying the squaring function $\lambda x.\,x^2$ to $5$.
+
+Here are some examples of lambda calculus expressions.\footnote{Lambda expressions extend as far to
+the right as possible. For example $\lambda x.\,x\ \lambda y.\,y$ is the same as
+$\lambda x.\,x\ (\lambda y.\,y)$, and is not the same as $(\lambda x.\,x)\ (\lambda y.\,y)$.
+Application is left associative. For example $e_1\ e_2\ e_3$ is the same as $(e_1\ e_2)\ e_3$. In
+general, use parentheses to make the parsing of a lambda expression clear if you are in doubt.}
+
+\begin{center}
+\begin{tabular}{ll}
+  $\lambda x.\,x$ & a lambda abstraction called the \emph{identity function}\\
+  $\lambda x.\,f\ (g\ x)$ & another abstraction\\
+  $(\lambda x.\,x)\ 42$ & an application\\
+  $\lambda y.\,\lambda x.\,x$ & an abstraction that ignores its argument and returns the identity function
+\end{tabular}
+\end{center}
+
+\subsection{Variable binding and $\alpha$-equivalence}
+
+An occurrence of a variable in an expression is either bound or free. An occurrence of a variable
+$x$ in a term is \emph{bound} if there is an enclosing $\lambda x.\,e$; otherwise, it is
+\emph{free}. A \emph{closed} term is one in which all identifiers are bound.
+
+Consider the following term:
+\[
+  \lambda x.\,(x\ (\lambda y.\,y\ a)\ x)\ y
+\]
+Both occurrences of $x$ are bound, the first occurrence of $y$ is bound, the $a$ is free, and the
+last $y$ is also free, since it is outside the scope of the $\lambda y$.
+
+If a program has some variables that are free, then you do not have a complete program as you do not
+know what to do with the free variables. Hence, a well formed program in lambda calculus is a
+closed term.
+
+The symbol $\lambda$ is a \emph{binding operator}, as it binds a variable within some scope (i.e.,
+some part of the expression): variable $x$ is bound in $e$ in the expression $\lambda x.\,e$.
+
+The name of bound variables is not important. Consider the mathematical integrals
+$\int_0^7 x^2\,dx$ and $\int_0^7 y^2\,dy$. They describe the same integral, even though one uses
+variable $x$ and the other uses variable $y$ in their definition. The meaning of these integrals is
+the same: the bound variable is just a placeholder. In the same way, we can change the name of
+bound variables without changing the meaning of functions. Thus $\lambda x.\,x$ is the same
+function as $\lambda y.\,y$. Expressions $e_1$ and $e_2$ that differ only in the name of bound
+variables are called \emph{$\alpha$-equivalent}, sometimes written $e_1\equiv_\alpha e_2$.
+
+\subsection{Higher-order functions}
+
+In lambda calculus, functions are values: functions can take functions as arguments and return
+functions as results. In the pure lambda calculus, every value is a function, and every closed
+program that terminates produces a function!
+
+For example, the following function takes a function $f$ as an argument, and applies it to the
+value $42$.
+\[
+  \lambda f.\,f\ 42
+\]
+This function takes an argument $v$ and returns a function that applies its own argument (a
+function) to $v$.
+\[
+  \lambda v.\,\lambda f.\,(f\ v)
+\]
+
+\section{Semantics}
+
+\subsection{$\beta$-equivalence}
+
+Application $(\lambda x.\,e_1)\ e_2$ applies the function $\lambda x.\,e_1$ to $e_2$. In some ways,
+we would like to regard the expression $(\lambda x.\,e_1)\ e_2$ as equivalent to the expression
+$e_1$ where every (free) occurrence of $x$ is replaced with $e_2$. For example, we would like to
+regard $(\lambda x.\,x^2)\ 5$ as equivalent to $5^2$.\footnote{We write $\sub{e_1}{e_2}{x}$ to mean
+expression $e_1$ with all free occurrences of $x$ replaced with $e_2$. There are several different
+notations to express this substitution, including $[x\mapsto e_2]e_1$ (used by Pierce),
+$[e_2/x]e_1$ (used by Mitchell), and $e_1[e_2/x]$ (used by Winskel).}
+
+Using our notation, we would like expressions $(\lambda x.\,e_1)\ e_2$ and $\sub{e_1}{e_2}{x}$ to be
+equivalent. This equivalence, between $(\lambda x.\,e_1)\ e_2$ and $\sub{e_1}{e_2}{x}$, is called
+\emph{$\beta$-equivalence}. Rewriting $(\lambda x.\,e_1)\ e_2$ into $\sub{e_1}{e_2}{x}$ is called a
+\emph{$\beta$-reduction}. Given a lambda calculus expression, we may, in general, be able to
+perform $\beta$-reductions. This corresponds to executing a lambda calculus expression.
+
+There may be more than one possible way to $\beta$-reduce an expression. Consider, for example,
+$(\lambda x.\,x+x)\ ((\lambda y.\,y)\ 5)$. We could use $\beta$-reduction to get either
+$((\lambda y.\,y)\ 5)+((\lambda y.\,y)\ 5)$ or $(\lambda x.\,x+x)\ 5$. The order in which we
+perform $\beta$-reductions results in different semantics for the lambda calculus.
+
+\subsection{Call-by-value}
+
+Call-by-value (or CBV) semantics makes sure that functions are only called on values. That is,
+given an application $(\lambda x.\,e_1)\ e_2$, CBV semantics makes sure that $e_2$ is a value
+before calling the function.
+
+So, what is a value? In the pure lambda calculus, any abstraction is a value. Remember, an
+abstraction $\lambda x.\,e$ is a function; in the pure lambda calculus, the only values are
+functions. In an applied lambda calculus with integers and arithmetic operations, values also
+include integers. Intuitively, a value is an expression that can not be
+reduced/executed/simplified any further.
+
+We can give small step operational semantics for call-by-value execution of the lambda calculus.
+Here, $v$ can be instantiated with any value (e.g., a function).
+\[
+  \rul{e_1\to e_1'}{e_1\ e_2\to e_1'\ e_2}
+  \qquad
+  \rul{e\to e'}{v\ e\to v\ e'}
+  \qquad
+  \infr{}{(\lambda x.\,e)\ v\to\sub{e}{v}{x}}{$\beta$-Reduction}
+\]
+We can see from these rules that, given an application $e_1\ e_2$, we first evaluate $e_1$ until it
+is a value, then we evaluate $e_2$ until it is a value, and then we apply the function to the
+value---a $\beta$-reduction.
+
+Let's consider some examples. (These examples use an applied lambda calculus that also includes
+reduction rules for arithmetic expressions.)
+\begin{align*}
+  (\lambda x.\,\lambda y.\,y\ x)\ (5+2)\ \lambda x.\,x+1
+    &\to(\lambda x.\,\lambda y.\,y\ x)\ 7\ \lambda x.\,x+1\\
+    &\to(\lambda y.\,y\ 7)\ \lambda x.\,x+1\\
+    &\to(\lambda x.\,x+1)\ 7\\
+    &\to 7+1\\
+    &\to 8
+\end{align*}
+\begin{align*}
+  (\lambda f.\,f\ 7)\ ((\lambda x.\,x\ x)\ \lambda y.\,y)
+    &\to(\lambda f.\,f\ 7)\ ((\lambda y.\,y)\ (\lambda y.\,y))\\
+    &\to(\lambda f.\,f\ 7)\ (\lambda y.\,y)\\
+    &\to(\lambda y.\,y)\ 7\\
+    &\to 7
+\end{align*}
+
+\subsection{Call-by-name}
+
+Call-by-name (or CBN) semantics applies the function as soon as possible. The small step
+operational semantics are a little simpler, as they do not need to ensure that the expression to
+which a function is applied is a value.
+\[
+  \rul{e_1\to e_1'}{e_1\ e_2\to e_1'\ e_2}
+  \qquad
+  \infr{}{(\lambda x.\,e_1)\ e_2\to\sub{e_1}{e_2}{x}}{$\beta$-Reduction}
+\]
+Let's consider the same examples we used for CBV.
+\begin{align*}
+  (\lambda x.\,\lambda y.\,y\ x)\ (5+2)\ \lambda x.\,x+1
+    &\to(\lambda y.\,y\ (5+2))\ \lambda x.\,x+1\\
+    &\to(\lambda x.\,x+1)\ (5+2)\\
+    &\to(5+2)+1\\
+    &\to 7+1\\
+    &\to 8
+\end{align*}
+\begin{align*}
+  (\lambda f.\,f\ 7)\ ((\lambda x.\,x\ x)\ \lambda y.\,y)
+    &\to((\lambda x.\,x\ x)\ \lambda y.\,y)\ 7\\
+    &\to((\lambda y.\,y)\ (\lambda y.\,y))\ 7\\
+    &\to(\lambda y.\,y)\ 7\\
+    &\to 7
+\end{align*}
+Note that the answers are the same, but the order of evaluation is different. (Later we will see
+languages where the order of evaluation is important, and may result in different answers.)
+
+\section{Lambda calculus evaluation}
+
+There are many different evaluation strategies for the $\lambda$-calculus. The most permissive is
+\emph{full $\beta$ reduction}, which allows any \emph{redex}---i.e., any expression of the form
+$(\lambda x.\,e_1)\ e_2$---to step to $\sub{e_1}{e_2}{x}$ at any time. It is defined formally by
+the following small-step operational semantics rules:
+\[
+  \rul{e_1\to e_1'}{e_1\ e_2\to e_1'\ e_2}
+  \qquad
+  \rul{e_2\to e_2'}{e_1\ e_2\to e_1\ e_2'}
+  \qquad
+  \rul{e_1\to e_1'}{\lambda x.\,e_1\to\lambda x.\,e_1'}
+  \qquad
+  \infr{}{(\lambda x.\,e_1)\ e_2\to\sub{e_1}{e_2}{x}}{$\beta$}
+\]
+The call-by-value and call-by-name strategies from the previous section are more restrictive.
+Neither allows evaluation under a $\lambda$. CBV only allows an application to reduce after its
+argument has been reduced to a value (i.e., a $\lambda$-abstraction), while CBN allows an
+application to reduce even when its argument is not a value. Unlike full $\beta$ reduction, both
+are deterministic: every expression can take at most one step.
+
+\section{Confluence}
+
+It is not hard to see that the full $\beta$ reduction strategy is non-deterministic. This raises an
+interesting question: do the choices made during the evaluation of an expression affect the final
+result? The answer turns out to be no: full $\beta$ reduction is \emph{confluent} in the following
+sense:
+
+\medskip
+\noindent\textbf{Theorem (Church--Rosser).} If $e\to^* e_1$ and $e\to^* e_2$ then there exists
+$e'$ such that $e_1\to^* e'$ and $e_2\to^* e'$.
+
+\medskip
+Confluence can be depicted graphically as follows:
+\begin{center}
+\begin{tikzpicture}[>=Stealth]
+  \node (e) at (0,2) {$e$};
+  \node (e1) at (-1.6,0.7) {$e_1$};
+  \node (e2) at (1.6,0.7) {$e_2$};
+  \node (ep) at (0,-0.6) {$e'$};
+  \draw[->] (e) -- node[above left] {$*$} (e1);
+  \draw[->] (e) -- node[above right] {$*$} (e2);
+  \draw[->] (e1) -- node[below left] {$*$} (ep);
+  \draw[->] (e2) -- node[below right] {$*$} (ep);
+\end{tikzpicture}
+\end{center}
+This theorem is due to Church and Rosser~\cite{church-rosser}, and confluence is often also called
+the \emph{Church--Rosser property}. An important consequence is that every expression has at most
+one \emph{normal form}---an expression that cannot step---up to $\alpha$-equivalence. If
+$e\to^* e_1$ and $e\to^* e_2$ where $e_1$ and $e_2$ are both normal forms, then confluence gives an
+$e'$ that both reduce to, which must be $e_1$ and $e_2$ themselves.
+
+Confluence does not say that every reduction sequence reaches the normal form. For example,
+$(\lambda x.\,\lambda y.\,y)\ \Omega$, where $\Omega$ is the diverging expression discussed in
+Section~\ref{sec:nonterm}, can step to the normal form $\lambda y.\,y$, but it can also step to
+itself forever by reducing $\Omega$.
+
+Interestingly, the confluence property does not hold for single steps. For example, consider the
+expression $e=(\lambda x.\,x\ x)\ ((\lambda y.\,y)\ z)$, which has two redexes:
+\begin{center}
+\begin{tikzpicture}[>=Stealth,node distance=1.2cm]
+  \node (top) at (0,3.6) {$(\lambda x.\,x\ x)\ ((\lambda y.\,y)\ z)$};
+  \node (a) at (-3.2,2.2) {$((\lambda y.\,y)\ z)\ ((\lambda y.\,y)\ z)$};
+  \node (b) at (-3.2,0.9) {$z\ ((\lambda y.\,y)\ z)$};
+  \node (c) at (3.2,2.2) {$(\lambda x.\,x\ x)\ z$};
+  \node (d) at (0,-0.3) {$z\ z$};
+  \draw[->] (top) -- node[above left] {outer} (a);
+  \draw[->] (a) -- (b);
+  \draw[->] (b) -- (d);
+  \draw[->] (top) -- node[above right] {inner} (c);
+  \draw[->] (c) -- (d);
+\end{tikzpicture}
+\end{center}
+Reducing the outer redex duplicates the inner one, so the left path needs two more steps to reach
+$z\ z$ while the right path needs only one. Hence there is no way to complete the diamond with
+single steps on both sides, and a naive proof of confluence by induction on single steps does not
+work. The standard proof, due to Tait and Martin-L\"of~\cite{barendregt}, instead uses
+\emph{parallel reduction}, which contracts any set of redexes in an expression at once. Parallel
+reduction does have the diamond property, and its reflexive-transitive closure coincides with
+$\to^*$, so confluence follows. Takahashi~\cite{takahashi} gives a particularly short version of
+this proof.
+
+\section{Substitution}
+
+Each of the evaluation relations for $\lambda$-calculus has a $\beta$ rule defined in terms of a
+substitution operation on expressions. Because the expressions involved in the substitution may
+share some variable names (and because we are working up to $\alpha$-equivalence) the definition of
+this operation is slightly subtle and defining it precisely turns out to be trickier than might
+first appear.
+
+As a first attempt, consider an obvious (but incorrect) definition of the substitution operator.
+Here we are substituting $e$ for $x$ in some other expression:
+\begin{align*}
+  \sub{y}{e}{x}&=\begin{cases} e & \text{if } y=x\\ y & \text{otherwise}\end{cases}\\
+  \sub{(e_1\ e_2)}{e}{x}&=(\sub{e_1}{e}{x})\ (\sub{e_2}{e}{x})\\
+  \sub{(\lambda y.\,e_1)}{e}{x}&=\lambda y.\,\sub{e_1}{e}{x}\qquad\text{where } y\neq x
+\end{align*}
+The intuitive idea is that the last rule relies on $\alpha$-equivalence to ``rewrite'' abstractions
+that use $x$ so they do not conflict. Unfortunately, this definition produces the wrong results
+when we substitute an expression with free variables under a $\lambda$. For example,
+\[
+  \sub{(\lambda y.\,x)}{y}{x}=(\lambda y.\,y)
+\]
+To fix this problem, we need to revise our definition so that when we substitute under a $\lambda$
+we do not accidentally bind variables in the expression we are substituting. The following
+definition correctly implements \emph{capture-avoiding substitution}:
+\begin{align*}
+  \sub{y}{e}{x}&=\begin{cases} e & \text{if } y=x\\ y & \text{otherwise}\end{cases}\\
+  \sub{(e_1\ e_2)}{e}{x}&=(\sub{e_1}{e}{x})\ (\sub{e_2}{e}{x})\\
+  \sub{(\lambda y.\,e_1)}{e}{x}&=\lambda y.\,(\sub{e_1}{e}{x})\qquad\text{where } y\neq x\text{ and } y\notin\mathrm{fv}(e)
+\end{align*}
+Note that in the case for $\lambda$-abstractions, we require that the bound variable $y$ be
+different from the variable $x$ we are substituting for and that $y$ not appear in the free
+variables of $e$, the expression we are substituting. Because we work up to $\alpha$-equivalence,
+we can always pick $y$ to satisfy these side conditions. For example, to calculate
+$\sub{(\lambda z.\,x\ z)}{(w\ y\ z)}{x}$ we first rewrite $\lambda z.\,x\ z$ to $\lambda u.\,x\ u$
+and then apply the substitution, obtaining $\lambda u.\,(w\ y\ z)\ u$ as the result.
+
+\section{$\lambda$-calculus encodings}
+
+The pure $\lambda$-calculus contains only functions as values. It is not exactly easy to write
+large or interesting programs in the pure $\lambda$-calculus. We can however encode objects, such
+as booleans, and integers.
+
+\subsection{Booleans}
+
+Let us start by encoding constants and operators for booleans. That is, we want to define functions
+$\tr$, $\fl$, $\AND$, $\NOT$, $\IF$, and other operators that behave as expected. For example:
+\begin{align*}
+  \AND\ \tr\ \fl&=\fl\\
+  \NOT\ \fl&=\tr\\
+  \IF\ \tr\ e_1\ e_2&=e_1\\
+  \IF\ \fl\ e_1\ e_2&=e_2
+\end{align*}
+Let's start by defining $\tr$ and $\fl$:
+\begin{align*}
+  \tr&\triangleq\lambda x.\,\lambda y.\,x\\
+  \fl&\triangleq\lambda x.\,\lambda y.\,y
+\end{align*}
+Thus, both $\tr$ and $\fl$ are functions that take two arguments; $\tr$ returns the first, and
+$\fl$ returns the second. We want the function $\IF$ to behave like
+\[
+  \lambda b.\,\lambda t.\,\lambda f.\ \mathbf{if}\ b=\tr\ \mathbf{then}\ t\ \mathbf{else}\ f.
+\]
+The definitions for $\tr$ and $\fl$ make this very easy.
+\[
+  \IF\triangleq\lambda b.\,\lambda t.\,\lambda f.\,b\ t\ f
+\]
+Definitions of other operators are also straightforward.
+\begin{align*}
+  \NOT&\triangleq\lambda b.\,b\ \fl\ \tr\\
+  \AND&\triangleq\lambda b_1.\,\lambda b_2.\,b_1\ b_2\ \fl\\
+  \OR&\triangleq\lambda b_1.\,\lambda b_2.\,b_1\ \tr\ b_2
+\end{align*}
+
+\subsection{Church numerals}
+
+Church numerals encode a number $n$ as a function that takes $f$ and $x$, and applies $f$ to $x$
+$n$ times.
+\begin{align*}
+  0&\triangleq\lambda f.\,\lambda x.\,x\\
+  1&\triangleq\lambda f.\,\lambda x.\,f\ x\\
+  2&\triangleq\lambda f.\,\lambda x.\,f\ (f\ x)\\
+  \SUCC&\triangleq\lambda n.\,\lambda f.\,\lambda x.\,f\ (n\ f\ x)
+\end{align*}
+In the definition for $\SUCC$, the expression $n\ f\ x$ applies $f$ to $x$ $n$ times (assuming that
+variable $n$ is the Church encoding of the natural number $n$). We then apply $f$ to the result,
+meaning that we apply $f$ to $x$ $n+1$ times.
+
+Given the definition of $\SUCC$, we can easily define addition. Intuitively, the natural number
+$n_1+n_2$ is the result of applying the successor function $n_1$ times to $n_2$.
+\[
+  \PLUS\triangleq\lambda n_1.\,\lambda n_2.\,n_1\ \SUCC\ n_2
+\]
+Similarly, multiplication adds $n_2$ to $0$, $n_1$ times, and a test for zero applies the constant
+function returning $\fl$ to $\tr$ $n$ times:
+\begin{align*}
+  \TIMES&\triangleq\lambda n_1.\,\lambda n_2.\,n_1\ (\PLUS\ n_2)\ 0\\
+  \ISZERO&\triangleq\lambda n.\,n\ (\lambda z.\,\fl)\ \tr
+\end{align*}
+A predecessor function $\PRED$, with $\PRED\ (n+1)=n$ and $\PRED\ 0=0$, is also definable, but it
+is surprisingly tricky.
+
+\section{Nontermination}\label{sec:nonterm}
+
+Consider the expression $(\lambda x.\,x\ x)\ (\lambda x.\,x\ x)$, which we will refer to as
+$\Omega$ for brevity. Let's try evaluating $\Omega$:
+\begin{align*}
+  \Omega&=(\lambda x.\,x\ x)\ (\lambda x.\,x\ x)\\
+  &\to(\lambda x.\,x\ x)\ (\lambda x.\,x\ x)\\
+  &=\Omega
+\end{align*}
+Evaluating $\Omega$ never reaches a value! It is an infinite loop!
+
+What happens if we use $\Omega$ as an actual argument to a function? Consider this program:
+\[
+  (\lambda x.(\lambda y.y))\ \Omega
+\]
+If we use CBV semantics to evaluate the program, we must reduce $\Omega$ to a value before we can
+apply the function. But $\Omega$ never evaluates to a value, so we can never apply the function.
+Thus, under CBV semantics, this program does not terminate. If we use CBN semantics, we can apply
+the function immediately, without needing to reduce the actual argument to a value:
+\[
+  (\lambda x.(\lambda y.y))\ \Omega\ \to_{\mathrm{CBN}}\ \lambda y.y
+\]
+This difference highlights the fact that evaluation orders, like CBV and CBN, can differ in terms of
+termination: expressions that diverge under one evaluation order may terminate in another. This does
+not contradict confluence: the CBV evaluation of this program simply never finishes, so it never
+reaches a different result.
+
+\section{Recursion}
+
+$\Omega$ demonstrates that we can write nonterminating $\lambda$-terms, but so far they are not very
+useful. Can we write recursive functions in the $\lambda$-calculus that do actually terminate and
+produce a value, as we can in most ``real'' programming languages? It seems difficult at first
+because all functions are anonymous---there is no name that a function can use to refer to itself.
+Surprisingly, however, it is possible to make functions that behave recursively. Roughly, our
+strategy will build on the ``self-replicating'' behavior of $\Omega$ to let functions invoke copies
+of themselves an unbounded number of times.
+
+Let's consider how we would like to write a factorial function:
+\[
+  \FACT\triangleq\lambda n.\,\IF\ (\ISZERO\ n)\ 1\ (\TIMES\ n\ (\FACT\ (\PRED\ n)))
+\]
+In slightly more readable notation, this is just:
+\[
+  \FACT\triangleq\lambda n.\ \ite{n=0}{1}{n\times\FACT\ (n-1)}
+\]
+Here, as in the definition above, the name $\FACT$ is simply meant to be shorthand for the
+expression on the right-hand side of the equation. But $\FACT$ appears on the right-hand side of the
+equation as well! Trying to expand the definition would yield an infinite term. This is not a
+definition, it's a recursive equation.
+
+\subsection{Recursion Removal Trick}
+
+We can perform a ``trick'' to define a function $\FACT$ that satisfies the recursive equation above.
+First, let's define a new function $\FACT'$ that looks like $\FACT$, but takes an additional
+argument $f$. We assume that the function $f$ will be instantiated with $\FACT'$ itself.
+\[
+  \FACT'\triangleq\lambda f.\,\lambda n.\ \ite{n=0}{1}{n\times(f\ f\ (n-1))}
+\]
+Note that when we call $f$, we pass it a copy of itself, preserving the assumption that the actual
+argument for $f$ will be $\FACT'$. Now we can define the factorial function $\FACT$ in terms of
+$\FACT'$.
+\[
+  \FACT\triangleq\FACT'\ \FACT'
+\]
+Let's try evaluating $\FACT$ on an integer.
+\begin{align*}
+  \FACT\ 3&=(\FACT'\ \FACT')\ 3 && \text{Definition of } \FACT\\
+  &=((\lambda f.\,\lambda n.\ \ite{n=0}{1}{n\times(f\ f\ (n-1))})\ \FACT')\ 3 && \text{Definition of } \FACT'\\
+  &\to(\lambda n.\ \ite{n=0}{1}{n\times(\FACT'\ \FACT'\ (n-1))})\ 3 && \text{Application to } \FACT'\\
+  &\to\ite{3=0}{1}{3\times(\FACT'\ \FACT'\ (3-1))} && \text{Application to } n\\
+  &\to 3\times(\FACT'\ \FACT'\ (3-1)) && \text{Evaluating if}\\
+  &\to^*\ldots\\
+  &\to^* 3\times 2\times 1\times 1\\
+  &\to^* 6
+\end{align*}
+So we now have a technique for writing a recursive function $f$: write a function $f'$ that
+explicitly takes a copy of itself as an argument, and then define $f\triangleq f'\ f'$.
+
+\subsection{Fixed point combinators}
+
+There is another way of writing recursive functions: we can express the recursive function as the
+fixed point of some other, higher-order function, and then take its fixed point. We saw this
+technique earlier in the course when we defined the denotational semantics for while loops.
+
+Let's consider the factorial function again. The factorial function $\FACT$ is a fixed point of the
+following function.
+\[
+  G\triangleq\lambda f.\,\lambda n.\ \ite{n=0}{1}{n\times(f\ (n-1))}
+\]
+Recall that if $g$ is a fixed point of $G$, then we have $G\ g=g$. So if we had some way of finding
+a fixed point of $G$, we would have a way of defining the factorial function $\FACT$.
+
+There are a number of ``fixed point combinators,'' and the (infamous) $\Y$ combinator is one of
+them. Thus, we can define the factorial function $\FACT$ to be simply $\Y\ G$, the fixed point of
+$G$. The $\Y$ combinator is defined as
+\[
+  \Y\triangleq\lambda f.\,(\lambda x.\,f\ (x\ x))\ (\lambda x.\,f\ (x\ x)).
+\]
+It was discovered by Haskell Curry, and is one of the simplest fixed-point combinators. Note how
+similar its definition is to $\Omega$.
+
+Unfortunately, $\Y$ does not work under CBV. Evaluating $\Y\ G$ gives
+\begin{align*}
+  \Y\ G&\to(\lambda x.\,G\ (x\ x))\ (\lambda x.\,G\ (x\ x))\\
+  &\to G\ ((\lambda x.\,G\ (x\ x))\ (\lambda x.\,G\ (x\ x)))\\
+  &\to G\ (G\ ((\lambda x.\,G\ (x\ x))\ (\lambda x.\,G\ (x\ x))))\\
+  &\to\cdots
+\end{align*}
+The argument to $G$ is never a value, so evaluation never terminates. Instead, we'll use a slight
+variant of the $\Y$ combinator, called $\Z$, which works under CBV. It wraps the self-application
+$x\ x$ in a $\lambda$, which delays it until it is needed. The $\Z$ combinator is defined as
+\[
+  \Z\triangleq\lambda f.\,(\lambda x.\,f\ (\lambda y.\,x\ x\ y))\ (\lambda x.\,f\ (\lambda y.\,x\ x\ y))
+\]
+Let's see it in action, on our function $G$. Define $\FACT$ to be $\Z\ G$ and calculate as follows:
+\begin{align*}
+  &\FACT\\
+  &=\Z\ G\\
+  &=(\lambda f.\,(\lambda x.\,f\ (\lambda y.\,x\ x\ y))\ (\lambda x.\,f\ (\lambda y.\,x\ x\ y)))\ G
+    && \text{Definition of } \Z\\
+  &\to(\lambda x.\,G\ (\lambda y.\,x\ x\ y))\ (\lambda x.\,G\ (\lambda y.\,x\ x\ y))\\
+  &\to G\ (\lambda y.\,(\lambda x.\,G\ (\lambda y.\,x\ x\ y))\ (\lambda x.\,G\ (\lambda y.\,x\ x\ y))\ y)\\
+  &=(\lambda f.\,\lambda n.\ \ite{n=0}{1}{n\times(f\ (n-1))})\\
+  &\qquad(\lambda y.\,(\lambda x.\,G\ (\lambda y.\,x\ x\ y))\ (\lambda x.\,G\ (\lambda y.\,x\ x\ y))\ y)
+    && \text{definition of } G\\
+  &\to\lambda n.\ \ite{n=0}{1}{}\\
+  &\qquad\mathbf{else}\ n\times((\lambda y.\,(\lambda x.\,G\ (\lambda y.\,x\ x\ y))\ (\lambda x.\,G\ (\lambda y.\,x\ x\ y))\ y)\ (n-1))\\
+  &=_\beta\lambda n.\ \ite{n=0}{1}{n\times(\lambda y.\,(\Z\ G)\ y)\ (n-1)}\\
+  &=_\beta\lambda n.\ \ite{n=0}{1}{n\times(\Z\ G\ (n-1))}\\
+  &=\lambda n.\ \ite{n=0}{1}{n\times(\FACT\ (n-1))}
+\end{align*}
+There are many (indeed infinitely many) fixed-point combinators. Here's a cute one, due to Jan Willem
+Klop:
+\[
+  \Y_k\triangleq(L\ L\ L\ L\ L\ L\ L\ L\ L\ L\ L\ L\ L\ L\ L\ L\ L\ L\ L\ L\ L\ L\ L\ L\ L\ L)
+\]
+where
+\[
+  L\triangleq\lambda a\,b\,c\,d\,e\,f\,g\,h\,i\,j\,k\,l\,m\,n\,o\,p\,q\,s\,t\,u\,v\,w\,x\,y\,z\,r.\
+  (r\ (t\ h\ i\ s\ i\ s\ a\ f\ i\ x\ e\ d\ p\ o\ i\ n\ t\ c\ o\ m\ b\ i\ n\ a\ t\ o\ r))
+\]
+To gain some more intuition for fixed-point combinators, let's derive a fixed-point combinator that
+was originally discovered by Alan Turing~\cite{turing}. Suppose we have a higher order function $f$,
+and want the fixed point of $f$. We want $\Theta\ f$ to be a fixed point of $f$, so we need
+\[
+  \Theta\ f=f\ (\Theta\ f).
+\]
+This means, that we can write the following recursive equation:
+\[
+  \Theta=\lambda f.\,f\ (\Theta\ f).
+\]
+Now we can use the recursion removal trick we described earlier. Define $\Theta'$ as
+$\lambda t.\,\lambda f.\,f\ (t\ t\ f)$, and $\Theta$ as $\Theta'\ \Theta'$. Then we have the
+following equalities:
+\begin{align*}
+  \Theta&=\Theta'\ \Theta'\\
+  &=(\lambda t.\,\lambda f.\,f\ (t\ t\ f))\ \Theta'\\
+  &\to\lambda f.\,f\ (\Theta'\ \Theta'\ f)\\
+  &=\lambda f.\,f\ (\Theta\ f)
+\end{align*}
+Let's try out the Turing combinator on our higher order function $G$ that we used to define
+$\FACT$. This time we will use CBN evaluation.
+\begin{align*}
+  \FACT&=\Theta\ G\\
+  &=((\lambda t.\,\lambda f.\,f\ (t\ t\ f))\ (\lambda t.\,\lambda f.\,f\ (t\ t\ f)))\ G\\
+  &\to(\lambda f.\,f\ ((\lambda t.\,\lambda f.\,f\ (t\ t\ f))\ (\lambda t.\,\lambda f.\,f\ (t\ t\ f))\ f))\ G\\
+  &\to G\ ((\lambda t.\,\lambda f.\,f\ (t\ t\ f))\ (\lambda t.\,\lambda f.\,f\ (t\ t\ f))\ G)\\
+  &=G\ (\Theta\ G) && \text{for brevity}\\
+  &=(\lambda f.\,\lambda n.\ \ite{n=0}{1}{n\times(f\ (n-1))})\ (\Theta\ G) && \text{Definition of } G\\
+  &\to\lambda n.\ \ite{n=0}{1}{n\times((\Theta\ G)\ (n-1))}\\
+  &=\lambda n.\ \ite{n=0}{1}{n\times(\FACT\ (n-1))}
+\end{align*}
+Note that the step from $G\ (\Theta\ G)$ passes the non-value $\Theta\ G$ to $G$, which is only
+allowed under CBN. Under CBV, $\Theta\ G$ diverges, just like $\Y\ G$. As with $\Z$, we can fix this
+by delaying the self-application, using $\Theta'_v\triangleq\lambda t.\,\lambda f.\,f\ (\lambda y.\,t\ t\ f\ y)$
+in place of $\Theta'$.
+% \end{document}

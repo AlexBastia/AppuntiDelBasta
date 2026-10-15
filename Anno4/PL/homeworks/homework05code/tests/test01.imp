@@ -1,0 +1,3 @@
+@ (x = $i implies y = $j) and x = $i @
+skip
+@ y = $j @

@@ -105,7 +105,31 @@ and substAssn (l:lexp) (x:var) (p:assn) : assn =
  * side conditions. Loop invariants and midpoint assertions (`c1; @P@ c2`)
  * give rise to side conditions. *)
 let rec wp (c:com) (q:assn) : assn * assn list =
-  failwith "Kurt"
+  match c with
+    | Skip -> q, []
+    | Assign(v, a) ->
+        let la = lexp_of_aexp a in
+        substAssn la v q, []
+    | Print(_) -> q, []
+    | Test(_, b) ->
+        let ab = assn_of_bexp(b) in
+        AImplies(ab, q), []
+    | Seq(c1, m, c2) ->
+        let (q2, l2) = wp c2 q in
+        (match m with
+          | None ->
+              let (p, l1) = wp c1 q2 in
+              p, l1@l2
+          | Some a ->
+              let (p, l1) = wp c1 a in
+              p, (AImplies(a, q2)::l1)@l2)
+    | If(b, c1, c2) ->
+        let ab = assn_of_bexp(b) and (p1, l1) = wp c1 q and (p2, l2) = wp c2 q in
+        AAnd(AImplies(ab, p1), AImplies(ANot(ab), p2)), l1@l2
+    | While(b, i, c) ->
+        let (p1, l1) = wp c i and ab = assn_of_bexp(b) in
+        i, AImplies(AAnd(i, ab), p1)::AImplies(AAnd(i, ANot(ab)), q)::l1
+
 
 (* Generate verification conditions for { pre } c { post }. *)
 let genc ((pre,c,post): assn * com * assn) : assn list =
