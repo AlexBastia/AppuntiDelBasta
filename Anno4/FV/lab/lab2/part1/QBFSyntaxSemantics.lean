@@ -68,7 +68,8 @@ def simpf {Var : Type} (f : Formula Var) : Formula Var :=
     | _, _ => f
 
 theorem simp_eval {Var : Type} [DecidableEq Var] (f : Formula Var) (e : Env Var) :
-    eval (simpf f) e = eval f e := sorry
+    eval (simpf f) e = eval f e := by
+      induction f <;> grind[ih, simpf, eval];
 
 theorem simp_size {Var : Type} (f : Formula Var) :
     size (simpf f) ≤ size f := sorry

@@ -185,7 +185,7 @@ Finally, by two applications of Lemma~2, we obtain $\langle \sigma, e_1 + e_2 \r
 \noindent\textbf{Case $e = e_1 * e_2$.} Similar to case for $e_1 + e_2$ above.
 
 \medskip
-\noindent\textbf{Case $e = x := e_1; e_2$.} Omitted. Try it as an exercise.
+\noindent\textbf{Case $e = x := e_1; e_2$.} Assume that $ \langle \sigma, x \coloneq e_1; e_2 \rangle \Downarrow \langle \sigma', n \rangle $. There is only one rule for which the conclusion matches the configuration, the \textsc{Assgn} rule. Thus we have that $ \langle \sigma, e_1 \rangle \Downarrow \langle \sigma'', n_1 \rangle $ and $ \langle \sigma''[x \mapsto n_1], e_2 \rangle \Downarrow \langle \sigma', n $. By using the IHs and the Lemma 3 below, done.
 
 \medskip
 \noindent$\boldsymbol{\impliedby}$\textbf{:} We proceed by induction on the derivation of
@@ -215,7 +215,10 @@ If $\langle \sigma, e \rangle \to^* \langle \sigma', n \rangle$, then the follow
 \end{itemize}
 }
 \pf{}{
-Omitted; try it as an exercise.
+  By induction on $ \langle \sigma, e \rangle \to^* \langle \sigma', n \rangle $:
+  \textbf{Case Refl}: then $ e = n $ and $ \sigma' = \sigma $, done by substitution.
+  \medskip
+  \textbf{Case Trans}: then $ \langle \sigma, e \rangle \to \langle \sigma'', e' \rangle $ and $ \langle \sigma'', e' \rangle \to^* \langle \sigma', n \rangle $. By using the \textsc{Trans} rule and the IH, by setting the intermediate step appropriately and using the relative single-step rules for the operations, the proof is done.
 }
 
 \mlenma{}{
@@ -223,8 +226,12 @@ If $\langle \sigma, e \rangle \to^* \langle \sigma', e' \rangle$ and $\langle \s
 \rangle \to^* \langle \sigma'', e'' \rangle$, then $\langle \sigma, e \rangle \to^* \langle
 \sigma'', e'' \rangle$.
 }
-\mlenma{}{
-Omitted; try it as an exercise.
+\pf{}{
+  By induction on the first relation:
+  \medskip
+  \textbf{Refl}: done by substitution.
+  \medskip
+  \textbf{Trans}: By the conditions of the rule, IH and the second relation, we have that $ \langle \sigma^*, e^* \rangle \to^* \langle \sigma'', e'' \rangle $. We can use the other condition of the step rule to prove the conclusion (using the step rule). 
 }
 
 \mlenma{}{
@@ -233,7 +240,7 @@ If $\langle \sigma, e \rangle \to \langle \sigma'', e'' \rangle$ and $\langle \s
 \langle \sigma', n \rangle$.
 }
 \begin{proof}
-Omitted; try it as an exercise.
+  By induction on $ e $, quite a long proof and I can't be bothered. Just use the single-step rules to find $ \sigma'', e'' $, and by this deduce the big-step rule used. 
 \end{proof}
 
 % \end{document}
