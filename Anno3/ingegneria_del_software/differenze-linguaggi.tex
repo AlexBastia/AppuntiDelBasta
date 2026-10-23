@@ -1,0 +1,1434 @@
+\documentclass{report}
+
+\input{../LatexTemp/preamble}
+\input{../LatexTemp/macros}
+\input{../LatexTemp/letterfonts}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{array}
+\usepackage{longtable}
+
+%==============================================================
+% Stile per i blocchi di codice (C, C++, Java, Python)
+%==============================================================
+\definecolor{codebg}{HTML}{F7F7FB}
+\definecolor{codekw}{HTML}{2D6FB1}
+\definecolor{codecm}{HTML}{388C46}
+\definecolor{codestr}{HTML}{C74440}
+\definecolor{coderule}{HTML}{CCCCCC}
+
+\lstset{
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{codekw}\bfseries,
+    commentstyle=\color{codecm}\itshape,
+    stringstyle=\color{codestr},
+    numberstyle=\tiny\color{gray},
+    showstringspaces=false,
+    breaklines=true,
+    breakatwhitespace=false,
+    frame=single,
+    rulecolor=\color{coderule},
+    backgroundcolor=\color{codebg},
+    tabsize=2,
+    columns=fullflexible,
+    keepspaces=true,
+    captionpos=b,
+    xleftmargin=1.2em,
+    aboveskip=1em,
+    belowskip=1em,
+}
+
+% codice inline
+\newcommand{\code}[1]{\texttt{\small #1}}
+% riga di intestazione linguaggio dentro un listing
+\newcommand{\lang}[1]{\hfill\textbf{\footnotesize\color{codekw}#1}}
+
+\graphicspath{{./img/}}
+
+%==============================================================
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \vspace*{3cm}
+    {\Huge\sffamily\bfseries Differenze tra i linguaggi\par}
+    \vspace{0.6cm}
+    {\LARGE\sffamily C \; $\cdot$ \; C++ \; $\cdot$ \; Java \; $\cdot$ \; Python\par}
+    \vspace{1.2cm}
+    {\Large Appunti di Ingegneria del Software\par}
+    \vspace{0.4cm}
+    {\large Funzioni virtuali \& late binding \; --- \; Template \& generics \; --- \; Strategy pattern\par}
+    \vspace{2cm}
+    {\large\itshape Rielaborazione trasversale delle slide del corso\par}
+    \vfill
+    {\large Anno 3\par}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+%==============================================================
+\chapter{Introduzione: perché confrontare i linguaggi}
+%==============================================================
+
+Le slide del corso presentano tre argomenti (\textbf{funzioni virtuali e late
+binding}, \textbf{template}, \textbf{strategy pattern}) usando principalmente
+C++ e Java come linguaggi di riferimento. Il professore, però, chiede
+ripetutamente di ragionare sulle \emph{differenze tra i linguaggi}: perché una
+certa feature esiste in C++ ma non in Java, come si emula un meccanismo in C
+che non ha l'orientamento agli oggetti, cosa cambia in un linguaggio a
+tipizzazione dinamica come Python.
+
+Questi appunti riorganizzano quindi \emph{tutti} gli argomenti delle slide
+mettendo sistematicamente a confronto \textbf{C, C++, Java e Python}. L'idea è
+che ogni meccanismo (l'overriding, il template, lo strategy) va capito non
+come un dettaglio sintattico di un linguaggio, ma come \emph{una risposta a un
+problema di ingegneria del software} (riuso, estensibilità, disaccoppiamento)
+che ciascun linguaggio risolve con scelte diverse.
+
+\section{I quattro linguaggi in una pagina}
+
+Prima di entrare nei dettagli conviene fissare le coordinate fondamentali dei
+quattro linguaggi, perché quasi tutte le differenze che vedremo discendono da
+queste scelte di progetto.
+
+\dfn{Tipizzazione statica vs dinamica}{
+    Un linguaggio è a \textbf{tipizzazione statica} se il tipo di ogni
+    espressione è noto e controllato a \emph{tempo di compilazione} (C, C++,
+    Java). È a \textbf{tipizzazione dinamica} se i tipi sono associati ai
+    \emph{valori} e controllati a \emph{tempo di esecuzione} (Python).
+    \\[2pt]
+    Ortogonale a questa c'è la distinzione \textbf{forte/debole}: un tipaggio è
+    \emph{forte} se il linguaggio impedisce (o rende esplicite) le conversioni
+    di tipo pericolose. C è statico ma relativamente \emph{debole} (i cast e
+    l'aritmetica dei puntatori permettono di reinterpretare la memoria); Java e
+    Python sono \emph{forti}.
+}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\footnotesize
+\begin{tabular}{|>{\raggedright\arraybackslash}p{2.6cm}|>{\raggedright\arraybackslash}p{2.5cm}|>{\raggedright\arraybackslash}p{2.8cm}|>{\raggedright\arraybackslash}p{2.6cm}|>{\raggedright\arraybackslash}p{2.6cm}|}
+\hline
+\textbf{Aspetto} & \textbf{C} & \textbf{C++} & \textbf{Java} & \textbf{Python} \\
+\hline
+Paradigma & imperativo / procedurale & multiparadigma (proc. + OOP + generico) & OOP (class-based) & multiparadigma (OOP + funzionale) \\
+\hline
+Tipizzazione & statica, debole & statica, forte & statica, forte & dinamica, forte \\
+\hline
+Esecuzione & compilato $\to$ nativo & compilato $\to$ nativo & compilato $\to$ bytecode $\to$ JVM & interpretato $\to$ bytecode $\to$ VM (CPython) \\
+\hline
+Memoria & manuale (\code{malloc}/\code{free}) & manuale + RAII / smart pointer & garbage collector & GC (reference counting + cicli) \\
+\hline
+Dispatch metodi & assente (puntatori a funzione) & statico di default, dinamico se \code{virtual} & \textbf{sempre} dinamico & \textbf{sempre} dinamico (duck typing) \\
+\hline
+Genericità & macro, \code{void*}, \code{\_Generic} & template (monomorfizzazione) & generics (type erasure) & duck typing + type hints \\
+\hline
+Ereditarietà & assente & multipla (con \code{virtual}) & singola + interfacce multiple & multipla (MRO C3) \\
+\hline
+\end{tabular}
+\end{center}
+
+\nt{
+    Tieni a mente questa tabella: è la \emph{chiave di lettura} di tutto il
+    resto. Ogni volta che una feature "esiste in un linguaggio e non
+    nell'altro" la spiegazione sta quasi sempre in una di queste righe
+    (tipizzazione, modello di esecuzione, gestione della memoria).
+}
+
+\section{Modello di esecuzione: cosa succede al codice}
+
+\begin{itemize}
+    \item \textbf{C e C++} sono \emph{compilati a codice macchina nativo}. Il
+    compilatore traduce direttamente in istruzioni della CPU; il binario gira
+    "sul metallo". Questo dà massime prestazioni e controllo, ma nessuna rete
+    di sicurezza a runtime.
+    \item \textbf{Java} è compilato in un formato intermedio (il
+    \emph{bytecode}) eseguito da una macchina virtuale (JVM). La JVM aggiunge
+    controlli a runtime (array bounds, type safety, garbage collection) e
+    porta il compromesso "write once, run anywhere".
+    \item \textbf{Python} (CPython) compila il sorgente in bytecode che poi
+    \emph{interpreta} in un ciclo di valutazione. Nessun controllo statico dei
+    tipi: gli errori di tipo emergono solo quando la riga viene eseguita.
+\end{itemize}
+
+Questa gerarchia (nativo $\to$ bytecode+VM $\to$ interpretato) spiega il
+trade-off ricorrente del corso: \textbf{più controllo e prestazioni} da un
+lato (C/C++), \textbf{più sicurezza e produttività} dall'altro (Java/Python).
+
+%==============================================================
+\chapter{Binding e funzioni virtuali}
+%==============================================================
+
+Questo capitolo copre la lezione \emph{Virtual Functions and Late Bindings}. Il
+concetto centrale è il \textbf{binding}: il momento in cui una chiamata di
+funzione viene associata al codice che effettivamente verrà eseguito.
+
+\section{Early binding vs late binding}
+
+\dfn{Binding}{
+    Il \textbf{binding} è l'associazione tra una \emph{chiamata} a funzione (il
+    punto nel codice dove appare l'invocazione) e la \emph{definizione} della
+    funzione (l'indirizzo di memoria del codice da eseguire).
+}
+
+\dfn{Early binding (compile-time binding)}{
+    L'associazione chiamata$\to$codice avviene a \textbf{tempo di
+    compilazione}. Il compilatore, incontrando la chiamata, scrive
+    un'istruzione macchina di \code{call} verso un indirizzo ben preciso e
+    fisso. È il comportamento standard delle funzioni in C e delle funzioni
+    \emph{non} virtuali in C++.
+}
+
+\dfn{Late binding (run-time binding)}{
+    L'associazione chiamata$\to$codice viene rimandata al \textbf{tempo di
+    esecuzione}: il compilatore non genera una \code{call} a un indirizzo
+    fisso, ma codice che \emph{calcola} a runtime quale funzione invocare, in
+    base al tipo \emph{effettivo} (dinamico) dell'oggetto. È il meccanismo che
+    rende possibili le funzioni virtuali.
+}
+
+\nt{
+    Uno dei principi centrali dell'OOP è determinare il comportamento degli
+    oggetti \emph{il più tardi possibile}, idealmente a runtime. Nei linguaggi
+    imperativi non-OO (C, Pascal, \dots) l'unico modo per farlo sono \code{if}
+    o \code{switch} espliciti sul "tipo": le funzioni virtuali sono la
+    soluzione elegante e automatica a questo problema.
+}
+
+\subsection{Il confronto fondamentale sul dispatch}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\footnotesize
+\begin{tabular}{|>{\raggedright\arraybackslash}p{2.3cm}|>{\raggedright\arraybackslash}p{9.5cm}|}
+\hline
+\textbf{Linguaggio} & \textbf{Comportamento di default del dispatch} \\
+\hline
+C & Nessun dispatch dinamico nativo. Le chiamate sono \emph{sempre} in early
+binding. Il polimorfismo si emula a mano con \textbf{puntatori a funzione}
+(spesso raccolti in una \code{struct}, che diventa una vtable manuale). \\
+\hline
+C++ & Early binding di \textbf{default}. Il late binding si attiva solo
+dichiarando il metodo \code{virtual}. Filosofia: "non paghi per ciò che non
+usi" (\emph{zero-overhead}). \\
+\hline
+Java & Late binding \textbf{sempre}: tutti i metodi non statici sono virtuali
+per default. Si può impedire l'override con \code{final}. \\
+\hline
+Python & Late binding \textbf{sempre}, per natura del linguaggio dinamico: il
+metodo da chiamare è cercato a runtime nel dizionario della classe (duck
+typing). Non esiste il concetto di "virtuale/non virtuale". \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Funzioni virtuali e overriding}
+
+\dfn{Funzione virtuale}{
+    Un metodo \emph{non statico} di una classe base che può essere
+    \textbf{ridefinito} (\emph{overridden}) in una classe derivata. La
+    ridefinizione fa sì che, chiamando il metodo su un riferimento/puntatore
+    alla classe base, venga eseguita la versione della classe \emph{reale}
+    dell'oggetto.
+}
+
+\dfn{Overriding}{
+    Il processo con cui un metodo della classe base viene \emph{sostituito} da
+    un altro nella classe derivata. Avviene solo se:
+    \begin{itemize}
+        \item il metodo sovrascritto è virtuale;
+        \item il metodo nella derivata ha \textbf{stessa signature} (e stesso
+        tipo di ritorno) del metodo nella base.
+    \end{itemize}
+}
+
+\dfn{Signature e prototipo}{
+    La \textbf{signature} di una funzione comprende: \emph{nome}, \emph{numero}
+    dei parametri formali, \emph{tipi} dei parametri formali. Il \emph{tipo di
+    ritorno NON fa parte della signature}. \\[2pt]
+    La signature \emph{insieme} al tipo di ritorno è detta \textbf{prototipo}
+    della funzione.
+}
+
+\mprop{Le tre possibilità dell'invocazione virtuale}{
+    Quando una funzione virtuale $f$ è invocata su un oggetto $o$ di classe $D$
+    derivata da $B$, ci sono tre casi:
+    \begin{enumerate}
+        \item $f$ definita solo in $D$: viene invocata $D.f$;
+        \item $f$ definita solo in $B$: viene invocata $B.f$ (ereditata da $D$);
+        \item $f$ definita (overridden) sia in $B$ sia in $D$: viene invocata
+        $D.f$.
+    \end{enumerate}
+    In tutti i casi conta la \textbf{classe reale} dell'oggetto, non la classe
+    del riferimento che lo punta.
+}
+
+\nt{
+    Quando si invoca una funzione virtuale su un oggetto il cui tipo è
+    \emph{noto a compile-time} (es. un oggetto locale, non un
+    riferimento/puntatore), il comportamento è indistinguibile da quello di una
+    funzione non virtuale: il vantaggio del polimorfismo emerge \emph{solo}
+    manipolando gli oggetti tramite riferimenti (Java) o puntatori (C++) alla
+    classe base.
+}
+
+\subsection{Overriding vs hiding vs overloading}
+
+Un punto su cui il prof insiste e che distingue i linguaggi:
+
+\begin{itemize}
+    \item \textbf{Overriding}: stessa signature + metodo virtuale $\Rightarrow$
+    sostituzione a runtime (polimorfismo).
+    \item \textbf{Overloading}: stesso nome, signature \emph{diversa}
+    $\Rightarrow$ funzioni distinte scelte a compile-time in base agli
+    argomenti.
+    \item \textbf{Hiding}: in C++, se nella derivata dichiaro un metodo con lo
+    stesso nome ma signature diversa di uno della base, \emph{tutti} i metodi
+    con quel nome nella base diventano \textbf{invisibili} nella derivata (non
+    c'è overloading tra base e derivata).
+\end{itemize}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\footnotesize
+\begin{tabular}{|>{\raggedright\arraybackslash}p{3.2cm}|>{\raggedright\arraybackslash}p{4.2cm}|>{\raggedright\arraybackslash}p{4.6cm}|}
+\hline
+\textbf{Situazione} & \textbf{C++} & \textbf{Java} \\
+\hline
+Metodo non dichiarato virtuale, ridefinito nella derivata &
+Non è override: è \textbf{hiding} (early binding sul tipo statico). &
+Non esiste il caso: \emph{tutti} i metodi sono virtuali. \\
+\hline
+Stesso nome, signature diversa nella derivata &
+I metodi omonimi della base diventano \textbf{invisibili} (nascosti). &
+Semplicemente \textbf{non} avviene override; i metodi restano visibili
+(overloading). \\
+\hline
+Tipo di ritorno diverso, stessa signature &
+Errore di compilazione (C++ ammette solo piccole variazioni:
+\emph{covariant return types}). &
+Errore, salvo tipo di ritorno covariante. \\
+\hline
+Impedire l'override & Non c'è \code{final} sui metodi (storicamente);
+i metodi non-\code{virtual} semplicemente non si sovrascrivono. &
+Parola chiave \code{final} (sul metodo o sull'intera classe). \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Sintassi nei quattro linguaggi}
+
+\subsection{C++ --- virtuale esplicito}
+
+In C++ un metodo è virtuale \textbf{solo se dichiarato tale}. I metodi non
+virtuali usano early binding; se provi a "sovrascriverli" nella derivata li
+stai solo \emph{nascondendo}.
+
+\begin{lstlisting}[language=C++]
+class B {
+public:
+    virtual void f() { std::cout << "B::f\n"; }  // virtuale
+    void g()         { std::cout << "B::g\n"; }  // NON virtuale
+};
+
+class D : public B {
+public:
+    void f() override { std::cout << "D::f\n"; } // override (virtuale)
+    void g()          { std::cout << "D::g\n"; } // HIDING, non override
+};
+
+int main() {
+    B* p = new D();
+    p->f();   // D::f  -> late binding (virtuale)
+    p->g();   // B::g  -> early binding (tipo statico B)
+    delete p;
+}
+\end{lstlisting}
+
+\nt{
+    In C++ (dal C++11) conviene sempre usare \code{override}: non cambia la
+    semantica ma fa segnalare al compilatore se per errore \emph{non} stai
+    davvero sovrascrivendo (es. signature sbagliata). \code{final} su un metodo
+    o classe impedisce ulteriori override/derivazioni (introdotto in C++11,
+    quindi \emph{oggi} un \code{final} esiste anche in C++, a differenza di
+    quanto dicono le slide più vecchie).
+}
+
+\subsection{Java --- virtuale di default}
+
+In Java \textbf{ogni} metodo non statico è virtuale. Non serve alcuna parola
+chiave; l'override è sempre possibile (salvo \code{final}).
+
+\begin{lstlisting}[language=Java]
+class B {
+    public void f() { System.out.println("B::f"); }
+}
+class D extends B {
+    @Override
+    public void f() { System.out.println("D::f"); }
+}
+public class Main {
+    public static void main(String[] args) {
+        B p = new D();
+        p.f();   // D::f  -> sempre late binding
+    }
+}
+\end{lstlisting}
+
+\subsection{C --- niente OOP: puntatori a funzione}
+
+In C non esistono classi né metodi virtuali. Il polimorfismo si \emph{emula}
+mettendo puntatori a funzione dentro una \code{struct}: di fatto si costruisce
+a mano quella \emph{tabella delle funzioni virtuali} che C++ e Java generano
+automaticamente.
+
+\begin{lstlisting}[language=C]
+/* "vtable" costruita a mano */
+typedef struct Animal {
+    void (*voice)(struct Animal* self);   // puntatore a funzione = metodo virtuale
+} Animal;
+
+void dog_voice(Animal* self) { printf("bau\n"); }
+void cat_voice(Animal* self) { printf("miao\n"); }
+
+int main() {
+    Animal a = { dog_voice };   // "istanza" con il suo comportamento
+    Animal b = { cat_voice };
+    a.voice(&a);   // bau   -> dispatch scelto dal puntatore a runtime
+    b.voice(&b);   // miao
+}
+\end{lstlisting}
+
+\nt{
+    Questo è \emph{esattamente} ciò che il compilatore C++ fa sotto il cofano
+    con la vtable (vedi sotto): la differenza è che in C++/Java è automatico e
+    type-safe, in C è manuale ed è compito del programmatore mantenerlo
+    corretto. Il prof cita proprio C e Pascal come linguaggi in cui il dispatch
+    dinamico non esiste nativamente.
+}
+
+\subsection{Python --- tutto dinamico (duck typing)}
+
+In Python il dispatch è \emph{sempre} dinamico e non serve dichiarare nulla: il
+metodo viene cercato a runtime seguendo la \emph{Method Resolution Order} della
+classe. Non conta la "classe del riferimento" (che non è nemmeno tipizzato).
+
+\begin{lstlisting}[language=Python]
+class Animal:
+    def voice(self): print("???")
+
+class Dog(Animal):
+    def voice(self): print("bau")
+
+class Cat(Animal):
+    def voice(self): print("miao")
+
+for x in (Dog(), Cat()):
+    x.voice()      # bau, miao  -> sempre late binding
+\end{lstlisting}
+
+\dfn{Duck typing}{
+    "If it walks like a duck and quacks like a duck, it's a duck". In Python
+    non conta il \emph{tipo} dichiarato di un oggetto ma solo il fatto che
+    \emph{possieda} il metodo/attributo richiesto. Il polimorfismo è quindi
+    ancora più ampio di quello per ereditarietà: due classi \emph{non}
+    imparentate sono interscambiabili se offrono gli stessi metodi.
+}
+
+\section{Come si implementa il late binding: la vtable}
+
+\dfn{Virtual Function Table (VFT/vtable)}{
+    Ogni classe che ha funzioni virtuali possiede una tabella (VFT) contenente
+    i \textbf{puntatori al codice} di ciascuna sua funzione virtuale (VFP1,
+    VFP2, \dots).
+}
+
+\dfn{Virtual Function Table Pointer (VFTP/vptr)}{
+    Ogni \emph{oggetto} di una classe con funzioni virtuali contiene un
+    puntatore nascosto (invisibile all'utente) alla vtable della sua classe.
+}
+
+\mprop{Passi del late binding a runtime}{
+    Per eseguire la chiamata \code{p->VF2()} attraverso un puntatore \code{p}
+    di tipo base:
+    \begin{enumerate}
+        \item dal puntatore si raggiunge l'oggetto;
+        \item nell'oggetto si legge il VFTP (vptr);
+        \item tramite il VFTP si raggiunge la vtable della classe \emph{reale};
+        \item si cerca la voce giusta (per \code{VF2}, l'entry VFP2);
+        \item si segue il puntatore trovato fino al codice e lo si esegue.
+    \end{enumerate}
+    Nota: in questo contesto "puntatore" significa puntatore C++ \emph{oppure}
+    riferimento Java.
+}
+
+\nt{
+    Java e Python usano meccanismi concettualmente identici: la JVM ha una
+    tabella dei metodi per classe; CPython cerca il metodo nel \code{\_\_dict\_\_}
+    della classe risalendo la MRO. Il costo dell'indirezione è lo stesso di cui
+    parlano le slide.
+}
+
+\section{Virtual vs non-virtual: la questione dell'efficienza}
+
+Se il polimorfismo è così comodo, perché non rendere tutti i metodi virtuali?
+È la domanda con cui si spiega la differenza filosofica \textbf{Java vs C++}:
+
+\begin{itemize}
+    \item \textbf{Java} sceglie la semplicità: tutti i metodi virtuali, sempre.
+    \item \textbf{C++} lascia la scelta all'utente (virtual/non-virtual). Il
+    motivo è l'\textbf{efficienza}: il late binding costa (un'indirezione in
+    più via vtable + impossibilità di fare \emph{inlining}).
+\end{itemize}
+
+\mprop{Quando l'overhead conta}{
+    Il costo del late binding è di solito trascurabile. Diventa rilevante solo
+    se un metodo \emph{semplice} viene chiamato \emph{moltissime} volte: in quei
+    casi l'indirezione impedisce ottimizzazioni (inline) e può diventare un
+    collo di bottiglia. Ambiti tipici: sistemi real-time, routine matematiche
+    di base, programmazione di sistema di basso livello.
+}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\footnotesize
+\begin{tabular}{|>{\raggedright\arraybackslash}p{3.4cm}|>{\raggedright\arraybackslash}p{3.4cm}|>{\raggedright\arraybackslash}p{3.4cm}|>{\raggedright\arraybackslash}p{3.0cm}|}
+\hline
+ & \textbf{C++} & \textbf{Java} & \textbf{Python} \\
+\hline
+Default & non virtuale & virtuale & virtuale \\
+\hline
+Costo di default & zero-overhead & indirezione vtable & lookup in dizionario \\
+\hline
+Ottimizzabile via inline & sì (non-virtual) & sì (JIT devirtualizza) & no (interprete) \\
+\hline
+Controllo al programmatore & massimo & minimo & nullo \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Esempio: tracciare l'output (dalle slide)}
+
+Le slide propongono un esercizio classico d'esame: dato un insieme di classi
+con metodi virtuali e non, capire quali chiamate compilano e quale output
+producono. Il ragionamento chiave:
+
+\mprop{Regola per l'esercizio}{
+    \begin{itemize}
+        \item Una chiamata \code{p->m()} attraverso un puntatore a \code{A}
+        \textbf{compila} solo se \code{A} (o un suo antenato) dichiara un metodo
+        con la signature di \code{m}: il compilatore guarda il \textbf{tipo
+        statico} del puntatore per decidere se la chiamata è legale.
+        \item Se il metodo è \code{virtual}, \emph{quale} versione venga
+        eseguita dipende dal \textbf{tipo dinamico} (reale) dell'oggetto.
+        \item Se il metodo \emph{non} è virtuale, si esegue la versione del
+        \textbf{tipo statico}.
+    \end{itemize}
+}
+
+\ex{Righe che non compilano}{
+    Nell'esempio delle slide (classi \code{A..G}):
+    \begin{itemize}
+        \item \code{aG.f()} non compila se \code{G} non definisce un
+        \code{f()} senza argomenti e \code{G} ha introdotto un \code{f(int)}
+        che \emph{nasconde} gli altri \code{f}.
+        \item \code{a->f(3)} con \code{a} di tipo \code{A*} non compila: il
+        compilatore cerca \code{A::f(int)}, che non esiste, anche se \code{a}
+        punta davvero a un oggetto derivato che ce l'ha (conta il tipo
+        statico).
+    \end{itemize}
+    Sono errori dovuti al fatto che la \emph{legalità} della chiamata si decide
+    sul tipo statico, mentre solo il \emph{dispatch} è dinamico.
+}
+
+%==============================================================
+\chapter{Template e generics}
+%==============================================================
+
+Questo capitolo copre la lezione \emph{Templates}. Il problema di partenza è il
+\textbf{riuso del codice}: molti programmi usano strutture dati generiche
+(stack, code, liste). Duplicare il codice per ogni tipo di elemento (una coda
+di clienti, una di messaggi, una di ordini) è insostenibile: ogni modifica va
+replicata ovunque. La soluzione è \textbf{parametrizzare il codice rispetto al
+tipo}.
+
+\section{Il problema: container e tipizzazione}
+
+\dfn{Genericità (type parameterization)}{
+    Il meccanismo con cui una classe o una funzione viene \emph{parametrizzata
+    rispetto a un tipo}, così da definire \emph{una sola volta} un algoritmo o
+    una struttura dati che funziona per molti tipi diversi. Le due incarnazioni
+    principali sono i \textbf{generics} (Java) e i \textbf{template} (C++).
+}
+
+Le slide legano la genericità al modello di tipizzazione:
+
+\begin{itemize}
+    \item Nei linguaggi a \textbf{tipizzazione dinamica} (Python) i container
+    generici, sia \emph{omogenei} sia \emph{eterogenei}, si costruiscono
+    banalmente: una lista può contenere qualunque cosa, non c'è un tipo da
+    fissare.
+    \item Nei linguaggi a \textbf{tipizzazione statica} (C, C++, Java) un
+    container "cablato" a un tipo limita il riuso. Le soluzioni pre-generics
+    erano:
+    \begin{itemize}
+        \item in \textbf{C}: \code{union}/variant record per l'eterogeneità (ma
+        con un numero finito di alternative e cast "sporchi" in estrazione),
+        oppure \code{void*} (che perde ogni type-safety);
+        \item difficoltà a \emph{nascondere} l'implementazione: per iterare
+        sul container serviva una variabile che rivelava la struttura interna.
+    \end{itemize}
+\end{itemize}
+
+\nt{
+    Ecco perché i template "nascono statici": servono proprio a recuperare, nei
+    linguaggi a tipizzazione statica, quella flessibilità che i linguaggi
+    dinamici hanno gratis --- ma \emph{senza} rinunciare al controllo dei tipi
+    a compile-time.
+}
+
+\section{Generics e template: la differenza profonda}
+
+\mprop{Template = generazione di codice a compile-time}{
+    Un template è un \emph{modello} secondo cui viene generato codice reale.
+    \begin{itemize}
+        \item Quando il compilatore incontra la \emph{definizione} del template,
+        \textbf{non genera codice}: fa i controlli possibili e rimanda il resto.
+        \item Al punto di \textbf{istanziazione} (dove il template è usato con
+        tipi concreti) il compilatore genera il codice \emph{specifico} per
+        quei tipi. Il corpo eseguito non è generico: è del tutto specializzato.
+        \item Il codice generato per una data combinazione di parametri è
+        prodotto \textbf{una sola volta} e riusato.
+    \end{itemize}
+}
+
+Questa è la distinzione capitale rispetto ai generics di Java:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\footnotesize
+\begin{tabular}{|>{\raggedright\arraybackslash}p{3.0cm}|>{\raggedright\arraybackslash}p{5.0cm}|>{\raggedright\arraybackslash}p{5.0cm}|}
+\hline
+ & \textbf{C++ template} & \textbf{Java generics} \\
+\hline
+Quando agiscono & compile-time: \textbf{monomorfizzazione} (una copia di codice per ogni tipo) & compile-time: \textbf{type erasure} (una sola copia, i parametri di tipo spariscono) \\
+\hline
+Codice prodotto & \code{vector<int>} e \code{vector<double>} sono classi \emph{diverse} e non imparentate & \code{List<Integer>} e \code{List<String>} condividono lo \emph{stesso} bytecode (\code{List}) \\
+\hline
+Tipi primitivi & funzionano direttamente & \textbf{vietati}: solo tipi riferimento (serve \code{Integer}, non \code{int}) \\
+\hline
+Type checking & incompleto sulla definizione, completo all'istanziazione & completo sulla definizione, poi cancellato \\
+\hline
+A runtime & tipo pienamente noto & tipo \textbf{cancellato} (\code{new T[]} impossibile, no \code{instanceof List<String>}) \\
+\hline
+Dimensione binario & può crescere (code bloat) & costante \\
+\hline
+Prestazioni & massime (nessun boxing, inline) & boxing/unboxing per i primitivi \\
+\hline
+\end{tabular}
+\end{center}
+
+\dfn{Monomorfizzazione}{
+    Strategia (C++, Rust) in cui il compilatore genera una \emph{copia
+    separata} del codice per ciascuna combinazione di parametri di tipo usata.
+    Massime prestazioni, ma possibile aumento della dimensione del binario
+    (\emph{code bloat}).
+}
+
+\dfn{Type erasure}{
+    Strategia (Java) in cui i parametri di tipo servono solo al type-checker e
+    vengono \emph{cancellati} dopo la compilazione: a runtime \code{List<String>}
+    è semplicemente \code{List}. Vantaggio: un solo bytecode, compatibilità
+    all'indietro. Svantaggio: informazioni di tipo non disponibili a runtime.
+}
+
+\nt{
+    Le slide dicono che "i template non sono generics completi": non c'è
+    typechecking completo sulla \emph{definizione}, perché finché i tipi sono
+    ignoti il compilatore non può verificare che, per esempio, \code{r = 2 * t}
+    sia lecito. In Java invece un generic è controllato \emph{subito} sulla
+    definizione (grazie ai \emph{bounds}, es. \code{<T extends Comparable<T>>}).
+}
+
+\section{Function template}
+
+\dfn{Function template}{
+    Definisce una \emph{funzione generica} applicabile ad argomenti di tipi
+    specificabili \emph{in seguito}, alla chiamata. Il controllo di consistenza
+    dei tipi è rimandato alla prima chiamata (rilassamento del type checking).
+}
+
+\begin{lstlisting}[language=C++]
+// dichiarazione: template + lista parametri tra <>
+template <typename T1, typename T2>
+void f(T1 t, T2& r) {
+    r = 2 * t;   // legale solo per certi T1, T2: verificato all'istanziazione
+}
+
+template <class T>            // 'class' e 'typename' qui equivalenti
+T maximum(T a, T b) {
+    return a > b ? a : b;     // richiede che operator> sia definito su T
+}
+
+int main() {
+    int x = 1, y = 2;
+    f(y, x);                  // OK: deduce T1=int, T2=int&
+    // f(anA, x);             // ERRORE: A non ha operator* con 2
+    std::cout << maximum(10, 15);   // deduce T=int
+}
+\end{lstlisting}
+
+\mprop{Deduzione dei parametri}{
+    Nelle \emph{function} template il compilatore di solito \textbf{deduce} da
+    solo i tipi guardando gli argomenti della chiamata. Se non ci riesce (o la
+    chiamata è ambigua) bisogna specificarli a mano:
+    \code{maximum<double>(a, b)}.
+}
+
+\subsection{Il classico tranello \code{char*}}
+
+\begin{Example}{max su stringhe C}{}
+    Con \code{maximum("Aladdin", "Jasmine")} il compilatore genera
+    \code{maximum(char*, char*)}, che confronta gli \emph{indirizzi} dei due
+    puntatori, non i contenuti! Risultato inatteso. Si risolve con una
+    \textbf{specializzazione}:
+\begin{lstlisting}[language=C++]
+template <> char* maximum(char* a, char* b) {
+    return strcmp(a, b) > 0 ? a : b;   // confronto vero delle stringhe
+}
+\end{lstlisting}
+    In C++ moderno non si presenta con \code{std::string} (che sovraccarica
+    \code{operator>}). È un ottimo esempio del prof su ``il template genera
+    codice specifico che magari non fa ciò che credi''.
+\end{Example}
+
+\section{Class template}
+
+\dfn{Class template}{
+    Una classe parametrizzata rispetto a uno o più tipi. Sintassi analoga a
+    quella dei function template.
+}
+
+\mprop{Istanziazione delle class template}{
+    Differenza rispetto alle function template: per le \emph{classi} il
+    compilatore \textbf{non deduce} i parametri (non ci sono argomenti da cui
+    dedurli). Vanno \emph{sempre} specificati esplicitamente: \code{A<int>},
+    \code{A<double>}.
+}
+
+\begin{lstlisting}[language=C++]
+template <typename T>
+class A {
+    T x, y;
+public:
+    A() : x(0), y(0) {}
+    T getSum() { return x + y; }
+    void setXY(T a, T b) { x = a; y = b; }
+};
+
+int main() {
+    A<int>    iA;    // genera la classe A<int>
+    A<double> dA;    // genera la classe A<double>  (tipo DIVERSO da A<int>)
+}
+\end{lstlisting}
+
+\mprop{Specializzazioni = classi indipendenti}{
+    Ogni istanziazione con parametri diversi crea una nuova
+    \textbf{specializzazione}. Due specializzazioni dello stesso template sono
+    classi regolari e \textbf{completamente scorrelate}: \code{A<int>},
+    \code{A<double>}, \code{A<B>} non hanno alcuna relazione. Non puoi assegnare
+    un \code{A<int>} a un \code{A<double>} senza una conversione esplicita.
+}
+
+\subsection{Istanziazione implicita ed esplicita}
+
+\begin{lstlisting}[language=C++]
+Z<int> zi;                 // istanziazione IMPLICITA (all'uso)
+template class Z<int>;     // istanziazione ESPLICITA (forzata dal programmatore)
+\end{lstlisting}
+
+\nt{
+    Sottigliezza dalle slide: dichiarare solo un \emph{puntatore}
+    \code{Z<int>* p;} \textbf{non} istanzia la classe (come dichiarare un
+    puntatore a una struct incompleta). L'istanziazione scatta quando serve la
+    definizione completa (es. creando un oggetto). Per questo, per i template,
+    dichiarazione e definizione dei membri stanno di solito \emph{nello stesso
+    header}: al punto di istanziazione il compilatore deve avere sotto gli occhi
+    tutto il codice.
+}
+
+\section{Genericità nei quattro linguaggi}
+
+\subsection{C --- nessun generics: macro, \code{void*}, \code{\_Generic}}
+
+C non ha genericità nel type system. Tre approcci storici:
+
+\begin{lstlisting}[language=C]
+/* 1) Macro: sostituzione testuale del preprocessore (nessun type-check) */
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+
+/* 2) void*: container generico ma type-unsafe, richiede cast a mano */
+typedef struct { void** data; int n; } List;
+
+/* 3) qsort della libreria standard: generico via void* + comparatore */
+int cmp_int(const void* a, const void* b) {
+    return (*(const int*)a) - (*(const int*)b);
+}
+qsort(arr, n, sizeof(int), cmp_int);
+
+/* 4) _Generic (C11): dispatch statico sul tipo, embrione di overloading */
+#define abs_g(x) _Generic((x), int: abs, double: fabs)(x)
+\end{lstlisting}
+
+\nt{
+    Questi meccanismi corrispondono alle "soluzioni pre-OO per i container"
+    citate nelle slide: \code{void*} e \code{union} danno genericità ed
+    eterogeneità, ma a costo di perdere il controllo dei tipi e di dover
+    inserire "messy test and cast code" all'estrazione dei valori.
+}
+
+\subsection{C++ --- template (già visti)}
+
+Monomorfizzazione a compile-time, massime prestazioni, base della
+\emph{Standard Template Library} (STL: \code{vector}, \code{map}, \code{sort},
+\dots).
+
+\subsection{Java --- generics con erasure}
+
+\begin{lstlisting}[language=Java]
+class Cell<A> {                 // A = parametro di tipo
+    private A value;
+    Cell(A value) { this.value = value; }
+    A get() { return value; }
+}
+// uso senza cast:
+Cell<String> c = new Cell<>("First");
+String s = c.get();             // nessun cast necessario
+
+// bounded type: vincolo sui parametri (impossibile nei template classici)
+static <T extends Comparable<T>> T max(T a, T b) {
+    return a.compareTo(b) >= 0 ? a : b;
+}
+\end{lstlisting}
+
+\nt{
+    Conseguenze dell'erasure da ricordare: non puoi fare \code{new T()},
+    \code{new T[n]}, né \code{o instanceof List<String>}; i generic \emph{non}
+    accettano primitivi (\code{List<int>} è illegale, serve \code{List<Integer>}
+    con boxing).
+}
+
+\subsection{Python --- duck typing e type hints}
+
+Python non ha bisogno di generics a runtime: una funzione lavora su qualunque
+oggetto che supporti le operazioni usate.
+
+\begin{lstlisting}[language=Python]
+def maximum(a, b):
+    return a if a > b else b       # funziona per int, float, str, ...
+
+# I "generics" esistono solo come ANNOTAZIONI statiche (typing),
+# controllate da tool esterni (mypy), MAI a runtime:
+from typing import TypeVar, Generic
+T = TypeVar("T")
+class Cell(Generic[T]):
+    def __init__(self, value: T) -> None:
+        self.value = value
+    def get(self) -> T:
+        return self.value
+\end{lstlisting}
+
+\mprop{Confronto sintetico sulla genericità}{
+    \begin{itemize}
+        \item \textbf{C}: genericità simulata (macro/\code{void*}), niente
+        type-safety.
+        \item \textbf{C++}: template $\to$ codice specializzato a compile-time,
+        veloce ma può gonfiare il binario.
+        \item \textbf{Java}: generics $\to$ un solo bytecode (erasure),
+        type-safe a compile-time ma info perse a runtime.
+        \item \textbf{Python}: non servono (duck typing); i type hint sono solo
+        documentazione controllabile offline.
+    \end{itemize}
+}
+
+%==============================================================
+\chapter{Strategy pattern e costrutti abilitanti}
+%==============================================================
+
+Questo capitolo copre la lezione \emph{Focus on the strategy pattern in Java}.
+Lo scopo del prof è mostrare come un \textbf{design pattern} si realizzi
+concretamente nel codice, e come i costrutti del linguaggio (interfacce, classi
+interne/anonime, polimorfismo, funzioni di prima classe) ne siano
+l'infrastruttura.
+
+\section{L'idea dello Strategy pattern}
+
+\dfn{Strategy pattern}{
+    Pattern comportamentale che \textbf{incapsula una famiglia di algoritmi}
+    intercambiabili dietro una stessa interfaccia, permettendo di scegliere
+    (anche a runtime) quale algoritmo usare, \emph{senza} modificare il codice
+    cliente che lo invoca. La "strategia" è un oggetto (o una funzione) passato
+    a chi la usa.
+}
+
+\mprop{Cosa abilita lo Strategy}{
+    Lo Strategy si regge su uno di questi due meccanismi:
+    \begin{enumerate}
+        \item \textbf{polimorfismo per overriding + late binding}: la strategia
+        è un oggetto che implementa un'interfaccia comune (Java, C++);
+        \item \textbf{funzioni di prima classe}: la strategia è direttamente una
+        funzione passata come argomento (C con puntatori a funzione, Python con
+        funzioni/lambda, C++ con \code{std::function}).
+    \end{enumerate}
+    Il prof sottolinea che in Java lo Strategy è "polimorfismo via overriding e
+    late binding", proprio \emph{perché} Java non ha puntatori a funzione.
+}
+
+\section{I costrutti Java che lo rendono elegante}
+
+Le slide introducono una serie di costrutti Java (classi annidate, interne,
+locali, anonime; interfacce con default/static) che servono a scrivere lo
+Strategy in modo conciso.
+
+\subsection{Classi annidate, interne, locali, anonime}
+
+\dfn{Classi in scope interni}{
+    Sia Java sia C++ permettono di definire una classe dentro un'altra. In C++
+    è solo una questione di \emph{visibilità e naming}. In Java la distinzione è
+    più profonda:
+    \begin{itemize}
+        \item \textbf{nested (static)}: dentro un'altra classe solo per
+        organizzazione/naming; può usare solo i membri \emph{static}
+        dell'esterna. Si dichiara con \code{static}.
+        \item \textbf{inner (non static)}: ogni istanza è legata a
+        un'\emph{istanza} della classe che la contiene e può accedere ai membri
+        d'istanza di quest'ultima. Non può avere membri static.
+        \item \textbf{local}: dichiarata dentro un \emph{blocco}/metodo; visibile
+        solo lì; accede alle variabili locali \code{final}/effectively final.
+        \item \textbf{anonymous}: classe locale \emph{senza nome}, dichiarata e
+        istanziata in un'unica espressione; una sola istanza. Usata quando serve
+        una classe una volta sola.
+    \end{itemize}
+}
+
+\begin{lstlisting}[language=Java]
+public class X {
+    int instanceVar;
+    static int staticVar;
+
+    private class Inner {                 // INNER: legata all'istanza di X
+        int y;
+        Inner() { y = instanceVar + staticVar; }   // accede a entrambi
+    }
+    private static class Nested {         // NESTED: solo membri static
+        int x;
+        Nested() { x = staticVar; /* instanceVar -> ERRORE */ }
+    }
+}
+\end{lstlisting}
+
+In C++ esiste solo la versione "nested" (naming/visibilità); non c'è il legame
+automatico con l'istanza dell'esterna:
+
+\begin{lstlisting}[language=C++]
+class X {
+public:
+    int instanceVar;
+    static int staticVar;
+    class Nested {
+        int x;
+        Nested() : x(staticVar) { /* instanceVar++ -> ERRORE */ }
+    };
+};
+\end{lstlisting}
+
+\subsubsection{Classi annidate in Python}
+
+Python permette di definire una classe sia dentro un'altra classe sia dentro una
+funzione, ma la \emph{semantica} è diversa da Java. La regola da ricordare:
+
+\mprop{La classe annidata in Python $\approx$ nested \emph{static} di Java}{
+    Una classe definita dentro un'altra è semplicemente un \textbf{attributo}
+    della classe esterna (\code{Outer.Inner}). \textbf{Non} riceve alcun
+    riferimento automatico all'istanza esterna: si comporta quindi come una
+    \emph{static nested class} di Java, mai come una \emph{inner class}. La
+    parola chiave \code{static} non esiste (e non serve) per le classi.
+}
+
+\nt{
+    \textbf{Gotcha fondamentale (scope di classe non annidati).} Il corpo di una
+    classe annidata \emph{non vede} i nomi definiti nel corpo della classe
+    esterna: in Python solo gli scope di \emph{funzione} (via closure), globale e
+    built-in fanno catena (LEGB), non quelli di classe. Verificato:
+    \code{y = x} dentro \code{Inner} solleva \code{NameError}.
+}
+
+\begin{lstlisting}[language=Python]
+class Outer:
+    x = 1
+    class Inner:
+        # y = x        # -> NameError: lo scope della classe esterna NON e' visibile
+        pass
+
+o = Outer.Inner()      # Inner e' solo un attributo di Outer
+# o non ha alcun riferimento automatico a un'istanza di Outer
+
+# "inner class" con accesso all'esterna: si passa self ESPLICITAMENTE
+class Container:
+    def __init__(self): self.value = 42
+    class Handle:
+        def __init__(self, outer): self.outer = outer
+        def show(self): return self.outer.value
+    def make(self): return Container.Handle(self)   # legame esplicito
+\end{lstlisting}
+
+\paragraph{Classe locale (dentro una funzione).} A differenza degli scope di
+classe, gli scope di \emph{funzione} in Python si annidano: una classe definita
+dentro una funzione può leggere le variabili locali della funzione, sia nel
+corpo della classe sia nei metodi (\textbf{closure}), senza bisogno di
+\code{final} come in Java.
+
+\begin{lstlisting}[language=Python]
+def make_adder(n):
+    class Adder:            # classe LOCALE
+        base = n            # il corpo classe legge il locale n della funzione
+        def add(self, x): return x + n   # metodo: closure su n
+    return Adder()
+
+make_adder(10).add(5)       # 15
+\end{lstlisting}
+
+\paragraph{Classi anonime: non esistono (e non servono).} Python non ha una
+sintassi per le classi anonime. Al loro posto:
+\begin{itemize}
+    \item le \code{lambda} danno \emph{funzioni} anonime (una sola espressione);
+    \item \code{type("Nome", (Base,), \{...\})} crea una classe al volo (ma vuole
+    comunque un nome);
+    \item nella stragrande maggioranza dei casi non serve nulla di tutto ciò:
+    dove Java usa una classe anonima che implementa un'interfaccia a metodo
+    singolo (es. \code{ActionListener}), Python passa direttamente una funzione
+    (funzioni first-class + duck typing).
+\end{itemize}
+
+\nt{
+    \textbf{Perché in Python le nested class sono rare.} Il meccanismo idiomatico
+    di \emph{namespacing} in Python è il \textbf{modulo} (un file \code{.py}), non
+    la classe annidata. Le classi annidate si usano quasi solo per legare
+    strettamente un tipo di supporto alla sua classe (es. \code{Model.Meta} in
+    Django) --- proprio l'uso "static nested" di Java.
+}
+
+\subsubsection{Classi annidate in C}
+
+In C non esistono classi: l'analogo è la definizione di una \code{struct} dentro
+un'altra \code{struct} (o dentro una funzione). Ma le regole di scope sono molto
+diverse da C++/Java.
+
+\mprop{In C il tag della struct annidata "leaka" nello scope esterno}{
+    Contrariamente a C++ (dove \code{Inner} è \code{Outer::Inner}, scoped nella
+    classe), in C il \emph{tag} di una struct annidata viene "issato" nello scope
+    del file: diventa un tipo globale visibile ovunque. Non c'è quindi alcun
+    vero \emph{namespacing}. (Verificato: il codice sotto compila in C, mentre in
+    C++ \code{struct Inner leaked;} dà "incomplete type".)
+}
+
+\begin{lstlisting}[language=C]
+struct Outer {
+    int x;
+    struct Inner { int y; } inner;   /* struct annidata */
+};
+
+struct Inner leaked;    /* C: OK, il tag Inner e' visibile a livello di file */
+                        /* C++: ERRORE, servirebbe Outer::Inner */
+\end{lstlisting}
+
+\begin{itemize}
+    \item \textbf{Struct locale}: una \code{struct} definita dentro una funzione
+    è invece a scope di blocco (visibile solo lì), l'unico caso in cui C offre un
+    vero incapsulamento del tipo.
+    \item \textbf{Nessuna inner class}: per dare a una struct "annidata" accesso
+    ai dati di quella esterna si passa un \emph{puntatore} all'esterna
+    esplicitamente (come per lo Strategy e le funzioni virtuali in C).
+    \item \textbf{Nessuna classe anonima}: attenzione, il C11 ha le
+    \emph{anonymous struct/union}, ma sono \emph{membri} aggregati senza nome
+    (servono per il layout, es. accedere a \code{s.a} invece di \code{s.u.a}), non
+    hanno nulla a che vedere con le classi anonime di Java.
+\end{itemize}
+
+\subsubsection{Quadro comparativo}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\footnotesize
+\begin{tabular}{|>{\raggedright\arraybackslash}p{2.5cm}|>{\raggedright\arraybackslash}p{2.4cm}|>{\raggedright\arraybackslash}p{2.6cm}|>{\raggedright\arraybackslash}p{3.0cm}|>{\raggedright\arraybackslash}p{2.2cm}|}
+\hline
+\textbf{Concetto (Java)} & \textbf{Java} & \textbf{C++} & \textbf{Python} & \textbf{C} \\
+\hline
+Nested (static) & \code{static class} & \code{class} annidata (scoped) & classe annidata (default) & struct annidata (tag \emph{leaka}) \\
+\hline
+Inner (legata all'istanza) & \code{class} (ref. esterna implicita) & non esiste (ref. esplicito) & non esiste (passi \code{self}) & non esiste (passi puntatore) \\
+\hline
+Local (in funzione) & sì (inner, locali \code{final}) & sì & sì (closure sui locali) & sì (struct block-scoped) \\
+\hline
+Anonima & sì (\code{new I()\{...\}}) & lambda (C++11) & no (lambda / \code{type()}) & no (solo anon. struct \emph{member}) \\
+\hline
+Namespacing preferito & package + nested & namespace + nested & \textbf{modulo} & file + prefissi nomi \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Interfacce}
+
+\dfn{Interfaccia (Java)}{
+    Un tipo riferimento che dichiara \emph{signature} di metodi (astratti),
+    costanti, e --- da Java 8 --- metodi \code{default} e \code{static}. Non ha
+    variabili d'istanza e non può essere istanziata: le classi la
+    \code{implements} fornendo il corpo dei metodi astratti.
+}
+
+\mprop{Perché le interfacce (e non l'ereditarietà multipla)}{
+    Le interfacce permettono a classi \emph{non} imparentate di condividere un
+    contratto comune \textbf{senza} una superclasse astratta condivisa. Java
+    ammette \code{implements} di \emph{più} interfacce (ereditarietà multipla di
+    \emph{tipo}) evitando le ambiguità dell'ereditarietà multipla di
+    \emph{stato} tipica del C++ (il "diamond problem").
+}
+
+\dfn{Default method}{
+    Metodo di interfaccia con un corpo (\code{default}). Serve a \textbf{far
+    evolvere un'interfaccia} senza rompere le classi che già la implementano:
+    aggiungere un metodo astratto le romperebbe, un \code{default} no (fornisce
+    un'implementazione di fallback ereditabile).
+}
+
+\begin{lstlisting}[language=Java]
+public interface DoIt {
+    void doSomething(int i, double x);          // astratto
+    int  doSomethingElse(String s);             // astratto
+    default boolean didItWork(int i, double x, String s) {  // aggiunto dopo
+        return true;                            // NON rompe le vecchie classi
+    }
+}
+\end{lstlisting}
+
+\mprop{Risoluzione dei conflitti tra default method}{
+    Se una classe eredita più default con la stessa signature, Java applica:
+    \begin{enumerate}
+        \item i metodi \emph{d'istanza} di una superclasse battono i default
+        d'interfaccia ("class wins");
+        \item i metodi già sovrascritti da altri candidati vengono ignorati;
+        \item se resta un conflitto irrisolubile, \textbf{errore di
+        compilazione}: la classe \emph{deve} fare override esplicito, potendo
+        invocare \code{Interfaccia.super.metodo()}.
+    \end{enumerate}
+}
+
+\subsection{Classi anonime e listener}
+
+Il caso d'uso principe è la gestione degli eventi (GUI): un \code{JButton} ha
+bisogno di un oggetto che implementi \code{ActionListener} (interfaccia con il
+solo metodo \code{actionPerformed}). Le slide mostrano tre modi di fornire la
+strategia di reazione al click:
+
+\begin{lstlisting}[language=Java]
+// 1) la classe contenitore implementa direttamente l'interfaccia
+public class SimpleCalc implements ActionListener {
+    public void actionPerformed(ActionEvent e) { /* ... */ }
+}
+
+// 2) inner class dedicata (accede ai campi dell'esterna, parametrizzabile)
+private class OperatorAction implements ActionListener {
+    private int operator;
+    OperatorAction(int op) { this.operator = op; }
+    public void actionPerformed(ActionEvent e) { /* usa operator */ }
+}
+
+// 3) classe anonima: la strategia definita sul posto, dove serve
+equalsButton.addActionListener(new ActionListener() {
+    @Override public void actionPerformed(ActionEvent e) { /* ... */ }
+});
+\end{lstlisting}
+
+\nt{
+    La classe anonima \emph{sembra} passare "un pezzo di codice" come parametro,
+    ma in realtà crea una classe a tutti gli effetti, ne istanzia un oggetto e
+    passa \emph{quell'oggetto}. È il ponte concettuale verso le \textbf{lambda}
+    (Java 8), che rendono lo Strategy ancora più conciso quando l'interfaccia ha
+    un solo metodo (\emph{functional interface}):
+    \code{equalsButton.addActionListener(e -> \{ ... \});}
+}
+
+\section{Lo Strategy nei quattro linguaggi}
+
+Qui sta il cuore del confronto richiesto dal prof: \emph{lo stesso pattern},
+quattro realizzazioni molto diverse a seconda di cosa il linguaggio offre.
+
+\subsection{Java --- interfaccia + (anonima/lambda)}
+
+\begin{lstlisting}[language=Java]
+interface Strategy { int execute(int a, int b); }
+
+class Context {
+    private Strategy s;
+    Context(Strategy s) { this.s = s; }
+    int run(int a, int b) { return s.execute(a, b); }   // late binding
+}
+
+Context add = new Context((a, b) -> a + b);   // lambda = strategia
+Context mul = new Context((a, b) -> a * b);
+\end{lstlisting}
+
+\subsection{C++ --- classe astratta, \code{std::function} o template}
+
+C++ offre più alternative: la classica (classe base astratta + virtual),
+oppure funzioni di prima classe con \code{std::function}, oppure la
+\emph{policy-based design} con i template (strategia scelta a compile-time,
+zero-overhead).
+
+\begin{lstlisting}[language=C++]
+// (a) classica: interfaccia = classe astratta con metodo virtuale puro
+struct Strategy { virtual int execute(int, int) = 0; virtual ~Strategy() {} };
+struct Add : Strategy { int execute(int a, int b) override { return a + b; } };
+
+// (b) moderna: la strategia e' una funzione (first-class)
+#include <functional>
+std::function<int(int,int)> s = [](int a, int b){ return a + b; };
+
+// (c) policy-based: strategia come parametro di template (compile-time)
+template <class Policy>
+struct Context { int run(int a, int b) { return Policy::execute(a, b); } };
+\end{lstlisting}
+
+\dfn{Funzione virtuale pura / classe astratta (C++)}{
+    Un metodo dichiarato \code{= 0} è \emph{puro}: la classe che lo contiene è
+    \textbf{astratta} (non istanziabile) e funge da interfaccia. È l'equivalente
+    C++ dell'\code{interface} di Java; combinando più classi astratte si ottiene
+    l'ereditarietà multipla di tipo.
+}
+
+\subsection{C --- puntatori a funzione (lo Strategy "originale")}
+
+In C la strategia è semplicemente un \textbf{puntatore a funzione} passato al
+codice cliente: è la forma più antica ed essenziale del pattern.
+
+\begin{lstlisting}[language=C]
+typedef int (*Strategy)(int, int);       // tipo "strategia"
+
+int run(Strategy s, int a, int b) { return s(a, b); }
+
+int add(int a, int b) { return a + b; }
+int mul(int a, int b) { return a * b; }
+
+int main() {
+    printf("%d\n", run(add, 3, 4));      // 7
+    printf("%d\n", run(mul, 3, 4));      // 12
+}
+\end{lstlisting}
+
+\nt{
+    Il prof osserva che in Java lo Strategy passa \emph{per forza} da
+    interfacce e overriding "proprio perché non usiamo puntatori a funzione". In
+    C accade l'opposto: non essendoci oggetti né override, il puntatore a
+    funzione è \emph{l'unico} strumento --- ed è sufficiente.
+}
+
+\subsection{Python --- funzioni di prima classe (quasi banale)}
+
+In Python le funzioni sono oggetti di prima classe: lo Strategy si riduce a
+passare una funzione (o qualunque \emph{callable}). Non servono né interfacce né
+classi.
+
+\begin{lstlisting}[language=Python]
+def run(strategy, a, b):
+    return strategy(a, b)
+
+run(lambda a, b: a + b, 3, 4)    # 7
+run(lambda a, b: a * b, 3, 4)    # 12
+\end{lstlisting}
+
+\mprop{Perché lo stesso pattern cambia forma}{
+    \begin{itemize}
+        \item Dove ci sono \textbf{funzioni di prima classe} (C, Python, C++
+        moderno) lo Strategy è "passa una funzione": leggero, poche righe.
+        \item Dove il linguaggio è \textbf{puramente a oggetti senza puntatori a
+        funzione} (Java classico) serve incapsulare la strategia in un
+        \emph{oggetto} che implementa un'interfaccia --- da cui l'importanza di
+        classi anonime e lambda per non appesantire il codice.
+    \end{itemize}
+    Il pattern è lo stesso; cambiano gli \emph{ingredienti} che il linguaggio
+    mette a disposizione.
+}
+
+\section{Ereditarietà e polimorfismo: quadro comparativo}
+
+Lo Strategy poggia sul polimorfismo, quindi conviene chiudere sistematizzando
+come i quattro linguaggi gestiscono ereditarietà e interfacce.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\footnotesize
+\begin{tabular}{|>{\raggedright\arraybackslash}p{2.6cm}|>{\raggedright\arraybackslash}p{2.3cm}|>{\raggedright\arraybackslash}p{3.0cm}|>{\raggedright\arraybackslash}p{2.6cm}|>{\raggedright\arraybackslash}p{2.4cm}|}
+\hline
+\textbf{Aspetto} & \textbf{C} & \textbf{C++} & \textbf{Java} & \textbf{Python} \\
+\hline
+Ereditarietà & assente & multipla (di stato) & singola (di stato) & multipla (di stato) \\
+\hline
+Interfacce & assenti & classi astratte (virtual puro) & \code{interface} (multiple) & ABC / duck typing \\
+\hline
+Diamond problem & --- & sì $\to$ risolto con \code{virtual} inheritance & evitato: stato singolo, tipo multiplo & risolto dalla MRO (linearizzazione C3) \\
+\hline
+Metodo astratto & --- & \code{virtual f() = 0;} & \code{abstract} / metodo d'interfaccia & \code{@abstractmethod} \\
+\hline
+Strategia idiomatica & puntatore a funzione & virtual / \code{std::function} / template & interfaccia + lambda & funzione / callable \\
+\hline
+\end{tabular}
+\end{center}
+
+\dfn{Diamond problem ed ereditarietà virtuale}{
+    Se \code{D} eredita da \code{B} e \code{C}, entrambe derivate da \code{A},
+    in C++ \code{D} contiene \emph{due} copie di \code{A} (ambiguità sui membri
+    di \code{A}). Si risolve con l'\textbf{ereditarietà virtuale}
+    (\code{class B : virtual public A}), che fa condividere un'unica \code{A}.
+    Java evita il problema alla radice: erediti lo \emph{stato} da una sola
+    classe, e più interfacce (che stato non hanno). Python usa la
+    \textbf{MRO C3} per linearizzare l'ordine di ricerca dei metodi.
+}
+
+%==============================================================
+\chapter{Tabelle riassuntive per l'esame}
+%==============================================================
+
+Riepilogo "a colpo d'occhio" dei confronti chiesti dal professore. Queste
+tabelle raccolgono, per ciascun argomento delle slide, la posizione dei quattro
+linguaggi.
+
+\section{Modello di esecuzione e tipizzazione}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\footnotesize
+\begin{tabular}{|>{\raggedright\arraybackslash}p{3.0cm}|>{\raggedright\arraybackslash}p{2.4cm}|>{\raggedright\arraybackslash}p{2.7cm}|>{\raggedright\arraybackslash}p{2.4cm}|>{\raggedright\arraybackslash}p{2.4cm}|}
+\hline
+ & \textbf{C} & \textbf{C++} & \textbf{Java} & \textbf{Python} \\
+\hline
+Compilazione & nativo & nativo & bytecode + JVM & bytecode + VM \\
+\hline
+Tipizzazione & statica debole & statica forte & statica forte & dinamica forte \\
+\hline
+Type-check tipi & compile-time & compile-time & compile-time & run-time \\
+\hline
+Memoria & manuale & manuale + RAII & GC & GC (refcount) \\
+\hline
+Velocità tipica & massima & massima & alta (JIT) & bassa \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Polimorfismo e dispatch (funzioni virtuali)}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\footnotesize
+\begin{tabular}{|>{\raggedright\arraybackslash}p{3.2cm}|>{\raggedright\arraybackslash}p{2.3cm}|>{\raggedright\arraybackslash}p{2.6cm}|>{\raggedright\arraybackslash}p{2.4cm}|>{\raggedright\arraybackslash}p{2.4cm}|}
+\hline
+ & \textbf{C} & \textbf{C++} & \textbf{Java} & \textbf{Python} \\
+\hline
+Dispatch di default & early (statico) & early (statico) & late (dinamico) & late (dinamico) \\
+\hline
+Metodo virtuale & simulato (ptr a funz.) & \code{virtual} esplicito & sempre & sempre \\
+\hline
+Bloccare l'override & --- & non-\code{virtual} / \code{final} (C++11) & \code{final} & convenzione / \code{\_\_} \\
+\hline
+Meccanismo & tabella manuale & vtable + vptr & tabella metodi JVM & lookup MRO / dict \\
+\hline
+Overhead & nullo & solo se virtual & sempre presente & interpretazione \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Genericità (template / generics)}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\footnotesize
+\begin{tabular}{|>{\raggedright\arraybackslash}p{3.2cm}|>{\raggedright\arraybackslash}p{2.3cm}|>{\raggedright\arraybackslash}p{2.7cm}|>{\raggedright\arraybackslash}p{2.5cm}|>{\raggedright\arraybackslash}p{2.4cm}|}
+\hline
+ & \textbf{C} & \textbf{C++} & \textbf{Java} & \textbf{Python} \\
+\hline
+Meccanismo & macro / \code{void*} & template & generics & duck typing \\
+\hline
+Quando & preproc. / runtime & compile-time & compile-time & runtime \\
+\hline
+Strategia & sostituzione testo & monomorfizzazione & type erasure & nessuna \\
+\hline
+Type-safe & no & sì (all'uso) & sì (poi erasa) & no (solo hint) \\
+\hline
+Primitivi & sì & sì & no (boxing) & n/a \\
+\hline
+Info a runtime & --- & sì & no & sì (dinamico) \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{OOP: ereditarietà e interfacce (strategy)}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\footnotesize
+\begin{tabular}{|>{\raggedright\arraybackslash}p{3.2cm}|>{\raggedright\arraybackslash}p{2.2cm}|>{\raggedright\arraybackslash}p{2.7cm}|>{\raggedright\arraybackslash}p{2.6cm}|>{\raggedright\arraybackslash}p{2.4cm}|}
+\hline
+ & \textbf{C} & \textbf{C++} & \textbf{Java} & \textbf{Python} \\
+\hline
+OOP nativo & no & sì & sì & sì \\
+\hline
+Ereditarietà multipla & --- & sì (stato) & solo interfacce & sì (MRO) \\
+\hline
+Interfaccia & --- & classe astratta & \code{interface} & ABC / protocol \\
+\hline
+Strategy idiomatico & ptr a funzione & virtual / functional / template & interfaccia + lambda & callable \\
+\hline
+Classi anonime & --- & lambda (C++11) & sì & lambda \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Le domande "trappola" tipiche del prof}
+
+\mprop{Cose da saper rispondere a voce}{
+    \begin{itemize}
+        \item \emph{Perché C++ ha \code{virtual} e Java no?} $\Rightarrow$
+        efficienza / zero-overhead: C++ non fa pagare il late binding a chi non
+        lo usa; Java preferisce l'uniformità.
+        \item \emph{Differenza tra template C++ e generics Java?} $\Rightarrow$
+        monomorfizzazione (codice per ogni tipo, runtime type noto) vs type
+        erasure (un solo bytecode, tipo cancellato).
+        \item \emph{Come si fa polimorfismo/strategy in C?} $\Rightarrow$
+        puntatori a funzione (dentro struct = vtable manuale).
+        \item \emph{Perché Python non ha bisogno di generics?} $\Rightarrow$
+        duck typing: i tipi si controllano a runtime, una funzione lavora su
+        qualunque oggetto "compatibile".
+        \item \emph{Overriding vs overloading vs hiding?} $\Rightarrow$ stessa
+        signature+virtuale (runtime) / stesso nome, signature diversa
+        (compile-time) / (solo C++) omonimo nella derivata che nasconde la base.
+        \item \emph{A cosa serve la vtable?} $\Rightarrow$ a realizzare il late
+        binding: ogni oggetto ha un vptr alla tabella dei puntatori ai metodi
+        virtuali della sua classe reale.
+        \item \emph{Perché i default method nelle interfacce Java?}
+        $\Rightarrow$ per far evolvere un'interfaccia senza rompere le classi
+        che già la implementano.
+    \end{itemize}
+}
+
+\vfill
+\begin{center}
+\itshape\small Fine degli appunti trasversali sui linguaggi.\\
+Argomenti coperti: funzioni virtuali \& late binding, template \& generics,
+strategy pattern --- confrontati su C, C++, Java, Python.
+\end{center}
+
+\end{document}

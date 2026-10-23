@@ -1,0 +1,56 @@
+\documentclass{report}
+
+\input{../LatexTemp/preamble.tex}
+\input{../LatexTemp/macros}
+\input{../LatexTemp/letterfonts}
+
+\usepackage[utf8]{inputenc}
+\usepackage{fontawesome}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{float}
+
+\usetikzlibrary{arrows.meta, positioning, automata}
+
+% --- stile per i sorgenti Prolog ---
+\lstdefinelanguage{prolog}{
+  morekeywords={is,not,fail,true,assert,retract},
+  sensitive=true,
+  morecomment=[l]{\%},
+  morestring=[b]',
+}
+\lstset{
+  language=prolog,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue!70!black}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  columns=fullflexible,
+  breaklines=true,
+  showstringspaces=false,
+  frame=leftline,
+  framesep=6pt,
+  rulecolor=\color{black!30},
+  xleftmargin=10pt,
+}
+
+\setlength{\parindent}{0pt}
+
+\title{\Huge{Foundations of Artificial Intelligence}\\Appunti}
+\author{\huge{Giovanni "Qua' Qua' dancer" Palma}}
+\date{}
+\pagenumbering{gobble}
+
+\begin{document}
+
+\maketitle
+\newpage
+\pdfbookmark[section]{\contentsname}{toc}
+\tableofcontents
+
+\pagebreak
+
+% --- Introduzione ---
+\include{paginette/intro-ai}
+
+\end{document}

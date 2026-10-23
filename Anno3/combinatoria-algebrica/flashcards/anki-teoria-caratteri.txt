@@ -1,42 +1,92 @@
-Che cos'e' il carattere di una rappresentazione (V, ρ)?;La funzione χ_ρ: G → C definita da χ_ρ(g) = tr(ρ(g)), cioe' la traccia della matrice associata a g.
-Quanto vale χ_ρ(e)?;dim V, perche' ρ(e) = Id_V e tr(Id_V) = dim V.
-Perche' il carattere e' costante sulle classi di coniugio?;Perche' χ(hgh⁻¹) = tr(ρ(h)ρ(g)ρ(h)⁻¹) = tr(ρ(g)) = χ(g), per la ciclicita' della traccia. I caratteri sono quindi funzioni di classe.
-Perche' χ_ρ(g⁻¹) = coniugato di χ_ρ(g)?;Gli autovalori di ρ(g) sono radici dell'unita' (perche' g ha ordine finito), quindi hanno modulo 1. Gli autovalori di ρ(g⁻¹) = ρ(g)⁻¹ sono i loro inversi λ⁻¹ = coniugato(λ) quando |λ| = 1.
-Regola generale per il carattere della rappresentazione di permutazione?;χ(g) = numero di punti fissi di g. Infatti la matrice di ρ(g) e' una matrice di permutazione e i termini diagonali sono 1 solo per gli indici fissati da g.
-Che cos'e' il prodotto tensoriale V ⊗ U?;Lo spazio quoziente L(V×U)/B, dove L(V×U) e' lo spazio vettoriale libero su tutte le coppie (v,u) e B e' il sottospazio delle relazioni di bilinearita'. Nel quoziente vale (av₁+bv₂)⊗u = a(v₁⊗u) + b(v₂⊗u) e simmetrico.
-Dimensione di V ⊗ U?;dim V · dim U. Se {v_i} e {u_j} sono basi, allora {v_i ⊗ u_j} e' una base di V ⊗ U.
-Che cos'e' lo spazio duale V*?;V* = Hom_K(V, K), lo spazio dei funzionali lineari su V. Ha dimensione dim V.
-Isomorfismo canonico V* ⊗ U ≅ ...?;Hom_K(V, U), tramite la mappa φ ⊗ u ↦ (v ↦ φ(v)·u). Ben definita per la proprieta' universale del tensore.
-Carattere della somma diretta χ_{V⊕U}(g) = ?;χ_V(g) + χ_U(g). Segue dalla matrice a blocchi diagonali della somma diretta.
-Carattere del prodotto tensoriale χ_{V⊗U}(g) = ?;χ_V(g) · χ_U(g). Segue dal prodotto di Kronecker delle matrici: tr(A⊗B) = tr(A)·tr(B).
-Carattere del duale χ_{V*}(g) = ?;coniugato(χ_V(g)). Perche' ρ*(g) = (ρ(g)⁻¹)ᵀ ha autovalori λ⁻¹ = coniugato(λ) (radici dell'unita').
-Carattere di Hom(V,U)?;χ_{Hom(V,U)}(g) = coniugato(χ_V(g)) · χ_U(g). Segue da Hom(V,U) ≅ V* ⊗ U e dalle formule per duale e tensore.
-Come agisce G su Hom_K(V,U)?;Per coniugazione: (g·f)(v) = π(g) ∘ f ∘ ρ(g)⁻¹(v). Si ottiene combinando l'azione duale su V* e l'azione su U tramite l'isomorfismo canonico.
-Che cos'e' la componente isotipica banale V^G?;V^G = {v ∈ V | ρ(g)v = v per ogni g ∈ G}, il sottospazio dei punti fissi. E' la somma di tutte le copie della rappresentazione banale dentro V.
-Formula per dim V^G?;dim V^G = (1/|G|) Σ_{g∈G} χ_V(g). Si ottiene come traccia del proiettore φ = (1/|G|) Σ ρ(g) su V^G.
-Perche' (Hom_C(U,W))^G = Hom_G(U,W)?;Perche' f ∈ Hom(U,W)^G significa g·f = f, cioe' π(g)∘f∘ρ(g)⁻¹ = f, che e' esattamente la condizione per essere un morfismo di rappresentazioni.
-Che cos'e' il prodotto hermitiano sulle funzioni centrali C(G)?;⟨χ₁, χ₂⟩ = (1/|G|) Σ_{g∈G} χ₁(g)·coniugato(χ₂(g)). E' lineare nel primo argomento, antilineare nel secondo, e definito positivo.
-Enunciato dell'ortogonalita' dei caratteri.;Se U, W sono irriducibili: ⟨χ_U, χ_W⟩ = 1 se U ≅ W, e ⟨χ_U, χ_W⟩ = 0 se U ≇ W.
-Schema della dimostrazione dell'ortogonalita' dei caratteri.;⟨χ_U, χ_W⟩ = (1/|G|)Σ χ_{U*⊗W}(g) = [Lemma A] dim(Hom(U,W))^G = [Lemma B] dim Hom_G(U,W) = [Schur] δ_{U,W}. Catena: media del carattere → punti fissi → morfismi G-equiv → Schur.
-Come si calcolano le molteplicita' k_i nella decomposizione V ≅ ⊕ V_i^{k_i}?;k_i = ⟨χ_V, χ_{V_i}⟩. Segue dalla linearita' del prodotto hermitiano e dall'ortogonalita'.
-Criterio di irriducibilita' tramite caratteri.;V e' irriducibile ⟺ ⟨χ_V, χ_V⟩ = 1. Perche' ⟨χ_V, χ_V⟩ = Σ k_i², che vale 1 sse un solo k_i = 1 e gli altri sono 0.
-Il carattere e' un invariante completo: cosa significa?;V ≅ W ⟺ χ_V = χ_W. Due rappresentazioni sono isomorfe se e solo se hanno lo stesso carattere.
-Struttura della rappresentazione regolare: con che molteplicita' appare ogni irriducibile V_i in C[G]?;k_i = dim V_i. Perche' il carattere regolare vale |G| per g=e e 0 altrimenti, quindi k_i = ⟨χ_{V_i}, χ_{reg}⟩ = χ_{V_i}(e) = dim V_i.
-Identita' di Burnside.;|G| = Σ (dim V_i)², dove la somma e' su tutte le irriducibili. Segue dalla dimensione della regolare: dim C[G] = |G| = Σ k_i · dim V_i = Σ (dim V_i)².
-I caratteri irriducibili formano una base di quale spazio?;Di C(G), lo spazio delle funzioni centrali. Quindi sono una base ortonormale. Di conseguenza il numero di irriducibili = numero di classi di coniugio di G.
-Idea della dimostrazione che i caratteri irriducibili generano C(G).;Se α ∈ C(G) con ⟨α, χ_{V_i}⟩ = 0 per ogni i, allora ψ_{α,V_i} = Σ α(g)ρ(g) e' un endomorfismo G-equivariante, per Schur e' λ·Id, ma tr = |G|⟨α, χ_{V_i}⟩ = 0 quindi λ = 0. Allora ψ_{α,V} = 0 per ogni V. In particolare sulla regolare: 0 = Σ α(g)·g, quindi α = 0.
-Quando G e' abeliano, le sue irriducibili hanno dimensione...?;Tutte dimensione 1. Perche' G abeliano ⟹ |G| classi di coniugio ⟹ |G| irriducibili ⟹ per Burnside Σ d_i² = |G| con |G| addendi, quindi d_i = 1 per ogni i.
-Potenza tensoriale T^k(V): definizione e dimensione?;T^k(V) = V ⊗ ··· ⊗ V (k volte). dim T^k(V) = n^k. Il gruppo S_k agisce permutando i fattori.
-Potenza simmetrica S^k(V): definizione e dimensione?;S^k(V) = T^k(V)/W dove W impone che scambiare due fattori non cambi il tensore. dim S^k(V) = C(n+k-1, k) (monomio di grado k in n variabili).
-Potenza esterna Λ^k(V): definizione e dimensione?;Λ^k(V) = T^k(V)/W' dove W' impone che scambiare due fattori cambi il segno. dim Λ^k(V) = C(n, k). Se due fattori sono uguali il tensore e' 0.
-Formula del carattere di Λ²(V)?;χ_{Λ²(V)}(g) = (χ_V(g)² - χ_V(g²))/2. Si usa Σ_{i<j} λ_iλ_j = ((Σλ_i)² - Σλ_i²)/2 e il fatto che Σλ_i² = χ_V(g²).
-Formula del carattere di S²(V)?;χ_{S²(V)}(g) = (χ_V(g)² + χ_V(g²))/2. Segue da T²(V) = Λ²(V) ⊕ S²(V).
-Perche' Λⁿ(V) ha dimensione 1 quando dim V = n?;dim Λⁿ(V) = C(n,n) = 1. Esiste un'unica forma n-lineare alternante (a meno di costanti): il determinante. Il cambio di segno per scambio di colonne e' proprio la proprieta' alternante.
-Che cos'e' la rappresentazione indotta Ind_H^G W (costruzione per somma diretta)?;Se H ≤ G e W e' una rappresentazione di H, allora Ind_H^G W = ⊕_{[g]∈G/H} ρ(g)W. Si sommano tutti i traslati di W per i laterali di H in G. dim = [G:H] · dim W.
-Che cos'e' la rappresentazione indotta Ind_H^G W (costruzione tensoriale)?;Ind_H^G W = C[G] ⊗_{C[H]} W, dove C[G] e' visto come C[H]-modulo destro. L'azione di G e': g·(t⊗w) = gt⊗w.
-Perche' le due definizioni di indotta (somma diretta e tensore) coincidono?;C[G] = ⊕_{r∈R} r·C[H] come C[H]-modulo destro, quindi C[G]⊗_{C[H]}W ≅ ⊕_r (r·C[H]⊗_{C[H]}W) ≅ ⊕_r W. L'azione di G coincide: g·(r⊗w) = r'⊗σ(h)w dove gr = r'h, che e' lo stesso di g che permuta gli addendi rW nella somma diretta.
-Formula del carattere dell'indotta.;χ_{Ind W}(g) = (1/|H|) Σ_{s∈G, s⁻¹gs∈H} χ_W(s⁻¹gs). Solo i laterali r tali che r⁻¹gr ∈ H contribuiscono alla traccia (gli altri permutano addendi diversi).
-Enunciato della Reciprocita' di Frobenius.;⟨Ind χ, ψ⟩_G = ⟨χ, Res_H^G ψ⟩_H. Il prodotto scalare di un carattere indotto con un carattere di G equivale al prodotto scalare del carattere originale con la restrizione a H.
-Schema della dimostrazione della Reciprocita' di Frobenius.;Si espande ⟨Ind χ, ψ⟩_G con la formula dell'indotta, si fa il cambio di variabile s⁻¹gs = h (cioe' g = shs⁻¹), si usa che ψ e' funzione centrale (ψ(shs⁻¹) = ψ(h)), la somma su s si separa dando un fattore |G| che si cancella, e resta (1/|H|) Σ_{h∈H} χ(h)·coniugato(ψ(h)) = ⟨χ, Res ψ⟩_H.
-Se H = {e} e W e' la rappresentazione banale, cos'e' Ind_H^G W?;La rappresentazione regolare C[G]. Ci sono |G| classi laterali (una per elemento), quindi Ind W = ⊕_{g∈G} g⊗C ≅ C[G].
-Bound sulla dimensione delle irriducibili: se A ≤ G e' abeliano, allora dim V ≤ ...?;dim V ≤ [G:A] = |G|/|A|. Si restringe V ad A, si trova W di dim 1 (A abeliano ⟹ irriducibili di dim 1), si induce a G ottenendo un sottospazio G-stabile di V di dimensione ≤ [G:A].
+#separator:tab
+#html:true
+#notetype:Basic
+#deck:Combinatoria Algebrica::Teoria dei Caratteri
+
+Definizione di <b>carattere</b> di una rappresentazione \((V, \rho)\).	Il carattere di \(\rho\) e' la funzione:<br>\[\chi_\rho : G \longrightarrow \mathbb{C}, \qquad g \longmapsto \mathrm{tr}(\rho(g))\]dove \(\mathrm{tr}\) denota la traccia dell'endomorfismo lineare \(\rho(g)\).
+
+Le tre proprieta' fondamentali della <b>traccia</b>.	<ol><li>\(\mathrm{tr}(\mathrm{Id}_V) = \dim V\)</li><li><b>Non dipende dalla base</b>: se \(B = P^{-1}AP\) allora \(\mathrm{tr}(B) = \mathrm{tr}(A)\) (per ciclicita': \(\mathrm{tr}(PQ) = \mathrm{tr}(QP)\)).</li><li>\(\mathrm{tr}(f) = \sum_i \lambda_i\) dove \(\lambda_i\) sono gli autovalori di \(f\) contati con molteplicita'.</li></ol>
+
+Le tre proprieta' fondamentali dei <b>caratteri</b>.	<ol><li>\(\chi_\rho(e) = \dim V\).</li><li>\(\chi_\rho\) e' costante sulle classi di coniugio (<b>funzione di classe</b>): \(\chi_\rho(hgh^{-1}) = \chi_\rho(g)\).</li><li>\(\chi_\rho(g^{-1}) = \overline{\chi_\rho(g)}\) (complesso coniugato), per \(G\) finito.</li></ol>
+
+Perche' \(\chi_\rho(g^{-1}) = \overline{\chi_\rho(g)}\)?	Gli autovalori di \(\rho(g)\) sono radici dell'unita' (poiche' \(g^n = e\) per qualche \(n\), quindi \(\rho(g)^n = I\)), dunque hanno modulo 1. Gli autovalori di \(\rho(g)^{-1} = \rho(g^{-1})\) sono i loro inversi, che per \(|\lambda| = 1\) coincidono con i coniugati: \(\lambda^{-1} = \bar\lambda\).
+
+Regola generale per il carattere della <b>rappresentazione di permutazione</b>.	\(\chi(g) = \#\{\text{punti fissi di } g\}\).<br>La matrice di \(\rho(g)\) e' una matrice di permutazione: il termine diagonale \((i,i)\) e' \(1\) solo se \(g\) fissa \(i\).
+
+Esempio: classi di coniugio e carattere dell'azione naturale di \(\mathfrak{S}_3\) su \(\mathbb{C}^3\).	Le tre classi di \(\mathfrak{S}_3\): \(\{e\}\), \(\{(12),(13),(23)\}\), \(\{(123),(132)\}\).<br>Carattere: \(\chi(e)=3\) (3 punti fissi), \(\chi(\text{trasp.})=1\) (1 punto fisso), \(\chi(\text{3-ciclo})=0\) (nessun punto fisso).
+
+Perche' \(\chi(hgh^{-1}) = \chi(g)\) (i caratteri sono funzioni centrali)?	\[\chi(hgh^{-1}) = \mathrm{tr}(\rho(h)\rho(g)\rho(h)^{-1}) \overset{\text{ciclicita'}}{=} \mathrm{tr}(\rho(g)) = \chi(g)\]
+
+Costruzione del <b>prodotto tensoriale</b> \(V \otimes U\) tramite spazio libero e quoziente.	<ol><li>Considera \(L(V \times U)\) = spazio vettoriale libero su tutte le coppie \((v,u)\), con base \(\{\delta_{(v,u)}\}\).</li><li>Sia \(B \subseteq L(V \times U)\) il sottospazio delle relazioni di bilinearita':<br>\((a_1v_1+a_2v_2, u) - a_1(v_1,u) - a_2(v_2,u)\) e simmetrico.</li><li>Definisci \(V \otimes U := L(V \times U) / B\) e scrivi \(v \otimes u := [(v,u)]\) (<b>tensore semplice</b>).</li></ol>Nel quoziente vale \((av_1+bv_2)\otimes u = a(v_1\otimes u) + b(v_2\otimes u)\).
+
+Dimensione di \(V \otimes U\) e sua base.	\(\dim(V \otimes U) = \dim V \cdot \dim U\).<br>Se \(\{v_i\}\) e \(\{u_j\}\) sono basi di \(V\) e \(U\), allora \(\{v_i \otimes u_j\}\) e' una base di \(V \otimes U\).
+
+Due esempi concreti di prodotto tensoriale.	<ol><li>\(K[x] \otimes_K K[y] \cong K[x,y]\): l'algebra dei polinomi in due variabili.</li><li>\(K[G \times H] \cong K[G] \otimes_K K[H]\): l'algebra di gruppo del prodotto diretto e' il prodotto tensoriale delle algebre.</li></ol>
+
+Definizione di <b>spazio duale</b> e <b>spazio Hom</b>.	\[V^* := \mathrm{Hom}_K(V, K)\]lo spazio dei funzionali lineari su \(V\); \(\dim V^* = \dim V\).<br><br>\[\mathrm{Hom}_K(V, U) := \{f: V \to U \mid f \text{ lineare}\}\]con \(\dim \mathrm{Hom}_K(V,U) = \dim V \cdot \dim U\).
+
+<b>Isomorfismo canonico</b> \(V^* \otimes U \cong \mathrm{Hom}_K(V,U)\).	La mappa<br>\[\Psi: V^* \otimes U \longrightarrow \mathrm{Hom}_K(V,U), \quad \varphi \otimes u \longmapsto (v \mapsto \varphi(v) \cdot u)\]e' ben definita per la proprieta' universale del prodotto tensoriale (bilinearita') ed e' un isomorfismo perche' \(\dim V^* \otimes U = \dim \mathrm{Hom}_K(V,U)\) e si verifica l'iniettivita'.
+
+Azione di \(G\) sulla <b>somma diretta</b> \(V \oplus U\) e carattere risultante.	L'azione e':<br>\[(\rho \oplus \pi)(g)(v+u) = \rho(g)v + \pi(g)u\]In termini matriciali, la matrice e' a <b>blocchi diagonali</b>. Il carattere e':<br>\[\chi_{V \oplus U}(g) = \chi_V(g) + \chi_U(g)\]
+
+Azione di \(G\) sul <b>prodotto tensoriale</b> \(V \otimes U\) e carattere risultante.	L'azione e':<br>\[(\rho \otimes \pi)(g)(v \otimes u) = \rho(g)v \otimes \pi(g)u\]La matrice e' il <b>prodotto di Kronecker</b> di \(\rho(g)\) e \(\pi(g)\). Il carattere e':<br>\[\chi_{V \otimes U}(g) = \chi_V(g) \cdot \chi_U(g)\]<br><b>Dim:</b> \(\mathrm{tr}(A \otimes B) = \sum_{i,j} A_{ii}B_{jj} = \mathrm{tr}(A)\cdot\mathrm{tr}(B)\).
+
+Azione di \(G\) sul <b>duale</b> \(V^*\) e carattere risultante.	Per avere \(G\)-invarianza del pairing \(\langle\varphi, v\rangle = \varphi(v)\) si forza:<br>\[\rho^*(g)(\varphi)(v) = \varphi(\rho(g)^{-1}v)\]cioè \(\rho^*(g) = (\rho(g^{-1}))^T\) (inverso della trasposta). Il carattere e':<br>\[\chi_{V^*}(g) = \overline{\chi_V(g)}\]<br><b>Dim:</b> autovalori di \(\rho^*(g)\) sono \(\lambda_i^{-1} = \bar\lambda_i\) (radici dell'unita').
+
+Azione di \(G\) su \(\mathrm{Hom}_K(V,U)\) e carattere risultante.	Via l'iso \(\mathrm{Hom}(V,U) \cong V^* \otimes U\), l'azione e' la coniugazione:<br>\[(g \cdot f)(v) = \pi(g) \circ f \circ \rho(g)^{-1}(v)\]Il carattere e':<br>\[\chi_{\mathrm{Hom}(V,U)}(g) = \overline{\chi_V(g)} \cdot \chi_U(g)\]
+
+Definizione della <b>componente isotipica banale</b> \(V^G\).	\[V^G := \{v \in V \mid \rho(g)v = v \ \forall g \in G\}\]il sottospazio dei punti fissi di \(G\) in \(V\). E' la somma di tutte le copie della rappresentazione banale dentro \(V\).
+
+Il <b>proiettore</b> su \(V^G\) e la formula per \(\dim V^G\).	Il proiettore canonico su \(V^G\) e':<br>\[\varphi := \frac{1}{|G|}\sum_{g \in G} \rho(g) \in \mathrm{End}(V)\]Si verifica che \(\varphi^2 = \varphi\) e \(\mathrm{Im}(\varphi) = V^G\). Poiche' \(\varphi\) e' diagonalizzabile con autovalori in \(\{0,1\}\), \(\dim V^G = \mathrm{tr}(\varphi)\):<br>\[\dim V^G = \frac{1}{|G|}\sum_{g \in G} \chi_V(g) \qquad \text{(Lemma A)}\]
+
+<b>Lemma B</b>: \(({\mathrm{Hom}_\mathbb{C}(U,W)})^G = \mathrm{Hom}_G(U,W)\).	La condizione \(g \cdot f = f\) in \(\mathrm{Hom}(U,W)^G\) significa:<br>\[\pi(g) \circ f \circ \rho(g)^{-1} = f \quad \forall g\]che e' esattamente la condizione per essere un <b>morfismo di rappresentazioni</b>. Quindi \((\mathrm{Hom}_\mathbb{C}(U,W))^G = \mathrm{Hom}_G(U,W)\).
+
+Definizione di <b>funzione centrale</b> e dello spazio \(\mathcal{C}(G)\).	\[\mathcal{C}(G) := \{f: G \to \mathbb{C} \mid f(hgh^{-1}) = f(g)\ \forall g,h \in G\}\]I caratteri \(\chi_V\) sono funzioni centrali. \(\dim \mathcal{C}(G)\) = numero di classi di coniugio di \(G\).
+
+Definizione del <b>prodotto hermitiano</b> su \(\mathcal{C}(G)\).	\[\langle \chi_1, \chi_2 \rangle := \frac{1}{|G|} \sum_{g \in G} \chi_1(g)\,\overline{\chi_2(g)}\]E' lineare nel primo argomento, antilineare nel secondo, definito positivo.
+
+Enunciato del <b>Teorema di Ortogonalita'</b> dei caratteri.	Siano \(U, W\) rappresentazioni irriducibili di \(G\). Allora:<br>\[\langle \chi_U, \chi_W \rangle = \begin{cases} 1 & \text{se } U \cong W \\ 0 & \text{se } U \not\cong W \end{cases}\]
+
+Catena logica della dimostrazione dell'<b>ortogonalita' dei caratteri</b>.	\[\langle \chi_U, \chi_W \rangle \overset{\text{def}}{=} \frac{1}{|G|}\sum_g \chi_{U^*\otimes W}(g) \overset{A}{=} \dim(\mathrm{Hom}(U,W))^G \overset{B}{=} \dim\mathrm{Hom}_G(U,W) \overset{\text{Schur}}{=} \delta_{U,W}\]<ul><li>Step A: Lemma A con \(V = U^* \otimes W\)</li><li>Step B: Lemma B</li><li>Step Schur: \(\mathrm{Hom}_G(U,W) = \{0\}\) se \(U \not\cong W\), \(\cong \mathbb{C}\) se \(U \cong W\)</li></ul>
+
+<b>Decomposizione unica</b> in irriducibili e formula per il carattere.	Ogni rappresentazione \(V\) di \(G\) si decompone in modo unico come:<br>\[V \cong V_1^{\oplus k_1} \oplus \cdots \oplus V_r^{\oplus k_r}\]dove \(V_1, \ldots, V_r\) sono tutte le irriducibili (a meno di iso). In caratteri:<br>\[\chi_V = \sum_{i=1}^r k_i \chi_{V_i}\]
+
+Come si calcolano le <b>molteplicita'</b> \(k_i\) nella decomposizione di \(V\)?	\[k_i = \langle \chi_V, \chi_{V_i} \rangle\]<b>Dim:</b> per linearita' e ortogonalita',<br>\[\langle \chi_V, \chi_{V_j}\rangle = \left\langle \sum_i k_i \chi_{V_i}, \chi_{V_j}\right\rangle = \sum_i k_i \delta_{ij} = k_j\]
+
+<b>Criterio di irriducibilita'</b> tramite caratteri.	\[V \text{ irriducibile} \iff \langle \chi_V, \chi_V \rangle = 1\]<b>Dim:</b> \(\langle \chi_V, \chi_V \rangle = \sum_i k_i^2\). Poiche' \(k_i \in \mathbb{Z}_{\geq 0}\), vale \(\sum k_i^2 = 1 \iff\) esattamente un \(k_i = 1\) e tutti gli altri sono 0.
+
+Il <b>carattere e' un invariante completo</b>: enunciato e dimostrazione.	\[V \cong W \iff \chi_V = \chi_W\]<b>Dim:</b> \((\Rightarrow)\) ovvio. \((\Leftarrow)\) Poiche' i \(\chi_{V_i}\) sono lin. ind., \(\chi_W = \chi_V = \sum k_i \chi_{V_i}\) e' la decomposizione unica, quindi \(V \cong W\).
+
+<b>Struttura della rappresentazione regolare</b>: molteplicita' di \(V_i\) in \(\mathbb{C}[G]\).	Ogni irriducibile \(V_i\) appare in \(\mathbb{C}[G]\) con molteplicita' \(k_i = \dim V_i\).<br><br><b>Dim:</b> il carattere regolare e' \(\chi_{\mathbb{C}[G]}(g) = |G|\) se \(g = e\) e \(0\) altrimenti (nessun punto fisso per \(g \neq e\)). Quindi:<br>\[k_i = \langle \chi_{V_i}, \chi_{\mathbb{C}[G]} \rangle = \frac{1}{|G|}\chi_{V_i}(e)\cdot|G| = \dim V_i\]
+
+<b>Identita' di Burnside</b>.	\[|G| = \sum_{i=1}^r (\dim V_i)^2\]dove la somma e' su tutte le irriducibili (a meno di iso). Segue dalla struttura della regolare: \(\dim \mathbb{C}[G] = |G| = \sum_i k_i \dim V_i = \sum_i (\dim V_i)^2\).
+
+I <b>caratteri irriducibili</b> formano una base ortonormale di \(\mathcal{C}(G)\).	<b>Teorema</b>: \(\chi_{V_1}, \ldots, \chi_{V_r}\) sono una base ortonormale di \(\mathcal{C}(G)\).<br><br>Gia' sappiamo che sono ortonormali (lin. ind.). Per mostrare che generano: se \(\alpha \in \mathcal{C}(G)\) con \(\langle \alpha, \chi_{V_i} \rangle = 0\) per ogni \(i\), allora \(\psi_{\alpha,V_i} := \sum_g \alpha(g)\rho(g) = 0\) per ogni irriducibile (per Schur e traccia nulla). Quindi \(\psi_{\alpha, \mathbb{C}[G]}(1_G) = \sum_g \alpha(g) \cdot g = 0\), e poiche' gli elementi di \(G\) sono una base di \(\mathbb{C}[G]\), si ha \(\alpha = 0\).
+
+Corollario: <b>numero di irriducibili</b> = numero di classi di coniugio.	I caratteri irriducibili formano una base di \(\mathcal{C}(G)\), che ha dimensione uguale al numero di classi di coniugio. Quindi:<br>\[\#\{\text{irriducibili di } G\} = \#\{\text{classi di coniugio di } G\}\]
+
+\(G\) e' abeliano \(\iff\) tutte le sue irriducibili hanno dimensione 1.	\((\Rightarrow)\) Se \(G\) e' abeliano, ogni elemento forma la propria classe \(\Rightarrow\) ci sono \(|G|\) classi \(\Rightarrow\) ci sono \(|G|\) irriducibili. Per Burnside \(\sum d_i^2 = |G|\) con \(|G|\) addendi, quindi \(d_i = 1\) per ogni \(i\).<br><br>\((\Leftarrow)\) Se tutti \(d_i = 1\), dalla struttura \(\mathbb{C}[G] \cong \mathbb{C}^{|G|}\) si deduce che \(\mathbb{C}[G]\) e' commutativo, quindi \(G\) e' abeliano.
+
+La funzione \(\psi_{\alpha, V} := \sum_{g \in G} \alpha(g)\,\rho(g)\): perche' e' un morfismo di rappresentazioni?	Per \(\alpha \in \mathcal{C}(G)\) e \((V,\rho)\) rappresentazione qualsiasi:<br>\[\psi_{\alpha,V} \circ \rho(h) = \sum_g \alpha(g)\rho(gh) \overset{g \to hgh^{-1}}{=} \sum_g \alpha(hgh^{-1})\rho(hg) = \rho(h)\sum_g\alpha(g)\rho(g)\]usando la centralita' \(\alpha(hgh^{-1}) = \alpha(g)\). Quindi \(\psi_{\alpha,V} \in \mathrm{End}_G(V)\).
+
+Esempio: irriducibili di \(\mathfrak{S}_3\) e Burnside.	\(\mathfrak{S}_3\) ha 3 classi di coniugio \(\Rightarrow\) esattamente 3 irriducibili. Da Burnside \(d_1^2 + d_2^2 + d_3^2 = 6\) con \(d_1 = 1\) (banale), \(d_2 = 2\) (standard), dunque \(d_3 = 1\). La decomposizione della regolare e':<br>\[\mathbb{C}[\mathfrak{S}_3] \cong U^{\oplus 1} \oplus W^{\oplus 2} \oplus X^{\oplus 1}\]
+
+Esempio: irriducibili di \(D_4\) e loro caratteri.	\(D_4\) ha 5 classi di coniugio: \(\{e\}, \{r,r^3\}, \{r^2\}, \{s,sr^2\}, \{sr,sr^3\}\). Quindi 5 irriducibili con \(d_1^2+\cdots+d_5^2 = 8\), da cui \(1^2+1^2+1^2+1^2+2^2=8\).<br>Le 4 irriducibili 1-dim vengono da \(D_4/Z(D_4) \cong \mathbb{Z}_2\times\mathbb{Z}_2\); la quinta \(V_5\) di dimensione 2 e' la rappresentazione naturale su \(\mathbb{R}^2\) (carattere: \(2,0,-2,0,0\)).
+
+Definizione di <b>potenza tensoriale</b> \(T^k(V)\).	\[T^k(V) := \underbrace{V \otimes \cdots \otimes V}_{k \text{ volte}}\]\(\dim T^k(V) = n^k\) (dove \(n = \dim V\)). Il gruppo \(\mathfrak{S}_k\) agisce su \(T^k(V)\) permutando i fattori:<br>\[\sigma \cdot (v_1 \otimes \cdots \otimes v_k) = v_{\sigma^{-1}(1)} \otimes \cdots \otimes v_{\sigma^{-1}(k)}\]
+
+Definizione di <b>potenza simmetrica</b> \(S^k(V)\) e sua dimensione.	\[S^k(V) := T^k(V)\,/\,W\]dove \(W\) e' generato dai tensori che differiscono per uno scambio di due posizioni. Nel quoziente l'ordine dei fattori non conta; si scrive \(v_1 \cdots v_k\).<br>\[\dim S^k(V) = \binom{n+k-1}{k}\](conta i monomi di grado \(k\) in \(n\) variabili).
+
+Definizione di <b>potenza esterna</b> \(\Lambda^k(V)\) e sua dimensione.	\[\Lambda^k(V) := T^k(V)\,/\,W'\]dove \(W'\) e' generato da \(v_1\otimes\cdots\otimes v_i\otimes\cdots\otimes v_j\otimes\cdots + v_1\otimes\cdots\otimes v_j\otimes\cdots\otimes v_i\otimes\cdots\). Nel quoziente scambiare due fattori cambia il segno; si scrive \(v_1 \wedge \cdots \wedge v_k\).<br>\[\dim \Lambda^k(V) = \binom{n}{k}\]Se due fattori sono uguali il tensore e' \(0\).
+
+Perche' \(\dim \Lambda^n(V) = 1\) e cosa rappresenta?	\(\dim \Lambda^n(V) = \binom{n}{n} = 1\). Esiste quindi un'unica forma \(n\)-lineare alternante (a meno di costanti): il <b>determinante</b>. Normalizzando con \(f(e_1, \ldots, e_n) = 1\) si ottiene esattamente \(\det\). Il cambio di segno per scambio di colonne e' la proprieta' alternante.
+
+Riepilogo dimensioni: \(\dim T^k\), \(\dim \Lambda^k\), \(\dim S^k\) per \(\dim V = n\).	\[\dim T^k(V) = n^k, \qquad \dim \Lambda^k(V) = \binom{n}{k}, \qquad \dim S^k(V) = \binom{n+k-1}{k}\]In particolare \(\dim \Lambda^\bullet(V) = \sum_{k=0}^n \binom{n}{k} = 2^n\).
+
+Formule per il carattere di \(\Lambda^2(V)\) e \(S^2(V)\).	\[\chi_{\Lambda^2(V)}(g) = \frac{\chi_V(g)^2 - \chi_V(g^2)}{2}\]\[\chi_{S^2(V)}(g) = \frac{\chi_V(g)^2 + \chi_V(g^2)}{2}\]<b>Idea:</b> sia \(\lambda_1,\ldots,\lambda_n\) autovalori di \(\rho(g)\). Allora \(\chi_{\Lambda^2}(g) = \sum_{i<j}\lambda_i\lambda_j = \frac{(\sum\lambda_i)^2 - \sum\lambda_i^2}{2} = \frac{\chi_V(g)^2 - \chi_V(g^2)}{2}\). La formula per \(S^2\) segue da \(T^2 = \Lambda^2 \oplus S^2\).
+
+Perche' \(\sum_i \lambda_i^2 = \chi_V(g^2)\) nella dimostrazione dei caratteri di \(\Lambda^2\) e \(S^2\)?	Gli autovalori di \(\rho(g)^2 = \rho(g^2)\) sono esattamente i quadrati degli autovalori di \(\rho(g)\), cioe' \(\lambda_1^2, \ldots, \lambda_n^2\). Quindi \(\chi_V(g^2) = \mathrm{tr}(\rho(g^2)) = \sum_i \lambda_i^2\).
+
+Interpretazione di \(T^2(V^*)\), \(S^2(V^*)\), \(\Lambda^2(V^*)\).	<ul><li>\(T^2(V^*) \cong \{\text{forme bilineari su } V\}\)</li><li>\(S^2(V^*) \cong \{\text{forme bilineari simmetriche su } V\}\)</li><li>\(\Lambda^2(V^*) \cong \{\text{forme bilineari antisimmetriche su } V\}\)</li></ul>
+
+L'algebra simmetrica \(S^\bullet(V^*)\) e' isomorfa a...?	\[S^\bullet(V^*) = \bigoplus_{k \geq 0} S^k(V^*) \cong K[x_1, \ldots, x_n]\]l'algebra dei polinomi in \(n\) variabili, dove \(\{x_1, \ldots, x_n\}\) e' la base duale di \(V^*\).

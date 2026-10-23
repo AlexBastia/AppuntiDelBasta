@@ -1959,104 +1959,121 @@ composizione debole, si itera il teorema precedente. Questo motiva la seguente d
 
 \section{La mappa caratteristica di Frobenius}
 
-I numeri $ \chi^\lambda(\mu) $ definiti da Murnaghan-Nakayama
+I numeri $ \chi^\lambda(\mu) $ che compaiono in Murnaghan-Nakayama
+(Teorema~\ref{thm:murnaghan-nakayama}) tramite
 \[
-  p_\mu = \sum_{\lambda \vdash n} \chi^\lambda(\mu)\, s_\lambda \tag{$ \star $}
+  p_\mu = \sum_{\lambda \vdash n} \chi^\lambda(\mu)\, s_\lambda \qquad (\star)
 \]
 non sono solo coefficienti combinatori: sono i \textbf{caratteri delle rappresentazioni
-irriducibili di $ \mathfrak{S}_n $}. Lo dimostriamo via la \emph{mappa caratteristica
-di Frobenius}, che traduce in modo isometrico ed isomorfo l'algebra dei caratteri di
-$ \mathfrak{S}_n $ nell'algebra delle funzioni simmetriche.
+irriducibili di $ \mathfrak{S}_n $}. Lo dimostriamo costruendo la \emph{mappa caratteristica
+di Frobenius} $ \mathrm{Frob} : CF \to \mathrm{Sym}[X] $, che traduce in modo isometrico e
+isomorfo l'algebra dei caratteri di $ \mathfrak{S}_n $ nell'anello delle funzioni simmetriche,
+e culmina nell'identificazione $ \mathrm{Frob}(\chi^\lambda) = s_\lambda $.
 
-\subsection{Esempio motivante: tavola dei caratteri di $ \mathfrak{S}_3 $}
-
-Applicando $ (\star) $ per $ n = 3 $ con tutte le $ \mu \vdash 3 $ si ottiene la
-matrice $ \chi^\lambda(\mu) $:
-\[
-  \begin{array}{c|ccc}
-    \chi^\lambda(\mu) & \mu = (1^3) & \mu = (2,1) & \mu = (3) \\ \hline
-    \lambda = (3)     & 1 & 1 & 1 \\
-    \lambda = (2,1)   & 2 & 0 & -1 \\
-    \lambda = (1^3)   & 1 & -1 & 1
-  \end{array}
-\]
-Si riconosce la tavola dei caratteri di $ \mathfrak{S}_3 $: la prima riga e' il
-carattere banale, la terza il segno, quella centrale il carattere della
-rappresentazione standard di dimensione $ 2 $.
-
-\subsection{Funzioni di classe e definizione di Frobenius}
+\subsection{Setup: funzioni centrali e prodotto scalare}
 
 \dfn{Funzioni di classe su $ \mathfrak{S}_n $}{
-  Lo spazio
+  Lo spazio delle \emph{funzioni centrali} (costanti sulle classi di coniugio)
   \[
-    CF^n := \mathcal{C}(\mathfrak{S}_n)
-    = \{\, f : \mathfrak{S}_n \to \mathbb{C} \mid f(\sigma) = f(\tau \sigma \tau^{-1})\ \forall \sigma, \tau \,\}
+    CF^n := \{\, f : \mathfrak{S}_n \to \mathbb{C} \mid f(\tau \sigma \tau^{-1}) = f(\sigma)\ \forall\, \sigma, \tau \,\}
   \]
-  ha dimensione $ |\mathrm{Par}(n)| $: una $ f \in CF^n $ e' determinata dai valori
-  $ f(\mu) $ con $ \mu \vdash n $ (tipo ciclico). Il prodotto scalare standard e'
+  ha dimensione $ |\mathrm{Par}(n)| $: una $ f \in CF^n $ e' determinata dai valori $ f(\mu) $
+  sul tipo ciclico $ \mu \vdash n $. Il prodotto scalare hermitiano e'
   \[
     \langle f, g \rangle_{CF^n}
     = \frac{1}{n!} \sum_{\sigma \in \mathfrak{S}_n} f(\sigma)\, \overline{g(\sigma)}
-    = \sum_{\mu \vdash n} \frac{f(\mu)\, \overline{g(\mu)}}{z_\mu},
+    = \sum_{\mu \vdash n} \frac{f(\mu)\, \overline{g(\mu)}}{z_\mu}.
   \]
-  dato che la classe di tipo $ \mu $ ha esattamente $ n!/z_\mu $ elementi.
 }
 
-\dfn{Mappa caratteristica di Frobenius}{\label{def:frobenius}
-  La trasformazione lineare
+\nt{
+  Le classi di coniugio di $ \mathfrak{S}_n $ sono in bigezione con le partizioni
+  $ \lambda \vdash n $ (tipo ciclico). Se $ \sigma $ ha tipo $ \lambda $ e $ m_i $ e' il numero
+  di cicli di lunghezza $ i $, la classe di $ \sigma $ ha $ n!/z_\lambda $ elementi, con
   \[
-    \mathrm{Frob} : CF^n \longrightarrow \mathrm{Sym}^n[X],
-    \qquad
-    \mathrm{Frob}(f) := \frac{1}{n!} \sum_{\sigma \in \mathfrak{S}_n} f(\sigma)\, p_{\lambda(\sigma)}
-                     = \sum_{\mu \vdash n} f(\mu)\, \frac{p_\mu}{z_\mu}.
+    z_\lambda = \prod_i i^{m_i}\, m_i!.
   \]
-  Equivalentemente, posto $ \Psi(\sigma) := p_{\lambda(\sigma)} \in \mathrm{Sym}[X] $:
-  \[
-    \mathrm{Frob}(f) = \langle f, \Psi \rangle_{\mathfrak{S}_n}.
-  \]
+  Infatti $ z_\lambda = |C_{\mathfrak{S}_n}(\sigma)| $ e' l'ordine del centralizzante: si possono
+  permutare i $ m_i $ cicli di lunghezza $ i $ tra loro ($ m_i! $ modi) e ruotare ciascuno
+  ($ i $ modi), ottenendo esattamente lo stabilizzatore di $ \sigma $ per coniugio.
 }
+
+Sul lato delle funzioni simmetriche lavoriamo in $ \mathrm{Sym}[X] = \mathbb{C}[p_1, p_2, \dots] $
+col prodotto scalare di Hall, determinato da
+\[
+  \langle p_\lambda, p_\mu \rangle = z_\lambda\, \delta_{\lambda \mu},
+  \qquad
+  \langle s_\lambda, s_\mu \rangle = \delta_{\lambda \mu}
+\]
+(l'ortonormalita' delle Schur e' il Teorema~\ref{thm:schur-ortonormali}).
+
+\subsection{Definizione della mappa di Frobenius}
+
+\dfn{Mappa caratteristica di Frobenius}{\label{def:frobenius}
+  Sia $ \Psi : \mathfrak{S}_n \to \mathrm{Sym}^n[X] $ la funzione centrale (a valori in
+  $ \mathrm{Sym}[X] $) definita da $ \Psi(\sigma) := p_{\lambda(\sigma)} $, dove $ \lambda(\sigma) $
+  e' il tipo ciclico di $ \sigma $. Per $ f \in CF^n $ si pone
+  \[
+    \mathrm{Frob}(f) := \langle f, \Psi \rangle
+    = \frac{1}{n!} \sum_{\sigma \in \mathfrak{S}_n} f(\sigma)\, p_{\lambda(\sigma)}
+    = \sum_{\mu \vdash n} f(\mu)\, \frac{p_\mu}{z_\mu},
+  \]
+  estesa per linearita' a $ \mathrm{Frob} : CF = \bigoplus_{n \geq 0} CF^n \longrightarrow \mathrm{Sym}[X] $.
+}
+
+\subsection{Frobenius e' un'isometria}
 
 \mprop{Frobenius e' un'isometria}{\label{prop:frob-isometria}
   Per ogni $ f, g \in CF^n $:
   \[
-    \langle f, g \rangle_{CF^n} = \langle \mathrm{Frob}(f), \mathrm{Frob}(g) \rangle_{\mathrm{Sym}^n[X]}.
+    \langle \mathrm{Frob}(f), \mathrm{Frob}(g) \rangle = \langle f, g \rangle_{CF^n}.
   \]
 }
 \pf{Dim}{
-  Le $ \{p_\mu\}_{\mu \vdash n} $ sono base ortogonale con $ \langle p_\mu, p_\nu \rangle = \delta_{\mu,\nu}\, z_\mu $:
+  Le $ \{p_\mu\}_{\mu \vdash n} $ sono ortogonali con $ \langle p_\lambda, p_\mu \rangle = z_\lambda\, \delta_{\lambda \mu} $, quindi
   \[
     \langle \mathrm{Frob}(f), \mathrm{Frob}(g) \rangle
+    = \Big\langle \sum_{\lambda} \frac{f(\lambda)}{z_\lambda}\, p_\lambda,\ \sum_{\mu} \frac{g(\mu)}{z_\mu}\, p_\mu \Big\rangle
     = \sum_{\lambda, \mu} \frac{f(\lambda)\, \overline{g(\mu)}}{z_\lambda z_\mu}\, \langle p_\lambda, p_\mu \rangle
-    = \sum_{\lambda \vdash n} \frac{f(\lambda)\, \overline{g(\lambda)}}{z_\lambda}
-    = \langle f, g \rangle_{CF^n}.
+    = \sum_{\lambda \vdash n} \frac{f(\lambda)\, \overline{g(\lambda)}}{z_\lambda}.
   \]
+  Raggruppando la somma su $ \mathfrak{S}_n $ per classi di coniugio (ciascuna di cardinalita'
+  $ n!/z_\lambda $), l'ultimo termine e' $ \frac{1}{n!} \sum_{\sigma} f(\sigma)\, \overline{g(\sigma)} = \langle f, g \rangle_{CF^n} $.
 }
 
-\subsection{Prodotto di induzione e struttura di anello}
+\subsection{Struttura di anello: il prodotto di induzione}
 
-Vogliamo rendere $ CF := \bigoplus_{n \geq 0} CF^n $ un anello in modo che $ \mathrm{Frob} $
-sia un omomorfismo. La definizione naturale viene dall'induzione di rappresentazioni.
+Per rendere $ \mathrm{Frob} $ un isomorfismo di \emph{anelli} (e non solo di spazi vettoriali)
+serve un prodotto su $ CF $ compatibile col prodotto di $ \mathrm{Sym}[X] $. Viene dall'induzione.
 
-\dfn{Prodotto puntuale e prodotto di induzione}{
-  Date $ f \in CF^m $ e $ g \in CF^n $, il \emph{prodotto puntuale}
-  $ f \times g \in \mathcal{C}(\mathfrak{S}_m \times \mathfrak{S}_n) $:
+\dfn{Prodotto esterno e prodotto di induzione}{
+  Per $ f \in CF^m $ e $ g \in CF^n $, il \emph{prodotto esterno}
+  $ f \times g \in \mathcal{C}(\mathfrak{S}_m \times \mathfrak{S}_n) $ e' $ (f \times g)(u, v) := f(u)\, g(v) $.
+  Identificato $ \mathfrak{S}_m \times \mathfrak{S}_n \leq \mathfrak{S}_{m+n} $ tramite l'immersione
+  standard ($ \mathfrak{S}_m $ su $ \{1, \dots, m\} $, $ \mathfrak{S}_n $ su $ \{m+1, \dots, m+n\} $),
+  il \emph{prodotto di induzione} e'
   \[
-    (f \times g)(u, v) := f(u)\, g(v).
+    f \circ g := \mathrm{Ind}^{\mathfrak{S}_{m+n}}_{\mathfrak{S}_m \times \mathfrak{S}_n}(f \times g),
+    \qquad
+    (f \circ g)(w) = \frac{1}{m!\, n!} \sum_{\substack{x \in \mathfrak{S}_{m+n} \\ x^{-1} w x \in \mathfrak{S}_m \times \mathfrak{S}_n}} (f \times g)(x^{-1} w x).
   \]
-  Identificato $ \mathfrak{S}_m \times \mathfrak{S}_n \leq \mathfrak{S}_{m+n} $ (con
-  $ \mathfrak{S}_m $ che agisce su $ \{1, \dots, m\} $ e $ \mathfrak{S}_n $ su $ \{m+1, \dots, m+n\} $),
-  il \emph{prodotto di induzione} e':
-  \[
-    f \circ g := \mathrm{Ind}^{\mathfrak{S}_{m+n}}_{\mathfrak{S}_m \times \mathfrak{S}_n}(f \times g)
-    \in CF^{m+n}.
-  \]
-  Esteso per bilinearita', $ (CF, \circ) $ e' un'algebra graduata, associativa e commutativa.
+  Esteso per bilinearita', $ (CF, \circ) $ e' un'algebra graduata associativa e commutativa
+  (l'associativita' segue da $ \mathrm{Ind}^G_H \circ \mathrm{Ind}^H_K = \mathrm{Ind}^G_K $).
 }
 
 \nt{
-  Se $ f = \chi_V $ e $ g = \chi_W $ sono caratteri di rappresentazioni di
-  $ \mathfrak{S}_m $ e $ \mathfrak{S}_n $, allora $ f \circ g $ e' il carattere di
+  Se $ f = \chi_V $ e $ g = \chi_W $ sono caratteri di rappresentazioni di $ \mathfrak{S}_m $
+  e $ \mathfrak{S}_n $, allora $ f \circ g $ e' il carattere di
   $ \mathrm{Ind}^{\mathfrak{S}_{m+n}}_{\mathfrak{S}_m \times \mathfrak{S}_n}(V \otimes W) $.
+}
+
+\mlenma{Concatenazione dei tipi ciclici}{
+  Se $ u \in \mathfrak{S}_m $ e $ v \in \mathfrak{S}_n $ agiscono su insiemi disgiunti, il tipo
+  ciclico di $ (u, v) \in \mathfrak{S}_{m+n} $ e' la concatenazione dei tipi di $ u $ e $ v $.
+  Dunque
+  \[
+    \Psi(u, v) = p_{\lambda(u)} \cdot p_{\lambda(v)} = \Psi(u)\, \Psi(v).
+  \]
 }
 
 \mprop{Frobenius e' un omomorfismo di anelli}{\label{prop:frob-omomorfismo}
@@ -2066,91 +2083,60 @@ sia un omomorfismo. La definizione naturale viene dall'induzione di rappresentaz
   \]
 }
 \pf{Dim}{
-  Per la reciprocita' di Frobenius applicata a $ \Psi $:
+  Per la reciprocita' di Frobenius (Teorema~\ref{thm:reciprocita-frobenius}) applicata a $ \Psi $,
+  con $ \mathrm{Res}_{\mathfrak{S}_m \times \mathfrak{S}_n} \Psi = \Psi \times \Psi $ (il Lemma precedente):
   \[
     \mathrm{Frob}(f \circ g)
-    = \langle \mathrm{Ind}^{\mathfrak{S}_{m+n}}_{\mathfrak{S}_m \times \mathfrak{S}_n}(f \times g), \Psi \rangle_{\mathfrak{S}_{m+n}}
-    = \langle f \times g, \mathrm{Res}\, \Psi \rangle_{\mathfrak{S}_m \times \mathfrak{S}_n}.
+    = \big\langle \mathrm{Ind}^{\mathfrak{S}_{m+n}}_{\mathfrak{S}_m \times \mathfrak{S}_n}(f \times g),\ \Psi \big\rangle_{\mathfrak{S}_{m+n}}
+    = \langle f \times g,\ \mathrm{Res}\, \Psi \rangle_{\mathfrak{S}_m \times \mathfrak{S}_n}.
   \]
-  \textbf{Punto chiave.} Se $ u \in \mathfrak{S}_m $ e $ v \in \mathfrak{S}_n $ agiscono
-  su insiemi disgiunti, il tipo ciclico di $ uv $ e' la concatenazione dei tipi di
-  $ u $ e $ v $, quindi $ \Psi(uv) = \Psi(u) \cdot \Psi(v) $. Pertanto:
+  Poiche' $ \Psi $ e' centrale ($ \Psi(w) = \Psi(x^{-1} w x) $), espandendo l'induzione e
+  sommando prima su $ x $ (che cancella la somma su $ w $ dando un fattore $ (m+n)! $) si ottiene,
+  usando il Lemma:
   \[
     \mathrm{Frob}(f \circ g)
-    = \frac{1}{m!\, n!} \sum_{u, v} f(u)\, g(v)\, \Psi(u)\, \Psi(v)
-    = \langle f, \Psi \rangle_{\mathfrak{S}_m} \cdot \langle g, \Psi \rangle_{\mathfrak{S}_n}
+    = \frac{1}{m!\, n!} \sum_{u \in \mathfrak{S}_m,\ v \in \mathfrak{S}_n} f(u)\, g(v)\, \overline{\Psi(u)\, \Psi(v)}
+    = \Big( \frac{1}{m!} \sum_u f(u)\, \overline{\Psi(u)} \Big) \Big( \frac{1}{n!} \sum_v g(v)\, \overline{\Psi(v)} \Big)
     = \mathrm{Frob}(f) \cdot \mathrm{Frob}(g).
   \]
 }
 
-\mprop{Frobenius e' bigettiva}{
-  $ \mathrm{Frob} : CF \to \mathrm{Sym}[X] $ e' un isomorfismo di algebre.
+\thm{Frobenius e' un isomorfismo di anelli}{\label{thm:frob-iso}
+  $ \mathrm{Frob} : CF \to \mathrm{Sym}[X] $ e' un isomorfismo di anelli graduati.
 }
 \pf{Dim}{
-  \textbf{Passo 1: azione sulle basi.} Per ogni $ \mu \vdash n $, sia
-  $ \alpha_\mu \in CF^n $ la funzione caratteristica della classe di coniugio di tipo $ \mu $:
-  \[
-    \alpha_\mu(\sigma) =
-    \begin{cases}
-      1 & \text{se } \lambda(\sigma) = \mu, \\
-      0 & \text{altrimenti}.
-    \end{cases}
-  \]
-  Le $ \{\alpha_\mu\}_{\mu \vdash n} $ sono per costruzione una base di $ CF^n $
-  (una funzione di classe e' determinata dai suoi valori sulle classi di coniugio,
-  in biezione con $ \mathrm{Par}(n) $).
-
-  Calcoliamo $ \mathrm{Frob}(\alpha_\mu) $. Le permutazioni $ \sigma \in \mathfrak{S}_n $
-  con tipo ciclico $ \mu $ sono esattamente $ n! / z_\mu $, e su ciascuna di esse
-  $ \alpha_\mu(\sigma) = 1 $ e $ p_{\lambda(\sigma)} = p_\mu $. Sulle altre, $ \alpha_\mu(\sigma) = 0 $.
-  Quindi:
-  \[
-    \mathrm{Frob}(\alpha_\mu)
-    = \frac{1}{n!} \sum_{\sigma \in \mathfrak{S}_n} \alpha_\mu(\sigma)\, p_{\lambda(\sigma)}
-    = \frac{1}{n!} \cdot \frac{n!}{z_\mu}\, p_\mu
-    = \frac{p_\mu}{z_\mu}.
-  \]
-
-  \textbf{Passo 2: base in base.} Le $ \{p_\mu / z_\mu\}_{\mu \vdash n} $ sono una base
-  di $ \mathrm{Sym}^n[X] $ (le $ p_\mu $ lo sono e $ z_\mu \neq 0 $). Quindi
-  $ \mathrm{Frob} : CF^n \to \mathrm{Sym}^n[X] $ manda la base $ \{\alpha_\mu\} $
-  nella base $ \{p_\mu / z_\mu\} $: in particolare e' suriettiva. Poiche'
-  $ \dim CF^n = |\mathrm{Par}(n)| = \dim \mathrm{Sym}^n[X] $, e' anche iniettiva.
-  Sommando sui gradi, $ \mathrm{Frob} : CF \to \mathrm{Sym}[X] $ e' un isomorfismo.
+  E' un omomorfismo per la Proposizione~\ref{prop:frob-omomorfismo}. Le $ \{p_\mu\}_{\mu \vdash n} $
+  sono una base di $ \mathrm{Sym}^n[X] $ e stanno nell'immagine di $ \mathrm{Frob} $ (la funzione
+  indicatrice della classe di tipo $ \mu $ va in $ p_\mu / z_\mu $), quindi $ \mathrm{Frob} $ e'
+  suriettiva; poiche' $ \dim CF^n = |\mathrm{Par}(n)| = \dim \mathrm{Sym}^n[X] $ (numero di partizioni
+  $ = $ numero di classi di coniugio), $ \mathrm{Frob} $ e' un isomorfismo. Sommando sui gradi si conclude.
 }
 
-\subsection{Caratteri virtuali e reticolo $ R $}
-
-\dfn{Reticolo dei caratteri virtuali}{
-  $ R^n := \mathbb{Z}\text{-combinazioni lineari di caratteri di }\mathfrak{S}_n \subseteq CF^n $
-  (\emph{caratteri virtuali}). Si pone $ R := \bigoplus_{n \geq 0} R^n $.
-  E' un sottoanello di $ CF $ rispetto a $ \circ $: il prodotto di due caratteri di
-  rappresentazioni e' ancora un carattere (di un'induzione).
-}
-
-\subsection{La rappresentazione $ \eta^\alpha $ e $ \mathrm{Frob}(\eta^\alpha) = h_\alpha $}
+\subsection{Esempi: rappresentazione banale e di permutazione}
 
 \mprop{Frobenius della rappresentazione banale}{
   Per ogni $ n \geq 0 $:
   \[
-    \mathrm{Frob}(1_{\mathfrak{S}_n}) = h_n.
+    \mathrm{Frob}(1_{\mathfrak{S}_n}) = \sum_{\lambda \vdash n} \frac{p_\lambda}{z_\lambda} = h_n.
   \]
 }
 \pf{Dim}{
-  $ \mathrm{Frob}(1_{\mathfrak{S}_n}) = \sum_{\mu \vdash n} \frac{p_\mu}{z_\mu} = h_n $
-  per la Proposizione~\ref{prop:hm-em-potenze}.
+  Il carattere banale vale $ 1 $ su ogni classe, dunque $ \mathrm{Frob}(1_{\mathfrak{S}_n}) = \sum_{\lambda \vdash n} p_\lambda / z_\lambda $.
+  Questa e' l'identita' dell'indice ciclico $ \sum_{\lambda \vdash n} p_\lambda / z_\lambda = h_n $
+  (Proposizione~\ref{prop:hm-em-potenze}), conseguenza di
+  $ \sum_{n \geq 0} h_n t^n = \exp\!\big( \sum_{k \geq 1} p_k t^k / k \big) $.
 }
 
-\dfn{Sottogruppo di Young e $ \eta^\alpha $}{
-  Data una composizione $ \alpha = (\alpha_1, \dots, \alpha_\ell) \models n $:
+\dfn{Sottogruppo di Young e $ M^\alpha $}{
+  Data una composizione $ \alpha = (\alpha_1, \dots, \alpha_\ell) \models n $, sia
   \[
     \mathfrak{S}_\alpha := \mathfrak{S}_{\alpha_1} \times \cdots \times \mathfrak{S}_{\alpha_\ell} \leq \mathfrak{S}_n,
     \qquad
-    \eta^\alpha := \mathrm{Ind}^{\mathfrak{S}_n}_{\mathfrak{S}_\alpha}(1_{\mathfrak{S}_\alpha}).
+    M^\alpha := \mathrm{Ind}^{\mathfrak{S}_n}_{\mathfrak{S}_\alpha}(1_{\mathfrak{S}_\alpha})
   \]
-  Geometricamente, $ \eta^\alpha $ e' il carattere della rappresentazione di
-  permutazione $ M^\alpha $ su $ \mathfrak{S}_n / \mathfrak{S}_\alpha $.
-  Per induzione transitiva: $ \eta^\alpha = 1_{\mathfrak{S}_{\alpha_1}} \circ \cdots \circ 1_{\mathfrak{S}_{\alpha_\ell}} $.
+  la \emph{rappresentazione di permutazione} sui laterali $ \mathfrak{S}_n / \mathfrak{S}_\alpha $,
+  di carattere $ \eta^\alpha $. Per induzione transitiva
+  $ \eta^\alpha = 1_{\mathfrak{S}_{\alpha_1}} \circ \cdots \circ 1_{\mathfrak{S}_{\alpha_\ell}} $.
 }
 
 \mprop{$ \mathrm{Frob}(\eta^\alpha) = h_\alpha $}{\label{prop:frob-eta}
@@ -2160,206 +2146,149 @@ sia un omomorfismo. La definizione naturale viene dall'induzione di rappresentaz
   \]
 }
 \pf{Dim}{
-  $ \mathrm{Frob} $ e' omomorfismo di anelli ed $ \eta^\alpha = 1_{\mathfrak{S}_{\alpha_1}} \circ \cdots \circ 1_{\mathfrak{S}_{\alpha_\ell}} $:
+  $ \mathrm{Frob} $ e' un omomorfismo di anelli ed $ \eta^\alpha = 1_{\mathfrak{S}_{\alpha_1}} \circ \cdots \circ 1_{\mathfrak{S}_{\alpha_\ell}} $, quindi
   \[
     \mathrm{Frob}(\eta^\alpha)
-    = \mathrm{Frob}(1_{\mathfrak{S}_{\alpha_1}}) \cdots \mathrm{Frob}(1_{\mathfrak{S}_{\alpha_\ell}})
-    = h_{\alpha_1} \cdots h_{\alpha_\ell} = h_\alpha.
+    = \prod_{i=1}^{\ell} \mathrm{Frob}(1_{\mathfrak{S}_{\alpha_i}})
+    = \prod_{i=1}^{\ell} h_{\alpha_i}
+    = h_\alpha.
   \]
 }
 
-\cor{Frobenius e' un isomorfismo di anelli su $ R $}{
-  $ \mathrm{Frob} : R \to \mathrm{Sym}[X]_{\mathbb{Z}} $ e' un isomorfismo di anelli.
-}
-\pf{Dim}{
-  I caratteri di $ \mathfrak{S}_n $ sono interi, dunque $ \mathrm{Frob}(R^n) \subseteq \mathrm{Sym}^n[X]_{\mathbb{Z}} $.
-  Per la proposizione precedente $ \mathrm{Frob}(\eta^\alpha) = h_\alpha $ e le
-  $ h_\alpha $ generano $ \mathrm{Sym}[X]_{\mathbb{Z}} $ come $ \mathbb{Z} $-modulo,
-  quindi $ \mathrm{Frob}|_R $ e' suriettiva. L'iniettivita' segue dalla bigettivita'
-  di $ \mathrm{Frob} $ su tutto $ CF $.
+\subsection{Il reticolo dei caratteri e la funzione $ \psi^\lambda $ di Jacobi-Trudi}
+
+\dfn{Reticolo dei caratteri virtuali}{
+  Sia $ R^n \subseteq CF^n $ il reticolo generato a coefficienti in $ \mathbb{Z} $ dai caratteri
+  irriducibili di $ \mathfrak{S}_n $ (i \emph{caratteri virtuali}, ovvero l'anello di Grothendieck),
+  e $ R := \bigoplus_{n \geq 0} R^n $. E' un sottoanello di $ (CF, \circ) $: il prodotto di due
+  caratteri genuini e' ancora un carattere (di un'induzione). Sia inoltre
+  $ \mathrm{Sym}[X]_{\mathbb{Z}} = \mathbb{Z}[h_1, h_2, \dots] $ il reticolo delle funzioni
+  simmetriche intere.
 }
 
-\subsection{Definizione di $ \psi^\lambda $ via Jacobi-Trudi}
+I caratteri di $ \mathfrak{S}_n $ sono interi, dunque $ \mathrm{Frob}(R^n) \subseteq \mathrm{Sym}^n[X]_{\mathbb{Z}} $.
+Piu' precisamente, ogni $ \eta^\alpha \in R^n $ va in $ h_\alpha $ (Proposizione~\ref{prop:frob-eta}) e le
+$ h_\alpha $ generano $ \mathrm{Sym}[X]_{\mathbb{Z}} $ come $ \mathbb{Z} $-modulo, quindi
+$ \mathrm{Frob}(R) \subseteq \mathrm{Sym}[X]_{\mathbb{Z}} $ (il Teorema~\ref{thm:chi-irriducibili}
+mostrera' che e' un isomorfismo di anelli).
 
 \dfn{Carattere virtuale $ \psi^\lambda $}{
-  Per $ \lambda \vdash n $, l'identita' di Jacobi-Trudi $ s_\lambda = \det(h_{\lambda_i - i + j}) $
-  motiva la definizione, nell'anello $ (R, \circ) $:
+  Per $ \lambda = (\lambda_1, \dots, \lambda_\ell) \vdash n $, motivati dall'identita' di
+  Jacobi-Trudi $ s_\lambda = \det(h_{\lambda_i - i + j}) $, poniamo nell'anello $ (R, \circ) $
   \[
-    \psi^\lambda := \det\!\bigl( \eta^{\lambda_i - i + j} \bigr)_{i, j = 1}^{\ell(\lambda)},
+    \psi^\lambda := \det\!\big( \eta^{(\lambda_i - i + j)} \big)_{1 \leq i, j \leq \ell} \ \in R^n,
   \]
-  con $ \eta^0 = 1_{\mathfrak{S}_0} $ (unita') e $ \eta^k = 0 $ per $ k < 0 $.
-  Per costruzione $ \psi^\lambda \in R^n $ e' un carattere virtuale.
+  con la convenzione $ \eta^{(0)} = 1_{\mathfrak{S}_0} $ (unita') ed $ \eta^{(k)} = 0 $ per $ k < 0 $.
+  Per costruzione $ \psi^\lambda $ e' un carattere virtuale.
 }
 
 \mprop{$ \mathrm{Frob}(\psi^\lambda) = s_\lambda $}{\label{prop:frob-psi}
-  Applicando $ \mathrm{Frob} $ (omomorfismo di anelli) al determinante:
+  Poiche' $ \mathrm{Frob} $ e' lineare e moltiplicativa (Teorema~\ref{thm:frob-iso}):
   \[
     \mathrm{Frob}(\psi^\lambda)
-    = \det\!\bigl( \mathrm{Frob}(\eta^{\lambda_i - i + j}) \bigr)
-    = \det\!\bigl( h_{\lambda_i - i + j} \bigr)
+    = \det\!\big( \mathrm{Frob}(\eta^{(\lambda_i - i + j)}) \big)
+    = \det\!\big( h_{\lambda_i - i + j} \big)
     \stackrel{\text{J-T}}{=} s_\lambda.
   \]
 }
 
-\subsection{Teorema centrale: i $ \chi^\lambda $ sono caratteri irriducibili}
+\subsection{Teorema principale: i $ \chi^\lambda $ sono i caratteri irriducibili}
 
 \thm{I $ \chi^\lambda $ sono i caratteri irriducibili di $ \mathfrak{S}_n $}{\label{thm:chi-irriducibili}
-  I numeri $ \chi^\lambda(\mu) $ definiti da Murnaghan-Nakayama tramite
-  $ p_\mu = \sum_\lambda \chi^\lambda(\mu)\, s_\lambda $ sono i caratteri delle
-  rappresentazioni irriducibili di $ \mathfrak{S}_n $. Le rappresentazioni
-  irriducibili sono indicizzate da $ \lambda \vdash n $, e quella associata a $ \lambda $
-  ha dimensione $ \chi^\lambda((1^n)) = f^\lambda = \#\mathrm{SYT}(\lambda) $.
+  $ \mathrm{Frob} : R \to \mathrm{Sym}[X]_{\mathbb{Z}} $ e' un isomorfismo di anelli e per ogni
+  $ \lambda \vdash n $ vale $ \psi^\lambda = \chi^\lambda $, il carattere della rappresentazione
+  irriducibile di $ \mathfrak{S}_n $ indicizzata da $ \lambda $. In particolare
+  $ \mathrm{Frob}(\chi^\lambda) = s_\lambda $, e la dimensione e' $ \chi^\lambda((1^n)) = f^\lambda = \#\mathrm{SYT}(\lambda) $.
 }
 \pf{Dim}{
-  \textbf{Passo 1: $ \{\psi^\lambda\} $ ortonormale.}
-  Da $ \mathrm{Frob}(\psi^\lambda) = s_\lambda $ (Proposizione~\ref{prop:frob-psi}) e
-  dall'ortonormalita' delle Schur (Teorema~\ref{thm:schur-ortonormali}, ricordando
-  $ s_\lambda = \widehat{s}_\lambda $), per l'isometria di Frobenius
-  (Proposizione~\ref{prop:frob-isometria}):
+  \textbf{(a) $ \{\psi^\lambda\}_{\lambda \vdash n} $ e' ortonormale.} Per l'isometria
+  (Proposizione~\ref{prop:frob-isometria}), $ \mathrm{Frob}(\psi^\lambda) = s_\lambda $
+  (Proposizione~\ref{prop:frob-psi}) e l'ortonormalita' delle Schur (Teorema~\ref{thm:schur-ortonormali}):
   \[
-    \langle \psi^\lambda, \psi^\mu \rangle_{CF^n}
-    = \langle s_\lambda, s_\mu \rangle = \delta_{\lambda, \mu}.
+    \langle \psi^\lambda, \psi^\mu \rangle_{CF^n} = \langle s_\lambda, s_\mu \rangle = \delta_{\lambda \mu}.
   \]
 
-  \textbf{Passo 2: $ \psi^\lambda = \pm $ carattere irriducibile.}
-  Poiche' $ \psi^\lambda \in R^n $, per definizione si scrive nella base dei caratteri
-  irriducibili $ \{\chi^\rho\}_\rho $ di $ \mathfrak{S}_n $ a coefficienti interi:
-  \[
-    \psi^\lambda = \sum_\rho a_\rho\, \chi^\rho, \qquad a_\rho \in \mathbb{Z}.
-  \]
-  Dal Passo 1, $ \langle \psi^\lambda, \psi^\lambda \rangle = 1 $.
-  Calcoliamo lo stesso prodotto scalare usando bilinearita' e l'ortonormalita'
-  degli irriducibili ($ \langle \chi^\rho, \chi^{\rho'} \rangle = \delta_{\rho, \rho'} $):
-  \[
-    \langle \psi^\lambda, \psi^\lambda \rangle
-    = \Big\langle \sum_\rho a_\rho \chi^\rho,\ \sum_{\rho'} a_{\rho'} \chi^{\rho'} \Big\rangle
-    = \sum_{\rho, \rho'} a_\rho\, a_{\rho'}\, \langle \chi^\rho, \chi^{\rho'} \rangle
-    = \sum_\rho a_\rho^2.
-  \]
-  Quindi $ \sum_\rho a_\rho^2 = 1 $ con $ a_\rho \in \mathbb{Z} $: l'unica soluzione e'
-  che esattamente un $ a_{\rho_0} = \pm 1 $ e tutti gli altri sono nulli. Pertanto
-  $ \psi^\lambda = \pm \chi^{\rho_0} $ e' il carattere (al segno) di una rappresentazione
-  irriducibile.
+  \textbf{(b) $ \psi^\lambda = \pm \chi^{\rho} $ per un irriducibile.} Essendo $ \psi^\lambda \in R^n $,
+  si scrive $ \psi^\lambda = \sum_\rho a_\rho\, \chi^\rho $ con $ a_\rho \in \mathbb{Z} $. Per
+  l'ortonormalita' degli irriducibili, $ 1 = \langle \psi^\lambda, \psi^\lambda \rangle = \sum_\rho a_\rho^2 $:
+  con $ a_\rho \in \mathbb{Z} $ l'unica possibilita' e' un solo $ a_{\rho_0} = \pm 1 $, gli altri
+  nulli. Dunque $ \psi^\lambda = \pm \chi^{\rho_0} $; per (a) l'assegnazione $ \lambda \mapsto \rho_0 $
+  e' iniettiva.
 
-  \textbf{Passo 3: $ \psi^\lambda = \chi^\lambda $.}
-
-  \emph{(A) Confronto delle immagini tramite Frobenius.} Abbiamo due fatti:
-  \begin{itemize}
-    \item \textbf{Fatto 1} (Proposizione~\ref{prop:frob-psi}):
-    $ \mathrm{Frob}(\psi^\lambda) = s_\lambda $.
-    \item \textbf{Fatto 2} (dal Corollario~\ref{cor:mn-vuoto}, Murnaghan-Nakayama):
-    $ \mathrm{Frob}(\chi^\lambda) = s_\lambda $.
-  \end{itemize}
-  Quest'ultimo segue invertendo $ p_\mu = \sum_\lambda \chi^\lambda(\mu)\, s_\lambda $:
-  poiche' $ \{p_\mu\} $ e $ \{p_\mu / z_\mu\} $ sono basi duali, $ \langle s_\lambda, p_\mu \rangle = \chi^\lambda(\mu) $,
-  quindi
+  \textbf{(c) Il segno e' sempre $ + $.} Valutiamo su $ (1^n) $. Da un lato
+  $ \chi^{\rho_0}((1^n)) = \dim V_{\rho_0} > 0 $. Dall'altro, poiche' $ \langle s_\lambda, p_\mu \rangle = \psi^\lambda(\mu) $
+  (basi duali $ \{p_\mu\} $, $ \{p_\mu/z_\mu\} $) e $ p_{(1^n)} = p_1^n = h_1^n = \sum_\lambda f^\lambda\, s_\lambda $
+  (Corollario~\ref{cor:h1n-schur}):
   \[
-    s_\lambda = \sum_\mu \langle s_\lambda, p_\mu \rangle\, \frac{p_\mu}{z_\mu}
-              = \sum_\mu \chi^\lambda(\mu)\, \frac{p_\mu}{z_\mu}
-              = \mathrm{Frob}(\chi^\lambda).
+    \psi^\lambda((1^n)) = \langle s_\lambda, p_{(1^n)} \rangle = \langle s_\lambda, h_1^n \rangle = f^\lambda > 0.
   \]
+  Se fosse $ \psi^\lambda = -\chi^{\rho_0} $ avremmo $ \psi^\lambda((1^n)) < 0 $: assurdo. Dunque
+  $ \psi^\lambda = \chi^{\rho_0} $, con $ \chi^{\rho_0}((1^n)) = f^\lambda $.
 
-  \emph{(B) Iniettivita' di Frobenius.} Dai due fatti $ \mathrm{Frob}(\psi^\lambda) = \mathrm{Frob}(\chi^\lambda) $;
-  per l'iniettivita' di $ \mathrm{Frob} $ (vedi Proposizione precedente):
-  \[
-    \psi^\lambda = \chi^\lambda.
-  \]
-
-  \emph{(C) Determinazione del segno.}  Dal Passo 2 sappiamo che
-  $ \psi^\lambda = \pm \chi^{\rho_0} $ per un irriducibile $ \chi^{\rho_0} $. Per
-  escludere il segno $ - $ valutiamo entrambi sull'identita' $ (1^n) \in \mathfrak{S}_n $:
-  \begin{itemize}
-    \item Per qualunque rappresentazione $ V $: $ \chi_V(1) = \dim V > 0 $. In particolare
-    $ \chi^{\rho_0}((1^n)) = \dim V_{\rho_0} > 0 $.
-    \item Calcoliamo $ \psi^\lambda((1^n)) $: per il Corollario~\ref{cor:h1n-schur},
-    $ h_1^n = \sum_\lambda f^\lambda\, s_\lambda $, quindi $ \langle s_\lambda, h_1^n \rangle = f^\lambda $.
-    D'altra parte $ p_{(1^n)} = p_1^n = h_1^n $, e per la formula di Frobenius
-    $ \chi^\lambda((1^n)) = \langle \chi^\lambda, \mathbb{1}_{(1^n)} \rangle\cdot z_{(1^n)} = \langle s_\lambda, p_{(1^n)} \rangle = f^\lambda > 0 $.
-    Per il punto (B), $ \psi^\lambda((1^n)) = \chi^\lambda((1^n)) = f^\lambda > 0 $.
-  \end{itemize}
-  Se fosse $ \psi^\lambda = -\chi^{\rho_0} $ avremmo $ \psi^\lambda((1^n)) = -\dim V_{\rho_0} < 0 $:
-  contraddizione. Pertanto $ \psi^\lambda = +\chi^{\rho_0} $, cioe' $ \chi^\lambda = \psi^\lambda $
-  \emph{e'} il carattere di una rappresentazione irriducibile $ V_\lambda := V_{\rho_0} $
-  di dimensione $ f^\lambda $.
+  \textbf{(d) Si ottengono tutti gli irriducibili.} Le partizioni $ \lambda \vdash n $ sono
+  $ |\mathrm{Par}(n)| $, tante quante le classi di coniugio e quindi quanti gli irriducibili
+  (Teorema~\ref{thm:caratteri-base-CG}). Per (b) e (c) i $ \psi^\lambda $ sono $ |\mathrm{Par}(n)| $
+  irriducibili distinti: sono percio' \emph{tutti} gli irriducibili di $ \mathfrak{S}_n $.
+  Ridenominandoli, $ \chi^\lambda := \psi^\lambda $ e' la parametrizzazione canonica degli
+  irriducibili per partizioni di $ n $, e $ \mathrm{Frob}(\chi^\lambda) = s_\lambda $.
 }
 
-\subsection{Il dizionario di Frobenius}\label{subsec:dizionario-frobenius}
+\subsection{Corollario: la regola di Murnaghan-Nakayama}
 
-\osservazione{Riepilogo della corrispondenza.
-\[
-  \begin{array}{c|c}
-    CF \text{ (caratteri di } \mathfrak{S}_n\text{)} & \mathrm{Sym}[X] \\ \hline
-    f \in CF^n & \mathrm{Frob}(f) = \sum_\mu f(\mu)\, p_\mu / z_\mu \\
-    \langle \cdot, \cdot \rangle_{CF^n} & \text{prodotto di Hall} \\
-    f \circ g \text{ (induzione)} & \mathrm{Frob}(f) \cdot \mathrm{Frob}(g) \\
-    1_{\mathfrak{S}_n} \text{ (banale)} & h_n \\
-    \eta^\alpha \text{ (perm. su } \mathfrak{S}_n / \mathfrak{S}_\alpha\text{)} & h_\alpha \\
-    \chi^\lambda = \psi^\lambda \text{ (irriducibile)} & s_\lambda \\
-    \mathrm{sgn} & e_n = s_{(1^n)} \\
-    \dim V_\lambda = \chi^\lambda((1^n)) & \langle s_\lambda, h_1^n \rangle = f^\lambda
-  \end{array}
-\]
+\cor{Sviluppo di $ p_\mu $ e border strip}{
+  Invertendo il cambio di base $ p \leftrightarrow s $ si ritrova l'identita' $ (\star) $ come
+  formula di $ \mathrm{Frob} $ sull'identita' $ \sigma \mapsto p_{\lambda(\sigma)} $:
+  \[
+    p_\mu = \sum_{\lambda \vdash n} \chi^\lambda(\mu)\, s_\lambda,
+    \qquad
+    \chi^\lambda(\mu) = \langle s_\lambda, p_\mu \rangle = \sum_T (-1)^{\mathrm{ht}(T)},
+  \]
+  somma sui \emph{border strip tableau} $ T $ di forma $ \lambda $ e tipo $ \mu $ (Teorema~\ref{thm:murnaghan-nakayama}):
+  decomposizioni di $ \lambda $ in strisce a bordo (connesse, senza quadrati $ 2 \times 2 $) di
+  lunghezze $ \mu_1, \mu_2, \dots $ inserite in ordine, dove $ \mathrm{ht}(T) $ e' la somma su ogni
+  striscia del numero di righe occupate meno $ 1 $. I coefficienti con segno dei border strip sono
+  cosi' un modo combinatorio per calcolare $ \chi^\lambda(\mu) $ senza i determinanti di Jacobi-Trudi.
 }
 
-\subsection{Corollari notevoli}
+\subsection{Esempio: la tavola dei caratteri di $ \mathfrak{S}_3 $}
 
-\cor{Schur-positivita'}{
-  Se $ V $ e' una rappresentazione di $ \mathfrak{S}_n $ con carattere $ \chi_V $,
-  allora $ \mathrm{Frob}(\chi_V) $ e' \emph{Schur-positiva}:
-  \[
-    \langle \mathrm{Frob}(\chi_V), s_\lambda \rangle \in \mathbb{N} \qquad \forall\, \lambda \vdash n.
-  \]
-  Una strategia comune per dimostrare la Schur-positivita' di una funzione simmetrica
-  e' esibirla come $ \mathrm{Frob} $ di un carattere genuino.
-}
-
-\cor{Regola di Young}{
-  Sia $ V_\lambda $ l'irriducibile di $ \mathfrak{S}_n $ associata a $ \lambda \vdash n $
-  e $ M^\alpha $ la rappresentazione di permutazione su $ \mathfrak{S}_n / \mathfrak{S}_\alpha $.
-  Allora:
-  \[
-    M^\alpha \cong \bigoplus_{\lambda \vdash n} V_\lambda^{\oplus K_{\lambda, \alpha}}.
-  \]
-}
-\pf{Dim}{
-  Per la teoria classica dei caratteri (Teorema~\ref{thm:caratteri-base-CG}), le
-  molteplicita' degli irriducibili in una rappresentazione si calcolano via prodotto
-  scalare: l'enunciato equivale a
-  \[
-    \langle \eta^\alpha, \chi^\lambda \rangle = K_{\lambda, \alpha}.
-  \]
-  Applichiamo l'isometria di Frobenius (Proposizione~\ref{prop:frob-isometria}),
-  $ \mathrm{Frob}(\eta^\alpha) = h_\alpha $ (Proposizione~\ref{prop:frob-eta}),
-  $ \mathrm{Frob}(\chi^\lambda) = s_\lambda $ (Teorema centrale, Passo 3) e lo
-  sviluppo $ h_\alpha = \sum_\lambda K_{\lambda, \alpha}\, s_\lambda $
-  (Corollario~\ref{cor:hmu-kostka-schur}, ricordando $ s_\lambda = \widehat{s}_\lambda $):
-  \[
-    \langle \eta^\alpha, \chi^\lambda \rangle
-    = \langle \mathrm{Frob}(\eta^\alpha), \mathrm{Frob}(\chi^\lambda) \rangle
-    = \langle h_\alpha, s_\lambda \rangle = K_{\lambda, \alpha}.
-  \]
-}
-
-\ex{Calcolo di $ \mathrm{Frob}(\mathrm{sgn}) $}{
-  Calcolare $ \mathrm{Frob}(\mathrm{sgn}) $ e identificarlo con un'irriducibile di
-  $ \mathfrak{S}_n $.
+\ex{Verifica esplicita per $ n = 3 $}{
+  Ricaviamo i $ \chi^\lambda(\mu) $ per $ \lambda, \mu \in \{(3),\, (2,1),\, (1^3)\} $ dai border strip.
 }
 \pf{Soluzione}{
-  Il carattere segno di $ \mathfrak{S}_n $ ha valore $ \mathrm{sgn}(\sigma) = (-1)^{n - \ell(\lambda(\sigma))} $
-  (segno di una permutazione di tipo $ \mu $ e' $ \prod_i (-1)^{\mu_i - 1} = (-1)^{n - \ell(\mu)} $).
-  Allora:
+  \textbf{Colonna $ \mu = (1^3) $ (identita').} $ \chi^\lambda((1^3)) = f^\lambda $:
+  $ f^{(3)} = 1 $, $ f^{(2,1)} = 2 $, $ f^{(1^3)} = 1 $. Verifica: $ 1^2 + 2^2 + 1^2 = 6 = 3! $.
+
+  \textbf{Colonna $ \mu = (3) $ (un'unica striscia di taglia $ 3 $).}
+  \begin{itemize}
+    \item $ \lambda = (3) $: striscia orizzontale, $ 1 $ riga, $ \mathrm{ht} = 0 $, segno $ +1 $.
+    \item $ \lambda = (2,1) $: il gancio $ (2,1) $ e' una striscia a bordo su $ 2 $ righe,
+    $ \mathrm{ht} = 1 $, segno $ -1 $.
+    \item $ \lambda = (1^3) $: striscia verticale, $ 3 $ righe, $ \mathrm{ht} = 2 $, segno $ +1 $.
+  \end{itemize}
+  Dunque $ p_3 = s_{(3)} - s_{(2,1)} + s_{(1^3)} $.
+
+  \textbf{Colonna $ \mu = (2,1) $.} Rimuovendo (Murnaghan-Nakayama) prima una striscia di taglia
+  $ 2 $ e poi una di taglia $ 1 $:
+  \begin{itemize}
+    \item $ \lambda = (3) $: segno $ +1 $.
+    \item $ \lambda = (2,1) $: nessuna striscia a bordo di taglia $ 2 $ lascia una partizione di $ 1 $
+    (i due residui non sono connessi), quindi $ \chi^{(2,1)}((2,1)) = 0 $.
+    \item $ \lambda = (1^3) $: segno $ -1 $.
+  \end{itemize}
+  Coerente con $ p_2 p_1 = s_{(3)} - s_{(1^3)} $ (via Pieri).
+
+  Raccogliendo, la tavola dei caratteri di $ \mathfrak{S}_3 $ (colonne = classi $ (1^3),\, (2,1),\, (3) $):
   \[
-    \mathrm{Frob}(\mathrm{sgn})
-    = \sum_{\mu \vdash n} (-1)^{n - \ell(\mu)}\, \frac{p_\mu}{z_\mu}.
+    \begin{array}{c|ccc}
+      \chi^\lambda(\mu) & (1^3) & (2,1) & (3) \\ \hline
+      \lambda = (3)     & 1 & 1 & 1 \\
+      \lambda = (2,1)   & 2 & 0 & -1 \\
+      \lambda = (1^3)   & 1 & -1 & 1
+    \end{array}
   \]
-  Ricordando l'azione di $ \omega $ sulle potenze, $ \omega(p_\mu) = (-1)^{n - \ell(\mu)} p_\mu $,
-  quindi:
-  \[
-    \mathrm{Frob}(\mathrm{sgn}) = \omega\!\left( \sum_{\mu \vdash n} \frac{p_\mu}{z_\mu} \right) = \omega(h_n) = e_n = s_{(1^n)}.
-  \]
-  Per il teorema centrale (Teorema~\ref{thm:chi-irriducibili}),
-  $ \mathrm{sgn} = \chi^{(1^n)} $: il carattere segno e' l'irriducibile associata alla colonna
-  $ (1^n) $.
+  La prima riga e' il carattere banale, l'ultima il segno, quella centrale la rappresentazione
+  standard di dimensione $ 2 $.
 }
 
 % \end{document}

@@ -1,0 +1,152 @@
+#separator:tab
+#html:true
+#notetype:Basic
+#deck:AI Knowledge Representation::01 Introduzione all'IA
+
+Come viene definita l'<b>intelligenza</b> nei lucidi (da Wikipedia)?	Capacità di logica, comprensione, autoconsapevolezza, apprendimento, conoscenza emotiva, ragionamento, pianificazione, creatività, pensiero critico e problem solving.<br>Più in generale: la capacità di <b>percepire o inferire informazioni</b> e di <b>conservarle come conoscenza</b> da applicare a <b>comportamenti adattivi</b> in un ambiente o contesto.
+
+In quale articolo e in che anno Turing pone la domanda "<b>Can machines think?</b>"? Quali due problemi individua?	<i>Computing Machinery and Intelligence</i>, rivista <i>Mind</i>, <b>1950</b>.<br>Problemi: definire una <b>macchina universale</b> e definire cosa significa <b>pensare</b> (termine ambiguo). Turing aggira il secondo con un criterio operativo: l'imitation game.
+
+Descrivi l'<b>imitation game</b> (test di Turing).	Tre attori: un <b>umano</b>, un <b>computer</b> e un <b>interrogante</b> in una stanza diversa.<br>L'interrogante deve classificare quale interlocutore è l'umano e quale la macchina.<br>Domanda: è possibile che il computer <b>inganni l'interrogante</b> e venga classificato come umano?
+
+Quali capacità deve avere un computer per superare il <b>test di Turing</b>?	<ul><li><b>Natural Language Processing</b></li><li><b>Knowledge Representation</b></li><li><b>Automatic Reasoning</b></li><li><b>Machine Learning</b></li></ul>
+
+Cosa serve <b>oltre il test di Turing</b> (cosiddetto test di Turing "totale")?	Le <b>interazioni fisiche</b> con l'ambiente: robotica, visione artificiale, parlato (speech), movimento, ecc.
+
+Quale chatbot ha "superato" il test di Turing nel <b>2014</b> e come?	<b>Eugene Goostman</b>, che imitava le risposte di un <b>ragazzo di 13 anni</b>.
+
+Quali <b>limiti/critiche</b> vengono attribuiti ai chatbot che "passano" il test di Turing (Cleverbot, Siri, Cortana, Alexa, ChatGPT)?	<ul><li>Spesso costruiti <b>indicizzando conversazioni precedenti</b>;</li><li>manca la <b>coerenza</b> (allucinazioni), lo <b>stato del dialogo</b>, la <b>semantica</b>;</li><li>prospettiva metodologica: approccio <b>ingegneristico</b> che favorisce l'<b>emulazione</b> più che il raggiungimento di intelligenza reale, in domini limitati.</li></ul>
+
+Perché i <b>puzzle matematici / problemi geometrici</b> (es. Allen Institute) vanno "oltre il test di Turing"?	Richiedono <b>comprensione profonda del linguaggio</b>, <b>senso comune</b>, capacità di <b>ragionamento</b> e <b>analisi multimodale</b> (testo + figura).
+
+Qual era la <b>previsione di Turing</b> (1950) sull'imitation game?	Entro circa <b>50 anni</b> (fine secolo), con computer di memoria circa \(10^9\), un interrogante medio non avrebbe avuto più del <b>70%</b> di probabilità di identificazione corretta dopo <b>5 minuti</b> di domande; e si sarebbe potuto parlare di macchine che pensano senza essere contraddetti.
+
+Differenza tra <b>Weak AI</b> e <b>Strong AI</b>.	<b>Weak AI</b>: è possibile costruire sistemi che <b>agiscono come se</b> fossero intelligenti?<br><b>Strong AI</b>: è possibile costruire sistemi che <b>sono</b> intelligenti, con <b>menti coscienti</b>, volontà e sentimenti?
+
+Differenza tra <b>General AI</b> e <b>Narrow AI</b>.	<b>General AI</b>: sistemi capaci di affrontare <b>qualsiasi compito generale</b> richiesto, come un umano.<br><b>Narrow AI</b>: IA capace di gestire <b>un solo compito specifico</b>; mostra un certo grado di intelligenza in un campo ma resta un sistema altamente specializzato in quel campo ristretto.
+
+Quando e da chi nasce ufficialmente l'<b>Intelligenza Artificiale</b>?	Nel <b>1956</b> (Dartmouth), con <b>Minsky, McCarthy, Shannon, Newell, Simon</b>.
+
+Qual è la <b>congettura di McCarthy (1955)</b> alla base dell'IA?	Congettura: «Ogni aspetto dell'apprendimento o qualsiasi altra caratteristica dell'intelligenza può <b>in linea di principio</b> essere descritto così precisamente che una macchina può essere costruita per <b>simularlo</b>.»
+
+Elenca le principali <b>definizioni di IA</b> date nei lucidi.	<ul><li>Studio di come far fare ai computer cose che <b>gli umani fanno meglio</b> (definizione <b>transitoria</b>, cfr. scacchi);</li><li>studio di come costruire computer che <b>passano il test di Turing</b> (ragionamento, linguaggio naturale, apprendimento; se situati in un ambiente anche percezione, visione, movimento, robotica);</li><li>definizioni non legate all'intelligenza umana ma alla capacità di <b>interagire con un ambiente e adattarvisi</b>.</li></ul>
+
+Perché la definizione "far fare ai computer cose che gli umani fanno meglio" è detta <b>transitoria</b>?	Perché quando la macchina riesce a fare quella cosa meglio dell'uomo (es. <b>scacchi</b>), quel compito esce dalla definizione: il confine si sposta nel tempo.
+
+Storia dell'IA: periodi <b>1943-1956</b> e <b>1952-1969</b>.	<b>1943-1956 Nascita dell'IA</b>: reti neurali, programmi di scacchi, dimostratori di teoremi.<br><b>1952-1969 Entusiasmo iniziale e grandi aspettative</b>: General Problem Solver, linguaggio LISP, reti neurali.
+
+Storia dell'IA: cosa succede nel periodo <b>1966-1974</b> ("Down to earth")?	Ridimensionamento: alcuni programmi si rivelano <b>inadeguati</b> (ELIZA, traduzioni sintattiche, reti neurali), altri <b>troppo costosi computazionalmente</b> (<b>esplosione combinatoria</b>).
+
+Storia dell'IA: periodi <b>1969-1979</b> e <b>1980-1988</b>.	<b>1969-1979 Sistemi basati sulla conoscenza</b>: conoscenza profonda in un dominio limitato, <b>sistemi esperti</b>.<br><b>1980-1988 L'IA entra nell'industria</b>: sistemi esperti di successo commerciale, <b>Fifth Generation project</b> in Giappone, aziende di IA, fondi di ricerca.
+
+Storia dell'IA: periodi <b>1988-2010</b>, <b>2010-oggi</b>, <b>2020-oggi</b>.	<b>1988-2010 Era del web e di internet</b>: sistemi di supporto alle decisioni, agenti robotici, linguaggio naturale.<br><b>2010-oggi Machine learning e deep learning</b>: big data e potenza di calcolo rendono efficaci le reti profonde; intelligenza e percezione aumentate, industria 4.0.<br><b>2020-oggi IA generativa e agenti conversazionali</b>.
+
+Differenza tra approccio <b>top-down (simbolico)</b> e <b>bottom-up (connessionista)</b> all'IA.	<b>Simbolico</b>: rappresentazione <b>simbolica</b> della conoscenza (logiche, ontologie, sistemi a regole, architettura dichiarativa); modelli <b>comprensibili dall'uomo</b>.<br><b>Connessionista</b>: reti neurali; conoscenza <b>non simbolica</b>, "codificata" nelle <b>connessioni tra neuroni</b>; concetti appresi da <b>esempi</b>; modelli <b>non comprensibili</b> dall'uomo.
+
+Definizione di <b>ragionamento deduttivo</b>, con esempio e limite.	Sillogismo aristotelico (logica deduttiva): da "tutti gli uomini sono mortali" e "Socrate è un uomo" si conclude "Socrate è mortale".<br>È corretto, ma <b>non permette di "imparare" nuova conoscenza</b>.
+
+Definizione di <b>ragionamento induttivo</b>, con esempio e limite.	Apprendimento, "deduzione inversa": osservando che diversi uccelli volano si generalizza "tutti gli uccelli volano" (e i pinguini?).<br>Produce <b>nuova conoscenza a scapito della correttezza</b>.
+
+Definizione di <b>ragionamento abduttivo</b> (ipotetico), con esempio e limite.	Duale della deduzione: dall'osservazione "Socrate è morto" e da "tutti gli uomini sono mortali" si <b>ipotizza</b> "Socrate è un uomo" (e se fosse un gatto?).<br>Risale alle <b>cause</b> osservando gli <b>effetti</b>, <b>a scapito della correttezza</b>.
+
+Definizione di <b>ragionamento per analogia</b>. Quali tecniche di ML vi si collegano?	Ragionamento metaforico / case-based: non richiede un modello né molti dati, usa il <b>principio di somiglianza</b>. Es.: Socrate e John "si somigliano", Socrate ama la filosofia, quindi John ama la filosofia.<br>Tecniche: <b>k-Nearest-Neighbor</b> e <b>Support Vector Machine (SVM)</b>.
+
+Oltre a deduzione, induzione, abduzione e analogia, quale altra forma di ragionamento è citata?	<b>Ragionamento con vincoli e ottimizzazione</b>, usando vincoli, probabilità, statistica (teorema di Bayes).
+
+Su quale metodo si basano la maggior parte dei sistemi di IA per la <b>dimostrazione automatica di teoremi</b>?	Sulla <b>deduzione</b> e in particolare sul <b>metodo di risoluzione</b> definito da <b>A. Robinson nel 1965</b>.
+
+Nello schema "Logica, dimostrazione automatica e Prolog", come si collegano sintassi e semantica?	<b>Sintassi</b>: simboli non interpretati, teorie assiomatiche, theorem provers.<br><b>Semantica</b>: interpretazione, concetto di <b>conseguenza logica</b>.<br>Collegamento tramite <b>correttezza</b> e <b>completezza</b>. La risoluzione lavora su clausole generali; la programmazione logica (Prolog) su <b>clausole definite</b>.
+
+Quali sono le tre <b>interpretazioni di algoritmo</b> presentate?	<ul><li>Algoritmo = <b>strutture dati + istruzioni</b></li><li>Algoritmo = <b>logica</b> (conoscenza) + <b>controllo</b> (motore inferenziale)</li><li>Algoritmo = <b>esempi</b> (esperienza) + <b>machine learning</b></li></ul>Scendendo nella lista aumentano il livello di <b>generalità</b> e di "intelligenza".
+
+Spiega l'equazione <b>Algoritmo = Logica + Controllo</b> nei linguaggi dichiarativi.	La conoscenza del problema è <b>indipendente dal suo uso</b>: esprime il <b>COSA</b> e non il <b>COME</b>; alta <b>modularità</b> e flessibilità.<br><b>Logica</b>: la conoscenza del problema determina <b>correttezza</b> ed efficienza.<br><b>Controllo</b>: la strategia di risoluzione determina l'<b>efficienza</b>.<br>È lo schema alla base dei <b>sistemi basati sulla conoscenza</b> (sistemi esperti).
+
+Cos'è <b>Prolog</b>, su quali idee si basa e chi lo ha realizzato?	<b>PROgramming in LOGic</b>, il linguaggio di programmazione logica più noto. Basato sulle idee di <b>R. Kowalski</b>, prima realizzazione di <b>A. Colmerauer (1973)</b>.
+
+Da cosa è composto un <b>programma Prolog</b>?	Un insieme di <b>clausole di Horn</b> che rappresentano:<ul><li><b>fatti</b> sugli oggetti e le relazioni;</li><li><b>regole</b> su oggetti e relazioni (IF ... THEN), con testa <code>:-</code> corpo;</li><li><b>goal</b>: clausole <b>senza testa</b>.</li></ul>Es.: <code>colleague(X,Y) :- works(X,Z), works(Y,Z), different(X,Y).</code>
+
+Come si definisce la <b>somma</b> in Prolog in modo dichiarativo e perché è interessante?	<code>sum(0,X,X).</code><br><code>sum(s(X),Y,s(Z)) :- sum(X,Y,Z).</code><br>Interi con la struttura del <b>successore</b> <code>s(X)</code>, definizione <b>ricorsiva</b>, <code>sum</code> simbolo non interpretato. La stessa definizione supporta <b>molte query</b> (= molti algoritmi): somma, sottrazione <code>sum(s(0),Y,s(s(s(0))))</code>, scomposizioni <code>sum(X,Y,s(s(s(0))))</code>, ecc.
+
+In programmazione logica, cosa distingue <b>deduzione</b>, <b>induzione</b> e <b>abduzione</b> in termini di teoria T, background B ed esempi/osservazioni E?	<ul><li><b>Deduzione</b>: dati T e B, si ricavano le conseguenze E.</li><li><b>Induzione</b>: dati B ed esempi E (\(E^+\), \(E^-\)), si apprende la teoria T.</li><li><b>Abduzione</b>: dati T ed osservazioni E, si ipotizzano i fatti B tali che \(T \cup B \models E\).</li></ul>
+
+Nell'<b>induzione</b> in programmazione logica, quali condizioni deve soddisfare la teoria T appresa?	<b>Completezza</b>: \(\forall e^+ \in E^+:\ B \cup T \models e^+\)<br><b>Consistenza</b>: \(\forall e^- \in E^-:\ B \cup T \not\models e^-\)<br>Es.: da <code>mother/father</code> e da esempi di <code>parent</code> si apprendono <code>parent(X,Y) :- mother(X,Y).</code> e <code>parent(X,Y) :- father(X,Y).</code>
+
+Nell'<b>abduzione</b>, a cosa servono i <b>vincoli di integrità</b> (IC)?	A <b>controllare/restringere le ipotesi</b>. Senza IC, da <code>parent(mary,vinni)</code> si abduce <code>mother(mary,vinni) ∨ father(mary,vinni)</code>. Con IC come <code>mother(X,Y) → female(X)</code>, <code>father(X,Y) → male(X)</code> e <code>female(mary)</code>, si sceglie solo <code>mother(mary,vinni)</code>.<br>Si richiede \(T \cup B \models E\) e \(T \cup B \models IC\).
+
+Quali sono gli aspetti storici chiave di <b>Prolog</b> (successi e limiti)?	<ul><li>Grande idea rivoluzionaria: linguaggio <b>non legato all'architettura di Von Neumann</b>;</li><li>contrapposizione Europa vs America (LISP);</li><li>progetto giapponese <b>Fifth Generation</b> negli anni '80, <b>fallito</b>;</li><li>non si è diffuso quanto previsto negli anni '80, pur con molte applicazioni ed estensioni;</li><li>implementazioni: <b>SWI-Prolog</b> (integrato col Semantic Web), <b>tuProlog</b> (Java, Unibo).</li></ul>
+
+Definizioni di <b>apprendimento</b> di Michalski (1986) e Simon (1984).	<b>Michalski</b>: apprendere è <b>costruire o modificare rappresentazioni</b> di ciò che si sta sperimentando.<br><b>Simon</b>: l'apprendimento denota <b>cambiamenti adattivi</b> nel sistema che gli permettono di svolgere lo stesso compito (o compiti della stessa popolazione) in modo <b>più efficiente ed efficace</b> la volta successiva.
+
+Il machine learning segue un approccio <b>empirista</b> o <b>razionalista</b>? Perché le aziende ICT ci investono?	<b>Empirista</b> (opposto al razionalista): si impara dall'esperienza.<br>Le aziende (Google, Facebook, IBM, Baidu, ...) hanno <b>molti dati</b> e vogliono <b>estrarne valore</b> (era dei big data).
+
+Differenza tra <b>apprendimento supervisionato</b>, <b>non supervisionato</b> e <b>per rinforzo</b>.	<b>Supervisionato</b>: parte da esempi forniti da un insegnante (<b>training set</b>); risolve <b>classificazione/regressione</b>.<br><b>Non supervisionato</b>: per osservazione e scoperta, senza aiuto esterno; il sistema struttura i dati e scopre pattern (<b>clustering</b>, data mining).<br><b>Per rinforzo</b>: impara un comportamento ottimo dalle esperienze passate tramite <b>ricompense e punizioni</b>; impara soprattutto dagli errori; molto usato in <b>robotica</b>.
+
+Esempi di applicazioni del <b>machine learning</b> citati nei lucidi.	Classificare email spam/non spam, predire il prezzo delle azioni Apple, diagnosi da esami, riconoscere cifre scritte (LeCun 1989), insegnare a un robot ad afferrare una tazza, progettare molecole, traduzione, speech-to-text, didascalie automatiche di immagini, battere il campione del mondo in un gioco.
+
+Definizione del task di <b>classificazione</b>.	Approssimare una funzione \(f\) dalle variabili di input \(X\) a variabili di output \(y\) <b>discrete/categoriche</b> (etichette, classi). Task <b>supervisionato</b>.
+
+Differenza tra classificazione <b>binaria</b>, <b>multi-classe</b> e <b>multi-label</b>. Come si misura?	<b>Binaria</b>: due classi. <b>Multi-classe</b>: più di due classi, una per esempio. <b>Multi-label</b>: un esempio può ricevere <b>più classi</b>.<br>Misura: <b>accuratezza</b> = percentuale di esempi classificati correttamente sul totale delle predizioni. Gli input possono essere reali o discreti.
+
+Definizione del task di <b>regressione</b>.	Approssimare una funzione \(f\) dalle variabili di input \(X\) a una variabile di output <b>continua</b> \(y\) (valore reale: quantità, importi, dimensioni). Task <b>supervisionato</b>.
+
+Cos'è una <b>regressione multivariata</b>, cos'è il <b>time series forecasting</b> e come si valuta la regressione?	<b>Multivariata</b>: più variabili di input.<br><b>Time series forecasting</b>: regressione con input <b>ordinati nel tempo</b>.<br>Valutazione: come <b>errore</b> delle predizioni, es. <b>RMSE</b> (non accuratezza, perché si predice una quantità).
+
+Definizione di <b>clustering</b>.	Organizzare oggetti in <b>gruppi i cui membri sono simili</b> in qualche modo; determina il raggruppamento intrinseco in dati <b>non etichettati</b>. È il principale task di <b>apprendimento non supervisionato</b>.
+
+Differenza tra <b>hard clustering</b> e <b>soft (fuzzy) clustering</b>. Quale algoritmo è il più usato per l'hard clustering?	<b>Hard</b>: ogni elemento appartiene a <b>uno e un solo</b> gruppo.<br><b>Soft/fuzzy</b>: un elemento può appartenere a <b>più gruppi</b>.<br>Algoritmo più usato per hard clustering: <b>k-means</b> (MacQueen, <b>1967</b>).
+
+Differenza tra apprendimento <b>simbolico</b> e <b>sub-simbolico</b>.	<b>Simbolico</b>: es. <b>alberi di decisione</b>; il modello appreso è ispezionabile e traducibile in <b>regole</b> (anche Prolog).<br><b>Sub-simbolico</b>: es. <b>neuroni artificiali</b> e reti multi-livello; conoscenza implicita nei pesi.
+
+Cosa sono gli <b>alberi di decisione</b> (ID3, C4.5) e qual è il loro vantaggio? Esempio degli hotel.	Metodo di apprendimento <b>simbolico</b> supervisionato: da un training set (attributi stelle, costo, centro, parcheggio; classe +/-) si apprende un albero traducibile in <b>regole leggibili</b>:<br><code>suggest(H) :- stelle(H,***).</code><br><code>suggest(H) :- stelle(H,**), centro(H,vicino).</code><br>Vantaggio: modello <b>comprensibile dall'uomo</b>.
+
+Definizione di <b>neurone artificiale</b>. Chi ha proposto il primo modello e quando?	Riceve un insieme di <b>input</b>, ne calcola la <b>somma pesata</b> e applica una <b>funzione di attivazione</b>; il neurone è attivo solo se l'input supera una <b>soglia</b>.<br>Primo modello matematico: <b>McCulloch e Pitts, 1943</b>, ispirato ai neuroni biologici.
+
+Scrivi l'output di un <b>percettrone a due input</b> e la condizione di appartenenza alla classe.	\[ y = H_S(w_1 x_1 + w_2 x_2 - \theta) \]con \(H_S\) funzione a gradino (Heaviside), \(\theta\) soglia.<br>Pattern nella classe se \( w_1 x_1 + w_2 x_2 - \theta > 0 \).
+
+Perché il percettrone realizza una <b>separazione lineare</b> dello spazio di input?	La condizione di classe si riscrive come \[ x_2 > -\frac{w_1}{w_2}x_1 + \frac{\theta}{w_2} \] cioè un <b>semipiano delimitato da una retta</b> (intercette \(\theta/w_1\) e \(\theta/w_2\)): da una parte classe C, dall'altra non C.
+
+Come si apprende una porta <b>AND</b> con un percettrone? Pesi trovati nei lucidi.	Regola di aggiornamento \(\Delta w = \eta\,\delta\,x\). Pesi: \(w_1 = 0.5,\ w_2 = 1,\ \theta = 1\).<br>La retta separa \((1,1)\) (unico output 1) da \((0,0),(0,1),(1,0)\): l'AND è <b>linearmente separabile</b>.
+
+Perché un singolo percettrone non può rappresentare lo <b>XOR</b>?	Il percettrone rappresenta solo <b>funzioni lineari</b> (separa con una sola retta). Nello XOR i punti positivi \((0,1),(1,0)\) e negativi \((0,0),(1,1)\) <b>non sono linearmente separabili</b>: servono reti <b>multi-livello</b>.
+
+Potere espressivo delle reti neurali in funzione del <b>numero di livelli</b>.	<ul><li><b>2 livelli</b> (percettrone): solo regioni <b>linearmente separabili</b>;</li><li><b>3 livelli</b>: <b>regioni convesse</b>, con numero di lati \(\le\) numero di neuroni nascosti;</li><li><b>4 livelli</b>: regioni di <b>qualsiasi forma</b>.</li></ul>
+
+Cos'è una <b>rete feed-forward</b> e in cosa differisce dall'approccio simbolico?	Architettura <b>multi-livello</b> (input layer, uno o più hidden layer, output layer) in cui l'informazione scorre in avanti.<br>La conoscenza <b>non è esplicita</b> ma insita nella <b>struttura della rete e nei pesi delle connessioni</b>.
+
+Enuncia il <b>teorema di approssimazione universale</b> e il suo limite.	Una rete <b>feed-forward con un solo hidden layer</b> e un numero <b>finito</b> di neuroni può approssimare <b>qualsiasi funzione continua</b> con accuratezza desiderata.<br>Limite: non dice nulla su <b>come configurare</b> la rete né come addestrarla (quali funzioni di output? quanti neuroni? quanti livelli?).
+
+Cosa è cambiato nelle reti neurali <b>dagli anni '80</b>?	Modelli di neurone più complessi con <b>funzioni non lineari</b> (es. <b>sigmoide</b>), nuove <b>architetture</b> e algoritmi di apprendimento più sofisticati.
+
+Definizione di <b>Deep Learning</b>.	Modelli e algoritmi che usano reti neurali con <b>molti neuroni e molti livelli</b> (anche centinaia); apprendono funzioni complesse cercando di individuare i dati più rilevanti. I concetti sono appresi tramite una <b>gerarchia di feature</b>, dalle più semplici alle più astratte; la rappresentazione è <b>distribuita implicitamente</b> nei livelli.
+
+Caratteristiche pratiche e limiti delle <b>Deep Neural Networks</b> citati nei lucidi.	<ul><li>Addestramento <b>computazionalmente costoso</b>;</li><li>gli algoritmi supervisionati ottengono buone prestazioni con circa <b>5.000 esempi per categoria</b> e superano gli umani con <b>10 milioni</b> di esempi;</li><li><b>non</b> sono una simulazione del cervello (che ha più neuroni e struttura più complessa); numero di neuroni paragonabile all'uomo previsto verso il <b>2050</b>.</li></ul>
+
+Cosa sono i <b>Foundation Models</b>? Tre caratteristiche.	Modelli di grande scala <b>pre-addestrati su dati ampi e diversificati</b>, poi adattati a innumerevoli applicazioni downstream ("base layer" dell'IA moderna).<ul><li><b>Addestrati su scala massiva</b> (testo, codice, immagini, ...);</li><li>architettura <b>Transformer</b>: la <b>self-attention</b> pesa le relazioni su lunghe sequenze di input;</li><li><b>general-purpose</b>: un modello trasferibile a molti task via <b>fine-tuning</b> o <b>prompting</b>.</li></ul>
+
+Differenza tra <b>IA tradizionale (narrow)</b> e <b>Foundation Models</b>.	<b>Tradizionale</b>: costruita per un task specifico, addestrata da zero ogni volta, richiede grandi dataset etichettati per task, trasferimento limitato.<br><b>Foundation</b>: pre-addestrata <b>una volta</b> su dati ampi, adattata con fine-tuning/prompting, riusata su molti task e domini, capace di <b>few-shot / zero-shot</b>.<br>Esempi: GPT, Claude, Gemini, Llama, Stable Diffusion.
+
+Cos'è l'<b>Agentic AI</b>? Quali sono le sue quattro capacità?	IA che <b>agisce</b>, non solo risponde: ragiona su un obiettivo, pianifica più passi, usa strumenti e si adatta a ciò che osserva.<ul><li><b>Perceive</b>: raccoglie contesto da ambiente, tool e passi precedenti;</li><li><b>Plan</b>: scompone un goal in sotto-task e decisioni;</li><li><b>Act</b>: chiama tool, API o altri sistemi;</li><li><b>Reflect</b>: valuta i risultati e corregge il piano.</li></ul>
+
+Descrivi l'<b>agent loop</b> e dove si applica.	<b>Observe</b> (legge stato e contesto) → <b>Plan</b> (sceglie il prossimo sotto-task migliore) → <b>Act</b> (agisce via tool o API) → <b>Reflect</b> (verifica il risultato e ricomincia).<br>Applicazioni: coding agents, research assistants, workflow automation, customer support agents.
+
+Definizione di <b>Automated Planning</b>.	Attività di problem solving che consiste nel <b>sintetizzare una sequenza di azioni</b> eseguite da un agente che porta da uno <b>stato iniziale</b> del mondo a uno <b>stato obiettivo</b> (goal).<br>Dati: stato iniziale, insieme di azioni, goal. Trovare: un <b>piano</b>, insieme <b>parzialmente o totalmente ordinato</b> di azioni.
+
+Da cosa è descritto il dominio di un <b>pianificatore automatico</b>?	<ol><li>rappresentazione dello <b>stato iniziale</b>;</li><li>rappresentazione del <b>goal</b>;</li><li>descrizione formale delle <b>azioni</b> eseguibili (<b>operatori</b>) in termini di <b>precondizioni</b> ed <b>effetti</b>.</li></ol>Il planner definisce dinamicamente il piano.
+
+Mondo dei blocchi: precondizioni ed effetti di <b>STACK(X,Y)</b> e <b>UNSTACK(X,Y)</b>.	<b>STACK(X,Y)</b>: IF holding(X) ∧ clear(Y) THEN handempty ∧ clear(X) ∧ on(X,Y).<br><b>UNSTACK(X,Y)</b>: IF handempty ∧ clear(X) ∧ on(X,Y) THEN holding(X) ∧ clear(Y).
+
+Mondo dei blocchi: precondizioni ed effetti di <b>PICKUP(X)</b> e <b>PUTDOWN(X)</b>.	<b>PICKUP(X)</b>: IF ontable(X) ∧ clear(X) ∧ handempty THEN holding(X).<br><b>PUTDOWN(X)</b>: IF holding(X) THEN ontable(X) ∧ clear(X) ∧ handempty.
+
+Elenca le principali <b>tecniche di planning</b>.	Planning deduttivo / come ricerca / lineare; planning non lineare; <b>Partial Order Planning (POP)</b>; gerarchico; condizionale; <b>graph-based</b>; per percorsi robotici; come comportamento emergente (<b>swarm intelligence</b>); <b>reinforcement learning</b> (per apprendere una policy).
+
+Cos'è la <b>swarm intelligence</b>?	Intelligenza distribuita ispirata alla natura (es. formiche che costruiscono nidi o spostano oggetti pesanti): comportamenti intelligenti che <b>emergono autonomamente senza coordinamento centrale</b> né supervisione. Porta a sistemi basati su metafore naturali, <b>robusti e adattivi</b> (swarm robotics).
+
+Come funzionano gli <b>algoritmi genetici</b>? Chi li ha sviluppati?	Ispirati all'evoluzione naturale, sviluppati negli <b>anni '70 da John Holland</b>.<br>Popolazione iniziale <b>casuale</b> → nuovi individui tramite <b>cross-over</b> (combina buone soluzioni genitrici) e <b>mutazione</b> (introduce elementi casuali); la <b>fitness</b> mantiene i migliori.<br>Utili quando un <b>modello del problema è difficile da definire</b>; la fitness non sempre è facile da definire (a volte la si chiede all'utente).
+
+Cos'è il <b>reinforcement learning</b> e quali componenti ha lo schema dei lucidi?	Apprendimento di <b>policy</b>: come agire dato lo stato del sistema.<br>Il <b>learner</b> agisce sul <b>sistema controllato</b>; un <b>critic</b> valuta e fornisce un <b>rinforzo</b> (ricompensa o punizione) con cui il learner modifica il comportamento. Es.: battere il campione del mondo in un gioco (Google).
+
+Struttura del corso <b>Fundamentals of AI and KR</b>: argomenti del <b>Modulo 1</b>.	Introduzione all'IA (storia, applicazioni, sistemi basati sulla conoscenza); problem solving come ricerca nello spazio degli stati (forward/backward reasoning, strategie di ricerca, giochi, CSP); ricerca locale, metaeuristiche, decomposizione, rilassamento di vincoli, branch-and-bound; planning (lineare, partial order, GraphPlan), scheduling.
+
+Struttura del corso: argomenti dei <b>Moduli 2 e 3</b>.	<b>Modulo 2</b> (Milano): knowledge representation and reasoning; conoscenza terminologica (reti semantiche, description logics, ontologie); azioni, situazioni, eventi; ragionamento con credenze (beliefs).<br><b>Modulo 3</b> (Calegari): incertezza e ragionamento probabilistico.
+
+Come è strutturato l'<b>esame</b> e come si calcola il voto finale?	Tre scritti indipendenti (esercizi + domande aperte): <b>Modulo 1 max 32</b> (challenge fino a +2, tetto 32), <b>Modulo 2 max 21</b>, <b>Modulo 3 max 11</b>.<br>Voto: \(\frac{M_1 + M_2 + M_3}{2}\), arrotondato tra 18 e 30; lode solo se \(\ge 31.0\).

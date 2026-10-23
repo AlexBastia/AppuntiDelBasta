@@ -1,0 +1,87 @@
+#separator:tab
+#html:true
+#notetype:Basic
+#deck:AI Knowledge Representation::02 Ricerca non informata
+
+Cos'è lo <b>spazio delle soluzioni</b> e cosa si intende per <b>ricerca</b> (search)?	Lo spazio delle soluzioni contiene tutte le possibili sequenze di azioni applicabili dall'agente; alcune portano a una soluzione.<br>La <b>ricerca</b> è il processo con cui l'agente esamina sequenze alternative di azioni che portano a stati noti e sceglie poi la migliore.
+
+Cosa prende in input e cosa restituisce un <b>algoritmo di ricerca</b>? Cos'è l'<b>esecuzione</b> (execution)?	Prende in input un <b>problema</b> e restituisce una <b>soluzione</b> sotto forma di sequenza di azioni.<br>Una volta trovata la soluzione, le azioni suggerite vengono effettivamente eseguite: questa fase si chiama <b>esecuzione</b>.
+
+Definisci <b>espansione</b> (expansion), <b>strategia di ricerca</b> (search strategy) e <b>albero di ricerca</b> (search tree).	<ul><li><b>Espansione</b>: partendo da uno stato, applicando gli operatori (funzione successore) si generano nuovi stati.</li><li><b>Strategia</b>: a ogni passo sceglie quale stato espandere.</li><li><b>Albero di ricerca</b>: rappresenta l'espansione di tutti gli stati a partire dallo stato iniziale (radice); i nodi sono stati, i rami operatori/azioni.</li></ul>
+
+Cosa rappresentano le <b>foglie</b> dell'albero di ricerca?	Le foglie rappresentano:<ul><li>stati ancora da espandere, oppure</li><li>soluzioni, oppure</li><li>vicoli ciechi (dead-ends).</li></ul>L'albero è un'esplorazione simulata, <i>off-line</i>, dello spazio degli stati.
+
+Quali sono i <b>quattro elementi</b> della <b>formulazione di un problema</b> (problem formulation)?	<ol><li><b>Stato iniziale</b> (es. \"at Arad\")</li><li><b>Funzione successore</b> \( S(x) \) = insieme di coppie azione-stato (es. \( S(\text{Arad}) = \{\langle \text{Arad}\to\text{Zerind}, \text{Zerind}\rangle, \dots\} \))</li><li><b>Test obiettivo</b> (goal test), esplicito o implicito</li><li><b>Costo del cammino</b> (path cost), con costo di passo \( c(x,a,y) \ge 0 \)</li></ol>Una <b>soluzione</b> è una sequenza di azioni che porta dallo stato iniziale al goal.
+
+Differenza tra <b>test obiettivo esplicito</b> e <b>implicito</b>? Esempi.	<ul><li><b>Esplicito</b>: si elenca lo stato goal, es. \( x = \) \"At Bucharest\".</li><li><b>Implicito</b>: il goal è descritto da una proprietà da verificare, es. \( \text{checkmate}(x) \) negli scacchi.</li></ul>
+
+Formula il problema della <b>vacanza in Romania</b> (da Arad a Bucarest).	<ul><li><b>Goal</b>: essere a Bucarest</li><li><b>Stati</b>: trovarsi in una città</li><li><b>Azioni</b>: viaggiare tra due città adiacenti</li><li><b>Soluzione</b>: sequenza di città, es. Arad, Sibiu, Fagaras, Bucharest</li><li><b>Costo</b>: es. distanza percorsa o numero di tratte</li></ul>
+
+Quali informazioni contiene un <b>nodo</b> (node) dell'albero di ricerca?	Una struttura dati che contiene:<ul><li>lo <b>stato</b></li><li>il <b>nodo padre</b></li><li>l'<b>operatore</b> applicato per ottenere il nodo</li><li>la <b>profondità</b> del nodo</li><li>il <b>costo del cammino</b> dallo stato iniziale al nodo, \( g(n) \)</li></ul>
+
+Differenza tra <b>stato</b> e <b>nodo</b>?	Lo stato è una configurazione del mondo; il nodo è una struttura dati dell'albero di ricerca che contiene uno stato più informazioni sul cammino (padre, operatore, profondità, costo). Lo stesso stato può comparire in più nodi, raggiunti da cammini diversi.
+
+Come si valuta l'<b>efficacia</b> di una strategia di ricerca? Cos'è il <b>costo totale</b>?	<ul><li>Si trova una soluzione?</li><li>È una buona soluzione? (cammino di costo minimo: costo <b>on-line</b>)</li><li>Quanto costa la ricerca? (tempo per trovare la soluzione: costo <b>off-line</b>)</li></ul>\[ \text{Costo totale} = \text{costo del cammino} + \text{costo della ricerca} \]Scegliere stati e azioni evidenzia l'importanza dell'<b>astrazione</b>.
+
+Formula il <b>gioco dell'8</b> (8-puzzle) come problema di ricerca.	Scacchiera 3×3 con 8 tessere e una casella vuota (blank).<ul><li><b>Stati</b>: posizione di ogni tessera</li><li><b>Operatori</b>: il blank si muove a destra, sinistra, su, giù</li><li><b>Test obiettivo</b>: descrizione dello stato finale</li><li><b>Costo</b>: ogni mossa costa 1</li></ul>
+
+Cos'è una <b>strategia</b> e che differenza c'è tra strategie <b>non informate</b> (uninformed) e <b>informate</b> (informed)?	La strategia è la scelta di come espandere l'albero di ricerca.<ul><li><b>Non informate</b>: non usano conoscenza del dominio; applicano le regole in modo arbitrario con ricerca esaustiva (impraticabili per problemi complessi).</li><li><b>Informate</b>: usano conoscenza del dominio, applicando le regole secondo un'<b>euristica</b>. Con un'euristica perfetta non servirebbe cercare.</li></ul>
+
+Quali sono i <b>quattro criteri</b> con cui si valutano le strategie di ricerca?	<ul><li><b>Completezza</b> (completeness): garantisce di trovare una soluzione se esiste?</li><li><b>Complessità temporale</b> (time complexity): quanto tempo serve?</li><li><b>Complessità spaziale</b> (space complexity): quanta memoria serve?</li><li><b>Ottimalità</b> (optimality): trova la soluzione migliore quando ce ne sono più di una?</li></ul>
+
+Significato dei parametri <b>b</b>, <b>d</b>, <b>m</b>, <b>l</b> nell'analisi di complessità.	<ul><li>\( b \): fattore di ramificazione massimo (branching factor)</li><li>\( d \): profondità della soluzione di costo minimo</li><li>\( m \): profondità massima dello spazio degli stati (può essere infinita)</li><li>\( l \): limite di profondità (depth limit)</li></ul>
+
+Come funziona l'<b>algoritmo generale di ricerca</b> (general search) e che ruolo ha <b>Queuing-Fn</b>?	Si mantiene una coda di nodi (fringe) inizializzata con lo stato iniziale; a ogni passo si estrae un nodo: se è goal si restituisce la soluzione, altrimenti lo si espande e i successori vengono inseriti nella coda tramite <b>Queuing-Fn</b>.<br>La strategia è determinata interamente da Queuing-Fn, cioè da <i>dove</i> si inseriscono i successori.
+
+Definizione di <b>profondità</b> (depth) di un nodo.	La radice ha profondità 0; ogni altro nodo ha profondità pari a quella del padre più 1.
+
+<b>Ricerca in ampiezza</b> (breadth-first search): quali nodi espande e come si implementa la frangia?	Espande sempre per primi i nodi <b>meno profondi</b>.<br>Frangia = coda <b>FIFO</b>: QueueingFn = aggiungi i successori in <b>fondo</b> alla coda.
+
+Proprietà della <b>ricerca in ampiezza</b> (BFS): completezza, tempo, spazio, ottimalità.	<ul><li><b>Completa</b>: sì (se \( b \) è finito)</li><li><b>Tempo</b>: \( 1 + b + b^2 + \dots + b^d = O(b^d) \), esponenziale in \( d \)</li><li><b>Spazio</b>: \( O(b^d) \), tiene in memoria tutti i nodi</li><li><b>Ottima</b>: sì se il costo è 1 per passo (costo = profondità); non ottima in generale</li></ul>
+
+Qual è il <b>principale svantaggio</b> della ricerca in ampiezza? (esempio numerico dei lucidi)	L'<b>occupazione di memoria</b> eccessiva, ancor più del tempo.<br>Con \( b=10 \), 1000 nodi/s, 100 byte/nodo: a profondità 8 servono 31 ore e 11 GB; a profondità 12, 35 anni e 111 TB; a profondità 14, 3500 anni e 11.111 TB.<br>Inoltre non ha implementazioni efficienti su sistemi a singolo processore.
+
+<b>Ricerca a costo uniforme</b> (uniform-cost search): come funziona e quando si usa al posto della BFS?	Ogni nodo è etichettato con il costo del cammino \( g(n) \); si espande sempre il nodo di <b>costo minimo</b>.<br>QueueingFn = inserisci i successori in ordine di costo del cammino crescente.<br>Si usa quando gli operatori hanno <b>costi non uniformi</b>: la BFS trova il cammino di costo minimo solo se costo = profondità.
+
+Proprietà della <b>ricerca a costo uniforme</b>.	Completa e ottima anche con costi degli operatori non uniformi; stessa complessità temporale e spaziale della BFS, \( O(b^d) \) (tabella comparativa dei lucidi).
+
+Esempio costo uniforme dei lucidi: S→A (1), S→B (5), S→C (15), A→G (10), B→G (5), C→G (5). Quale cammino trova?	Espansioni: S (0) → A (1) genera G con \( g=11 \) → B (5) genera G con \( g=10 \).<br>Viene scelto il nodo di costo minimo: G via B con costo <b>10</b> (S-B-G), non il G via A (11) generato prima.
+
+<b>Ricerca in profondità</b> (depth-first search): quali nodi espande e come si implementa la frangia?	Espande per primi i nodi <b>più profondi</b>; a parità di profondità sceglie arbitrariamente (il più a sinistra).<br>Frangia = pila <b>LIFO</b>: QueueingFn = inserisci i successori in <b>cima</b> alla pila.
+
+Proprietà della <b>ricerca in profondità</b> (DFS).	<ul><li><b>Completa</b>: no, fallisce in spazi a profondità infinita o con cicli; modificandola per evitare stati ripetuti sul cammino diventa completa negli spazi finiti</li><li><b>Tempo</b>: \( O(b^m) \), pessimo se \( m \gg d \), ma se le soluzioni sono dense può essere molto più veloce della BFS</li><li><b>Spazio</b>: \( O(bm) \), lineare</li><li><b>Ottima</b>: no</li></ul>
+
+Perché la ricerca in profondità è <b>efficiente</b> dal punto di vista implementativo?	Memorizza un solo cammino alla volta (una singola pila), quindi l'occupazione di memoria è modesta: circa \( b \cdot m \) nodi.
+
+Albero: n0 con figli n1..n4; n1→n11,n12,n13; n2→n21,n22 (n21 goal); n3→n31,n32,n33; n4→n41,n42. Evoluzione della lista L in <b>profondità</b>?	Successori in testa a L:<br>n0<br>n1, n2, n3, n4<br>n11, n12, n13, n2, n3, n4<br>n12, n13, n2, n3, n4<br>n13, n2, n3, n4<br>n2, n3, n4<br>n21, n22, n3, n4 → <b>successo</b> (n21)
+
+Stesso albero (n0; n1..n4; goal n21). Evoluzione della lista L in <b>ampiezza</b>?	Successori in coda a L:<br>n0<br>n1, n2, n3, n4<br>n2, n3, n4, n11, n12, n13<br>n3, n4, n11, n12, n13, n21, n22<br>n4, n11, …, n31, n32, n33<br>n11, …, n41, n42<br>… si scorrono n11, n12, n13 …<br>n21, n22, n31, … → <b>successo</b>.<br>Qui la BFS espande più nodi della DFS.
+
+<b>Ricerca a profondità limitata</b> (depth-limited search): come funziona?	Variante della DFS con un parametro di <b>profondità massima</b> \( l \): i nodi a profondità \( l \) sono trattati come privi di successori.<br>Raggiunto il limite o un fallimento, esplora i cammini alternativi (backtracking).<br>Evita i rami infiniti; implementabile ricorsivamente.
+
+Proprietà della <b>ricerca a profondità limitata</b>.	<ul><li>Tempo \( O(b^l) \)</li><li>Spazio \( O(bl) \)</li><li>Ottima: no</li><li>Completa: <b>sì solo se \( l \ge d \)</b>; fissare un limite non risolve necessariamente il problema della completezza</li></ul>
+
+<b>Approfondimento iterativo</b> (iterative deepening): algoritmo.	Prova tutti i limiti di profondità possibili, evitando di dover scegliere il limite:<ol><li>\( C = 0 \) (o 1)</li><li>Applica la DFS con limite \( C \); se trova una soluzione si ferma</li><li>Altrimenti incrementa \( C \) e torna al passo 2</li></ol>Emula la BFS con applicazioni ripetute della DFS a limite crescente.
+
+Proprietà dell'<b>approfondimento iterativo</b>.	<ul><li><b>Completa</b>: sì</li><li><b>Tempo</b>: \( (d+1)b^0 + d\,b^1 + (d-1)b^2 + \dots + b^d = O(b^d) \)</li><li><b>Spazio</b>: \( O(bd) \)</li><li><b>Ottima</b>: sì se il costo di passo è 1 (modificabile per esplorare un albero a costo uniforme)</li></ul>
+
+Perché nell'<b>approfondimento iterativo</b> la riespansione ripetuta dei nodi non peggiora molto il tempo? Quando è la strategia preferita?	I nodi dei livelli alti vengono rigenerati più volte, ma la maggior parte dei nodi si trova all'ultimo livello (\( b^d \)), generato una sola volta; il totale resta \( O(b^d) \).<br>Combina i vantaggi di ampiezza (completezza, ottimalità a costo unitario) e profondità (memoria lineare): è in genere la strategia preferita quando lo spazio di ricerca è <b>molto grande</b> (e la profondità della soluzione non è nota).
+
+<b>Ricerca bidirezionale</b> (bidirectional search): complessità e proprietà secondo la tabella dei lucidi.	Si cerca contemporaneamente dallo stato iniziale e dal goal (se applicabile).<ul><li>Tempo \( O(b^{d/2}) \)</li><li>Spazio \( O(b^{d/2}) \)</li><li>Ottima: sì</li><li>Completa: sì</li></ul>
+
+<b>Tabella comparativa</b>: tempo e spazio di BFS, costo uniforme, DFS, profondità limitata, approfondimento iterativo, bidirezionale.	<ul><li>Ampiezza: \( b^d \) / \( b^d \)</li><li>Costo uniforme: \( b^d \) / \( b^d \)</li><li>Profondità: \( b^m \) / \( bm \)</li><li>Prof. limitata: \( b^l \) / \( bl \)</li><li>Approf. iterativo: \( b^d \) / \( bd \)</li><li>Bidirezionale: \( b^{d/2} \) / \( b^{d/2} \)</li></ul>
+
+<b>Tabella comparativa</b>: quali strategie non informate sono <b>complete</b> e quali <b>ottime</b>?	<ul><li>Ampiezza: completa sì, ottima sì</li><li>Costo uniforme: sì, sì</li><li>Profondità: no, no</li><li>Prof. limitata: sì se \( l \ge d \), no</li><li>Approf. iterativo: sì, sì</li><li>Bidirezionale: sì, sì</li></ul>(Ottimalità di BFS e ID nel senso di costo unitario per passo.)
+
+Vero o falso: la BFS è sempre ottima.	<b>Falso</b>. Trova il cammino a costo minimo solo se il costo coincide con la profondità (costo 1 per passo). Con costi non uniformi serve la ricerca a <b>costo uniforme</b>.
+
+Vero o falso: la ricerca in profondità limitata è sempre completa perché elimina i rami infiniti.	<b>Falso</b>. Evita i rami infiniti, ma è completa solo se \( l \ge d \): se il limite è inferiore alla profondità della soluzione, la soluzione non viene trovata.
+
+Quale strategia non informata ha il miglior compromesso tra <b>memoria</b> e <b>completezza/ottimalità</b>? Perché?	L'<b>approfondimento iterativo</b>: completo e ottimo (costo unitario) come la BFS, tempo \( O(b^d) \), ma spazio solo \( O(bd) \) come la DFS.
+
+Esercizio 1 (3 tessere e un blank, griglia 2×2): come cambia lo <b>spazio degli stati</b> se si vietano le mosse che tornano a uno stato già presente <b>sullo stesso cammino</b>?	I rami che riproducono uno stato già visto sul cammino (marcati <b>Loop</b>) vengono potati: l'albero diventa finito e la DFS non può più cadere in cicli infiniti (diventa completa nello spazio finito).<br>Nel testo, ordine degli operatori: blank a destra, sinistra, su, giù.
+
+Esercizio 2 (secchi da 5 L pieno e 2 L vuoto, si può travasare o buttare acqua; goal: 1 L nel secondo). Dopo quanti passi si raggiunge il goal?	Cammino soluzione: \( (5,0) \to (3,2) \to (3,0) \to (1,2) \to (1,0) \to (0,1) \), cioè il goal è a profondità <b>5</b>.<br>Nello spazio molti rami terminano in <b>FAIL</b> (es. \( (0,0) \), acqua esaurita) o <b>LOOP</b> (stato ripetuto). La BFS lo trova esplorando tutti i livelli fino al 5; la DFS dipende dall'ordine degli operatori e dai loop evitati.
+
+Esercizio 3 (12 monete in pile \( \langle 4,7,1\rangle \); si spostano monete da A a B solo se raddoppiano B; goal \( \langle 4,4,4\rangle \)). Qual è la soluzione?	Successori di \( \langle 4,7,1\rangle \): \( \langle 3,7,2\rangle \), \( \langle 4,6,2\rangle \), \( \langle 8,3,1\rangle \).<br>Da \( \langle 4,6,2\rangle \) (spostando 2 dalla pila 2 alla 3, che raddoppia a 4) si ottiene \( \langle 4,4,4\rangle \): soluzione a profondità <b>2</b>: \( \langle 4,7,1\rangle \to \langle 4,6,2\rangle \to \langle 4,4,4\rangle \).<br>In ampiezza è il 10° nodo generato; in profondità (primo figlio a sinistra) si scende prima nel ramo \( \langle 3,7,2\rangle \).
+

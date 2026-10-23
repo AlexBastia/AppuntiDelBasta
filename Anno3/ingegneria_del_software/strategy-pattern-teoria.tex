@@ -1,0 +1,1806 @@
+\documentclass{report}
+
+\input{../LatexTemp/preamble}
+\input{../LatexTemp/macros}
+\input{../LatexTemp/letterfonts}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{array}
+\usepackage{longtable}
+\PassOptionsToPackage{hyphens}{url}
+\usepackage{url}
+\Urlmuskip=0mu plus 1mu
+
+%==============================================================
+\definecolor{codebg}{HTML}{F7F7FB}
+\definecolor{codekw}{HTML}{2D6FB1}
+\definecolor{codecm}{HTML}{388C46}
+\definecolor{codestr}{HTML}{C74440}
+\definecolor{coderule}{HTML}{CCCCCC}
+
+\lstset{
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{codekw}\bfseries,
+    commentstyle=\color{codecm}\itshape,
+    stringstyle=\color{codestr},
+    numberstyle=\tiny\color{gray},
+    showstringspaces=false,
+    breaklines=true,
+    breakatwhitespace=false,
+    frame=single,
+    rulecolor=\color{coderule},
+    backgroundcolor=\color{codebg},
+    tabsize=2,
+    columns=fullflexible,
+    keepspaces=true,
+    captionpos=b,
+    xleftmargin=1.2em,
+    aboveskip=0.9em,
+    belowskip=0.9em,
+}
+
+\newcommand{\code}[1]{\texttt{\small #1}}
+\newcommand{\fonteslide}[1]{{\footnotesize\itshape\color{gray} Fonte: slide \emph{L04}, pag.~#1.\par}}
+\newcommand{\fontelibro}[1]{{\footnotesize\itshape\color{gray} Fonte: \emph{Thinking in C++} (Eckel), Vol.~2, #1.\par}}
+\newcommand{\fonteprove}[1]{{\footnotesize\itshape\color{gray} Misurato in \code{prove/strategy/#1} (compilato ed eseguito).\par}}
+
+\graphicspath{{./img/}}
+
+%==============================================================
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \vspace*{2.0cm}
+    {\Huge\sffamily\bfseries Strategy Pattern\par}
+    \vspace{0.35cm}
+    {\LARGE\sffamily L'infrastruttura dei linguaggi\par}
+    \vspace{0.9cm}
+    {\large\sffamily Nested class, inner class, local class\\
+    e i loro equivalenti\par}
+    \vspace{1.0cm}
+    {\LARGE\sffamily Java \quad$\cdot$\quad C++ \quad$\cdot$\quad Python \quad$\cdot$\quad C\par}
+    \vspace{1.3cm}
+    {\Large Appunti di Ingegneria del Software\par}
+    \vspace{1.3cm}
+    {\footnotesize\itshape Il pattern in se' e' dato per noto: qui interessa
+    \textbf{con quali meccanismi del linguaggio} lo si costruisce, e cosa
+    cambia nel comportamento a seconda della forma scelta.\\[6pt]
+    Ogni affermazione tecnica di questo documento e' stata
+    \textbf{misurata} compilando ed eseguendo
+    (g++ 15.2.1, gcc 15.2.1, JDK 21, Python 3.13):\\
+    i sorgenti sono in \code{prove/strategy/}.\par}
+    \vfill
+    {\large Anno 3\par}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+%==============================================================
+\chapter{Il problema infrastrutturale}\label{ch:infra}
+%==============================================================
+
+\section{Cosa serve, meccanicamente, per fare Strategy}
+
+Il pattern richiede due sole capacita' dal linguaggio:
+
+\begin{enumerate}
+    \item \textbf{memorizzare un riferimento a del codice} in una
+          struttura dati;
+    \item \textbf{sostituirlo} con un altro riferimento.
+\end{enumerate}
+
+Tutto il resto (interfacce, classi astratte, ereditarieta') e' un
+\emph{modo} di ottenere queste due cose, non un requisito. I meccanismi
+disponibili sono quattro: \textbf{puntatori a funzione} nativi,
+\textbf{first-class function}, \textbf{classi o istanze di classi},
+\textbf{reflection}.
+
+\mprop{Perche' le slide del corso parlano di late binding}{
+    Le slide aprono con una motivazione che spiega tutto il resto:
+    \begin{quote}\itshape
+    ``Here we reflect substantially on how the strategy pattern is
+    achieved in Java. This is at the core of polymorphism via overriding
+    and late binding. \textbf{Indeed, this is also because we do not use
+    pointers to functions.}''
+    \end{quote}
+    Java non ha puntatori a funzione: deve ottenere lo stesso risultato con
+    \textbf{oggetti} e \textbf{late binding}. E' per questo che le slide,
+    prima di arrivare al pattern, dedicano trenta pagine a
+    \emph{nested class}, \emph{inner class}, \emph{local class},
+    \emph{classi anonime} e \emph{interfacce}: sono l'infrastruttura con
+    cui, in Java, si impacchetta una strategia.
+}
+
+\fonteslide{4}
+
+\section{Il punto di partenza: la frase-chiave delle slide}
+
+\begin{quote}\itshape
+``In Java and in C++ it's possible to place a class definition within
+another class definition. \textbf{In C++ this is just related to
+visibility and naming. In Java the matter is deeper}; we can distinguish
+between \emph{nested classes}, \emph{inner classes} and \emph{local
+classes}.''
+\end{quote}
+
+\fonteslide{6}
+
+Questo documento prende quella frase e la verifica in tutti e quattro i
+linguaggi, misurando che cosa cambia davvero.
+
+\section{La mappa: quale forma esiste in quale linguaggio}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\setlength{\tabcolsep}{4pt}
+\footnotesize
+\begin{tabular}{|>{\raggedright\arraybackslash}p{3.1cm}|>{\centering\arraybackslash}p{2.5cm}|>{\centering\arraybackslash}p{2.5cm}|>{\centering\arraybackslash}p{2.5cm}|>{\centering\arraybackslash}p{2.2cm}|}
+\hline
+ & \textbf{Java} & \textbf{C++} & \textbf{Python} & \textbf{C} \\
+\hline
+classe annidata (namespacing) & si' (\code{static}) & si' & si' & \textbf{no}: il nome resta globale \\
+\hline
+legame implicito con l'istanza esterna & \textbf{si'} (inner class) & no & no & no \\
+\hline
+classe locale in una funzione & si' & si' & si' & solo la \code{struct}, senza metodi \\
+\hline
+la classe locale cattura le variabili locali & si' (\emph{effectively final}) & \textbf{NO} & \textbf{si'} (closure) & no \\
+\hline
+classe anonima / senza nome & si' & lambda & \code{type()} o lambda & no \\
+\hline
+puntatori a funzione & no & si' & (funzioni first-class) & \textbf{si'} \\
+\hline
+\end{tabular}
+\end{center}
+
+\nt{
+    Le due caselle piu' sorprendenti, entrambe verificate col compilatore:
+    \begin{itemize}
+        \item in \textbf{C++} una classe locale \textbf{non puo'} leggere
+              le variabili automatiche della funzione che la contiene ---
+              cosa che in Java e Python si fa normalmente;
+        \item in \textbf{C} annidare una \code{struct} \textbf{non crea
+              alcuno scope}: il nome e' visibile anche fuori (in C++ la
+              stessa riga e' un errore).
+    \end{itemize}
+}
+
+\section{L'esempio comune: \texttt{SimpleCalc}}
+
+Per confrontare i quattro linguaggi a parita' di problema, tutti gli
+esempi implementano la stessa \textbf{calcolatrice} delle slide
+(\code{SimpleCalc}, pagg.~37--50), resa \emph{headless} per poter girare
+senza display grafico:
+
+\begin{itemize}
+    \item \textbf{Strategy} $=$ \code{Operazione}, con un metodo
+          \code{applica(a, b)};
+    \item \textbf{Context} $=$ \code{Calcolatrice}, che tiene un
+          accumulatore e l'operazione corrente, e vi \emph{delega};
+    \item \textbf{ConcreteStrategy} $=$ le singole operazioni,
+          implementate ogni volta con una forma di classe diversa.
+\end{itemize}
+
+Il calcolo di prova e' sempre lo stesso: \code{20 \(\langle\)op\(\rangle\)
+6}, cosi' i risultati sono confrontabili a colpo d'occhio fra linguaggi.
+
+%==============================================================
+\chapter{Java: l'interfaccia come tipo Strategy}\label{ch:interfacce}
+%==============================================================
+
+Prima di scegliere \emph{dove} mettere l'implementazione (nested, inner,
+local, anonima --- capitolo~\ref{ch:java}), bisogna dichiarare il
+\textbf{tipo} della strategia. In Java quel tipo e' quasi sempre
+un'\textbf{interfaccia}, ed e' il costrutto a cui le slide dedicano piu'
+spazio (pagg.~13--36).
+
+\section{Dichiarazione}
+
+\dfn{Interface (slide 13)}{
+    Una dichiarazione di interfaccia introduce un \textbf{nuovo reference
+    type} i cui membri sono classi, interfacce, costanti e metodi. Questo
+    tipo \textbf{non ha variabili di istanza} e tipicamente dichiara uno o
+    piu' \textbf{metodi astratti}; classi altrimenti \emph{non
+    imparentate} possono implementarla fornendone le implementazioni.
+    \\[3pt]
+    Le interfacce \textbf{non possono essere istanziate}: possono solo
+    essere implementate da classi o estese da altre interfacce.
+    Contengono solo costanti, firme di metodi, default method, static
+    method e tipi annidati.
+}
+
+\fonteslide{13}
+
+\begin{lstlisting}[language=Java]
+public interface Bicycle {
+    void changeCadence(int newValue);
+    void changeGear(int newValue);
+    void speedUp(int increment);
+    void applyBrakes(int decrement);
+}
+\end{lstlisting}
+
+\fonteslide{14}
+
+\mprop{Perche' Java ammette l'ereditarieta' multipla di interfacce}{
+    Le slide danno la ragione precisa: le interfacce
+    \emph{``support single and multiple inheritance, since \textbf{the
+    absence of instance data eliminates the ambiguities} of, say, C++''}.
+    \\[3pt]
+    Non avendo stato di istanza, non esiste il problema dei
+    \textbf{dati duplicati} che in C++ richiede l'ereditarieta' virtuale.
+    Resta solo il problema del \emph{comportamento} duplicato, risolto
+    dalle due regole della sezione~\ref{sec:regole}.
+}
+
+\fonteslide{14}
+
+\begin{Example}{Verificato: un'interfaccia ha davvero solo costanti}{}
+Interrogando a runtime i campi dichiarati in un'interfaccia con costanti:
+\begin{lstlisting}
+campi dichiarati in un'interfaccia:
+  E  ->  static=true final=true public=true
+\end{lstlisting}
+Tutte le costanti sono \textbf{implicitamente} \code{public static
+final}; tutti i metodi abstract, default e static sono
+\textbf{implicitamente} \code{public}. Nessuno stato di istanza, come
+promesso.
+\end{Example}
+
+\fonteslide{15}
+\fonteprove{NL5\_Java\_Interfacce.java}
+
+\section{Implementazione}
+
+\begin{lstlisting}[language=Java]
+class BianchiBicycle implements Bicycle {
+  int cadence = 0, speed = 0, gear = 1;
+  // Il compilatore RICHIEDE che changeCadence, changeGear, speedUp e
+  // applyBrakes siano tutti implementati: la compilazione FALLISCE se
+  // uno di essi manca.
+  void changeCadence(int newValue) { cadence = newValue; }
+  // ...
+}
+\end{lstlisting}
+
+\fonteslide{16}
+
+\section{Default e static method}
+
+\dfn{Default e static method (slide 15, 29)}{
+    Un \textbf{default method} (parola chiave \code{default}) ha un corpo
+    e \textbf{puo' essere sovrascritto}: e' il meccanismo che permette
+    l'\emph{evoluzione} di un'interfaccia, supportando l'implementazione
+    non obbligatoria di tutti i metodi nelle classi.
+    \\[3pt]
+    Un \textbf{static method} serve per comportamenti generali
+    dell'interfaccia: \textbf{non} puo' accedere a dati non-static e
+    \textbf{non} puo' essere sovrascritto.
+}
+
+\fonteslide{29}
+
+\begin{Example}{Il problema che i default risolvono (esempio Oracle)}{}
+Data un'interfaccia gia' pubblicata e usata da altri:
+\begin{lstlisting}[language=Java]
+public interface DoIt {
+   void doSomething(int i, double x);
+   int  doSomethingElse(String s);
+}
+\end{lstlisting}
+volendo aggiungere un metodo, \textbf{tutto il codice delle vecchie
+implementazioni si romperebbe}, perche' non ha quel metodo. Con
+\code{default} il problema sparisce:
+\begin{lstlisting}[language=Java]
+public interface DoIt {
+   void doSomething(int i, double x);
+   int  doSomethingElse(String s);
+   default boolean didItWork(int i, double x, String s) {
+       // Method body
+   }
+}
+\end{lstlisting}
+\textbf{Verificato:} una classe scritta \emph{prima} dell'aggiunta di
+\code{didItWork} continua a compilare e a funzionare, ereditando il
+default.
+\end{Example}
+
+\fonteslide{30-32}
+\fonteprove{NL5\_Java\_Interfacce.java}
+
+\section{Le due regole di risoluzione dei conflitti}\label{sec:regole}
+
+Default e abstract method si ereditano come metodi di istanza. Ma quando
+i supertipi forniscono \textbf{piu' default method con la stessa firma},
+il compilatore applica due principi:
+
+\mprop{Le due regole (slide 17)}{
+    \begin{enumerate}
+        \item i \textbf{metodi di istanza sono preferiti} ai default
+              method delle interfacce;
+        \item i metodi \textbf{gia' sovrascritti da altri candidati sono
+              ignorati} --- circostanza che si presenta quando i supertipi
+              condividono un antenato comune.
+    \end{enumerate}
+}
+
+\fonteslide{17}
+
+\subsection{Regola 1: l'istanza vince}
+
+\begin{lstlisting}[language=Java]
+public class Horse {
+  public String identifyMyself() { return "I am a horse."; }
+}
+public interface Flyer {
+  default public String identifyMyself() { return "I am able to fly."; }
+}
+public interface Mythical {
+  default public String identifyMyself() {
+      return "I am a mythical creature."; }
+}
+public class Pegasus extends Horse implements Flyer, Mythical { }
+\end{lstlisting}
+
+\textbf{Output verificato:} \code{Pegasus.identifyMyself()} restituisce
+\emph{``I am a horse.''} --- il metodo di istanza ereditato dalla
+\emph{classe} \code{Horse} vince sui default delle due interfacce.
+
+\fonteslide{18-19}
+
+\subsection{Regola 2: i gia' sovrascritti sono ignorati}
+
+\begin{lstlisting}[language=Java]
+public interface Animal {
+    default public String identifyMyself() { return "I am an animal."; }
+}
+public interface EggLayer extends Animal {
+    default public String identifyMyself() { return "I am able to lay eggs."; }
+}
+public interface FireBreather extends Animal { }      // NON fa override
+
+public class Dragon implements EggLayer, FireBreather { }
+\end{lstlisting}
+
+\textbf{Output verificato:} \emph{``I am able to lay eggs.''} ---
+\code{EggLayer} ha gia' sovrascritto il default di \code{Animal}, quindi
+quello di \code{Animal} (che \code{FireBreather} porterebbe) viene
+\textbf{ignorato}. Nessuna ambiguita', nessun override necessario.
+
+\fonteslide{20-21}
+
+\subsection{Il conflitto vero: due default indipendenti}
+
+Quando due default \textbf{indipendenti} confliggono (o un default
+confligge con un abstract), il compilatore \textbf{produce un errore} e
+si e' obbligati a fare l'override esplicito.
+
+\begin{lstlisting}[language=Java]
+public interface OperateCar {
+    default public int startEngine(EncryptedKey key) { /* impl */ }
+}
+public interface FlyCar {
+    default public int startEngine(EncryptedKey key) { /* impl */ }
+}
+public class FlyingCar implements OperateCar, FlyCar { }   // ERRORE
+\end{lstlisting}
+
+\textbf{Errore reale prodotto dal compilatore:}
+
+\begin{lstlisting}
+error: types OperateCar and FlyCar are incompatible;
+  class FlyingCar inherits unrelated defaults for
+  startEngine(EncryptedKey) from types OperateCar and FlyCar
+\end{lstlisting}
+
+La correzione, con la sintassi \code{Interfaccia.super.metodo()}:
+
+\begin{lstlisting}[language=Java]
+public class FlyingCar implements OperateCar, FlyCar {
+    public int startEngine(EncryptedKey key) {
+        FlyCar.super.startEngine(key);
+        OperateCar.super.startEngine(key);
+    }
+}
+\end{lstlisting}
+
+\nt{
+    Il nome che precede \code{super} deve riferirsi a una
+    \textbf{superinterfaccia diretta} che definisce o eredita un default
+    per quel metodo. Questa forma di invocazione non e' limitata al caso
+    del conflitto: \code{super} si puo' usare per invocare un default
+    method sia in classi sia in interfacce.
+}
+
+\fonteslide{22-25}
+\fonteprove{NL5\_Java\_Interfacce.java}
+
+\subsection{Un metodo di istanza ereditato soddisfa un abstract}
+
+\begin{lstlisting}[language=Java]
+public interface Mammal { String identifyMyself(); }   // ASTRATTO
+public class Horse { public String identifyMyself() { return "I am a horse."; } }
+
+public class Mustang extends Horse implements Mammal { }   // non implementa nulla!
+\end{lstlisting}
+
+\textbf{Output verificato:} \emph{``I am a horse.''} --- \code{Mustang}
+eredita \code{identifyMyself()} da \code{Horse}, e quel metodo concreto
+\textbf{soddisfa} il contratto astratto di \code{Mammal}.
+
+\fonteslide{26-27}
+
+\subsection{Il riepilogo delle slide}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\footnotesize
+\begin{tabular}{|>{\raggedright\arraybackslash}p{4.0cm}|>{\centering\arraybackslash}p{4.0cm}|>{\centering\arraybackslash}p{4.0cm}|}
+\hline
+ & \textbf{Metodo di istanza della superclasse} & \textbf{Metodo static della superclasse} \\
+\hline
+\textbf{Metodo di istanza della sottoclasse} & \emph{Overrides} & errore di compilazione \\
+\hline
+\textbf{Metodo static della sottoclasse} & errore di compilazione & \emph{Hides} \\
+\hline
+\end{tabular}
+\end{center}
+
+\fonteslide{28}
+
+\section{Il listener: l'interfaccia a un solo metodo}
+
+Le slide arrivano allo Strategy attraverso gli \textbf{event listener} di
+Swing. Un listener \emph{e'} un'interfaccia con un solo metodo:
+
+\begin{lstlisting}[language=Java]
+public interface ActionListener extends EventListener {
+    public void actionPerformed(ActionEvent e);
+}
+\end{lstlisting}
+
+\fonteslide{36}
+
+\mprop{ActionListener \emph{e'} una Strategy}{
+    \begin{itemize}
+        \item l'\textbf{interfaccia} \code{ActionListener} e' il tipo
+              Strategy: incapsula ``cosa fare quando succede l'evento'';
+        \item il \code{JButton} e' il \textbf{Context}: non sa cosa fara'
+              il listener, lo invoca e basta;
+        \item \code{addActionListener()} e' l'\textbf{iniezione} della
+              strategia.
+    \end{itemize}
+    Le slide notano anche il vantaggio pratico: piu' componenti grafici
+    possono condividere \textbf{lo stesso} listener, se fanno la stessa
+    cosa --- che e' esattamente il riuso promesso dallo Strategy.
+}
+
+\fonteslide{34-35}
+
+\section{Functional interface: il ponte verso le lambda}
+
+\begin{Prop}{Verificato: una lambda richiede UN SOLO metodo astratto}{}
+    Contando a runtime i metodi astratti dichiarati:
+\begin{lstlisting}
+MioActionListener    metodi astratti: 1  -> e' una FUNCTIONAL INTERFACE
+Bicycle              metodi astratti: 4  -> NON e' functional
+\end{lstlisting}
+    Provando a implementare \code{Bicycle} con una lambda:
+\begin{lstlisting}
+error: incompatible types: Bicycle is not a functional interface
+    multiple non-overriding abstract methods found in interface Bicycle
+\end{lstlisting}
+    E' per questo che i \textbf{default method contano} anche qui:
+    aggiungere default method a un'interfaccia \textbf{non} le fa perdere
+    lo status di functional interface, perche' i default non sono
+    astratti. Un'interfaccia puo' avere venti default method e restare
+    implementabile con una lambda.
+\end{Prop}
+
+\fonteprove{NL5\_Java\_Interfacce.java}
+
+%==============================================================
+\chapter{Java: quattro forme piu' la lambda}\label{ch:java}
+%==============================================================
+
+\section{Le tre categorie delle slide}
+
+\dfn{Nested class}{
+    Una classe dentro un'altra, dichiarata \code{static}. Serve per
+    \textbf{naming e packaging}: permette di \emph{nascondere l'esistenza}
+    di una classe al mondo esterno e di raggruppare classi che
+    appartengono logicamente insieme. Il nome e' \textbf{locale alla
+    classe che la racchiude}.
+    \\[3pt]
+    \textbf{Vincolo:} le dichiarazioni in una nested class possono usare
+    \textbf{solo i membri \code{static}} della classe esterna.
+}
+
+\fonteslide{7}
+
+\dfn{Inner class}{
+    Una classe dentro un'altra \textbf{senza} \code{static}. In Java
+    ``dichiarare semplicemente una classe dentro il corpo di un'altra,
+    senza ulteriori qualificazioni, produce una inner class''.
+    \\[3pt]
+    Ogni istanza ha una \textbf{enclosing instance} e puo' usarne i
+    membri --- \emph{anche quelli di istanza}. Non puo' avere membri
+    \code{static}, ne' lo stesso nome della classe che la racchiude.
+}
+
+\fonteslide{8, 11}
+
+\dfn{Local class}{
+    Una classe dichiarata \textbf{dentro il corpo di una funzione}. Utile
+    quando servono codice e strutture dati per compiti specifici dentro
+    una funzione, senza renderli disponibili all'esterno: e' un mezzo per
+    imporre \textbf{incapsulamento a livello di scope di funzione}. Il
+    nome e' locale allo scope che la racchiude.
+    \\[3pt]
+    In Java le local class sono \textbf{a tutti gli effetti inner class},
+    non semplici nested: accedono ai membri della classe esterna, alle
+    variabili locali \code{final} e ai parametri.
+}
+
+\fonteslide{12}
+
+\begin{Example}{L'esempio canonico delle slide}{}
+\begin{lstlisting}[language=Java]
+public class X {
+  int instanceVar;           // appartiene a un'istanza di X
+  static int staticVar;      // appartiene alla classe X
+
+  private class Inner {                      // INNER (non static)
+    int y;
+    Inner() { y = instanceVar + staticVar; } // puo' usare ENTRAMBI
+  }
+
+  private static class Nested {              // NESTED (static)
+    int x;
+    Nested() {
+      x = staticVar;
+      // x += instanceVar;   // Errore! nessuna istanza di X disponibile
+    }
+  }
+}
+\end{lstlisting}
+La differenza sta in \emph{una sola parola chiave}, ma cambia la natura
+della classe: \code{Nested} e' una classe come le altre, \code{Inner} non
+esiste senza un oggetto \code{X} che la ospiti.
+\end{Example}
+
+\fonteslide{9}
+
+\section{La sintassi di creazione}
+
+\begin{Prop}{\texttt{esterno.new Inner()}}{}
+    Una nested class si istanzia come una classe normale, col nome
+    qualificato. Una \textbf{inner} class richiede una sintassi speciale,
+    perche' serve \emph{un'istanza dell'esterno}:
+\begin{lstlisting}[language=Java]
+// nested (static): il nome e' qualificato dalla CLASSE
+Calcolatrice.Somma s = new Calcolatrice.Somma();
+
+// inner: il nome e' qualificato da un'ISTANZA
+NL1_Java_SimpleCalc esterno = new NL1_Java_SimpleCalc();
+Operazione inner = esterno.new MoltiplicaPerCampo();
+\end{lstlisting}
+    Provare a scrivere \code{new MoltiplicaPerCampo()} da un contesto
+    \code{static} e' un errore di compilazione: non c'e' nessuna
+    enclosing instance da agganciare.
+\end{Prop}
+
+\section{Le tre classi dello Strategy in Java}
+
+\subsection{Strategy e Context}
+
+\begin{lstlisting}[language=Java]
+// STRATEGY: un'interfaccia ANNIDATA (le interfacce annidate sono
+// sempre implicitamente static)
+interface Operazione {
+    int applica(int a, int b);
+    default String simbolo() { return "?"; }
+}
+
+// CONTEXT: tiene lo stato (l'accumulatore) e delega alla strategia
+static class Calcolatrice {
+    private int accumulatore = 0;
+    private Operazione operazione;             // la STRATEGIA
+
+    void setOperazione(Operazione op) { this.operazione = op; }
+
+    void premiNumero(int n) {                  // i "bottoni" delle slide
+        if (operazione == null) { accumulatore = n; return; }
+        accumulatore = operazione.applica(accumulatore, n);  // <- delega
+    }
+    int display() { return accumulatore; }
+}
+\end{lstlisting}
+
+\subsection{Forma A --- static nested}
+
+\begin{lstlisting}[language=Java]
+static int contatoreStatico = 0;        // membro STATIC dell'esterna
+private int campoDiIstanza = 100;       // membro di ISTANZA
+
+static class Somma implements Operazione {   // <- static: e' NESTED
+    @Override public int applica(int a, int b) {
+        contatoreStatico++;             // OK: membro static
+        // campoDiIstanza;              // ERRORE: non c'e' un'istanza!
+        return a + b;
+    }
+    @Override public String simbolo() { return "+"; }
+}
+\end{lstlisting}
+
+\textbf{Perche' questa forma:} la strategia non ha bisogno di conoscere lo
+stato di un particolare oggetto \code{Calcolatrice}; \code{static} lo
+dichiara esplicitamente ed evita di tenere in vita l'oggetto esterno.
+E' la forma da preferire per default.
+
+\subsection{Forma B --- inner class}
+
+\begin{lstlisting}[language=Java]
+class MoltiplicaPerCampo implements Operazione {   // NON static: INNER
+    @Override public int applica(int a, int b) {
+        // legge il campo di ISTANZA dell'oggetto esterno:
+        return a * b % campoDiIstanza;
+    }
+    @Override public String simbolo() { return "*%" + campoDiIstanza; }
+}
+\end{lstlisting}
+
+\textbf{Perche' questa forma:} e' la scelta delle slide per i bottoni
+\code{+} e \code{-} di \code{SimpleCalc}. Il commento della slide 43 e'
+esplicito: \emph{``this also has the advantage of allowing the inner class
+access to the components defined within the outer class''}. La strategia
+deve leggere e scrivere \code{currentCalc} e \code{calcOperation} della
+calcolatrice: una inner class lo fa senza che si debba passare nulla.
+
+\begin{Example}{La prova che il legame e' vivo (output reale)}{}
+Lo \textbf{stesso} oggetto-strategia, dopo aver modificato un campo
+dell'\emph{oggetto esterno}:
+\begin{lstlisting}
+campoDiIstanza=100 -> 20*6 % 100 = 20
+campoDiIstanza=7   -> 20*6 % 7   = 1
+\end{lstlisting}
+E creando l'inner class da \emph{un'altra} istanza esterna:
+\begin{lstlisting}
+inner di un'ALTRA istanza (campo=1000): 120
+\end{lstlisting}
+Non si tratta di una copia del valore fatta alla costruzione: la
+strategia \textbf{legge lo stato dell'enclosing instance al momento della
+chiamata}. Due istanze esterne danno due ``mondi'' separati.
+\end{Example}
+
+\fonteprove{NL1\_Java\_SimpleCalc.java}
+
+\subsection{Forma C --- local class}
+
+\begin{lstlisting}[language=Java]
+static Operazione creaSottrazioneLimitata(int minimo) {
+    // 'minimo' e' effectively final: catturabile
+    class SottrazioneLimitata implements Operazione {   // visibile SOLO qui
+        @Override public int applica(int a, int b) {
+            return Math.max(a - b, minimo);   // <- CATTURA 'minimo'
+        }
+        @Override public String simbolo() { return "-(>=" + minimo + ")"; }
+    }
+    return new SottrazioneLimitata();
+    // fuori dal metodo il NOME 'SottrazioneLimitata' non esiste piu'
+}
+\end{lstlisting}
+
+\textbf{Perche' questa forma:} la classe serve solo a costruire
+\emph{quel} particolare oggetto, e non ha senso come tipo pubblico. Il
+nome resta confinato al metodo (incapsulamento a livello di funzione), ma
+il \emph{tipo} continua a esistere: l'oggetto restituito e' perfettamente
+utilizzabile fuori, attraverso l'interfaccia.
+
+\mprop{La regola della cattura: \emph{effectively final}}{
+    Una local class (e una classe anonima) puo' catturare una variabile
+    locale solo se questa non viene mai riassegnata dopo
+    l'inizializzazione. Il motivo e' che la cattura avviene
+    \textbf{per valore}: il compilatore copia il valore nell'oggetto, e
+    permettere riassegnazioni successive creerebbe due copie divergenti.
+    \\[3pt]
+    Nota la differenza rispetto ai \emph{campi}: la forma B legge
+    \code{campoDiIstanza} \emph{ogni volta}, e infatti lo vede cambiare;
+    la forma C ha una copia di \code{minimo} congelata alla creazione.
+}
+
+\subsection{Forma D --- classe anonima}
+
+\begin{lstlisting}[language=Java]
+static Operazione divisioneSicura() {
+    return new Operazione() {              // <- classe SENZA nome
+        @Override public int applica(int a, int b) {
+            return b == 0 ? a : a / b;
+        }
+        @Override public String simbolo() { return "/"; }
+    };
+}
+\end{lstlisting}
+
+\textbf{Perche' questa forma:} le slide la introducono con una motivazione
+di ingegneria del software, non di sintassi. Quando \emph{ogni} bottone ha
+un comportamento diverso, avere una classe con nome per ciascuno
+provocherebbe una \emph{``proliferation of standard classes, making the
+code not readable''}. Con le classi anonime \emph{``the behaviour
+associated with a button is placed right where such button is
+instantiated''}.
+
+\fonteslide{47}
+
+\wc{La classe anonima e' ``un pezzo di codice passato come parametro''}{
+    Le slide insistono su questo punto: \emph{``we get the impression that
+    a piece of code could be the parameter of the call of the method
+    \code{addActionListener}. \textbf{But it is not so}: it is a fully
+    fledged (anonymous) class that is created, and an object of it is then
+    instantiated and passed as a parameter''}.
+    \\[3pt]
+    E' la conferma della slide 4: Java non passa funzioni, passa
+    \textbf{oggetti}. La sintassi concisa maschera un oggetto vero.
+}
+
+\fonteslide{49}
+
+\subsection{Forma E --- lambda}
+
+\begin{lstlisting}[language=Java]
+c.setOperazione((a, b) -> a > b ? a : b);   // lambda
+c.setOperazione(Math::sqrt);                 // method reference
+\end{lstlisting}
+
+Possibile perche' \code{Operazione} ha un solo metodo astratto
+(\emph{functional interface} de facto).
+
+\section{La misura decisiva: i nomi generati dal compilatore}
+
+Le cinque forme non sono varianti stilistiche: producono \textbf{artefatti
+diversi}. Chiedendo a runtime il nome della classe di ciascuna strategia,
+si ottiene (output reale):
+
+\begin{lstlisting}
+A static nested -> NL1_Java_SimpleCalc$Somma
+B inner         -> NL1_Java_SimpleCalc$MoltiplicaPerCampo
+C local         -> NL1_Java_SimpleCalc$1SottrazioneLimitata
+D anonima       -> NL1_Java_SimpleCalc$1
+E lambda        -> NL1_Java_SimpleCalc$$Lambda/0x000000003f041000
+\end{lstlisting}
+
+E i file effettivamente prodotti da \code{javac}:
+
+\begin{lstlisting}
+NL1_Java_SimpleCalc$1.class                      <- anonima
+NL1_Java_SimpleCalc$1SottrazioneLimitata.class   <- local
+NL1_Java_SimpleCalc$Calcolatrice.class
+NL1_Java_SimpleCalc$MoltiplicaPerCampo.class     <- inner
+NL1_Java_SimpleCalc$Operazione.class
+NL1_Java_SimpleCalc$Somma.class                  <- nested
+NL1_Java_SimpleCalc.class
+\end{lstlisting}
+
+\mprop{Cosa insegna questo elenco}{
+    \begin{itemize}
+        \item nested e inner producono un \code{.class} col
+              \textbf{proprio nome} (\code{\$Somma},
+              \code{\$MoltiplicaPerCampo}): sono tipi a pieno titolo,
+              distinguibili;
+        \item la \textbf{local class} ha un \textbf{numero davanti al
+              nome} (\code{\$1SottrazioneLimitata}): il numero serve
+              perche' due metodi diversi potrebbero dichiarare due local
+              class omonime;
+        \item la \textbf{anonima} ha \textbf{solo un numero}
+              (\code{\$1}): non ha un nome da conservare;
+        \item la \textbf{lambda} \textbf{non ha alcun file
+              \code{.class}}. Il suo nome contiene un indirizzo
+              (\code{/0x\dots}) perche' la classe e' \textbf{generata a
+              runtime} dalla JVM (\code{invokedynamic} $+$
+              \code{LambdaMetafactory}).
+    \end{itemize}
+    Quindi una lambda \textbf{non e'} zucchero sintattico per una classe
+    anonima: sono due meccanismi diversi con la stessa apparenza.
+}
+
+\fonteprove{NL1\_Java\_SimpleCalc.java}
+
+%==============================================================
+\chapter{C++: solo nested, piu' le lambda}\label{ch:cpp}
+%==============================================================
+
+\section{L'equivalente dell'interfaccia: la classe astratta pura}
+
+In C++ non esiste \code{interface}: si usa una \textbf{classe astratta
+pura} --- soli metodi virtuali puri, nessun dato di istanza --- piu' un
+distruttore virtuale.
+
+\begin{lstlisting}[language=C++]
+struct Bicycle {                      // "interfaccia" in C++
+    virtual void changeCadence(int) = 0;
+    virtual void changeGear(int) = 0;
+    virtual void speedUp(int) = 0;
+    virtual void applyBrakes(int) = 0;
+    virtual ~Bicycle() = default;     // obbligatorio: si distrugge via base*
+};
+\end{lstlisting}
+
+E l'equivalente di un \textbf{default method} e' un metodo virtuale
+\textbf{con corpo}. Ma qui la corrispondenza si rompe, e in modo
+istruttivo.
+
+\wc{Un metodo virtuale con corpo e' l'equivalente di un default method}{
+    \textbf{Non del tutto.} Un default method Java non aggiunge ne' stato
+    ne' un sotto-oggetto alla classe che implementa l'interfaccia. Un
+    metodo virtuale C++ porta con se' una \textbf{base vera}, con vtable
+    e sotto-oggetto --- e quindi riapre il \emph{diamond problem} che le
+    interfacce Java evitano per costruzione.
+}
+
+\subsection{I tre casi delle slide, tradotti}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\setlength{\tabcolsep}{4pt}
+\footnotesize
+\begin{tabular}{|>{\raggedright\arraybackslash}p{2.3cm}|>{\raggedright\arraybackslash}p{5.0cm}|>{\raggedright\arraybackslash}p{5.0cm}|}
+\hline
+\textbf{Caso} & \textbf{Java} & \textbf{C++} \\
+\hline
+\emph{Pegasus} (istanza vs default) & compila da solo: vince \code{Horse} (regola 1) & \textbf{ambiguo}: \emph{``request for member 'identifyMyself' is ambiguous''}. Va risolto a mano \\
+\hline
+\emph{Dragon} (antenato comune) & compila da solo: vince \code{EggLayer} (regola 2) & serve l'\textbf{ereditarieta' virtuale}; poi funziona per \textbf{dominanza} \\
+\hline
+\emph{FlyingCar} (default indipendenti) & errore, override obbligatorio, \code{FlyCar.super.f()} & \textbf{identico}, ma la sintassi e' \code{FlyCar::f()} \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{Prop}{Il caso Dragon e' l'analogo esatto della regola 2}{}
+    In C++ il caso \code{Dragon} si scrive cosi':
+\begin{lstlisting}[language=C++]
+struct Animal       { virtual std::string identifyMyself() const
+                      { return "I am an animal."; } };
+struct EggLayer     : virtual Animal {          // <- virtual!
+    std::string identifyMyself() const override
+    { return "I am able to lay eggs."; } };
+struct FireBreather : virtual Animal { };
+struct Dragon : EggLayer, FireBreather { };     // nessun override
+\end{lstlisting}
+    Funziona (output verificato: \emph{``I am able to lay eggs.''})
+    grazie alla \textbf{dominanza}: con \code{virtual} c'e' un solo
+    sotto-oggetto \code{Animal}, ed \code{EggLayer} lo domina.
+    \\[3pt]
+    E' \emph{la stessa idea} della regola 2 di Java (``i metodi gia'
+    sovrascritti sono ignorati''), ottenuta pero' con un meccanismo del
+    tutto diverso --- e che in Java non serve, perche' le interfacce non
+    portano sotto-oggetti da condividere.
+\end{Prop}
+
+\begin{Example}{La misura che spiega tutto: \code{sizeof}}{}
+\begin{lstlisting}
+sizeof(Pegasus) = 24 byte     (tre basi polimorfiche -> TRE vptr)
+\end{lstlisting}
+In Java implementare dieci interfacce \textbf{non aggiunge nulla}
+all'oggetto: le interfacce non hanno stato di istanza. In C++ ogni base
+polimorfica costa un vptr. E' la conferma quantitativa della frase della
+slide 14 (\emph{``the absence of instance data eliminates the ambiguities
+of, say, C++''}): non e' solo una questione di ambiguita' logica, e'
+anche una questione di \textbf{layout in memoria}.
+\end{Example}
+
+\fonteprove{NL6\_interfacce\_altri\_linguaggi.cpp}
+
+\section{``In C++ this is just related to visibility and naming''}
+
+La frase della slide 6 e' esatta, e ha tre conseguenze precise, tutte
+verificate.
+
+\mprop{Conseguenza 1: non esiste l'inner class}{
+    In C++ una classe annidata e' \textbf{sempre} l'equivalente di una
+    \code{static} nested class di Java: \textbf{non} ha alcun legame
+    implicito con un'istanza della classe esterna.
+}
+
+\begin{lstlisting}[language=C++]
+struct E {
+    int v = 1;
+    struct N {
+        int f() { return v; }   // ERRORE: invalid use of non-static
+    };                          //         data member 'E::v'
+};
+\end{lstlisting}
+
+Per ottenere il comportamento di una inner class Java bisogna
+\textbf{passare esplicitamente} un puntatore all'oggetto esterno --- che
+e' esattamente cio' che il compilatore Java genera di nascosto.
+
+\mprop{Conseguenza 2: ma l'accesso ai privati c'e'}{
+    Dal C++11 una classe annidata ha accesso ai membri \textbf{privati}
+    della classe che la racchiude (ha gli stessi diritti di un membro).
+    Verificato: la nested \code{Somma} incrementa il
+    \code{contatoreStatico\_} privato dell'enclosing.
+}
+
+\mprop{Conseguenza 3: lo scope, invece, c'e' eccome}{
+    Il nome di una classe annidata e' \textbf{qualificato}:
+    \code{Calcolatrice::Somma}. Non e' visibile come \code{Somma} nudo
+    all'esterno. (Si vedra' nel capitolo sul C che questo, per le
+    \code{struct}, e' una differenza C/C++ sostanziale.)
+}
+
+\section{Le tre classi dello Strategy in C++}
+
+\subsection{Strategy e Context, con le strategie annidate}
+
+\begin{lstlisting}[language=C++]
+// STRATEGY: in C++ non esiste 'interface' -> classe astratta pura
+struct Operazione {
+    virtual int applica(int a, int b) const = 0;
+    virtual std::string simbolo() const { return "?"; }
+    virtual ~Operazione() = default;      // sempre, se si distrugge via base*
+};
+
+class Calcolatrice {                       // CONTEXT
+    int accumulatore_ = 0;
+    const Operazione* operazione_ = nullptr;
+    static int contatoreStatico_;          // membro STATIC privato
+    int campoDiIstanza_ = 100;             // membro di ISTANZA privato
+
+public:
+    // --- FORMA A: nested class ---
+    struct Somma : Operazione {
+        int applica(int a, int b) const override {
+            contatoreStatico_++;           // OK: privato static dell'enclosing
+            // return a + b + campoDiIstanza_;  // ERRORE: nessuna istanza!
+            return a + b;
+        }
+        std::string simbolo() const override { return "+"; }
+    };
+    // ...
+};
+int Calcolatrice::contatoreStatico_ = 0;   // definizione fuori dalla classe
+\end{lstlisting}
+
+\subsection{Forma B --- l'equivalente dell'inner class, a mano}
+
+\begin{lstlisting}[language=C++]
+class MoltiplicaPerCampo : public Operazione {
+    const Calcolatrice* esterno_;          // <- l'"enclosing instance", A MANO
+public:
+    explicit MoltiplicaPerCampo(const Calcolatrice* e) : esterno_(e) {}
+    int applica(int a, int b) const override {
+        return a * b % esterno_->campoDiIstanza_;   // accede al privato
+    }
+};
+
+// factory che imita la sintassi Java 'esterno.new Inner()'
+std::unique_ptr<Operazione> creaMoltiplicaPerCampo() const {
+    return std::make_unique<MoltiplicaPerCampo>(this);
+}
+\end{lstlisting}
+
+\textbf{Perche' questa struttura:} rende \emph{visibile nel codice} cio'
+che Java nasconde. Il costo dell'``inner class'' Java c'e' anche in Java
+--- un campo puntatore in piu' per oggetto --- solo che non si vede. In
+C++ lo si paga esplicitamente, e infatti si misura:
+
+\begin{lstlisting}
+sizeof(Calcolatrice::Somma)        = 8    (solo il vptr)
+sizeof(MoltiplicaPerCampo)         = 16   (vptr + puntatore all'esterno)
+\end{lstlisting}
+
+\fonteprove{NL2\_cpp\_SimpleCalc.cpp}
+
+\subsection{Forma C --- local class, e i suoi due vincoli}
+
+Le slide dicono che ``sia Java sia C++ permettono di definire una classe
+dentro il corpo di una funzione''. E' vero, ma in C++ con due limiti che
+Java non ha, entrambi verificati con messaggi d'errore reali.
+
+\begin{wconc}{Una local class C++ puo' usare le variabili locali della funzione}{}
+    \textbf{No.} Puo' usare solo variabili \code{static}, globali, enum e
+    tipi. Le variabili \textbf{automatiche} sono vietate:
+\begin{lstlisting}[language=C++]
+void g() {
+    int automatica = 1;
+    class L {
+    public:
+        int f() { return automatica; }   // ERRORE
+    };
+}
+\end{lstlisting}
+    Messaggio reale del compilatore:
+\begin{lstlisting}
+error: use of local variable with automatic storage
+       from containing function
+\end{lstlisting}
+    \textbf{Il motivo:} una local class e' un \emph{tipo}, e i suoi metodi
+    sono funzioni ordinarie; non esiste alcun meccanismo che copi le
+    variabili locali dentro l'oggetto. In Java quel meccanismo esiste (la
+    cattura per valore delle \emph{effectively final}); in C++ e' stato
+    aggiunto solo nel 2011, e si chiama \textbf{lambda}.
+\end{wconc}
+
+\begin{wconc}{Una local class C++ puo' avere membri dati \texttt{static}}{}
+    \textbf{No.} Messaggio reale:
+\begin{lstlisting}
+error: local class 'class g()::L' shall not have
+       static data member 'int g()::L::m'
+\end{lstlisting}
+    Un membro static richiederebbe una definizione a livello di
+    namespace, che per una classe locale non e' esprimibile.
+\end{wconc}
+
+Nell'esempio eseguibile, per aggirare il primo vincolo, il valore
+``catturato'' viene passato tramite una variabile \code{static} locale ---
+e il commento nel codice segnala che si tratta di un \emph{workaround},
+non della soluzione idiomatica:
+
+\begin{lstlisting}[language=C++]
+std::unique_ptr<Operazione> creaSottrazioneLimitata(int minimo) {
+    static int minimoStatico = 0;      // workaround: non 'minimo' diretto
+    minimoStatico = minimo;
+
+    class SottrazioneLimitata : public Operazione {
+    public:
+        int applica(int a, int b) const override {
+            // return std::max(a - b, minimo);   // *** ERRORE ***
+            int m = minimoStatico;               // ...quindi la statica
+            return (a - b) > m ? (a - b) : m;
+        }
+    };
+    return std::make_unique<SottrazioneLimitata>();
+}
+\end{lstlisting}
+
+\nt{
+    Questo workaround ha un difetto grave che vale la pena vedere: la
+    variabile \code{static} e' \textbf{condivisa fra tutte} le chiamate.
+    Creando due strategie con minimi diversi, la seconda
+    \emph{sovrascriverebbe} il valore visto dalla prima. E' precisamente
+    il problema che le closure risolvono, e il motivo per cui in C++
+    moderno per questo scopo si usa una lambda, non una local class.
+}
+
+\subsection{Forma D --- la lambda: la vera classe locale del C++}
+
+\begin{lstlisting}[language=C++]
+int minimo = 5;                              // variabile AUTOMATICA
+cf.setOperazione([minimo](int a, int b) {    // <- catturata!
+    int r = a - b;
+    return r > minimo ? r : minimo;
+}, "-(>=5) lambda");
+\end{lstlisting}
+
+\mprop{Cos'e' davvero una lambda}{
+    Il compilatore genera un \textbf{tipo senza nome} (\emph{closure
+    type}), \textbf{locale} allo scope in cui la lambda appare, con un
+    \code{operator()} e un membro per ogni variabile catturata. E' quindi
+    letteralmente una \textbf{classe locale anonima con cattura}: risolve
+    in un colpo il limite della local class e fornisce l'equivalente della
+    classe anonima di Java.
+}
+
+\fontelibro{cap.~10, ``Strategy''}
+
+Le dimensioni misurate rendono concreto il confronto:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\footnotesize
+\begin{tabular}{|>{\raggedright\arraybackslash}p{6.4cm}|>{\centering\arraybackslash}p{1.8cm}|>{\raggedright\arraybackslash}p{4.0cm}|}
+\hline
+\textbf{Forma} & \textbf{sizeof} & \textbf{Composizione} \\
+\hline
+nested class con un metodo virtuale & 8 & solo il vptr \\
+\hline
+``inner class'' con puntatore all'esterno & 16 & vptr $+$ puntatore \\
+\hline
+lambda che cattura un \code{int} & \textbf{4} & solo la cattura, \textbf{nessun vptr} \\
+\hline
+lambda senza cattura & \textbf{1} & oggetto vuoto \\
+\hline
+\code{std::function<int(int,int)>} & 32 & type erasure \\
+\hline
+\end{tabular}
+\end{center}
+
+\nt{
+    Una lambda e' \emph{piu' piccola} di una strategia con funzione
+    virtuale, perche' non ha vptr: il tipo e' noto staticamente. Il prezzo
+    e' che ogni lambda ha un \textbf{tipo diverso}, quindi per metterle in
+    una variabile comune serve \code{std::function} --- che reintroduce
+    l'indirezione (e i 32 byte). E' lo stesso trade-off
+    monomorfizzazione/erasure incontrato nei template.
+}
+
+\fonteprove{NL2\_cpp\_SimpleCalc.cpp}
+
+%==============================================================
+\chapter{Python: un solo costrutto, tre comportamenti}\label{ch:python}
+%==============================================================
+
+\section{L'equivalente dell'interfaccia: tre possibilita'}
+
+Python offre \textbf{tre} modi di dichiarare il tipo di una strategia,
+che coprono uno spettro che in Java non esiste.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\footnotesize
+\begin{tabular}{|>{\raggedright\arraybackslash}p{3.4cm}|>{\raggedright\arraybackslash}p{4.4cm}|>{\raggedright\arraybackslash}p{4.4cm}|}
+\hline
+\textbf{Meccanismo} & \textbf{Tipo di controllo} & \textbf{Quando fallisce} \\
+\hline
+\code{abc.ABC} $+$ \code{@abstractmethod} & \textbf{nominale}: serve ereditare esplicitamente & a \textbf{runtime}, all'istanziazione \\
+\hline
+\code{typing.Protocol} & \textbf{strutturale}: basta avere i metodi & a \textbf{compile time}, ma solo se lanci \code{mypy} \\
+\hline
+niente (duck typing) & nessuno & a runtime, alla prima chiamata mancante \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{lstlisting}[language=Python]
+# 1. NOMINALE: l'equivalente piu' vicino a 'interface' di Java
+class Bicycle(ABC):
+    @abstractmethod
+    def change_cadence(self, v: int) -> None: ...
+    def descrivi(self) -> str:              # <- l'equivalente di un DEFAULT
+        return f"{type(self).__name__} generica"
+
+# 2. STRUTTURALE: nessuna ereditarieta' richiesta
+@runtime_checkable
+class Operazione(Protocol):
+    def applica(self, a: int, b: int) -> int: ...
+
+class Somma:                                # NON eredita da Operazione!
+    def applica(self, a, b): return a + b
+\end{lstlisting}
+
+\textbf{Verificato:} \code{issubclass(Somma, Operazione)} restituisce
+\code{True} pur non essendoci alcuna parentela dichiarata --- conta la
+\emph{struttura}. Ed e' l'opposto esatto di Java, dove serve
+\code{implements}.
+
+\fonteprove{NL7\_interfacce\_python.py}
+
+\section{I tre casi delle slide, risolti dall'MRO}
+
+Python non ha ne' le due regole di Java ne' la dominanza del C++: ha
+l'\textbf{MRO} (Method Resolution Order, linearizzazione C3). I risultati
+spesso coincidono, ma il meccanismo e' diverso --- e le differenze si
+vedono.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\footnotesize
+\begin{tabular}{|>{\raggedright\arraybackslash}p{2.1cm}|>{\raggedright\arraybackslash}p{3.6cm}|>{\raggedright\arraybackslash}p{6.6cm}|}
+\hline
+\textbf{Caso} & \textbf{Risultato} & \textbf{Meccanismo} \\
+\hline
+\emph{Pegasus} & \emph{``I am a horse.''} (come Java) & MRO: \code{[Pegasus, Horse, Flyer, Mythical, object]} --- vince il \textbf{primo nell'ordine}, non ``la classe'' \\
+\hline
+\emph{Dragon} & \emph{``I am able to lay eggs.''} (come Java) & MRO: \code{[Dragon, EggLayer, FireBreather, Animal, object]} --- C3 mette \code{EggLayer} prima di \code{Animal} \\
+\hline
+\emph{FlyingCar} & \textbf{nessun errore!} & prende silenziosamente il primo dell'MRO \\
+\hline
+\end{tabular}
+\end{center}
+
+\wc{Python risolve i conflitti ``come Java''}{
+    Coincidenza di risultati, non di meccanismo --- e due differenze
+    pesanti, entrambe verificate:
+    \begin{enumerate}
+        \item \textbf{l'ordine delle basi conta.} Scrivendo
+              \code{class Pegasus(Flyer, Horse, Mythical)} invece di
+              \code{class Pegasus(Horse, Flyer, Mythical)}, il risultato
+              \textbf{cambia}: diventa \emph{``I am able to fly.''}. In
+              Java la regola ``istanza batte default'' vale
+              \emph{indipendentemente} dall'ordine in cui si scrivono le
+              interfacce;
+        \item \textbf{il conflitto vero non e' un errore.} Il caso
+              \code{FlyingCar} --- due implementazioni indipendenti dello
+              stesso metodo --- in Java \textbf{non compila}; in Python
+              passa inosservato e vince il primo nell'MRO. E' il caso in
+              cui Python e' piu' permissivo e \emph{piu' pericoloso}.
+    \end{enumerate}
+}
+
+\fonteprove{NL7\_interfacce\_python.py}
+
+\nt{
+    Perche' in Python il problema dei \emph{dati} duplicati non si pone
+    mai: lo stato di un'istanza vive in \textbf{un solo}
+    \code{\_\_dict\_\_}, qualunque sia la profondita' della gerarchia. Non
+    esistono sotto-oggetti separati da condividere, quindi non serve nulla
+    di analogo all'ereditarieta' virtuale del C++. Resta solo il problema
+    dell'\emph{ordine} di risoluzione --- che e' appunto l'MRO.
+}
+
+\section{Nested, inner, local: un solo costrutto}
+
+Python non ha alcuna distinzione \emph{sintattica} fra nested, inner,
+local e anonymous class: ha un solo costrutto, \code{class}, che si
+comporta diversamente a seconda di \textbf{dove} lo si scrive. Le
+differenze vanno quindi misurate, non lette nella sintassi.
+
+\section{Misura 1: la classe annidata NON vede lo scope esterno}
+
+\begin{lstlisting}[language=Python]
+class Esterna:
+    attributo = "ESTERNO"
+    class Annidata:
+        def prova(self):
+            return attributo        # nome NUDO
+\end{lstlisting}
+
+Risultato reale: \code{NameError: name 'attributo' is not defined}.
+
+\mprop{Perche'}{
+    Il corpo di una classe crea uno \textbf{namespace}, non uno
+    \emph{scope} annidato per la ricerca dei nomi: il corpo di
+    \code{Annidata} non ``vede'' il corpo di \code{Esterna}. Bisogna
+    qualificare: \code{Esterna.attributo}.
+    \\[3pt]
+    Il comportamento e' quindi lo stesso delle \textbf{nested class del
+    C++}: puro \textbf{namespacing}. Python \emph{non} ha inner class.
+    Confermato da \code{\_\_qualname\_\_}, che vale
+    \code{Esterna.Annidata}.
+}
+
+\fonteprove{NL3\_python\_SimpleCalc.py}
+
+\begin{Example}{Un'asimmetria che sorprende}{}
+Dentro il corpo di una classe, \emph{mentre viene definita}, i nomi
+precedenti \textbf{sono} visibili. Nel file eseguibile:
+\begin{lstlisting}[language=Python]
+class Calcolatrice:
+    class Operazione(ABC): ...
+    class Somma(Operazione):        # <- 'Operazione' NUDO funziona qui!
+        def applica(self, a, b):
+            Calcolatrice.contatore_statico += 1   # <- ma questo va qualificato
+            return a + b
+\end{lstlisting}
+La differenza: \code{Operazione} viene risolto \emph{durante} l'esecuzione
+del corpo di \code{Calcolatrice} (quando il namespace locale della classe
+e' ancora attivo); \code{contatore\_statico} invece viene risolto
+\emph{dopo}, quando il metodo \code{applica} viene chiamato --- e a quel
+punto quel namespace non esiste piu'.
+\end{Example}
+
+\section{Misura 2: la classe locale SI' cattura (a differenza del C++)}
+
+\begin{lstlisting}[language=Python]
+def fabbrica(moltiplicatore):
+    class Locale:
+        def calcola(self, x):
+            return x * moltiplicatore    # variabile LOCALE della funzione
+    return Locale
+\end{lstlisting}
+
+Risultati reali: \code{fabbrica(3)} produce una classe che moltiplica per
+3, \code{fabbrica(5)} per 5.
+
+\mprop{Il contrasto col C++}{
+    Questa e' esattamente la riga che in C++ produce
+    \emph{``use of local variable with automatic storage from containing
+    function''}. In Python funziona perche' i metodi sono
+    \textbf{closure}: catturano la \emph{cella} della variabile
+    nell'ambiente lessicale che le racchiude.
+    \\[3pt]
+    Python quindi \textbf{non ha} l'inner class di Java (misura 1), ma
+    \textbf{ha} la local class con cattura --- che in C++ richiede una
+    lambda.
+}
+
+\section{Misura 3: ogni chiamata crea una classe NUOVA}
+
+\begin{lstlisting}
+L3, L5 = fabbrica(3), fabbrica(5)
+L3 is L5             -> False
+isinstance(L3(), L5) -> False
+stesso __qualname__  -> True  (fabbrica.<locals>.Locale)
+\end{lstlisting}
+
+\mprop{Conseguenza pratica pesante}{
+    Sono \textbf{due classi distinte} con lo \emph{stesso nome sorgente}.
+    Un'istanza della prima \textbf{non} e' istanza della seconda: quindi
+    \code{isinstance} non e' affidabile per confrontare oggetti prodotti
+    da chiamate diverse della stessa factory.
+    \\[3pt]
+    In Java la local class e' compilata \textbf{una volta sola}
+    (\code{\$1SottrazioneLimitata}) e le sue istanze condividono il tipo.
+    In Python l'oggetto-classe e' \textbf{ricreato a ogni chiamata}, con
+    il costo di memoria e tempo che ne segue --- ragione per cui, se non
+    serve la cattura per-chiamata, conviene definire la classe fuori.
+}
+
+\fonteprove{NL3\_python\_SimpleCalc.py}
+
+\section{Le tre classi dello Strategy in Python}
+
+\begin{lstlisting}[language=Python]
+class Calcolatrice:                       # CONTEXT
+    contatore_statico = 0                 # attributo di CLASSE
+
+    class Operazione(ABC):                # STRATEGY, annidata
+        @abstractmethod
+        def applica(self, a, b): ...
+        def simbolo(self): return "?"
+
+    class Somma(Operazione):              # FORMA A: annidata
+        def applica(self, a, b):
+            Calcolatrice.contatore_statico += 1     # va QUALIFICATO
+            return a + b
+        def simbolo(self): return "+"
+
+    class MoltiplicaPerCampo(Operazione): # FORMA B: "inner", a mano
+        def __init__(self, esterno):
+            self._esterno = esterno       # enclosing instance ESPLICITA
+        def applica(self, a, b):
+            return a * b % self._esterno.campo
+
+    def crea_moltiplica_per_campo(self):  # imita esterno.new Inner()
+        return Calcolatrice.MoltiplicaPerCampo(self)
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+# FORMA C: local class, con cattura vera
+def crea_sottrazione_limitata(minimo):
+    class SottrazioneLimitata(Calcolatrice.Operazione):
+        def applica(self, a, b):
+            return max(a - b, minimo)     # <- cattura; in C++ e' errore
+        def simbolo(self): return f"-(>={minimo})"
+    return SottrazioneLimitata()
+
+# FORMA D: la classe davvero "anonima", creata con type()
+def divisione_sicura():
+    return type(
+        "",                                       # nome VUOTO
+        (Calcolatrice.Operazione,),
+        {"applica": lambda self, a, b: a if b == 0 else a // b,
+         "simbolo": lambda self: "/"},
+    )()
+\end{lstlisting}
+
+Verificato: \code{type(anon).\_\_name\_\_} e' la stringa vuota, e
+\code{isinstance(anon, Calcolatrice.Operazione)} e' \code{True} --- e'
+una sottoclasse a tutti gli effetti, senza nome.
+
+\nt{
+    In Python la forma idiomatica per lo Strategy non e' nessuna di queste
+    quattro: e' passare direttamente una \textbf{funzione}. Le classi
+    servono quando la strategia ha stato o deve esporre piu' metodi. Il
+    documento le mostra tutte perche' l'obiettivo qui e' confrontare
+    l'\emph{infrastruttura}, non scegliere lo stile.
+}
+
+%==============================================================
+\chapter{C: senza classi, senza scope, senza closure}\label{ch:c}
+%==============================================================
+
+Il C non ha classi. Le tre categorie delle slide vanno quindi tradotte in
+meccanismi diversi --- e nel farlo emergono due limiti che gli altri tre
+linguaggi non hanno.
+
+\section{L'equivalente dell'interfaccia: la struct di puntatori}
+
+In C l'``interfaccia'' e' una \code{struct} i cui campi sono
+\textbf{puntatori a funzione}: e' letteralmente la vtable, scritta a mano.
+
+\begin{lstlisting}[language=C]
+typedef struct {                    /* l'"interfaccia" */
+    int (*applica)(const struct Operazione *self, int a, int b);
+    const char *simbolo;
+} OperazioneVT;
+
+struct Operazione {                 /* la "classe astratta" */
+    const OperazioneVT *vptr;
+};
+\end{lstlisting}
+
+\mprop{Cosa manca, rispetto a un'interfaccia vera}{
+    \begin{itemize}
+        \item \textbf{nessun controllo di completezza}: se dimentichi di
+              assegnare un puntatore, non c'e' alcun errore di
+              compilazione --- solo un \code{NULL} che a runtime fa
+              crashare. In Java il compilatore \emph{rifiuta} una classe
+              che non implementa tutti i metodi;
+        \item \textbf{nessun default method}: si puo' lasciare un campo
+              a \code{NULL} e far controllare al Context
+              (\code{if (vt->f) vt->f(...)}) --- ed e' esattamente cio'
+              che fa il VFS del kernel Linux con
+              \code{struct file\_operations};
+        \item \textbf{nessun conflitto possibile}: non esistendo
+              ereditarieta' multipla, il problema che le due regole di
+              Java risolvono \emph{non si presenta}. Se servono due
+              ``interfacce'', si mettono due vtable nella struct e si
+              sceglie a mano quale usare.
+    \end{itemize}
+}
+
+\fonteprove{NL4\_c\_SimpleCalc.c}
+
+\section{Scoperta 1: annidare una \texttt{struct} NON crea uno scope}
+
+\begin{lstlisting}[language=C]
+struct Contenitore {
+    int campo;
+    struct Annidata {        /* "annidata" solo tipograficamente */
+        int x;
+    } ann;
+};
+
+/* Questa riga COMPILA in C: */
+struct Annidata annidata_usata_fuori = { 42 };
+\end{lstlisting}
+
+Verificato: il programma compila con \code{gcc -Wall -Wextra} e stampa
+\code{42}.
+
+\begin{Prop}{La differenza C / C++}{}
+    In \textbf{C} annidare una \code{struct} e' puramente tipografico: il
+    tag \code{Annidata} finisce nello \textbf{stesso spazio dei nomi
+    globale} del tag esterno. Non c'e' alcun incapsulamento.
+    \\[3pt]
+    In \textbf{C++} la stessa riga e' un \textbf{errore}:
+\begin{lstlisting}
+error: variable 'Annidata usata_fuori' has initializer
+       but incomplete type
+\end{lstlisting}
+    perche' li' il nome corretto sarebbe
+    \code{Contenitore::Annidata}. E' un caso in cui il C++ \emph{non} e'
+    un soprainsieme del C, e mostra che quel poco che le slide
+    attribuiscono al C++ (``visibility and naming'') e' comunque piu' di
+    quanto offra il C.
+\end{Prop}
+
+\fonteprove{NL4\_c\_SimpleCalc.c}
+
+\section{Scoperta 2: le funzioni locali non esistono in C standard}
+
+\begin{lstlisting}[language=C]
+int main(void) {
+    int fattore = 3;
+    int moltiplica(int x) { return x * fattore; }   /* ??? */
+    return moltiplica(10);
+}
+\end{lstlisting}
+
+Compilato con \code{-std=c11 -pedantic}:
+
+\begin{lstlisting}
+warning: ISO C forbids nested functions [-Wpedantic]
+\end{lstlisting}
+
+Funziona solo come \textbf{estensione GNU} (\code{-std=gnu11}).
+
+\mprop{La conseguenza per lo Strategy}{
+    Si puo' definire una \code{struct} dentro una funzione (e quella e'
+    davvero locale), ma \textbf{non le si puo' dare un metodo}: le
+    funzioni che implementano il comportamento devono stare a livello
+    globale. Quindi:
+    \begin{itemize}
+        \item la \textbf{vtable} e le funzioni-strategia sono sempre
+              globali;
+        \item la ``localita''' puo' riguardare solo i \emph{dati};
+        \item non esistendo closure, il contesto va passato
+              \textbf{a mano}.
+    \end{itemize}
+    Le quattro forme di Java collassano in \textbf{una sola} tecnica.
+}
+
+\section{Le tre classi dello Strategy in C}
+
+\subsection{Strategy: una struct di puntatori a funzione}
+
+\begin{lstlisting}[language=C]
+struct Operazione;                       /* dichiarazione anticipata */
+
+typedef struct {                         /* la "vtable" a mano */
+    int (*applica)(const struct Operazione *self, int a, int b);
+    const char *simbolo;
+} OperazioneVT;
+
+struct Operazione {                      /* la "classe base astratta" */
+    const OperazioneVT *vptr;
+};
+\end{lstlisting}
+
+\subsection{Context e delega}
+
+\begin{lstlisting}[language=C]
+typedef struct {
+    int accumulatore;
+    const struct Operazione *operazione;
+    int campo;                     /* lo "stato dell'oggetto esterno" */
+} Calcolatrice;
+
+static void calc_premi_numero(Calcolatrice *c, int n) {
+    if (c->operazione == NULL) { c->accumulatore = n; return; }
+    /* la delega, identica a strategy.algorithm() di Java/C++ */
+    c->accumulatore = c->operazione->vptr->applica(c->operazione,
+                                                  c->accumulatore, n);
+}
+\end{lstlisting}
+
+\subsection{Le tre forme, tradotte}
+
+\begin{lstlisting}[language=C]
+/* FORMA A -- l'equivalente della NESTED: nessuno stato proprio */
+typedef struct { struct Operazione base; } Somma;
+
+static int somma_applica(const struct Operazione *self, int a, int b) {
+    (void)self;                    /* non serve alcuno stato */
+    contatore_statico++;           /* usa il "membro static" globale */
+    return a + b;
+}
+static const OperazioneVT SOMMA_VT = { somma_applica, "+" };
+
+/* FORMA B -- l'equivalente dell'INNER: porta il puntatore all'esterno */
+typedef struct {
+    struct Operazione base;
+    const Calcolatrice *esterno;   /* l'"enclosing instance", A MANO */
+} MoltiplicaPerCampo;
+
+static int moltiplica_applica(const struct Operazione *self, int a, int b) {
+    const MoltiplicaPerCampo *m = (const MoltiplicaPerCampo *)self;
+    return a * b % m->esterno->campo;      /* legge lo stato dell'esterno */
+}
+
+/* FORMA C -- l'equivalente della LOCAL: il valore "catturato" e' un campo */
+typedef struct {
+    struct Operazione base;
+    int minimo;                    /* la "cattura", esplicita */
+} SottrazioneLimitata;
+\end{lstlisting}
+
+\mprop{Il ruolo del ``primo membro''}{
+    In tutte e tre le forme, \code{struct Operazione base;} e' il
+    \textbf{primo} membro. Lo standard C garantisce l'assenza di padding
+    all'inizio di una struct, quindi il cast fra
+    \code{struct Operazione*} e il tipo concreto e' un \textbf{no-op}: e'
+    cio' che permette al Context di trattare uniformemente strategie
+    diverse.
+}
+
+\subsection{Forma D --- puntatore a funzione e contesto \texttt{void*}}
+
+\begin{lstlisting}[language=C]
+typedef int (*FunzioneBinaria)(void *ctx, int a, int b);
+
+typedef struct { int soglia; } CtxMassimo;
+
+static int massimo_con_soglia(void *ctx, int a, int b) {
+    CtxMassimo *c = (CtxMassimo *)ctx;
+    int m = a > b ? a : b;
+    return m > c->soglia ? m : c->soglia;
+}
+
+static int applica_funzione(FunzioneBinaria f, void *ctx, int a, int b) {
+    return f(ctx, a, b);            /* la delega, senza oggetti */
+}
+\end{lstlisting}
+
+E' il pattern di \code{qsort\_r}, dei callback POSIX, di GTK e del VFS del
+kernel Linux: la coppia (\emph{puntatore a funzione}, \emph{void*}) e'
+l'equivalente C di una closure.
+
+\fonteprove{NL4\_c\_SimpleCalc.c}
+
+%==============================================================
+\chapter{Confronto finale}\label{ch:confronto}
+%==============================================================
+
+\section{La stessa strategia, quattro infrastrutture}
+
+Tutti e quattro i programmi calcolano \code{20 \(\langle\)op\(\rangle\)
+6}. Output reali affiancati:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\footnotesize
+\begin{tabular}{|>{\raggedright\arraybackslash}p{2.4cm}|>{\raggedright\arraybackslash}p{3.3cm}|>{\raggedright\arraybackslash}p{3.3cm}|>{\raggedright\arraybackslash}p{3.3cm}|}
+\hline
+\textbf{Forma} & \textbf{Java} & \textbf{C++ / Python} & \textbf{C} \\
+\hline
+A ``nested'' & \code{static class} & \code{struct} annidata / \code{class} in \code{class} & \code{struct} $+$ vtable \\
+\hline
+B ``inner'' & \textbf{automatico} (non-static) & puntatore all'esterno \textbf{a mano} & campo \code{esterno} \textbf{a mano} \\
+\hline
+C ``local'' & con cattura & C++: \textbf{senza} cattura; Python: \textbf{con} & solo dati, metodi globali \\
+\hline
+D ``anonima'' & \code{new I()\{\dots\}} & lambda / \code{type("")} & \emph{non esiste} \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Il TIPO della strategia: le quattro dichiarazioni}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\setlength{\tabcolsep}{4pt}
+\footnotesize
+\begin{tabular}{|>{\raggedright\arraybackslash}p{1.7cm}|>{\raggedright\arraybackslash}p{3.4cm}|>{\raggedright\arraybackslash}p{3.4cm}|>{\raggedright\arraybackslash}p{3.6cm}|}
+\hline
+ & \textbf{Come si dichiara} & \textbf{Conflitti fra piu' basi} & \textbf{Costo per l'oggetto} \\
+\hline
+\textbf{Java} & \code{interface} $+$ \code{default}/\code{static} & le \textbf{due regole}; il conflitto vero e' un \textbf{errore} & \textbf{nessuno}: niente stato di istanza \\
+\hline
+\textbf{C++} & classe astratta pura $+$ dtor virtuale & \textbf{ambiguo}: risolvi a mano, o ereditarieta' \textbf{virtuale} $+$ dominanza & \textbf{un vptr per base} (Pegasus: 24 byte) \\
+\hline
+\textbf{Python} & \code{ABC} (nominale) o \code{Protocol} (strutturale) & \textbf{MRO}: nessun errore, vince il primo & nessuno: un solo \code{\_\_dict\_\_} \\
+\hline
+\textbf{C} & \code{struct} di puntatori a funzione & \emph{non esistono}: niente ereditarieta' & un puntatore (il vptr) \\
+\hline
+\end{tabular}
+\end{center}
+
+\mprop{La differenza piu' importante fra i quattro}{
+    Solo \textbf{Java} tratta il conflitto fra comportamenti ereditati
+    come un \textbf{errore di compilazione} che obbliga il programmatore a
+    decidere. C++ lo segnala come ambiguita' (ma solo al punto d'uso, o
+    alla definizione della classe se manca il final overrider); Python
+    \textbf{non lo segnala affatto} e sceglie in silenzio; il C non puo'
+    nemmeno averlo.
+}
+
+\section{Le quattro affermazioni da ricordare}
+
+\mprop{Sintesi}{
+    \begin{enumerate}
+        \item Solo \textbf{Java} ha il legame \emph{implicito} con
+              l'istanza esterna (inner class). In C++, Python e C va
+              scritto a mano --- e in Java quel campo puntatore esiste
+              comunque, solo che non si vede.
+        \item Solo \textbf{C++} vieta alla classe locale di leggere le
+              variabili automatiche. Per questo la lambda, nel C++
+              moderno, e' la vera ``classe locale''.
+        \item Solo \textbf{Python} ricrea l'oggetto-classe a ogni chiamata
+              della funzione che la contiene, con la conseguenza che
+              \code{isinstance} fra classi omonime da chiamate diverse e'
+              \code{False}.
+        \item Solo il \textbf{C} non ottiene \emph{alcun} incapsulamento
+              annidando: il tag resta globale, e senza funzioni locali
+              tutte le forme collassano in ``struct $+$ puntatori a
+              funzione $+$ contesto esplicito''.
+    \end{enumerate}
+}
+
+\section{Come scegliere, in pratica}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\footnotesize
+\begin{tabular}{|>{\raggedright\arraybackslash}p{5.6cm}|>{\raggedright\arraybackslash}p{6.8cm}|}
+\hline
+\textbf{Se la strategia\dots} & \textbf{usa\dots} \\
+\hline
+non ha bisogno dello stato del Context & \textbf{nested/static}: e' la forma di default, non trattiene l'oggetto esterno \\
+\hline
+deve leggere lo stato \emph{vivo} del Context & Java: \textbf{inner class}; altrove: puntatore/riferimento esplicito \\
+\hline
+serve solo dentro un metodo, e cattura un parametro & Java: \textbf{local class}; C++: \textbf{lambda}; Python: \textbf{local class}; C: campo nella struct \\
+\hline
+e' usata una volta sola, in un'espressione & \textbf{anonima} (Java) / \textbf{lambda} (C++, Python) \\
+\hline
+e' un semplice calcolo senza stato & \textbf{lambda} o funzione libera; in C un puntatore a funzione nudo \\
+\hline
+\end{tabular}
+\end{center}
+
+%==============================================================
+\chapter{Esecuzione e verifica}\label{ch:esecuzione}
+%==============================================================
+
+\section{I quattro programmi}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\footnotesize
+\begin{tabular}{|>{\raggedright\arraybackslash}p{4.5cm}|>{\raggedright\arraybackslash}p{8.0cm}|}
+\hline
+\textbf{File} & \textbf{Comando} \\
+\hline
+\code{NL1\_Java\_SimpleCalc.java} & \code{javac NL1\_Java\_SimpleCalc.java \&\& java -cp . NL1\_Java\_SimpleCalc} \\
+\hline
+\code{NL2\_cpp\_SimpleCalc.cpp} & \code{g++ -std=c++17 -Wall -Wextra NL2\_cpp\_SimpleCalc.cpp -o NL2 \&\& ./NL2} \\
+\hline
+\code{NL3\_python\_SimpleCalc.py} & \code{python3 NL3\_python\_SimpleCalc.py} \\
+\hline
+\code{NL4\_c\_SimpleCalc.c} & \code{gcc -std=c11 -Wall -Wextra NL4\_c\_SimpleCalc.c -o NL4 \&\& ./NL4} \\
+\hline
+\code{NL5\_Java\_Interfacce.java} & \code{javac NL5\_Java\_Interfacce.java \&\& java -cp . NL5\_Java\_Interfacce} \\
+\hline
+\code{NL6\_interfacce\_}\allowbreak\code{altri\_linguaggi.cpp} & \code{g++ -std=c++17 -Wall -Wextra NL6\_*.cpp -o NL6 \&\& ./NL6} \\
+\hline
+\code{NL7\_interfacce\_python.py} & \code{python3 NL7\_interfacce\_python.py} \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Esperimenti: rompili apposta}
+
+\nt{
+    Ogni ``ERRORE'' commentato nei sorgenti e' reale: scommentalo e leggi
+    il messaggio del compilatore. Sono la parte piu' istruttiva.
+    \begin{enumerate}
+        \item \textbf{Java} --- crea \code{new MoltiplicaPerCampo()} da
+              \code{main} (che e' \code{static}): il compilatore chiede
+              un'enclosing instance.
+        \item \textbf{Java} --- riassegna la variabile catturata dalla
+              local class dopo averla usata: \emph{``local variables
+              referenced from an inner class must be final or effectively
+              final''}.
+        \item \textbf{C++} --- nella local class, sostituisci
+              \code{minimoStatico} con \code{minimo}:
+              \emph{``use of local variable with automatic storage from
+              containing function''}.
+        \item \textbf{C++} --- aggiungi \code{static int m;} alla local
+              class: \emph{``local class shall not have static data
+              member''}.
+        \item \textbf{C++} --- nella nested \code{Somma}, prova a leggere
+              \code{campoDiIstanza\_}: \emph{``invalid use of non-static
+              data member''} --- la prova che non esiste l'inner class.
+        \item \textbf{Python} --- nella classe annidata, usa
+              \code{contatore\_statico} senza qualificarlo:
+              \code{NameError} a runtime (non a ``compile time'': Python
+              non ha modo di accorgersene prima).
+        \item \textbf{C} --- compila \code{NL4} con \code{-std=c11
+              -pedantic} dopo aver aggiunto una funzione dentro una
+              funzione: \emph{``ISO C forbids nested functions''}.
+        \item \textbf{C} --- rinomina la \code{struct Annidata} in
+              \code{Contenitore} e osserva il conflitto: la prova che i
+              tag stanno tutti nello stesso spazio globale.
+        \item \textbf{Java} --- togli l'override di \code{startEngine} da
+              \code{FlyingCar}: \emph{``inherits unrelated defaults''}.
+        \item \textbf{Java} --- prova a implementare \code{Bicycle} (4
+              metodi astratti) con una lambda: \emph{``is not a functional
+              interface''}.
+        \item \textbf{C++} --- togli l'override in \code{Pegasus}:
+              \emph{``request for member 'identifyMyself' is
+              ambiguous''} --- il caso che in Java compila da solo.
+        \item \textbf{C++} --- togli \code{virtual} dalle basi di
+              \code{EggLayer}/\code{FireBreather}: il caso \code{Dragon}
+              diventa ambiguo.
+        \item \textbf{Python} --- inverti l'ordine delle basi di
+              \code{Pegasus}: il risultato \textbf{cambia} (in Java no).
+    \end{enumerate}
+}
+
+%==============================================================
+\chapter{Fonti}\label{ch:fonti}
+%==============================================================
+
+\begin{itemize}
+    \item Slide del corso: \emph{L04 --- Focus on the strategy pattern in
+          Java} (Giancarlo Succi, Universita' di Bologna), 51 pagine ---
+          in particolare le pagg.~6--12 (nested / inner / local class),
+          \textbf{13--32 (interfacce, default e static method, le due
+          regole di risoluzione dei conflitti, gli esempi Pegasus /
+          Dragon / FlyingCar / Mustang / DoIt)}, 33--36 (anonymous class e
+          listener), 37--50 (\code{SimpleCalc} con le tre implementazioni
+          di \code{ActionListener}).
+    \item Bruce Eckel, \emph{Thinking in C++}, Vol.~2, cap.~10
+          (\emph{Design Patterns}), sezione \emph{``Strategy: choosing the
+          algorithm at runtime''}, e cap.~5 per il policy-based design:
+          \url{https://web.mit.edu/merolish/ticpp/TicV2.html\#_Toc53985877}
+    \item Wikipedia, \emph{Strategy pattern} --- per la tassonomia dei
+          quattro meccanismi (puntatori a funzione, first-class function,
+          classi/istanze, reflection):
+          \url{https://en.wikipedia.org/wiki/Strategy_pattern}
+    \item Cartella \code{prove/strategy/} --- i quattro programmi
+          \code{NL1}--\code{NL4} e i test di misura, tutti compilati ed
+          eseguiti su questa macchina. \textbf{Ogni output, messaggio
+          d'errore e valore di \code{sizeof} citato in questo documento
+          proviene da un'esecuzione reale}, non da memoria.
+\end{itemize}
+
+\end{document}

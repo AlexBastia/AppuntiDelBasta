@@ -1,0 +1,168 @@
+#separator:tab
+#html:true
+#notetype:Basic
+#deck:Ingegneria del Software::UML Parte 2
+
+Quali sono i <b>cinque livelli</b> della piramide dell'<b>Object-Oriented Design</b> (dal basso verso l'alto)?	1. <b>Subsystem design</b><br>2. <b>Class and object design</b><br>3. <b>Message design</b><br>4. <b>Responsibilities design</b> (la punta della piramide)
+
+Quali sono i <b>cinque "Design Issues"</b> che un metodo di design dovrebbe affrontare?	• <b>Decomposability</b>: capacità di scomporre un problema grande in sotto-problemi più semplici<br>• <b>Composability</b>: possibilità di riusare componenti già costruiti per creare altri sistemi<br>• <b>Understandability</b>: facilità con cui un componente si capisce senza fare riferimento ad altri moduli<br>• <b>Continuity</b>: piccoli cambiamenti nel programma si riflettono in cambiamenti in pochi moduli<br>• <b>Protection</b>: caratteristica architetturale che riduce la propagazione degli effetti collaterali di un errore
+
+Quali sono i <b>quattro "Ingredients for OOD"</b> (le componenti in cui si suddividono i sottosistemi)?	• <b>Problem domain component</b>: sottosistemi che implementano direttamente i requisiti del cliente<br>• <b>Human interaction component</b>: sottosistemi che implementano la user interface (incluse GUI riusabili)<br>• <b>Task Management Component</b>: sottosistemi che controllano e coordinano task concorrenti<br>• <b>Data management component</b>: sottosistema responsabile di storage e retrieval degli oggetti
+
+Nella relazione <b>OOA → OOD</b>, a cosa corrispondono rispettivamente classi, attributi, operazioni, associazioni e behavior del Analysis Model nel Design Model?	<b>classi</b> → classi + oggetti<br><b>attributi</b> → data types<br><b>operazioni</b> → methods<br><b>associazioni</b> → links + messages<br><b>behavior</b> → control
+
+Cosa distingue concretamente l'<b>OOD</b> dall'<b>OOA</b>, in termini di livello di dettaglio?	Nell'OOD si fissano: <b>nomi definitivi</b>, <b>signature fisse</b> dei messaggi, <b>multiplicity e sua realizzazione</b>, <b>visibility</b>, <b>algoritmi</b> per i metodi, e diagrammi di sequenza/collaborazione più dettagliati. Si usano inoltre <b>notazioni diagrammatiche aggiuntive</b>.
+
+In UML, oltre ai Class Diagram (che restano strutturalmente uguali tra OOA e OOD), quali <b>Structural</b> e <b>Behavioral Diagrams</b> aggiuntivi si usano in OOD?	<b>Structural</b>: Object Diagrams, Deployment Diagrams.<br><b>Behavioral</b>: Statechart Diagrams, Activity Diagrams, Sequence Diagrams, Collaboration Diagrams (questi ultimi due sono detti anche <i>Interaction Diagrams</i>).
+
+Perché gli <b>Object Diagrams</b> non vengono analizzati in dettaglio nel corso?	Perché trattano oggetti (istanze di classi) e sono <b>assolutamente omomorfi ai Class Diagram</b>: la loro struttura è identica.
+
+Qual è la differenza concettuale fondamentale tra <b>Statechart diagrams</b> e <b>Interaction diagrams</b>?	<b>Interaction diagrams</b> mostrano come <b>più oggetti interagiscono</b> tra loro.<br><b>Statechart diagrams</b> mostrano il comportamento di <b>un solo oggetto</b>: come cambia stato in base ai messaggi che riceve. Sono a grana fine e focalizzati strettamente (narrowly focused, fine-grained).
+
+Quali sono gli <b>altri nomi</b> con cui sono noti gli Statechart diagrams?	<b>State transition diagrams</b>, <b>State diagrams</b>, <b>Harel diagrams</b>.
+
+Cos'è lo <b>state</b> di un oggetto, in uno statechart diagram?	L'insieme di valori che descrivono un oggetto in un preciso istante di tempo, <b>determinato in base ai valori degli attributi</b> (es. un <code>Account</code> con <code>balance : Float</code> può essere nello stato <i>ok</i> o <i>overdrafted</i>).
+
+Cosa sono gli <b>eventi</b> in uno statechart diagram, e possono sempre cambiare lo stato?	Gli eventi sono <b>messaggi ricevuti</b> dall'oggetto. Un evento <b>può o non può</b> cambiare lo stato (es. un ulteriore <code>deposit</code> mentre si è già <i>overdrafted</i> potrebbe lasciare l'oggetto nello stesso stato).
+
+In notazione statechart, cosa rappresentano rispettivamente <b>entry</b>, <b>do</b>, <b>on</b> ed <b>exit</b> all'interno di un box-stato?	<b>entry</b>: azione eseguita all'ingresso nello stato.<br><b>do</b>: attività continuativa svolta finché si è nello stato (es. "display window").<br><b>on</b>: azione eseguita in risposta a uno specifico evento mentre si è in quello stato.<br><b>exit</b>: azione eseguita all'uscita dallo stato.
+
+Qual è la differenza tra <b>Activity</b> e <b>Action</b> in uno statechart diagram?	Un'<b>Activity</b> può richiedere più tempo e <b>può essere interrotta</b>. Un'<b>Action</b> avviene "velocemente" e <b>non è interrompibile</b>.
+
+Qual è la sintassi completa dell'etichetta su una transizione tra <code>State-A</code> e <code>State-B</code> in uno statechart diagram, e quali parti sono opzionali?	<code>Event(arguments)[condition]/action</code><br><b>Event</b> = invio di un messaggio; <b>guard condition</b> tra parentesi quadre (la transizione avviene solo se valuta a vero); <b>action</b> dopo lo slash. <b>Ogni parte può essere omessa.</b>
+
+Cosa significa che le <b>guard condition</b> delle transizioni uscenti da uno stesso stato devono essere <b>mutually exclusive</b>?	Che per ogni possibile valutazione, <b>al più una guardia</b> tra quelle sulle transizioni uscenti dallo stesso stato può essere vera, così da garantire che il comportamento del sistema sia deterministico.
+
+Come si rappresentano lo <b>Start State</b> e l'<b>End State</b> in uno statechart diagram?	Lo <b>Start State</b> è un pallino nero pieno (con una freccia verso lo stato iniziale). L'<b>End State</b> è un pallino nero pieno racchiuso in un cerchio (doppio cerchio).
+
+[Esercizio] Nello statechart della "States of a hockey game", da quale stato parte la partita, e quali sono i due modi in cui si arriva allo stato <b>"end of game"</b>?	Si parte da <b>"playing"</b> (dopo lo start state). Si arriva a "end of game" tramite: la transizione <code>win[time is up]</code> da "Boxing", oppure passando per "shootout" (raggiunto da "playing" con <code>tie[time is up]</code>) che poi va a "Boxing".
+
+[Esercizio] Nello statechart "States of a hockey game", cosa fanno gli eventi <b>"penalty"</b> e <b>"face off"</b>?	<code>penalty</code> porta lo stato da <b>"playing" a "break"</b>; <code>face off</code> riporta lo stato da <b>"break" a "playing"</b> (fanno quindi da coppia andata/ritorno tra i due stati).
+
+Nel problema "<b>Cancel the order</b>" (poter cancellare un ordine in qualsiasi momento), quali sono le <b>due soluzioni</b> proposte per lo statechart?	1. Aggiungere <b>transizioni da ogni stato</b> verso lo stato "cancelled"<br>2. Usare un <b>superstate</b> con un'unica transizione di uscita verso "cancelled"
+
+In uno statechart diagram, cosa rappresenta un <b>superstate</b> con dei <b>substates</b> al suo interno?	Un raggruppamento di più stati (substates, con il proprio stato iniziale interno) in un unico stato di livello superiore (superstate): una transizione in ingresso al superstate porta al suo stato iniziale interno, mentre una transizione in uscita dal superstate (es. su un evento) si applica a <b>tutti</b> i substates contemporaneamente — è il caso usato per "cancelled" nell'esempio dell'ordine, raggruppando Checking/Waiting/Dispatching in un superstate "Active".
+
+È vero che gli statechart diagram devono sempre riferirsi a classi o oggetti?	No: possono riferirsi anche a <b>subsystem</b> o altri classifier, anche se il loro uso più comune è per oggetti.
+
+A cosa servono gli <b>Activity diagrams</b>, e a quale altro formalismo sono simili?	Descrivono <b>workflow</b> e <b>parallel processing</b>. Sono simili alle <b>reti di Petri</b>. Un'attività può essere concettuale (un task da svolgere) oppure, a livello di specifica/implementazione, un metodo su una classe.
+
+In un activity diagram, cosa rappresenta una <b>synchronization bar</b>, e qual è la differenza tra <b>Fork</b> e <b>Join</b>?	La synchronization bar indica che le attività collegate <b>possono essere svolte in parallelo</b> (in qualsiasi ordine). Il <b>Fork</b> è la barra da cui partono più attività in parallelo; il <b>Join</b> è la barra in ingresso dove <b>tutti i predecessori devono essere terminati</b> prima di proseguire. L'activity diagram mostra quindi un <b>ordine parziale</b> delle attività.
+
+[Esercizio] Nell'activity diagram della "Coffee Pot", cosa succede dopo il fork iniziale, e qual è la condizione di guardia prevista?	Si eseguono in parallelo "Put coffee in filter" → "Put filter in machine" e "Check water in reservoir". Da "Check water in reservoir" parte un branch: se <code>[not enough water]</code> si esegue "Put water in the reservoir"; altrimenti si prosegue direttamente. Un join sincronizza i due rami prima di "Turn on machine".
+
+In un activity diagram, come si rappresenta un <b>Branch</b> con <b>Guard expression</b>, e in cosa differisce visivamente da una synchronization bar?	Il Branch è rappresentato da un <b>rombo (diamond)</b> da cui partono più frecce, ciascuna etichettata con una <b>guard expression</b> tra parentesi quadre; solo il ramo la cui condizione è vera viene percorso. La synchronization bar (fork/join) è invece una <b>barra nera</b> e rappresenta parallelismo, non scelta condizionale.
+
+Gli <b>Interaction diagrams</b> possono essere letti secondo due viste. Quali, e a quale tipo di diagramma corrispondono?	<b>Time-based view</b> → Sequence Diagrams.<br><b>Organization-based view</b> → Collaboration Diagrams.
+
+Nella struttura di un <b>Sequence diagram</b>, cosa viene organizzato sull'asse orizzontale e cosa su quello verticale?	Sull'asse <b>orizzontale</b> sono organizzati gli <b>oggetti</b> (e classi); sull'asse <b>verticale</b> il <b>tempo</b> in cui avvengono gli eventi/messaggi.
+
+In un sequence diagram, in che direzione punta una freccia di messaggio, in termini di client/supplier?	Dal <b>client</b> (chi invia la richiesta) al <b>supplier</b> (chi la riceve/fornisce il servizio).
+
+In un sequence diagram, cosa indicano rispettivamente un <b>asterisco (*)</b> prima del nome del messaggio e una <b>condizione tra parentesi quadre</b> prima del nome del messaggio?	L'<b>asterisco</b> indica <b>iterazione</b> (il messaggio viene inviato più volte, es. <code>* prepare()</code>). La <b>condizione</b> tra parentesi quadre indica che il messaggio viene inviato solo se quella condizione è vera (es. <code>[check = true] remove()</code>).
+
+In un sequence diagram, come si rappresentano <b>creazione</b> e <b>distruzione</b> di un oggetto?	La <b>creazione</b> è rappresentata da un messaggio (spesso stereotipato <code>«create»</code>) che punta al box dell'oggetto creato. La <b>distruzione</b> è rappresentata da una <b>X</b> sulla lifeline dell'oggetto, spesso associata a un messaggio <code>«destroy»</code>.
+
+Cos'è la <b>self-delegation</b> in un sequence diagram, e come si rappresenta?	Un oggetto che invia un messaggio <b>a se stesso</b> (es. per invocare un proprio metodo interno). Si rappresenta con una freccia che parte ed arriva sulla stessa lifeline, formando un piccolo anello.
+
+Cos'è la <b>lifeline</b> e cos'è il <b>focus of control</b> (activation) in un sequence diagram?	La <b>lifeline</b> è la linea tratteggiata verticale che rappresenta l'esistenza nel tempo di un oggetto. Il <b>focus of control</b> (o activation) è il rettangolo stretto sovrapposto alla lifeline che indica il periodo in cui quell'oggetto sta effettivamente eseguendo codice (è "attivo" nello stack di chiamate).
+
+In un sequence diagram, come si distinguono graficamente un messaggio <b>sincrono</b> ("call event") da uno <b>asincrono</b> ("signal")?	Il messaggio <b>sincrono</b> è rappresentato con una <b>freccia piena</b> (full arrow). Il messaggio <b>asincrono</b> è rappresentato con una <b>mezza freccia</b> (half arrow).
+
+Cosa NON fa un <b>messaggio asincrono</b>, e quali <b>tre cose</b> può fare?	Non blocca il chiamante ("does not block the caller"). Può: 1. creare un <b>nuovo thread</b>; 2. creare un <b>nuovo oggetto</b>; 3. comunicare con un <b>thread già in esecuzione</b>.
+
+Cosa significa <b>KISS</b> applicato ai sequence diagram, e cosa si dovrebbe fare quando la logica condizionale diventa complessa?	KISS = "<b>Keep It Small and Simple</b>". Se la logica condizionale è semplice, la si aggiunge direttamente al diagramma; se è <b>complessa</b>, conviene <b>disegnare diagrammi separati</b> invece di appesantire un unico diagramma.
+
+Cos'è una <b>boundary class</b>, e a cosa serve mostrarla in un interaction diagram?	Una boundary class modella una <b>boundary</b>, cioè il confine di comunicazione tra il sistema e il mondo esterno (es. una user interface o un altro sistema). Mostrarla negli interaction diagram serve a <b>catturare i requisiti dell'interfaccia</b>, ma <b>non</b> a specificare come l'interfaccia sarà effettivamente implementata.
+
+In un <b>Collaboration diagram</b>, come viene indicato l'ordine dei messaggi, dato che non c'è un asse del tempo esplicito?	Tramite la <b>numerazione dei messaggi</b>: una numerazione semplice (1, 2, 3, 4, ...) oppure gerarchica (es. 1, 1.1, 1.2, 1.3, 2, 2.1, 2.1.1, 2.2, 3), che mostra anche <b>quale operazione ne chiama un'altra</b>.
+
+Quali sono i <b>contenuti condivisi</b> tra Sequence diagrams e Collaboration diagrams (oggetti, tipi di messaggi)?	Entrambi hanno: <b>oggetti</b> che si scambiano messaggi; messaggi <b>sincroni</b> (call events, freccia piena) e <b>asincroni</b> (signals, mezza freccia); messaggi <code>«create»</code> e <code>«destroy»</code>; i messaggi sono numerati e possono avere loop. Le slide riassumono: "<i>Almost same stuff as sequence diagrams!</i>"
+
+Confrontando Sequence e Collaboration diagram, per cosa sono <b>rispettivamente migliori</b>?	I <b>Sequence diagram</b> sono migliori per vedere il <b>flusso del tempo</b> (la sequenza dei messaggi è più difficile da seguire nei collaboration diagram). I <b>Collaboration diagram</b> sono migliori per vedere il <b>flusso di controllo per organizzazione</b> (il loro layout può mostrare anche le connessioni statiche tra oggetti).
+
+[Esercizio - Elevator] Nel Class Diagram dell'Elevator, quale classe base è generalizzata in <code>Elevator Button</code> e <code>Floor Button</code>, e da quale classe sono entrambe "controlled"?	La classe base è <code>Button</code> (con attributo <code>illuminated: boolean</code>). Entrambe le sottoclassi sono controllate (association "controls") dalla classe <code>Elevator Controller</code>.
+
+[Esercizio - Elevator] Nella Elevator - Sequence Diagram, cosa succede subito dopo "1. Press floor button" e cosa segna la fine del primo "giro" prima che l'utente prema il pulsante dell'ascensore?	Dopo "1. Press floor button", il Floor Button riceve "2. Turn on light" (dal Elevator Controller); poi l'Elevator Controller invia "3. * Move up one floor" (iterato) all'Elevator; una volta arrivato, "4. Turn off light" spegne la luce del Floor Button — a quel punto l'utente può eseguire "6. Press elevator button".
+
+[Esercizio - Elevator] Nella Elevator - Collaboration Diagram, quali oggetti sono direttamente collegati (hanno un link) all'<code>Elevator Controller</code>?	<code>User A</code>, <code>Elevator Doors</code>, <code>Elevator</code>, <code>Elevator Button</code>, <code>Floor Button</code> — e l'<code>Elevator Controller</code> ha anche un self-link (12. Start timer).
+
+Nel "System Design" con contratti client/server o peer-to-peer, cosa rappresenta il <b>contract</b> attorno al server subsystem (o a ciascun peer subsystem)?	L'interfaccia pubblica del sottosistema attraverso cui gli altri sottosistemi possono inviare <b>request</b>: nel caso client/server il client invia richieste al server; nel caso peer-to-peer, entrambi i sottosistemi possono inviarsi richieste a vicenda, ciascuno col proprio contract.
+
+Quali sono i <b>tre approcci</b> menzionati per scomporre un sistema grande in sottosistemi più piccoli?	1. <b>Roman principle</b>: Divide & conquer (dividi un sistema grande in parti gestibili)<br>2. <b>Structured methods</b>: functional decomposition<br>3. Approccio <b>OO</b>: raggruppare le classi in unità di livello superiore, cioè <b>Packages / Components</b>
+
+Cos'è una <b>dependency</b> tra due package, secondo la definizione data a lezione?	Esiste una dependency tra due elementi se un <b>cambiamento nella definizione di uno</b> può causare un <b>cambiamento nell'altro</b>. L'obiettivo (e l'arte) del design su larga scala è <b>minimizzare le dipendenze</b>, per contenere gli effetti dei cambiamenti.
+
+Quali sono le <b>due interpretazioni</b> possibili per i <b>Nested packages</b> (package annidati dentro altri package)?	<b>Transparent</b>: tutto il contenuto dei package contenuti è visibile dall'esterno.<br><b>Opaque</b>: sono visibili solo le classi del container, non il contenuto dei package annidati.
+
+Quali sono i <b>tre passi</b> per <b>restringere la complessità dell'interfaccia</b> di un package, e a quale design pattern corrisponde questa tecnica?	1. Dare a tutte le classi del package solo <b>package visibility</b><br>2. Definire una <b>classe pubblica</b> che espone il comportamento pubblico del package<br>3. <b>Delegare</b> le operazioni pubbliche alla classe appropriata interna al package<br>Questa tecnica corrisponde al pattern <b>Facade</b> [Gamma et al. 1994].
+
+Quali sono le <b>tre "Rules of thumb"</b> suggerite per l'uso dei package e delle loro dipendenze?	1. Cercare di <b>evitare cicli</b> nella struttura delle dipendenze<br>2. Se ci sono <b>troppe dipendenze</b>, provare a <b>refattorizzare</b> il sistema<br>3. Usare i package quando il class diagram del sistema <b>non è più leggibile</b> su un singolo foglio di carta formato lettera
+
+Qual è la differenza fondamentale tra <b>Packages</b> e <b>Diagrams</b> in UML, in termini di scopo?	I <b>Packages</b> rappresentano <b>divisioni fisiche</b> del lavoro di sviluppo, il cui obiettivo è facilitare la definizione di workpackage e lo sviluppo del sistema software. I <b>Diagrams</b> rappresentano un <b>assemblaggio logico di informazioni</b>, il cui obiettivo è facilitare la comprensione del dominio target.
+
+Nella notazione UML per un <b>Component</b> (es. <code>mickeymouse.dll</code>), come viene rappresentato graficamente il componente?	Come un rettangolo con il nome del componente, dotato sul bordo sinistro di <b>due piccoli rettangoli sporgenti</b> (l'icona classica del componente).
+
+Come vengono rappresentate le <b>interfacce</b> fornite da un componente (es. <code>Detective</code>, <code>Friend</code>, <code>BoyFriend</code> per <code>mickeymouse.dll</code>)?	Con dei <b>cerchi ("lollipop")</b> collegati al componente tramite una linea, ciascuno etichettato con il nome dell'interfaccia.
+
+Nella "Detailed View of a Collaboration" tra <code>mickeymouse.dll</code> e <code>pluto.dll</code> attraverso l'interfaccia <code>Detective</code>, qual è la differenza tra la relazione di <b>Realization</b> e quella di <b>Dependency</b>?	La <b>Realization</b> (freccia tratteggiata con punta triangolare vuota) collega <code>mickeymouse.dll</code> all'interfaccia <code>Detective</code>, indicando che il componente <b>implementa</b> quell'interfaccia. La <b>Dependency</b> (freccia tratteggiata semplice) collega <code>pluto.dll</code> all'interfaccia, indicando che <b>dipende</b> da (usa) quell'interfaccia senza implementarla.
+
+Come sono collegati un componente (es. <code>mickeymouse.dll</code>) e le classi che contiene (es. <code>Cartoon</code>, <code>Character</code>, <code>Mouse</code>) in un diagramma UML?	Con frecce di <b>dependency tratteggiate</b> che vanno dal componente verso ciascuna delle classi che lo compongono/implementa.
+
+Quali sono i <b>cinque stereotipi</b> che UML definisce per i componenti?	<b>executable</b>, <b>library</b>, <b>table</b>, <b>file</b>, <b>document</b>.
+
+Cos'è un <b>Node</b> in UML, e come si rappresenta graficamente?	Un elemento fisico che <b>esiste a runtime</b> e rappresenta una <b>risorsa computazionale</b>, con almeno un po' di memoria e spesso capacità di elaborazione. Si rappresenta come un <b>cubo/parallelepipedo 3D</b> con il nome all'interno.
+
+Qual è la <b>differenza concettuale</b> tra Components e Nodes, pur essendo entrambi "simili" (hanno nomi, partecipano a dependency/generalization/association, possono essere annidati)?	I <b>Components</b> sono cose che <b>partecipano all'esecuzione</b> di un sistema (rappresentano il packaging fisico di elementi altrimenti logici); i <b>Nodes</b> sono cose che <b>eseguono i componenti</b> (rappresentano il deployment fisico dei componenti).
+
+[Esercizio] In un Deployment Diagram con notazione <code>: kiosk</code> che "Deploys user.exe" collegato via <code>«10-T Ethernet»</code> a <code>s : server</code>, cosa significa la sintassi <code>s : server</code> con attributi <code>processorSpeed = 300 mHz</code>?	È la notazione di un'<b>istanza di nodo</b> (analoga a "oggetto : Classe"), dove <code>s</code> è il nome dell'istanza e <code>server</code> il tipo di nodo; gli attributi tra parentesi (es. <code>processorSpeed</code>, <code>memory</code>) descrivono le caratteristiche di quella specifica istanza di nodo, mentre "Deploys" elenca i componenti (eseguibili) installati su di essa.
+
+Quali sono i <b>due aspetti</b> da considerare quando si parla di supporto UML ai sistemi Real-Time?	1. Le <b>feature di UML</b> che possono essere usate per supportare applicazioni Real-Time<br>2. Le <b>estensioni proposte a UML</b> per gestire le applicazioni Real-Time (usando le self-extending feature di UML)
+
+Quali sono i <b>tre "Real Time Constructs"</b> che UML mette a disposizione per le applicazioni Real-Time?	<b>Change Event</b>, <b>Time Event</b>, <b>Timing constraints</b>.
+
+Qual è la differenza tra un evento <b>"when"</b> e un evento <b>"after"</b>, nei Time and Change events?	<code>when</code> specifica la <b>data/ora assoluta</b> in cui l'evento avverrà (es. <code>when(12:00AM) / goForLunch()</code>). <code>after</code> specifica <b>dopo quanto tempo</b> un dato evento verrà eseguito (es. <code>after(5 minutes) / put the egg in the pot</code>).
+
+Nelle <b>Timing Constraints</b> di UML, quali sono le <b>tre variabili "built-in"</b> disponibili, e cosa fa il costrutto <b>"every"</b>?	Le tre variabili built-in sono <code>startTime</code>, <code>stopTime</code> ed <code>executionTime</code>. Il costrutto <b>"every"</b> identifica un messaggio che viene <b>reinviato a intervalli di tempo prestabiliti</b>.
+
+[Esercizio] Nell'esempio "Owner - Lazy Dog" con <code>{every 1 hour} 1: callToOrder()</code> e <code>{executionTime &lt; 1 hour} 2: checkTheHouse()</code>, cosa esprimono le due timing constraint?	La prima impone che il messaggio <code>callToOrder()</code> venga <b>reinviato ogni ora</b>. La seconda impone che l'esecuzione del self-message <code>checkTheHouse()</code> da parte di "Lazy Dog" duri <b>meno di un'ora</b>.
+
+Perché il supporto Real-Time di UML viene descritto come "Unfortunately" limitato nella pratica?	Perché <b>nessun tool o linguaggio di programmazione esistente</b> (nemmeno Rose 2000, secondo le slide) è in grado di <b>far rispettare</b> (enforce) tali vincoli temporali.
+
+Cos'è <b>ROOM</b> (citato nelle slide sul Real-Time UML), e cosa introduce di particolare?	<b>Real Time Object Oriented Modeling</b>. Introduce concetti come le <b>capsule</b> (es. <code>«capsule» anX:CapsuleClassX</code>) e le loro <b>port</b> (es. <code>portA:ProtocolA::master</code>), con una notazione shorthand ("iconified form") per rappresentare le istanze di capsula.
+
+Cos'è <b>OCL</b> (Object Constraint Language), e quali sono le sue <b>tre caratteristiche fondamentali</b>?	È il <b>linguaggio di espressione per UML</b>. È: 1. un linguaggio <b>puro, senza side effects</b>; 2. un linguaggio di <b>modellazione, non eseguibile</b>; 3. un linguaggio <b>formale</b>, con semantica ben definita.
+
+Qual è il <b>goal</b> dichiarato di OCL?	Definire in modo <b>chiaro e non ambiguo</b> le "guard statements" (condizioni di guardia) in UML.
+
+In OCL, come cambia la sintassi degli attributi rispetto a Java (in particolare riguardo alla keyword "this")?	La sintassi è la stessa di Java, ma <code>this</code> diventa <code>self</code> (es. <code>self.weight &lt; 100</code>).
+
+Le espressioni OCL sono <b>tipizzate dinamicamente o staticamente</b>?	Sono <b>fortemente tipizzate</b> (strongly typed) e la <b>type conformance viene verificata</b> (es. <code>self.weight &lt; "abc"</code> non è valido perché confronta un Real con una stringa).
+
+In OCL, come si esprimono <b>pre-condizioni</b> e <b>post-condizioni</b> su un'operazione? Fai l'esempio di <code>Dog::eat(f: Real)</code>.	Si associano all'operazione dichiarando <code>pre:</code> e <code>post:</code>. Per <code>Dog::eat(f: Real)</code>: <code>post: weight := weight@pre + f</code>, dove <code>weight@pre</code> indica il valore dell'attributo <b>prima</b> dell'esecuzione dell'operazione.
+
+In OCL, come vengono trattate le associazioni di <b>cardinalità 1</b> rispetto a quelle di <b>cardinalità diversa da 1</b>?	Le associazioni di cardinalità <b>1</b> sono trattate come <b>attributi</b> (es. <code>Fido.owner = Joe</code>). Le associazioni di cardinalità <b>diversa da 1</b> sono trattate come <b>insiemi (sets)</b> (es. <code>Joe-&gt;pet</code> è l'insieme di tutti gli animali di Joe), con operazioni ben definite; gli operatori <code>"."</code> e <code>"-&gt;"</code> possono essere usati <b>polimorficamente</b>.
+
+Nella gerarchia dei tipi di OCL, quali sono le <b>tre sottoclassi concrete</b> di <code>Collection</code>?	<code>Set</code>, <code>Bag</code>, <code>Sequence</code>.
+
+Elenca almeno <b>sei metodi</b> disponibili sulle collection in OCL.	Ad esempio: <code>size</code>, <code>includes</code>, <code>count</code>, <code>includesAll</code>, <code>isEmpty</code>, <code>notEmpty</code>, <code>sum</code>, <code>exists</code>, <code>forAll</code>, <code>iterate</code>, <code>select</code>, <code>reject</code>, <code>collect</code>.
+
+Qual è la <b>key idea</b> alla base del <b>Refactoring</b> secondo le slide?	I sistemi software sono <b>entità in evoluzione</b> che richiedono continuo aggiornamento e manutenzione ("housekeeping"). Per rendere questo processo "semplice" (non "orrendamente difficile"), si adotta uno <b>sviluppo incrementale con cicli di vita brevi e refactoring costante</b>.
+
+Cosa significa "<b>Refactoring UML diagrams</b>" secondo la definizione data a lezione?	Rivedere il sistema, ristrutturando il design proprio e dei suoi componenti, puntando a maggiore <b>semplicità</b> e maggiore aderenza alla <b>struttura del dominio</b> — <b>mantenendone il comportamento</b> (behavior) inalterato.
+
+[Esercizio] Nell'esempio di refactoring "Array/Matrix", qual è il primo passo (dalla semplice ereditarietà Array→Matrix) e qual è il passo finale che introduce <code>SparseMatrix</code>/<code>DenseMatrix</code>?	Il primo passo introduce la specializzazione di <code>Matrix</code> in <code>SparseMatrix</code> e <code>DenseMatrix</code> (entrambe sottoclassi di <code>Matrix</code>, che a sua volta eredita da <code>Array</code>).
+
+[Esercizio] Nell'esempio di refactoring esteso Array/Vector/Matrix, cosa introduce il "Last Step" del refactoring, e con quale relazione collega le nuove classi?	Introduce la classe <code>IndexedCollection</code> (con <code>operator[]()</code>) da cui ereditano <code>Vector</code> e <code>Matrix</code>, e la trasforma in modo che <code>Array</code> diventi un'<b>interfaccia</b> (realizzata da <code>SparseArray</code> e <code>DenseArray</code>); <code>IndexedCollection</code> è collegata ad <code>Array</code> tramite una relazione di <b>aggregazione</b> (Last Step).
+
+Nella tabella delle "Tecniche usate per il refactoring" (Class / Static member data / Static member function / Temp. data), quali tecniche si applicano <b>solo ai Temp. data</b> (evidenziate in rosso solo per quella colonna)?	<b>Push Up/Down</b> è evidenziata come applicabile a Temp. data (oltre che, implicitamente, non alle altre colonne in quella riga); mentre <b>Break Down/Condense</b> si applica sia a (Static) member data sia a Temp. data, e <b>Re-qualify</b> si applica a Class, (Static) member data e Temp. data.
+
+Quali sono i <b>tre modi</b> in cui i Design Pattern possono essere strumentali (instrumental) per il refactoring?	1. <b>Suggeriscono la struttura interna</b> del codice ("hint the inner structure")<br>2. <b>Guidano lo sviluppo</b> di nuove strutture di oggetti e classi<br>3. Aiutano a <b>separare le strategie di implementazione dall'obiettivo</b> dell'implementazione
+
+Nella "Guide for refactoring with Design Patterns", quale pattern è suggerito per: (a) creazione consistente tra classi, (b) tree structure, (c) double dispatching?	(a) <b>Abstract Factory</b><br>(b) <b>Composite</b><br>(c) <b>Visitor</b>
+
+Nella "Guide for refactoring with Design Patterns", quale pattern è suggerito per: (a) numero variabile di feature, (b) implementazione flessibile di un algoritmo, (c) implementazione flessibile di una classe?	(a) <b>Decorator</b><br>(b) <b>Strategy</b><br>(c) <b>Bridge</b>
+
+Quali sono i <b>tre "Criteria for refactoring"</b> elencati a lezione?	1. Rifattorizzare quando il programma mostra <b>deficienze</b>, non per "miglioramento concettuale"<br>2. Scrivere il codice <b>esattamente una volta</b> (si veda la relazione <code>&lt;&lt;include&gt;&gt;</code> negli Use Case)<br>3. <b>Eliminare le entità grandi</b> (metodi, classi, package/namespace)
+
+Quali sono i <b>due "Inhibitor$$"</b> pratici che ostacolano il refactoring, citati a lezione?	"<b>The system works</b>" e mancano <b>tempo</b> e <b>denaro</b> per rifattorizzare; inoltre è un ostacolo il dover lavorare sulle <b>astrazioni di design create da qualcun altro</b>.

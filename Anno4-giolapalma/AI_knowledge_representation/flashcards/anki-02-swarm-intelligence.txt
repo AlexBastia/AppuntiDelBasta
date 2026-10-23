@@ -1,0 +1,86 @@
+#separator:tab
+#html:true
+#notetype:Basic
+#deck:AI Knowledge Representation::02 Swarm Intelligence
+
+Cos'è la <b>swarm intelligence</b> (SI)?	Tecnica di IA basata sullo studio del <b>comportamento collettivo</b> in sistemi <b>decentralizzati</b> e <b>auto-organizzati</b>.<br>Una popolazione di <b>agenti semplici</b> interagisce <b>localmente</b> tra loro e con l'ambiente; senza un controllo centralizzato, le interazioni locali portano all'<b>emergere di un comportamento globale</b>.<br>Esempi in natura: colonie di formiche, stormi di uccelli, mandrie, colonie batteriche, banchi di pesci.
+
+Cosa afferma il principio «<b>la mente è sociale</b>» (mind is social, Kennedy &amp; Eberhart 2001)?	<ul><li>L'intelligenza umana è il risultato dell'<b>interazione sociale</b>;</li><li>valutare, confrontare e <b>imitare</b> gli altri, emulare i comportamenti di successo permette di adattarsi ad ambienti complessi scoprendo pattern ottimi;</li><li>cultura e cognizione sono conseguenze delle scelte sociali; la cultura emerge quando gli individui diventano simili tramite <b>apprendimento sociale</b>;</li><li>per modellare l'intelligenza umana bisogna modellare individui in un <b>contesto sociale</b>.</li></ul>
+
+Quali sono le <b>caratteristiche</b> di un sistema di swarm intelligence?	<ul><li>insieme di <b>individui semplici</b> con capacità limitate;</li><li>gli individui <b>non hanno la visione globale</b> del sistema;</li><li><b>comunicazione locale</b> (diretta o indiretta - <b>stigmergica</b>);</li><li><b>calcolo distribuito</b>: nessun coordinamento centralizzato;</li><li><b>robustezza</b>;</li><li><b>adattività</b>.</li></ul>
+
+Quali <b>metafore naturali</b> ispirano la swarm intelligence?	Colonie di <b>formiche</b>, colonie di <b>api</b>, <b>banchi di pesci</b>, <b>stormi di uccelli</b>.
+
+Quali sono gli <b>ingredienti dell'auto-organizzazione</b> (self-organisation)?	<ul><li><b>Interazioni multiple</b> tra agenti (agenti semplici, es. rule-based; sistemi multi-agente);</li><li><b>Feedback positivo</b>: rinforzo dei comportamenti comuni, amplificazione di fluttuazioni casuali e formazione di strutture;</li><li><b>Feedback negativo</b>: saturazione, competizione, esaurimento delle risorse.</li></ul>
+
+Cos'è la <b>stigmergia</b> (stigmergy)?	Una forma di <b>comunicazione indiretta</b>: un agente <b>modifica l'ambiente</b> e gli altri reagiscono a questo cambiamento.<br>Es.: le formiche comunicano tramite il <b>feromone</b>.
+
+Quali sono i principali <b>algoritmi di swarm intelligence</b> citati, con autori e anno?	<ul><li><b>Ant Colony Optimization</b> (ACO) - Dorigo, 1992: comportamento delle formiche, feedback positivo tramite tracce di feromone che rinforzano le componenti che contribuiscono alla soluzione;</li><li><b>Artificial Bee Colony</b> (ABC) - Karaboga, 2005: popolazione di api in cerca di nettare;</li><li><b>Particle Swarm Optimization</b> (PSO) - Kennedy &amp; Eberhart, 1995: stormi di uccelli / banchi di pesci, imitazione dei vicini.</li></ul>
+
+Cosa si osserva nel comportamento delle <b>formiche</b> reali (ant colony)?	<ul><li>Le formiche depositano <b>tracce di feromone</b> camminando dal nido al cibo e viceversa;</li><li>tendono a scegliere (con maggiore probabilità) i percorsi con <b>più feromone</b>;</li><li>l'interazione cooperativa porta al comportamento emergente di trovare il <b>cammino più breve</b>.</li></ul>
+
+Cosa mostra l'esperimento del <b>doppio ponte</b> (double bridge)?	Tra nido (N) e cibo (F) ci sono due percorsi di lunghezza diversa. Inizialmente le formiche li usano entrambi; sul ramo <b>più corto</b> i viaggi andata/ritorno sono più rapidi, quindi il feromone vi si accumula più velocemente (<b>feedback positivo</b>) e alla fine quasi tutte le formiche convergono sul <b>percorso più breve</b>.
+
+Cos'è il <b>modello a feromone</b> e il <b>grafo di costruzione</b> (construction graph) in ACO?	Il <b>pheromone model</b> è un modello probabilistico parametrizzato che rappresenta le tracce di feromone.<br>Le formiche costruiscono soluzioni <b>incrementalmente</b> con passi stocastici su un grafo completamente connesso \(G = (C, L)\):<ul><li>vertici \(C\) = <b>componenti della soluzione</b>;</li><li>archi \(L\) = connessioni;</li><li>stati = <b>cammini</b> su \(G\).</li></ul>I <b>vincoli</b> definiscono cosa è una soluzione consistente.
+
+Come si modella il <b>TSP in ACO</b>?	<ul><li>nodi di \(G\) (componenti) = <b>città</b> da visitare;</li><li>archi = <b>collegamenti</b> tra città;</li><li>soluzione = <b>cammino hamiltoniano</b> nel grafo;</li><li>vincoli per evitare sotto-cicli: <b>ogni formica visita ogni città una sola volta</b>.</li></ul>
+
+In ACO, quali <b>sorgenti di informazione</b> sono associate a connessioni/componenti e cosa rappresentano?	<ul><li><b>Feromone</b> \(\tau\): astrae le tracce naturali e codifica la <b>memoria a lungo termine</b> del processo di ricerca globale;</li><li><b>Valore euristico</b> \(\eta\): rappresenta la <b>conoscenza a priori</b> sul problema.</li></ul>
+
+Descrivi lo <b>schema di base</b> (basic schema) di ACO.	Un problema di ottimizzazione combinatoria (CO problem) viene tradotto in <b>componenti della soluzione</b> e <b>modello a feromone</b>. Dentro ACO si alternano ciclicamente:<ul><li><b>costruzione probabilistica</b> delle soluzioni;</li><li><b>aggiornamento dei valori di feromone</b>;</li></ul>partendo da un'<b>inizializzazione</b> dei valori di feromone.
+
+Come funziona l'<b>Ant System</b> (primo esempio di ACO)?	<ul><li>Le formiche costruiscono una soluzione seguendo un cammino sul grafo di costruzione;</li><li>una <b>regola di transizione</b> sceglie il prossimo nodo, usando <b>euristica</b> e <b>feromone</b>;</li><li>i feromoni vengono aggiornati in base alla <b>qualità della soluzione trovata</b>;</li><li>la <b>memoria</b> è usata per ricordare i cammini passati.</li></ul>
+
+Pseudocodice dell'<b>Ant System</b>.	InitializePheromoneValues()<br><b>while</b> condizioni di terminazione non soddisfatte <b>do</b><br>&nbsp;&nbsp;<b>for all</b> formiche \(a \in A\) <b>do</b><br>&nbsp;&nbsp;&nbsp;&nbsp;\(s_a \leftarrow\) ConstructSolution\((\tau, \eta)\)<br>&nbsp;&nbsp;<b>end for</b><br>&nbsp;&nbsp;ApplyOnlineDelayedPheromoneUpdate()<br><b>end while</b>
+
+Ant System: qual è la <b>regola di transizione probabilistica</b> per passare dal nodo \(i\) al nodo \(j\)?	\[ p_{ij} = \begin{cases} \dfrac{[\tau_{ij}]^{\alpha}\,[\eta_{ij}]^{\beta}}{\sum_{k \in \text{feasible}} [\tau_{ik}]^{\alpha}\,[\eta_{ik}]^{\beta}} &amp; \text{se } j \text{ consistente} \\ 0 &amp; \text{altrimenti} \end{cases} \]<ul><li>\(\tau_{ij}\): traccia di feromone;</li><li>\(\eta_{ij} = 1/d_{ij}\): euristica (inverso della distanza);</li><li>\(\alpha, \beta\): pesano l'importanza di feromone ed euristica.</li></ul>
+
+Ant System: qual è la regola di <b>aggiornamento del feromone</b>?	\[ \tau_{ij} \leftarrow (1-\rho)\,\tau_{ij} + \sum_{k=1}^{m} \Delta\tau_{ij}^{k} \]\[ \Delta\tau_{ij}^{k} = \begin{cases} 1/L_k &amp; \text{se la formica } k \text{ ha usato l'arco } (i,j) \\ 0 &amp; \text{altrimenti} \end{cases} \]\(\rho\): coefficiente di <b>evaporazione</b>; \(m\): numero di formiche; \(L_k\): lunghezza del cammino della formica \(k\) (cammini più corti depositano più feromone).
+
+Nell'aggiornamento del feromone in ACO, a cosa serve l'<b>evaporazione</b> \(\rho\)?	Riduce a ogni iterazione tutto il feromone di un fattore \((1-\rho)\): è un meccanismo di <b>feedback negativo</b> che fa \"dimenticare\" le scelte vecchie/cattive ed evita convergenza prematura. L'evaporazione viene applicata <b>sempre</b>.
+
+Pseudocodice generale della metaeuristica <b>ACO</b> (con ScheduleActivities).	<b>while</b> condizioni di terminazione non soddisfatte <b>do</b><br>&nbsp;&nbsp;ScheduleActivities<br>&nbsp;&nbsp;&nbsp;&nbsp;AntBasedSolutionConstruction()<br>&nbsp;&nbsp;&nbsp;&nbsp;PheromoneUpdate()<br>&nbsp;&nbsp;&nbsp;&nbsp;DaemonActions() {opzionale}<br>&nbsp;&nbsp;end ScheduleActivities<br><b>end while</b>
+
+Cosa fa la fase <b>AntBasedSolutionConstruction()</b> di ACO?	Le formiche si muovono applicando una <b>politica di decisione locale stocastica</b> che usa i valori di <b>feromone</b> ed <b>euristica</b> sulle componenti del grafo. Durante il movimento tengono traccia delle <b>soluzioni parziali</b> (cammini) costruite.
+
+Quali tipi di <b>PheromoneUpdate()</b> esistono in ACO?	<ul><li><b>Online step-by-step</b>: le formiche aggiornano il feromone <b>durante</b> la costruzione della soluzione;</li><li><b>Online delayed</b>: le formiche aggiornano <b>a ritroso</b> il feromone sulle componenti usate in base alla <b>qualità della soluzione complessiva</b>;</li><li><b>Evaporazione</b>: applicata sempre.</li></ul>
+
+Cosa sono le <b>DaemonActions()</b> in ACO?	Azioni <b>centralizzate</b> che non possono essere eseguite dalle singole formiche, ad es.:<ul><li>procedura di <b>local search</b> applicata a ogni soluzione costruita;</li><li>raccolta di <b>informazione globale</b> per decidere se depositare feromone aggiuntivo per guidare la ricerca da una prospettiva globale.</li></ul>Sono opzionali.
+
+Quali <b>varianti di ACO</b> sono citate nei lucidi?	<b>MAX-MIN Ant System</b>, <b>Hyper-cube Framework</b>, <b>Multi-level ACO</b>, <b>Beam ACO</b>. (Progetti EU: SWARM-BOT, SWARMANOID.)
+
+Quali sono i <b>tre tipi di api</b> nell'<b>Artificial Bee Colony</b> (ABC)?	<ul><li><b>Employed bees</b> (operaie): associate a una specifica fonte di nettare;</li><li><b>Onlookers</b> (osservatrici): osservando le employed scelgono una fonte di nettare;</li><li><b>Scouts</b> (esploratrici): scoprono nuove fonti di cibo.</li></ul>Le fonti sono inizialmente scoperte dalle scout; quando una fonte si esaurisce, le employed di quella fonte diventano scout.
+
+Nell'algoritmo ABC, a cosa corrispondono <b>posizione</b> e <b>quantità</b> di cibo?	<ul><li><b>Posizione della fonte di cibo</b> = <b>soluzione</b> (ci sono tante soluzioni quante employed bees);</li><li><b>Quantità di nettare</b> = <b>fitness</b>.</li></ul>
+
+Struttura generale dell'<b>algoritmo ABC</b>.	InitializationPhase()<br><b>repeat</b><br>&nbsp;&nbsp;EmployedBeePhase()<br>&nbsp;&nbsp;OnlookerBeePhase()<br>&nbsp;&nbsp;ScoutBeePhase()<br>&nbsp;&nbsp;Sol = BestSolutionSoFar<br><b>until</b> (Cycle = MaxCycleNum o MaxCPUtime)
+
+ABC: come avviene la <b>fase di inizializzazione</b>?	Un insieme di posizioni di fonti di cibo viene scelto a caso e se ne calcola la quantità di nettare. Ogni soluzione \(X_m\) (\(m = 1..N_{pop}\)) ha \(n\) variabili \(X_{mi}\) con bound inferiore/superiore, inizializzate come:<br>\[ X_{mi} = lb_i + \text{rand}(0,1)\,(ub_i - lb_i) \]
+
+ABC: cosa fa la <b>EmployedBeePhase</b> e come si calcola la <b>fitness</b>?	Ogni employed bee torna alla fonte visitata al ciclo precedente (che ha in memoria) e sceglie una <b>nuova fonte nel vicinato</b> di quella attuale tramite informazione visiva.<br>Fitness da funzione obiettivo:<br>\[ ftn(X_m) = \begin{cases} \dfrac{1}{1+obj(X_m)} &amp; \text{se } obj(X_m) \ge 0 \\ 1 + |obj(X_m)| &amp; \text{se } obj(X_m) &lt; 0 \end{cases} \]
+
+ABC: come sceglie la fonte un'<b>onlooker bee</b>?	Con probabilità proporzionale alla fitness della fonte:<br>\[ p_m = \frac{ftn(X_m)}{\sum_{i=1}^{N_{pop}} ftn(X_i)} \]È il meccanismo di <b>feedback positivo</b>.
+
+ABC: cosa succede nella <b>ScoutPhase</b>?	Le scout scelgono fonti di nettare <b>a caso</b>. Le employed bees che <b>non riescono a migliorare</b> la soluzione dopo un certo numero di tentativi diventano scout e <b>abbandonano</b> la fonte → meccanismo di <b>feedback negativo</b>.
+
+Quali <b>applicazioni</b> di ABC sono citate?	<ul><li><b>Addestramento di reti neurali</b> (funzione da ottimizzare = errore quadratico medio);</li><li><b>ottimizzazione numerica</b>;</li><li><b>ottimizzazione combinatoria</b> / problemi vincolati.</li></ul>
+
+Chi ha proposto la <b>Particle Swarm Optimization</b> (PSO) e da cosa nasce?	Nel <b>1995</b> da <b>James Kennedy</b> (scienziato psico-sociale) e <b>Russell Eberhart</b> (ingegnere elettrico). Nasce dall'analisi dei meccanismi di interazione tra gli individui di uno sciame, particolarmente interessante quando tutto lo sciame ha un <b>obiettivo comune</b> (es. ricerca di cibo).
+
+Quali sono le <b>tre regole</b> che guidano i movimenti di uno stormo di uccelli? Cosa aggiunge PSO?	<ul><li><b>Seguire i vicini</b>;</li><li><b>restare nello stormo</b>;</li><li><b>evitare collisioni</b>.</li></ul>Con queste regole si modella il movimento collettivo di uno stormo <b>senza obiettivo comune</b>; PSO aggiunge un <b>obiettivo comune</b>: la ricerca del cibo.
+
+In PSO, con un obiettivo comune, quali alternative ha un individuo che trova cibo? Come si propaga l'informazione?	<ul><li>allontanarsi dal gruppo per raggiungere il cibo (scelta <b>individualista</b>);</li><li>restare nel gruppo (scelta <b>sociale</b>).</li></ul>Se più individui si muovono verso il cibo gli altri li seguono: gradualmente <b>tutto il gruppo cambia direzione</b> verso le zone promettenti, l'informazione si propaga a tutti i membri.
+
+Qual è l'<b>analogia</b> di PSO per i problemi di ottimizzazione e come bilancia <b>esplorazione</b> e <b>sfruttamento</b>?	<ul><li><b>Individui</b> = configurazioni candidate che si muovono e campionano lo spazio N-dimensionale delle soluzioni;</li><li><b>interazione sociale</b> = ogni agente sfrutta le ricerche altrui muovendosi verso le regioni promettenti (miglior soluzione globale).</li></ul><b>Esplorazione</b> (exploration): agenti individuali che cercano soluzioni.<br><b>Sfruttamento</b> (exploitation): comportamento sociale, sfruttare il successo degli altri.
+
+Cos'è il concetto di <b>vicinato/prossimità</b> (neighborhood) in PSO?	Gli individui sono influenzati dalle azioni degli individui a loro più <b>vicini</b> (sotto-gruppi); ogni individuo appartiene a <b>più sotto-gruppi</b>, quindi la diffusione dell'informazione è globalmente garantita.<br>I sotto-gruppi <b>non</b> sono legati alla vicinanza fisica nello spazio dei parametri, ma sono <b>definiti a priori</b>.
+
+PSO: qual è il problema affrontato e quali grandezze ha ogni <b>particella</b>?	Minimizzare \(f: \mathbb{R}^n \to \mathbb{R}\) (fitness/costo), <b>senza conoscerne il gradiente</b>: trovare \(a\) tale che \(f(a) \le f(b)\ \forall b\).<br>Sciame di \(S\) particelle; ogni particella \(i\) ha:<ul><li><b>posizione</b> \(x_i \in \mathbb{R}^n\);</li><li><b>velocità</b> \(v_i \in \mathbb{R}^n\);</li><li>\(p_i\): miglior posizione trovata dalla particella;</li></ul>\(g\): miglior posizione trovata dall'<b>intero sciame</b>.
+
+PSO: come avviene l'<b>inizializzazione</b> delle particelle?	Per ogni particella \(i = 1..S\):<ul><li>\(x_i \sim U(b_{lo}, b_{up})\) (uniforme nei bound dello spazio);</li><li>\(p_i \leftarrow x_i\);</li><li>se \(f(p_i) &lt; f(g)\): \(g \leftarrow p_i\);</li><li>\(v_i \sim U(-|b_{up} - b_{lo}|,\ |b_{up} - b_{lo}|)\).</li></ul>
+
+PSO: scrivi le formule di aggiornamento di <b>velocità</b> e <b>posizione</b>.	Estratti \(r_p, r_g \sim U(0,1)\):<br>\[ v_i \leftarrow \omega\, v_i + \varphi_p\, r_p\,(p_i - x_i) + \varphi_g\, r_g\,(g - x_i) \]\[ x_i \leftarrow x_i + v_i \]<ul><li>\(\omega\): inerzia;</li><li>\(\varphi_p\): peso della componente <b>cognitiva/individuale</b> (verso \(p_i\));</li><li>\(\varphi_g\): peso della componente <b>sociale</b> (verso \(g\)).</li></ul>
+
+PSO: cosa succede dopo l'aggiornamento della posizione e quando si termina?	Se \(f(x_i) &lt; f(p_i)\): \(p_i \leftarrow x_i\); se inoltre \(f(p_i) &lt; f(g)\): \(g \leftarrow p_i\).<br>Si ripete fino a un criterio di terminazione (es. numero di iterazioni, fitness adeguata) e si restituisce \(g\).<br>I parametri \(\omega, \varphi_p, \varphi_g\) vanno scelti con cura: influenzano molto efficacia ed efficienza.
+
+Perché il <b>parameter tuning</b> è un problema per gli algoritmi di swarm intelligence? Che strumenti esistono?	Gli algoritmi sono molto semplici ma richiedono una <b>taratura accurata dei parametri</b>, operazione tediosa e soggetta a errori: è difficile trovare la configurazione ottima.<br>Esistono tecniche di <b>tuning automatico</b>, es. <b>ParamILS</b>.

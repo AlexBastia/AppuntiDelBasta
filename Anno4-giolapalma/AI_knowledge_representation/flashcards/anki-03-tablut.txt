@@ -1,0 +1,75 @@
+#separator:tab
+#html:true
+#notetype:Basic
+#deck:AI Knowledge Representation::03 Tablut Challenge
+
+Qual è l'<b>obiettivo</b> della Tablut Challenge (per i docenti e per gli studenti)?	<ul><li>Per i docenti: stimolare la comprensione e la discussione degli <b>algoritmi di base per risolvere giochi</b> in ambito AI.</li><li>Per gli studenti: <b>vincere!</b></li></ul>
+
+Quali <b>soluzioni</b> sono ammesse per realizzare il giocatore della Tablut Challenge?	Qualunque soluzione che sfrutti algoritmi in qualche modo legati all'AI, ad esempio:<ul><li>esplorazione dello spazio degli stati</li><li>algoritmi genetici e swarm optimization</li><li>reti neurali</li><li>approcci basati su vincoli</li><li>soluzioni in Prolog</li></ul>
+
+Origine del <b>Tablut</b>: da dove viene e a che famiglia di giochi appartiene?	<ul><li>Gioco del Nord Europa, quasi sconosciuto; non esiste traccia scritta delle regole originali.</li><li>Le uniche regole scritte sono di <b>Linneo</b> (il biologo), in latino, dopo averlo visto giocare dai Lapponi.</li><li>Appartiene ai <b>Tafl Games</b> medievali (altri: Hnefatafl, Tawlbwrdd, Brandubh).</li></ul>
+
+In che senso il Tablut è un gioco <b>asimmetrico</b>?	I due giocatori hanno <b>pedine diverse</b> (numero e tipo) e <b>obiettivi diversi</b>: il Bianco vuole far fuggire il Re, il Nero vuole catturarlo.
+
+Tablut: <b>scacchiera</b> e <b>pezzi</b> di ciascun giocatore.	<ul><li>Scacchiera <b>9x9</b>.</li><li><b>Nero</b> (attaccante): 16 soldati.</li><li><b>Bianco</b> (difensore): 8 soldati + 1 <b>Re</b>.</li></ul>
+
+Tablut: qual è l'<b>obiettivo del Bianco</b> e quale quello del <b>Nero</b>?	<ul><li><b>Bianco</b>: far fuggire il Re, portandolo su una delle <b>caselle di fuga</b> (escape) sul bordo.</li><li><b>Nero</b>: <b>catturare il Re</b>.</li></ul>
+
+Regole Ashton: cosa sono il <b>Castello</b>, i <b>Campi</b> (camps) e le <b>Escape</b>?	<ul><li><b>Castello</b>: la casella centrale della scacchiera (dove parte il Re).</li><li><b>Campi</b>: 4 gruppi di 4 caselle a forma di T al centro di ogni lato (3 sul bordo + 1 verso l'interno); sono le posizioni di partenza dei soldati neri.</li><li><b>Escape</b>: caselle del bordo (2 per lato vicino a ogni angolo, 16 in totale, angoli esclusi) che il Re deve raggiungere.</li></ul>
+
+Tablut: <b>posizione iniziale</b> dei pezzi.	<ul><li>Re nel <b>Castello</b> (centro).</li><li>8 soldati bianchi a croce attorno al Re (2 per direzione).</li><li>16 soldati neri sui 4 <b>Campi</b> (4 per lato).</li></ul>
+
+Tablut: come si <b>muovono</b> le pedine?	<ul><li>Solo <b>ortogonalmente</b> (su, giù, sinistra, destra), come la torre negli scacchi.</li><li>Di un numero <b>qualsiasi</b> di caselle.</li><li>Non si può attraversare né fermarsi su caselle occupate da pedine, sul <b>Castello</b> o sui <b>Campi</b>.</li></ul>
+
+Regole Ashton: quale <b>eccezione</b> riguarda il movimento dei neri nei <b>Campi</b>?	Le pedine nere possono muoversi dentro le caselle del <b>proprio Campo di partenza</b> finché non ne escono; una volta uscite <b>non possono rientrarvi</b>.
+
+Tablut: quando una pedina viene <b>catturata</b>?	Quando l'avversario la circonda con <b>due pedine su lati opposti</b> (orizzontale o verticale). La pedina catturata viene rimossa dal gioco. Si possono catturare <b>più pedine con una sola mossa</b>.
+
+Cosa significa che la cattura deve essere <b>attiva</b>?	La cattura avviene solo per effetto della mossa dell'<b>avversario</b>: se una pedina si sposta da sola in una posizione già circondata, <b>NON</b> è catturata.
+
+Regole Ashton: come si cattura il <b>Re quando è nel Castello</b>?	Il Re deve essere circondato su <b>tutti e 4 i lati</b>.
+
+Regole Ashton: come si cattura il <b>Re adiacente al Castello</b>?	Il Re deve essere circondato sui <b>3 lati liberi</b> (il quarto è il Castello).
+
+Regole Ashton: come si cattura un <b>soldato adiacente al Castello</b>?	Basta una pedina avversaria sul <b>lato opposto al Castello</b>: il Castello fa da <b>barriera</b>. Non importa se il Re è nel Castello o no.
+
+Regole Ashton: come si cattura una pedina (Re o soldato) <b>adiacente a un Campo</b>?	Basta una pedina avversaria sul <b>lato opposto al Campo</b>: il Campo fa da <b>barriera</b>, indipendentemente dal fatto che sia occupato o no.
+
+Tablut: chi <b>muove per primo</b>?	Il <b>Bianco</b>.
+
+Tablut (regole Ashton): quali sono le <b>condizioni di fine partita</b>?	<ul><li>Il Re raggiunge una casella <b>Escape</b>: vince il <b>Bianco</b>.</li><li>Il Re viene <b>catturato</b>: vince il <b>Nero</b>.</li><li>Un giocatore <b>non può muovere</b> alcuna pedina: quel giocatore <b>perde</b>.</li><li>Lo <b>stesso stato</b> si ripresenta due volte: <b>pareggio</b>.</li></ul>
+
+Tablut Challenge: come sono organizzati i <b>tornei</b> e il <b>punteggio</b>?	<ul><li>Tornei separati per <b>dimensione del team</b>.</li><li>Partite di andata e ritorno: una da Bianco, una da Nero.</li><li><b>Vittoria = 3 punti</b>, <b>pareggio = 1 punto</b>.</li></ul>
+
+Tablut Challenge: qual è il <b>limite di tempo</b> per mossa e cosa succede se lo si supera?	<ul><li><b>60 secondi</b> per mossa (può essere ridotto se necessario, es. troppi partecipanti).</li><li>Il timeout è gestito dal server-arbitro; in caso di timeout il giocatore di turno <b>perde</b>.</li></ul>
+
+Tablut Challenge: cosa succede se il giocatore propone una <b>mossa illegale</b>?	Vengono sollevate eccezioni specifiche e il giocatore <b>perde</b>.
+
+Tablut Challenge: cosa bisogna <b>realizzare</b> e come si comunica?	<ul><li>Un <b>agente software</b> che gioca comunicando con il <b>server-arbitro</b> fornito dai docenti.</li><li>I messaggi sono <b>stringhe JSON</b>.</li><li>È fornita una possibile rappresentazione dello stato (utile ma non obbligatoria).</li></ul>
+
+Cosa contiene il <b>progetto Java</b> fornito (TablutCompetition su GitHub)?	<ul><li><b>Server</b> che mantiene lo stato e comunica coi giocatori (StateTablut.java, Server.java).</li><li><b>Game engine</b> (GameAshtonTablut.java): verifica la legalità delle mosse (Action.java) e aggiorna lo stato.</li><li>Classe astratta <b>TablutClient.java</b>: invia la mossa e legge lo stato dal server.</li><li>Client umano testuale e client <b>random</b>.</li><li><b>Tester.java</b> per testare regole e stati personalizzati.</li><li>Altre varianti del gioco (probabilmente rotte).</li></ul>
+
+Tablut Challenge: come avviene la <b>connessione iniziale</b> al server?	<ul><li>Il server attende i giocatori: si connette <b>sempre prima il Bianco</b>.</li><li>Entrambi comunicano il proprio <b>nome</b> tramite stringa.</li><li>Quando entrambi sono connessi il server invia lo stato corrente a tutti e la partita inizia.</li></ul>
+
+Descrivi il <b>ciclo di gioco</b> di un giocatore nella Tablut Challenge.	<ol><li>Leggi lo stato dal server.</li><li>Calcola la mossa.</li><li>Invia la mossa al server.</li><li>Leggi il nuovo stato (modificato dalla tua mossa).</li><li>Torna a 1 (lettura <b>bloccante</b> dello stato modificato dall'avversario).</li></ol>
+
+Quali vincoli valgono durante il <b>turno dell'avversario</b>?	<ul><li>Il giocatore <b>non può eseguire attività di calcolo</b>.</li><li>C'è un limite superiore alla <b>memoria</b> utilizzabile: le risorse hardware sono limitate.</li></ul>
+
+Con quali <b>parametri</b> (e in che ordine) deve essere lanciato il giocatore?	<ol><li><b>Ruolo</b>: WHITE o BLACK (parola intera, gestita <b>case-insensitive</b>).</li><li><b>Timeout</b> in secondi.</li><li><b>Indirizzo IP</b> del server.</li></ol>Eventuali parametri opzionali sono ammessi, ma serve un comportamento di default. Es.: <code>/home/tablut/tablut/runmyplayer.sh WHITE 60 192.168.20.101</code>
+
+Tablut Challenge: quali <b>linguaggi</b> sono consigliati?	<ul><li><b>Java</b>: il più semplice, tutto il progetto è in Java.</li><li><b>Python</b>: alcune librerie leggono 1 byte alla volta; c'è un file helper per la comunicazione.</li><li>Altro: qualunque cosa compatibile con la macchina della competizione (JSON permette l'interoperabilità); avvisare i docenti per scelte esotiche.</li></ul>
+
+Quali <b>tecniche</b> suggeriscono i lucidi per il giocatore di Tablut?	<ul><li>Le <b>ricerche nello spazio degli stati</b> sono le più facili da implementare.</li><li>Chiavi della vittoria: <b>rappresentazioni compatte</b>, <b>simmetrie</b>, <b>modifica veloce dello stato</b>, <b>euristiche veloci</b>.</li><li>Per qualcosa di nuovo: algoritmi genetici, reti neurali, linguaggi logici.</li></ul>
+
+Quali <b>varianti</b> del Tablut sono citate come spunto per la riusabilità del software?	<ul><li><b>Tablut classico</b>: niente campi e un'altra cattura speciale.</li><li><b>Brandubh</b>: griglia 7x7, niente campi, 4+1 bianchi, 8 neri.</li><li><b>Tablut moderno</b>: come il classico, ma escape negli <b>angoli</b> e Re da circondare su ogni lato.</li></ul>
+
+Tablut Challenge: requisiti della <b>macchina virtuale</b> e dello script di avvio.	<ul><li>Credenziali <b>tablut/tablut</b>: non modificare credenziali, configurazione utente né SSH.</li><li>Tutto il progetto nella cartella <b>/home/tablut/tablut</b>.</li><li>Il giocatore si lancia con un unico script <b>runmyplayer.sh</b> (rimuovere il player random; usare un nome di player significativo).</li></ul>
+
+Tablut Challenge: caratteristiche <b>hardware</b> della VM di gara.	<ul><li>Linux <b>Debian 64 bit</b> (ultima versione), VirtualBox.</li><li><b>4 CPU</b>, <b>8 GB RAM</b>, 30 GB disco.</li><li><b>Nessuna GPU</b>.</li><li><b>Nessuna connessione internet</b>: solo risorse locali, tutte le dipendenze devono essere già nella VM.</li><li>Non stampare output inutile che saturi il disco.</li></ul>
+
+Tablut Challenge: cosa e come si <b>consegna</b>?	<ul><li>Immagine della VM caricata sul proprio <b>OneDrive</b> UniBo.</li><li>Su <b>Virtuale</b> un file <b>.txt</b> con: link alla VM, come eseguire il giocatore da riga di comando, eventuali parametri opzionali.</li><li>Consigliato l'uso di repository pubblici (GitHub, Bitbucket...).</li></ul>
+
+Tablut Challenge: <b>scadenze</b> e obblighi (iscrizione, consegna, presentazione, questionari).	<ul><li>Iscrizione entro l'<b>11 ottobre</b> tramite modulo su Virtuale.</li><li>Consegna del player entro il <b>22 novembre</b> (23:59) su Virtuale.</li><li><b>Presentazione obbligatoria</b> del player (tutti i membri del team presenti), probabilmente nell'ultima settimana del corso.</li><li>Due <b>questionari anonimi</b>: uno sulle tecniche usate dopo la consegna, uno sull'esperienza personale verso la fine.</li><li>Ci si può ritirare in qualsiasi momento.</li></ul>
+
+Checklist di <b>troubleshooting</b> prima della consegna (cosa deve garantire lo script)?	<ul><li>Accetta i 3 parametri: ruolo, timeout, IP del server.</li><li>Codice <b>case-insensitive</b> sul ruolo (es. "wHitE").</li><li>Gestisce correttamente <b>timeout anche minori di 60 s</b>.</li><li>Usa l'<b>IP passato</b>, non uno fisso (es. localhost).</li><li>Tutte le dipendenze già installate (preferire pip/java a pipenv/poetry).</li></ul>
+

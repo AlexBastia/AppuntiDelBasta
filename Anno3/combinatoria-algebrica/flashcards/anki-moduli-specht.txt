@@ -1,0 +1,84 @@
+#separator:tab
+#html:true
+#notetype:Basic
+#deck:Combinatoria Algebrica::Classificazione Irriducibili di Sn
+
+Definizione di <b>partizione</b> \(\lambda \vdash n\).	Una sequenza \(\lambda = (\lambda_1, \ldots, \lambda_k)\) con<br>\[\lambda_1 \geq \cdots \geq \lambda_k \geq 0, \qquad \sum_{i=1}^k \lambda_i = n\]Si scrive \(|\lambda| = n\), \(\ell(\lambda) = k\). L'insieme di tutte le partizioni di \(n\) e' \(\mathrm{Par}(n)\), e \(\mathrm{Par} = \bigcup_n \mathrm{Par}(n)\).
+
+Definizione di <b>partizione sghemba</b> \(\lambda/\mu\).	Se \(\mu \subseteq \lambda\) (cioe' \(\mu_i \leq \lambda_i\) per ogni \(i\)), la partizione sghemba e':<br>\[\lambda/\mu := (\lambda_1 - \mu_1, \ldots, \lambda_k - \mu_k)\]Geometricamente: il diagramma di Ferrers di \(\lambda\) meno quello di \(\mu\).
+
+Definizione di <b>ordine dominante</b> su \(\mathrm{Par}(n)\).	\(\mu \leq \lambda\) nell'ordine dominante se:<br>\[\forall i.\ \mu_1 + \cdots + \mu_i \leq \lambda_1 + \cdots + \lambda_i\]E' un ordine <b>parziale</b>: due partizioni di lunghezze diverse possono essere incomparabili.
+
+Definizione di <b>RLO</b> (Reverse Lexicographic Order) su \(\mathrm{Par}(n)\).	Ordine <b>totale</b>: \(\mu \leq^R \lambda\) se \(\mu = \lambda\), oppure esiste \(i\) tale che \(\mu_1 = \lambda_1, \ldots, \mu_i = \lambda_i\) ma \(\mu_{i+1} < \lambda_{i+1}\).<br><br>Esempio in \(\mathrm{Par}(5)\): \((5) >^R (4,1) >^R (3,2) >^R (3,1,1) >^R (2,2,1) >^R (2,1^3) >^R (1^5)\).
+
+Relazione tra <b>ordine dominante</b> e <b>RLO</b>.	\[\lambda \leq \mu \text{ (dominante)} \implies \lambda \leq^R \mu \text{ (RLO)}\]L'RLO estende l'ordine dominante a un ordine totale.
+
+Definizione di <b>SSYT</b> (Semi-Standard Young Tableau).	Un riempimento del diagramma di Ferrers di \(\lambda/\mu\) con interi positivi tale che:<ul><li>le entrate siano <b>debolmente crescenti</b> lungo ogni riga (sinistra → destra);</li><li>le entrate siano <b>strettamente crescenti</b> lungo ogni colonna (basso → alto, notazione francese).</li></ul>
+
+Definizione di <b>SYT</b> (Standard Young Tableau).	Un SSYT in cui ogni intero da \(1\) a \(|\lambda/\mu|\) compare <b>esattamente una volta</b>. Equivalentemente: tableau iniettivo con righe e colonne strettamente crescenti.
+
+Definizione di <b>tableau iniettivo</b>.	Riempimento delle celle del diagramma di Ferrers di \(\lambda \vdash n\) con gli interi \(1, \ldots, n\), ciascuno usato esattamente una volta (nessuna condizione di ordine).
+
+Come agisce \(\mathfrak{S}_n\) sui tableau iniettivi?	Per \(\sigma \in \mathfrak{S}_n\), il tableau \(\sigma \cdot T\) si ottiene sostituendo ogni entrata \(i\) di \(T\) con \(\sigma(i)\).
+
+Definizione di <b>gruppo di riga</b> \(R(T)\) e <b>gruppo di colonna</b> \(C(T)\).	Sia \(T\) un tableau iniettivo di forma \(\lambda \vdash n\).<ul><li>\(R(T) \leq \mathfrak{S}_n\): permutazioni che spostano entrate solo all'interno delle rispettive righe. \(R(T) \cong \mathfrak{S}_{\lambda_1} \times \cdots \times \mathfrak{S}_{\lambda_k}\).</li><li>\(C(T) \leq \mathfrak{S}_n\): permutazioni che spostano entrate solo all'interno delle rispettive colonne. \(C(T) \cong \mathfrak{S}_{\lambda'}\) dove \(\lambda'\) e' la partizione coniugata.</li></ul>
+
+<b>Proprieta' di coniugio</b> dei gruppi di riga e colonna.	Per ogni \(\sigma \in \mathfrak{S}_n\) e ogni tableau iniettivo \(T\):<br>\[R(\sigma \cdot T) = \sigma\, R(T)\, \sigma^{-1}, \qquad C(\sigma \cdot T) = \sigma\, C(T)\, \sigma^{-1}\]
+
+Enunciato del <b>Lemma di Partizione dei Tableau</b>.	Siano \(T, \widetilde{T}\) tableau iniettivi di forma \(\lambda, \widetilde{\lambda} \vdash n\) con \(\lambda \not>^R \widetilde{\lambda}\). Allora si verifica <b>esattamente una</b> delle seguenti:<ol><li>Esistono \(i \neq j\) nella stessa colonna di \(T\) e nella stessa riga di \(\widetilde{T}\).</li><li>\(\lambda = \widetilde{\lambda}\) e esistono \(\widetilde{p} \in R(\widetilde{T})\), \(q \in C(T)\) tali che \(\widetilde{p}\widetilde{T} = qT\).</li></ol>
+
+Definizione di <b>tabloide</b> \(\{T\}\).	Il tabloide \(\{T\}\) associato a un tableau iniettivo \(T\) e' l'orbita di \(T\) sotto \(R(T)\): due tableau nello stesso tabloide hanno le stesse entrate in ogni riga (ma in ordine arbitrario). L'azione di \(\mathfrak{S}_n\) e' \(\sigma \cdot \{T\} := \{\sigma \cdot T\}\).
+
+Definizione della rappresentazione \(M^\lambda\) e suo isomorfismo.	\(M^\lambda\) ha come base formale l'insieme dei tabloidi di forma \(\lambda \vdash n\), con azione di \(\mathfrak{S}_n\) per permutazione. Vale:<br>\[M^\lambda \cong \mathrm{Ind}_{\mathfrak{S}_\lambda}^{\mathfrak{S}_n} \mathbf{1}\]dove \(\mathbf{1}\) e' la rappresentazione banale di \(\mathfrak{S}_\lambda = \mathfrak{S}_{\lambda_1} \times \cdots \times \mathfrak{S}_{\lambda_k}\).
+
+Dimensioni di \(M^\lambda\) nei tre casi notevoli.	<ul><li>\(\lambda = (n)\): un unico tabloide, \(M^{(n)} \cong \mathbf{1}\) (banale).</li><li>\(\lambda = (1^n)\): \(n!\) tabloidi, \(M^{(1^n)} \cong \mathbb{C}[\mathfrak{S}_n]\) (regolare).</li><li>\(\lambda = (n-1,1)\): \(n\) tabloidi \(\{i \mid \text{resto}\}\), \(\dim M^{(n-1,1)} = n\).</li></ul>
+
+Definizione dei tre <b>simmetrizzatori</b> di Young.	Sia \(T\) un tableau iniettivo. In \(\mathbb{C}[\mathfrak{S}_n]\):<ol><li><b>Simmetrizzatore delle righe:</b> \(\displaystyle a_T := \sum_{p \in R(T)} p\)</li><li><b>Simmetrizzatore delle colonne:</b> \(\displaystyle b_T := \sum_{q \in C(T)} \mathrm{sgn}(q)\, q\)</li><li><b>Simmetrizzatore di Young:</b> \(c_T := b_T a_T\)</li></ol>
+
+Proprieta' algebriche di \(a_T\) e \(b_T\).	Per ogni \(p \in R(T)\), \(q \in C(T)\), \(\sigma \in \mathfrak{S}_n\):<ol><li>\(p\, a_T = a_T\, p = a_T\), \quad \(a_T^2 = |R(T)|\, a_T\).</li><li>\(q\, b_T = b_T\, q = \mathrm{sgn}(q)\, b_T\), \quad \(b_T^2 = |C(T)|\, b_T\).</li><li>\(\sigma a_T \sigma^{-1} = a_{\sigma \cdot T}\), \quad \(\sigma b_T \sigma^{-1} = b_{\sigma \cdot T}\).</li></ol>
+
+Definizione del <b>vettore di Specht</b> \(v_T\).	\[v_T := b_T \cdot \{T\} = \sum_{q \in C(T)} \mathrm{sgn}(q)\, \{q \cdot T\} \;\in M^\lambda\]Il termine \(q = \mathrm{id}\) contribuisce \(+\{T\}\), e tutti gli altri tabloidi \(\{qT\}\) per \(q \neq \mathrm{id}\) hanno segno \(\mathrm{sgn}(q)\).
+
+Due proprieta' fondamentali del <b>vettore di Specht</b>.	<ol><li>\(v_T \neq 0\) per ogni tableau iniettivo \(T\): il tabloide \(\{T\}\) compare con coefficiente \(+1\) e non viene cancellato.</li><li>Per ogni \(\sigma \in \mathfrak{S}_n\): \(\sigma \cdot v_T = v_{\sigma \cdot T}\).</li></ol>
+
+Definizione del <b>modulo di Specht</b> \(S^\lambda\).	\[S^\lambda := \mathbb{C}[\mathfrak{S}_n] \cdot v_T \subseteq M^\lambda\]il sottomodulo generato ciclicamente da un qualsiasi vettore di Specht \(v_T\) di forma \(\lambda\). La definizione non dipende dalla scelta di \(T\).
+
+Enunciato del <b>Teorema della Base Standard</b>.	L'insieme \(\{v_T \mid T \text{ e' un SYT di forma } \lambda\}\) e' una <b>base</b> di \(S^\lambda\). In particolare:<br>\[\dim S^\lambda = f^\lambda := \#\{\text{SYT di forma } \lambda\}\]
+
+Tre casi notevoli di \(S^\lambda\) come rappresentazioni di \(\mathfrak{S}_n\).	<ul><li>\(S^{(n)}\): rappresentazione <b>banale</b>, dimensione \(1\).</li><li>\(S^{(1^n)}\): rappresentazione <b>segno</b>, dimensione \(1\).</li><li>\(S^{\lambda'} \cong S^\lambda \otimes \mathrm{sgn}\): torcere per il segno equivale a coniugare la partizione.</li></ul>
+
+Esempio: \(S^{(n-1,1)}\) come rappresentazione di \(\mathfrak{S}_n\).	\(S^{(n-1,1)}\) e' la <b>rappresentazione standard</b>: i vettori di Specht sono \(v_T = x_i - x_j\), e<br>\[S^{(n-1,1)} = \left\{(y_1, \ldots, y_n) \in \mathbb{C}^n \;\Big|\; \sum_i y_i = 0\right\]\]di dimensione \(f^{(n-1,1)} = n-1\).
+
+Definizione dell'<b>ordine sui tabloidi</b> (tramite forme parziali).	Il tabloide parziale \(\{T\}^i\) e' \(\{T\}\) ristretto alle entrate \(\leq i\). La forma \(\mathrm{sh}(\{T\}^i)\) e' la composizione debole che conta le entrate \(\leq i\) per ogni riga. Si pone \(\{T\} \leq \{\widetilde T\}\) se \(\mathrm{sh}(\{T\}^i) \leq \mathrm{sh}(\{\widetilde T\}^i)\) per ogni \(i\) nell'ordine di dominanza.
+
+Enunciato del <b>Lemma sull'ordine e il gruppo di colonna</b>.	Sia \(T\) un SYT e sia \(q \in C(T)\), \(q \neq \mathrm{id}\). Allora:<br>\[\{T\} \not\leq \{qT\}\]Intuitivamente: \(q\) sposta almeno un'entrata verso l'alto nella colonna, alleggerendo le somme parziali di \(\{qT\}\).
+
+Schema della dimostrazione dell'<b>indipendenza lineare</b> di \(\{v_T \mid T \in \mathrm{SYT}(\lambda)\}\).	Supponi \(\sum_T \gamma_T v_T = 0\) con qualche \(\gamma_T \neq 0\). Sia \(\overline T\) il massimo SYT con \(\gamma_{\overline T} \neq 0\).<br>Il tabloide \(\{\overline T\}\) compare in \(v_{\overline T}\) con coefficiente \(+1\) (per il Lemma: tutti i \(\{q\overline T\}\) con \(q \neq \mathrm{id}\) sono strettamente minori). Nessun \(v_{\widetilde T}\) con \(\widetilde T \neq \overline T\) puo' produrre \(\{\overline T\}\) senza che \(\widetilde T\) sia strettamente maggiore di \(\overline T\): contraddizione con la massimalita'. Quindi \(\gamma_{\overline T} = 0\).
+
+Le tre identita' del <b>Lemma di Young</b>.	Siano \(f^\mu = \#\{\text{SYT di forma }\mu\}\):<ol><li><b>Regola di discesa:</b> \(\displaystyle f^\mu = \sum_{\nu \to \mu} f^\nu\) (rimuovi una cella angolo)</li><li><b>Regola di salita:</b> \(\displaystyle \sum_{\lambda \leftarrow \mu} f^\lambda = (n+1)\, f^\mu\) (aggiungi una cella)</li><li><b>Identita' delle dimensioni:</b> \(\displaystyle \sum_{\lambda \vdash n} (f^\lambda)^2 = n!\)</li></ol>
+
+Schema della dimostrazione dell'<b>argomento di conteggio</b> per \(\dim S^\lambda = f^\lambda\).	L'identita' \(\sum_\lambda (f^\lambda)^2 = n!\) (Lemma di Young) coincide con \(\sum_\lambda (\dim S^\lambda)^2\) che deve valere \(n! = |\mathfrak{S}_n|\) (dalla decomposizione della rappresentazione regolare). Poiche' per indipendenza lineare \(\dim S^\lambda \geq f^\lambda\), l'uguaglianza globale forza \(\dim S^\lambda = f^\lambda\) per ogni \(\lambda\).
+
+Enunciato del <b>Lemma Tecnico</b>.	Siano \(T, \widetilde T\) tableau iniettivi di forma \(\lambda, \widetilde\lambda \vdash n\), con \(\lambda \not>^R \widetilde\lambda\). Allora:<br>\[b_T\{\widetilde T\} = \begin{cases} 0 & \text{se } \exists\, i \neq j \text{ nella stessa col. di } T \text{ e stessa riga di } \widetilde T \\ \pm\, v_T & \text{altrimenti} \end{cases}\]
+
+Dimostrazione del <b>Caso 1</b> del Lemma Tecnico (\(b_T\{\widetilde T\} = 0\)).	Siano \(i \neq j\) nella stessa colonna di \(T\) e stessa riga di \(\widetilde T\). Sia \(\tau = (ij)\).<ul><li>\(\tau \in C(T)\) quindi \(b_T \tau = -b_T\).</li><li>\(\tau\{\widetilde T\} = \{\widetilde T\}\) perche' \(i,j\) sono nella stessa riga di \(\widetilde T\).</li></ul>Quindi: \(b_T\{\widetilde T\} = b_T(\tau\{\widetilde T\}) = (b_T\tau)\{\widetilde T\} = -b_T\{\widetilde T\}\), da cui \(b_T\{\widetilde T\} = 0\).
+
+Dimostrazione del <b>Caso 2</b> del Lemma Tecnico (\(b_T\{\widetilde T\} = \pm v_T\)).	Poiche' non esistono interi nella stessa colonna di \(T\) e riga di \(\widetilde T\), il Lemma di Partizione da' \(\widetilde p \in R(\widetilde T)\), \(q \in C(T)\) con \(\widetilde p\widetilde T = qT\). Allora:<br>\[b_T\{\widetilde T\} = b_T\{\widetilde p\widetilde T\} = b_T\{qT\} = b_T q\{T\} = \mathrm{sgn}(q)\,b_T\{T\} = \mathrm{sgn}(q)\,v_T = \pm v_T\]dove si usa: (i) \(\widetilde p \in R(\widetilde T)\) non altera il tabloide; (ii) \(q \in C(T) \Rightarrow b_T q = \mathrm{sgn}(q) b_T\).
+
+<b>Corollario del Lemma Tecnico</b>: per SYT con \(\widetilde T > T\).	Se \(T, \widetilde T\) sono SYT con \(\widetilde T > T\) (ordine iniettivo), allora:<br>\[b_T\{\widetilde T\} = 0\]Il Lemma di Partizione per SYT distinti della stessa forma esclude il Caso 2 (due SYT diversi hanno tabloidi diversi), quindi si e' necessariamente nel Caso 1.
+
+Conseguenza chiave del Lemma Tecnico: azione di \(b_T\) su \(M^{\widetilde\lambda}\).	\[b_T \cdot M^{\widetilde\lambda} = \mathbb{C}\, v_T \quad\text{se } \lambda \not>^R \widetilde\lambda\]In particolare \(b_T \cdot M^\lambda = \mathbb{C}\, v_T\): il simmetrizzatore di colonna "proietta" \(M^\lambda\) sull'asse monodimensionale di \(v_T\).
+
+Enunciato del <b>Teorema di Classificazione</b> delle irriducibili di \(\mathfrak{S}_n\).	I moduli di Specht \(\{S^\lambda \mid \lambda \in \mathrm{Par}(n)\}\) costituiscono un sistema <b>completo</b> di rappresentazioni irriducibili di \(\mathfrak{S}_n\), a due a due non isomorfe.
+
+Quattro passi della dimostrazione del <b>Teorema di Classificazione</b>.	<ol><li><b>Non banalita':</b> \(v_T \neq 0\) quindi \(S^\lambda \neq 0\).</li><li><b>Non isomorfismo:</b> \(b_T \cdot S^\lambda = \mathbb{C} v_T \neq 0\), ma \(b_T \cdot S^{\widetilde\lambda} = 0\) per \(\widetilde\lambda >^R \lambda\) (Lemma Tecnico). Questa asimmetria esclude isomorfismi tra moduli di forme diverse.</li><li><b>Irriducibilita':</b> se \(S^\lambda = V \oplus W\), applicando \(b_T\) si ha \(\mathbb{C} v_T = b_T V \oplus b_T W\). Poiche' \(\mathbb{C} v_T\) e' 1-dim, uno e' zero, e \(v_T\) genera ciclicamente \(S^\lambda\), quindi \(V = S^\lambda\).</li><li><b>Completezza:</b> \(|\mathrm{Par}(n)|\) = numero classi di coniugio di \(\mathfrak{S}_n\) = numero di irriducibili.</li></ol>
+
+Formula-chiave che governa la classificazione.	\[b_T \cdot S^\lambda = \mathbb{C}\, v_T \neq 0, \qquad b_T \cdot S^{\widetilde\lambda} = 0 \text{ se } \widetilde\lambda >^R \lambda\]Questa asimmetria dell'azione di \(b_T\) garantisce simultaneamente il non isomorfismo (moduli di forme diverse non possono essere isomorfi) e l'irriducibilita' (non si puo' scomporre in sottomoduli propri).
+
+Perche' le classi di coniugio di \(\mathfrak{S}_n\) sono indicizzate dalle partizioni?	Due permutazioni sono coniugate in \(\mathfrak{S}_n\) se e solo se hanno lo stesso <b>tipo ciclico</b>. Il tipo ciclico di \(\sigma\) e' la partizione data dalle lunghezze dei suoi cicli (in ordine decrescente), quindi i tipi ciclici sono in biiezione con \(\mathrm{Par}(n)\).
+
+Definizione di <b>parola di colonna</b> \(w_{\mathrm{col}}(T)\).	La sequenza ottenuta leggendo le entrate di \(T\) colonna per colonna, da sinistra a destra, dall'alto verso il basso in ciascuna colonna.
+
+Ordine totale sui tableau iniettivi.	\(\widetilde T > T\) se:<ol><li>la forma di \(\widetilde T\) e' strettamente maggiore di quella di \(T\) nel RLO, oppure</li><li>le forme coincidono e il piu' grande intero che occupa celle diverse compare <b>prima</b> in \(w_{\mathrm{col}}(\widetilde T)\) che in \(w_{\mathrm{col}}(T)\).</li></ol>
+
+Per un SYT \(T\): cosa succede ai tabloidi \(\{pT\}\) e \(\{qT\}\) per \(p \in R(T)\), \(q \in C(T)\)?	<ul><li>\(p \in R(T)\): l'intero piu' grande spostato da \(p\) si muove a sinistra nella riga, quindi \(p \cdot T \geq T\) (prima nella parola di colonna).</li><li>\(q \in C(T)\): l'intero piu' grande spostato da \(q\) scende nella colonna, quindi \(q \cdot T \leq T\) (dopo nella parola di colonna).</li></ul>

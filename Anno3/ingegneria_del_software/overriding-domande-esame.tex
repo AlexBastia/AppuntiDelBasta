@@ -1,0 +1,1672 @@
+\documentclass{report}
+
+\input{../LatexTemp/preamble}
+\input{../LatexTemp/macros}
+\input{../LatexTemp/letterfonts}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{array}
+\usepackage{longtable}
+
+%==============================================================
+% Stile per i blocchi di codice (C, C++, Java, Python)
+%==============================================================
+\definecolor{codebg}{HTML}{F7F7FB}
+\definecolor{codekw}{HTML}{2D6FB1}
+\definecolor{codecm}{HTML}{388C46}
+\definecolor{codestr}{HTML}{C74440}
+\definecolor{coderule}{HTML}{CCCCCC}
+
+\lstset{
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{codekw}\bfseries,
+    commentstyle=\color{codecm}\itshape,
+    stringstyle=\color{codestr},
+    numberstyle=\tiny\color{gray},
+    showstringspaces=false,
+    breaklines=true,
+    breakatwhitespace=false,
+    frame=single,
+    rulecolor=\color{coderule},
+    backgroundcolor=\color{codebg},
+    tabsize=2,
+    columns=fullflexible,
+    keepspaces=true,
+    captionpos=b,
+    xleftmargin=1.2em,
+    aboveskip=0.8em,
+    belowskip=0.8em,
+}
+
+% codice inline
+\newcommand{\code}[1]{\texttt{\small #1}}
+% metodi dunder di Python: \dunder{init} -> __init__
+\newcommand{\dunder}[1]{\texttt{\small \_\_#1\_\_}}
+
+%==============================================================
+% Box DOMANDA e SOLUZIONE
+%   \begin{domanda}{A1}{titolo} ... \end{domanda}
+%   \begin{soluzione}{A1 --- titolo} ... \end{soluzione}
+% (sono ambienti, non macro: dentro ci si puo' mettere lstlisting)
+%==============================================================
+\newtcolorbox{domanda}[2]{%
+    enhanced,
+    breakable,
+    colback=white,
+    colframe=myb!80!black,
+    fonttitle=\bfseries\sffamily,
+    coltitle=white,
+    colbacktitle=myb!80!black,
+    title={#1 \quad\textbullet\quad #2},
+    arc=2pt,
+    left=3mm, right=3mm,
+    boxrule=1pt,
+}
+
+\newtcolorbox{soluzione}[1]{%
+    enhanced,
+    breakable,
+    colback=white,
+    colframe=myg!80!black,
+    fonttitle=\bfseries\sffamily,
+    coltitle=white,
+    colbacktitle=myg!80!black,
+    title={Soluzione #1},
+    arc=2pt,
+    left=3mm, right=3mm,
+    boxrule=1pt,
+}
+
+% riga finale della domanda con il rimando alla soluzione
+\newcommand{\vaisol}[1]{%
+    \par\vspace{4pt}\hfill{\footnotesize\itshape\color{gray}%
+    Soluzione a pag.~\pageref{sol:#1}}%
+}
+
+\graphicspath{{./img/}}
+
+%==============================================================
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \vspace*{2.5cm}
+    {\Huge\sffamily\bfseries Overriding e funzioni virtuali\par}
+    \vspace{0.5cm}
+    {\LARGE\sffamily Domande d'esame avanzate\par}
+    \vspace{1.0cm}
+    {\LARGE\sffamily C \quad$\cdot$\quad C++ \quad$\cdot$\quad Java \quad$\cdot$\quad Python\par}
+    \vspace{1.4cm}
+    {\Large Appunti di Ingegneria del Software\par}
+    \vspace{0.4cm}
+    {\large 31 domande con soluzione ragionata\par}
+    \vspace{2cm}
+    {\large\itshape ``All'esame chiede piu' di quello che c'e' scritto:\\
+    soprattutto le \textbf{differenze} tra i linguaggi.''\par}
+    \vfill
+    {\large Anno 3\par}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+%==============================================================
+\chapter{Come usare questo fascicolo}
+%==============================================================
+
+Questo fascicolo raccoglie \textbf{31 domande di difficolta' alta} su
+\emph{overriding} e \emph{dispatch dinamico}, pensate per il tipo di
+interrogazione in cui il professore parte da uno snippet di codice e chiede
+\emph{``cosa stampa e perche'''}, oppure chiede di confrontare la stessa
+feature nei quattro linguaggi del corso.
+
+La struttura e' la seguente:
+
+\begin{itemize}
+    \item i capitoli \ref{ch:cpp}--\ref{ch:trasv} contengono \emph{solo le
+          domande}, raggruppate per linguaggio (C++, Java, Python, C) piu' un
+          gruppo trasversale: si possono usare come simulazione a libro chiuso;
+    \item il capitolo \ref{ch:sol} contiene le \emph{soluzioni ragionate},
+          nello stesso ordine; ogni domanda riporta in basso a destra il numero
+          di pagina della propria soluzione.
+\end{itemize}
+
+I codici delle domande (\code{A1}, \code{B3}, \code{C5}, \dots) sono stabili:
+la lettera indica il gruppo, il numero la posizione.
+
+\nt{
+    Tre idee fanno da filo conduttore a quasi tutte le domande, e conviene
+    tenerle a mente perche' sono quelle su cui si sbaglia:
+    \textbf{(1)} \emph{cosa} viene deciso a tempo di compilazione (overload,
+    campi, argomenti di default, controllo di accesso) e cosa a tempo di
+    esecuzione (solo il \emph{corpo} del metodo virtuale);
+    \textbf{(2)} \emph{quando} il tipo dinamico di un oggetto e' gia' quello
+    finale (in Java sempre, in C++ no durante costruzione e distruzione);
+    \textbf{(3)} \emph{dove} avviene la ricerca del metodo (vtable a indice
+    fisso in C++/Java, dizionario lungo l'MRO in Python, struct di puntatori a
+    funzione scritta a mano in C).
+}
+
+\section{Fonti segnalate dal docente}
+
+Il docente ha indicato come riferimento due voci di Wikipedia:
+
+\begin{itemize}
+    \item \textbf{Virtual inheritance} ---
+          \texttt{\small en.wikipedia.org/wiki/Virtual\_inheritance}\\
+          il problema del diamante con l'esempio \emph{Animal / Mammal /
+          WingedAnimal / Bat}, la regola di inizializzazione della base virtuale
+          e il costo in memoria. Corrisponde alle domande A4 e A9--A12.
+    \item \textbf{Virtual function} ---
+          \texttt{\small en.wikipedia.org/wiki/Virtual\_function}\\ dispatch
+          dinamico e late binding, metodi virtuali puri e classi astratte,
+          distruttori virtuali, chiamate virtuali durante la costruzione, vtable
+          e relativo overhead, quali linguaggi hanno i metodi virtuali per
+          default. Corrisponde alle domande A1, A8, A11, D1, E1 ed E2.
+\end{itemize}
+
+Le due voci sono il minimo sindacale: quasi tutte le domande di questo fascicolo
+partono da li' e chiedono il passo successivo, cioe' \emph{perche'} il
+meccanismo e' fatto cosi' e \emph{come cambia} negli altri tre linguaggi.
+
+%==============================================================
+\chapter{C++}\label{ch:cpp}
+%==============================================================
+
+\begin{domanda}{A1}{Chiamate virtuali in costruttore e distruttore}
+Cosa stampa il programma? Motiva riga per riga.
+\begin{lstlisting}[language=C++]
+struct A {
+    A() { std::cout << "A() "; f(); }
+    virtual ~A() { g(); }
+    virtual void f() { std::cout << "A::f "; }
+    virtual void g() { std::cout << "A::g "; }
+};
+struct B : A {
+    int x = 42;
+    void f() override { std::cout << "B::f " << x << " "; }
+    void g() override { std::cout << "B::g "; }
+};
+int main() { B b; }
+\end{lstlisting}
+E se in \code{A} avessi scritto \code{virtual void f() = 0;}? Cosa cambia, e
+perche' e' \emph{undefined behavior} e non un errore di compilazione?
+\vaisol{A1}
+\end{domanda}
+
+\begin{domanda}{A2}{Argomenti di default e binding}
+Cosa stampa e perche'?
+\begin{lstlisting}[language=C++]
+struct Base { virtual void f(int x = 10) { std::cout << "Base " << x; } };
+struct Der : Base { void f(int x = 20) override { std::cout << "Der " << x; } };
+int main() { Base* p = new Der; p->f(); }
+\end{lstlisting}
+\vaisol{A2}
+\end{domanda}
+
+\begin{domanda}{A3}{Name hiding degli overload}
+Perche' questo codice compila ma chiama la funzione ``sbagliata''? Correggilo
+in almeno due modi diversi.
+\begin{lstlisting}[language=C++]
+struct B { virtual void f(int);  void f(double); };
+struct D : B { void f(int) override; };
+D d;  d.f(3.14);
+\end{lstlisting}
+\vaisol{A3}
+\end{domanda}
+
+\begin{domanda}{A4}{Dominanza ed ereditarieta' virtuale}
+Cosa stampa?
+\begin{lstlisting}[language=C++]
+struct A { virtual void f() { std::cout << "A"; } };
+struct B : virtual A { void f() override { std::cout << "B"; } };
+struct C : virtual A { };
+struct D : B, C { };
+int main() { D d; d.f(); }
+\end{lstlisting}
+Cosa succederebbe \emph{senza} la parola chiave \code{virtual} nelle basi? E se
+anche \code{C} facesse l'override di \code{f()}, in quale momento esatto il
+programma diventa ill-formed?
+\vaisol{A4}
+\end{domanda}
+
+\begin{domanda}{A5}{Ereditarieta' multipla, thunk e aggiustamento di this}
+\begin{lstlisting}[language=C++]
+struct A { virtual void f(); int a; };
+struct B { virtual void g(); int b; };
+struct C : A, B { void f() override; void g() override; };
+C c;  B* pb = &c;      // (void*)pb != (void*)&c
+pb->g();
+\end{lstlisting}
+Il \code{this} che riceve \code{C::g} deve puntare all'inizio di \code{C}, ma
+\code{pb} punta al sotto-oggetto \code{B}. Chi esegue l'aggiustamento e dove e'
+memorizzato? Quanti vptr contiene \code{c}? Come recuperi l'indirizzo
+dell'oggetto \emph{most derived} partendo da \code{pb}?
+\vaisol{A5}
+\end{domanda}
+
+\begin{domanda}{A6}{Quando una firma e' davvero un override}
+Quali dei seguenti sono override legali di
+\code{virtual void f(int) const noexcept;}\,? Motiva \emph{ciascuno}.
+\begin{center}
+\footnotesize
+\begin{tabular}{|l|l|}
+\hline
+(a) \code{void f(int)}                    & (e) \code{void f(int) const noexcept \&\&} \\
+\hline
+(b) \code{void f(int) const}              & (f) \code{int f(int) const noexcept} \\
+\hline
+(c) \code{void f(int) const noexcept}     & (g) \code{void f(int) const noexcept override final} \\
+\hline
+(d) \code{void f(long) const noexcept}    & \\
+\hline
+\end{tabular}
+\end{center}
+\vaisol{A6}
+\end{domanda}
+
+\begin{domanda}{A7}{Private virtual e pattern NVI}
+Spiega il pattern NVI (\emph{Non-Virtual Interface}) e di' cosa succede a
+ciascuna delle tre righe finali.
+\begin{lstlisting}[language=C++]
+class B {
+public:  void call() { f(); }
+private: virtual void f() { std::cout << "B"; }
+};
+class D : public B {
+public: void f() override { std::cout << "D"; }
+};
+B* p = new D;
+p->call();                     // (1)
+p->f();                        // (2)
+static_cast<D*>(p)->f();       // (3)
+\end{lstlisting}
+Perche' un metodo \code{private virtual} e' comunque overridabile? Su quale
+tipo viene fatto il controllo di accesso?
+\vaisol{A7}
+\end{domanda}
+
+\begin{domanda}{A8}{Cinque ``perche''' sul modello a oggetti del C++}
+Rispondi con motivazione tecnica (non ``perche' lo dice lo standard''):
+\begin{enumerate}
+    \item[(a)] perche' un \textbf{costruttore} non puo' essere \code{virtual},
+          e come si implementa un \code{clone()} polimorfico con return
+          covariante?
+    \item[(b)] perche' una \textbf{member function template} non puo' essere
+          \code{virtual}?
+    \item[(c)] una funzione virtuale puo' essere \code{inline}? Con quale
+          effetto reale?
+    \item[(d)] cosa permette al compilatore \code{final} che \code{override}
+          non permette?
+    \item[(e)] perche' \code{delete[] pBase} su un array di \code{Derived} e'
+          UB \emph{anche} con distruttore virtuale?
+\end{enumerate}
+\vaisol{A8}
+\end{domanda}
+
+\section{Ereditarieta' virtuale}
+
+\begin{domanda}{A9}{Chi costruisce la base virtuale}
+Cosa stampa? E cosa stamperebbe \code{D d;} al posto di \code{E e;}\,? E
+\code{B b;}\,?
+\begin{lstlisting}[language=C++]
+struct A { A(const char* who) { std::cout << who << " "; } };
+struct B : virtual A { B() : A("da B") {} };
+struct C : virtual A { C() : A("da C") {} };
+struct D : B, C  { D() : A("da D"), B(), C() {} };
+struct E : D     { E() : A("da E"), D()      {} };
+int main() { E e; }
+\end{lstlisting}
+Cosa succede se togli \code{A("da E")} dalla lista di inizializzazione di
+\code{E}? E qual e' l'ordine di costruzione dei sotto-oggetti?
+\vaisol{A9}
+\end{domanda}
+
+\begin{domanda}{A10}{Layout e costo della base virtuale}
+Nel classico esempio \code{Animal} / \code{Mammal} / \code{WingedAnimal} /
+\code{Bat} con ereditarieta' virtuale, il layout di \code{Bat} diventa
+\begin{center}
+\code{(vpointer, Mammal, vpointer, WingedAnimal, Bat, Animal)}
+\end{center}
+Rispondi: perche' il sotto-oggetto \code{Animal} finisce \textbf{in fondo} e non
+all'inizio? Perche' servono \textbf{due} vpointer? Perche' l'offset fra un
+sotto-oggetto \code{Mammal} e il suo \code{Animal} non e' una costante di
+compilazione, come invece succede nell'ereditarieta' non virtuale? E infine:
+quale delle due righe seguenti e' ill-formed, e perche'?
+\begin{lstlisting}[language=C++]
+Animal* pa = &bat;
+Bat* p1 = static_cast<Bat*>(pa);
+Bat* p2 = dynamic_cast<Bat*>(pa);
+\end{lstlisting}
+\vaisol{A10}
+\end{domanda}
+
+\begin{domanda}{A11}{Metodi virtuali puri nel diamante}
+\begin{lstlisting}[language=C++]
+struct I { virtual void f() = 0; virtual ~I() = default; };
+struct L : virtual I { void f() override { std::cout << "L"; } };
+struct R : virtual I { };
+struct D : L, R { };
+int main() { D d; d.f(); }
+\end{lstlisting}
+\code{D} e' istanziabile? Cosa cambia se togli \code{virtual} dalle basi di
+\code{L} e \code{R}? Infine: un metodo virtuale \emph{puro} puo' avere un
+\textbf{corpo}? Se si', come lo si chiama e a cosa serve? In quale caso quel
+corpo e' \emph{obbligatorio}?
+\vaisol{A11}
+\end{domanda}
+
+\begin{domanda}{A12}{Quando usarla, e come se la cavano gli altri tre linguaggi}
+Il criterio classico e' che l'ereditarieta' virtuale serve quando l'ereditarieta'
+esprime una \emph{restrizione di un insieme} e non una \emph{composizione di
+parti}. Spiega il criterio, poi rispondi:
+\begin{itemize}
+    \item in una frase: che differenza c'e', a livello di rappresentazione in
+          memoria, tra base virtuale e base non virtuale?
+    \item perche' in \textbf{Java} il problema del diamante \emph{sui dati} non
+          puo' nemmeno presentarsi, e quale diamante resta?
+    \item perche' in \textbf{Python} si potrebbe dire che l'ereditarieta' e'
+          ``sempre virtuale''?
+    \item come si sceglie fra le due in \textbf{C}?
+\end{itemize}
+Cita infine un esempio reale di ereditarieta' virtuale nella libreria standard
+del C++.
+\vaisol{A12}
+\end{domanda}
+
+%==============================================================
+\chapter{Java}\label{ch:java}
+%==============================================================
+
+\begin{domanda}{B1}{Campi nascosti contro metodi sovrascritti}
+Cosa stampa? Ci sono tre risultati diversi: spiegali tutti e tre.
+\begin{lstlisting}[language=Java]
+class A { String x = "A"; String get() { return x; } String getX() { return x; } }
+class B extends A { String x = "B"; String get() { return x; } }
+
+A a = new B();
+System.out.println(a.x);        // (1)
+System.out.println(a.get());    // (2)
+System.out.println(a.getX());   // (3)
+System.out.println(((B)a).x);   // (4)
+\end{lstlisting}
+\vaisol{B1}
+\end{domanda}
+
+\begin{domanda}{B2}{Metodi statici e istanze}
+Cosa stampa e perche'? Come si chiama tecnicamente il fenomeno (non e'
+overriding)?
+\begin{lstlisting}[language=Java]
+class A { static String s() { return "A"; } }
+class B extends A { static String s() { return "B"; } }
+A a = new B();
+System.out.println(a.s());
+\end{lstlisting}
+\vaisol{B2}
+\end{domanda}
+
+\begin{domanda}{B3}{Metodo overridabile chiamato dal costruttore}
+Cosa stampa? Descrivi l'ordine \emph{esatto} di inizializzazione.
+\begin{lstlisting}[language=Java]
+class A { A() { init(); } void init() { } }
+class B extends A {
+    final int x;
+    List<String> list = new ArrayList<>();
+    B() { x = 5; }
+    @Override void init() { System.out.println(x); System.out.println(list); }
+}
+new B();
+\end{lstlisting}
+\vaisol{B3}
+\end{domanda}
+
+\begin{domanda}{B4}{Overriding o overloading?}
+Cosa stampa ciascuna riga?
+\begin{lstlisting}[language=Java]
+class A { void m(Object o) { System.out.println("A/Object"); } }
+class B extends A { void m(String s) { System.out.println("B/String"); } }
+
+A a = new B();  B b = new B();
+a.m("hi");            // (1)
+b.m("hi");            // (2)
+b.m((Object)"hi");    // (3)
+\end{lstlisting}
+\vaisol{B4}
+\end{domanda}
+
+\begin{domanda}{B5}{Generics, erasure e bridge method}
+Perche' questo lancia \code{ClassCastException} e, soprattutto, \emph{in quale
+metodo} viene lanciata? Che bytecode ha generato il compilatore?
+\begin{lstlisting}[language=Java]
+class Node<T> { T data; void set(T t) { this.data = t; } }
+class MyNode extends Node<Integer> { @Override void set(Integer i) { super.set(i); } }
+
+Node n = new MyNode();
+n.set("stringa");
+\end{lstlisting}
+\vaisol{B5}
+\end{domanda}
+
+\begin{domanda}{B6}{Diamante di default method}
+Perche' non compila? Scrivi la correzione.
+\begin{lstlisting}[language=Java]
+interface A { default String f() { return "A"; } }
+interface B extends A { default String f() { return "B"; } }
+interface C extends A { default String f() { return "C"; } }
+class D implements B, C { }
+\end{lstlisting}
+Poi spiega: (a) la regola \emph{class wins}; (b) perche' un'interfaccia
+\textbf{non puo'} dichiarare \code{default String toString()}; (c) perche'
+esiste \code{invokeinterface} distinto da \code{invokevirtual}.
+\vaisol{B6}
+\end{domanda}
+
+\begin{domanda}{B7}{Le regole dell'override in Java}
+Quali di queste operazioni sono legali? Motiva.
+\begin{enumerate}
+    \item[(a)] restringere la visibilita' \code{public} $\rightarrow$ \code{protected};
+    \item[(b)] allargarla \code{protected} $\rightarrow$ \code{public};
+    \item[(c)] return covariante;
+    \item[(d)] aggiungere una \emph{checked exception} non dichiarata nella base;
+    \item[(e)] fare l'override di un metodo \code{private} della superclasse;
+    \item[(f)] un metodo \code{static} che fa l'override di uno di istanza;
+    \item[(g)] scrivere \code{equals(MyType)} invece di \code{equals(Object)}:
+          che bug produce con \code{HashSet.contains()}?
+\end{enumerate}
+\vaisol{B7}
+\end{domanda}
+
+%==============================================================
+\chapter{Python}\label{ch:py}
+%==============================================================
+
+\begin{domanda}{C1}{MRO, C3 e super() cooperativo}
+Dai l'MRO di \code{D} e l'output. Perche' \code{super()} dentro \code{B}
+\emph{non} chiama \code{A.f}?
+\begin{lstlisting}[language=Python]
+class A:
+    def f(self): print("A")
+class B(A):
+    def f(self): print("B"); super().f()
+class C(A):
+    def f(self): print("C"); super().f()
+class D(B, C):
+    def f(self): print("D"); super().f()
+D().f()
+\end{lstlisting}
+Poi: perche' \code{class X(A, B)} con \code{class B(A)} solleva
+\code{TypeError}?
+\vaisol{C1}
+\end{domanda}
+
+\begin{domanda}{C2}{Lookup implicito dei metodi speciali}
+Cosa stampano le due righe? Enuncia la regola.
+\begin{lstlisting}[language=Python]
+class A:
+    def __len__(self): return 1
+a = A()
+a.__len__ = lambda: 99
+print(len(a))
+print(a.__len__())
+\end{lstlisting}
+Perche' questo rende difficile scrivere un \emph{proxy} trasparente basato su
+\dunder{getattr}?
+\vaisol{C2}
+\end{domanda}
+
+\begin{domanda}{C3}{Name mangling}
+Cosa stampa? Come si chiama il meccanismo e come lo si usa per ottenere
+l'equivalente di un metodo \emph{non} virtuale?
+\begin{lstlisting}[language=Python]
+class A:
+    def __init__(self): self.__helper()
+    def __helper(self): print("A helper")
+class B(A):
+    def __helper(self): print("B helper")
+B()
+\end{lstlisting}
+\vaisol{C3}
+\end{domanda}
+
+\begin{domanda}{C4}{Dove vive davvero un metodo}
+Analizza riga per riga.
+\begin{lstlisting}[language=Python]
+class A:
+    def f(self): print("A.f")
+class B(A):
+    def f(self): print("B.f")
+
+b = B()
+b.f()                                  # (1)
+A.f(b)                                 # (2)
+B.f = A.f;  b.f()                      # (3)
+b.f = lambda: print("inst");  b.f()    # (4)
+del b.f
+b.__class__ = A;  b.f()                # (5)
+\end{lstlisting}
+Perche' al punto (4) l'attributo di istanza vince sul metodo di classe, mentre
+con una \code{property} non succederebbe?
+\vaisol{C4}
+\end{domanda}
+
+\begin{domanda}{C5}{Priorita' delle operazioni riflesse}
+Cosa stampa e perche'? Qual e' la regola precisa di CPython?
+\begin{lstlisting}[language=Python]
+class A:
+    def __add__(self, other): return "A.__add__"
+class B(A):
+    def __radd__(self, other): return "B.__radd__"
+print(A() + B())
+\end{lstlisting}
+\vaisol{C5}
+\end{domanda}
+
+\begin{domanda}{C6}{Il costruttore virtuale che il C++ non ha}
+Cosa stampa? Perche' questo e' il modo idiomatico di scrivere factory
+polimorfiche?
+\begin{lstlisting}[language=Python]
+class A:
+    @classmethod
+    def create(cls, *args): return cls(*args)
+    def __repr__(self): return type(self).__name__
+class B(A): pass
+print(B.create())
+\end{lstlisting}
+Cosa cambierebbe con uno \code{@staticmethod} che restituisce \code{A()}?
+\vaisol{C6}
+\end{domanda}
+
+\begin{domanda}{C7}{Metodi astratti che non astraggono}
+Perche' questo \textbf{non} solleva alcun errore all'istanziazione, e come si
+corregge?
+\begin{lstlisting}[language=Python]
+from abc import abstractmethod
+class Base:
+    @abstractmethod
+    def f(self): ...
+class Impl(Base): pass
+Impl()
+\end{lstlisting}
+Bonus: ai fini dell'overriding, che differenza c'e' tra \dunder{init\_subclass},
+una metaclasse e \code{ABCMeta.\_\_subclasshook\_\_}?
+\vaisol{C7}
+\end{domanda}
+
+%==============================================================
+\chapter{C}\label{ch:c}
+%==============================================================
+
+\begin{domanda}{D1}{Dispatch dinamico scritto a mano}
+Implementa il dispatch dinamico in C puro: una \code{struct Shape} con vtable,
+un \code{Circle} che ``eredita'', e la funzione \code{draw\_all}. Poi rispondi:
+\begin{itemize}
+    \item perche' il sotto-oggetto base deve essere il \textbf{primo} membro?
+    \item chi inizializza il vptr, e cosa succede se te lo dimentichi
+          (confronto con il C++)?
+    \item come emuli un \textbf{distruttore virtuale} e un \code{dynamic\_cast}?
+\end{itemize}
+\vaisol{D1}
+\end{domanda}
+
+\begin{domanda}{D2}{Il cast che sembra innocuo}
+Perche' questo e' formalmente scorretto in C, anche se ``funziona'' su tutti i
+compilatori?
+\begin{lstlisting}[language=C]
+void draw_all(Shape **v, size_t n);
+Circle *arr[3] = { c1, c2, c3 };
+draw_all((Shape **)arr, 3);
+\end{lstlisting}
+Cosa dicono lo standard sulla \emph{common initial sequence} e la regola di
+\emph{strict aliasing}? Perche' la garanzia ``indirizzo del primo membro =
+indirizzo della struct'' non basta a salvarti qui?
+\vaisol{D2}
+\end{domanda}
+
+\begin{domanda}{D3}{Traduzione letterale di virtual}
+In C++ scrivi \code{virtual double area() const;}. Traduci \emph{letteralmente}
+la sua rappresentazione a runtime: cosa diventa \code{this}, cosa diventa
+\code{const}, cos'e' la vtable e come viene ``ereditata'' dalla classe
+derivata. Qual e' il costo in byte per oggetto e per classe?
+\vaisol{D3}
+\end{domanda}
+
+\begin{domanda}{D4}{Due polimorfismi diversi nella libreria standard e nel kernel}
+\code{struct file\_operations} del kernel Linux e il comparatore di
+\code{qsort(..., int (*cmp)(const void*, const void*))} sono due forme diverse
+di polimorfismo. Quale corrisponde all'overriding e quale alla
+\emph{strategy}/callback? Cosa fa la macro \code{container\_of} e a quale
+operazione del C++ corrisponde?
+\vaisol{D4}
+\end{domanda}
+
+\begin{domanda}{D5}{Perche' il C non puo' avere overriding automatico}
+Perche' in C non puoi ottenere overriding ``automatico'' nemmeno usando
+\code{static inline} negli header? Collega la risposta a: \emph{early binding},
+unita' di traduzione, assenza di \emph{name mangling} e assenza di costruttori.
+\vaisol{D5}
+\end{domanda}
+
+%==============================================================
+\chapter{Domande trasversali}\label{ch:trasv}
+%==============================================================
+
+\begin{domanda}{E1}{Tabella comparativa del dispatch}
+Compila la tabella per \textbf{C++, Java, Python, C}:
+\begin{enumerate}
+    \item[(i)] meccanismo di dispatch a runtime;
+    \item[(ii)] costo per chiamata;
+    \item[(iii)] e' possibile aggiungere o rimpiazzare un metodo a runtime?
+    \item[(iv)] esiste il \emph{method hiding}?
+    \item[(v)] come si chiama esplicitamente l'implementazione della base?
+\end{enumerate}
+\vaisol{E1}
+\end{domanda}
+
+\begin{domanda}{E2}{Virtuale per default oppure no}
+In C++ le funzioni sono non virtuali per default, in Java sono virtuali per
+default (salvo \code{final}, \code{private}, \code{static}), in Python tutto e'
+dinamico. Argomenta il trade-off usando: \emph{zero-overhead principle},
+\emph{fragile base class problem} e devirtualizzazione (CHA + inline caching
+nella JVM contro LTO e \code{final} in C++).
+\vaisol{E2}
+\end{domanda}
+
+\begin{domanda}{E3}{Covarianza e controvarianza}
+Data \code{Base} con \code{void process(Base b)} e \code{Derived} con
+\code{void process(Derived d)}: in quale dei quattro linguaggi questo e' un
+override? Collega la risposta alla \textbf{covarianza/controvarianza dei
+parametri} e al principio di sostituzione di Liskov. Perche' nessun linguaggio
+mainstream ammette parametri controvarianti?
+\vaisol{E3}
+\end{domanda}
+
+\begin{domanda}{E4}{Sette termini da non confondere}
+Definisci con precisione e distingui: \emph{overriding}, \emph{overloading},
+\emph{hiding/shadowing}, \emph{dominanza}, \emph{bridge method}, \emph{thunk},
+\emph{final overrider}. Per ciascuno indica in quale dei quattro linguaggi
+esiste.
+\vaisol{E4}
+\end{domanda}
+
+%==============================================================
+\chapter{Soluzioni}\label{ch:sol}
+%==============================================================
+
+\section{Soluzioni C++}
+
+\begin{soluzione}{A1 --- Chiamate virtuali in costruttore e distruttore}
+\label{sol:A1}
+Output: \code{A() A::f A::g}\,.
+
+Durante il corpo del costruttore di \code{A} il tipo dinamico dell'oggetto
+\textbf{e'} \code{A}: il vptr e' stato impostato a quello di \code{A} e verra'
+riscritto solo all'inizio del costruttore di \code{B}. Quindi \code{f()}
+risolve ad \code{A::f} --- e per fortuna, perche' \code{B::x} non e' ancora
+inizializzato e \code{B::f} lo leggerebbe.
+
+Simmetricamente \code{\~{}A()} gira \emph{dopo} \code{\~{}B()}: quando si entra
+nel corpo di \code{\~{}A} il vptr e' gia' stato riportato ad \code{A}, quindi
+\code{g()} chiama \code{A::g}.
+
+\textbf{Regola:} mai chiamare funzioni virtuali da costruttore o distruttore
+aspettandosi dispatch dinamico. Il tipo dinamico ``cresce'' durante la
+costruzione e ``decresce'' durante la distruzione.
+
+Con \code{f()} pura, la chiamata dal costruttore di \code{A} e'
+\textbf{undefined behavior} (\emph{[class.abstract]}). Non e' un errore di
+compilazione perche' la chiamata e' sintatticamente lecita e in generale il
+compilatore non puo' dimostrare che verra' eseguita (potrebbe essere dentro un
+\code{if}, o in una funzione chiamata dal costruttore). In pratica quasi tutte
+le implementazioni mettono nella vtable di \code{A} il simbolo
+\code{\_\_cxa\_pure\_virtual}, che termina il programma con il messaggio
+``pure virtual method called''.
+\end{soluzione}
+
+\begin{soluzione}{A2 --- Argomenti di default e binding}
+\label{sol:A2}
+Stampa \code{Der 10}.
+
+Il \emph{corpo} della funzione e' scelto dinamicamente (tramite vtable), ma gli
+\textbf{argomenti di default sono sostituiti a tempo di compilazione} in base
+al \emph{tipo statico} dell'espressione, che qui e' \code{Base*}. Il
+compilatore genera di fatto \code{p->f(10)} e poi il dispatch porta a
+\code{Der::f}.
+
+Da qui la regola pratica: \textbf{mai ridefinire gli argomenti di default in un
+override}. Se servono default diversi, si usa NVI (vedi A7): la funzione
+pubblica non virtuale porta il default, quella virtuale privata non ne ha.
+\end{soluzione}
+
+\begin{soluzione}{A3 --- Name hiding degli overload}
+\label{sol:A3}
+\code{D::f(int)} \textbf{nasconde} tutti gli overload \code{B::f}: il
+\emph{name lookup} risale gli scope e si ferma al \emph{primo} che contiene il
+nome \code{f}, cioe' \code{D}. Solo dopo, sull'insieme trovato, parte
+l'\emph{overload resolution}. Quindi l'unico candidato e' \code{D::f(int)}, e
+\code{3.14} viene convertito a \code{int} (con troncamento silenzioso).
+
+Correzioni possibili:
+\begin{lstlisting}[language=C++]
+struct D : B {
+    using B::f;              // (1) reintroduce tutti gli overload della base
+    void f(int) override;
+};
+d.B::f(3.14);                // (2) chiamata qualificata
+// (3) ridichiarare esplicitamente void f(double) in D
+\end{lstlisting}
+Il flag \code{-Woverloaded-virtual} di GCC/Clang intercetta il caso.
+\end{soluzione}
+
+\begin{soluzione}{A4 --- Dominanza ed ereditarieta' virtuale}
+\label{sol:A4}
+Stampa \code{B}.
+
+Con basi virtuali esiste \textbf{un solo} sotto-oggetto \code{A} condiviso, e
+la regola di \textbf{dominanza} stabilisce che \code{B::f} domina \code{A::f}
+(perche' \code{B} deriva da \code{A}). Il \emph{final overrider} di \code{A::f}
+in \code{D} e' quindi unico: nessuna ambiguita'.
+
+Senza \code{virtual} nelle basi ci sarebbero \textbf{due} sotto-oggetti
+\code{A} distinti, quindi due \code{A::f} indipendenti: \code{d.f()} e'
+ambiguo (errore di compilazione) e servirebbe \code{d.B::f()}.
+
+Se anche \code{C} facesse l'override, non esisterebbe piu' un final overrider
+unico: il programma e' \textbf{ill-formed alla definizione di \code{D}} (non al
+punto di chiamata), a meno che \code{D} non fornisca il proprio override, che
+allora domina entrambi.
+\end{soluzione}
+
+\begin{soluzione}{A5 --- Ereditarieta' multipla, thunk e aggiustamento di this}
+\label{sol:A5}
+L'aggiustamento del \code{this} lo esegue un \textbf{thunk}: nella
+\emph{vtable secondaria} (quella associata al sotto-oggetto \code{B} dentro
+\code{C}) la entry per \code{g} non punta a \code{C::g}, ma a un piccolo
+trampolino che fa \code{this -= offsetof(C, B-subobject)} e poi salta a
+\code{C::g}. Nell'Itanium ABI si chiama \emph{non-virtual this adjustment};
+altre ABI memorizzano l'offset accanto al puntatore a funzione.
+
+\code{c} contiene \textbf{due vptr}: uno per il sotto-oggetto primario
+(\code{A}) e uno per \code{B}. Ecco perche' \code{sizeof(C)} e' maggiore di
+quanto ci si aspetterebbe dai soli campi.
+
+L'indirizzo dell'oggetto \emph{most derived} si ottiene con
+\code{dynamic\_cast<void*>(pb)}, che usa l'\emph{offset-to-top} memorizzato
+nella vtable prima delle entry dei metodi.
+\end{soluzione}
+
+\begin{soluzione}{A6 --- Quando una firma e' davvero un override}
+\label{sol:A6}
+\begin{itemize}
+    \item[(a)] \code{void f(int)} --- \textbf{no}: perde \code{const}, quindi
+          la firma e' diversa. Diventa un overload che \emph{nasconde} il
+          virtuale; con \code{override} il compilatore da' errore.
+    \item[(b)] \code{void f(int) const} --- \textbf{no}: da C++17 \code{noexcept}
+          fa parte del \emph{tipo} della funzione, e un override non puo' essere
+          \emph{meno} restrittivo della base. (Il contrario --- base non
+          \code{noexcept}, derivata \code{noexcept} --- e' invece legale.)
+    \item[(c)] \code{void f(int) const noexcept} --- \textbf{si'}, e' l'override
+          corretto.
+    \item[(d)] \code{void f(long) const noexcept} --- \textbf{no}: parametri
+          diversi, quindi overload + hiding.
+    \item[(e)] con \code{\&\&} --- \textbf{no}: i \emph{ref-qualifier} fanno
+          parte della firma e devono coincidere esattamente.
+    \item[(f)] \code{int f(int) const noexcept} --- \textbf{no}: il return type
+          e' diverso e non covariante. La covarianza vale solo per puntatori o
+          riferimenti a classi in relazione di derivazione (e non per
+          \code{int} contro \code{void}).
+    \item[(g)] \code{override final} in una classe gia' \code{final} ---
+          legale, ma ridondante.
+\end{itemize}
+\end{soluzione}
+
+\begin{soluzione}{A7 --- Private virtual e pattern NVI}
+\label{sol:A7}
+(1) stampa \code{D}; \quad (2) \textbf{errore di compilazione}; \quad
+(3) compila e stampa \code{D}.
+
+Il \emph{name lookup} e il \emph{controllo di accesso} avvengono sul
+\textbf{tipo statico} e sono completamente ortogonali al dispatch dinamico, che
+avviene sul tipo dinamico. Per questo un \code{private virtual} e'
+perfettamente overridabile: la classe derivata non ha bisogno di
+\emph{chiamarlo}, solo di \emph{ridefinirlo}.
+
+\textbf{NVI:} l'interfaccia pubblica e' non virtuale (\code{call()}) e i punti
+di variazione sono virtuali privati. In questo modo la base mantiene il
+controllo su pre/post-condizioni, logging, lock, invarianti --- ed e' libera di
+cambiare il numero e la forma dei punti di estensione senza rompere le
+derivate. Corollario noto (Sutter): in una classe base pubblica, l'unica
+funzione che dovrebbe essere \code{public} \emph{e} \code{virtual} e' il
+distruttore.
+\end{soluzione}
+
+\begin{soluzione}{A8 --- Cinque ``perche''' sul modello a oggetti del C++}
+\label{sol:A8}
+\textbf{(a)} Il dispatch virtuale richiede un oggetto gia' costruito con un
+vptr valido, ed e' esattamente il costruttore a installarlo: un costruttore
+virtuale sarebbe circolare. L'idioma sostitutivo e' il \emph{virtual
+constructor} di Coplien:
+\begin{lstlisting}[language=C++]
+struct Base {
+    virtual Base* clone() const { return new Base(*this); }
+    virtual ~Base() = default;
+};
+struct Der : Base {
+    Der* clone() const override { return new Der(*this); }  // return covariante
+};
+\end{lstlisting}
+
+\textbf{(b)} Una member template genera un numero potenzialmente illimitato di
+istanziazioni, scoperte in unita' di traduzione diverse e anche molto dopo la
+definizione della classe: la vtable dovrebbe avere dimensione e layout non
+determinabili nel punto in cui la classe viene definita. (Una \emph{class}
+template puo' invece avere tutte le funzioni virtuali che vuole: per ogni
+istanziazione concreta l'insieme dei metodi e' noto.)
+
+\textbf{(c)} Si'. \code{inline} resta utile per le chiamate risolte
+staticamente (\code{obj.f()} su un oggetto, \code{Base::f()} qualificato, o
+dopo devirtualizzazione); il compilatore deve comunque emettere anche una copia
+\emph{out-of-line}, perche' l'indirizzo della funzione finisce nella vtable.
+
+\textbf{(d)} \code{override} e' solo un \emph{controllo}: ``verifica che io
+stia davvero sovrascrivendo qualcosa''. \code{final} e' invece
+un'\emph{informazione semantica} --- nessuno potra' piu' fare l'override ---
+che permette al compilatore di \textbf{devirtualizzare} la chiamata e quindi di
+inlinearla, anche senza LTO o analisi dell'intero programma.
+
+\textbf{(e)} L'aritmetica dei puntatori negli array usa \code{sizeof} del
+\textbf{tipo statico}: \code{pBase[1]} verrebbe calcolato con passo
+\code{sizeof(Base)} invece di \code{sizeof(Derived)}. Il distruttore virtuale
+non c'entra nulla: il problema e' l'indicizzazione, non la distruzione. La
+soluzione e' \code{std::vector<std::unique\_ptr<Base>{}>}.
+\end{soluzione}
+
+\begin{soluzione}{A9 --- Chi costruisce la base virtuale}
+\label{sol:A9}
+Stampa \code{da E}, \textbf{una volta sola}.
+
+La regola e' che \textbf{la base virtuale viene inizializzata dal costruttore
+della classe \emph{most derived}}, cioe' dalla classe dell'oggetto che si sta
+effettivamente creando. Tutti gli altri mem-initializer per \code{A} ---
+quelli in \code{B}, \code{C} e \code{D} --- vengono semplicemente
+\emph{ignorati}, perche' in questa costruzione quelle classi sono sotto-oggetti,
+non l'oggetto piu' derivato.
+
+Quindi: \code{D d;} stampa \code{da D}, e \code{B b;} stampa \code{da B}. Lo
+stesso mem-initializer \code{A("da B")} viene usato o ignorato a seconda del
+ruolo che \code{B} ha in quella particolare costruzione: ecco perche' scriverlo
+in \code{B} non e' inutile, serve per il caso in cui \code{B} sia standalone.
+
+Se togli \code{A("da E")} da \code{E}, il compilatore deve inizializzare
+\code{A} per default --- ma \code{A} non ha costruttore di default, quindi il
+programma e' \textbf{ill-formed}. Conseguenza pratica: una base virtuale
+conviene che abbia un costruttore di default, altrimenti \emph{ogni} classe
+concreta della gerarchia (a qualunque profondita') e' obbligata a nominarla
+esplicitamente. E' uno dei costi ``sociali'' dell'ereditarieta' virtuale.
+
+\textbf{Ordine di costruzione:} prima tutte le \emph{basi virtuali}, in ordine
+di visita depth-first da sinistra a destra della gerarchia della classe most
+derived; poi le basi non virtuali nell'ordine di dichiarazione; poi i membri
+nell'ordine di dichiarazione; infine il corpo del costruttore. Qui:
+\code{A}, \code{B}, \code{C}, \code{D}, \code{E}. La distruzione avviene in
+ordine esattamente inverso.
+\end{soluzione}
+
+\begin{soluzione}{A10 --- Layout e costo della base virtuale}
+\label{sol:A10}
+\code{Animal} finisce \textbf{in fondo} proprio perche' e' \emph{condiviso}: i
+sotto-oggetti \code{Mammal} e \code{WingedAnimal} devono conservare il layout
+che avrebbero da soli (cosi' il codice compilato per \code{Mammal} continua a
+funzionare), quindi l'unica copia della base comune viene messa in una posizione
+che non appartiene a nessuno dei due rami. Nel caso non virtuale, invece, ogni
+ramo si porta dietro la \emph{propria} copia della base, incorporata al proprio
+inizio.
+
+Servono \textbf{due vpointer} perche' ciascun ramo che eredita virtualmente ha
+bisogno di sapere ``quanto dista da qui il mio \code{Animal}'', e questa
+distanza e' diversa a seconda di come il sotto-oggetto e' immerso nell'oggetto
+completo. L'informazione si chiama \textbf{vbase offset} e sta nella vtable,
+accanto ai puntatori ai metodi.
+
+Perche' non e' una costante di compilazione? Perche' quando il compilatore
+traduce un metodo di \code{Mammal} non sa se quel \code{Mammal} sara' un oggetto
+autonomo (e allora \code{Animal} sta subito dopo il vptr) oppure il sotto-oggetto
+di un \code{Bat} (e allora \code{Animal} sta molto piu' in la', dopo
+\code{WingedAnimal} e dopo i membri di \code{Bat}). Con ereditarieta' non
+virtuale l'offset base/derivata e' invece fissato una volta per tutte a compile
+time --- ed e' esattamente la differenza di costo fra i due meccanismi: nel caso
+virtuale l'accesso a un membro della base costa un'indirezione in piu'. Nel
+conto di Wikipedia, la dimensione dell'oggetto \code{Bat} cresce di due
+puntatori rispetto alla versione non virtuale, in cambio dell'unicita' di
+\code{Animal} e dell'assenza di ambiguita'.
+
+\textbf{Il cast:} e' ill-formed la riga con \code{static\_cast}. Un
+\code{static\_cast} da base virtuale a derivata e' \emph{vietato dallo
+standard}, e per il motivo appena detto: il compilatore dovrebbe sottrarre un
+offset che non conosce staticamente. Serve \code{dynamic\_cast}, che legge
+l'informazione dalla vtable a runtime (ed e' anche l'unico caso in cui
+\code{dynamic\_cast} e' obbligatorio pur non essendoci alcuna incertezza sul
+tipo). Per lo stesso motivo non si puo' usare \code{offsetof} su un membro della
+base virtuale, e i puntatori a membro della base virtuale hanno una
+rappresentazione piu' complessa.
+\end{soluzione}
+
+\begin{soluzione}{A11 --- Metodi virtuali puri nel diamante}
+\label{sol:A11}
+\textbf{Si', \code{D} e' istanziabile} e stampa \code{L}. Con le basi virtuali
+esiste un solo sotto-oggetto \code{I}, e per la regola di dominanza (A4) il suo
+\emph{final overrider} unico e' \code{L::f}. Il ramo \code{R} non ha bisogno di
+implementare nulla: eredita l'implementazione ``dall'altra parte'' del diamante.
+E' esattamente il punto sottolineato da Wikipedia --- con ereditarieta' virtuale
+il metodo puro va implementato \emph{una volta sola} nella gerarchia.
+
+Togliendo \code{virtual} dalle basi, ci sono \textbf{due} sotto-oggetti \code{I}
+indipendenti: quello raggiunto via \code{R} ha ancora \code{f} pura, quindi
+\code{D} resta \textbf{astratta} e \code{D d;} non compila. E anche se
+implementassi \code{f} in \code{R}, la chiamata \code{d.f()} sarebbe ambigua e
+servirebbe \code{d.L::f()}.
+
+\textbf{Un metodo puro puo' avere un corpo.} \code{= 0} dichiara solo che le
+derivate concrete devono fornire un override; non vieta di dare
+un'implementazione di \emph{default}:
+\begin{lstlisting}[language=C++]
+struct I { virtual void f() = 0; };
+void I::f() { std::cout << "comportamento di base"; }
+struct D : I { void f() override { I::f(); std::cout << " + extra"; } };
+\end{lstlisting}
+Il corpo si puo' invocare solo con \textbf{chiamata qualificata}
+(\code{I::f()}), mai per dispatch dinamico: la entry in vtable resta quella
+``pura''. Serve come fallback riusabile dalle derivate --- ed e' lo stesso
+schema di Python, dove un \code{@abstractmethod} puo' avere un corpo che la
+sottoclasse richiama con \code{super()}.
+
+Il corpo e' \textbf{obbligatorio} in un caso: il \emph{distruttore virtuale
+puro}. \code{virtual \~{}I() = 0;} rende la classe astratta (idioma utile quando
+non ci sono altri metodi da rendere puri), ma il distruttore di ogni derivata
+chiama comunque quello della base, quindi la definizione deve esistere:
+\code{I::\~{}I() \{\}}.
+\end{soluzione}
+
+\begin{soluzione}{A12 --- Quando usarla, e come se la cavano gli altri tre linguaggi}
+\label{sol:A12}
+\textbf{Il criterio.} Se l'ereditarieta' esprime una \emph{restrizione di un
+insieme} --- un \code{Bat} \emph{e'} un \code{Animal}, e ne esiste uno solo per
+ogni pipistrello --- allora la base va condivisa, quindi \code{virtual}. Se
+invece l'ereditarieta' viene usata per \emph{comporre parti} indipendenti (un
+\code{Bat} ``contiene'' le caratteristiche del volo e quelle dei mammiferi come
+due moduli distinti), avere due copie e' coerente, e la base non virtuale va
+bene. In pratica: la duplicazione e' un bug quando la base rappresenta
+\emph{identita'}, e' accettabile quando rappresenta \emph{implementazione}.
+
+\textbf{Rappresentazione in memoria, in una frase:} una base non virtuale e'
+\emph{incorporata} (una copia per ogni ramo, offset costante), una base virtuale
+e' \emph{condivisa} (una copia sola, raggiunta tramite un offset letto a runtime)
+--- cioe' concettualmente ``per valore'' contro ``per riferimento''.
+
+\textbf{Java.} Una classe puo' estendere una sola classe, quindi lo stato non
+puo' arrivare da due strade: il diamante \emph{sui dati} e' impedito per
+costruzione. Resta il diamante \emph{sul comportamento}, quello dei
+\code{default method} delle interfacce (B6), che il linguaggio non risolve
+automaticamente ma obbliga a risolvere a mano con un override esplicito e
+\code{X.super.f()}. Le interfacce sono in un certo senso ``sempre virtuali'':
+non portando stato, non c'e' niente da duplicare.
+
+\textbf{Python.} L'ereditarieta' multipla di stato e' permessa, ma gli attributi
+vivono in \emph{un solo} \code{\_\_dict\_\_} per istanza, e la linearizzazione C3
+mette ogni classe base \emph{una volta sola} nell'MRO. Quindi Python si comporta
+di fatto come se ogni base fosse virtuale: c'e' una sola \code{A}, e se tutti
+cooperano con \code{super()} il suo \dunder{init} viene eseguito esattamente una
+volta (C1). Il prezzo lo si paga altrove: l'ordine di inizializzazione dipende
+dall'MRO della classe concreta, esattamente come in C++ la base virtuale e'
+costruita dalla most derived (A9).
+
+\textbf{C.} La scelta e' esplicita e si vede: base non virtuale $=$
+\code{struct A base;} incorporata come primo membro (D1); base virtuale $=$
+\code{struct A *base;}, un puntatore alla copia condivisa. Il costo
+dell'ereditarieta' virtuale in C++ e' letteralmente il costo di quella
+sostituzione --- un'indirezione in piu' e un puntatore in piu' per ramo.
+
+\textbf{Esempio reale nella libreria standard:} la gerarchia degli stream.
+\code{basic\_istream} e \code{basic\_ostream} derivano \emph{virtualmente} da
+\code{basic\_ios}, cosicche' \code{basic\_iostream} (da cui \code{std::stringstream},
+\code{std::fstream}) abbia un solo stato di stream --- un solo buffer, un solo
+insieme di flag di errore --- invece di due. Se l'ereditarieta' non fosse
+virtuale, \code{ss.fail()} potrebbe dare risposte diverse a seconda del ramo da
+cui la si interroga.
+\end{soluzione}
+
+\section{Soluzioni Java}
+
+\begin{soluzione}{B1 --- Campi nascosti contro metodi sovrascritti}
+\label{sol:B1}
+\begin{enumerate}
+    \item[(1)] \code{A} --- i \textbf{campi non sono polimorfici}: l'accesso e'
+          risolto a tempo di compilazione sul tipo statico della variabile
+          (\code{A a}), con l'istruzione \code{getfield A.x}.
+    \item[(2)] \code{B} --- i metodi si': \code{invokevirtual} risolve sul tipo
+          dinamico.
+    \item[(3)] \code{A} --- \code{getX()} e' definito \emph{dentro} \code{A}, e
+          nel suo corpo l'identificatore \code{x} si riferisce ad \code{A.x}.
+    \item[(4)] \code{B}.
+\end{enumerate}
+Il punto chiave e' che \code{B.x} non \emph{sostituisce} \code{A.x}: lo
+\textbf{nasconde}. Nell'oggetto esistono \emph{due} campi distinti, e \code{A.x}
+resta raggiungibile da dentro \code{B} con \code{super.x} oppure
+\code{((A)this).x}. Morale: i campi si dichiarano \code{private} e si espongono
+con metodi, altrimenti l'ereditarieta' diventa illeggibile.
+\end{soluzione}
+
+\begin{soluzione}{B2 --- Metodi statici e istanze}
+\label{sol:B2}
+Stampa \code{A}. E' \textbf{hiding di metodo statico}, non overriding: la
+chiamata viene compilata in \code{invokestatic A.s()} sulla base del tipo
+statico di \code{a}; l'oggetto non viene nemmeno usato (\code{javac} emette il
+warning ``static method should be qualified by type name'').
+
+I metodi \code{static} sono legati staticamente \emph{per definizione}: non
+esiste un ricevitore su cui fare dispatch, quindi non esiste nemmeno un slot in
+vtable. Lo stesso vale per \code{private} (\code{invokespecial}) e per i metodi
+\code{final}, che pero' uno slot ce l'hanno.
+\end{soluzione}
+
+\begin{soluzione}{B3 --- Metodo overridabile chiamato dal costruttore}
+\label{sol:B3}
+Stampa \code{0} e poi \code{null}.
+
+Ordine di inizializzazione:
+\begin{enumerate}
+    \item \code{super()} --- e qui sta il punto: il costruttore di \code{A}
+          chiama \code{init()}, che e' \textbf{gia'} dispatchato dinamicamente
+          su \code{B}. A differenza del C++ (A1), in Java il tipo dinamico
+          dell'oggetto e' quello finale \emph{fin dal primo istante}: non
+          esiste il ``vptr che cresce'';
+    \item \emph{dopo} il ritorno da \code{super()} vengono eseguiti gli
+          inizializzatori di campo e i blocchi di istanza di \code{B}, in ordine
+          testuale;
+    \item infine il corpo del costruttore di \code{B}.
+\end{enumerate}
+Percio' durante \code{init()} i campi di \code{B} valgono ancora il default:
+\code{x == 0} \emph{anche se dichiarato \code{final}}, e \code{list == null}
+(NullPointerException se ci si fa qualcosa).
+
+E' l'errore classico documentato in \emph{Effective Java} (item 19):
+\textbf{mai invocare metodi overridabili dal costruttore}. Se serve, si usa un
+metodo \code{private} o \code{final}, oppure un factory method che costruisce e
+\emph{poi} inizializza.
+\end{soluzione}
+
+\begin{soluzione}{B4 --- Overriding o overloading?}
+\label{sol:B4}
+(1) \code{A/Object} \quad (2) \code{B/String} \quad (3) \code{A/Object}.
+
+\code{B.m(String)} \textbf{non} fa l'override di \code{A.m(Object)}: le firme
+sono diverse, quindi e' un \emph{overload} che si aggiunge al metodo ereditato.
+
+La risoluzione dell'overload avviene a \textbf{tempo di compilazione} sul tipo
+statico: con \code{A a} l'unico candidato visibile e' \code{m(Object)}; con
+\code{B b} i candidati sono due e vince il piu' specifico, \code{m(String)}; col
+cast esplicito il tipo statico dell'argomento torna \code{Object}.
+
+\textbf{Slogan da ripetere all'esame:} \emph{overload = statico, override =
+dinamico}. Mescolare i due e' la fonte di bug piu' comune sull'argomento (vedi
+anche B7g con \code{equals}).
+\end{soluzione}
+
+\begin{soluzione}{B5 --- Generics, erasure e bridge method}
+\label{sol:B5}
+L'eccezione viene lanciata \textbf{dentro il bridge method sintetico
+\code{MyNode.set(Object)}}, non nel codice scritto dal programmatore.
+
+Per \emph{erasure}, \code{Node.set(T)} diventa \code{set(Object)}. Ma
+\code{MyNode.set(Integer)} ha un descriptor diverso, quindi da solo
+\emph{non} sarebbe un override per la JVM. Il compilatore genera allora in
+\code{MyNode}:
+\begin{lstlisting}[language=Java]
+// ACC_BRIDGE | ACC_SYNTHETIC
+void set(Object o) { this.set((Integer) o); }
+\end{lstlisting}
+Poiche' \code{n} e' dichiarata di tipo \textbf{raw}, il compilatore non inserisce
+alcun \code{checkcast} al call site: viene emessa
+\code{invokevirtual Node.set(Object)}, il dispatch arriva al bridge, il bridge
+esegue \code{checkcast Integer} su una \code{String} e lancia
+\code{ClassCastException}. Il fenomeno si chiama \emph{heap pollution}, ed e' il
+prezzo della retrocompatibilita' scelta da Java (erasure) invece della
+reificazione dei generici (come in C\#).
+
+I bridge method vengono generati anche per i \textbf{return covarianti}: se la
+base restituisce \code{Object} e la derivata \code{String}, servono due metodi.
+\end{soluzione}
+
+\begin{soluzione}{B6 --- Diamante di default method}
+\label{sol:B6}
+\code{D} eredita due default method \code{f()} egualmente specifici e non
+correlati fra loro: \code{B} e \code{C} sono entrambe sotto-interfacce di
+\code{A}, ma nessuna delle due e' sotto-interfaccia dell'altra, quindi non c'e'
+un criterio per preferirne una. Errore: \emph{inherits unrelated defaults}.
+Correzione:
+\begin{lstlisting}[language=Java]
+class D implements B, C {
+    @Override public String f() { return B.super.f(); }
+}
+\end{lstlisting}
+
+\textbf{(a) Class wins.} Un metodo concreto ereditato da una \emph{superclasse}
+batte sempre un default method, anche se l'interfaccia sembra ``piu' vicina''.
+La regola esiste per garantire la retrocompatibilita': aggiungere un default a
+un'interfaccia gia' pubblicata non deve mai cambiare il comportamento del codice
+esistente.
+
+\textbf{(b)} I metodi di \code{Object} sono ereditati da \emph{ogni} classe:
+per la regola ``class wins'' un default \code{toString()} sarebbe sempre
+scavalcato e quindi inutile o ambiguo. Il JLS lo vieta esplicitamente a tempo di
+compilazione.
+
+\textbf{(c)} Con l'ereditarieta' singola delle classi, ogni metodo virtuale ha
+uno \textbf{slot a indice fisso} nella vtable, identico in tutte le
+sottoclassi: \code{invokevirtual} e' quindi un accesso a offset costante. Le
+interfacce invece possono essere implementate da classi con gerarchie
+completamente diverse, e non esiste un indice comune: \code{invokeinterface}
+richiede una ricerca (itable, itable stub, o inline cache costruita dal JIT).
+\end{soluzione}
+
+\begin{soluzione}{B7 --- Le regole dell'override in Java}
+\label{sol:B7}
+\begin{itemize}
+    \item[(a)] \textbf{illegale}: non si puo' restringere la visibilita', o si
+          violerebbe la sostituibilita' (un client che vede \code{Base} potrebbe
+          chiamare il metodo).
+    \item[(b)] \textbf{legale}: allargare si puo'.
+    \item[(c)] \textbf{legale} da Java 5 (implementata con bridge method, B5).
+    \item[(d)] \textbf{illegale} per le \emph{checked} exception: si possono
+          solo restringere o omettere. Le \emph{unchecked} sono libere, perche'
+          non fanno parte del contratto verificato dal compilatore.
+    \item[(e)] \textbf{impossibile}: i metodi \code{private} non sono ereditati
+          ne' virtuali (\code{invokespecial}); definirne uno omonimo nella
+          derivata crea un metodo del tutto indipendente.
+    \item[(f)] \textbf{illegale} in entrambe le direzioni: \code{static} non
+          puo' nascondere un metodo di istanza ne' viceversa.
+    \item[(g)] \code{equals(MyType)} e' un \emph{overload}. Tutte le collezioni
+          (\code{HashSet}, \code{HashMap}, \code{List.contains}) chiamano
+          \code{equals(Object)}, che rimane quello di \code{Object}, cioe'
+          l'identita' di riferimento: \code{contains} restituisce \code{false}
+          su oggetti logicamente uguali. Annotare sempre con \code{@Override}
+          --- sulla firma sbagliata da' errore di compilazione --- e ricordare
+          che \code{equals} va sempre accompagnato da \code{hashCode}.
+\end{itemize}
+\end{soluzione}
+
+\section{Soluzioni Python}
+
+\begin{soluzione}{C1 --- MRO, C3 e super() cooperativo}
+\label{sol:C1}
+MRO: \code{D $\rightarrow$ B $\rightarrow$ C $\rightarrow$ A $\rightarrow$
+object} (linearizzazione C3). Output: \code{D B C A}.
+
+Il punto cruciale e' che \textbf{\code{super()} non significa ``la
+superclasse''}, ma ``il prossimo nell'MRO \emph{dell'oggetto}''. Dentro
+\code{B.f}, con \code{type(self) is D}, il successivo dopo \code{B} nella lista
+e' \code{C}, non \code{A}. E' esattamente questo che rende possibile
+l'ereditarieta' multipla \emph{cooperativa}: ogni classe chiama \code{super()}
+una volta sola e ogni implementazione di \code{f} viene eseguita esattamente una
+volta, in ordine deterministico.
+
+Corollario pratico: in una gerarchia cooperativa tutti i metodi devono avere
+firme compatibili (tipicamente \code{*args, **kwargs}), altrimenti la catena si
+rompe a meta'.
+
+\code{class X(A, B)} con \code{class B(A)}: C3 deve rispettare sia l'ordine
+locale delle basi (\code{A} prima di \code{B}) sia la monotonicita' (\code{B}
+prima di \code{A}, perche' \code{B} deriva da \code{A}). I due vincoli sono
+contraddittori, quindi si ottiene
+\code{TypeError: Cannot create a consistent method resolution order (MRO)}.
+\end{soluzione}
+
+\begin{soluzione}{C2 --- Lookup implicito dei metodi speciali}
+\label{sol:C2}
+\code{len(a)} stampa \textbf{1}; \code{a.\_\_len\_\_()} stampa \textbf{99}.
+
+L'invocazione \textbf{implicita} dei metodi speciali salta il dizionario
+dell'istanza e cerca lo slot direttamente sul \textbf{tipo}
+(\code{type(a).\_\_len\_\_}). E' cio' che permette a CPython di usare gli slot
+scritti in C (\code{tp\_as\_sequence->sq\_length}) e di non pagare una ricerca
+per attributo a ogni operazione. La ricerca \emph{esplicita} per attributo
+segue invece la regola normale: istanza, poi tipo, poi MRO.
+
+Conseguenza per i proxy: \dunder{getattr} non viene \emph{mai} consultato per le
+operazioni implicite (\code{len(p)}, \code{p + q}, \code{with p:},
+\code{p[0]}, \code{iter(p)}\dots), perche' la ricerca non passa dal
+\dunder{getattribute} dell'istanza. Per questo \code{unittest.mock.MagicMock}
+deve pre-definire tutti i dunder \emph{sul tipo}, e i proxy davvero trasparenti
+si costruiscono generando dinamicamente una classe.
+\end{soluzione}
+
+\begin{soluzione}{C3 --- Name mangling}
+\label{sol:C3}
+Stampa \code{A helper}.
+
+E' il \textbf{name mangling}: dentro il corpo di \code{A}, il compilatore
+riscrive \code{self.\_\_helper} in \code{self.\_A\_\_helper}; \code{B} definisce
+invece \code{\_B\_\_helper}. I due nomi non collidono, quindi non c'e' nessun
+override.
+
+E' l'unico modo idiomatico in Python per ottenere un metodo
+\textbf{effettivamente non virtuale}: serve per implementare NVI, e soprattutto
+per evitare collisioni accidentali di nomi nei \emph{mixin} e nelle gerarchie
+profonde. Non e' un meccanismo di sicurezza: \code{b.\_A\_\_helper()} funziona
+benissimo. Con un solo underscore (\code{\_helper}) non c'e' mangling: e' solo
+una convenzione, e l'override avviene normalmente.
+\end{soluzione}
+
+\begin{soluzione}{C4 --- Dove vive davvero un metodo}
+\label{sol:C4}
+\begin{enumerate}
+    \item[(1)] \code{B.f} --- dispatch normale lungo \code{type(b).\_\_mro\_\_}.
+    \item[(2)] \code{A.f} --- chiamata esplicita dell'implementazione della base,
+          equivalente a \code{super(B, b).f()}. In Python 3 \code{A.f} e' una
+          funzione semplice, quindi \code{self} va passato a mano.
+    \item[(3)] \code{A.f} --- le classi sono oggetti mutabili: si e' sostituito
+          il metodo a runtime (\emph{monkey patching}). Nessun altro linguaggio
+          del corso lo permette senza strumenti esterni.
+    \item[(4)] \code{inst} --- l'attributo di istanza vince (e la lambda non
+          riceve \code{self}: e' una funzione qualunque, non un metodo).
+    \item[(5)] \code{A.f} --- riassegnare \dunder{class} cambia il tipo dinamico
+          dell'oggetto e quindi il dispatch.
+\end{enumerate}
+Il motivo del punto (4) e' il \textbf{protocollo dei descrittori}: le funzioni
+sono descrittori \emph{non-data} (definiscono solo \dunder{get}), e per questi
+il \code{\_\_dict\_\_} dell'istanza ha la precedenza. Una \code{property} e'
+invece un descrittore \emph{data} (definisce \dunder{get} \emph{e}
+\dunder{set}), e i descrittori data vincono \emph{sempre} sul dizionario
+dell'istanza: e' proprio cosi' che una property riesce a intercettare le
+assegnazioni.
+\end{soluzione}
+
+\begin{soluzione}{C5 --- Priorita' delle operazioni riflesse}
+\label{sol:C5}
+Stampa \code{B.\_\_radd\_\_}.
+
+Regola generale: per \code{x + y} Python prova \code{type(x).\_\_add\_\_} e poi
+\code{type(y).\_\_radd\_\_}. \textbf{Ma} se \code{type(y)} e' una
+\emph{sottoclasse propria} di \code{type(x)} \emph{e} fornisce un
+\code{\_\_radd\_\_} diverso da quello (eventuale) di \code{type(x)}, il metodo
+riflesso viene provato \textbf{per primo}. In CPython il controllo e' la
+funzione \code{method\_is\_overloaded}: se il tipo di sinistra non ha affatto
+\code{\_\_radd\_\_}, quello della sottoclasse conta come ``overloaded'' e vince.
+
+La motivazione di design e' che una sottoclasse deve sempre poter avere
+l'ultima parola sulle operazioni che la coinvolgono, altrimenti non potrebbe
+raffinare il comportamento ereditato (si pensi a \code{int} e a una sottoclasse
+che rappresenta unita' di misura).
+\end{soluzione}
+
+\begin{soluzione}{C6 --- Il costruttore virtuale che il C++ non ha}
+\label{sol:C6}
+Stampa \code{B}.
+
+In un \code{classmethod}, \code{cls} e' legato al tipo su cui e' avvenuta
+\emph{effettivamente} la chiamata (\code{B}), quindi \code{cls()} costruisce una
+\code{B}: i classmethod sono \textbf{polimorfici}. E' letteralmente il
+\emph{costruttore virtuale} che in C++ va emulato con \code{clone()} (A8a) e
+che in Java richiede una factory esplicita o la reflection.
+
+Con uno \code{@staticmethod} che fa \code{return A()} si perde l'informazione
+sul tipo: la factory restituirebbe sempre una \code{A} e ogni sottoclasse
+sarebbe costretta a riscriverla. Vale anche l'inverso: dentro un classmethod,
+\code{super().create()} funziona e propaga correttamente \code{cls}.
+\end{soluzione}
+
+\begin{soluzione}{C7 --- Metodi astratti che non astraggono}
+\label{sol:C7}
+\code{Impl()} non solleva nulla perche' il controllo dei metodi astratti non e'
+fatto dal decoratore, ma da \code{ABCMeta} in fase di creazione della classe:
+e' la metaclasse a popolare l'insieme \code{\_\_abstractmethods\_\_}, che
+\code{object.\_\_new\_\_} poi consulta. Il decoratore \code{@abstractmethod} da
+solo si limita a impostare \code{\_\_isabstractmethod\_\_ = True} sulla
+funzione, e senza \code{ABCMeta} nessuno legge quel flag.
+
+Correzione: \code{class Base(abc.ABC):} oppure
+\code{class Base(metaclass=abc.ABCMeta):}.
+
+\textbf{Bonus.} \dunder{init\_subclass} e' un hook \emph{per sottoclasse},
+invocato alla creazione di ogni classe figlia: e' il modo leggero per
+validare o registrare le sottoclassi senza scrivere una metaclasse. Una
+\textbf{metaclasse} controlla la creazione dell'oggetto-classe stesso (e puo'
+provocare conflitti di metaclasse nell'ereditarieta' multipla).
+\code{\_\_subclasshook\_\_} interviene invece su \code{issubclass} e
+\code{isinstance} e serve a implementare \emph{duck typing strutturale}: e' cosi'
+che \code{collections.abc.Iterable} riconosce come sottoclasse qualunque tipo
+definisca \dunder{iter}, senza ereditarieta' esplicita.
+\end{soluzione}
+
+\section{Soluzioni C}
+
+\begin{soluzione}{D1 --- Dispatch dinamico scritto a mano}
+\label{sol:D1}
+\begin{lstlisting}[language=C]
+typedef struct Shape Shape;
+
+typedef struct {                     /* la vtable: una per CLASSE */
+    void   (*draw)(const Shape *self);
+    double (*area)(const Shape *self);
+    void   (*dtor)(Shape *self);     /* distruttore virtuale */
+    const char *type_name;           /* poor man's RTTI */
+} ShapeVT;
+
+struct Shape { const ShapeVT *vptr; };               /* "classe base" */
+typedef struct { Shape base; double r; } Circle;     /* "classe derivata" */
+
+static void   circle_draw(const Shape *s)
+{ printf("Circle r=%g\n", ((const Circle *)s)->r); }
+
+static double circle_area(const Shape *s)
+{ double r = ((const Circle *)s)->r; return 3.14159265 * r * r; }
+
+static void   circle_dtor(Shape *s) { free(s); }
+
+static const ShapeVT CIRCLE_VT = { circle_draw, circle_area, circle_dtor, "Circle" };
+
+Circle *circle_new(double r) {
+    Circle *c = malloc(sizeof *c);
+    c->base.vptr = &CIRCLE_VT;       /* <-- il "costruttore" installa il vptr */
+    c->r = r;
+    return c;
+}
+
+void draw_all(Shape *const *v, size_t n) {
+    for (size_t i = 0; i < n; i++)
+        v[i]->vptr->draw(v[i]);      /* == v[i]->draw() del C++ */
+}
+\end{lstlisting}
+
+\textbf{Primo membro.} Lo standard garantisce che una struct non abbia padding
+\emph{all'inizio}, quindi \code{(Shape *)circle == \&circle->base}: la
+conversione derivata/base e' un no-op e il \code{this} non va aggiustato. E'
+esattamente il caso dell'ereditarieta' singola in C++, quello senza thunk (A5).
+
+\textbf{Il vptr lo inizializzi tu.} Se dimentichi quella riga hai un puntatore
+indeterminato e la prima chiamata virtuale salta nel vuoto. In C++ e' il
+compilatore a emettere l'assegnamento all'inizio di \emph{ogni} costruttore, e a
+riscriverlo a ogni livello della gerarchia (che e' poi il motivo di A1).
+
+\textbf{Distruttore virtuale} = una entry \code{dtor} nella vtable, invocata
+sempre come \code{s->vptr->dtor(s)}; ogni ``derivata'' libera i propri membri e
+poi chiama esplicitamente il distruttore della base.
+\textbf{\code{dynamic\_cast}} = confronto del \code{vptr} (o del tag
+\code{type\_name}) con quello atteso; per gerarchie a piu' livelli si mette
+nella vtable un puntatore \code{parent} e si risale la catena.
+\end{soluzione}
+
+\begin{soluzione}{D2 --- Il cast che sembra innocuo}
+\label{sol:D2}
+\code{Circle *} e \code{Shape *} sono tipi di puntatore \textbf{non
+compatibili}: la conversione \code{Circle **} $\rightarrow$ \code{Shape **} non
+e' mai implicita e, una volta forzata col cast, l'accesso a \code{v[i]} legge un
+oggetto il cui \emph{effective type} e' \code{Circle *} attraverso un lvalue di
+tipo \code{Shape *}. E' una violazione della regola di \emph{aliasing}
+(\emph{C11 6.5p7}), quindi undefined behavior --- innocuo nella pratica perche'
+tutti i puntatori a struct hanno la stessa rappresentazione, ma il compilatore e'
+autorizzato a riordinare o eliminare gli accessi.
+
+La garanzia ``indirizzo del primo membro = indirizzo della struct''
+(\emph{6.7.2.1p15}) riguarda \textbf{l'indirizzo dell'oggetto}, non la
+compatibilita' fra \emph{tipi di puntatore}: dice che il cast
+\code{Circle *} $\rightarrow$ \code{Shape *} da' l'indirizzo giusto, non che un
+array di \code{Circle *} \emph{sia} un array di \code{Shape *}. La regola della
+\emph{common initial sequence} (\emph{6.5.2.3}) e' poi enunciata solo per struct
+che condividono una \code{union} visibile nella stessa unita' di traduzione.
+
+Soluzione corretta: costruire un vero array di \code{Shape *}, convertendo
+elemento per elemento (\code{arr[i] = \&c[i]->base;}). La conversione va fatta
+\emph{sull'oggetto}, non sul puntatore a puntatore --- ed e' lo stesso motivo per
+cui in Java gli array covarianti producono \code{ArrayStoreException} (E3).
+\end{soluzione}
+
+\begin{soluzione}{D3 --- Traduzione letterale di virtual}
+\label{sol:D3}
+\begin{itemize}
+    \item \code{this} diventa il primo parametro esplicito \code{Shape *self};
+    \item \code{const} diventa \code{const Shape *self}: nessuna differenza a
+          runtime, solo type checking a compile time;
+    \item la chiamata \code{s->area()} diventa \code{s->vptr->area(s)}: due
+          dereferenziazioni (vptr, poi lo slot) piu' una chiamata indiretta;
+    \item la \textbf{vtable e' un oggetto statico unico per classe}
+          (\code{static const ShapeVT}), non per istanza. L'``ereditarieta''' della
+          vtable e' letteralmente: copiare la tabella della base e sovrascrivere
+          gli slot ridefiniti, \emph{mantenendo lo stesso indice} per lo stesso
+          metodo. E' questa invarianza dell'indice a rendere il dispatch $O(1)$
+          e indipendente dalla profondita' della gerarchia.
+\end{itemize}
+\textbf{Costo:} un puntatore per \emph{oggetto} (8 byte su architettura a 64
+bit, piu' l'eventuale allineamento) e una tabella di $N$ puntatori per
+\emph{classe}. Nessun altro overhead: e' il \emph{zero-overhead principle} ---
+paghi solo se usi \code{virtual}, ed e' il motivo per cui in C++ il default e'
+non virtuale (E2).
+\end{soluzione}
+
+\begin{soluzione}{D4 --- Due polimorfismi diversi}
+\label{sol:D4}
+\code{struct file\_operations} e' \textbf{overriding}: e' una vtable a tutti gli
+effetti, condivisa da tutte le istanze di un ``tipo'' di file (ext4, procfs, un
+driver di periferica), raggiunta da \code{struct file} attraverso il campo
+\code{f\_op}. Ogni filesystem ridefinisce solo le entry che gli servono e lascia
+\code{NULL} le altre (che il VFS interpreta come ``comportamento di default'':
+un modo per emulare i metodi non astratti della base).
+
+Il comparatore di \code{qsort} e' invece una \textbf{strategy}/callback: la
+funzione e' passata per parametro alla singola chiamata e non e' associata al
+\emph{tipo} degli oggetti ordinati; non esiste alcuna entita' ``classe'' che la
+erediti. E' il polimorfismo della \emph{Strategy} del GoF, non quello del
+\emph{Template Method}.
+
+\code{container\_of(ptr, type, member)} risale dall'indirizzo di un membro
+all'indirizzo della struct che lo contiene, sottraendo \code{offsetof}. E' il
+\textbf{downcast} da base a derivata (\code{static\_cast<Derived *>(pBase)}) nel
+caso in cui il sotto-oggetto base \emph{non} sia il primo membro: la stessa
+aritmetica di offset che genererebbe il compilatore C++.
+\end{soluzione}
+
+\begin{soluzione}{D5 --- Perche' il C non puo' avere overriding automatico}
+\label{sol:D5}
+Perche' in C ogni chiamata di funzione e' \textbf{early binding}: il nome viene
+risolto dal linker a \emph{un} singolo simbolo, e non esiste alcun canale --- ne'
+un vptr implicito ne' metadati di tipo --- che leghi un \emph{oggetto} a un
+insieme di funzioni. \code{static inline} negli header duplica la definizione in
+ogni unita' di traduzione, ma resta comunque una risoluzione statica per nome.
+
+Si aggiungono due impedimenti strutturali:
+\begin{itemize}
+    \item senza \emph{name mangling} non potresti nemmeno avere due funzioni
+          \code{area} con lo stesso nome e parametri diversi nello stesso
+          programma (niente overload, quindi a maggior ragione niente override);
+    \item senza costruttori non esiste un punto garantito in cui installare il
+          vptr: ogni schema di dispatch dinamico va costruito \emph{e mantenuto}
+          a mano dal programmatore.
+\end{itemize}
+Ed e' precisamente quello che fanno i grandi progetti C: GObject/GTK, il VFS del
+kernel Linux, COM su Windows. Il C non e' ``incapace'' di polimorfismo: si
+limita a non automatizzarlo.
+\end{soluzione}
+
+\section{Soluzioni trasversali}
+
+\begin{soluzione}{E1 --- Tabella comparativa del dispatch}
+\label{sol:E1}
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\setlength{\tabcolsep}{4pt}
+\scriptsize
+\begin{tabular}{|>{\raggedright\arraybackslash}p{1.8cm}|>{\raggedright\arraybackslash}p{3.1cm}|>{\raggedright\arraybackslash}p{3.1cm}|>{\raggedright\arraybackslash}p{3.1cm}|>{\raggedright\arraybackslash}p{3.1cm}|}
+\hline
+& \textbf{C++} & \textbf{Java} & \textbf{Python} & \textbf{C} \\
+\hline
+Meccanismo &
+vtable per classe + vptr per oggetto; indice noto a compile time &
+\code{invokevirtual} (vtable) / \code{invokeinterface} (itable); JIT con inline cache e CHA &
+lookup nel \code{\_\_dict\_\_} lungo l'MRO del tipo, con \emph{type method cache}, poi protocollo dei descrittori &
+manuale: struct di puntatori a funzione \\
+\hline
+Costo &
+2 load + chiamata indiretta; devirtualizzabile con \code{final}/LTO &
+come C++, ma spesso \emph{inlinato per speculazione} e deottimizzato se serve &
+il piu' alto: lookup hash + creazione del bound method (mitigato da cache e \code{LOAD\_METHOD}) &
+identico al C++: e' la stessa cosa scritta a mano \\
+\hline
+Metodi a runtime &
+no: layout fissato a compile time &
+no per una classe gia' caricata (solo agent, redefinition, proxy dinamici) &
+\textbf{si', sempre}: classi mutabili, \dunder{class} riassegnabile &
+si', se la vtable non e' \code{const} \\
+\hline
+Method hiding &
+si': name hiding degli overload, campi, membri non virtuali &
+si': campi, \code{static}, \code{private} &
+non esiste hiding, solo shadowing istanza/classe/MRO &
+non applicabile \\
+\hline
+Chiamare la base &
+\code{Base::f()} (chiamata non virtuale) &
+\code{super.f()} $\rightarrow$ \code{invokespecial}; \code{B.super.f()} per i default &
+\code{super().f()} (segue l'MRO!) oppure \code{A.f(self)} &
+\code{parent\_vt->f(self)} esplicito \\
+\hline
+\end{tabular}
+\end{center}
+\end{soluzione}
+
+\begin{soluzione}{E2 --- Virtuale per default oppure no}
+\label{sol:E2}
+Il C++ segue lo \textbf{zero-overhead principle}: chi non usa il polimorfismo
+non deve pagare ne' il vptr (che oltretutto romperebbe la \emph{layout
+compatibility} con il C e la natura POD dei tipi) ne' la chiamata indiretta. Per
+questo \code{virtual} e' opt-in. Il prezzo e' che rendere virtuale un metodo in
+un secondo momento e' un \textbf{cambio di ABI}, e che dimenticare
+\code{virtual \~{}Base()} e' undefined behavior.
+
+Java sceglie il default virtuale per uniformita' e perche' il costo e'
+recuperabile \emph{a runtime}: la JVM esegue \textbf{Class Hierarchy Analysis}
+(se una sola classe caricata implementa il metodo, la chiamata viene
+devirtualizzata e inlinata, con una \emph{guard} e una deottimizzazione se in
+seguito viene caricata una seconda implementazione) e usa \textbf{inline cache}
+monomorfiche o bimorfiche. E' un'ottimizzazione che il C++ puo' fare solo con
+LTO o con \code{final}, perche' la compilazione e' separata e l'insieme delle
+classi non e' chiuso.
+
+Il \textbf{fragile base class problem} taglia in entrambe le direzioni: con il
+default virtuale ogni metodo pubblico diventa un punto di estensione non
+intenzionale, e una modifica interna alla base puo' rompere sottoclassi che ne
+fanno l'override (il caso classico e' \code{HashSet.addAll} che internamente
+chiama \code{add}); con il default non virtuale il rischio si sposta
+sull'\emph{hiding} silenzioso, che il compilatore non segnala. Python porta il
+compromesso all'estremo opposto: massima flessibilita' (monkey patching, mixin
+cooperativi, classi mutabili), nessuna garanzia statica e il costo di dispatch
+piu' alto dei quattro.
+\end{soluzione}
+
+\begin{soluzione}{E3 --- Covarianza e controvarianza}
+\label{sol:E3}
+\textbf{In nessuno dei quattro linguaggi} \code{process(Derived)} sostituisce
+\code{process(Base)} in modo corretto, ma per ragioni diverse.
+
+In C++ e Java e' un \textbf{overload} con firma diversa: la derivata eredita
+comunque \code{process(Base)} e vi aggiunge un secondo metodo (in Java
+\code{@Override} darebbe errore; in C++ scatta anche il name hiding, A3). In
+Python la firma non fa parte dell'identita' del metodo, quindi
+\code{def process(self, d)} \emph{sostituisce} davvero quella della base: li'
+l'override avviene, ma \textbf{viola LSP} e i type checker (mypy, pyright) lo
+segnalano. In C il concetto non esiste.
+
+Il principio di sostituzione di Liskov richiede parametri
+\textbf{controvarianti} (la derivata deve accettare \emph{almeno} tutto cio' che
+accetta la base) e return \textbf{covarianti} (deve promettere \emph{almeno}
+quanto la base). Restringere il parametro a \code{Derived} e' covarianza dei
+parametri, e non e' type-safe: con
+\code{Base b = new Derived(); b.process(new Base());} il metodo riceverebbe un
+oggetto che non sa trattare. E' lo stesso buco degli array covarianti di Java
+(\code{ArrayStoreException}) e dei parametri covarianti di Eiffel, entrambi
+riconosciuti come errori di progetto.
+
+La controvarianza dei parametri sarebbe invece \emph{sicura}, ma quasi nessun
+linguaggio la implementa perche' complica enormemente l'overload resolution e
+nella pratica serve raramente: Python e TypeScript la accettano solo a livello
+di type checker, Scala e Kotlin la esprimono sui generici (\code{-T}, \code{in T})
+invece che sui parametri dei metodi.
+\end{soluzione}
+
+\begin{soluzione}{E4 --- Sette termini da non confondere}
+\label{sol:E4}
+\begin{itemize}
+    \item \textbf{Overriding} --- ridefinizione, in una sottoclasse, di un
+          metodo con la \emph{stessa firma}, risolta sul tipo \emph{dinamico}.
+          C++ (solo se \code{virtual}), Java (default), Python (sempre). In C
+          solo emulato a mano.
+    \item \textbf{Overloading} --- piu' funzioni con lo stesso nome e parametri
+          diversi, risolte a \emph{tempo di compilazione}. C++ e Java. In Python
+          \textbf{no}: l'ultima definizione vince, si emula con
+          \code{functools.singledispatch}. In C no.
+    \item \textbf{Hiding / shadowing} --- un nome in uno scope piu' interno
+          oscura quello esterno, \emph{senza} polimorfismo: campi e metodi
+          \code{static} in Java, name hiding degli overload e membri non
+          virtuali in C++. In Python esiste solo lo shadowing
+          istanza/classe/MRO.
+    \item \textbf{Dominanza} --- solo C++, con ereditarieta' virtuale: un membro
+          di una classe piu' derivata domina quello della base virtuale e
+          risolve un'ambiguita' che altrimenti sarebbe tale (A4).
+    \item \textbf{Bridge method} --- solo Java: metodo sintetico generato dal
+          compilatore per riconciliare l'erasure dei generici e i return
+          covarianti con la firma che la JVM richiede per il dispatch (B5).
+    \item \textbf{Thunk} --- C++ (e implementazioni C manuali): trampolino che
+          aggiusta \code{this} nell'ereditarieta' multipla o virtuale prima di
+          saltare all'override (A5).
+    \item \textbf{Final overrider} --- C++: per ogni funzione virtuale e ogni
+          classe, l'unica implementazione effettivamente installata in vtable;
+          se non e' unica il programma e' ill-formed. Il concetto esiste anche
+          in Java, ma e' sempre banale per via dell'ereditarieta' singola.
+\end{itemize}
+\end{soluzione}
+
+%==============================================================
+\chapter{Ripasso lampo}
+%==============================================================
+
+Le dieci affermazioni da avere in testa entrando all'esame.
+
+\begin{enumerate}
+    \item In C++ il tipo dinamico \emph{cresce} durante la costruzione e
+          \emph{decresce} durante la distruzione: virtuali chiamate da
+          ctor/dtor risolvono alla classe corrente. In Java il tipo dinamico e'
+          quello finale fin dall'inizio, per questo la stessa situazione produce
+          campi non ancora inizializzati.
+    \item Overload $=$ statico, override $=$ dinamico. Se cambia la firma, non
+          e' un override: e' un overload (e in C++ nasconde pure gli altri).
+    \item Sono risolti sul \textbf{tipo statico}: campi, metodi \code{static},
+          argomenti di default, controllo di accesso, scelta dell'overload,
+          aritmetica dei puntatori negli array. Sul tipo dinamico c'e' solo il
+          \emph{corpo} del metodo virtuale.
+    \item Il controllo di accesso e' ortogonale al dispatch: un
+          \code{private virtual} si puo' sovrascrivere ma non chiamare (NVI).
+    \item Distruttore virtuale ogni volta che si distrugge tramite puntatore
+          alla base; ma \code{delete[]} polimorfico resta UB comunque.
+    \item Base non virtuale $=$ incorporata, una copia per ramo, offset
+          costante. Base virtuale $=$ condivisa, una copia sola, offset letto a
+          runtime: percio' la costruisce la classe \emph{most derived} e percio'
+          \code{static\_cast} dalla base virtuale alla derivata e' vietato.
+    \item In Java i generici sono cancellati: i \emph{bridge method} sono la
+          toppa, e l'\emph{heap pollution} il suo effetto collaterale.
+    \item Nel diamante dei default method vince la classe (\emph{class wins});
+          fra interfacce non correlate non vince nessuno e si deve fare
+          l'override esplicito con \code{X.super.f()}.
+    \item In Python \code{super()} significa ``il prossimo nell'MRO
+          dell'oggetto'', non ``la superclasse''; i dunder impliciti si cercano
+          sul tipo, mai sull'istanza; il doppio underscore fa mangling e produce
+          metodi di fatto non virtuali.
+    \item In C il polimorfismo si scrive a mano: struct di puntatori a funzione
+          come vtable, sotto-oggetto base come primo membro, vptr installato dal
+          costruttore, \code{container\_of} al posto del downcast.
+    \item Liskov: parametri controvarianti (o invarianti), return covarianti,
+          precondizioni non piu' forti, postcondizioni non piu' deboli. Ogni
+          override che viola questo schema e' un bug in attesa.
+\end{enumerate}
+
+\end{document}

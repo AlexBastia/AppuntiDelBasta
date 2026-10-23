@@ -1,0 +1,101 @@
+#separator:tab
+#html:true
+#notetype:Basic
+#deck:AI Knowledge Representation::02 Ricerca informata
+
+Secondo i lucidi, in cosa consiste l'<b>intelligenza</b> di un sistema di ricerca?	Non nella capacità di cercare, ma nella capacità di usare <b>conoscenza sul problema</b> per ridurre/mitigare l'<b>esplosione combinatoria</b>.<br>Per un sistema con capacità di calcolo limitata, l'intelligenza è la scelta saggia di cosa fare dopo.
+
+Perché servono le <b>strategie informate</b>? (osservazione di Newell-Simon)	I metodi non informati, in uno spazio di profondità \( d \) e fattore di ramificazione \( b \), hanno complessità spaziale proporzionale a \( b^d \) per trovare un goal in una foglia: inaccettabile per problemi complessi.<br>Si espandono allora i nodi usando conoscenza euristica del dominio (<b>funzioni di valutazione</b>) per decidere quale espandere per primo.
+
+Cos'è una <b>funzione di valutazione</b> (evaluation function) e quale <b>trade-off</b> introduce?	Fornisce una stima computazionale dello sforzo per raggiungere lo stato finale.<br>Trade-off: il tempo speso a valutare un nodo (attività di <b>meta-livello</b>) deve essere ripagato da una riduzione dello spazio esplorato (livello <b>base</b>). Le strategie non informate non hanno attività di meta-livello.
+
+Quali <b>problemi</b> pongono le funzioni euristiche?	<ul><li>Come trovare la funzione di valutazione corretta, cioè scegliere i nodi più \"promettenti\"?</li><li>È difficile caratterizzare numericamente la conoscenza empirica sul problema.</li><li>Non sempre la scelta ovvia è la migliore (es. labirinto: muoversi sempre riducendo la distanza dall'uscita porta a una strada più lunga).</li></ul>
+
+Gioco dell'8: euristica \"numero di <b>tessere fuori posto</b>\". Stima sempre la distanza esatta?	No: è solo una stima. Nell'esempio dei lucidi l'euristica vale 3 ma servono <b>4 mosse</b> per arrivare al goal. L'euristica <b>sottostima</b>, non dà la distanza esatta.
+
+Cos'è la <b>ricerca best-first</b> e quali sono i suoi casi particolari?	Usa una funzione di valutazione che calcola un numero che rappresenta la <b>desiderabilità</b> dell'espansione di un nodo; si sceglie il nodo più desiderabile.<br>QueuingFn = inserisci i successori in ordine decrescente di desiderabilità.<br>Casi particolari: <b>ricerca greedy</b> (o hill climbing) e <b>A*</b>.
+
+Algoritmo della <b>ricerca greedy</b> (greedy best-first) passo per passo.	<ol><li>Sia L la lista dei nodi iniziali, ordinati per distanza dal goal (crescente)</li><li>Se L è vuota fallisci; altrimenti sia n il primo nodo di L</li><li>Se n è il goal restituisci la soluzione (il cammino)</li><li>Altrimenti rimuovi n da L, aggiungi tutti i figli di n e <b>riordina l'intera L</b> secondo la stima di distanza dal goal; torna al passo 2</li></ol>
+
+Qual è la <b>funzione di valutazione</b> della greedy best-first? Esempio nel problema della Romania.	\[ f(n) = h(n) \]dove \( h(n) \) è la stima del costo da \( n \) al goal. Es. \( h_{SLD}(n) \) = distanza in linea d'aria (straight-line distance) tra \( n \) e Bucarest.<br>Espande il nodo che <i>sembra</i> più vicino al goal.
+
+Proprietà della <b>greedy best-first</b>: completezza, ottimalità, complessità.	<ul><li><b>Non ottima</b> e può essere <b>incompleta</b> (stessa trappola della DFS)</li><li>Tempo nel caso peggiore: \( b^d \)</li><li>Spazio: tiene in memoria tutti i nodi, coincide con il tempo</li><li>Con una buona euristica tempo e spazio si riducono sostanzialmente</li></ul>
+
+Perché la <b>greedy</b> non è ottima?	Perché cerca di raggiungere il prima possibile un nodo con distanza 0 dal goal, non il nodo di profondità/costo minimo: ignora il costo già speso. Nell'esempio dei lucidi segue un ramo lungo con \( h=1 \) ripetuto (goal a profondità 6) invece del goal a profondità 3 sull'altro ramo.
+
+Funzione di valutazione di <b>A*</b>: definisci i termini.	\[ f(n) = g(n) + h'(n) \]<ul><li>\( g(n) \): costo (nei lucidi, profondità) per raggiungere \( n \) dalla radice</li><li>\( h'(n) \): stima della distanza da \( n \) al goal</li></ul>Si espandono i nodi per valori crescenti di \( f(n) \).
+
+Quale idea combina <b>A*</b>?	Cerca di unire i vantaggi della <b>ricerca in profondità</b> (efficienza) con quelli della <b>ricerca a costo uniforme</b> (ottimalità e completezza): non considera solo la distanza dal goal ma anche il costo per raggiungere il nodo.
+
+Algoritmo <b>A*</b> (versione su alberi) passo per passo.	<ol><li>Sia L la lista dei nodi iniziali</li><li>Se L è vuota fallisci; altrimenti sia n il nodo con \( g(n)+h'(n) \) minimo</li><li>Se n è il goal restituisci la soluzione (cammino)</li><li>Altrimenti rimuovi n da L e aggiungi a L tutti i figli di n etichettati con \( g+h' \); torna al passo 2</li></ol>
+
+Vero o falso: A* trova sempre il cammino ottimo.	<b>Falso</b>: dipende dalla funzione euristica. È garantito ottimo se \( h' \) è <b>ammissibile</b> (su alberi); su grafi con lista dei chiusi serve la <b>consistenza</b>.
+
+Definisci euristica <b>ottimistica / ammissibile</b> (admissible).	Sia \( h(n) \) la vera distanza da \( n \) al goal. \( h'(n) \) è ammissibile (ottimistica, feasible) se per ogni nodo:\[ h'(n) \le h(n) \]cioè non sovrastima mai il costo per raggiungere il goal.
+
+Enuncia il <b>teorema di ottimalità di A*</b>.	Se \( h'(n) \le h(n) \) per ogni nodo \( n \) (euristica ammissibile), allora A* trova sempre il cammino ottimo verso il goal.
+
+Euristiche ammissibili \"banali\": cosa succede con \( h'=h \) e con \( h'=0 \)?	<ul><li>\( h'=h \) (euristica perfetta): sempre ammissibile, e non servirebbe cercare</li><li>\( h'=0 \): sempre ammissibile; A* degenera in ricerca in <b>ampiezza</b> (con \( g \) = profondità), ovvero costo uniforme</li></ul>
+
+<b>Dimostrazione</b> dell'ottimalità di A*: impostazione.	Si suppone che sia stato generato un goal <b>sub-ottimo</b> \( G_2 \) che si trova nella coda. Sia \( n \) un nodo non espanso nella coda che sta sul cammino minimo verso il goal ottimo \( G \). Si mostra che \( n \) viene sempre scelto prima di \( G_2 \).
+
+<b>Dimostrazione</b> dell'ottimalità di A*: i passaggi.	<ul><li>\( f(G_2) = g(G_2) \) poiché \( h(G_2)=0 \)</li><li>\( g(G_2) > g(G) \) poiché \( G_2 \) è sub-ottimo</li><li>\( f(G) = g(G) \) poiché \( h(G)=0 \), quindi \( f(G_2) > f(G) \)</li><li>\( h'(n) \le h(n) \) (ammissibilità), quindi \( f(n) = g(n)+h'(n) \le g(n)+h(n) = f(G) \) (\( n \) è sul cammino ottimo)</li></ul>Dunque \( f(G_2) > f(G) \ge f(n) \): A* non selezionerà mai \( G_2 \) per l'espansione.
+
+Perché l'euristica \"<b>tessere fuori posto</b>\" del gioco dell'8 è ammissibile?	Perché ogni mossa può ridurre la distanza (numero di tessere fuori posto) al massimo di <b>una unità</b>: servono quindi almeno tante mosse quante sono le tessere fuori posto.
+
+Gioco dell'8: definisci le euristiche \( h_1 \) e \( h_2 \). Nell'esempio dei lucidi quanto valgono?	<ul><li>\( h_1 \) = numero di tessere fuori posto (\( h_1 = 7 \))</li><li>\( h_2 \) = somma delle distanze di ogni tessera dalla posizione finale, contate come somma di distanze orizzontali e verticali (<b>distanza di Manhattan</b>): \( h_2 = 2+3+3+2+4+2+0+2 = 18 \)</li></ul>Entrambe sono ammissibili.
+
+<b>Dominanza</b>: fra \( h_1 \) (tessere fuori posto) e \( h_2 \) (Manhattan), quale è meglio e perché?	\( h_2 \), perché \( h_1(n) \le h_2(n) \) per ogni nodo e sono entrambe ammissibili.<br>Regola: è meglio usare l'euristica con <b>valori più alti</b>, purché resti ottimistica (più vicina a \( h \), espande meno nodi).
+
+Come si <b>inventano euristiche</b>? (problemi rilassati, relaxed problems)	Spesso il costo di una soluzione <b>esatta</b> di un <b>problema rilassato</b> (con meno vincoli) è una buona euristica per il problema originale.<br>Se il problema è descritto in un linguaggio formale, i problemi rilassati si possono costruire <b>automaticamente</b>.
+
+Gioco dell'8: quali <b>problemi rilassati</b> si ottengono dalla regola \"una tessera può spostarsi da A a B se A è adiacente a B e B è vuota\"?	<ul><li>Si sposta da A a B se A è adiacente a B → <b>distanza di Manhattan</b></li><li>Si sposta da A a B se B è vuota</li><li>Si sposta da A a B in un solo salto → <b>tessere fuori posto</b></li></ul>
+
+Come combinare più euristiche ammissibili \( h_1, \dots, h_m \)?	Prendendo il massimo:\[ h'(n) = \max(h_1(n), h_2(n), \dots, h_m(n)) \]
+
+Perché bisogna passare <b>dagli alberi ai grafi</b> nella ricerca?	Finora si è assunto che lo spazio fosse un albero, quindi che non si potesse raggiungere lo stesso nodo da cammini diversi. L'assunzione è semplicistica (es. gioco dell'8): nei grafi gli stati ripetuti rendono l'albero di ricerca un albero con nodi ripetuti.
+
+Algoritmo <b>GRAPH-SEARCH</b>: cosa aggiunge rispetto alla ricerca su albero?	Un insieme <b>closed</b> degli stati già espansi. A ogni passo si estrae un nodo dalla frangia; se è goal si restituisce la soluzione; <b>se il suo stato non è in closed</b>, lo si aggiunge a closed e si inseriscono in frangia i suoi successori. Altrimenti il nodo viene scartato.
+
+<b>A* su grafi</b>: quali due liste usa?	<ul><li><b>Lista dei nodi aperti</b> (open, La): nodi ancora da esaminare</li><li><b>Lista dei nodi chiusi</b> (closed, Lc): nodi espansi, rimossi per evitare di riesaminarli</li></ul>Si assume che \( g(n) \) valuti la <b>distanza minima</b> di \( n \) dal nodo di partenza.
+
+<b>A* su grafi</b>: algoritmo completo, inclusa la gestione dei nodi già presenti in La o Lc.	<ol><li>La = nodi iniziali</li><li>Sia n il nodo di La con \( g+h' \) minimo; se La è vuota fallisci</li><li>Se n è goal, stop e restituisci il cammino</li><li>Altrimenti sposta n da La a Lc e aggiungi a La i figli di n con il loro costo dalla radice:<ul><li>figlio già in <b>La</b>: non aggiungerlo, ma aggiorna l'etichetta se il nuovo costo è minore</li><li>figlio già in <b>Lc</b>: non aggiungerlo a La, ma se il costo è migliore aggiorna il suo costo e quello di figli e discendenti</li></ul></li><li>Torna al passo 2</li></ol>
+
+Definisci euristica <b>consistente</b> (monotona, consistent/monotone).	Per ogni nodo \( n \) e ogni successore \( n' \) generato da un'azione \( a \):\[ h(n) \le c(n,a,n') + h(n') \]e \( h(n) = 0 \) se lo stato è goal (disuguaglianza triangolare).
+
+Dimostra che con euristica <b>consistente</b> \( f \) non decresce lungo un cammino.	\[ f(n') = g(n') + h(n') = g(n) + c(n,a,n') + h(n') \ge g(n) + h(n) = f(n) \]usando \( h(n) \le c(n,a,n') + h(n') \). Quindi \( f(n) \) non decresce mai lungo un cammino.
+
+Teorema sull'<b>ottimalità di A* con GRAPH-SEARCH</b>.	Se \( h(n) \) è <b>consistente</b>, allora A* che usa GRAPH-SEARCH è ottimo. Con la monotonicità si ha la garanzia di trovare il cammino più breve dalla radice al goal.
+
+Differenza tra condizione per l'ottimalità di A* su <b>alberi</b> e su <b>grafi</b>?	<ul><li>Albero: basta un'euristica <b>ammissibile</b> (\( h' \le h \))</li><li>Grafo (GRAPH-SEARCH con lista dei chiusi, senza riaperture): serve un'euristica <b>consistente</b></li></ul>In alternativa, su grafi si può modificare l'algoritmo per aggiornare e propagare \( g \) quando si trova un cammino migliore verso un nodo già raggiunto.
+
+Esempio A* dei lucidi con euristica <b>non ammissibile</b>: perché A* non trova il goal ottimo?	Radice \( 0+3 \); a sinistra una catena con \( h' \) che resta a 1 (nodi \( 1+2, 2+1, 3+1, 4+1, 5+1 \), goal a profondità 6); a destra \( 1+4 \), \( 2+1 \), goal \( 3+0 \). Il ramo destro inizia con \( f=5 \) e viene esplorato tardi: se il nodo etichettato 5 a sinistra fosse il goal, verrebbe raggiunto <b>prima</b> del goal ottimo a destra. L'euristica sovrastima (es. \( h'=4 \) a distanza vera 2).
+
+Gioco dell'8 con A* e \( h' \) = tessere fuori posto: come si calcola \( f \) del primo livello?	\( f(n) = g(n) + h'(n) \), con \( g \) = profondità e \( h' \) = numero di tessere fuori posto. La radice ha \( f = 0+4 \); i tre figli hanno \( f = 1+6 \), \( 1+4 \), \( 1+6 \): si espande quello con \( f=5 \).
+
+<b>Procedura</b> per verificare se un'euristica è <b>ammissibile</b> su un grafo dato.	<ol><li>Per ogni nodo \( n \) calcola il costo vero minimo \( h^*(n) \) verso il goal (es. con Dijkstra o a mano)</li><li>Controlla \( h(n) \le h^*(n) \) per <b>ogni</b> nodo</li></ol>Basta un nodo che sovrastima per renderla non ammissibile.
+
+<b>Procedura</b> per verificare se un'euristica è <b>consistente</b> su un grafo dato (non orientato).	Per <b>ogni arco</b> \( (n,n') \) di costo \( c \) controlla \( h(n) \le c + h(n') \); se il grafo non è orientato verifica anche \( h(n') \le c + h(n) \). Verifica \( h(\text{goal}) = 0 \).<br>Basta un arco che viola la disuguaglianza per renderla inconsistente.
+
+Trappola tipica: un'euristica <b>ammissibile</b> è sempre <b>consistente</b>?	<b>No</b>. Esempio dell'esercizio 5: l'euristica è ammissibile ma non consistente (es. \( h(A)=5 > c(A,C)+h(C) = 3+1 \)), e A* su grafi restituisce un cammino non ottimo.
+
+Esercizio 5: grafo non orientato con archi A-B 1, A-C 3, B-C 1, B-G 9, C-G 5, C-H 2, H-G 1; euristiche \( h \): A=5, B=4, C=1, H=1, G=0. L'euristica è <b>ammissibile</b>? È <b>consistente</b>?	Costi veri: A=5 (A-B-C-H-G), B=4, C=3, H=1, G=0 → \( h \le h^* \) ovunque: <b>ammissibile</b>.<br><b>Non consistente</b>: \( h(A)=5 > 3 + h(C) = 4 \); \( h(B)=4 > 1 + h(C) = 2 \).
+
+Esercizio 5 (stesso grafo, start A, goal G): traccia di <b>A* su grafi</b> (Russell-Norvig) e cammino trovato.	<ul><li>Espandi A: C \( f=3+1=4 \), B \( f=1+4=5 \)</li><li>Espandi C (cammino AC): G \( f=8 \), H \( f=3+2+1=6 \), B \( f=8 \)</li><li>Espandi B (AB): G \( f=1+9=10 \); C è già chiuso</li><li>Espandi H (ACH): G \( f=3+2+1+0=6 \)</li><li>Seleziona G: cammino <b>A-C-H-G</b>, costo <b>6</b></li></ul>Non ottimo: A-B-C-H-G costa <b>5</b>.
+
+Esercizio 5: perché A* su grafi trova A-C-H-G (costo 6) invece di A-B-C-H-G (costo 5)? Come si rimedia?	Perché l'euristica non è <b>consistente</b>: C viene chiuso con \( g=3 \) prima di scoprire il cammino A-B-C con \( g=2 \), e non viene riaperto.<br>Rimedi:<ol><li>scegliere un'euristica <b>consistente</b>, oppure</li><li>modificare l'algoritmo aggiornando \( g \) ogni volta che un nodo è raggiunto con un cammino migliore e propagando l'aggiornamento</li></ol>
+
+Esercizio 5: come si <b>corregge l'euristica</b> e che traccia ottiene A*?	Ponendo \( h(C) = 3 \) l'euristica diventa consistente.<ol><li>La=[A], Lc=[]</li><li>La=[(AB,5),(AC,6)], Lc=[A]</li><li>La=[(ABC,5),(AC,6),(ABG,10)], Lc=[A,B]</li><li>La=[(ABCH,5),(AC,6),(ABCG,7),(ABG,10)], Lc=[A,B,C]</li><li>La=[(ABCHG,5),…], Lc=[A,B,C,H]</li><li>Si seleziona G: cammino ottimo A-B-C-H-G, costo 5</li></ol>
+
+Esercizio 4 (puzzle con 3 tessere nere N, 3 bianche B e un blank: NNNBBB_). Operatori e costi? Goal?	<ul><li>Una tessera si sposta nel blank adiacente: costo 1</li><li>Una tessera salta nel blank scavalcando al massimo due tessere: costo = distanza percorsa (tessere scavalcate + 1)</li></ul>Goal: tutte le tessere <b>bianche a sinistra</b> delle nere, indipendentemente dalla posizione del blank.
+
+Esercizio 4: euristica \( h'_1 \) = <b>tessere fuori posto</b> (nere fuori posto se in posizioni 1-3, bianche se in 5-7). Quanto vale nello stato iniziale NNNBBB_? È ammissibile?	\( h'_1 = 5 \) (3 nere in 1-3 + 2 bianche in 5-6).<br>È ammissibile: ogni tessera fuori posto deve muoversi almeno una volta e ogni mossa costa almeno 1. Con \( h'_1 \) A* espande ad es. \( f=1+5 \), \( f=2+5 \), \( f=3+6 \) al primo livello.
+
+Esercizio 4: euristica \( h'_2 \) = <b>distanza delle tessere nere dalle posizioni 4, 5, 6</b>. È ammissibile? Come si corregge?	<b>No</b>: nello stato goal BBB_NNN vale \( h=0 \) ma \( h'_2 = 3 \), quindi sovrastima.<br>Correzione: usare la <b>distanza minima</b> tra le tessere nere e una qualsiasi posizione goal, chiamata \( h'_3 \).
+
+Trappola tipica nel definire un'euristica: cosa verificare <b>sempre</b> negli stati goal?	Che \( h(\text{goal}) = 0 \) per <b>tutti</b> gli stati goal (es. esercizio 4: se il goal ammette più configurazioni, un'euristica che misura la distanza da una sola configurazione, come \( h'_2 \), può valere più di 0 in un goal e quindi non essere ammissibile).
+
+Su un problema con <b>costi non uniformi</b> e una buona euristica ammissibile, quale strategia scegliere? E se non c'è euristica?	Con euristica ammissibile (consistente se si lavora su grafi): <b>A*</b>, ottimo e più efficiente.<br>Senza euristica: <b>costo uniforme</b> (ottimo con costi non uniformi), che equivale ad A* con \( h'=0 \). Evitare la <b>greedy</b> se serve l'ottimo.
+
+Trappola tipica: confondere <b>greedy best-first</b> e <b>A*</b>. Cosa li distingue?	<ul><li>Greedy: \( f(n) = h(n) \), guarda solo la distanza stimata dal goal → non ottima, può essere incompleta</li><li>A*: \( f(n) = g(n) + h'(n) \), considera anche il costo già speso → ottima con \( h' \) ammissibile (consistente su grafi)</li></ul>
+

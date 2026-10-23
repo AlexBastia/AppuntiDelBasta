@@ -1,0 +1,62 @@
+#separator:tab
+#html:true
+#notetype:Basic
+#deck:Combinatoria Algebrica::Restrizione e Induzione
+
+Che cos'e' lo <b>stabilizzatore</b> di un sottospazio \(W\) in una rappresentazione \((V, \rho)\) di \(G\)?	Lo <b>stabilizzatore</b> e' il sottogruppo:<br>\[H := \{g \in G \mid \rho(g)W \subseteq W\}\]Si verifica che \(H \leq G\) e che \(W\) e' una rappresentazione di \(H\).
+
+Come si costruisce la <b>rappresentazione indotta</b> \(\mathrm{Ind}_H^G W\)?	Si forma la somma di tutti i traslati di \(W\) tramite \(G\):<br>\[U := \sum_{g \in G} \rho(g)W\]<b>Osservazione chiave</b>: \(\rho(g)W\) dipende solo dal laterale \(gH\), e laterali distinti danno sottospazi con intersezione \(\{0\}\). La somma e' quindi diretta:<br>\[U = \bigoplus_{[g] \in G/H} \rho(g)W =: \mathrm{Ind}_H^G W\]
+
+Perche' \(\rho(g)W\) dipende solo dal laterale \(gH\)?	Se \(g' \in gH\), allora \(g' = gh\) per qualche \(h \in H\), quindi:<br>\[\rho(g')W = \rho(gh)W = \rho(g)\rho(h)W = \rho(g)W\]perche' \(\rho(h)W = W\) per definizione di \(H\).
+
+Perche' la rappresentazione indotta \(\mathrm{Ind}_H^G W\) e' <b>\(G\)-stabile</b>?	Per ogni \(h \in G\) e ogni addendo \(\rho(g)W\):<br>\[\rho(h) \cdot \rho(g)W = \rho(hg)W\]che e' ancora un addendo di \(U\) (quello del laterale \([hg]\)).
+
+Qual e' la <b>dimensione</b> di \(\mathrm{Ind}_H^G W\)?	\[\dim(\mathrm{Ind}_H^G W) = |G/H| \cdot \dim W = \frac{|G|}{|H|} \cdot \dim W\]
+
+Enunciato del <b>bound sulla dimensione</b> delle irriducibili tramite un sottogruppo abeliano.	<b>Teorema</b>: se \(G\) e' finito e \(A \leq G\) e' un sottogruppo abeliano, allora ogni rappresentazione irriducibile \(V\) di \(G\) soddisfa:<br>\[\dim V \leq \frac{|G|}{|A|}\]
+
+Perche' ogni irriducibile di un gruppo abeliano ha dimensione 1?	Per il Corollario di Schur: ogni \(\rho(a)\) e' un'omotetia (multiplo scalare dell'identita'), quindi ogni sottospazio 1-dimensionale e' stabile, il che forza ogni irriducibile ad avere dimensione 1.
+
+Schema della dimostrazione di \(\dim V \leq |G|/|A|\) (sottogruppo abeliano).	<ol><li>Restringi \(V\) ad \(A\); per Maschke si decompone in irriducibili di \(A\), ciascuna di dimensione 1. Prendi \(W \leq V\) con \(\dim W = 1\) sotto-\(A\)-modulo.</li><li>Forma \(U = \bigoplus_{[g] \in G/A} \rho(g)W \subseteq V\); \(U\) e' \(G\)-stabile con \(\dim U \leq |G/A|\).</li><li>Poiche' \(V\) e' irriducibile e \(U \neq 0\), \(V = U\), quindi \(\dim V \leq |G|/|A|\). \(\square\)</li></ol>
+
+<b>Corollario</b>: bound sulla dimensione delle irriducibili di \(D_n\).	Ogni rappresentazione irriducibile di \(D_n\) ha dimensione \(\leq 2\).<br><br><b>Dim:</b> \(D_n\) contiene il sottogruppo ciclico \(C_n\) di indice \([D_n : C_n] = 2\), quindi:<br>\[\dim V \leq \frac{|D_n|}{|C_n|} = 2\]
+
+Come agisce \(g \in G\) sulla rappresentazione indotta \(V = \bigoplus_{r \in R} rW\) tramite rappresentanti dei laterali?	Dato \(r \in R\), si scrive \(gr = r_g \cdot h\) con \(r_g \in R\) e \(h \in H\). Allora \(g\):<br><ul><li><b>permuta gli addendi</b>: manda \(rW\) in \(r_g W\);</li><li><b>agisce all'interno di \(W\)</b>: tramite \(\sigma(h)\).</li></ul>
+
+Cosa si ottiene con \(H = \{e\}\) e \(W\) la rappresentazione banale?	\[\mathrm{Ind}_{\{e\}}^G W \cong \mathbb{C}[G]\]la <b>rappresentazione regolare</b> di \(G\): ci sono \(|G|\) laterali (uno per elemento), ciascuno con una copia di \(\mathbb{C}\).
+
+Descrivi \(\mathrm{Ind}_{C_4}^{D_4} W\) per \(W\) la rappresentazione di \(C_4\) data da \(R \cdot z = iz\).	I laterali sono \(D_4/C_4 = \{C_4,\, sC_4\}\) con rappresentanti \(\{e, s\}\), quindi:<br>\[V = W \oplus sW \quad \text{con base } \{e_1, se_1\}\]<b>Azione di \(R\)</b> (usando \(SR = R^{-1}S\)):<br>\[\rho(R) = \begin{pmatrix} i & 0 \\ 0 & -i \end{pmatrix}\]<b>Azione di \(S\)</b>:<br>\[\rho(S) = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}\]Quindi \(V\) e' l'irriducibile naturale 2-dimensionale di \(D_4\).
+
+Definizione di <b>prodotto tensoriale</b> \(V \otimes_A W\) di due \(A\)-moduli.	E' il quoziente del modulo libero generato dai simboli \(\{v \otimes w\}\) per le relazioni che rendono \(\otimes\) \(A\)-bilineare: gli elementi di \(A\) possono attraversare il tensore,<br>\[a \cdot v \otimes w = v \otimes a \cdot w\]
+
+Dai tre esempi di prodotto tensoriale su un anello.	<ol><li>\(\mathbb{Z}^n \otimes_\mathbb{Z} \mathbb{Q} \cong \mathbb{Q}^n\): immersione degli interi nei razionali.</li><li>\((\mathbb{Z}/n\mathbb{Z}) \otimes_\mathbb{Z} \mathbb{Q} = \{0\}\): gli elementi di torsione si annullano.</li><li>\(\mathbb{R}^n \otimes_\mathbb{R} \mathbb{C} \cong \mathbb{C}^n\): estensione degli scalari da \(\mathbb{R}\) a \(\mathbb{C}\).</li></ol>
+
+Definizione della <b>rappresentazione indotta tramite prodotto tensoriale</b>.	\[\mathrm{Ind}_H^G W := \mathbb{C}[G] \otimes_{\mathbb{C}[H]} W\]dove \(\mathbb{C}[G]\) e' visto come \(\mathbb{C}[H]\)-modulo a destra. L'azione di \(G\) e':<br>\[g \cdot (t \otimes w) = gt \otimes w, \quad g \in G,\; t \in \mathbb{C}[G],\; w \in W\]
+
+Cosa significa che \(\mathbb{C}[G]\) e' un \(\mathbb{C}[H]\)-<b>modulo destro</b> nella definizione tensoriale dell'indotta?	L'azione destra e' data dalla moltiplicazione a destra: \(t \cdot h = th\) per \(t \in \mathbb{C}[G]\), \(h \in H\). Questo permette di definire \(\mathbb{C}[G] \otimes_{\mathbb{C}[H]} W\), dove \(H\) agisce a destra su \(\mathbb{C}[G]\) e a sinistra su \(W\).
+
+Come si manifesta il <b>twisting di \(H\)</b> nella definizione tensoriale \(\mathrm{Ind}_H^G W = \mathbb{C}[G] \otimes_{\mathbb{C}[H]} W\)?	Elementi dello stesso laterale agiscono allo stesso modo a meno dell'azione di \(H\) su \(W\): se \(g' = gh\) allora:<br>\[g'(t \otimes w) = ght \otimes w = gt \otimes hw\]La parte di \(H\) "twista" \(W\) mentre la parte del laterale permuta gli addendi.
+
+Enunciato del teorema di equivalenza tra le due definizioni di rappresentazione indotta.	Sia \(H \leq G\) e \((W, \sigma)\) rappresentazione di \(H\). Le due costruzioni sono isomorfe come \(G\)-moduli:<br>\[\mathbb{C}[G] \otimes_{\mathbb{C}[H]} W \;\cong\; \bigoplus_{r \in R} rW\]per qualsiasi sistema completo di rappresentanti \(R\) per \(G/H\).
+
+Schema della dimostrazione di \(\mathbb{C}[G] \otimes_{\mathbb{C}[H]} W \cong \bigoplus_{r \in R} rW\).	<ol><li><b>Decomposizione:</b> come \(\mathbb{C}[H]\)-modulo destro, \(\mathbb{C}[G] = \bigoplus_{r \in R} r \cdot \mathbb{C}[H]\).</li><li><b>Distribuzione del tensore:</b> \(\mathbb{C}[G] \otimes_{\mathbb{C}[H]} W \cong \bigoplus_r (r \cdot \mathbb{C}[H] \otimes_{\mathbb{C}[H]} W)\).</li><li><b>Ogni addendo \(\cong W\):</b> la mappa \(rh \otimes w \mapsto \sigma(h)w\) e' un isomorfismo.</li><li><b>Compatibilita' dell'azione:</b> \(g \cdot (r \otimes w) = r' \otimes \sigma(h_{g,r})w\) corrisponde esattamente all'azione nella costruzione per somma diretta.</li></ol>
+
+Proprieta' principali della rappresentazione indotta.	<ol><li>\(\dim(\mathrm{Ind}_H^G W) = \dim W \cdot |G|/|H|\)</li><li><b>Transitivita'</b>: se \(K \leq H \leq G\), allora:<br>\[\mathrm{Ind}_H^G(\mathrm{Ind}_K^H W) \cong \mathrm{Ind}_K^G W\]</li></ol>
+
+Quali sono i due modi per <b>costruire rappresentazioni</b> di \(G\) a partire da sottogruppi?	<ol><li><b>Discendere</b>: se \(N \trianglelefteq G\), un \(G/N\)-modulo diventa \(G\)-modulo componendo con \(G \to G/N\).</li><li><b>Salire</b>: se \(H \leq G\), un \(H\)-modulo diventa \(G\)-modulo tramite \(\mathrm{Ind}_H^G\).</li></ol>
+
+Formula per il <b>carattere della rappresentazione indotta</b>.	Per ogni \(g \in G\):<br>\[\chi_{\mathrm{Ind}_H^G W}(g) = \frac{1}{|H|} \sum_{\substack{s \in G \\ s^{-1}gs \in H}} \chi_W(s^{-1}gs)\]
+
+Perche' nella formula del carattere dell'indotta contribuiscono solo gli \(s\) con \(s^{-1}gs \in H\)?	Nella matrice di \(\rho(g)\) scritta nella base \(\bigsqcup_{r \in R}(\text{base di }rW)\), il blocco di \(rW\) e' diagonale solo quando \(g\) manda \(rW\) in se' stesso, cioe' \(gr = rh\) per qualche \(h \in H\), cioe' \(r^{-1}gr \in H\). Altrimenti il blocco e' fuori diagonale e contribuisce 0 alla traccia.
+
+Come si definisce la <b>restrizione</b> \(\mathrm{Res}_H^G V\) di una rappresentazione di \(G\) ad \(H\)?	\(\mathrm{Res}_H^G V\) e' la rappresentazione di \(H\) ottenuta componendo:<br>\[H \hookrightarrow G \xrightarrow{\rho} GL(V)\]Ha carattere \(\chi_{\mathrm{Res}} = \chi_V\big|_H\) (la restrizione di \(\chi_V\) agli elementi di \(H\)).
+
+Enunciato della <b>Reciprocita' di Frobenius</b>.	Siano \(H \leq G\), \(W\) una rappresentazione di \(H\) e \(U\) una rappresentazione di \(G\). Allora:<br>\[\langle \chi_{\mathrm{Ind}_H^G W},\; \chi_U \rangle_G \;=\; \langle \chi_W,\; \chi_{\mathrm{Res}_H^G U} \rangle_H\]
+
+Qual e' il <b>cambio di variabili chiave</b> nella dimostrazione della Reciprocita' di Frobenius?	Si pone \(s^{-1}gs = h \in H\), cioe' \(g = shs^{-1}\). Poiche' \(\chi_U\) e' una funzione centrale, \(\overline{\chi_U(shs^{-1})} = \overline{\chi_U(h)}\). La doppia somma su \((g, s)\) con \(s^{-1}gs \in H\) diventa somma su tutti gli \((s, h) \in G \times H\); sommando su \(s\) appare un fattore \(|G|\) che si cancella.
+
+Interpretazione informale della Reciprocita' di Frobenius.	Indurre da \(H\) a \(G\) (salire) e restringere da \(G\) a \(H\) (scendere) sono operazioni <b>aggiunte</b>: quanto un \(H\)-modulo indotto "assomiglia" a una rappresentazione di \(G\) e' uguale a quanto quella rappresentazione "assomiglia" all'\(H\)-modulo quando viene ristretta.
+
+Verifica con Frobenius che \(V_{\text{nat}} \cong \mathrm{Ind}_{C_4}^{D_4} W\) per \(W: R \mapsto iz\).	Per Reciprocita' di Frobenius:<br>\[\langle \chi_V, \mathrm{Ind}\,\chi_W \rangle_{D_4} = \langle \mathrm{Res}_{C_4} \chi_V, \chi_W \rangle_{C_4}\]Valori su \(\{e, R, R^2, R^3\}\): \(\chi_V = (2, 0, -2, 0)\), \(\chi_W = (1, i, -1, -i)\).<br>\[= \frac{1}{4}\bigl(2{\cdot}1 + 0{\cdot}(-i) + (-2){\cdot}(-1) + 0{\cdot}i\bigr) = \frac{1}{4}(2+0+2+0) = 1\]Quindi \(V \cong \mathrm{Ind}_{C_4}^{D_4} W\). \(\checkmark\)
+
+Cosa significa \(\langle \chi_V, \mathrm{Ind}\,\chi_W \rangle_G = 1\)?	\(V\) e \(\mathrm{Ind}\,W\) sono isomorfe come \(G\)-rappresentazioni: la molteplicita' di \(V\) nella decomposizione di \(\mathrm{Ind}\,W\) in irriducibili e' esattamente 1.

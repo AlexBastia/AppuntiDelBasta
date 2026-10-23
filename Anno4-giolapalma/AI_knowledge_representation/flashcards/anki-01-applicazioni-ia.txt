@@ -1,0 +1,75 @@
+#separator:tab
+#html:true
+#notetype:Basic
+#deck:AI Knowledge Representation::01 Applicazioni dell'IA
+
+Quali sono le principali <b>aree applicative dell'IA</b> presentate nell'introduzione, con le loro caratteristiche?	<ul><li><b>Decision support systems</b>: molto specializzati su un dominio; knowledge based e controllo</li><li><b>Sistemi formali e giochi</b> (scacchi/Go): numero limitato di mosse e spazio; regole esplicite e non ambigue</li><li><b>Linguaggio naturale / question answering</b> (Watson): ambiguo, implicito, dipendente dal contesto; basato su stati cognitivi</li><li><b>Visione</b> (ImageNet): riconoscimento/classificazione di oggetti; incertezza e rumore (simbolico/sub-simbolico)</li><li><b>Robotica e sistemi autonomi</b>: agenti in un ambiente; decisioni dinamiche e in tempo reale</li></ul>
+
+Cosa afferma la citazione di <b>Feigenbaum</b> sui <b>knowledge based systems</b>?	"Il potere di un sistema intelligente deriva principalmente dalla <b>quantità e qualità della conoscenza</b> che ha sul problema."<br>Applicazioni: pianificazione, predizione, diagnosi.
+
+Qual è il <b>collo di bottiglia</b> dei knowledge based systems (KBS) e quali problemi presenta?	Il <b>knowledge acquisition</b> (acquisizione della conoscenza). Problemi:<ul><li>l'esperto umano non può essere sostituito, ma va supportato in compiti lunghi e ripetitivi</li><li>fonti di conoscenza diverse, spesso in contrasto e incomplete</li><li>la conoscenza cambia nel tempo</li><li>la conoscenza non è sempre esplicita (va scoperta)</li></ul>→ si ricorre a tecniche di <b>learning e data mining</b>.
+
+Cos'è un <b>decision support system (DSS)</b>?	Sistema che <b>supporta, senza sostituire</b>, gli esperti umani nel processo decisionale tramite generazione, valutazione e visualizzazione di scenari e predizioni.<br>Gradi di supporto: analisi dei dati per descrizione, diagnosi, predizione, ottimizzazione.
+
+Che differenza c'è tra <b>decision support</b> e <b>decision automation</b>?	La decision automation è un passo oltre: <b>esclude l'intervento umano</b> (la decisione/azione è presa dal sistema), mentre il decision support lascia la decisione all'umano.
+
+Quali sono i quattro tipi di <b>analytics</b> (modello Gartner) e a quale domanda risponde ciascuno?	<ul><li><b>Descriptive</b>: What happened? (cosa è successo)</li><li><b>Diagnostic</b>: Why did it happen? (perché)</li><li><b>Predictive</b>: What will happen? (cosa succederà)</li><li><b>Prescriptive</b>: What should I do? (cosa devo fare)</li></ul>Andando da descriptive a prescriptive cresce valore e complessità e diminuisce l'input umano richiesto per arrivare a decisione e azione; la prescriptive può portare a decision automation.
+
+Secondo Gartner (2013), qual è la <b>diffusione</b> nelle industrie dei quattro tipi di analytics?	<ul><li>Descriptive: <b>99%</b> (adottata da quasi tutti)</li><li>Diagnostic: <b>30%</b> (minoranze)</li><li>Predictive: <b>13%</b> (ancora pochi)</li><li>Prescriptive: <b>3%</b> (pochissimi early adopters)</li></ul>
+
+Cos'è la <b>descriptive analytics</b> e quali strumenti usa?	Usa i dati per <b>descrivere il sistema</b>:<ul><li>dashboard di visualizzazione</li><li>business intelligence</li><li>report statistici</li><li>dati geo-referenziati</li></ul>L'intervento umano è ancora <b>largamente necessario</b>.<br>Esempi Gartner: report sull'operatività dell'impianto, report dei guasti, report di vendita, statistiche di servizio.
+
+Descrivi gli <b>esempi di descriptive analytics</b> visti a lezione.	<ul><li><b>Configurazione di un processo produttivo con vincoli ambientali</b>: per ogni componente si caratterizzano consumo di energia, consumo d'acqua, emissioni in aria, emissioni in acqua, tempo di lavoro, costo (dati statici: caratterizzazione del sistema)</li><li><b>Energy baseline</b> (progetto Seaside): confronto tra baseline e consumo misurato con differenza cumulata e generazione di alert (es. 0.5 MWh)</li></ul>
+
+Cos'è la <b>diagnostic analytics</b>?	Usa i dati per <b>capire le cause</b>: fault diagnosis, root cause analysis.<br>Per arrivare alle decisioni l'intervento umano è ancora largamente necessario.<br>Esempi Gartner: gestione allarmi, identificazione della causa radice, fault analysis.
+
+Descrivi l'<b>esempio di diagnostic analytics</b> su un impianto industriale.	Sistema che analizza i dati di un impianto (dati dai sensori + dati sui guasti) per:<ul><li>identificare le serie temporali che precedono un guasto</li><li>classificare le serie temporali prima del guasto per identificare il tipo di guasto</li><li>identificare i sensori più informativi</li><li>creare modelli per identificare le cause</li></ul>
+
+Cos'è la <b>predictive analytics</b> e quali tecniche usa?	Usa i dati per <b>predire l'evoluzione futura</b> del sistema:<ul><li>sistemi di simulazione</li><li>predizione di serie temporali</li><li>machine learning (classificazione e regressione)</li></ul>Per arrivare a decisioni serve una <b>what-if analysis</b>.<br>Esempi Gartner: load forecasting, fault prediction, previsione dei prezzi e della domanda.
+
+Descrivi l'esempio di predictive analytics sul <b>consumo/produzione di un impianto fotovoltaico</b>.	<b>Input</b>: serie temporale storica della produzione passata, previsioni meteo, giorno/mese/anno.<br><b>Output</b>: produzione futura.
+
+Descrivi l'esempio di predictive analytics sull'<b>adozione del fotovoltaico</b> in base agli incentivi.	Modello (ad agenti):<ul><li>agenti divisi per tipo</li><li>agenti caratterizzati da aspetti sociali ed economici</li><li>dati passati (incentivi/adozione)</li></ul><b>Output</b>: un modello simulativo.
+
+Cos'è la <b>prescriptive analytics</b> e quali tecniche usa?	Supporto decisionale che indica cosa fare:<ul><li>sistemi di <b>ottimizzazione</b> (mono e multi-obiettivo)</li><li>risolutori di problemi <b>combinatori</b></li><li>risolutori <b>basati su logica</b></li></ul>Per decidere occorre <b>selezionare lo scenario preferito</b>.<br>Esempi Gartner: sistemi self-learning, ottimizzazione del controllo, load balancing, ri-pianificazione della produzione.
+
+Descrivi l'esempio di <b>prescriptive analytics</b> per gli incentivi al fotovoltaico.	DSS che propone incentivi per favorire una data adozione di PV.<br>Sistema di ottimizzazione che prende in input:<ul><li>il modello simulatore</li><li>vincoli economici/finanziari/territoriali</li><li>funzioni obiettivo</li></ul><b>Output</b>: scenari alternativi e i loro impatti.
+
+Quali sono i <b>domini applicativi dei DSS</b>?	<ul><li><b>Industria</b>: manifatturiero, automotive, avionica, food, energia…</li><li><b>Settore pubblico</b>: sanità, mobilità, pubblica amministrazione</li><li><b>Sfide globali</b>: cambiamento climatico, povertà, riduzione dei conflitti, salute ambientale, mitigazione dei disastri naturali</li></ul>
+
+Cos'è <b>Deep Blue</b> e quale risultato ha ottenuto?	Sistema IBM per gli scacchi (IBM Risk 2000): valuta <b>200 milioni di mosse al secondo</b> e conosce <b>600.000 aperture</b>.<br>Nel <b>1997</b> batte <b>Kasparov</b>. Domanda aperta: è intelligenza?<br>Chomsky: "un programma che batte un grande maestro a scacchi è interessante quanto un bulldozer che vince una gara olimpica di sollevamento pesi".
+
+Come funziona l'algoritmo <b>minimax</b> e qual è il suo limite?	Definisce la strategia ottima per un giocatore (<b>Max</b>) suggerendo la mossa migliore, sotto l'ipotesi che l'avversario (<b>Min</b>) giochi al meglio: ai livelli Max si sceglie il massimo dei valori dei figli, ai livelli Min il minimo.<br>Limite: spazio del problema enorme (prima mossa 400 alternative, seconda 144.000…) → <b>esplosione combinatoria</b> (approccio a forza bruta). Serve una <b>funzione di valutazione</b> della posizione dei pezzi e della posizione complessiva sulla scacchiera.
+
+Cos'è <b>AlphaGo</b> e quali tecniche combina?	Sviluppato da <b>DeepMind</b> (acquisita da Google nel 2014; aveva imparato a giocare 49 videogiochi Atari 2600 meglio degli umani).<br>Combina <b>deep learning e tecniche simboliche</b> (IA classica).<br><b>Marzo 2016</b>: batte <b>Lee Sedol</b>, campione mondiale di Go.<br>Go molto più complesso degli scacchi: \(10^{170}\) posizioni possibili contro \(10^{50}\).<br>2017: IJCAI Marvin Minsky Medal, per la combinazione di tecniche classiche di IA e machine learning allo stato dell'arte.
+
+Cosa illustra l'esempio della DNN che impara a "scavare un tunnel" (<b>Learning but not deep reasoning</b>)?	Dopo 240 minuti di training il sistema capisce che scavare un tunnel attraverso il muro è la tecnica più efficace (Atari), MA non sa cosa sia un tunnel né un muro: ha imparato <b>contingenze in scenari specifici</b>, non ragionamento.
+
+Cos'è <b>Watson</b> (IBM) e cosa ha fatto a Jeopardy!?	Supercomputer IBM per <b>question answering e NLP</b>. A Jeopardy! (quiz USA dal 1964, si dà la risposta/indizio e bisogna formulare la domanda) nel <b>febbraio 2011</b> batte Ken Jennings (record di 74 vittorie consecutive) e Brad Rutter (2 vittorie e 1 pareggio per Watson).<br>Conoscenza costruita da testi, enciclopedie e web. Grande come 10 frigoriferi, 80 trilioni di operazioni al secondo, legge 200 milioni di pagine in 3 secondi.<br>Sviluppo: ~1 milione di righe di codice, 5 anni, 20 persone; memoria 20 TB.
+
+Quali sono i due compiti di Watson e cosa insegna sull'intelligenza?	Intelligenza = combinazione di <b>algoritmi, conoscenza</b> e di come essa è memorizzata, usata, organizzata.<br>Due compiti: <b>text generation</b> (umani meglio del computer) e <b>answer generation</b> (computer meglio degli umani).<br>Tempi di risposta: single core 2 ore; 1 server Power 750 (32 core) &lt;4 min; un rack (320 core) &lt;30 s; Watson (90 server, 2880 core) &lt;3 s.
+
+Quali critiche hanno rivolto <b>Searle</b> e <b>Chomsky</b> a Watson?	<ul><li><b>Searle</b>: "Watson non sa di aver vinto a Jeopardy! IBM ha inventato un programma ingegnoso, non un computer che pensa."</li><li><b>Chomsky</b>: "Watson non capisce nulla. È un rullo compressore più grande…"</li></ul>
+
+Cos'è il <b>Semantic Web</b> e perché è rilevante per l'IA?	Il Web contiene tutto ciò che un agente intelligente dovrebbe "sapere": repository distribuito, emergente, autonomo e completo della conoscenza umana, usabile da umani e computer, ma andrebbe <b>strutturato</b> per essere recuperato più facilmente.<ul><li>Semantic web: "usa" e "ragiona" sui dati del Web</li><li>WWW, costo della memoria ridotto, big data non strutturati e potenza di calcolo hanno cambiato la natura delle applicazioni IA</li><li>Memorizzare tutta la conoscenza umana e il senso comune in forma utilizzabile</li><li>La conoscenza va organizzata e strutturata: <b>ontologie</b></li></ul>
+
+A cosa servono le <b>ontologie</b> nell'esempio feline/cat/lion?	<ul><li>Aggiungono <b>semantica</b>: cat e lion sono felini, quindi sottoclassi di quel concetto (gerarchia animal → mammal → feline/dog → cat/lion → tabby cat); cercando "feline" si trovano immagini di gatti e leoni anche se non etichettate come feline</li><li>Risolvono l'<b>ambiguità</b> del linguaggio naturale: in Italia "Felino" è anche un tipo di salame</li></ul>Risorse: <b>WordNet</b>, <b>BabelNet</b>.
+
+Cos'è <b>Tacotron 2</b>?	Sistema di <b>text-to-speech</b> di Google basato su <b>reti neurali</b>: la voce sintetica è indistinguibile da quella umana.
+
+Cos'è l'<b>ImageNet Challenge</b>?	Classificatore universale di immagini:<ul><li>14M immagini, 20k categorie</li><li>etichettate tramite <b>crowdsourcing</b></li><li>organizzate secondo la gerarchia di <b>WordNet</b></li></ul>Errore di classificazione: 26% nel 2011, oggi 3% (umani: 5%).
+
+Cos'è l'<b>image captioning</b>?	Descrivere in linguaggio naturale il contenuto di un'immagine (sistema Google). Le didascalie vanno da corrette a con errori minori, parzialmente correlate o non correlate all'immagine.
+
+Cosa sono gli <b>attacchi avversari</b> alle DNN ("DNN: sometimes they make big mistakes")?	Le DNN possono essere <b>instabili</b>: applicando piccole perturbazioni all'input (modificando pochi pixel, invisibili all'occhio umano) si può cambiare arbitrariamente l'output. Es.: gatto persiano classificato come "toaster" (tostapane).
+
+Perché non possiamo fidarci ciecamente delle <b>DNN</b> ("Can we trust DNN")?	Molto efficaci nella percezione, ma:<ul><li><b>Data e computational power eager</b>, funzionano in un mondo noto e stabile: problemi su dati lontani dal training (overfitting); dati possibilmente biased</li><li><b>Difficilmente spiegabili</b>: milioni di parametri, difficili da capire anche per gli sviluppatori</li><li><b>Non distinguono causalità e correlazione</b>: tecniche statistiche che trovano correlazioni non lineari, non relazioni causa-effetto ("curve-fitting")</li><li><b>Non affidabili</b>: errori grossi e "diversi" da quelli umani</li></ul>
+
+Quale esempio mostra che le correlazioni sono <b>lontane dalla causalità</b>?	Spurious correlations (tylervigen.com): il <b>consumo pro capite di mozzarella</b> è correlato (≈95.86%) con il <b>numero di dottorati in ingegneria civile</b> conferiti, senza alcun nesso causale.
+
+Cosa si intende con "<b>mind needs a body</b>"?	Un'intelligenza completa richiede un <b>agente incorporato</b> in un ambiente: percepisce l'ambiente tramite <b>sensori</b> (percepts), ragiona (think) e agisce tramite <b>effettori</b> (actions). Esempio: Atlas di Boston Dynamics che fa parkour.
+
+Cos'è la <b>RoboCup</b> e perché è una sfida diversa dai giochi?	Competizione nata in Giappone nel <b>1997</b> con l'obiettivo di creare entro il <b>2050</b> una squadra di calcio robotica capace di giocare (e possibilmente battere) la squadra campione del mondo.<br>Troppo ambiziosa? Deep Blue è arrivato 50 anni dopo il primo computer, lo sbarco sulla Luna 50 anni dopo il primo aereo.<br>Diversa dai giochi: robot <b>immersi in un ambiente</b>, con sensing e reazione in tempo reale, comunicazione, visione, percezione, movimento, coordinazione, pianificazione e apprendimento. È un <b>Full Turing Test</b>.
+
+Cos'è il robot <b>NAO</b> e in quali applicazioni è mostrato a lezione?	Robot umanoide di <b>Aldebaran Robotics</b> (sensori tattili, telecamere, microfoni, sonar, giunti articolati). Applicazioni:<ul><li>RoboCup (Nao-Team HTWK, Lipsia)</li><li>legge un testo in italiano (tesi UniBo)</li><li>interagisce in linguaggio naturale (tesi UniBo + AI group DISI)</li><li>risolve espressioni matematiche (tesi UniBo)</li></ul>
+

@@ -1,0 +1,96 @@
+#separator:tab
+#html:true
+#notetype:Basic
+#deck:AI Knowledge Representation::02 Ricerca locale e metaeuristiche
+
+Che differenza c'è tra algoritmi <b>costruttivi</b> e algoritmi di <b>ricerca locale</b> (local search)?	<ul><li><b>Costruttivi</b>: generano una soluzione aggiungendo, a partire da uno stato vuoto o iniziale, componenti della soluzione in un certo ordine.</li><li><b>Ricerca locale</b>: partono da una soluzione iniziale (completa) e cercano di migliorarla iterativamente tramite <b>mosse locali</b>.</li></ul>Le mosse locali definiscono un <b>vicinato</b> (neighborhood).
+
+Quando è applicabile/conveniente la <b>ricerca locale</b>?	Quando il <b>cammino</b> per raggiungere la soluzione <b>non è importante</b>: la descrizione dello stato contiene tutte le informazioni per capire se una configurazione è soluzione o no.<br>Es. <b>n regine</b>: si parte con tutte le regine sulla scacchiera e le si sposta per ridurre il numero di attacchi.
+
+Cos'è il <b>problema delle n regine</b> (n queens) e come lo si affronta con la ricerca locale?	Posizionare n regine su una scacchiera in modo che nessuna attacchi un'altra.<br>Ricerca locale: si parte da una configurazione con tutte le regine sulla scacchiera e si spostano le regine per <b>ridurre il numero di attacchi</b>.
+
+Cos'è il <b>vicinato</b> (neighborhood) \(N(s)\) di una soluzione?	L'insieme delle soluzioni raggiungibili da \(s\) applicando una <b>mossa locale</b>. Le mosse locali definiscono il vicinato.<br>Es.: con soluzioni binarie, il vicinato di \(s\) = insieme delle soluzioni a <b>distanza di Hamming 1</b> da \(s\).
+
+Definisci il <b>problema del commesso viaggiatore</b> (TSP).	Dato un grafo non orientato con n nodi, in cui ogni arco ha un costo positivo, trovare il <b>tour hamiltoniano</b> (ciclo che visita ogni nodo una volta) di <b>costo totale minimo</b>.
+
+Cosa sono i vicinati <b>k-exchange</b> (2-opt, 3-opt) per il TSP?	Vicinati in cui si rimuovono k archi dal tour e si ricollegano i pezzi in modo diverso:<ul><li><b>2-opt</b>: effettua due scambi di archi;</li><li><b>3-opt</b>: effettua tre scambi di archi.</li></ul>
+
+Con soluzione TSP rappresentata come <b>permutazione</b> di \((1,\dots,n)\), quali vicinati si possono usare?	<ul><li><b>2-swap</b>: scambia due numeri nella sequenza;</li><li><b>k-cycle</b>: seleziona k posizioni e cicla i loro numeri.<br>Es. \((1,2,3,4,5,6,7,8) \to (1,5,3,2,4,6,7,8)\)</li></ul>
+
+Come funziona il <b>miglioramento iterativo</b> / <b>hill climbing</b> (iterative improvement)?	Algoritmo di ricerca locale di base: una mossa viene eseguita <b>solo se</b> produce una soluzione <b>migliore</b> della corrente; si ferma appena trova un <b>ottimo locale</b>.<br>Varianti: <b>best</b> improvement, <b>first</b> improvement, <b>stochastic first</b>, ecc.
+
+Scrivi lo pseudocodice di alto livello dell'<b>iterative improvement</b>.	\(s \leftarrow\) GenerateInitialSolution()<br><b>repeat</b><br>&nbsp;&nbsp;\(s \leftarrow\) BestOf\((s, N(s))\)<br><b>until</b> nessun miglioramento è possibile
+
+Quali sono i principali <b>difetti</b> dell'hill climbing?	<ul><li>Poco efficace nell'esplorare lo spazio di ricerca: si ferma al <b>primo ottimo locale</b> incontrato;</li><li><b>non ricorda</b> gli stati già visitati.</li></ul>«Come scalare l'Everest nella nebbia fitta e con l'amnesia».
+
+Definisci <b>massimo locale</b> e <b>massimo globale</b> per una funzione di valutazione \(f\).	<ul><li><b>Massimo locale</b>: \(s\) tale che \(f(s) \ge f(s')\ \ \forall s' \in N(s)\).</li><li><b>Massimo globale</b>: \(s_{opt}\) tale che \(f(s_{opt}) \ge f(s)\ \ \forall s\).</li></ul>Analogamente per i minimi.
+
+Che relazione c'è tra <b>dimensione del vicinato</b> e qualità delle soluzioni?	Più il vicinato è <b>grande</b>, più è probabile che un massimo locale sia anche globale → soluzioni di qualità più alta.<br>Ma cresce lo <b>sforzo computazionale</b> per esplorarlo (trade-off).
+
+Quali sono i tre problemi tipici della ricerca locale nel <b>landscape</b>: <b>ottimi locali</b>, <b>plateau</b>, <b>creste</b> (ridges)?	<ul><li><b>Ottimi locali</b>: stati migliori di tutti i vicini ma peggiori di altri stati lontani.</li><li><b>Plateau</b>: zone piatte in cui i vicini hanno lo stesso valore; in che direzione muoversi? (scelta casuale).</li><li><b>Creste</b> (ridges): area più alta adiacente a dove si dovrebbe andare, ma non raggiungibile direttamente: bisogna muoversi in un'altra direzione per arrivarci.</li></ul>
+
+Quali elementi compaiono nel disegno del <b>landscape</b> della funzione obiettivo?	Funzione obiettivo vs spazio degli stati con: <b>massimo globale</b>, <b>massimo locale</b>, <b>massimo locale \"piatto\"</b> (flat local maximum), <b>spalla</b> (shoulder) e lo <b>stato corrente</b>.
+
+Cosa sono le <b>metaeuristiche</b> (metaheuristics) e quali strategie usano per superare i limiti della ricerca locale?	Strategie di ricerca più efficaci e generali della semplice ricerca locale. Ad esempio:<ul><li><b>accettare mosse peggioranti</b>;</li><li><b>cambiare vicinato o funzione di costo</b> durante la ricerca;</li><li>usare <b>strategie di ricerca di alto livello</b>.</li></ul>
+
+Ricerca locale come ricerca su grafo: differenza tra <b>grafo di vicinato</b> (neighborhood graph) e <b>grafo di ricerca</b> (search graph)?	La ricerca parte da un nodo iniziale e si sposta da un nodo a un suo vicino fino a una condizione di terminazione.<ul><li><b>Neighborhood graph</b>: rappresenta la <b>topologia</b> dello spazio di ricerca (nodi = soluzioni, archi = mosse).</li><li><b>Search graph</b>: rappresenta l'<b>esplorazione effettiva</b> dello spazio compiuta dall'algoritmo.</li></ul>
+
+Cos'è il <b>simulated annealing</b> e da dove trae origine?	Metaeuristica con origini nella <b>meccanica statistica</b> (algoritmo di <b>Metropolis</b>).<ul><li><b>Permette mosse peggioranti</b> (verso soluzioni di qualità peggiore della corrente);</li><li>la <b>probabilità</b> di accettarle <b>diminuisce</b> durante la ricerca (tramite la temperatura \(T\)).</li></ul>
+
+Qual è la <b>probabilità di accettazione</b> di una mossa peggiorante nel <b>simulated annealing</b>?	\[ p(\text{accetta } s') = \exp\left(-\frac{|f(s') - f(s)|}{T}\right) \]Sui lucidi: \(\exp(-(f(s')-f(s))/T)\). Più è grande il peggioramento o più è bassa la temperatura \(T\), minore è la probabilità di accettare.
+
+Scrivi lo pseudocodice del <b>simulated annealing</b>.	\(s \leftarrow\) GenerateInitialSolution(); \(T \leftarrow T_0\)<br><b>while</b> condizioni di terminazione non soddisfatte <b>do</b><br>&nbsp;&nbsp;\(s' \leftarrow\) PickAtRandom\((N(s))\)<br>&nbsp;&nbsp;<b>if</b> \(f(s') > f(s)\) <b>then</b> \(s \leftarrow s'\)<br>&nbsp;&nbsp;<b>else</b> accetta \(s'\) con probabilità \(p(T, s', s)\)<br>&nbsp;&nbsp;Update(\(T\))<br><b>end while</b>
+
+Quali <b>schemi di raffreddamento</b> (cooling schedule) della temperatura esistono nel simulated annealing?	<ul><li><b>Logaritmico</b>: \(T_{k+1} = \Gamma / \log(k + k_0)\). Garantisce convergenza all'ottimo con probabilità 1, ma è <b>troppo lento</b> per le applicazioni.</li><li><b>Geometrico</b>: \(T_{k+1} = \alpha T_k\), con \(\alpha \in\ ]0,1[\).</li><li><b>Non monotono</b>: la temperatura si abbassa (favorisce l'intensificazione) e poi si rialza (aumenta la diversificazione).</li></ul>
+
+Cosa sono <b>intensificazione</b> (intensification) e <b>diversificazione</b> (diversification)?	Le due spinte che una strategia di ricerca di alto livello deve bilanciare:<ul><li><b>Intensificazione</b>: sfruttare/approfondire le regioni promettenti, raggiungere gli ottimi locali in modo efficiente (es. SA a bassa temperatura, local search in ILS).</li><li><b>Diversificazione</b>: esplorare regioni nuove dello spazio, sfuggire agli ottimi locali (es. SA ad alta temperatura, perturbazione in ILS).</li></ul>
+
+Qual è l'idea della <b>tabu search</b>?	Sfrutta <b>esplicitamente la storia</b> della ricerca per modificare dinamicamente il vicinato da esplorare.<br>La <b>tabu list</b> tiene traccia delle soluzioni (o mosse) visitate di recente e le <b>vieta</b> ⇒ permette di <b>uscire dai minimi locali</b> ed <b>evitare cicli</b>.
+
+Scrivi lo pseudocodice base della <b>tabu search</b>.	\(s \leftarrow\) GenerateInitialSolution()<br>TabuList \(\leftarrow \emptyset\)<br><b>while</b> condizioni di terminazione non soddisfatte <b>do</b><br>&nbsp;&nbsp;\(s \leftarrow\) BestOf\((N(s) \setminus \text{TabuList})\)<br>&nbsp;&nbsp;Update(TabuList)<br><b>end while</b><br>Nota: si sceglie il migliore dei vicini ammessi anche se peggiore della corrente.
+
+Nella tabu search, perché si memorizzano <b>mosse</b> invece che soluzioni, e cosa sono i <b>criteri di aspirazione</b> (aspiration criteria)?	Memorizzare liste di soluzioni è spesso inefficiente, quindi si salvano le <b>mosse</b>. Però vietando mosse si rischia di tagliare <b>buone soluzioni non ancora visitate</b>.<br><b>Criteri di aspirazione</b>: permettono comunque una mossa tabu se soddisfa una condizione, es. porta a una soluzione <b>migliore della corrente</b> (o della migliore trovata).
+
+Tabu search nella versione dettagliata: come si definisce l'<b>AllowedSet</b>?	Con più tabu list \(TL_1,\dots,TL_r\):<br>\(\text{AllowedSet}(s,k) = \{z \in N(s) \mid \) nessuna condizione tabu è violata <b>oppure</b> almeno una condizione di aspirazione è soddisfatta\(\}\)<br>Poi \(s \leftarrow\) ChooseBestOf(AllowedSet), si aggiornano tabu list e condizioni di aspirazione, \(k \leftarrow k+1\).
+
+Su quali due tipi di passi si basa l'<b>iterated local search</b> (ILS)?	<ul><li><b>Passi di local search sussidiaria</b>: raggiungere ottimi locali nel modo più efficiente possibile (<b>intensificazione</b>);</li><li><b>Passi di perturbazione</b>: sfuggire efficacemente agli ottimi locali (<b>diversificazione</b>).</li></ul>In più un <b>criterio di accettazione</b> controlla il bilanciamento tra diversificazione e intensificazione.
+
+Scrivi lo pseudocodice dell'<b>iterated local search</b>.	\(s_0 \leftarrow\) GenerateInitialSolution()<br>\(s^* \leftarrow\) LocalSearch\((s_0)\)<br><b>while</b> condizioni di terminazione non soddisfatte <b>do</b><br>&nbsp;&nbsp;\(s' \leftarrow\) Perturbation\((s^*, \text{history})\)<br>&nbsp;&nbsp;\(s^{*\prime} \leftarrow\) LocalSearch\((s')\)<br>&nbsp;&nbsp;\(s^* \leftarrow\) ApplyAcceptanceCriterion\((s^*, s^{*\prime}, \text{history})\)<br><b>end while</b>
+
+Quali sono le <b>lezioni apprese</b> (lesson learned) sulle metaeuristiche di traiettoria?	<ul><li>La <b>modellazione</b> è un problema rilevante;</li><li>servono <b>strategie di alto livello</b> per esplorare efficacemente lo spazio (intensificazione/diversificazione);</li><li>importanza della <b>storia della ricerca</b>;</li><li>il <b>tuning dei parametri</b> è spesso critico.</li></ul>
+
+Cosa caratterizza le <b>metaeuristiche basate su popolazione</b> (population based)?	<ul><li>Fanno evolvere un <b>insieme di punti</b> dello spazio di ricerca;</li><li>alcune sono ispirate a processi naturali (evoluzione naturale, foraggiamento degli insetti sociali);</li><li>principio base: <b>apprendere correlazioni tra componenti di soluzioni \"buone\"</b>.</li></ul>
+
+A quali tre componenti chiave dell'evoluzione si ispirano gli <b>algoritmi genetici</b> (genetic algorithms)?	<ul><li><b>Adattamento</b>: gli organismi sono adatti al loro habitat;</li><li><b>Ereditarietà</b> (inheritance): i figli somigliano ai genitori;</li><li><b>Selezione naturale</b>: emergono nuovi tipi adattati, chi non cambia adeguatamente si estingue.</li></ul>
+
+Quali sono i <b>concetti chiave</b> degli algoritmi genetici? Mirano a simulare l'evoluzione biologica?	<ul><li>Gli individui più adatti (fittest) hanno alta probabilità di avere molta prole;</li><li>i figli sono simili, ma non uguali, ai genitori;</li><li>i tratti degli individui migliori si diffondono nella popolazione generazione dopo generazione.</li></ul><b>No</b>: i GA non vogliono simulare i processi evolutivi biologici, ma <b>sfruttarne i concetti chiave</b> per il problem solving.
+
+Descrivi le fasi del <b>ciclo evolutivo</b> (evolutionary cycle) di un GA.	<ul><li><b>Selezione</b>: sceglie i genitori il cui materiale genetico viene riprodotto con variazioni;</li><li><b>Ricombinazione</b> (crossover): combina il materiale genetico dei genitori;</li><li><b>Mutazione</b>: introduce variabilità nei genotipi;</li><li><b>Rimpiazzo/inserimento</b> (replacement): definisce la nuova popolazione a partire dalla nuova e dalla vecchia.</li></ul>
+
+Terminologia GA: <b>popolazione</b>, <b>genotipo</b>, <b>cromosoma</b>, <b>gene</b>, <b>allele</b>.	<ul><li><b>Popolazione</b>: insieme di individui (soluzioni);</li><li>gli individui sono detti anche <b>genotipi</b>;</li><li>i <b>cromosomi</b> sono composti da unità dette <b>geni</b>;</li><li>il dominio dei valori di un gene è composto dagli <b>alleli</b> (es. variabile binaria ↔ gene con due alleli).</li></ul>
+
+Come funziona l'operatore di <b>crossover</b> (ricombinazione) su cromosomi binari?	Combinazione incrociata di due cromosomi (vagamente simile al crossover biologico). Es. <b>one-point</b>: si sceglie un punto di taglio e si scambiano le code:<br>011001|0111 , 110100|0010 → 011001|<b>0010</b> , 110100|<b>0111</b>
+
+Come funziona l'operatore di <b>mutazione</b> (mutation) in un GA binario?	Ogni gene ha probabilità \(p_M\) di essere modificato (<b>\"flipped\"</b>, 0↔1). Serve a introdurre <b>diversità</b>.
+
+Cos'è la <b>selezione proporzionale</b> (proportional / roulette wheel selection)?	La probabilità che un individuo sia scelto come genitore è <b>proporzionale alla sua fitness</b>:<br>\[ p_i = \frac{f_i}{\sum_j f_j} \]Rappresentata solitamente come una <b>ruota della roulette</b> con spicchi di ampiezza proporzionale alla fitness.
+
+Cos'è il <b>rimpiazzo generazionale</b> (generational replacement)? Pro, contro e alternativa.	La nuova generazione <b>sostituisce interamente</b> la vecchia.<ul><li><b>Pro</b>: molto semplice, poco costoso, analisi teorica più facile;</li><li><b>Contro</b>: le buone soluzioni potrebbero non essere mantenute nella nuova popolazione.</li></ul><b>Alternativa</b>: tenere i migliori n individui tra vecchia e nuova popolazione (o varianti).
+
+Operatori genetici per <b>variabili reali</b> \(x \in [a,b]\).	<ul><li><b>Mutazione</b>: perturbazione casuale \(x \to x \pm \delta\), accettata se \(x \pm \delta \in [a,b]\);</li><li><b>Crossover</b>: combinazione lineare \(z = \lambda_1 x + \lambda_2 y\), con \(\lambda_1, \lambda_2\) tali che \(a \le z \le b\).</li></ul>
+
+Operatori genetici per soluzioni codificate come <b>permutazioni</b>.	Soluzione \(x = (x_1,\dots,x_n)\) permutazione di \((1,\dots,n)\).<ul><li><b>Mutazione</b>: scambio casuale di due elementi;</li><li><b>Crossover</b>: come il crossover a 2 punti, ma <b>evitando ripetizioni</b> di valori.</li></ul>
+
+Scrivi lo pseudocodice di un <b>algoritmo genetico</b>.	Initialize Population; Evaluate Population<br><b>while</b> condizioni di terminazione non soddisfatte <b>do</b><br>&nbsp;&nbsp;<b>while</b> nuova popolazione non completa <b>do</b><br>&nbsp;&nbsp;&nbsp;&nbsp;seleziona due genitori; applica crossover; applica mutazione a ogni nuovo individuo<br>&nbsp;&nbsp;<b>end while</b><br>&nbsp;&nbsp;Population ← New population; Evaluate Population<br><b>end while</b>
+
+Quali sono le possibili <b>condizioni di terminazione</b> di un algoritmo genetico?	<ul><li>raggiunto il <b>limite di tempo</b> di esecuzione;</li><li>ottenute soluzioni <b>soddisfacenti</b>;</li><li><b>stagnazione</b> (caso limite: la popolazione converge tutta sullo stesso individuo).</li></ul>
+
+Qual è l'<b>intuizione</b> dietro crossover, mutazione e selezione in un GA?	<ul><li><b>Crossover</b>: combina parti buone di soluzioni buone (ma potrebbe ottenere l'effetto opposto);</li><li><b>Mutazione</b>: introduce diversità;</li><li><b>Selezione</b>: spinge la popolazione verso fitness alte.</li></ul>
+
+<b>Pro e contro</b> degli algoritmi genetici.	<b>Pro</b>: estremamente semplici; general purpose; modelli teorici trattabili.<br><b>Contro</b>: la <b>codifica</b> è cruciale; operatori genetici troppo semplici.
+
+Come si definisce la <b>fitness</b> nell'esempio GA delle <b>8 regine</b>?	La <b>penalità</b> di una regina è il numero di regine che può attaccare (dare scacco); la fitness della configurazione è la <b>somma delle penalità</b> delle singole regine (da minimizzare).
+
+<b>Linee guida di progetto</b>: quando preferire ricerca locale/metaeuristiche di traiettoria e quando approcci a popolazione?	<b>Local search / metaeuristiche</b> se:<ul><li>le strutture di vicinato creano un grafo di ricerca <b>correlato</b>;</li><li>il costo computazionale delle mosse è <b>basso</b>;</li><li>\"inventare\" mosse è facile.</li></ul><b>Population-based</b> se:<ul><li>le soluzioni si codificano come composizione di buoni <b>building block</b>;</li><li>il costo delle mosse in local search è alto;</li><li>è difficile progettare vicinati efficaci;</li><li>serve un'esplorazione a grana grossa (spazi enormi).</li></ul>
+
+Quali <b>framework software</b> per metaeuristiche sono citati?	<ul><li><b>Comet</b> (Dynadec): framework di metaeuristiche constraint-based, linguaggio proprietario (gratuito per accademici), strutture dati efficienti;</li><li><b>EasyLocal++</b> (Di Gaspero, Schaerf): framework C++ di stochastic local search (GPL), l'utente istanzia classi astratte.</li></ul>

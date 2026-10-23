@@ -1,0 +1,158 @@
+\documentclass{report}
+
+\input{../LatexTemp/preamble.tex}
+\input{../LatexTemp/macros}
+\input{../LatexTemp/letterfonts}
+
+\usepackage[utf8]{inputenc}
+\usepackage{ytableau}
+\ytableausetup{notabloids,smalltableaux,centertableaux}
+
+\setlength{\parindent}{0pt}
+\pagenumbering{gobble}
+
+\begin{document}
+
+\qs{Rappresentazioni di permutazione di $ \mathfrak{S}_4 $}{
+  Definite $ \forall g \in \mathfrak{S}_4 $ da
+  \[
+    \rho(g)(x_1,x_2,x_3,x_4) = (x_{g(1)}, x_{g(2)}, x_{g(3)}, x_{g(4)})\,, \qquad
+    \varphi(g)(x_1,x_2,x_3,x_4) = \mathrm{sgn}(g)\, (x_{g(1)}, x_{g(2)}, x_{g(3)}, x_{g(4)})\,,
+  \]
+  le rappresentazioni $ (V,\rho) $ e $ (U,\varphi) $ di $ \mathfrak{S}_4 $ su $ V = U = \mathbb{C}^4 $.
+  \begin{enumerate}
+    \item Calcolare il carattere $ \chi_V $ di $ (V,\rho) $ e il carattere $ \chi_U $ di $ (U,\varphi) $.
+    \item Calcolare $ \innerproduct{\chi_V}{\chi_V} $ e $ \innerproduct{\chi_U}{\chi_U} $. $ V $ e $ U $ sono irriducibili?
+    \item Determinare esplicitamente una sottorappresentazione $ V_1 \subseteq V $ isomorfa alla banale ed una sottorappresentazione $ U_1 \subseteq U $ isomorfa al segno.
+    \item Determinare sottorappresentazioni $ V_2 \subseteq V $ e $ U_2 \subseteq U $ tali che $ V = V_1 \oplus V_2 $, $ U = U_1 \oplus U_2 $. Calcolare $ \chi_{V_2} $, $ \chi_{U_2} $ per differenza.
+    \item Calcolando opportuni prodotti scalari, mostrare che $ V_2 $ e $ U_2 $ sono irriducibili.
+    \item Mostrare che, come rappresentazioni, $ U \cong U_1 \otimes V $ e $ U_2 \cong U_1 \otimes V_2 $.
+    \item Invocando teoremi noti, spiegare perche' $ \mathfrak{S}_4 $ ha esattamente $ 5 $ rappresentazioni irriducibili. Essendo $ V_1, V_2, U_1, U_2 $ quattro di esse, calcolare quale deve essere la dimensione della quinta, che chiameremo $ (W,\psi) $.
+    \item Calcolare $ \chi_{\mathbb{C}[\mathfrak{S}_4]} $ e, per differenza, $ \chi_W $.
+  \end{enumerate}
+}
+
+\pf{Soluzione}{
+
+  \textbf{Classi di coniugio.} Le classi di coniugio di $ \mathfrak{S}_4 $ sono determinate dal tipo ciclico:
+  \begin{center}
+  \begin{tabular}{c|ccccc}
+    classe & $ e $ & $ (12) $ & $ (12)(34) $ & $ (123) $ & $ (1234) $ \\
+    \hline
+    dimensione classe & $ 1 $ & $ 6 $ & $ 3 $ & $ 8 $ & $ 6 $ \\
+    $ \mathrm{sgn} $ & $ 1 $ & $ -1 $ & $ 1 $ & $ 1 $ & $ -1 $ \\
+    punti fissi & $ 4 $ & $ 2 $ & $ 0 $ & $ 1 $ & $ 0 $ \\
+  \end{tabular}
+  \end{center}
+
+  \textbf{1)} La matrice di $ \rho(g) $ nella base canonica $ e_1,\ldots,e_4 $ e' la matrice di permutazione associata a $ g $, quindi la sua traccia e' il numero di punti fissi di $ g $:
+  \[
+    \chi_V(g) = \#\{ i \mid g(i) = i \}\,.
+  \]
+  Poiche' $ \varphi(g) = \mathrm{sgn}(g)\, \rho(g) $ come operatori su $ \mathbb{C}^4 $, si ha $ \chi_U(g) = \mathrm{sgn}(g)\, \chi_V(g) $. Sostituendo i valori della tabella (nell'ordine delle classi $ e, (12), (12)(34), (123), (1234) $):
+  \[
+    \chi_V = (4,\, 2,\, 0,\, 1,\, 0)\,, \qquad \chi_U = (4,\, -2,\, 0,\, 1,\, 0)\,.
+  \]
+
+  \textbf{2)}
+  \[
+    \innerproduct{\chi_V}{\chi_V} = \frac{1}{24}\left( 1 \cdot 4^2 + 6 \cdot 2^2 + 3 \cdot 0^2 + 8 \cdot 1^2 + 6 \cdot 0^2 \right) = \frac{16+24+0+8+0}{24} = 2\,,
+  \]
+  \[
+    \innerproduct{\chi_U}{\chi_U} = \frac{1}{24}\left( 1 \cdot 4^2 + 6 \cdot (-2)^2 + 3 \cdot 0^2 + 8 \cdot 1^2 + 6 \cdot 0^2 \right) = \frac{16+24+0+8+0}{24} = 2\,.
+  \]
+  Poiche' $ \innerproduct{\chi_V}{\chi_V} = \sum_i m_i^2 $, dove $ m_i $ sono le molteplicita' delle componenti irriducibili di $ V $, l'unico modo di scrivere $ 2 $ come somma di quadrati di interi positivi e' $ 1+1 $: dunque $ V $ (e analogamente $ U $) \textbf{non} e' irriducibile, ma si decompone come somma diretta di due rappresentazioni irriducibili non isomorfe tra loro, ciascuna con molteplicita' $ 1 $.
+
+  \textbf{3)} Sia $ v_0 = (1,1,1,1) $. Per ogni $ g $, permutare quattro coordinate uguali non le cambia, quindi $ \rho(g) v_0 = v_0 $ e
+  \[
+    V_1 \coloneq \langle v_0 \rangle \subseteq V
+  \]
+  e' una sottorappresentazione $ 1 $-dimensionale isomorfa alla rappresentazione banale.
+
+  Sia $ u_0 = (1,1,1,1) \in U $ (lo stesso vettore, ma visto dentro $ U $). Allora $ \varphi(g) u_0 = \mathrm{sgn}(g)\, (1,1,1,1) = \mathrm{sgn}(g)\, u_0 $, quindi
+  \[
+    U_1 \coloneq \langle u_0 \rangle \subseteq U
+  \]
+  e' una sottorappresentazione $ 1 $-dimensionale isomorfa alla rappresentazione segno.
+
+  \textbf{4)} Sia $ \innerproduct{\cdot}{\cdot} $ il prodotto scalare standard su $ \mathbb{C}^4 $. Sia $ \rho(g) $ che $ \varphi(g) $ sono matrici ortogonali (matrici di permutazione, eventualmente moltiplicate per $ \pm 1 $), quindi entrambe preservano il prodotto scalare standard: possiamo allora prendere l'ortogonale di $ V_1 $ (risp. $ U_1 $), che e' automaticamente una sottorappresentazione:
+  \[
+    V_2 \coloneq V_1^{\perp} = \{ (x_1,x_2,x_3,x_4) \mid x_1+x_2+x_3+x_4 = 0 \} \subseteq V\,,
+  \]
+  \[
+    U_2 \coloneq U_1^{\perp} = \{ (x_1,x_2,x_3,x_4) \mid x_1+x_2+x_3+x_4 = 0 \} \subseteq U\,,
+  \]
+  cioe' lo stesso sottospazio di $ \mathbb{C}^4 $, visto pero' rispettivamente con l'azione $ \rho $ e con l'azione $ \varphi $. Per costruzione $ V = V_1 \oplus V_2 $ e $ U = U_1 \oplus U_2 $.
+
+  Per differenza (usando $ \chi_{V_1} \equiv 1 $ e $ \chi_{U_1} = \mathrm{sgn} $):
+  \[
+    \chi_{V_2} = \chi_V - \chi_{V_1} = (4,2,0,1,0) - (1,1,1,1,1) = (3,\, 1,\, -1,\, 0,\, -1)\,,
+  \]
+  \[
+    \chi_{U_2} = \chi_U - \chi_{U_1} = (4,-2,0,1,0) - (1,-1,1,1,-1) = (3,\, -1,\, -1,\, 0,\, 1)\,.
+  \]
+
+  \textbf{5)}
+  \[
+    \innerproduct{\chi_{V_2}}{\chi_{V_2}} = \frac{1}{24}\left(1 \cdot 3^2 + 6 \cdot 1^2 + 3 \cdot (-1)^2 + 8 \cdot 0^2 + 6 \cdot (-1)^2\right) = \frac{9+6+3+0+6}{24} = 1\,,
+  \]
+  \[
+    \innerproduct{\chi_{U_2}}{\chi_{U_2}} = \frac{1}{24}\left(1 \cdot 3^2 + 6 \cdot (-1)^2 + 3 \cdot (-1)^2 + 8 \cdot 0^2 + 6 \cdot 1^2\right) = \frac{9+6+3+0+6}{24} = 1\,.
+  \]
+  Essendo entrambi uguali a $ 1 $, $ V_2 $ e $ U_2 $ sono irriducibili (ciascuna di dimensione $ 3 $).
+
+  \textbf{6)} Per definizione $ \varphi(g) = \mathrm{sgn}(g)\, \rho(g) $ come operatori su $ \mathbb{C}^4 $. Identificando $ U_1 = \langle u_0 \rangle $ con $ \mathbb{C} $ tramite $ u_0 \mapsto 1 $, la mappa lineare
+  \[
+    U_1 \otimes V \longrightarrow U\,, \qquad u_0 \otimes x \longmapsto x
+  \]
+  e' un isomorfismo, ed e' equivariante: $ (\varphi \otimes \rho)(g) $ manda $ u_0 \otimes x $ in
+  \[
+    \varphi(g) u_0 \otimes \rho(g) x = \mathrm{sgn}(g)\, u_0 \otimes \rho(g) x \longmapsto \mathrm{sgn}(g)\, \rho(g) x = \varphi(g) x\,,
+  \]
+  che e' esattamente l'immagine di $ x $ tramite $ \varphi(g) $. Dunque $ U \cong U_1 \otimes V $. Restringendo la stessa mappa a $ U_1 \otimes V_2 $ (che finisce esattamente in $ U_2 $, essendo $ U_2 $ e $ V_2 $ lo stesso sottospazio $ \{ \sum_i x_i = 0 \} $), si ottiene $ U_2 \cong U_1 \otimes V_2 $.
+
+  In alternativa: $ \chi_{U_1 \otimes V} = \chi_{U_1} \cdot \chi_V = \mathrm{sgn} \cdot \chi_V = \chi_U $, e due rappresentazioni con lo stesso carattere sono isomorfe; stesso argomento per $ U_2 \cong U_1 \otimes V_2 $.
+
+  \textbf{7)} Per un teorema noto, il numero di rappresentazioni irriducibili (a meno di isomorfismo) di un gruppo finito $ G $ e' uguale al numero delle sue classi di coniugio. $ \mathfrak{S}_4 $ ha $ 5 $ classi di coniugio ($ e $, trasposizioni, doppie trasposizioni, $ 3 $-cicli, $ 4 $-cicli), dunque esattamente $ 5 $ rappresentazioni irriducibili a meno di isomorfismo.
+
+  $ V_1 $ (banale, dim $ 1 $), $ U_1 $ (segno, dim $ 1 $), $ V_2 $ (dim $ 3 $) e $ U_2 $ (dim $ 3 $) sono quattro di esse, e sono a due a due non isomorfe (hanno caratteri distinti). Per un altro teorema noto, se $ W_1,\ldots,W_5 $ sono tutte le rappresentazioni irriducibili di $ G $, allora $ \sum_i (\dim W_i)^2 = |G| $. Quindi:
+  \[
+    1^2 + 1^2 + 3^2 + 3^2 + \dim(W)^2 = 24 \quad \Longrightarrow \quad \dim(W)^2 = 24 - 20 = 4 \quad \Longrightarrow \quad \dim(W) = 2\,.
+  \]
+
+  \textbf{8)} Il carattere della rappresentazione regolare $ \mathbb{C}[\mathfrak{S}_4] $ e'
+  \[
+    \chi_{\mathbb{C}[\mathfrak{S}_4]}(g) = \begin{cases} |\mathfrak{S}_4| = 24 & g = e \\ 0 & g \neq e \end{cases}\,, \qquad \text{cioe'} \quad \chi_{\mathbb{C}[\mathfrak{S}_4]} = (24,\, 0,\, 0,\, 0,\, 0)\,.
+  \]
+  Per il teorema di decomposizione della rappresentazione regolare, $ \mathbb{C}[\mathfrak{S}_4] \cong \bigoplus_i (\dim W_i)\, W_i $, cioe'
+  \[
+    \chi_{\mathbb{C}[\mathfrak{S}_4]} = 1 \cdot \chi_{V_1} + 1 \cdot \chi_{U_1} + 3 \cdot \chi_{V_2} + 3 \cdot \chi_{U_2} + 2 \cdot \chi_W\,.
+  \]
+  Per differenza:
+  \[
+    \chi_W = \frac{1}{2}\Big( \chi_{\mathbb{C}[\mathfrak{S}_4]} - \chi_{V_1} - \chi_{U_1} - 3\chi_{V_2} - 3\chi_{U_2} \Big)\,.
+  \]
+  Calcolando classe per classe (ad es. su $ (12) $: $ \frac{1}{2}(0 - 1 - (-1) - 3\cdot 1 - 3\cdot(-1)) = \frac{1}{2}(0-1+1-3+3) = 0 $, e similmente sulle altre) si ottiene
+  \[
+    \chi_W = (2,\, 0,\, 2,\, -1,\, 0)\,.
+  \]
+  Si verifica $ \innerproduct{\chi_W}{\chi_W} = \frac{1}{24}(1 \cdot 4 + 6 \cdot 0 + 3 \cdot 4 + 8 \cdot 1 + 6 \cdot 0) = \frac{24}{24} = 1 $, confermando che $ W $ e' effettivamente irriducibile, come atteso dal punto \textbf{7)}. \Qed
+}
+
+\nt{
+  Riassumendo, la tavola dei caratteri di $ \mathfrak{S}_4 $ risulta:
+  \begin{center}
+  \begin{tabular}{c|ccccc}
+     & $ e $ & $ (12) $ & $ (12)(34) $ & $ (123) $ & $ (1234) $ \\
+    \hline
+    $ \chi_{V_1} $ (banale) & $ 1 $ & $ 1 $ & $ 1 $ & $ 1 $ & $ 1 $ \\
+    $ \chi_{U_1} $ (segno) & $ 1 $ & $ -1 $ & $ 1 $ & $ 1 $ & $ -1 $ \\
+    $ \chi_{V_2} $ & $ 3 $ & $ 1 $ & $ -1 $ & $ 0 $ & $ -1 $ \\
+    $ \chi_{U_2} $ & $ 3 $ & $ -1 $ & $ -1 $ & $ 0 $ & $ 1 $ \\
+    $ \chi_W $ & $ 2 $ & $ 0 $ & $ 2 $ & $ -1 $ & $ 0 $ \\
+  \end{tabular}
+  \end{center}
+  In particolare $ V_2 $ e' la classica \vocab{rappresentazione standard} di $ \mathfrak{S}_4 $, $ U_2 = V_2 \otimes U_1 $ e' la sua torsione per il segno, e $ W $ e' la rappresentazione $ 2 $-dimensionale ottenuta componendo la proiezione $ \mathfrak{S}_4 \twoheadrightarrow \mathfrak{S}_4 / V_4 \cong \mathfrak{S}_3 $ (dove $ V_4 $ e' il sottogruppo normale di Klein) con l'unica rappresentazione irriducibile $ 2 $-dimensionale di $ \mathfrak{S}_3 $.
+}
+
+\end{document}

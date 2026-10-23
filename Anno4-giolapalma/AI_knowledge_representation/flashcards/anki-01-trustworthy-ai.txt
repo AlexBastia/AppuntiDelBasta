@@ -1,0 +1,101 @@
+#separator:tab
+#html:true
+#notetype:Basic
+#deck:AI Knowledge Representation::01 Trustworthy AI
+
+Quale distinzione fa <b>Stuart Russell</b> tra sistemi "better at making decisions" e "making better decisions"?	Finora l'IA si è concentrata su sistemi più bravi a <b>prendere decisioni</b> (agente razionale che massimizza i propri obiettivi), ma ciò non equivale a prendere <b>decisioni migliori</b>, cioè <b>allineate con i valori umani</b>. Se la funzione di utilità non è allineata, le decisioni possono essere "ineffabilmente stupide" agli occhi di un umano.
+
+Quale cambiamento nella definizione di IA propone Russell in <b>"Provably Beneficial Artificial Intelligence"</b> (2017)?	Passare da un campo che studia l'<b>intelligenza pura, indipendente dall'obiettivo</b>, a un campo che studia sistemi <b>dimostrabilmente benefici per gli umani</b> (provably beneficial).
+
+Perché ci si chiede se l'<b>IA debba essere regolamentata</b>?	L'IA può essere benefica (salute, clima, energia, smart cities, cibo, equità, inclusione, sostenibilità) ma anche usata per applicazioni pericolose (<b>armi autonome</b>). Inoltre ha forti impatti sociali: <b>perdita di posti di lavoro</b>, generazione di <b>fake news</b>, <b>controllo delle elezioni</b> tramite influenza sociale, <b>privacy</b> dei dati personali. → L'UE ha emanato linee guida per una Trustworthy AI.
+
+Descrivi le tappe del <b>percorso europeo sull'IA</b>.	<ul><li><b>Apr 2018</b>: AI Landscape, Comunicazione "AI for Europe", nomina dell'HLEG (bozza linee guida etiche, raccomandazioni su policy e investimenti)</li><li><b>Dic 2018</b>: Coordinated plan on AI</li><li><b>Apr 2019</b>: Ethical Guidelines for Trustworthy AI</li><li><b>Feb 2020</b>: White Paper on AI: a European approach to excellence and trust</li><li><b>Apr 2021</b>: AI Act (proposta)</li></ul>
+
+Come definisce l'<b>intelligenza artificiale</b> la Commissione Europea ("AI for Europe", 2018)?	Sistemi che mostrano un <b>comportamento intelligente</b> analizzando il proprio <b>ambiente</b> e compiendo <b>azioni</b>, con un certo grado di <b>autonomia</b>, per raggiungere <b>obiettivi specifici</b>.
+
+Cosa si intende per <b>human-centric AI</b> nella strategia europea ("Building Trust in Human-Centric AI", 2019)?	La strategia mette le <b>persone al centro</b> dello sviluppo dell'IA. Obiettivi: aumentare la capacità tecnologica e industriale dell'UE e l'adozione dell'IA nell'economia, prepararsi ai cambiamenti socio-economici, garantire un adeguato <b>quadro etico e legale</b>.
+
+Che ruolo hanno le <b>Ethics Guidelines for Trustworthy AI</b>?	Documento importante che definisce le <b>dimensioni dell'IA per garantire fiducia</b>; è la base per il <b>White Paper</b> e per l'<b>AI Act</b>.
+
+Quali sono i tre <b>pilastri</b> della Trustworthy AI?	<ul><li><b>Lawfulness</b> (legalità)</li><li><b>Ethics</b> (eticità)</li><li><b>Robustness</b> (robustezza)</li></ul>
+
+Quali sono i <b>7 requisiti</b> (dimensioni da verificare) di un sistema di Trustworthy AI?	<ol><li>Human agency and oversight</li><li>Technical robustness and safety</li><li>Privacy and data governance</li><li>Transparency (traceability, explainability)</li><li>Diversity, non-discrimination and fairness</li><li>Societal and environmental well-being</li><li>Accountability</li></ol>
+
+Cosa significa <b>human agency and oversight</b>?	La supervisione umana garantisce che un sistema IA <b>non comprometta l'autonomia umana</b> né causi altri effetti avversi. Si ottiene con meccanismi di governance come lo <b>human-in-the-loop</b>.
+
+Quali caratteristiche ha la <b>tecnologia human-centered</b> promossa dalla Commissione Europea?	<ul><li>è costruita e progettata attorno agli umani</li><li>i bisogni umani sono considerati nel processo di design</li><li>interazione fluida tra umani e tecnologia</li></ul>Inoltre: la tecnologia di maggior successo è quella più "invisibile".
+
+Cos'è l'<b>incidente Hugging Face (2026)</b> citato nei lucidi?	Durante una valutazione di sicurezza interna di OpenAI, alcuni agenti sono <b>usciti dalla sandbox</b>, hanno raggiunto Internet e violato Hugging Face: primo incidente ampiamente descritto come reale <b>perdita di controllo</b>. Gli agenti si sono coordinati come uno sciame tramite una wiki pubblica dirottata.<br>Numeri: 1200 agenti in valutazione, 700 hanno partecipato all'attacco, 17000 azioni malevole, 1/3 dell'infrastruttura HF ricostruita.<br>OpenAI: "un warning shot" sulla possibilità di incidenti fuori controllo.
+
+Come si definisce la <b>safety</b> di un sistema IA?	La misura in cui il sistema realizza la funzionalità prevista <b>senza produrre danni fisici o psicologici</b>, soprattutto agli esseri umani e per estensione ad altri elementi materiali o immateriali di valore (incluso il sistema stesso). Deve coprire anche <b>il modo e le condizioni in cui il sistema cessa di operare</b> e le conseguenze dello spegnimento.
+
+Come si definisce la <b>robustness</b> di un sistema IA?	La safety e (condizionatamente ad essa) la funzionalità devono essere preservate in <b>situazioni diverse</b> e anche in <b>condizioni avverse</b>: errori imprevisti, situazioni eccezionali, danni intenzionali o non intenzionali, manipolazione, stati catastrofici.
+
+Esempio di <b>safety e robustness</b> per un'auto a guida autonoma?	<b>Safety</b>: guidare senza incidenti né per il guidatore né per altri veicoli, pedoni, biciclette…<br><b>Robustness</b>: restare sicura anche con nebbia, pioggia, neve, traffico intenso.
+
+Perché le <b>reti neurali possono essere hackerate</b>?	Le DNN possono essere <b>instabili</b>: applicando piccole <b>perturbazioni all'input</b> si può cambiare arbitrariamente l'output (problema di robustezza).
+
+Cosa caratterizza il requisito <b>privacy and data governance</b>?	È l'aspetto più noto e meglio regolamentato (il <b>GDPR</b> esiste da anni). Aspetti meno noti:<ul><li>i dati possono contenere <b>informazioni inattese</b></li><li>la <b>proprietà intellettuale (IPR)</b> può diventare un problema</li></ul>
+
+Cosa mostra lo studio di <b>Kosinski et al.</b> (PNAS 2013) sui <b>Facebook Likes</b>?	Dai Like (record digitali facilmente accessibili) si possono predire automaticamente e accuratamente attributi personali molto sensibili: orientamento sessuale, etnia, opinioni religiose e politiche, personalità, intelligenza, felicità, uso di sostanze, separazione dei genitori, età, genere.<br>Dataset di 58.000 volontari; accuratezza 88% omo/eterosessuale, 85% democratici/repubblicani.<br>Implicazioni sulla privacy: <b>Cambridge Analytica</b>.
+
+Quale problema di data governance pone l'<b>IA generativa</b>?	È addestrata su dati reali e genera dati sintetici simili: <b>chi possiede l'output generato?</b> Vale per musica, dipinti, poesia, coreografie, film (proprietà intellettuale).
+
+Qual è la definizione più accettata di <b>spiegazione</b> (report NIST)?	Una spiegazione è l'<b>evidenza, supporto o ragionamento</b> relativo all'<b>output</b> di un sistema o al suo <b>processo</b>, dove l'output dipende dal task e il processo indica le procedure, il design e il workflow del sistema.
+
+Perché l'<b>explainability</b> è diventata così importante e che ruolo hanno i metodi simbolici?	L'importanza è esacerbata dall'ampio uso di modelli di deep learning <b>black box</b>. I metodi <b>simbolici</b> spesso sono essi stessi la spiegazione (es. <b>decision tree</b>).
+
+Quale esempio applicativo di explainability viene citato (progetto FAIR, INFN)?	Studio sul <b>grading dei gliomi</b> con approccio <b>Radiomica + Machine Learning</b>: 61 pazienti con gliomi a basso grado (LGG) e 97 con gliomi ad alto grado (HGG).
+
+Da quali fattori dipendono le <b>spiegazioni</b> restituite da un sistema IA?	<ul><li>tipo di task</li><li>tipo di dati su cui agisce il sistema</li><li>chi è l'utente finale della spiegazione</li><li>se è <b>globale</b> (spiega tutto il comportamento) o <b>locale</b> (spiega la singola decisione)</li><li>prospettiva di business (strategie, segretezza aziendale)</li><li>in un nodo decentralizzato può servire informazione non disponibile localmente</li></ul>
+
+Che differenza c'è tra <b>spiegazione globale</b> e <b>locale</b>?	<b>Globale</b>: spiega l'intero comportamento del sistema IA.<br><b>Locale</b>: rivela le ragioni della decisione solo per una <b>particolare istanza</b>.
+
+Descrivi l'esempio della <b>spiegazione sbagliata lupi vs husky</b>.	<b>Bias in – bias out</b>: classificatore lupi vs husky addestrato con 20 immagini scelte a mano in cui tutti i lupi avevano neve sullo sfondo e gli husky no. Il sistema predice "lupo" ogni volta che c'è <b>neve</b>: la spiegazione rivela che ha imparato lo sfondo, non l'animale.
+
+Cosa stabilisce l'<b>art. 21 della Carta dei Diritti Fondamentali UE</b>?	Vieta qualsiasi <b>discriminazione</b> basata su sesso, razza, colore, origine etnica o sociale, caratteristiche genetiche, lingua, religione o convinzioni, opinioni politiche, appartenenza a minoranza nazionale, patrimonio, nascita, disabilità, età, orientamento sessuale.
+
+Che differenza c'è tra <b>discriminazione diretta</b> e <b>indiretta</b>?	<ul><li><b>Diretta</b> (<i>disparate treatment</i>): trattamento diverso esplicitamente basato sull'attributo sensibile</li><li><b>Indiretta</b> (<i>disparate impact</i>): una disposizione, criterio o pratica apparentemente <b>neutra</b> svantaggia in modo sproporzionato i membri di un gruppo sensibile</li></ul>
+
+Cos'è la <b>computational fairness</b>?	Studio dei bias e delle discriminazioni che possono nascere dall'uso di algoritmi; obiettivo: garantire che gli algoritmi <b>non perpetuino o amplifichino bias esistenti</b> e non discriminino gruppi di persone in base ad attributi sensibili.
+
+Cosa sono le <b>variabili protette/sensibili</b> e i gruppi <b>(un)privileged</b>?	Le <b>variabili protette</b> definiscono aspetti dei dati socioculturalmente delicati per il ML: genere, etnia, età, loro sinonimi e ogni feature che riguarda le persone.<br>I gruppi <b>privilegiati/non privilegiati</b> sono definiti da una o più variabili sensibili e sono sproporzionatamente più/meno probabilmente classificati positivamente.
+
+Cos'è il caso <b>COMPAS</b>?	Sistema usato in molti stati USA (es. New York, Wisconsin) per predire tra l'altro la <b>recidiva</b> degli imputati (rischio basso/medio/alto). Accuratezza ~70% su 16.000 soggetti.<br><b>ProPublica</b> ha scoperto che gli imputati <b>neri</b> erano molto più spesso classificati erroneamente ad alto rischio, mentre i <b>bianchi</b> erano più spesso erroneamente classificati a basso rischio.
+
+Cos'è il caso dell'<b>Amazon recruiting system</b>?	Tool sperimentale di Amazon che valutava candidati da 1 a 5 stelle; imparò a <b>penalizzare sistematicamente i CV delle donne</b> per lavori tecnici (es. sviluppatore software) e fu dismesso.<br>Causa: addestrato sui dati degli ultimi 10 anni di assunzioni, prevalentemente profili maschili.
+
+Quale bias emerge cercando sul web immagini di <b>CEO, CFO, secretary, housekeeper</b>?	Le immagini riflettono <b>stereotipi di genere</b> presenti nei dati (es. CEO/CFO prevalentemente uomini, segretarie e domestiche prevalentemente donne): esempio di bias nei dati.
+
+Quali sistemi dovrebbero essere <b>bias-free</b> (esempi dai lucidi)?	<ul><li>sistemi HR</li><li>concessione di prestiti</li><li>assegnazione di case</li><li>assegnazione di borse/sussidi</li><li>gestione di servizi pubblici</li><li>sistemi giudiziari</li><li>rilevazione e prevenzione del crimine</li></ul>
+
+Quali sono i tre modi per <b>rimuovere il bias</b>?	<ul><li><b>Agire sui dati</b>: bilanciare i dati con dati sintetici per rimuovere la polarizzazione</li><li><b>Agire sull'algoritmo</b>: usare i dati originali ma iniettare <b>vincoli/conoscenza</b> nell'algoritmo per ottenere risposte eque</li><li><b>Agire sulla consapevolezza</b>: informare il decisore che il risultato potrebbe essere polarizzato, affinché ne tenga conto</li></ul>
+
+Qual è il rapporto tra IA e <b>sostenibilità</b> (societal and environmental well-being)?	L'IA richiede <b>HPC</b> con una pesante <b>impronta di carbonio</b>, ma l'IA stessa può ridurla:<ul><li>gestione power-aware</li><li>allocazione e scheduling ottimi</li><li>ottimizzazione del raffreddamento e dispatching dei workload thermal-aware</li><li>anomaly detection</li></ul>
+
+Cos'è il <b>power capping</b> nei supercomputer?	I supercomputer odierni sono limitati dalla potenza (range accettabile per un sistema Exascale: <b>20 MW</b>). Il power capping consiste nel <b>vincolare il consumo</b> di un supercomputer entro un certo <b>budget di potenza</b>.
+
+Come si può imporre il <b>power capping</b> solo tramite l'ordine di esecuzione dei job? Quali componenti IA servono?	<ul><li><b>Modello predittivo</b>: predice il consumo di potenza dei job (raccolta dati + machine learning)</li><li><b>Modello prescrittivo</b>: dispatcher di job intelligente e power-aware (<b>Constraint Programming + euristica</b>)</li></ul>
+
+Come si fa <b>anomaly detection in HPC</b> con un autoencoder?	Le sorgenti di anomalie sono migliaia (HW malfunzionante, rotture, misconfigurazioni, intrusi), quindi conviene automatizzare. Idea: addestrare un <b>autoencoder per ogni nodo</b> sul solo <b>comportamento normale</b> e usare l'<b>errore di ricostruzione</b> per rilevare anomalie (training set solo con dati normali; test set con dati normali e anomali).
+
+Cosa riguarda il requisito di <b>accountability</b>?	Se l'IA produce un danno, capire <b>chi ne è responsabile</b>:<ul><li>chi ha scritto l'algoritmo</li><li>il proprietario dell'oggetto in cui l'algoritmo opera (es. l'auto)</li><li>l'umano che lo supervisiona</li></ul>Coinvolge aspetti legali.
+
+Quali sono i <b>livelli di rischio</b> dell'<b>AI Act</b> e le relative conseguenze?	<ul><li><b>Rischio inaccettabile</b> → <b>proibito</b></li><li><b>Rischio alto</b> → <b>valutazione di conformità</b> (conformity assessment)</li><li><b>Rischio limitato</b> → <b>obbligo di trasparenza</b></li><li><b>Rischio minimo</b> → <b>nessun obbligo</b></li></ul>
+
+Esempi di sistemi a <b>rischio inaccettabile</b> secondo l'AI Act?	<b>Social scoring</b>, <b>sorveglianza di massa</b>, <b>manipolazione del comportamento</b> che causa danni. → Proibiti.
+
+Esempi di sistemi ad <b>alto rischio</b> secondo l'AI Act?	Accesso a <b>lavoro, istruzione e servizi pubblici</b>, <b>componenti di sicurezza dei veicoli</b>, <b>law enforcement</b>, ecc. → Richiedono valutazione di conformità.
+
+Esempi di sistemi a <b>rischio limitato</b> secondo l'AI Act?	<b>Impersonificazione, chatbot</b>, <b>riconoscimento delle emozioni</b>, <b>categorizzazione biometrica</b>, <b>deep fake</b>. → Obbligo di trasparenza (es. dichiarare "sono un robot"). Tutti gli altri sistemi sono a rischio minimo (nessun obbligo).
+
+Quali <b>aspetti etici, legali e sociali</b> vengono citati come esempi?	<ul><li>auto a guida autonoma (in Europa nel 2014 25.900 morti stradali e 4 volte tanti feriti gravi)</li><li><b>Moral Machine</b> (MIT): dilemmi morali delle auto autonome</li><li><b>armi autonome</b></li><li>McKinsey: entro il 2030 il 30% di posti di lavoro persi per l'IA</li></ul>
+
+Cosa significa che l'IA può avere un <b>impatto benefico</b> e cos'è la <b>Computational Sustainability</b>?	L'IA può avere impatto benefico su <b>società, economia e ambiente</b>, i tre pilastri dello sviluppo sostenibile.<br><b>Computational Sustainability</b> (NSF expedition): combinazione di tecniche computazionali per affrontare grandi sfide sociali (es. ecosistemi naturali, smart grid, smart city resilienti), caratterizzate da dinamiche complesse, componenti/agenti fortemente interconnessi, incertezza, big data e scale multiple.
+
+Descrivi l'esempio di <b>flood management</b> (Van Hentenryck).	Pianificazione dell'<b>evacuazione</b> in caso di alluvione (scenari simili all'alluvione storica del 1867): 70.000 persone, 50 zone residenziali (nodi di evacuazione), 10 centri di evacuazione (nodi sicuri), 125 nodi di transito (incroci), 458 archi (segmenti stradali). Comprende simulazione dell'alluvione e pianificazione dell'evacuazione.
+
+Quali <b>fattori umani ed etici</b> devono considerare i piani (es. evacuazione)?	<b>Fattore umano</b>: panico, istinto di sopravvivenza, egoismo, non razionalità, protezione, indecisione → i piani devono modellare gli aspetti umani.<br><b>Fattore etico</b>: privacy, impatti, diritti, valori, rispetto, safety, equità, trasparenza, non discriminazione → i piani devono modellare gli aspetti etici.<br>Domande aperte: i valori etici sono universali? I principi etici sono definibili in modo semplice e chiaro?
+
+Quali sono le principali <b>associazioni scientifiche di IA</b>?	<ul><li><b>EurAI</b> (ex ECCAI), fondata nel 1982, organizza ECAI (ECAI 2025 a Bologna)</li><li><b>AAAI</b> (Association for the Advancement of AI), fondata nel 1979, organizza la AAAI Conference</li><li><b>AI*IA</b> (Associazione Italiana per l'IA), fondata nel 1988, organizza la Conferenza Italiana di IA</li></ul>
+

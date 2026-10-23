@@ -650,7 +650,7 @@ La dimostrazione si articola in due parti: prima mostriamo che i vettori di Spec
 
 Per concludere la dimostrazione del teorema, serve mostrare che $\dim S^\lambda = f^\lambda$. L'indipendenza lineare da' $\dim S^\lambda \geq f^\lambda$. Il verso opposto segue da un argomento di conteggio.
 
-\mlenma{Young}{
+\mlenma{Young}{\label{lemma:young}
   Sia $\mu \vdash n$ e sia $f^\mu = \#\{\text{SYT di forma } \mu\}$. Denotiamo con $\nu \to \mu$ il fatto che $\nu$ si ottiene da $\mu$ rimuovendo una cella, e con $\lambda \leftarrow \mu$ il fatto che $\lambda$ si ottiene da $\mu$ aggiungendo una cella.
   \begin{center}
     $\nu \to \mu$:\quad
@@ -850,3 +850,120 @@ La formula-chiave che governa l'intera classificazione è l'asimmetria dell'azio
 b_T \cdot S^\lambda = \mathbb{C}\, v_T \neq 0, \qquad b_T \cdot S^{\wt{\lambda}} = 0 \;\;\text{se } \wt{\lambda} >^R \lambda.
 \]
 Questa proprietà garantisce simultaneamente la non isomorfismo tra moduli associati a partizioni diverse e l'impossibilità di scomporre ciascun modulo in sottomoduli propri.
+
+\section{Esercizio: i moduli di Specht per $\mathfrak{S}_4$}
+
+\qs{Esercizio 7 (19 marzo): $S^\lambda$ per $\lambda \vdash 4$}{
+  Per ogni $ \lambda \vdash 4 $:
+  \begin{itemize}
+    \item elenca i tabloidi e $ M^\lambda $ (Definizione~\ref{def:tabloide}, Definizione~\ref{def:M-lambda});
+    \item scelto un tableau $ T $ di forma $ \lambda $, calcola $ b_T $ (Definizione~\ref{def:simmetrizzatori}) e il vettore di Specht $ v_T $ (Definizione~\ref{def:vettore-specht});
+    \item determina il modulo di Specht $ S^\lambda $ (Definizione~\ref{def:modulo-specht}), identificandolo con una delle rappresentazioni irriducibili di $ \mathfrak{S}_4 $.
+  \end{itemize}
+}
+
+\pf{Soluzione}{
+  Le partizioni di $ 4 $ sono $ (4), (3,1), (2,2), (2,1,1), (1^4) $: per il Teorema~\ref{thm:classificazione-specht} i cinque moduli di Specht corrispondenti formano un sistema completo di rappresentazioni irriducibili di $ \mathfrak{S}_4 $, a due a due non isomorfe (coerentemente col fatto che $ \mathfrak{S}_4 $ ha esattamente $ 5 $ classi di coniugio).
+
+  \textbf{Dimensioni.} Per una forma a una sola riga o a una sola colonna c'e' un unico modo di riempirla in modo standard (le entrate crescono nell'unico ordine possibile), quindi $ f^{(n)} = f^{(1^n)} = 1 $ per ogni $ n $; in particolare $ f^{(3)}=f^{(1,1,1)}=1 $. Usando solo la \textbf{regola di discesa} $ f^\mu = \sum_{\nu \to \mu} f^\nu $ (Lemma~\ref{lemma:young}) e il valore $ f^{(2,1)}=2 $ gia' visto nell'esempio sopra:
+  \[
+    f^{(4)} = f^{(3)} = 1\,, \qquad
+    f^{(3,1)} = f^{(2,1)} + f^{(3)} = 2+1 = 3\,, \qquad
+    f^{(2,2)} = f^{(2,1)} = 2\,,
+  \]
+  \[
+    f^{(2,1,1)} = f^{(2,1)} + f^{(1,1,1)} = 2+1 = 3\,, \qquad
+    f^{(1^4)} = f^{(1,1,1)} = 1\,.
+  \]
+  (Verifica con l'identita' delle dimensioni, Lemma~\ref{lemma:young}: $ 1^2+3^2+2^2+3^2+1^2 = 24 = 4! $.)
+
+  Recuperiamo dall'esercizio sulle rappresentazioni di permutazione $ (V,\rho) $ e $ (U,\varphi) $ di $ \mathfrak{S}_4 $ (dove $ \rho, \varphi $ agiscono su $ \mathbb{C}^4 $ permutando le coordinate, con $ \varphi = \mathrm{sgn} \cdot \rho $) la decomposizione gia' trovata in $5$ irriducibili: $ V = V_1 \oplus V_2 $ (banale $\oplus$ standard, $\dim 1,3$), $ U = U_1 \oplus U_2 $ (segno $\oplus$ standard$\otimes$segno, $\dim 1,3$), e la quinta irriducibile $ W $ di $ \dim 2 $. Le identifichiamo ora una per una con i moduli di Specht.
+
+  \textbf{$ \lambda = (4) $.} Un'unica riga $ \Rightarrow $ un unico tabloide $ \{1,2,3,4\} $, quindi $ \dim M^{(4)} = 1 $. Preso $ T $ con $ 1,2,3,4 $ nell'unica riga, ogni colonna ha una sola casella, quindi $ C(T) = \{e\} $, $ b_T = e $ e $ v_T = \{T\} $. Dato che l'unico tabloide e' fissato da \emph{ogni} $ \sigma \in \mathfrak{S}_4 $, $ S^{(4)} = M^{(4)} $ e' la rappresentazione banale:
+  \[
+    S^{(4)} \cong V_1\,.
+  \]
+
+  \textbf{$ \lambda = (1,1,1,1) $.} Una sola colonna di altezza $4$:
+  \begin{center}
+    \begin{ytableau} 4 \\ 3 \\ 2 \\ 1 \end{ytableau}
+  \end{center}
+  ogni riga ha una sola casella, quindi nessuna riga-equivalenza non banale e $ \dim M^{(1^4)} = 4! = 24 $ ($ M^{(1^4)} $ e' la rappresentazione regolare). Con $ T $ come sopra, $ C(T) = \mathfrak{S}_4 $ (tutta la colonna), quindi
+  \[
+    b_T = \sum_{\sigma \in \mathfrak{S}_4} \mathrm{sgn}(\sigma)\, \sigma\,, \qquad v_T = \sum_{\sigma \in \mathfrak{S}_4} \mathrm{sgn}(\sigma)\, \{\sigma T\}\,.
+  \]
+  Per ogni $ \tau \in \mathfrak{S}_4 $, sostituendo $ \sigma' = \tau\sigma $:
+  \[
+    \tau \cdot v_T = \sum_{\sigma \in \mathfrak{S}_4} \mathrm{sgn}(\sigma)\, \{\tau\sigma T\} = \sum_{\sigma' \in \mathfrak{S}_4} \mathrm{sgn}(\tau\inv \sigma')\, \{\sigma' T\} = \mathrm{sgn}(\tau) \sum_{\sigma'} \mathrm{sgn}(\sigma')\, \{\sigma' T\} = \mathrm{sgn}(\tau)\, v_T\,,
+  \]
+  quindi $ S^{(1^4)} = \langle v_T \rangle $ (dimensione $ f^{(1^4)}=1 $) e' la rappresentazione segno:
+  \[
+    S^{(1^4)} \cong U_1\,.
+  \]
+
+  \textbf{$ \lambda = (3,1) $.} Un tabloide e' determinato dall'unico elemento nella riga corta, quindi i $4$ tabloidi sono in biiezione naturale con $ \{1,2,3,4\} $: $ M^{(3,1)} \cong \mathbb{C}^4 = V $, con $ \mathfrak{S}_4 $ che agisce esattamente come $ \rho $ (permutando le coordinate). Prendiamo il SYT
+  \begin{center}
+    $ T = $ \begin{ytableau} 4 \\ 1 & 2 & 3 \end{ytableau}
+  \end{center}
+  Le colonne sono $ \{1,4\}, \{2\}, \{3\} $, quindi $ C(T) = \{e,(14)\} $, $ b_T = e - (14) $ e
+  \[
+    v_T = \{T\} - (14)\{T\} = \{1,2,3\mid4\} - \{2,3,4\mid1\} \;\longleftrightarrow\; e_4 - e_1 \in V
+  \]
+  (identificando il tabloide con singoletto $ i $ nella riga corta con $ e_i $). Il vettore $ e_4-e_1 $ ha somma delle coordinate nulla, dunque sta nel sottospazio $ V_2 = \{\sum x_i = 0\} \subseteq V $ trovato nell'esercizio precedente. Essendo $ S^{(3,1)} $ irriducibile di dimensione $ f^{(3,1)}=3 $ e $ V_2 $ gia' irriducibile della stessa dimensione, il sottomodulo non nullo $ S^{(3,1)} \subseteq V_2 $ deve coincidere con $ V_2 $ stesso:
+  \[
+    S^{(3,1)} \cong V_2\,.
+  \]
+
+  \textbf{$ \lambda = (2,1,1) $.} $ \dim M^{(2,1,1)} = 4!/2! = 12 $. Prendiamo il SYT
+  \begin{center}
+    $ T = $ \begin{ytableau} 4 \\ 3 \\ 1 & 2 \end{ytableau}
+  \end{center}
+  Le colonne sono $ \{1,3,4\}, \{2\} $, quindi $ C(T) \cong \mathfrak{S}_{\{1,3,4\}} \cong \mathfrak{S}_3 $, di ordine $6$:
+  \[
+    b_T = \sum_{\sigma \in \mathfrak{S}_{\{1,3,4\}}} \mathrm{sgn}(\sigma)\, \sigma = e - (13) - (14) - (34) + (134) + (143)\,,
+  \]
+  \[
+    v_T = \{1,2\mid3\mid4\} - \{2,3\mid1\mid4\} - \{2,4\mid3\mid1\} - \{1,2\mid4\mid3\} + \{2,3\mid4\mid1\} + \{2,4\mid1\mid3\}\,.
+  \]
+  Notiamo che $ (2,1,1) = (3,1)' $, la partizione coniugata (il diagramma trasposto). Per un tableau $ T $ di forma $ \lambda $ e il suo trasposto $ T' $ di forma $ \lambda' $ si scambiano righe e colonne, cioe' $ R(T') = C(T) $ e $ C(T') = R(T) $: e' questo scambio tra simmetrizzatore di riga $ a_T $ e di colonna $ b_T $ a produrre esattamente un twist per il segno tra le due rappresentazioni. Vale quindi in generale
+  \[
+    S^{\lambda'} \cong S^\lambda \otimes \mathrm{sgn}\,.
+  \]
+  Percio' $ S^{(2,1,1)} \cong S^{(3,1)} \otimes \mathrm{sgn} = V_2 \otimes U_1 = U_2 $, coerentemente con $ f^{(2,1,1)}=3=\dim U_2 $:
+  \[
+    S^{(2,1,1)} \cong U_2\,.
+  \]
+
+  \textbf{$ \lambda = (2,2) $.} $ \dim M^{(2,2)} = 4!/(2!2!) = 6 $. Prendiamo il SYT
+  \begin{center}
+    $ T = $ \begin{ytableau} 3 & 4 \\ 1 & 2 \end{ytableau}
+  \end{center}
+  Le colonne sono $ \{1,3\}, \{2,4\} $, quindi $ C(T) = \{e,(13)\} \times \{e,(24)\} $, di ordine $4$:
+  \[
+    b_T = e - (13) - (24) + (13)(24)\,,
+  \]
+  \[
+    v_T = \{1,2\mid3,4\} - \{2,3\mid1,4\} - \{1,4\mid2,3\} + \{3,4\mid1,2\}\,.
+  \]
+  Restano solo $4$ irriducibili gia' assegnate ($ V_1, V_2, U_2, U_1 $, di dimensioni $1,3,3,1$): essendo $ \{S^\lambda\}_{\lambda \vdash 4} $ un sistema completo e irridondante (Teorema~\ref{thm:classificazione-specht}), l'ultima partizione $ \lambda=(2,2) $ deve corrispondere alla rappresentazione mancante $ W $, di dimensione $2$ -- coerentemente con $ f^{(2,2)}=2 $ calcolato sopra:
+  \[
+    S^{(2,2)} \cong W\,.
+  \]
+  \Qed
+}
+
+\nt{
+  Riassumendo:
+  \begin{center}
+  \begin{tabular}{c|ccccc}
+    $ \lambda $ & $(4)$ & $(3,1)$ & $(2,2)$ & $(2,1,1)$ & $(1^4)$ \\
+    \hline
+    $ \dim M^\lambda $ & $1$ & $4$ & $6$ & $12$ & $24$ \\
+    $ f^\lambda = \dim S^\lambda $ & $1$ & $3$ & $2$ & $3$ & $1$ \\
+    $ S^\lambda \cong $ & $V_1$ & $V_2$ & $W$ & $U_2$ & $U_1$ \\
+  \end{tabular}
+  \end{center}
+  Si noti la simmetria per coniugio: $ (3,1) $ e $ (2,1,1)=(3,1)' $ sono partner coniugati (standard e standard$\otimes$segno), $ (4) $ e $ (1^4)=(4)' $ sono partner coniugati (banale e segno), mentre $ (2,2)=(2,2)' $ e' autoconiugata -- coerentemente col fatto che $ W \otimes \mathrm{sgn} \cong W $, essendo $W$ l'unica irriducibile $2$-dimensionale di $ \mathfrak{S}_4 $.
+}
+
+% \end{document}
