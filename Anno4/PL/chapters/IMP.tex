@@ -1,0 +1,394 @@
+% \begin{document}
+\section{A simple imperative language IMP}
+
+We will now consider a more realistic programming language, one where we can assign values to
+variables and execute control constructs such as \textbf{if} and \textbf{while}. The syntax for
+this imperative language, called IMP, is as follows:
+
+\begin{align*}
+\text{arithmetic expressions} \quad & a \in \mathbf{Aexp} \quad a ::= x \mid n \mid a_1 + a_2
+\mid a_1 \times a_2 \\
+\text{Boolean expressions} \quad & b \in \mathbf{Bexp} \quad b ::= \mathbf{true} \mid
+\mathbf{false} \mid a_1 < a_2 \\
+\text{commands} \quad & c \in \mathbf{Com} \quad c ::= \mathbf{skip} \mid x := a \mid c_1; c_2
+\mid \mathbf{if}\ b\ \mathbf{then}\ c_1\ \mathbf{else}\ c_2 \mid \mathbf{while}\ b\
+\mathbf{do}\ c
+\end{align*}
+
+\subsection{Small-step operational semantics}
+
+We'll first give a small-step operational semantics for IMP. The configurations in this
+language are of the form $\langle \sigma, c \rangle$, $\langle \sigma, b \rangle$, and $\langle
+\sigma, a \rangle$, where $\sigma$ is a store. The final configurations are of the form
+$\langle \sigma, \mathbf{skip} \rangle$ for commands, $\langle \sigma, \mathbf{true} \rangle$
+and $\langle \sigma, \mathbf{false} \rangle$ for Boolean expressions, and $\langle \sigma, n
+\rangle$ for arithmetic expressions. There are three different small-step operational
+semantics relations: one each of the syntactic categories.
+\[
+\to_{\mathbf{Com}} \; \subseteq \; (\mathbf{Store} \times \mathbf{Com}) \times (\mathbf{Store}
+\times \mathbf{Com})
+\]
+\[
+\to_{\mathbf{Bexp}} \; \subseteq \; (\mathbf{Store} \times \mathbf{Bexp}) \times
+(\mathbf{Store} \times \mathbf{Bexp})
+\]
+\[
+\to_{\mathbf{Aexp}} \; \subseteq \; (\mathbf{Store} \times \mathbf{Aexp}) \times
+(\mathbf{Store} \times \mathbf{Aexp})
+\]
+
+For brevity, we will overload the symbol $\to$ and use it to refer to all of these relations.
+Which relation is being used will be clear from context. The evaluation rules for arithmetic
+and Boolean expressions are similar to the ones we've seen before. However, note that since the
+arithmetic expressions no longer contain assignment, arithmetic and Boolean expressions can not
+update the store. But to streamline everything we keep it as an output. In the small-step we'll fix the fact that the store doesn't change, but this can be altered if needed using $ \sigma' $.
+
+\medskip
+\noindent\textbf{Arithmetic expressions}
+
+\[
+\frac{n = \sigma(x)}{\langle \sigma, x \rangle \to \langle \sigma, n \rangle}
+\]
+
+\[
+\frac{\langle \sigma, a_1 \rangle \to \langle \sigma, a_1' \rangle}{\langle \sigma, a_1 + a_2
+\rangle \to \langle \sigma, a_1' + a_2 \rangle}
+\qquad
+\frac{\langle \sigma, a_2 \rangle \to \langle \sigma, a_2' \rangle}{\langle \sigma, n + a_2
+\rangle \to \langle \sigma, n + a_2' \rangle}
+\qquad
+\frac{p = n + m}{\langle \sigma, n + m \rangle \to \langle \sigma, p \rangle}
+\]
+
+\[
+\frac{\langle \sigma, a_1 \rangle \to \langle \sigma, a_1' \rangle}{\langle \sigma, a_1 \times
+a_2 \rangle \to \langle \sigma, a_1' \times a_2 \rangle}
+\qquad
+\frac{\langle \sigma, a_2 \rangle \to \langle \sigma, a_2' \rangle}{\langle \sigma, n \times a_2
+\rangle \to \langle \sigma, n \times a_2' \rangle}
+\qquad
+\frac{p = n \times m}{\langle \sigma, n \times m \rangle \to \langle \sigma, p \rangle}
+\]
+
+\medskip
+\noindent\textbf{Boolean expressions}
+
+\[
+\frac{\langle \sigma, a_1 \rangle \to \langle \sigma, a_1' \rangle}{\langle \sigma, a_1 < a_2
+\rangle \to \langle \sigma, a_1' < a_2 \rangle}
+\qquad
+\frac{\langle \sigma, a_2 \rangle \to \langle \sigma, a_2' \rangle}{\langle \sigma, n < a_2
+\rangle \to \langle \sigma, n < a_2' \rangle}
+\]
+
+\[
+\frac{n < m}{\langle \sigma, n < m \rangle \to \langle \sigma, \mathbf{true} \rangle}
+\qquad
+\frac{n \geq m}{\langle \sigma, n < m \rangle \to \langle \sigma, \mathbf{false} \rangle}
+\]
+
+\medskip
+\noindent\textbf{Commands}
+
+\[
+\frac{\langle \sigma, a \rangle \to \langle \sigma, a' \rangle}{\langle \sigma, x := a \rangle
+\to \langle \sigma, x := a' \rangle}
+\qquad
+\frac{}{\langle \sigma, x := n \rangle \to \langle \sigma[x \mapsto n], \mathbf{skip} \rangle}
+\]
+
+\[
+\frac{\langle \sigma, c_1 \rangle \to \langle \sigma', c_1' \rangle}{\langle \sigma, c_1; c_2
+\rangle \to \langle \sigma', c_1'; c_2 \rangle}
+\qquad
+\frac{}{\langle \sigma, \mathbf{skip}; c_2 \rangle \to \langle \sigma, c_2 \rangle}
+\]
+
+For \textbf{if} commands, we reduce the test until we get $\mathbf{true}$ or $\mathbf{false}$
+and then we execute the appropriate branch:
+
+\[
+\frac{\langle \sigma, b \rangle \to \langle \sigma, b' \rangle}{\langle \sigma, \mathbf{if}\ b\
+\mathbf{then}\ c_1\ \mathbf{else}\ c_2 \rangle \to \langle \sigma, \mathbf{if}\ b'\
+\mathbf{then}\ c_1\ \mathbf{else}\ c_2 \rangle}
+\]
+
+\[
+\frac{}{\langle \sigma, \mathbf{if}\ \mathbf{true}\ \mathbf{then}\ c_1\ \mathbf{else}\ c_2
+\rangle \to \langle \sigma, c_1 \rangle}
+\qquad
+\frac{}{\langle \sigma, \mathbf{if}\ \mathbf{false}\ \mathbf{then}\ c_1\ \mathbf{else}\ c_2
+\rangle \to \langle \sigma, c_2 \rangle}
+\]
+
+For \textbf{while} loops, the above strategy doesn't work, because if we evaluate $ b $ we won't be able to re-evaluate it for the next loop. Instead, we use the following
+rule, which can be thought of as ``unrolling'' the loop, one iteration at a time.
+
+\[
+\frac{}{\langle \sigma, \mathbf{while}\ b\ \mathbf{do}\ c \rangle \to \langle \sigma,
+\mathbf{if}\ b\ \mathbf{then}\ (c; \mathbf{while}\ b\ \mathbf{do}\ c)\ \mathbf{else}\
+\mathbf{skip} \rangle}
+\]
+\nt{
+With this new rule, induction on the structure of the term doesn't work! This is because instead of always getting smaller, the step is to a bigger $ c $. Sometimes this is managable, but not always.
+}
+
+We can now take a concrete program and see how it executes under the above rules. Consider we
+execute the program
+
+\ex{Small-step eval of IMP}{
+\[
+\mathit{foo} := 3;\ \mathbf{while}\ \mathit{foo} < 4\ \mathbf{do}\ \mathit{foo} := \mathit{foo}
++ 5
+\]
+The execution works as follows:
+\begin{align*}
+&\langle \sigma, \mathit{foo} := 3; \mathbf{while}\ \mathit{foo} < 4\ \mathbf{do}\ \mathit{foo}
+:= \mathit{foo} + 5 \rangle \\
+\to\ &\langle \sigma', \mathbf{skip}; \mathbf{while}\ \mathit{foo} < 4\ \mathbf{do}\ \mathit{foo}
+:= \mathit{foo} + 5 \rangle && \text{where } \sigma' = \sigma[\mathit{foo} \mapsto 3] \\
+\to\ &\langle \sigma', \mathbf{while}\ \mathit{foo} < 4\ \mathbf{do}\ \mathit{foo} := \mathit{foo}
++ 5 \rangle \\
+\to\ &\langle \sigma', \mathbf{if}\ \mathit{foo} < 4\ \mathbf{then}\ (\mathit{foo} := \mathit{foo}
++ 5; W)\ \mathbf{else}\ \mathbf{skip} \rangle \\
+\to\ &\langle \sigma', \mathbf{if}\ 3 < 4\ \mathbf{then}\ (\mathit{foo} := \mathit{foo} + 5;
+W)\ \mathbf{else}\ \mathbf{skip} \rangle \\
+\to\ &\langle \sigma', \mathbf{if}\ \mathbf{true}\ \mathbf{then}\ (\mathit{foo} := \mathit{foo}
++ 5; W)\ \mathbf{else}\ \mathbf{skip} \rangle \\
+\to\ &\langle \sigma', \mathit{foo} := \mathit{foo} + 5; \mathbf{while}\ \mathit{foo} < 4\
+\mathbf{do}\ \mathit{foo} := \mathit{foo} + 5 \rangle \\
+\to\ &\langle \sigma', \mathit{foo} := 3 + 5; \mathbf{while}\ \mathit{foo} < 4\ \mathbf{do}\
+\mathit{foo} := \mathit{foo} + 5 \rangle \\
+\to\ &\langle \sigma', \mathit{foo} := 8; \mathbf{while}\ \mathit{foo} < 4\ \mathbf{do}\
+\mathit{foo} := \mathit{foo} + 5 \rangle \\
+\to\ &\langle \sigma'', \mathbf{skip}; \mathbf{while}\ \mathit{foo} < 4\ \mathbf{do}\
+\mathit{foo} := \mathit{foo} + 5 \rangle && \text{where } \sigma'' = \sigma'[\mathit{foo}
+\mapsto 8] \\
+\to\ &\langle \sigma'', \mathbf{while}\ \mathit{foo} < 4\ \mathbf{do}\ \mathit{foo} :=
+\mathit{foo} + 5 \rangle \\
+\to\ &\langle \sigma'', \mathbf{if}\ \mathit{foo} < 4\ \mathbf{then}\ (\mathit{foo} :=
+\mathit{foo} + 5; W)\ \mathbf{else}\ \mathbf{skip} \rangle \\
+\to\ &\langle \sigma'', \mathbf{if}\ 8 < 4\ \mathbf{then}\ (\mathit{foo} := \mathit{foo} + 5;
+W)\ \mathbf{else}\ \mathbf{skip} \rangle \\
+\to\ &\langle \sigma'', \mathbf{if}\ \mathbf{false}\ \mathbf{then}\ (\mathit{foo} :=
+\mathit{foo} + 5; W)\ \mathbf{else}\ \mathbf{skip} \rangle \\
+\to\ &\langle \sigma'', \mathbf{skip} \rangle
+\end{align*}
+where $W$ is an abbreviation for the while loop $\mathbf{while}\ \mathit{foo} < 4\
+\mathbf{do}\ \mathit{foo} := \mathit{foo} + 5$.
+}
+
+\section{Large-step operational semantics for IMP}
+
+We define large-step evaluation relations for arithmetic expressions, Boolean expressions, and
+commands. The relation for arithmetic expressions relates an arithmetic expression and store to
+the integer value that the expression evaluates to. For Boolean expressions, the final value is
+in $\mathbf{Bool} = \{\mathbf{true}, \mathbf{false}\}$. For commands, the final value is a
+store.
+
+\[
+\Downarrow_{\mathbf{Aexp}} \; \subseteq \; (\mathbf{Aexp} \times \mathbf{Store}) \times
+\mathbf{Int}
+\]
+\[
+\Downarrow_{\mathbf{Bexp}} \; \subseteq \; (\mathbf{Bexp} \times \mathbf{Store}) \times
+\mathbf{Bool}
+\]
+\[
+\Downarrow_{\mathbf{Com}} \; \subseteq \; (\mathbf{Com} \times \mathbf{Store}) \times
+\mathbf{Store}
+\]
+
+Again, we overload the symbol $\Downarrow$ and use it for any of these three relations; which
+relation is intended will be clear from context. We also use infix notation, for example
+writing $\langle \sigma, c \rangle \Downarrow \sigma'$ if $(\langle \sigma, c \rangle, \sigma')
+\in {\Downarrow_{\mathbf{Com}}}$.
+
+\nt{
+  In this course, we're not interested in concrete syntax, so ambiguous AST aren't a problem. Braces can be used to explicit.
+}
+
+\medskip
+\noindent\textbf{Arithmetic expressions.}
+
+\[
+\frac{}{\langle \sigma, n \rangle \Downarrow n}
+\qquad
+\frac{\sigma(x) = n}{\langle \sigma, x \rangle \Downarrow n}
+\]
+
+\[
+\frac{\langle \sigma, a_1 \rangle \Downarrow n_1 \qquad \langle \sigma, a_2 \rangle \Downarrow
+n_2 \qquad n = n_1 + n_2}{\langle \sigma, a_1 + a_2 \rangle \Downarrow n}
+\qquad
+\frac{\langle \sigma, a_1 \rangle \Downarrow n_1 \qquad \langle \sigma, a_2 \rangle \Downarrow
+n_2 \qquad n = n_1 \times n_2}{\langle \sigma, a_1 \times a_2 \rangle \Downarrow n}
+\]
+
+\medskip
+\noindent\textbf{Boolean expressions.}
+
+\[
+\frac{}{\langle \sigma, \mathbf{true} \rangle \Downarrow \mathbf{true}}
+\qquad
+\frac{}{\langle \sigma, \mathbf{false} \rangle \Downarrow \mathbf{false}}
+\]
+
+\[
+\frac{\langle \sigma, a_1 \rangle \Downarrow n_1 \qquad \langle \sigma, a_2 \rangle \Downarrow
+n_2 \qquad n_1 < n_2}{\langle \sigma, a_1 < a_2 \rangle \Downarrow \mathbf{true}}
+\qquad
+\frac{\langle \sigma, a_1 \rangle \Downarrow n_1 \qquad \langle \sigma, a_2 \rangle \Downarrow
+n_2 \qquad n_1 \geq n_2}{\langle \sigma, a_1 < a_2 \rangle \Downarrow \mathbf{false}}
+\]
+
+\medskip
+\noindent\textbf{Commands.}
+
+\[
+\frac{}{\langle \sigma, \mathbf{skip} \rangle \Downarrow \sigma} \; \text{SKIP}
+\qquad
+\frac{\langle \sigma, a \rangle \Downarrow n}{\langle \sigma, x := a \rangle \Downarrow
+\sigma[x \mapsto n]} \; \text{ASSGN}
+\]
+
+\[
+\frac{\langle \sigma, c_1 \rangle \Downarrow \sigma' \qquad \langle \sigma', c_2 \rangle
+\Downarrow \sigma''}{\langle \sigma, c_1; c_2 \rangle \Downarrow \sigma''} \; \text{SEQ}
+\]
+
+\[
+\frac{\langle \sigma, b \rangle \Downarrow \mathbf{true} \qquad \langle \sigma, c_1 \rangle
+\Downarrow \sigma'}{\langle \sigma, \mathbf{if}\ b\ \mathbf{then}\ c_1\ \mathbf{else}\ c_2
+\rangle \Downarrow \sigma'} \; \text{IF-T}
+\qquad
+\frac{\langle \sigma, b \rangle \Downarrow \mathbf{false} \qquad \langle \sigma, c_2 \rangle
+\Downarrow \sigma'}{\langle \sigma, \mathbf{if}\ b\ \mathbf{then}\ c_1\ \mathbf{else}\ c_2
+\rangle \Downarrow \sigma'} \; \text{IF-F}
+\]
+
+\[
+\frac{\langle \sigma, b \rangle \Downarrow \mathbf{false}}{\langle \sigma, \mathbf{while}\ b\
+\mathbf{do}\ c \rangle \Downarrow \sigma} \; \text{WHILE-F}
+\]
+
+\[
+\frac{\langle \sigma, b \rangle \Downarrow \mathbf{true} \qquad \langle \sigma, c \rangle
+\Downarrow \sigma' \qquad \langle \sigma', \mathbf{while}\ b\ \mathbf{do}\ c \rangle \Downarrow
+\sigma''}{\langle \sigma, \mathbf{while}\ b\ \mathbf{do}\ c \rangle \Downarrow \sigma''} \;
+\text{WHILE-T}
+\]
+
+\nt{
+  The big-step semantics treat termination differently to small-step. To prove these two are equal, we could assume termination.
+}
+
+It's interesting to see that the rule for while loops does not rely on using an if command (as
+in the case of small-step semantics). Why does this rule work?
+
+\subsection{Command equivalence}
+
+The small-step operational semantics suggests that the loop $\mathbf{while}\ b\ \mathbf{do}\ c$
+should be equivalent to the command $\mathbf{if}\ b\ \mathbf{then}\ (c; \mathbf{while}\ b\
+\mathbf{do}\ c)\ \mathbf{else}\ \mathbf{skip}$. Can we show that this indeed the case that the
+language is defined using the above large-step evaluation?
+
+First, we need to to be more precise about what ``equivalent commands'' mean. Our formal model
+allows us to define this concept using large-step evaluations as follows. (One can write a
+similar definition using $\to^*$ in small-step semantics.)
+
+\dfn{Equivalence of commands}{
+Two commands $c$ and $c'$ are equivalent (written $c \sim c'$) if, for any stores $\sigma$ and
+$\sigma'$, we have
+\[
+\langle \sigma, c \rangle \Downarrow \sigma' \iff \langle \sigma, c' \rangle \Downarrow
+\sigma'.
+\]
+}
+
+We can now state and prove the claim that $\mathbf{while}\ b\ \mathbf{do}\ c$ and $\mathbf{if}\
+b\ \mathbf{then}\ (c; \mathbf{while}\ b\ \mathbf{do}\ c)\ \mathbf{else}\ \mathbf{skip}$ are
+equivalent.
+
+\thm{}{
+For all $b \in \mathbf{Bexp}$ and $c \in \mathbf{Com}$ we have
+\[
+\mathbf{while}\ b\ \mathbf{do}\ c \; \sim \; \mathbf{if}\ b\ \mathbf{then}\ (c;
+\mathbf{while}\ b\ \mathbf{do}\ c)\ \mathbf{else}\ \mathbf{skip}.
+\]
+}
+
+\pf{}{
+Let $W$ be an abbreviation for $\mathbf{while}\ b\ \mathbf{do}\ c$. We want to show that for
+all stores $\sigma$, $\sigma'$, we have:
+\[
+\langle \sigma, W \rangle \Downarrow \sigma' \quad \text{if and only if} \quad \langle \sigma,
+\mathbf{if}\ b\ \mathbf{then}\ (c; W)\ \mathbf{else}\ \mathbf{skip} \rangle \Downarrow \sigma'
+\]
+For this, we must show that both directions ($\implies$ and $\impliedby$) hold. We'll show
+only direction $\implies$; the other is similar.
+
+Assume that $\sigma$ and $\sigma'$ are stores such that $\langle \sigma, W \rangle \Downarrow
+\sigma'$. It means that there is some derivation that proves this fact. Inspecting the
+evaluation rules, we see that there are two possible rules whose conclusions match this fact:
+\textsc{While-F} and \textsc{While-T}. We analyze each of them in turn.
+
+\medskip
+\noindent\textbf{\textsc{While-F}.} The derivation must look like the following.
+\[
+\cfrac{\overset{\displaystyle \vdots_1}{\langle \sigma, b \rangle \Downarrow \mathbf{false}}}
+{\langle \sigma, W \rangle \Downarrow \sigma} \; \text{WHILE-F}
+\]
+Here, we use $\vdots_1$ to refer to the derivation of $\langle \sigma, b \rangle \Downarrow
+\mathbf{false}$. Note that in this case, $\sigma' = \sigma$.
+
+We can use $\vdots_1$ to derive a proof tree showing that the evaluation of $\mathbf{if}\ b\
+\mathbf{then}\ (c; W)\ \mathbf{else}\ \mathbf{skip}$ yields the same final state $\sigma$:
+\[
+\cfrac{
+\overset{\displaystyle \vdots_1}{\langle \sigma, b \rangle \Downarrow \mathbf{false}}
+\qquad
+\cfrac{}{\langle \sigma, \mathbf{skip} \rangle \Downarrow \sigma} \; \text{SKIP}
+}{\langle \sigma, \mathbf{if}\ b\ \mathbf{then}\ (c; W)\ \mathbf{else}\ \mathbf{skip} \rangle
+\Downarrow \sigma} \; \text{IF-F}
+\]
+
+\medskip
+\noindent\textbf{\textsc{While-T}.} In this case, the derivation has the following form.
+\[
+\cfrac{
+\overset{\displaystyle \vdots_2}{\langle \sigma, b \rangle \Downarrow \mathbf{true}}
+\qquad
+\overset{\displaystyle \vdots_3}{\langle \sigma, c \rangle \Downarrow \sigma''}
+\qquad
+\overset{\displaystyle \vdots_4}{\langle \sigma'', W \rangle \Downarrow \sigma'}
+}{\langle \sigma, W \rangle \Downarrow \sigma'} \; \text{WHILE-T}
+\]
+We can use subderivations $\vdots_2$, $\vdots_3$, and $\vdots_4$ to show that the evaluation of
+$\mathbf{if}\ b\ \mathbf{then}\ (c; W)\ \mathbf{else}\ \mathbf{skip}$ yields the same final
+state $\sigma'$.
+\[
+\cfrac{
+\overset{\displaystyle \vdots_2}{\langle \sigma, b \rangle \Downarrow \mathbf{true}}
+\qquad
+\cfrac{
+\overset{\displaystyle \vdots_3}{\langle \sigma, c \rangle \Downarrow \sigma''}
+\qquad
+\overset{\displaystyle \vdots_4}{\langle \sigma'', W \rangle \Downarrow \sigma'}
+}{\langle \sigma, c; W \rangle \Downarrow \sigma'} \; \text{SEQ}
+}{\langle \sigma, \mathbf{if}\ b\ \mathbf{then}\ (c; W)\ \mathbf{else}\ \mathbf{skip} \rangle
+\Downarrow \sigma'} \; \text{IF-T}
+\]
+
+Hence, we showed that in each of the two possible cases, the command $\mathbf{if}\ b\
+\mathbf{then}\ (c; W)\ \mathbf{else}\ \mathbf{skip}$ evaluates to the same final state as the
+command $W$.
+}
+
+Some questions:
+\begin{itemize}
+\item Can we write a program that doesn't terminate? yes, obv
+\item Is IMP Turing Complete? Kinda, we don't have a way of creating new state (it's statically allocated), so if we replace the unbound \textbf{Int} type with something like \textbf{Int64}, it wouldn't be complete
+\end{itemize}
+
+% \end{document}

@@ -1,0 +1,482 @@
+% \begin{document}
+\chapter{Separation Logic}
+
+So far, we have looked at a version of Hoare logic that supports reasoning about IMP programs in
+terms of pre- and post-conditions on stores. In this lecture, we consider a language with pointers
+and dynamic memory allocation. We define a big-step operational semantics for the language as a
+relation on program states $(\sigma,h)$ with a store and a heap. We show how Hoare logic fails to
+support modular reasoning due to aliasing between pointers. Finally, we introduce
+\emph{separation logic}, which extends Hoare logic's assertions with predicates on heaps and
+provides a \emph{frame} rule that supports modular proofs.
+
+\section{IMP with Heaps}
+%
+As a first step, we extend IMP with standard commands for manipulating values on the heap. Note: in
+this lecture we will write $e$ for arithmetic expressions rather than $a$, as it is more intuitive:
+\begin{align*}
+  c\ ::=\ & \kw{skip}\mid x:=e\mid c_1;c_2\mid\kw{if}\ b\ \kw{then}\ c_1\ \kw{else}\ c_2\mid\kw{while}\ b\ \kw{do}\ c\\
+  \mid\ & x:=\kw{new}(e)\mid\kw{free}(e)\mid x:=\ast e\mid\ast e_1:=e_2
+\end{align*}
+The new commands in this language include:
+\begin{itemize}
+  \item $x:=\kw{new}(e)$, which evaluates $e$ to a value $v$, allocates storage for $v$ on the heap,
+    and assigns the pointer to that storage to $x$ in the store;
+  \item $x:=\ast e$, which evaluates $e$ to a pointer $p$, loads the value $v$ associated with $p$
+    from the heap, and assigns $v$ to $x$ in the store;
+  \item $\ast e_1:=e_2$, which evaluates $e_1$ to a pointer $p$ and $e_2$ to a value $v$, and then
+    stores $v$ at the location associated with $p$ on the heap; and
+  \item $\kw{free}(e)$, which evaluates $e$ to a pointer $p$ and deallocates the heap storage
+    associated with $p$.
+\end{itemize}
+%
+\section{Big-Step Operational Semantics}
+%
+To define the semantics of this extension of IMP, we will need states that keep track both of the
+local variables as well as the heap. We will model states as pairs $(\sigma,h)$ where
+\begin{itemize}
+  \item $\sigma\in\mathrm{Var}\to\mathbb{Z}$ is the store, which for simplicity we take to be a
+    total function, and
+  \item $h\in\mathrm{Addr}\rightharpoonup_{\mathrm{fin}}\mathbb{Z}$ is the heap, a finite partial
+    function.
+\end{itemize}
+Here $\mathrm{Addr}\subseteq\mathbb{Z}\setminus\{0\}$ is the set of addresses. Pointers are just
+integers, so they can be stored in variables, stored on the heap, and computed with arithmetic
+expressions. We exclude $0$ so that it can serve as the null pointer: no cell is ever stored at
+address $0$. As usual, we write $\dom(h)$ for the domain of the heap and $h[p\mapsto v]$ for the
+heap that maps $p$ to $v$ and otherwise behaves like $h$.
+%
+In the formal semantics, commands evaluate in one big step to an outcome $\omega$, which is either
+a final state or a memory error:
+\[
+  \ev{\sigma,h,c}\sem\omega\qquad\qquad \omega\ ::=\ (\sigma',h')\mid\err
+\]
+while arithmetic and boolean expressions remain pure,
+\[
+  \ev{\sigma,e}\sem v
+\]
+%
+\paragraph{Basic commands}
+\[
+  \infr{}{\ev{\sigma,h,\kw{skip}}\sem(\sigma,h)}{Skip}
+  \qquad
+  \infr{\ev{\sigma,e}\sem v}{\ev{\sigma,h,x:=e}\sem(\sigma[x\mapsto v],h)}{Assign}
+\]
+\[
+  \infr{\ev{\sigma,h,c_1}\sem(\sigma_1,h_1)\qquad\ev{\sigma_1,h_1,c_2}\sem\omega}
+       {\ev{\sigma,h,c_1;c_2}\sem\omega}{Seq}
+\]
+%
+\paragraph{Conditionals and loops}
+\[
+  \infr{\ev{\sigma,b}\sem\mathrm{true}\qquad\ev{\sigma,h,c_1}\sem\omega}
+       {\ev{\sigma,h,\kw{if}\ b\ \kw{then}\ c_1\ \kw{else}\ c_2}\sem\omega}{If-True}
+  \qquad
+  \infr{\ev{\sigma,b}\sem\mathrm{false}\qquad\ev{\sigma,h,c_2}\sem\omega}
+       {\ev{\sigma,h,\kw{if}\ b\ \kw{then}\ c_1\ \kw{else}\ c_2}\sem\omega}{If-False}
+\]
+\[
+  \infr{\ev{\sigma,b}\sem\mathrm{false}}
+       {\ev{\sigma,h,\kw{while}\ b\ \kw{do}\ c}\sem(\sigma,h)}{While-False}
+\]
+\[
+  \infr{\ev{\sigma,b}\sem\mathrm{true}\qquad\ev{\sigma,h,c}\sem(\sigma_1,h_1)\qquad
+        \ev{\sigma_1,h_1,\kw{while}\ b\ \kw{do}\ c}\sem\omega}
+       {\ev{\sigma,h,\kw{while}\ b\ \kw{do}\ c}\sem\omega}{While-True}
+\]
+%
+\paragraph{Heap commands}
+\[
+  \infr{\ev{\sigma,e}\sem p\qquad p\in\dom(h)\qquad h(p)=v}
+       {\ev{\sigma,h,x:=\ast e}\sem(\sigma[x\mapsto v],h)}{Load}
+  \qquad
+  \infr{\ev{\sigma,e_1}\sem p\qquad\ev{\sigma,e_2}\sem v\qquad p\in\dom(h)}
+       {\ev{\sigma,h,\ast e_1:=e_2}\sem(\sigma,h[p\mapsto v])}{Store}
+\]
+\[
+  \infr{\ev{\sigma,e}\sem v\qquad p\in\mathrm{Addr}\setminus\dom(h)}
+       {\ev{\sigma,h,x:=\kw{new}(e)}\sem(\sigma[x\mapsto p],h[p\mapsto v])}{New}
+  \qquad
+  \infr{\ev{\sigma,e}\sem p\qquad p\in\dom(h)}
+       {\ev{\sigma,h,\kw{free}(e)}\sem(\sigma,h|_{\dom(h)\setminus\{p\}})}{Free}
+\]
+Here $h|_A$ is the restriction of $h$ to the addresses in $A$. Note that \rn{New} may choose any
+unused address $p$, so the semantics is nondeterministic.
+%
+\paragraph{Memory errors} A load, store, or free at an address that is not allocated produces a
+memory error, and errors propagate through sequencing and loops:
+\[
+  \infr{\ev{\sigma,e}\sem p\qquad p\notin\dom(h)}{\ev{\sigma,h,x:=\ast e}\sem\err}{Load-Err}
+  \qquad
+  \infr{\ev{\sigma,e_1}\sem p\qquad p\notin\dom(h)}{\ev{\sigma,h,\ast e_1:=e_2}\sem\err}{Store-Err}
+\]
+\[
+  \infr{\ev{\sigma,e}\sem p\qquad p\notin\dom(h)}{\ev{\sigma,h,\kw{free}(e)}\sem\err}{Free-Err}
+  \qquad
+  \infr{\ev{\sigma,h,c_1}\sem\err}{\ev{\sigma,h,c_1;c_2}\sem\err}{Seq-Err}
+\]
+\[
+  \infr{\ev{\sigma,b}\sem\mathrm{true}\qquad\ev{\sigma,h,c}\sem\err}
+       {\ev{\sigma,h,\kw{while}\ b\ \kw{do}\ c}\sem\err}{While-Err}
+\]
+The rules for \rn{Seq}, \rn{If}, and \rn{While-True} above already pass along an error from their
+last premise. Since $0\notin\mathrm{Addr}$, any load, store, or free at address $0$ produces
+$\err$. No other command can fail: the store is total, so expressions always evaluate, and we
+assume that $\mathrm{Addr}$ is infinite, so \rn{New} can always find an unused address in the
+finite heap. Thanks to the outcome $\err$, a program that crashes is now distinguishable from one
+that runs forever, which has no derivation at all.
+%
+\section{The Rule of Constancy}
+%
+The following rule is admissible in standard Hoare logic:
+\[
+  \infr{\vdash\triple{P}{c}{Q}\qquad\fv(R)\cap\modv(c)=\emptyset}
+       {\vdash\triple{P\wedge R}{c}{Q\wedge R}}{Constancy}
+\]
+Here $\fv(R)$ are the free variables of $R$ and $\modv(c)$ are the variables that $c$ may modify.
+For example, $\fv(y=0)=\{y\}$ and $\modv(x:=x+1)=\{x\}$.
+%
+Intuitively, the rule of constancy captures a form of local reasoning. It allows us to first prove
+a simple Hoare triple and then extend it to a more complicated triple by conjoining the same
+predicate to the pre- and post-conditions. For instance, using this rule we can strengthen
+\[
+  \triple{x>0}{x:=x+1}{x>1}
+\]
+to
+\[
+  \triple{x>0\wedge y=0}{x:=x+1}{x>1\wedge y=0}
+\]
+%
+\paragraph{Free and Modified Variables}
+The function $\fv(P)$ returns the set of program variables that occur free in assertion $P$.
+\begin{align*}
+  \fv(n)&=\fv(\mathrm{true})=\fv(\mathrm{false})=\emptyset\\
+  \fv(x)&=\{x\}\\
+  \fv(a_1+a_2)&=\fv(a_1\times a_2)=\fv(a_1\le a_2)=\fv(a_1)\cup\fv(a_2)\\
+  \fv(P\wedge Q)&=\fv(P\vee Q)=\fv(P\Rightarrow Q)=\fv(P)\cup\fv(Q)\\
+  \fv(\neg P)&=\fv(\forall i.\,P)=\fv(\exists i.\,P)=\fv(P)
+\end{align*}
+The quantifier cases do not remove anything, because $i$ is a logical variable, not a program
+variable.
+%
+The function $\modv(c)$ returns the set of program variables modified by command $c$.
+\begin{align*}
+  \modv(\kw{skip})&=\modv(\ast e_1:=e_2)=\modv(\kw{free}(e))=\emptyset\\
+  \modv(x:=e)&=\modv(x:=\ast e)=\modv(x:=\kw{new}(e))=\{x\}\\
+  \modv(c_1;c_2)&=\modv(\kw{if}\ b\ \kw{then}\ c_1\ \kw{else}\ c_2)=\modv(c_1)\cup\modv(c_2)\\
+  \modv(\kw{while}\ b\ \kw{do}\ c)&=\modv(c)
+\end{align*}
+%
+\paragraph{Issues Related to Aliasing} Unfortunately, the rule of constancy is not sound when we
+extend our language of assertions with heap predicates. For example, suppose that we add an
+assertion $e_1\pto e_2$, which says that the heap contains a cell at address $e_1$ holding $e_2$
+(and possibly other cells as well). Now consider trying to use the rule of constancy to add a
+``constant fact'' about the heap. We might first prove the following triple:
+\[
+  \{\,x\pto-\,\}\ \ast x:=4\ \{\,x\pto 4\,\}.
+\]
+and then use the rule of constancy to obtain:
+\[
+  \{\,x\pto-\ \wedge\ y\pto 3\,\}\ \ast x:=4\ \{\,x\pto 4\ \wedge\ y\pto 3\,\}.
+\]
+Here $\modv(\ast x:=4)=\emptyset$, so the side condition of the rule is satisfied trivially.
+However, if $x$ and $y$ are aliases for each other, then the postcondition is false. Of course, it
+is possible to complicate the pre- and post-condition to capture disjointness predicates, but this
+quickly becomes impractical---in principle, every pointer on the heap might be aliased to every
+other pointer, which leads to a combinatorial explosion. Such complications motivated the
+development of separation logic.
+%
+\section{Heap Assertions}
+%
+Before defining separation logic, let us extend our language of assertions with heap predicates:
+\[
+  H,J,K\ ::=\ \emp\mid\pure{P}\mid e_1\pto e_2\mid H_1\sep H_2\mid H_1\hand H_2\mid H_1\hor H_2
+  \mid\forall i.\,H\mid\exists i.\,H
+\]
+Intuitively, these predicates can be understood as follows.
+\begin{itemize}
+  \item $\emp$ : heap is empty,
+  \item $\pure{P}$ : heap is empty and $P$ holds,
+  \item $e_1\pto e_2$ : heap consists of exactly one cell with pointer $e_1$ and value $e_2$ (this
+    is stricter than the informal reading of $\pto$ in the previous section),
+  \item $H_1\sep H_2$ : heap splits into two disjoint pieces, one satisfying $H_1$ and the other
+    $H_2$,
+  \item $H_1\hand H_2$ and $H_1\hor H_2$ are heap assertion versions of the standard boolean
+    connectives, and
+  \item $\forall i.\,H$ and $\exists i.\,H$ are heap assertion versions of the standard
+    quantifiers.
+\end{itemize}
+More formally, we can model their semantics as follows:
+\begin{align*}
+  (\sigma,h)&\models_I\emp && \text{if } h=\emptyset\\
+  (\sigma,h)&\models_I\pure{P} && \text{if } h=\emptyset\wedge\sigma\models_I P\\
+  (\sigma,h)&\models_I e_1\pto e_2 && \text{if } h=\{(p,v)\}\text{ where }\ev{\sigma,e_1}_I\sem p\text{ and }\ev{\sigma,e_2}_I\sem v\\
+  (\sigma,h)&\models_I H_1\sep H_2 && \text{if } \exists h_1,h_2.\ h=h_1\uplus h_2\wedge(\sigma,h_1)\models_I H_1\wedge(\sigma,h_2)\models_I H_2\\
+  (\sigma,h)&\models_I H_1\hand H_2 && \text{if } (\sigma,h)\models_I H_1\text{ and }(\sigma,h)\models_I H_2\\
+  (\sigma,h)&\models_I H_1\hor H_2 && \text{if } (\sigma,h)\models_I H_1\text{ or }(\sigma,h)\models_I H_2\\
+  (\sigma,h)&\models_I \forall i.\,H && \text{if } (\sigma,h)\models_{I[i\mapsto v]}H\text{ for all }v\\
+  (\sigma,h)&\models_I \exists i.\,H && \text{if } (\sigma,h)\models_{I[i\mapsto v]}H\text{ for some }v
+\end{align*}
+Here $h_1\uplus h_2$ is the union of heaps $h_1$ and $h_2$ with disjoint domains (it is undefined
+if they overlap). Free variables extend to heap assertions in the obvious way, e.g.,
+$\fv(e_1\pto e_2)=\fv(e_1)\cup\fv(e_2)$, $\fv(\emp)=\emptyset$, and $\fv(\pure{P})=\fv(P)$.
+%
+Quantifiers bind logical variables (never program variables), which range over integers, including
+addresses, and over finite lists of integers; $I$ maps each to a value of the right kind. We
+typically write $i,j,a,b$ for integers and $L$ for lists.
+%
+We will often abbreviate $e\pto-\ \triangleq\ \exists i.\,e\pto i$.
+%
+As heaps only contain addresses, $0\pto v$ is unsatisfiable for every $v$: there is no heap whose
+single cell is at address $0$. Similarly, predicates like $x\pto 5\sep x\pto 5$ are unsatisfiable
+as the separating conjunction operator, $\sep$, enforces disjointness---even when the two cells
+would hold the same value.
+%
+\paragraph{Equivalence and entailment.} Two heap assertions are equivalent, written
+$H_1\equiv H_2$, if they hold in exactly the same states:
+\[
+  H_1\equiv H_2\ \triangleq\ \forall\sigma,h,I.\ (\sigma,h)\models_I H_1\iff(\sigma,h)\models_I H_2.
+\]
+(Note that it is not enough for $H_1$ and $H_2$ to be both valid or both invalid---for example,
+$x\pto 1$ and $x\pto 2$ are both invalid, but they are certainly not equivalent.) Similarly, $H_1$
+\emph{entails} $H_2$, written $H_1\entails H_2$, if every state satisfying $H_1$ also satisfies
+$H_2$.
+%
+Separating conjunction satisfies several familiar algebraic laws:
+\begin{align*}
+  H\sep J&\equiv J\sep H && \text{(commutativity)}\\
+  (H\sep J)\sep K&\equiv H\sep(J\sep K) && \text{(associativity)}\\
+  H\sep\emp&\equiv H && \text{(unit)}
+\end{align*}
+However, $\sep$ and $\hand$ behave differently. In general,
+$\pure{P}\sep H\not\equiv\pure{P}\hand H$: the left-hand side says that $P$ holds and $H$
+describes the whole heap, while the right-hand side requires the heap to be empty. For instance,
+$\pure{\mathrm{true}}\sep x\pto 1$ is satisfiable, but $\pure{\mathrm{true}}\hand x\pto 1$ is not.
+When $H$ is $\emp$, the two do coincide: $\pure{P}\sep\emp\equiv\pure{P}\hand\emp$. In practice,
+$\pure{P}\sep H$ is the idiomatic way to state a pure fact $P$ alongside a heap assertion $H$, and
+we will use entailments such as $\pure{P}\sep H\entails H$ freely.
+%
+\section{Valid Triples}
+%
+Now we define the notion of valid triples. We use the standard definition for separation logic,
+which is partial correctness with \emph{fault avoidance}, following Reynolds and O'Hearn: a valid
+triple guarantees that the program never produces a memory error, and that if it terminates, the
+postcondition holds. The explicit outcome $\err$ is what makes this possible. If memory errors
+simply got stuck, a crashing program would have no derivation, just like a program that runs
+forever, and a partial correctness triple would hold vacuously for it. With fault avoidance,
+$\triple{\emp}{\kw{free}(x)}{\mathrm{false}}$ is not valid, because $\kw{free}(x)$ produces $\err$
+on the empty heap. On the other hand, $\triple{\emp}{\kw{while}\ \mathrm{true}\ \kw{do}\ \kw{skip}}{\mathrm{false}}$
+is valid: the loop never crashes and never terminates. As usual for partial correctness,
+termination must be proved separately if it is needed.
+%
+\medskip
+\noindent\textbf{Definition (Valid Triple).} A triple is \emph{valid}, written
+$\models\triple{H}{c}{J}$, if for all $\sigma,h$, and $I$ with $\sigma,h\models_I H$:
+\begin{itemize}
+  \item $\ev{\sigma,h,c}\sem\err$ is not derivable, and
+  \item every $\sigma',h'$ with $\ev{\sigma,h,c}\sem(\sigma',h')$ satisfies $\sigma',h'\models_I J$.
+\end{itemize}
+Because \rn{New} makes the semantics nondeterministic, both conditions quantify over all
+executions: a valid triple rules out an error for every possible choice of fresh addresses.
+%
+Note that the precondition $H$ describes the entire heap in which $c$ runs, and $c$ must not
+produce an error in any such heap. So a valid triple implicitly says that $c$ only accesses cells
+described by $H$---its \emph{footprint}. For example, $\triple{x\pto 3}{\ast x:=4}{x\pto 4}$ is
+valid, but $\triple{\emp}{\ast x:=4}{\emp}$ is not, because $\ast x:=4$ produces $\err$ on the
+empty heap.
+%
+\section{The Frame Rule}
+%
+A major appeal of separation logic is that it supports the so-called frame rule:
+\[
+  \infr{\vdash\triple{H}{c}{J}\qquad\fv(K)\cap\modv(c)=\emptyset}
+       {\vdash\triple{H\sep K}{c}{J\sep K}}{Frame}
+\]
+The rule captures modular reasoning about the heap. Intuitively, we first prove a specification for
+$c$ using only the ``heap'' footprint it needs. Then the command can be framed in any larger
+context obtained by combining the footprint with a disjoint heap.
+%
+\paragraph{Soundness.} Why is the frame rule sound? Write $h\perp h_0$ when $h$ and $h_0$ have
+disjoint domains. The proof rests on four facts, the first three about the semantics (each proved
+by induction on derivations) and the last about assertions (proved by induction on the assertion):
+\begin{itemize}
+  \item \emph{Safety monotonicity}: if $\ev{\sigma,h,c}\sem\err$ is not derivable, then neither is
+    $\ev{\sigma,h\uplus h_0,c}\sem\err$, for any $h_0\perp h$. (If a load, store, or free finds its
+    address in $h$, it also finds it in $h\uplus h_0$.)
+  \item \emph{Frame property}: if $\ev{\sigma,h,c}\sem\err$ is not derivable and
+    $\ev{\sigma,h\uplus h_0,c}\sem(\sigma',h')$, then $h'=h_1'\uplus h_0$ for some $h_1'$ with
+    $\ev{\sigma,h,c}\sem(\sigma',h_1')$. In other words, a run in the larger heap leaves $h_0$
+    untouched and behaves like a run in $h$.
+  \item \emph{Unmodified variables}: if $\ev{\sigma,h,c}\sem(\sigma',h')$, then
+    $\sigma'(y)=\sigma(y)$ for every $y\notin\modv(c)$.
+  \item \emph{Coincidence} (also called the agreement or relevance lemma): if $\sigma$ and
+    $\sigma'$ agree on $\fv(K)$, then $\sigma,h\models_I K$ if and only if $\sigma',h\models_I K$.
+    That is, an assertion depends on the store only through its free variables.
+\end{itemize}
+The interesting case of the frame property is \rn{New}. The run in $h\uplus h_0$ allocates some
+$p\notin\dom(h\uplus h_0)$. Since $\dom(h)\subseteq\dom(h\uplus h_0)$, this $p$ is also unused in
+$h$, so the run in $h$ alone can pick the same $p$, and the results match:
+$(h\uplus h_0)[p\mapsto v]=h[p\mapsto v]\uplus h_0$. This is exactly why \rn{New} is allowed to
+choose any unused address. With a deterministic allocator, say $p=1+\max\dom(h)$, the two runs
+could allocate different addresses, and the frame rule would be unsound: on the empty heap the
+allocator returns $1$, so $\triple{\emp}{x:=\kw{new}(1)}{\pure{x=1}\sep x\pto 1}$ would be valid,
+but framing in $1\pto 5$ gives a false triple, because the allocator would now return $2$.
+%
+\medskip
+\noindent\textbf{Theorem (Soundness of Frame).} If $\models\triple{H}{c}{J}$ and
+$\fv(K)\cap\modv(c)=\emptyset$, then $\models\triple{H\sep K}{c}{J\sep K}$.
+%
+\medskip
+\noindent\emph{Proof.} Suppose $\sigma,h\models_I H\sep K$. Then $h=h_1\uplus h_0$ with
+$\sigma,h_1\models_I H$ and $\sigma,h_0\models_I K$. By the premise, $\ev{\sigma,h_1,c}\sem\err$ is
+not derivable, so by safety monotonicity neither is $\ev{\sigma,h,c}\sem\err$. Now suppose
+$\ev{\sigma,h,c}\sem(\sigma',h')$. By the frame property, $h'=h_1'\uplus h_0$ with
+$\ev{\sigma,h_1,c}\sem(\sigma',h_1')$, so $\sigma',h_1'\models_I J$ by the premise. By the
+unmodified-variables fact, $\sigma'$ agrees with $\sigma$ on $\fv(K)$, since
+$\fv(K)\cap\modv(c)=\emptyset$; so by coincidence we still have $\sigma',h_0\models_I K$. Hence
+$\sigma',h'\models_I J\sep K$. \hfill$\blacksquare$
+%
+\paragraph{Why fault avoidance?} The proof uses the absence of errors in an essential way. Suppose
+instead that memory errors simply got stuck, and triples were ordinary partial correctness
+statements. Then $\triple{\emp}{\kw{free}(x)}{\emp}$ would be valid vacuously, since
+$\kw{free}(x)$ has no result on the empty heap. But framing in $x\pto 3$ would give
+$\triple{x\pto 3}{\kw{free}(x)}{x\pto 3}$, which is false: the free succeeds and the cell is gone.
+Fault avoidance rules out the first triple, because it forces a command to own every cell it
+touches.
+%
+\paragraph{Baking in the frame rule.} Some modern presentations, such as Chargu\'eraud's, take a
+different approach and build the frame rule into the definition of triples. There,
+$\triple{H}{c}{J}$ is defined to be valid if, for every $K$ with $\fv(K)\cap\modv(c)=\emptyset$,
+the triple $\triple{H\sep K}{c}{J\sep K}$ is valid in the sense above. The frame rule is then sound
+by construction, at the cost of a less direct definition.
+%
+\section{Small Axioms for Heap Commands}
+%
+We can define ``small'' axioms for the heap-manipulating commands as follows.
+\[
+  \infr{x\notin\fv(e_1)\cup\fv(e_2)}
+       {\{\,e_1\pto e_2\,\}\ x:=\ast e_1\ \{\,\pure{x=e_2}\sep e_1\pto e_2\,\}}{Load}
+  \qquad
+  \infr{}{\{\,e_1\pto-\,\}\ \ast e_1:=e_2\ \{\,e_1\pto e_2\,\}}{Store}
+\]
+\[
+  \infr{x\notin\fv(e)}{\{\,\emp\,\}\ x:=\kw{new}(e)\ \{\,x\pto e\,\}}{Alloc}
+  \qquad
+  \infr{}{\{\,e\pto-\,\}\ \kw{free}(e)\ \{\,\emp\,\}}{Free}
+\]
+In \rn{Alloc}, the program variable $x$ ends up holding the address of the new cell, so
+$x\pto e$ describes that cell. The side condition is needed because $e$ is interpreted in the final
+store, where $x$ has been overwritten.
+%
+A full treatment of separation logic has other proof rules similar to Hoare logic. In the examples
+below we also use the rules for sequencing and consequence, where consequence is stated using
+entailment ($\entails$) between heap assertions, and the familiar invariant rule for loops:
+\[
+  \infr{\{\pure{b}\sep I\}\ c\ \{I\}}
+       {\{I\}\ \kw{while}\ b\ \kw{do}\ c\ \{\pure{\neg b}\sep I\}}{While}
+\]
+Note how the loop test is combined with the invariant using $\sep$: $\pure{b}\sep I$ says that $b$
+holds and $I$ describes the heap. Using $\pure{b}\hand I$ instead would be wrong: it would also
+require an empty heap.
+%
+\section{Example: Swap}
+%
+The following program swaps the contents of the cells at $p$ and $q$:
+\[
+  t:=\ast p;\ u:=\ast q;\ \ast p:=u;\ \ast q:=t
+\]
+A natural specification is the following, where $a$ and $b$ are logical variables:
+\[
+  \{\,p\pto a\sep q\pto b\,\}\ \mathrm{swap}\ \{\,p\pto b\sep q\pto a\,\}.
+\]
+We can prove it using the small axioms, framing away the cells (and pure facts) each command does
+not touch. Each use of \rn{Frame} is allowed, since the frame never mentions the assigned variable:
+\begin{align*}
+  &\{\,p\pto a\sep q\pto b\,\}\\
+  &t:=\ast p;\qquad \text{\rn{Load}, framing } q\pto b\\
+  &\{\,\pure{t=a}\sep p\pto a\sep q\pto b\,\}\\
+  &u:=\ast q;\qquad \text{\rn{Load}, framing } \pure{t=a}\sep p\pto a\\
+  &\{\,\pure{t=a}\sep\pure{u=b}\sep p\pto a\sep q\pto b\,\}\\
+  &\ast p:=u;\qquad \text{\rn{Store}, framing everything but } p\pto a\\
+  &\{\,\pure{t=a}\sep\pure{u=b}\sep p\pto u\sep q\pto b\,\}\\
+  &\ast q:=t\qquad \text{\rn{Store}, framing everything but } q\pto b\\
+  &\{\,\pure{t=a}\sep\pure{u=b}\sep p\pto u\sep q\pto t\,\}\ \entails\\
+  &\{\,p\pto b\sep q\pto a\,\}
+\end{align*}
+(Before each \rn{Store} we also weaken $p\pto a$ to $p\pto-$, and similarly for $q$.)
+%
+\paragraph{Is this the only specification?} No! Because $\sep$ forces the two cells to be
+disjoint, the specification above says nothing about the case where $p$ and $q$ are aliases. In
+that case the program is the identity, which we can specify as follows:
+\[
+  \{\,\pure{p=q}\sep p\pto a\,\}\ \mathrm{swap}\ \{\,\pure{p=q}\sep p\pto a\,\}.
+\]
+%
+\section{Linked Lists}
+%
+\paragraph{Representation.} We represent a linked list as a sequence of nodes. The node at address
+$p$ occupies two consecutive cells: its value is stored at $p$ and the address of the next node is
+stored at $p+1$. We use $0$ as the null pointer; recall that $0\notin\mathrm{Addr}$, so $0$ is
+never the address of a cell. For example, the following heap holds the list $[1,2,3]$ at address
+$6$:
+%
+\begin{center}
+\begin{tikzpicture}[>=Stealth,
+    cell/.style={draw,minimum width=9mm,minimum height=7mm,inner sep=0pt},
+    addr/.style={font=\footnotesize}]
+  \node[addr] at (-1.5,0) {$p=6$};
+  \draw[->] (-1.0,0) -- (-0.1,0);
+  % node at 6
+  \node[cell] (a1) at (0.2,0) {1};
+  \node[cell] (a2) at (1.1,0) {30};
+  \node[addr,above=0pt of a1] {6};
+  \node[addr,above=0pt of a2] {7};
+  % node at 30
+  \node[cell] (b1) at (3.2,0) {2};
+  \node[cell] (b2) at (4.1,0) {14};
+  \node[addr,above=0pt of b1] {30};
+  \node[addr,above=0pt of b2] {31};
+  % node at 14
+  \node[cell] (c1) at (6.2,0) {3};
+  \node[cell] (c2) at (7.1,0) {0};
+  \node[addr,above=0pt of c1] {14};
+  \node[addr,above=0pt of c2] {15};
+  \draw[->] (a2.south) -- ++(0,-0.6) -| (b1.south);
+  \draw[->] (b2.south) -- ++(0,-0.6) -| (c1.south);
+\end{tikzpicture}
+\end{center}
+%
+As a finite map, it is $h=\{6\mapsto 1,\ 7\mapsto 30,\ 30\mapsto 2,\ 31\mapsto 14,\ 14\mapsto 3,\ 15\mapsto 0\}$.
+Nodes need not be adjacent or in order; only the pointers matter. (Our $\kw{new}(e)$ allocates a
+single cell. A real language would allocate a whole node at once, but we will not need allocation
+below.)
+%
+\paragraph{A list predicate.} To reason about lists, we define a heap predicate
+$\mathrm{list}(p,L)$, meaning ``$p$ points to a list holding the mathematical list $L$,'' by
+recursion on $L$:
+\begin{align*}
+  \mathrm{list}(p,[\,])&\ \triangleq\ \pure{p=0}\\
+  \mathrm{list}(p,v\ld L)&\ \triangleq\ \exists q.\ p\pto v\sep(p+1)\pto q\sep\mathrm{list}(q,L)
+\end{align*}
+Unfolding the definition step by step:
+\begin{align*}
+  &\mathrm{list}(6,[1,2,3])\\
+  \equiv\ &\exists q_1.\ 6\pto 1\sep 7\pto q_1\sep\mathrm{list}(q_1,[2,3])\\
+  \equiv\ &\exists q_1,q_2.\ 6\pto 1\sep 7\pto q_1\sep q_1\pto 2\sep(q_1+1)\pto q_2\sep\mathrm{list}(q_2,[3])\\
+  \equiv\ &\exists q_1,q_2,q_3.\ 6\pto 1\sep 7\pto q_1\sep q_1\pto 2\sep(q_1+1)\pto q_2\sep q_2\pto 3\sep(q_2+1)\pto q_3\sep\pure{q_3=0}
+\end{align*}
+The heap above satisfies the last line, with $q_1=30$, $q_2=14$, and $q_3=0$.
+%
+\paragraph{What $\sep$ rules out.} Because each unfolding claims new cells that are disjoint from
+all the others, and the list must end at $0$, no list $L$ makes $\mathrm{list}(p,L)$ describe a
+cyclic structure. Similarly, $\mathrm{list}(p_1,L_1)\sep\mathrm{list}(p_2,L_2)$ guarantees that the
+two lists share no nodes: a shared tail would have to belong to both halves of the heap. In Hoare
+logic we would need explicit ``acyclic'' and ``disjoint'' predicates to say these things. Here
+$\sep$ gives us both for free.
+%
+\section*{Further Reading}
+%
+Interested students are referred to two canonical treatments: Reynolds's lecture notes, or
+Chargu\'eraud's habilitation thesis or textbook \emph{Separation Logic Foundations} (Software
+Foundations, Volume 6), which this lecture is loosely based on.
+%
+% \end{document}

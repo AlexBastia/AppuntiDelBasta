@@ -1,0 +1,381 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{mathpartir} % for inference rules; if unavailable, rules are written with \dfrac as fallback
+\usepackage{tikz}
+\usepackage{hyperref}
+
+\newtheorem{example}{Example}
+
+\title{CS-462 -- Programming Languages Foundations \\ Lecture \#2: Inductive definitions and proofs}
+\author{EPFL}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\noindent In this lecture, we will use the semantics of our simple language of arithmetic
+expressions,
+\[
+e ::= x \mid n \mid e_1 + e_2 \mid e_1 * e_2 \mid x := e_1 ; e_2,
+\]
+to express useful program properties, and we will prove these properties by induction.
+
+\section{Program Properties}
+
+There are a number of interesting questions about a language one can ask: Is it deterministic?
+Are there non-terminating programs? What sorts of errors can arise during evaluation? Having a
+formal semantics allows us to express these properties precisely.
+
+\begin{itemize}
+    \item \textbf{Determinism:} Evaluation is deterministic,
+    \[
+    \forall e \in \mathbf{Exp}.\ \forall \sigma, \sigma', \sigma'' \in \mathbf{Store}.\ \forall
+    e', e'' \in \mathbf{Exp}.
+    \]
+    \[
+    \text{if } \langle \sigma, e \rangle \to \langle \sigma', e' \rangle \text{ and } \langle
+    \sigma, e \rangle \to \langle \sigma'', e'' \rangle \text{ then } e' = e'' \text{ and }
+    \sigma' = \sigma''.
+    \]
+
+    \item \textbf{Termination:} Evaluation of every expression terminates,
+    \[
+    \forall e \in \mathbf{Exp}.\ \forall \sigma \in \mathbf{Store}.\ \exists \sigma' \in
+    \mathbf{Store}.\ \exists e' \in \mathbf{Exp}.\ \langle \sigma, e \rangle \to^* \langle
+    \sigma', e' \rangle \text{ and } \langle \sigma', e' \rangle \not\to,
+    \]
+    where $\langle \sigma', e' \rangle \not\to$ is shorthand for $\neg(\exists \sigma'' \in
+    \mathbf{Store}.\ \exists e'' \in \mathbf{Exp}.\ \langle \sigma', e' \rangle \to \langle
+    \sigma'', e'' \rangle)$.
+\end{itemize}
+
+It is tempting to want the following soundness property,
+
+\begin{itemize}
+    \item \textbf{Soundness:} Evaluation of every expression yields an integer,
+    \[
+    \forall e \in \mathbf{Exp}.\ \forall \sigma \in \mathbf{Store}.\ \exists \sigma' \in
+    \mathbf{store}.\ \exists n' \in \mathbf{Int}.\ \langle \sigma, e \rangle \to^* \langle
+    \sigma', n' \rangle,
+    \]
+\end{itemize}
+
+\noindent but unfortunately it does not hold in our language! For example, consider the
+totally-undefined function $\sigma$ and the expression $i + j$. The configuration $\langle
+\sigma, i + j \rangle$ is \emph{stuck}---it has no possible transitions---but $i + j$ is not an
+integer. The problem is that $i + j$ has \emph{free variables} but $\sigma$ does not contain
+mappings for those variables.
+
+To fix this problem, we can restrict our attention to \emph{well-formed} configurations
+$\langle \sigma, e \rangle$, where $\sigma$ is defined on (at least) the free variables in $e$.
+This makes sense as evaluation typically starts with a \emph{closed} expression. We can define
+the set of free variables of an expression as follows:
+\begin{align*}
+fvs(x) &\triangleq \{x\} \\
+fvs(n) &\triangleq \{\} \\
+fvs(e_1 + e_2) &\triangleq fvs(e_1) \cup fvs(e_2) \\
+fvs(e_1 * e_2) &\triangleq fvs(e_1) \cup fvs(e_2) \\
+fvs(x := e_1 ; e_2) &\triangleq fvs(e_1) \cup (fvs(e_2) \setminus \{x\})
+\end{align*}
+
+Now we can formulate two properties that imply a variant of the soundness property above:
+
+\begin{itemize}
+    \item \textbf{Progress:} For each expression $e$ and store $\sigma$ such that the free
+    variables of $e$ are contained in the domain of $\sigma$, either $e$ is an integer or there
+    exists a possible transition for $\langle \sigma, e \rangle$,
+    \[
+    \forall e \in \mathbf{Exp}.\ \forall \sigma \in \mathbf{Store}.
+    \]
+    \[
+    fvs(e) \subseteq \operatorname{dom}(\sigma) \implies e \in \mathbf{Int} \text{ or } (\exists
+    e' \in \mathbf{Exp}.\ \exists \sigma' \in \mathbf{Store}.\ \langle \sigma, e \rangle \to
+    \langle \sigma', e' \rangle)
+    \]
+
+    \item \textbf{Preservation:} Evaluation preserves containment of free variables in the
+    domain of the store,
+    \[
+    \forall e, e' \in \mathbf{Exp}.\ \forall \sigma, \sigma' \in \mathbf{Store}.
+    \]
+    \[
+    fvs(e) \subseteq \operatorname{dom}(\sigma) \text{ and } \langle \sigma, e \rangle \to
+    \langle \sigma', e' \rangle \implies fvs(e') \subseteq \operatorname{dom}(\sigma').
+    \]
+\end{itemize}
+
+The rest of this lecture shows how can we prove such properties using induction.
+
+\section{Inductive sets}
+
+Induction is an important concept in programming language theory. An inductively-defined set
+$A$ is one that is described using a finite collection of axioms and inductive (inference)
+rules. Axioms of the form
+\[
+a \in A
+\]
+indicate that $a$ is in the set $A$. Inductive rules
+\[
+\frac{a_1 \in A \quad \ldots \quad a_n \in A}{a \in A}
+\]
+indicate that if $a_1, \ldots, a_n$ are all elements of $A$, then $a$ is also an element of $A$.
+
+The set $A$ is the set of all elements that can be inferred to belong to $A$ using a (finite)
+number of applications of these rules, starting only from axioms. In other words, for each
+element $a$ of $A$, we must be able to construct a finite proof tree whose final conclusion is
+$a \in A$.
+
+\begin{example}
+The set described by a grammar is an inductive set. For instance, the set of arithmetic
+expressions can be described with two axioms and three inference rules:
+\[
+\frac{}{x \in \mathbf{Exp}} \qquad \frac{}{n \in \mathbf{Exp}}
+\]
+\[
+\frac{e_1 \in \mathbf{Exp} \quad e_2 \in \mathbf{Exp}}{e_1 + e_2 \in \mathbf{Exp}} \qquad
+\frac{e_1 \in \mathbf{Exp} \quad e_2 \in \mathbf{Exp}}{e_1 * e_2 \in \mathbf{Exp}} \qquad
+\frac{e_1 \in \mathbf{Exp} \quad e_2 \in \mathbf{Exp}}{x := e_1 ; e_2 \in \mathbf{Exp}}
+\]
+These axioms and rules describe the same set of expressions as the grammar:
+\[
+e ::= x \mid n \mid e_1 + e_2 \mid e_1 * e_2 \mid x := e_1 ; e_2
+\]
+\end{example}
+
+\begin{example}
+The natural numbers (expressed here in unary notation) can be inductively defined:
+\[
+\frac{}{0 \in \mathbb{N}} \qquad \frac{n \in \mathbb{N}}{\operatorname{succ}(n) \in \mathbb{N}}
+\]
+\end{example}
+
+\begin{example}
+The small-step evaluation relation $\to$ is an inductively defined set.
+\end{example}
+
+\begin{example}
+The multi-step evaluation relation can be inductively defined:
+\[
+\frac{}{\langle \sigma, e \rangle \to^* \langle \sigma, e \rangle} \; \text{REFL}
+\qquad
+\frac{\langle \sigma, e \rangle \to \langle \sigma', e' \rangle \quad \langle \sigma', e'
+\rangle \to^* \langle \sigma'', e'' \rangle}{\langle \sigma, e \rangle \to^* \langle \sigma'',
+e'' \rangle} \; \text{TRANS}
+\]
+\end{example}
+
+\begin{example}
+The set of free variables of an expression $e$ can be inductively defined:
+\[
+\frac{}{y \in fvs(y)}
+\]
+\[
+\frac{y \in fvs(e_1)}{y \in fvs(e_1 + e_2)} \qquad
+\frac{y \in fvs(e_2)}{y \in fvs(e_1 + e_2)}
+\]
+\[
+\frac{y \in fvs(e_1)}{y \in fvs(e_1 * e_2)} \qquad
+\frac{y \in fvs(e_2)}{y \in fvs(e_1 * e_2)}
+\]
+\[
+\frac{y \in fvs(e_1)}{y \in fvs(x := e_1 ; e_2)} \qquad
+\frac{y \neq x \quad y \in fvs(e_2)}{y \in fvs(x := e_1 ; e_2)}
+\]
+\end{example}
+
+\section{Inductive proofs}
+
+We can prove facts about elements of an inductive set using an inductive reasoning that follows
+the structure of the set definition.
+
+\subsection{Mathematical induction}
+
+You have probably seen proofs by induction over the natural numbers, called mathematical
+induction. In such proofs, we typically want to prove that some property $P$ holds for all
+natural numbers, that is, $\forall n \in \mathbb{N}.\ P(n)$. A proof by induction works by first
+proving that $P(0)$ holds, and then proving for all $m \in \mathbb{N}$, if $P(m)$ then $P(m +
+1)$. The principle of mathematical induction can be stated succinctly as
+\[
+P(0) \text{ and } (\forall m \in \mathbb{N}.\ P(m) \implies P(m+1)) \implies \forall n \in
+\mathbb{N}.\ P(n).
+\]
+The proposition $P(0)$ is the basis of the induction (also called the base case) while $P(m)
+\implies P(m+1)$ is called induction step (or the inductive case). While proving the induction
+step, the assumption that $P(m)$ holds is called the induction hypothesis.
+
+\subsection{Structural induction}
+
+Given an inductively defined set $A$, to prove that a property $P$ holds for all elements of
+$A$, we need to show:
+
+\begin{enumerate}
+    \item \textbf{Base cases:} For each axiom
+    \[
+    a \in A,
+    \]
+    $P(a)$ holds.
+
+    \item \textbf{Inductive cases:} For each inference rule
+    \[
+    \frac{a_1 \in A \quad \ldots \quad a_n \in A}{a \in A},
+    \]
+    if $P(a_1)$ and $\ldots$ and $P(a_n)$ then $P(a)$.
+\end{enumerate}
+
+Note that if the set $A$ is the set of natural numbers from Example 2 above, then the
+requirements for proving that $P$ holds for all elements of $A$ is equivalent to mathematical
+induction.
+
+If $A$ describes a syntactic set, then we refer to induction following the requirements above
+as \emph{structural induction}. If $A$ is an operational semantics relation (such as the
+small-step operational semantics relation $\to$) then such an induction is called
+\emph{induction on derivations}. We will see examples of structural induction and induction on
+derivations throughout the course.
+
+\subsection{Example: Progress}
+
+Let's consider the progress property defined above, and repeated here:
+
+\medskip
+\noindent\textbf{Progress:} For each store $\sigma$ and expression $e$ such that the free
+variables of $e$ are contained in the domain of $\sigma$, either $e$ is an integer or there
+exists a possible transition for $\langle \sigma, e \rangle$:
+\[
+\forall e \in \mathbf{Exp}.\ \forall \sigma \in \mathbf{Store}.\ fvs(e) \subseteq
+\operatorname{dom}(\sigma) \implies e \in \mathbf{Int} \text{ or } (\exists e' \in
+\mathbf{Exp}.\ \exists \sigma' \in \mathbf{Store}.\ \langle \sigma, e \rangle \to \langle
+\sigma', e' \rangle)
+\]
+
+Let's rephrase this property in terms of an explicit predicate on expressions:
+\[
+P(e) \triangleq \forall \sigma \in \mathbf{Store}.\ fvs(e) \subseteq \operatorname{dom}(\sigma)
+\implies e \in \mathbf{Int} \text{ or } (\exists e', \sigma'.\ \langle \sigma, e \rangle \to
+\langle \sigma', e' \rangle)
+\]
+
+The idea is to build a proof that follows the inductive structure given by the grammar:
+\[
+e ::= x \mid n \mid e_1 + e_2 \mid e_1 * e_2 \mid x := e_1 ; e_2
+\]
+This technique is called ``structural induction on $e$.'' We analyze each case in the grammar
+and show that $P(e)$ holds for that case. Since the grammar productions $e_1 + e_2$ and $e_1 *
+e_2$ and $x := e_1 ; e_2$ are inductive, they are inductive steps in the proof; the cases for
+$x$ and $n$ are base cases. The proof proceeds as follows.
+
+\begin{proof}
+Let $e$ be an expression. We will prove that
+\[
+\forall \sigma \in \mathbf{Store}.\ fvs(e) \subseteq \operatorname{dom}(\sigma) \implies e \in
+\mathbf{Int} \text{ or } (\exists e', \sigma'.\ \langle \sigma, e \rangle \to \langle \sigma',
+e' \rangle)
+\]
+by structural induction on $e$. We analyze several cases, one for each case in the grammar for
+expressions:
+
+\medskip
+\noindent\textbf{Case $e = x$:} Let $\sigma$ be an arbitrary store, and assume that $fvs(e)
+\subseteq \operatorname{dom}(\sigma)$. By the definition of $fvs$ we have $fvs(x) = \{x\}$. By
+assumption we have $\{x\} \subseteq \operatorname{dom}(\sigma)$ and so $x \in
+\operatorname{dom}(\sigma)$. Let $n = \sigma(x)$. By the \textsc{Var} axiom we have $\langle
+\sigma, x \rangle \to \langle \sigma, n \rangle$, which finishes the case.
+
+\medskip
+\noindent\textbf{Case $e = n$:} We immediately have $e \in \mathbf{Int}$, which finishes the
+case.
+
+\medskip
+\noindent\textbf{Case $e = e_1 + e_2$:} Let $\sigma$ be an arbitrary store, and assume that
+$fvs(e) \subseteq \operatorname{dom}(\sigma)$. We will assume that $P(e_1)$ and $P(e_2)$ hold
+and show that $P(e)$ holds. Let's expand these properties. We have
+\[
+P(e_1) = \forall \sigma \in \mathbf{Store}.\ fvs(e_1) \subseteq \operatorname{dom}(\sigma)
+\implies e_1 \in \mathbf{Int} \text{ or } (\exists e', \sigma'.\ \langle \sigma, e_1 \rangle \to
+\langle \sigma', e' \rangle)
+\]
+\[
+P(e_2) = \forall \sigma \in \mathbf{Store}.\ fvs(e_2) \subseteq \operatorname{dom}(\sigma)
+\implies e_2 \in \mathbf{Int} \text{ or } (\exists e', \sigma'.\ \langle \sigma, e_2 \rangle \to
+\langle \sigma', e' \rangle)
+\]
+and want to prove:
+\[
+P(e_1 + e_2) = \forall \sigma \in \mathbf{Store}.\ fvs(e_1+e_2) \subseteq
+\operatorname{dom}(\sigma) \implies e_1 + e_2 \in \mathbf{Int} \text{ or } (\exists e',
+\sigma'.\ \langle \sigma, e_1 + e_2 \rangle \to \langle \sigma', e' \rangle)
+\]
+We analyze several subcases.
+
+\smallskip
+\noindent\textit{Subcase $e_1 = n_1$ and $e_2 = n_2$:} By rule \textsc{Add}, we immediately have
+$\langle \sigma, n_1 + n_2 \rangle \to \langle \sigma, p \rangle$, where $p = n_1 + n_2$.
+
+\smallskip
+\noindent\textit{Subcase $e_1 \notin \mathbf{Int}$:} By assumption and the definition of $fvs$
+we have
+\[
+fvs(e_1) \subseteq fvs(e_1 + e_2) \subseteq \operatorname{dom}(\sigma)
+\]
+Hence, by the induction hypothesis $P(e_1)$ we also have $\langle \sigma, e_1 \rangle \to
+\langle \sigma', e' \rangle$ for some $e'$ and $\sigma'$. By rule \textsc{Ladd} we have $\langle
+\sigma, e_1 + e_2 \rangle \to \langle \sigma', e' + e_2 \rangle$.
+
+\smallskip
+\noindent\textit{Subcase $e_1 = n_1$ and $e_2 \notin \mathbf{Int}$:} By assumption and the
+definition of $fvs$ we have
+\[
+fvs(e_2) \subseteq fvs(e_1 + e_2) \subseteq \operatorname{dom}(\sigma)
+\]
+Hence, by the induction hypothesis $P(e_2)$ we also have $\langle \sigma, e_2 \rangle \to
+\langle \sigma', e' \rangle$ for some $e'$ and $\sigma'$. By rule \textsc{Radd} we have $\langle
+\sigma, e_1 + e_2 \rangle \to \langle \sigma', e_1 + e' \rangle$, which finishes the case.
+
+\medskip
+\noindent\textbf{Case $e = e_1 * e_2$:} Analogous to the previous case.
+
+\medskip
+\noindent\textbf{Case $e = x := e_1 ; e_2$:} Let $\sigma$ be an arbitrary store, and assume that
+$fvs(e) \subseteq \operatorname{dom}(\sigma)$. As above, we assume that $P(e_1)$ and $P(e_2)$
+hold and show that $P(e)$ holds. Let's expand these properties. We have
+\[
+P(e_1) = \forall \sigma.\ fvs(e_1) \subseteq \operatorname{dom}(\sigma) \implies e_1 \in
+\mathbf{Int} \text{ or } (\exists e', \sigma'.\ \langle \sigma, e_1 \rangle \to \langle \sigma',
+e' \rangle)
+\]
+\[
+P(e_2) = \forall \sigma.\ fvs(e_2) \subseteq \operatorname{dom}(\sigma) \implies e_2 \in
+\mathbf{Int} \text{ or } (\exists e', \sigma'.\ \langle \sigma, e_2 \rangle \to \langle \sigma',
+e' \rangle)
+\]
+and want to prove:
+\[
+P(x := e_1 ; e_2) = \forall \sigma.\ fvs(x := e_1 ; e_2) \subseteq \operatorname{dom}(\sigma)
+\implies
+\]
+\[
+x := e_1 ; e_2 \in \mathbf{Int} \text{ or } (\exists e', \sigma'.\ \langle \sigma, x := e_1 ;
+e_2 \rangle \to \langle \sigma', e' \rangle)
+\]
+We analyze several subcases.
+
+\smallskip
+\noindent\textit{Subcase $e_1 = n_1$:} By rule \textsc{Assgn} we have $\langle \sigma, x := n_1
+; e_2 \rangle \to \langle \sigma', e_2 \rangle$ where $\sigma' = \sigma[x \mapsto n_1]$.
+
+\smallskip
+\noindent\textit{Subcase $e_1 \notin \mathbf{Int}$:} By assumption and the definition of $fvs$
+we have
+\[
+fvs(e_1) \subseteq fvs(x := e_1 ; e_2) \subseteq \operatorname{dom}(\sigma)
+\]
+Hence, by induction hypothesis we also have $\langle \sigma, e_1 \rangle \to \langle \sigma',
+e' \rangle$ for some $e'$ and $\sigma'$. By the rule \textsc{Assgn1} we have $\langle \sigma, x
+:= e_1 ; e_2 \rangle \to \langle \sigma', x := e_1' ; e_2 \rangle$, which finishes the case and
+the inductive proof.
+\end{proof}
+
+\end{document}

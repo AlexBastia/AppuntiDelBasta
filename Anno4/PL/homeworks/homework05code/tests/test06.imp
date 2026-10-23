@@ -1,0 +1,5 @@
+@ x = $i and y = $j @
+while (x != y) do
+  @ true @
+  x := x - 1
+@ x = y @

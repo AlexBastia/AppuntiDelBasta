@@ -1,0 +1,21 @@
+i := 0;
+countin := 0;
+countout := 0;
+while i < 3 do {
+  i := i + 1;
+  j := 0;
+  while j < 3 do {
+    j := j + 1;
+    if j = 2 then {
+      continue
+    } else {
+      skip
+    };
+    countin := countin + 1
+  };
+  countout := countout + 1 
+};
+test i = 3;
+test countin = 6;
+test countout = 3;
+print countout

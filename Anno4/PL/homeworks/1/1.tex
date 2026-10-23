@@ -1,0 +1,136 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{mathpartir}
+
+\newcommand{\clamp}[2]{\mathrm{clamp}(#1,#2)}
+\newcommand{\conf}[2]{\langle #1,\, #2\rangle}
+\newcommand{\Str}{\mathit{Str}}
+
+\title{Homework 1}
+\author{Alex Bastianini}
+\date{9/12/2026}
+
+\begin{document}
+\maketitle
+
+\section*{1.}
+
+\subsection*{a.}
+
+\[
+\inferrule*[right=LADD]{
+  \inferrule*[right=CLAMP1]{
+    \inferrule*[right=ASSGN]{
+      \sigma' = \sigma[x \mapsto -1]
+    }{
+      \conf{\sigma}{x:=-1;\,x} \longrightarrow \conf{\sigma'}{x}
+    }
+  }{
+    \conf{\sigma}{\clamp{(x:=-1;\,x)}{(x:=2;\,x)}} \longrightarrow \conf{\sigma'}{\clamp{x}{(x:=2;\,x)}}
+  }
+}{
+  \conf{\sigma}{\clamp{(x:=-1;\,x)}{(x:=2;\,x)}+x} \longrightarrow \conf{\sigma'}{\clamp{x}{(x:=2;\,x)}+x}
+}
+\]
+
+\subsection*{b.}
+
+\[
+\begin{aligned}
+&\conf{\sigma}{\clamp{(x:=-1;\,x)}{(x:=2;\,x)}+x} \\
+&\longrightarrow \conf{\sigma'}{\clamp{x}{(x:=2;\,x)}+x} \\
+&\longrightarrow \conf{\sigma'}{\clamp{-1}{(x:=2;\,x)}+x} \\
+&\longrightarrow \conf{\sigma''}{\clamp{-1}{x}+x} \\
+&\longrightarrow \conf{\sigma''}{\clamp{-1}{2}+x} \\
+&\longrightarrow \conf{\sigma''}{0+x} \\
+  &\longrightarrow \conf{\sigma''}{0+2} \\
+  &\longrightarrow \conf{\sigma''}{2}
+\end{aligned}
+\]
+
+\subsection*{c.}
+
+Update the following rules
+\[
+  \inferrule*[right=\textsc{ClampLNeg}]{
+  n_1 < 0
+}{
+  \conf{\sigma}{\clamp{n_1}{e_2}} \longrightarrow \conf{\sigma}{0}
+}
+\]
+
+\[
+  \inferrule*[right=\textsc{Clamp2}]{
+  n_1 \ge 0 \\ \conf{\sigma}{e_2} \longrightarrow \conf{\sigma'}{e_2'}
+}{
+  \conf{\sigma}{\clamp{n_1}{e_2}} \longrightarrow \conf{\sigma'}{\clamp{n_1}{e_2'}}
+}
+\]
+
+\bigskip
+\noindent Also, $n_1 \ge 0$ can be removed as a condition for \textsc{ClampRNeg}.
+
+\section*{2.}
+
+\subsection*{a.}
+No, for example $\conf{\sigma}{(1+2)/(3+4)}$ can step to $\conf{\sigma}{3/(3+4)}$ using \textsc{ldiv}, or to $\conf{\sigma}{(1+2)/7}$ using \textsc{rdiv}.
+
+\subsection*{b.}
+Yes, because the initial language terminates (either returns an $\mathit{Int}$ or is blocked), so the evaluation of $e_1$ and $e_2$ in the division either gets blocked (terminates) or returns two $\mathit{Int}$s $n_1$ and $n_2$. At this point, if $n_2 = 0$ the execution terminates, and if $n_2 \ne 0$ an $\mathit{Int}$ is returned and the execution terminates.
+
+\subsection*{c.}
+No, for example $\conf{\emptyset}{1/0} \not\longrightarrow$.
+
+\section*{3.}
+
+\subsection*{a.}
+
+\[
+\inferrule*{ }{\varepsilon \in \Str} \qquad
+\inferrule*{ }{c \in \Str} \qquad
+\inferrule*{
+  s_1 \in \Str \\ s_2 \in \Str
+}{
+  s_1 \cdot s_2 \in \Str
+}
+\]
+
+\subsection*{b.}
+We want to prove $\forall s \in \Str.\ P(s)$. By structural induction on $s$:
+
+\begin{itemize}
+\item \textbf{Case $\varepsilon$}: Prove $P(\varepsilon)$.
+\item \textbf{Case $c$}: Prove $P(c)$.
+\item \textbf{Case $s_1 \cdot s_2$}: Prove $P(s_1) \wedge P(s_2) \implies P(s_1 \cdot s_2)$.
+\end{itemize}
+
+\subsection*{c.}
+
+\[
+\inferrule*{ }{((c_1,c),\,c_1 \cdot c) \in \mathit{append}} \qquad
+\inferrule*{ }{((s_1 \cdot s_2,\,c),\,(s_1 \cdot s_2)\cdot c) \in \mathit{append}}
+\]
+
+\subsection*{d.}
+
+\[
+\inferrule*{ }{(c,c) \in \mathit{last}} \qquad
+\inferrule*{
+  (s_2,c) \in \mathit{last}
+}{
+  (s_1 \cdot s_2,\,c) \in \mathit{last}
+}
+\]
+
+\section*{Generative AI disclosure}
+Claude Sonnet was used to translate handwriting to LaTeX. AI was not used in any other way for this homework.
+
+\section*{Debriefing}
+\begin{enumerate}
+\item 1h
+\item Easy
+\item Yes
+\item 90\%
+\end{enumerate}
+\end{document}

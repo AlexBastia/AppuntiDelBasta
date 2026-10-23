@@ -1,0 +1,11 @@
+x := 4;
+r := 0;
+while x > 0 do {
+  y := x;
+  while y > 0 do {
+    r := r + 1;
+    y := y - 1
+  };
+  x := x - 1
+};
+print r

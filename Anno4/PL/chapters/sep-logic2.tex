@@ -1,0 +1,282 @@
+% \begin{document}
+
+In proofs, it will often be convenient to have structural rules that allow us to rearrange
+assertions in various ways. The \rn{Exists} rule lets us reason about a command under an
+existential quantifier: if $c$ takes $H$ to $J$ for every value of the logical variable $i$, then
+it takes $\exists i.\,H$ to $\exists i.\,J$.
+\[
+  \infr{\vdash\triple{H}{c}{J}}{\vdash\triple{\exists i.\,H}{c}{\exists i.\,J}}{Exists}
+\]
+In the examples, we will use this rule constantly, because unfolding a recursive predicate will
+always introduces existentials.
+
+\section{Example: Disposing a List}
+
+The following program $\mathrm{dispose}$ frees every node of the list at $p$:
+\[
+  \begin{array}{l}
+    \kw{while}\ (p\neq 0)\ \kw{do}\ (\\
+    \quad q:=\ast(p+1);\\
+    \quad\kw{free}(p);\\
+    \quad\kw{free}(p+1);\\
+    \quad p:=q\\
+    )
+  \end{array}
+\]
+Its specification is $\{\lst(p,L)\}\ \mathrm{dispose}\ \{\emp\}$, and a suitable loop invariant is
+$\exists L'.\,\lst(p,L')$: the heap always holds exactly the rest of the list. The precondition
+implies the invariant (take $L'=L$). For the loop body, the \rn{While} rule requires us to show
+$\{\pure{p\neq 0}\sep\exists L'.\,\lst(p,L')\}\ \mathrm{body}\ \{\exists L'.\,\lst(p,L')\}$:
+\begin{align*}
+  &\{\,(\exists L'.\,\lst(p,L'))\sep\pure{p\neq 0}\,\}\ \Rightarrow\ \text{(unfold)}\\
+  &\{\,\exists v,y,L''.\ p\pto v\sep(p+1)\pto y\sep\lst(y,L'')\,\}\\
+  &q:=\ast(p+1);\qquad\text{(\rn{Load}, \rn{Frame})}\\
+  &\{\,\exists v,y,L''.\ \pure{q=y}\sep p\pto v\sep(p+1)\pto y\sep\lst(y,L'')\,\}\\
+  &\kw{free}(p);\qquad\text{(\rn{Free}, \rn{Frame})}\\
+  &\{\,\exists y,L''.\ \pure{q=y}\sep(p+1)\pto y\sep\lst(y,L'')\,\}\\
+  &\kw{free}(p+1);\qquad\text{(\rn{Free}, \rn{Frame})}\\
+  &\{\,\exists y,L''.\ \pure{q=y}\sep\lst(y,L'')\,\}\ \Rightarrow\\
+  &\{\,\exists L'.\,\lst(q,L')\,\}\\
+  &p:=q\qquad\text{(assignment)}\\
+  &\{\,\exists L'.\,\lst(p,L')\,\}
+\end{align*}
+The first implication unfolds the list: since $p\neq 0$, the list cannot be empty (as
+$\lst(p,[\,])$ would force $p=0$), so $L'=v\ld L''$ for some $v$ and $L''$. Each command is then
+verified under the existential using \rn{Exists}, and with \rn{Frame} to carry along the cells it
+does not touch. For example, the load uses the \rn{Load} axiom on the single cell $(p+1)\pto y$ and
+frames $p\pto v\sep\lst(y,L'')$; its side condition holds because $q$ occurs in neither $p+1$ nor
+$y$. After $\kw{free}(p)$, no cell mentions $v$ any more, so we drop $\exists v$ by
+\rn{Consequence}. The last implication repackages what remains as the invariant with $q$ in place
+of $p$, and the assignment axiom then gives the invariant itself.
+
+When the loop exits, we have $(\exists L'.\,\lst(p,L'))\sep\pure{p=0}$. Since $0\pto v$ is
+unsatisfiable, $\lst(0,L')$ forces $L'=[\,]$, and so the heap is empty, as required. Because
+triples are partial correctness statements, we did not need to prove that the loop terminates
+(although it does, since the length of $L'$ decreases on every iteration).
+
+\section{List Segments}
+
+For loops that traverse a list without destroying it, we need to describe the part of the list that
+has already been visited. A \emph{list segment} from $p$ to $q$ holding $L$ is a list that ends at
+$q$ instead of at $0$:
+\begin{align*}
+  \lseg(p,q,[\,])&\ \triangleq\ \pure{p=q}\\
+  \lseg(p,q,v\ld L)&\ \triangleq\ \exists r.\ p\pto v\sep(p+1)\pto r\sep\lseg(r,q,L)
+\end{align*}
+
+\begin{center}
+\begin{tikzpicture}[>=Stealth,
+    cell/.style={draw,minimum width=8mm,minimum height=7mm,inner sep=0pt}]
+  \node (p) at (-1,0) {$p$};
+  \draw[->] (p) -- (-0.45,0);
+  \foreach \i/\v in {0/v_1,2/v_2,4/v_3} {
+    \node[cell] (v\i) at (\i,0) {$\v$};
+    \node[cell] (n\i) at (\i+0.8,0) {$\bullet$};
+  }
+  \draw[->] (n0.center) -- (v2.west);
+  \draw[->] (n2.center) -- (v4.west);
+  \draw[->] (n4.center) -- ++(1.0,0) node[right] {$q$};
+  \node at (3,-1) {$\lseg(p,q,[v_1,v_2,v_3])$};
+\end{tikzpicture}
+\end{center}
+
+The following facts are each proved by induction on $L$:
+\begin{align*}
+  \lst(p,L)&\equiv\lseg(p,0,L)\\
+  \lseg(p,x,L)\sep x\pto v\sep(x+1)\pto y&\Rightarrow\lseg(p,y,L\app[v]) && \text{(snoc)}\\
+  \lseg(p,y,L)\sep\lst(y,L')&\Rightarrow\lst(p,L\app L') && \text{(concat)}
+\end{align*}
+Snoc extends a segment by one node at its end, and concat attaches a list to the end of a segment.
+
+\section{Example: List Append}
+
+The following program $\mathrm{append}$, appends the list at $p_2$ to the list at $p_1$, leaving
+the result at $r$.
+\[
+  \begin{array}{l}
+    x:=p_1;\\
+    n:=\ast(x+1);\\
+    \kw{while}\ (n\neq 0)\ \kw{do}\ (\\
+    \quad x:=n;\\
+    \quad n:=\ast(x+1)\\
+    );\\
+    \ast(x+1):=p_2;\\
+    r:=p_1
+  \end{array}
+\]
+In the program, the variable $x$ always points at a node of the first list, and $n$ holds that
+node's next pointer; the loop walks $x$ to the last node, and the final store overwrites its null
+pointer with $p_2$.
+
+For example, suppose the heap initially holds the lists $[1,2]$ at address $6$ and $[3,4]$ at
+address $99$:
+\begin{center}
+\begin{tabular}{l|cccccccc}
+  address & 6 & 7 & 22 & 23 & 46 & 47 & 99 & 100\\\hline
+  before  & 1 & 46 & 4 & 0 & 2 & 0 & 3 & 22\\
+  after   & 1 & 46 & 4 & 0 & 2 & 99 & 3 & 22
+\end{tabular}
+\end{center}
+with $p_1=6$ and $p_2=99$. Afterwards, $x=46$ (the last node of the first list), $n=0$, $r=6$, and
+the heap holds the list $[1,2,3,4]$ at $r$. Only one cell changes---the last node is modified from
+$0$ to $p_2$.
+
+The specification for this program
+\[
+  \{\lst(p_1,L_1)\sep\lst(p_2,L_2)\sep\pure{p_1\neq 0}\}\ \mathrm{append}\ \{\lst(r,L_1\app L_2)\}.
+\]
+Two aspects of this specification deserve comment. First, the pure fact $p_1\neq 0$ is essential:
+if the first list is empty, then $x=0$, so the program accesses address $1$, which need not be
+allocated, and it may produce a memory error. Second, $\lst(p_2,L_2)$ does not appear in the
+postcondition because its cells have become part of $\lst(r,L_1\app L_2)$. The precondition's
+$\sep$ guarantees that the two lists are disjoint, so appending cannot create a cycle.
+
+To keep the proof readable, we abbreviate a node as
+\[
+  \nd{p}{v}{q}\ \triangleq\ p\pto v\sep(p+1)\pto q.
+\]
+The proof has three parts: the code before the loop, which establishes the invariant; the loop
+body, which preserves it; and the code after the loop, which establishes the postcondition.
+
+\paragraph{Before the loop.} We frame $\lst(p_2,L_2)$, which this code does not touch. Since
+$p_1\neq 0$, the first list is not empty, so we can unfold its first node:
+\begin{align*}
+  &\{\,\lst(p_1,L_1)\sep\pure{p_1\neq 0}\,\}\ \Rightarrow\\
+  &\{\,\exists v,y,L_b.\ \pure{L_1=v\ld L_b}\sep\nd{p_1}{v}{y}\sep\lst(y,L_b)\,\}\\
+  &x:=p_1;\\
+  &\{\,\exists v,y,L_b.\ \pure{L_1=v\ld L_b}\sep\pure{x=p_1}\sep\nd{x}{v}{y}\sep\lst(y,L_b)\,\}\\
+  &n:=\ast(x+1);\\
+  &\{\,\exists v,y,L_b.\ \pure{L_1=v\ld L_b}\sep\pure{x=p_1}\sep\pure{n=y}\sep\nd{x}{v}{y}\sep\lst(y,L_b)\,\}\ \Rightarrow\\
+  &\{\,\exists v,L_b.\ \pure{L_1=[\,]\app v\ld L_b}\sep\lseg(p_1,x,[\,])\sep\nd{x}{v}{n}\sep\lst(n,L_b)\,\}
+\end{align*}
+Note that the pure fact $\pure{L_1=v\ld L_b}$ must be carried through every assertion: it is the
+only connection between the logical variables $v$ and $L_b$ and the list $L_1$ in the
+specification. In the last step we use $\lseg(p_1,x,[\,])\equiv\pure{p_1=x}$ and replace $y$ by
+$n$. Generalizing $[\,]$ to an arbitrary $L_a$, and adding back the frame, suggests the loop
+invariant
+\[
+  I\ \triangleq\ \exists L_a,v,L_b.\ \pure{L_1=L_a\app v\ld L_b}\sep\lseg(p_1,x,L_a)\sep\nd{x}{v}{n}\sep\lst(n,L_b)\sep\lst(p_2,L_2).
+\]
+The visited part of the first list is the segment from $p_1$ to $x$; $x$ is the current node,
+holding $v$ and pointing to $n$; and the rest of the first list is at $n$. The assertion we derived
+is exactly $I$ with $L_a=[\,]$, so the code before the loop establishes the invariant.
+
+\paragraph{The loop body.} We must show
+$\{I\sep\pure{n\neq 0}\}\ x:=n;\ n:=\ast(x+1)\ \{I\}$. We again frame $\lst(p_2,L_2)$. Since
+$n\neq 0$, the rest of the list is not empty, so we unfold $L_b=w\ld L_c$:
+\begin{align*}
+  &\{\,I\sep\pure{n\neq 0}\,\}\ \Rightarrow\ \text{(unfold)}\\
+  &\{\,\exists L_a,v,w,m,L_c.\ \pure{L_1=L_a\app v\ld w\ld L_c}\\
+  &\qquad\sep\lseg(p_1,x,L_a)\sep\nd{x}{v}{n}\sep\nd{n}{w}{m}\sep\lst(m,L_c)\,\}\ \Rightarrow\ \text{(snoc)}\\
+  &\{\,\exists L_a,v,w,m,L_c.\ \pure{L_1=L_a\app v\ld w\ld L_c}\\
+  &\qquad\sep\lseg(p_1,n,L_a\app[v])\sep\nd{n}{w}{m}\sep\lst(m,L_c)\,\}\\
+  &x:=n;\qquad\text{(assignment)}\\
+  &\{\,\exists L_a,v,w,m,L_c.\ \pure{L_1=L_a\app v\ld w\ld L_c}\\
+  &\qquad\sep\lseg(p_1,x,L_a\app[v])\sep\nd{x}{w}{m}\sep\lst(m,L_c)\,\}\\
+  &n:=\ast(x+1)\qquad\text{(\rn{Load}, \rn{Frame})}\\
+  &\{\,\exists L_a,v,w,m,L_c.\ \pure{L_1=L_a\app v\ld w\ld L_c}\sep\pure{n=m}\\
+  &\qquad\sep\lseg(p_1,x,L_a\app[v])\sep\nd{x}{w}{m}\sep\lst(m,L_c)\,\}\ \Rightarrow\\
+  &\{\,I\,\}
+\end{align*}
+The snoc step folds the current node into the visited segment. The final implication re-establishes
+$I$ with $L_a\app[v]$ for $L_a$, $w$ for $v$, and $L_c$ for $L_b$. This fact holds because
+$L_a\app v\ld w\ld L_c=(L_a\app[v])\app w\ld L_c$, and $\nd{x}{w}{m}\sep\lst(m,L_c)$ becomes
+$\nd{x}{w}{n}\sep\lst(n,L_c)$ because $n=m$.
+
+\paragraph{After the loop.} When the loop exits, we have $I\sep\pure{n=0}$. Since $n=0$, the rest
+of the list must be empty, so $L_b=[\,]$ and hence $L_1=L_a\app[v]$:
+\begin{align*}
+  &\{\,I\sep\pure{n=0}\,\}\ \Rightarrow\\
+  &\{\,\exists L_a,v.\ \pure{L_1=L_a\app[v]}\sep\lseg(p_1,x,L_a)\sep\nd{x}{v}{0}\sep\lst(p_2,L_2)\,\}\\
+  &\ast(x+1):=p_2;\qquad\text{(\rn{Store}, \rn{Frame})}\\
+  &\{\,\exists L_a,v.\ \pure{L_1=L_a\app[v]}\sep\lseg(p_1,x,L_a)\sep\nd{x}{v}{p_2}\sep\lst(p_2,L_2)\,\}\ \Rightarrow\ \text{(snoc)}\\
+  &\{\,\lseg(p_1,p_2,L_1)\sep\lst(p_2,L_2)\,\}\\
+  &r:=p_1\qquad\text{(assignment)}\\
+  &\{\,\lseg(r,p_2,L_1)\sep\lst(p_2,L_2)\,\}\ \Rightarrow\ \text{(concat)}\\
+  &\{\,\lst(r,L_1\app L_2)\,\}
+\end{align*}
+This establishes the postcondition and completes the proof.
+
+\section{The Magic Wand}
+
+In standard Hoare logic, the assignment axiom $\{P[e/x]\}\ x:=e\ \{P\}$ works backwards: it
+computes the weakest precondition of an assignment by substitution. What is the weakest
+precondition of a heap store such as $\ast x:=5$ with respect to a postcondition $Q$? Substitution
+doesn't work, because $Q$ may refer to the cell at $x$ under a different name---e.g., an assertion
+such as $y\pto 3$ may refers to the same cell when $x$ and $y$ are aliases. What we would like to
+say is: ``I hold the cell at $x$, together with a promise: add $x\pto 5$, and you get $Q$.'' Our
+existing assertion language has no way to express such a promise, so we add a new connective,
+called \emph{magic wand}.
+
+\paragraph{Definition.} The \emph{magic wand}, or \emph{separating implication}, is defined by
+\[
+  (\sigma,h)\models_I H\wand J\quad\text{iff for all } h'\perp h \text{ with } (\sigma,h')\models_I H,
+  \text{ we have } (\sigma,h\uplus h')\models_I J.
+\]
+Intuitively, $H\wand J$ describes a heap that becomes a $J$-heap when you add an $H$-heap; it is
+sometimes described as ``$J$ with an $H$-shaped hole.'' The wand is to $\sep$ as implication is to
+conjunction. In particular, it satisfies modus ponens and a currying law:
+\[
+  H\sep(H\wand J)\Rightarrow J
+  \qquad\qquad
+  (K\sep H\Rightarrow J)\ \text{iff}\ (K\Rightarrow H\wand J)
+\]
+For example, $\emp\wand H\equiv H$, and any heap satisfying $y\pto 4$ also satisfies
+\[
+  x\pto 3\wand(x\pto 3\sep y\pto 4).
+\]
+(If $x$ and $y$ are aliases, no disjoint heap satisfies $x\pto 3$, so the wand holds vacuously.)
+
+\paragraph{Weakest preconditions for heap commands.} With the wand, we can state the weakest
+preconditions of the heap commands, where ``weakest'' is with respect to our fault-avoiding
+triples:
+\begin{center}
+\begin{tabular}{ll}
+  \textbf{Command} & \textbf{Weakest precondition for $Q$}\\\hline
+  $\ast e_1:=e_2$ & $(e_1\pto-)\sep((e_1\pto e_2)\wand Q)$\\
+  $\kw{free}(e)$ & $(e\pto-)\sep Q$\\
+  $x:=\kw{new}(e)$ & $\forall i.\ (i\pto e)\wand Q[i/x]$\quad($i$ fresh)
+\end{tabular}
+\end{center}
+For a store, we must own the cell at $e_1$ (so that the store does not fault), and the rest of the
+heap must turn into a $Q$-heap once a cell $e_1\pto e_2$ is added. For allocation, the rest of the
+heap must turn into a $Q$-heap once any new cell $i\pto e$ is added, with $x$ holding its address
+$i$, because \rn{New} may choose any unused address. For example, with
+$Q=x\pto 5\sep y\pto 7$,
+\[
+  \wpre(\ast x:=5,\,Q)=x\pto-\sep(x\pto 5\wand(x\pto 5\sep y\pto 7))\ \Leftarrow\ x\pto-\sep y\pto 7,
+\]
+by currying, since $y\pto 7\sep x\pto 5\Rightarrow x\pto 5\sep y\pto 7$. This is exactly what we
+would expect.
+
+\paragraph{Backward rules from forward ones.} We do not need new proof rules to use these weakest
+preconditions. For example, the backward rule for stores follows from the forward \rn{Store}
+axiom. Let $K=(e_1\pto e_2)\wand Q$. Since $\modv(\ast e_1:=e_2)=\emptyset$, the \rn{Store} axiom
+and \rn{Frame} give
+\[
+  \{e_1\pto-\sep K\}\ \ast e_1:=e_2\ \{e_1\pto e_2\sep K\}.
+\]
+By modus ponens, $e_1\pto e_2\sep((e_1\pto e_2)\wand Q)\Rightarrow Q$, so by \rn{Consequence},
+\[
+  \{(e_1\pto-)\sep((e_1\pto e_2)\wand Q)\}\ \ast e_1:=e_2\ \{Q\}.
+\]
+In other words, the forward small axioms together with \rn{Frame} already suffice; the wand simply
+lets us state weakest preconditions.
+
+\paragraph{Where the magic wand shows up.} The wand plays a central role in modern program logics.
+In Iris, for example, the rules for weakest preconditions are stated using $\wand$, much like the
+backward rules above. Viper supports magic wands in specifications. The wand is also useful for
+describing partial data structures: for instance, $\lst(x,L_2)\wand\lst(p,L_1\app L_2)$ describes
+a list with a hole, which becomes a complete list once the list at $x$ is supplied. On the other
+hand, the wand is notoriously hard to automate, which is one reason why most tools reason in the
+forward direction, often using symbolic execution.
+
+\section*{Further Reading}
+
+Reynolds's lecture notes cover list segments, the structural rules (including the form of the
+\rn{Exists} rule used here), and backward reasoning with the magic wand. Chargu\'eraud's textbook
+\emph{Separation Logic Foundations} (Software Foundations, Volume 6) takes as primitive a variant of
+the \rn{Exists} rule with the existential only in the precondition (\texttt{triple\_hexists}), and
+derives the form used here from it (\texttt{triple\_hexists2}).
+
+% \end{document}

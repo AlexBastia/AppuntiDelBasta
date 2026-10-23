@@ -1,0 +1,5 @@
+@ x = y and z = 0 @
+x := x + 1;
+if x > y then { z := 1; y := y + z } else { x := x * 2};
+z := z * 2
+@ x = y and z = 2 @

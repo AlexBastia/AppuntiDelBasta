@@ -1,0 +1,6 @@
+@ x = $i and y = $j and exists $i ($i > 0) @
+while (not (y = 0)) do 
+  @ x + y = $i + $j @
+  { y := y - 1;
+    x := x + 1 }
+@ x = $i + $j @

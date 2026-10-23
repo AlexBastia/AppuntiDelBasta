@@ -1,0 +1,6 @@
+Gemini Pro was used to generate the standard semantics of arithmetic and boolean operations, this was usefull to automate writing of standard uninteresting code.
+
+1. 5h
+2. moderate-difficult
+3. yes
+4. 90%

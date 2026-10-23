@@ -1,0 +1,9 @@
+@ y > 0 @
+z := 0;
+i := y;
+while (i > 0) do
+  @ z = (y - i) * x and y >= 0 @ {
+  z := z + x;
+  y := y - 1
+}
+@ z = x * y @

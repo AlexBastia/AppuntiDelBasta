@@ -1,0 +1,297 @@
+% \begin{document}
+\section{Decorated Programs}
+
+Doing a complete proof in Hoare Logic can feel overly verbose. The ``core'' of a proof consists
+of the preconditions and postconditions surrounding every command; with those, it's usually
+possible to infer the complete shape of the proof tree.
+
+\emph{Decorating} programs is a way to informally write down a Hoare logic proof of
+correctness. The idea is to insert assertion decorations between every ``line'' of the program.
+Using this informal evidence, you can reconstruct the full formal proof.
+
+\subsection{Informal Rules}
+
+We'll set out a few rules to check whether a decorated program represents a valid proof using
+\emph{local consistency} checks. The rules, as you'll see, are informal reflections of the
+formal inference rules for Hoare logic.
+
+\medskip
+\noindent\textbf{Skip.} For \textbf{skip}, the precondition and postcondition should be the
+same, like this:
+\begin{center}
+\begin{tabular}{l}
+$\{P\}$ \\
+$\mathbf{skip}$ \\
+$\{P\}$
+\end{tabular}
+\end{center}
+
+\noindent\textbf{Sequence.} For sequences, a new assertion $R$ appears between the two
+commands. The two halves $\{P\}\ c_1\ \{R\}$ and $\{R\}\ c_2\ \{Q\}$ must be (recursively)
+locally consistent:
+\begin{center}
+\begin{tabular}{l}
+$\{P\}$ \\
+$c_1;$ \\
+$\{R\}$ \\
+$c_2$ \\
+$\{Q\}$
+\end{tabular}
+\end{center}
+
+\noindent\textbf{Assignment.} Assignments are locally consistent when the precondition is the
+same as the postcondition except that it substitutes the assigned expression in for the
+variable:
+\begin{center}
+\begin{tabular}{l}
+$\{P[a/x]\}$ \\
+$x := a$ \\
+$\{P\}$
+\end{tabular}
+\end{center}
+
+\noindent\textbf{Conditions.} An \textbf{if} is locally consistent when both branches are
+locally consistent after adding the branch condition to each:
+\begin{center}
+\begin{tabular}{l}
+$\{P\}$ \\
+$\mathbf{if}\ b\ \mathbf{then}$ \\
+\qquad $\{P \wedge b\}$ \\
+\qquad $c_1$ \\
+\qquad $\{Q\}$ \\
+$\mathbf{else}$ \\
+\qquad $\{P \wedge \neg b\}$ \\
+\qquad $c_2$ \\
+\qquad $\{Q\}$ \\
+$\{Q\}$
+\end{tabular}
+\end{center}
+
+\noindent\textbf{Loops.} A \textbf{while} command should be decorated with a loop invariant:
+\begin{center}
+\begin{tabular}{l}
+$\{P\}$ \\
+$\mathbf{while}\ b\ \mathbf{do}$ \\
+\qquad $\{P \wedge b\}$ \\
+\qquad $c$ \\
+\qquad $\{P\}$ \\
+$\{P \wedge \neg b\}$
+\end{tabular}
+\end{center}
+
+\noindent\textbf{Implication.} To capture the CONSEQUENCE rule, you can always write a (valid)
+implication to connect two commands:
+\begin{center}
+\begin{tabular}{l}
+$\{P\} \Rightarrow$ \\
+$\{Q\}$
+\end{tabular}
+\end{center}
+
+\nt{
+  It's possible to give a less redundant definition of these rules (less decorated), but this won't have the property of having a pre and post condition for every command.
+}
+
+\subsection{Decorating a Program}
+
+These informal rules tell you how to verify whether a decorated program is correct, but they
+don't by themselves tell you how to construct those decorations (and thereby a proof). You can
+do this almost mechanically---except for loop invariants, which still require some creativity
+to concoct.
+
+Here's an example program:
+\[
+\mathbf{while}\ (0 < \mathtt{y})\ \mathbf{do}\ (
+\ \mathtt{x} := \mathtt{x} + 1;\ \mathtt{y} := \mathtt{y} - 1
+\ )
+\]
+
+The first step is to decide what we want to prove about this program. So we write a
+precondition and postcondition for the whole program. Intuitively, the program adds
+$\mathtt{y}$ onto the initial value of the variable $\mathtt{x}$, so we'll assert that:
+
+\begin{center}
+\begin{tabular}{l}
+$\{\mathtt{x} = m \wedge \mathtt{y} = n \wedge 0 \leq n\}$ \\
+$\mathbf{while}\ (0 < \mathtt{y})\ \mathbf{do}\ ($ \\
+\qquad $\mathtt{x} := \mathtt{x} + 1;$ \\
+\qquad $\mathtt{y} := \mathtt{y} - 1$ \\
+$)$ \\
+$\{\mathtt{x} = m + n\}$
+\end{tabular}
+\end{center}
+
+This program is a while command, so the next step is to come up with a loop invariant. We'll
+set up the structure first. We need an assertion $I$ where we can ``connect'' the loop's
+precondition and postcondition to our overall precondition and postcondition using
+implications, like this:
+
+\begin{center}
+\begin{tabular}{l}
+$\{\mathtt{x} = m \wedge \mathtt{y} = n \wedge 0 \leq n\} \Rightarrow$ \\
+$\{I\}$ \\
+$\mathbf{while}\ (0 < \mathtt{y})\ \mathbf{do}\ ($ \\
+\qquad $\{I \wedge 0 < y\}$ \\
+\qquad $\mathtt{x} := \mathtt{x} + 1;$ \\
+\qquad $\mathtt{y} := \mathtt{y} - 1$ \\
+\qquad $\{I\}$ \\
+$)$ \\
+$\{I \wedge 0 \not< \mathtt{y}\} \Rightarrow$ \\
+$\{\mathtt{x} = m + n\}$
+\end{tabular}
+\end{center}
+
+On every iteration of the loop, the variable $\mathtt{x}$ is the sum we want, $m + n$, less the
+current value of $\mathtt{y}$, which is the number of iterations remaining. So we'll define the
+invariant $I$ like this:
+\[
+I ::= (\mathtt{x} = m + n - \mathtt{y}) \wedge 0 \leq \mathtt{y}
+\]
+The top implication follows because $n - \mathtt{y} = 0$, and the bottom implication is valid
+because $0 \not< \mathtt{y}$ and $0 \leq \mathtt{y}$ together imply $\mathtt{y} = 0$.
+
+To finish decorating the program, we need an assertion between the two lines in the body of the
+loop. By the rule for assignments, we know that this must be $I[\mathtt{y} - 1/\mathtt{y}]$, or:
+\[
+P_1 ::= (\mathtt{x} = m + n - (\mathtt{y} - 1)) \wedge (0 \leq \mathtt{y} - 1)
+\]
+To make the assignment to $\mathtt{x}$ locally consistent, then, its precondition must be
+$P_1[\mathtt{x} + 1/\mathtt{x}]$, or:
+\[
+P_2 ::= (\mathtt{x} + 1 = m + n - (\mathtt{y} - 1)) \wedge (0 \leq \mathtt{y} - 1)
+\]
+It's straightforward to see that the precondition at the top of the loop, $I \wedge 0 <
+\mathtt{y}$, implies this new assertion $P_2$. Now we can write our complete decorated program
+using these definitions:
+
+\begin{center}
+\begin{tabular}{l}
+$\{\mathtt{x} = m \wedge \mathtt{y} = n \wedge 0 \leq n\} \Rightarrow$ \\
+$\{I\}$ \\
+$\mathbf{while}\ (0 < \mathtt{y})\ \mathbf{do}\ ($ \\
+\qquad $\{I \wedge 0 < y\} \Rightarrow$ \\
+\qquad $\{P_2\}$ \\
+\qquad $\mathtt{x} := \mathtt{x} + 1;$ \\
+\qquad $\{P_1\}$ \\
+\qquad $\mathtt{y} := \mathtt{y} - 1$ \\
+\qquad $\{I\}$ \\
+$)$ \\
+$\{I \wedge 0 \not< \mathtt{y}\} \Rightarrow$ \\
+$\{\mathtt{x} = m + n\}$
+\end{tabular}
+\end{center}
+
+\section{Weakest Preconditions}
+
+Previously, we discussed the issue of completeness---i.e., whether it is possible to derive
+every valid partial correctness specification using the axioms and rules of Hoare logic.
+Unfortunately, if treated as a pure deductive system, Hoare logic cannot be complete. To see
+why, consider the following partial correctness specifications:
+\[
+\{\mathbf{true}\}\ \mathbf{skip}\ \{P\}
+\qquad
+\{\mathbf{true}\}\ c\ \{\mathbf{false}\}
+\]
+The first is valid if and only if the assertion $P$ is valid while the second is valid if and
+only if the command $c$ does not halt.
+
+It turns out that the culprit is the CONSEQUENCE rule,
+\[
+\frac{\models (P \Rightarrow P') \qquad \{P'\}\ c\ \{Q'\} \qquad \models (Q' \Rightarrow
+Q)}{\{P\}\ c\ \{Q\}} \; \text{CONSEQUENCE}
+\]
+which includes two premises about the validity of implications between the assertions
+involved. Proving those implications for our two examples would require proving arbitrary
+logical predicates $P$ and proving that arbitrary IMP programs $c$ terminate. By G\"odel's
+incompleteness theorem, we know that there is no consistent mathematical proof system that can
+do the former. Therefore, Hoare logic cannot be complete in that sense.
+
+On the other hand, Hoare logic does enjoy this property:
+
+\thm{Relative Completeness of Hoare Logic}{
+$\forall P, Q \in \mathbf{Assn}, c \in \mathbf{Com}.\ \models \{P\}\ c\ \{Q\}$ implies $\vdash
+\{P\}\ c\ \{Q\}$.
+}
+
+This result states that Hoare logic is no more incomplete than the language of assertions---i.e., if we
+had an oracle that could decide the validity of assertions, then we could decide the validity
+of partial correctness specifications. In other words, for any valid Hoare triple, there exists
+a proof in Hoare logic---as long as you have some external way to decide the validity of the
+premises to the CONSEQUENCE rule.\\
+
+Cook's proof of relative completeness depends on the notion of \emph{weakest liberal
+preconditions}. Given a command $c$ and a postcondition $Q$, the weakest liberal precondition
+is the weakest assertion $P$ such that $\{P\}\ c\ \{Q\}$ is valid. Here, ``weakest'' means that
+any other valid precondition implies $P$. That is, $P$ most accurately describes input states
+for which $c$ either does not terminate or ends up in a state satisfying $Q$.
+
+\dfn{Weakest Liberal Precondition}{
+Formally, an assertion $P$ is a weakest liberal precondition of $c$ and $Q$ if:
+\[
+\forall \sigma, I.\ \sigma \models_I P \iff (\mathcal{C}[\![c]\!]\, \sigma) \text{ is
+undefined} \ \vee\ (\mathcal{C}[\![c]\!]\sigma) \models_I Q
+\]
+}
+
+\nt{
+  The interpretation is the same to check $ P $ and $ Q  $, meaning the program can't change the set of logical variables.
+}
+
+We write $\mathrm{wlp}(c, Q)$ for the weakest liberal precondition of command $c$ and
+postcondition $Q$. From left-to-right, the formula above states that $\mathrm{wlp}(c, Q)$ is a
+valid precondition: $\models \{P\}\ c\ \{Q\}$. The right-to-left implication says it is the
+weakest valid precondition: if another assertion $R$ satisfies $\models \{R\}\ c\ \{Q\}$, then
+$R$ implies $P$. It can be shown that weakest liberal preconditions are unique modulo
+equivalence.
+
+We can calculate the weakest liberal precondition of a command as follows:
+\begin{align*}
+\mathrm{wlp}(\mathbf{skip}, P) &= P \\
+\mathrm{wlp}(x := a, P) &= P[a/x] \\
+\mathrm{wlp}((c_1; c_2), P) &= \mathrm{wlp}(c_1, \mathrm{wlp}(c_2, P)) \\
+\mathrm{wlp}(\mathbf{if}\ b\ \mathbf{then}\ c_1\ \mathbf{else}\ c_2, P) &= (b \implies
+\mathrm{wlp}(c_1, P)) \wedge (\neg b \implies \mathrm{wlp}(c_2, P))
+\end{align*}
+
+The definition of $\mathrm{wlp}(\mathbf{while}\ b\ \mathbf{do}\ c, P)$ is slightly more
+complicated---it encodes the weakest liberal precondition for each iteration of the loop. To
+give the intuition, first define the weakest liberal precondition for a loop that terminates in
+$i$ steps as follows:
+\begin{align*}
+F_0(P) &= \mathbf{true} \\
+F_{i+1}(P) &= (\neg b \implies P) \wedge (b \implies \mathrm{wlp}(c, F_i(P)))
+\end{align*}
+We can then express the weakest liberal precondition using an infinitary conjunction:
+\[
+\mathrm{wlp}(\mathbf{while}\ b\ \mathbf{do}\ c, P) = \bigwedge_i F_i(P)
+\]
+See Winskel Chapter 7 for the details of how to encode the weakest liberal precondition for a
+while loop as an ordinary assertion.
+
+To check that our definition is correct, we can prove (how?) that it yields a valid partial
+correctness specification:
+
+\mlenma{Correctness of Weakest Preconditions}{
+\[
+\forall c \in \mathbf{Com}, Q \in \mathbf{Assn}.\ \models \{\mathrm{wlp}(c, Q)\}\ c\ \{Q\}
+\text{ and } \forall R \in \mathbf{Assn}.\ \models \{R\}\ c\ \{Q\} \text{ implies } (R \implies
+\mathrm{wlp}(c, Q))
+\]
+}
+
+It is not hard to prove that it also yields a provable specification:
+
+\mlenma{Provability of Weakest Preconditions}{
+$\forall c \in \mathbf{Com}, Q \in \mathbf{Assn}.\ \vdash \{\mathrm{wlp}(c, Q)\}\ c\ \{Q\}$
+}
+
+Relative completeness follows by a simple argument:
+
+\pf{Sketch}{
+Let $c$ be a command and let $P$ and $Q$ be assertions such that the partial correctness
+specification $\{P\}\ c\ \{Q\}$ is valid. By Lemma~1 we have $\models P \implies
+\mathrm{wlp}(c, Q)$. By Lemma~2 we have $\vdash \{\mathrm{wlp}(c, Q)\}\ c\ \{Q\}$. We conclude
+$\vdash \{P\}\ c\ \{Q\}$ using the CONSEQUENCE rule.
+}
+
+% \end{document}

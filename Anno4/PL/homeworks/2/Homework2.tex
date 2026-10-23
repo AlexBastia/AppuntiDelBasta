@@ -1,0 +1,187 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{enumitem}
+
+% ---- Semantics notation ----
+\newcommand{\Exp}{\mathit{Exp}}
+\newcommand{\Com}{\mathit{Com}}
+\newcommand{\Store}{\mathit{Store}}
+\newcommand{\conf}[2]{\langle #1, #2 \rangle}
+\newcommand{\step}{\longrightarrow}
+\newcommand{\steps}{\longrightarrow^{*}}
+\newcommand{\nostep}{\not\longrightarrow}
+
+\newcommand{\Case}[1]{\medskip\noindent\underline{\textbf{Case #1}}\smallskip\par}
+
+% inference rule helper
+\newcommand{\infrule}[2]{%
+  \begin{array}{c}
+    #1 \\ \hline #2
+  \end{array}%
+}
+\newcommand{\infruleside}[3]{%
+  \begin{array}{c}
+    #1 \\ \hline #2
+  \end{array}\quad #3%
+}
+
+\title{Homework 2}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{1)}
+
+Let $e \in \Exp$. We prove by structural induction on $e$ that:
+\[
+\forall \sigma \in \Store.\ \exists \sigma' \in \Store.\ \exists e' \in \Exp.\
+\conf{\sigma}{e} \steps \conf{\sigma'}{e'} \ \wedge\ \conf{\sigma'}{e'} \nostep.
+\]
+
+\Case{$e = x$}
+
+\begin{itemize}
+  \item[$\cdot$] $x \in \sigma$: By \textsc{Var}, $\conf{\sigma}{x} \step \conf{\sigma}{n}$.
+  By \textsc{Refl} and \textsc{Trans}, $\conf{\sigma}{x} \steps \conf{\sigma}{n}$.
+  Because $\conf{\sigma}{n} \nostep$, done.
+
+  \item[$\cdot$] $x \notin \sigma$: By \textsc{Refl}, $\conf{\sigma}{x} \steps \conf{\sigma}{x}$.
+  Because $\conf{\sigma}{x} \nostep$ if $x \notin \sigma$, done.
+\end{itemize}
+
+\Case{$e = n$}
+
+By \textsc{Refl}, $\conf{\sigma}{n} \steps \conf{\sigma}{n}$. Because $\conf{\sigma}{n} \nostep$, done.
+
+\Case{$e = e_1 + e_2$ (same for $e_1 * e_2$)}
+
+By IH1, $\conf{\sigma}{e_1} \steps \conf{\sigma'}{e_1'} \ \wedge\ \conf{\sigma'}{e_1'} \nostep$.
+
+\begin{itemize}
+  \item[$\cdot$] $e_1' = n$: By Lemma 1 (proven during lecture),
+  $\conf{\sigma}{e_1+e_2} \steps \conf{\sigma'}{n+e_2}$.
+
+  By IH2, $\conf{\sigma'}{e_2} \steps \conf{\sigma''}{e_2'} \ \wedge\ \conf{\sigma''}{e_2'} \nostep$.
+
+  \begin{itemize}
+    \item[$\cdot$] $e_2' = m$: By Lemma 1, $\conf{\sigma'}{n+e_2} \steps \conf{\sigma''}{n+m}$.
+    By transitivity, $\conf{\sigma}{e_1+e_2} \steps \conf{\sigma''}{p}$, where $p = n+m$.
+    Because $\conf{\sigma''}{p} \nostep$, done.
+
+    \item[$\cdot$] $e_2' \neq m$: By Lemma 1, $\conf{\sigma'}{n+e_2} \steps \conf{\sigma''}{n+e_2'}$.
+    By transitivity, $\conf{\sigma}{e_1+e_2} \steps \conf{\sigma''}{n+e_2'}$.
+    Because $\conf{\sigma''}{e_2'} \nostep$ and $e_2' \neq m$, $\conf{\sigma''}{n+e_2'} \nostep$, done.
+  \end{itemize}
+
+  \item[$\cdot$] $e_1' \neq n$: By Lemma 1, $\conf{\sigma}{e_1+e_2} \steps \conf{\sigma'}{e_1'+e_2}$.
+  Because $\conf{\sigma'}{e_1'} \nostep$ and $e_1' \neq n$, $\conf{\sigma'}{e_1'+e_2} \nostep$, done.
+\end{itemize}
+
+\Case{$e = x := e_1 ; e_2$}
+
+By IH1, $\conf{\sigma}{e_1} \steps \conf{\sigma'}{e_1'} \ \wedge\ \conf{\sigma'}{e_1'} \nostep$.
+
+\begin{itemize}
+  \item[$\cdot$] $e_1' = n$: By Lemma 1, $\conf{\sigma}{x:=e_1;e_2} \steps \conf{\sigma'}{x:=n;e_2}$.
+  By \textsc{Assign}, \textsc{Refl}, \textsc{Trans} and transitivity,
+  $\conf{\sigma}{x:=e_1;e_2} \steps \conf{\sigma''}{e_2}$.
+  By IH2 and transitivity, done.
+
+  \item[$\cdot$] $e_1' \neq n$: By Lemma 1, $\conf{\sigma}{x:=e_1;e_2} \steps \conf{\sigma'}{x:=e_1';e_2}$.
+  Because $e_1' \neq n$ and $\conf{\sigma'}{e_1'} \nostep$, $\conf{\sigma'}{x:=e_1';e_2} \nostep$. Done.
+\end{itemize}
+
+\section*{2)}
+
+\begin{enumerate}[label=\alph*.]
+  \item $e = x:=1;0$
+  \item $e_1 = x:=1;0 \qquad e_2 = x:=2;0$
+  \item Ok.
+\end{enumerate}
+
+\section*{3)}
+
+Let $\sigma, \sigma' \in \Store$, $c, c' \in \Com$.
+We prove by induction on the derivation $\conf{\sigma}{c} \steps \conf{\sigma'}{c'}$ that
+
+\[
+\forall \sigma'', c''.\quad
+\underbrace{\conf{\sigma}{c} \steps \conf{\sigma'}{c'}}_{(H1)} \ \wedge\
+\underbrace{\conf{\sigma'}{c'} \steps \conf{\sigma''}{c''}}_{(H2)}
+\ \Longrightarrow\ \conf{\sigma}{c} \steps \conf{\sigma''}{c''}.
+\]
+
+\Case{Refl}
+
+By H1, H2, $\sigma = \sigma' \wedge \sigma' = \sigma'' \wedge c = c' \wedge c' = c''$.
+By transitivity of $=$, $\sigma = \sigma'' \wedge c = c''$.
+By \textsc{Refl}, $\conf{\sigma}{c} \steps \conf{\sigma}{c}$.
+
+\Case{Step}
+
+By \textsc{Step} and H1, $\exists \sigma^{*}, c^{*}.\ \conf{\sigma}{c} \step \conf{\sigma^{*}}{c^{*}} \ \wedge\ \conf{\sigma^{*}}{c^{*}} \steps \conf{\sigma'}{c'}$.
+
+By IH and H2, $\conf{\sigma^{*}}{c^{*}} \steps \conf{\sigma''}{c''}$.
+
+By \textsc{Step}, $\conf{\sigma}{c} \steps \conf{\sigma''}{c''}$.
+
+\section*{4)}
+
+\[
+\infrule{\conf{\sigma}{e_1} \step \conf{\sigma'}{e_1'}}
+     {\conf{\sigma}{\mathrm{try}\ e_1\ \mathrm{with}\ E\ \mathrm{do}\ e_2} \step \conf{\sigma'}{\mathrm{try}\ e_1'\ \mathrm{with}\ E\ \mathrm{do}\ e_2}}
+\]
+
+\bigskip
+
+\[
+\dfrac{}{\conf{\sigma}{\mathrm{try}\ E\ \mathrm{with}\ E\ \mathrm{do}\ e_2} \step \conf{\sigma}{e_2}}
+\]
+
+\bigskip
+
+\[
+\dfrac{}{\conf{\sigma}{\mathrm{try}\ n\ \mathrm{with}\ E\ \mathrm{do}\ e_2} \step \conf{\sigma}{n}}
+\]
+
+\bigskip
+
+\[
+\infrule{E' \neq E}
+     {\conf{\sigma}{\mathrm{try}\ E'\ \mathrm{with}\ E\ \mathrm{do}\ e_2} \step \conf{\sigma}{E'}}
+\]
+
+\bigskip
+
+\[
+\dfrac{}{\conf{\sigma}{\mathrm{throw}\ E} \step \conf{\sigma}{E}}
+\qquad
+\left.
+\infrule{\conf{\sigma}{E+e_2} \step \conf{\sigma}{E}}
+     {\conf{\sigma}{n+E} \step \conf{\sigma}{E}}
+\right\}\ \text{same for } e_1 * e_2
+\]
+
+\bigskip
+
+\[
+\dfrac{}{\conf{\sigma}{x := E; e_2} \step \conf{\sigma}{E}}
+\]
+
+\section*{Generative AI Disclosure}
+Claude Sonnet LLM was used to translate handwriting to LaTeX. In addition, Gemini Pro was used to understand what the inductive hypothesis of Exercise 3 should be in the Step case, as I didn't fully understand induction on derivations. The LLMs helped me not waste time by rewriting everything and aided my understanding of some topics.
+
+\section*{Debriefing}
+\begin{itemize}
+\item 4h
+\item moderate-difficult
+\item only me
+\item $ 90\% $
+\end{itemize}
+
+\end{document}
