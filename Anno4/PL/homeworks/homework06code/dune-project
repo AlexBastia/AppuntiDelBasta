@@ -1,0 +1,11 @@
+(lang dune 3.0)
+(name vcgen)
+(generate_opam_files true)
+
+(package
+ (name vcgen)
+ (synopsis "Verification condition generation for separation logic")
+ (depends
+  ocaml
+  dune
+  z3))

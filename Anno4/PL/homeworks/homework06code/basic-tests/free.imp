@@ -1,0 +1,9 @@
+@ list(l) @
+
+while (l != 0) do @ list(l) @ {
+  tmp := *(l + 1);
+  free(2, l);
+  l := tmp;
+}
+
+@ true @

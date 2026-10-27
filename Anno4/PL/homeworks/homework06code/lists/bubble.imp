@@ -1,0 +1,49 @@
+@ true @
+
+/* Build the list [3, 1, 5, 2, 4]. */
+l := 0;
+l := new(4, l);
+l := new(2, l);
+l := new(5, l);
+l := new(1, l);
+l := new(3, l);
+
+@ list(l) @
+
+/* unimplemented: bubble sort l. */
+
+if (l != 0) then {
+
+while (flag = 1) do @ (l != 0) * list(l) @
+{
+  flag := 0;
+  p := l;
+  next := *(p + 1);
+  while (next != 0) do @ lseg(l, p) * p |-> _ * (p+1) |-> next * list(next) @
+  {
+    v := *p;
+    u := *next;
+    if (v > u) then {
+      flag := 1;
+      *p := u;
+      *next := v
+    }
+    p := next;
+    next := *(next+1)
+  }
+}
+
+}
+
+@ list(l) @
+
+/* Print the list, which should print 1 2 3 4 5 once it is sorted, and free it. */
+while (l != 0) do @ list(l) @ {
+  v := *l;
+  print v;
+  t := *(l + 1);
+  free(2, l);
+  l := t;
+}
+
+@ true @

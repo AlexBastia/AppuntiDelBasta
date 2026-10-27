@@ -1,0 +1,17 @@
+@ list(l1) * list(l2) @
+
+if (l1 = 0) then {
+  l1 := l2;
+} else {
+  p := l1;
+  tmp := *(p + 1);
+  while (tmp != 0) do
+  @ lseg(l1, p) * p |-> _ * p+1 |-> tmp * list(tmp) * list(l2) @
+  {
+    p := tmp;
+    tmp := *(p + 1);
+  }
+  *(p + 1) := l2;
+}
+
+@ list(l1) @
