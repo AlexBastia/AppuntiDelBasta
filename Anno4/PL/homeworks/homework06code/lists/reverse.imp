@@ -1,0 +1,13 @@
+@ list(p) @
+
+q := 0;
+while (p != 0) do @ list(p) * list(q) @
+{
+  next := *(p+1);
+  *(p+1) := q;
+  q := p;
+  p := next;
+}
+p := q
+
+@ list(p) @

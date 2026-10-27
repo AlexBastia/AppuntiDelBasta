@@ -1,0 +1,456 @@
+% \begin{document}
+
+\chapter{Type Systems}
+\noindent
+A \emph{type} is a collection of computational entities that share some common property. For example, the type $\tint$ represents all expressions that evaluate to an integer, the type $\tbool$ represents all expressions that evaluate to a Boolean, the type $\tint \to \tint$ represents all functions from integers to integers, and the type $\tint \times \tbool$ represents all pairs of an integer and a Boolean.
+
+You can see types as a \emph{static} approximation of the \emph{dynamic} behaviors of terms and programs. Type \emph{systems} are a lightweight formal method for reasoning about behavior of a program. Uses of type systems include: naming and organizing useful concepts; providing information (to the compiler or programmer) about data manipulated by a program; and ensuring that the run-time behavior of programs meet certain criteria.
+
+In this lecture, we'll consider a type system for the lambda calculus that ensures that values are used correctly; for example, that a program never tries to add an integer to a function. The resulting language (lambda calculus plus the type system) is called the \emph{simply-typed lambda calculus} (STLC).
+
+\section{Simply-typed lambda calculus}
+
+The syntax of the simply-typed lambda calculus is similar to that of untyped lambda calculus, with the exception of abstractions. Since abstractions define functions that take an argument, in the simply-typed lambda calculus, we explicitly state what the type of the argument is. That is, in an abstraction $\lam{x}{\tau} e$, the $\tau$ is the expected type of the argument.
+
+The syntax of the simply-typed lambda calculus is as follows. It includes integer literals $n$, arithmetic $e_1 \oplus e_2$ (where the operator $\oplus$ is addition, subtraction, or multiplication), and the \emph{unit value} $()$. The unit value is the only value of type $\tunit$.
+
+\[
+\begin{array}{rcl@{\qquad}l}
+\text{expressions} & e & ::= & x \mid \lam{x}{\tau} e \mid e_1\; e_2 \mid n \mid e_1 \oplus e_2 \mid () \\
+\text{operators} & \oplus & ::= & + \mid - \mid \times \\
+\text{values} & v & ::= & \lam{x}{\tau} e \mid n \mid () \\
+\text{types} & \tau & ::= & \tint \mid \tunit \mid \tau_1 \to \tau_2
+\end{array}
+\]
+
+The operational semantics of the simply-typed lambda calculus are the same as the untyped lambda calculus. For completeness, we present the CBV small step operational semantics here.
+
+\[
+E ::= \hole \mid E\; e \mid v\; E \mid E \oplus e \mid v \oplus E
+\qquad
+\inferrule*[right=\rn{Context}]{e \to e'}{E[e] \to E[e']}
+\]
+\[
+\inferrule*[right=\mbox{$\beta$-\rn{reduction}}]{ }{(\lam{x}{\tau} e)\; v \to e\subst{v}{x}}
+\qquad
+\inferrule*[right=\rn{Arith}]{n = n_1 \oplus n_2}{n_1 \oplus n_2 \to n}
+\]
+
+\subsection{The typing relation}
+
+The presence of types does not alter the evaluation of an expression at all. So what use are types? We will use types to restrict what expressions we will evaluate. Specifically, the type system for the simply-typed lambda calculus will ensure that any well-typed program will not get stuck. A term $e$ is \emph{stuck} if $e$ is not a value and there is no term $e'$ such that $e \to e'$. For example, the expression $42 + \lambda x.\, x$ is stuck: it attempts to add an integer and a function; it is not a value, and there is no operational rule that allows us to reduce this expression. Another stuck expression is $()\; 47$, which attempts to apply the unit value to an integer.
+
+We introduce a relation (or judgment) over typing contexts (or type environments) $\Gamma$, expressions $e$, and types $\tau$. The judgment
+\[
+\Gamma \vdash e : \tau
+\]
+is read as ``$e$ has type $\tau$ in context $\Gamma$''.
+
+A typing context is a sequence of variables and their types. In the typing judgment $\Gamma \vdash e : \tau$, we will ensure that if $x$ is a free variable of $e$, then $\Gamma$ associates $x$ with a type. We can view a typing context as a partial function from variables to types. We will write $\Gamma, x:\tau$ or $\Gamma[x \mapsto \tau]$ to indicate the typing context that extends $\Gamma$ by associating variable $x$ with type $\tau$. The empty context is sometimes written $\emptyset$, or often just not written at all. For example, we write $\vdash e : \tau$ to mean that the closed term $e$ has type $\tau$ under the empty context.
+
+Given a typing environment $\Gamma$ and expression $e$, if there is some $\tau$ such that $\Gamma \vdash e : \tau$, we say that $e$ is \emph{well-typed} under context $\Gamma$; if $\Gamma$ is the empty context, we say $e$ is well-typed.
+
+We define the judgment $\Gamma \vdash e : \tau$ inductively.
+\[
+\inferrule*[right=\rn{T-Int}]{ }{\Gamma \vdash n : \tint}
+\qquad
+\inferrule*[right=\rn{T-Arith}]{\Gamma \vdash e_1 : \tint \\ \Gamma \vdash e_2 : \tint}{\Gamma \vdash e_1 \oplus e_2 : \tint}
+\qquad
+\inferrule*[right=\rn{T-Unit}]{ }{\Gamma \vdash () : \tunit}
+\]
+\[
+\inferrule*[right=\rn{T-Var}]{\Gamma(x) = \tau}{\Gamma \vdash x : \tau}
+\qquad
+\inferrule*[right=\rn{T-Abs}]{\Gamma, x:\tau \vdash e : \tau'}{\Gamma \vdash \lam{x}{\tau} e : \tau \to \tau'}
+\qquad
+\inferrule*[right=\rn{T-App}]{\Gamma \vdash e_1 : \tau \to \tau' \\ \Gamma \vdash e_2 : \tau}{\Gamma \vdash e_1\; e_2 : \tau'}
+\]
+
+An integer $n$ always has type $\tint$. Expression $e_1 \oplus e_2$ has type $\tint$ if both $e_1$ and $e_2$ have type $\tint$. The unit value $()$ always has type $\tunit$.
+
+Variable $x$ has whatever type the context associates with $x$. Note that $\Gamma$ must contain an association for $x$ in order for the judgment $\Gamma \vdash x : \tau$ to hold, that is, $x \in \mathrm{dom}(\Gamma)$. The abstraction $\lam{x}{\tau} e$ has the function type $\tau \to \tau'$ if the function body $e$ has type $\tau'$ under the assumption that $x$ has type $\tau$. Finally, an application $e_1\; e_2$ has type $\tau'$ provided that $e_1$ is a function of type $\tau \to \tau'$, and $e_2$ is an argument of the expected type, i.e., of type $\tau$.
+
+To type check an expression $e$, we attempt to construct a derivation of the judgment $\vdash e : \tau$, for some type $\tau$. For example, consider the program $(\lam{x}{\tint} x + 40)\; 2$. The following is a proof that $(\lam{x}{\tint} x + 40)\; 2$ is well-typed.
+\[
+\inferrule*[right=\rn{T-App}]{
+  \inferrule*[right=\rn{T-Abs}]{
+    \inferrule*[right=\rn{T-Arith}]{
+      \inferrule*[right=\rn{T-Var}]{ }{x:\tint \vdash x : \tint} \\
+      \inferrule*[right=\rn{T-Int}]{ }{x:\tint \vdash 40 : \tint}
+    }{x:\tint \vdash x + 40 : \tint}
+  }{\vdash \lam{x}{\tint} x + 40 : \tint \to \tint} \\
+  \inferrule*[right=\rn{T-Int}]{ }{\vdash 2 : \tint}
+}{\vdash (\lam{x}{\tint} x + 40)\; 2 : \tint}
+\]
+
+\subsection{Type soundness}
+
+We mentioned above that the type system ensures that any well-typed program does not get stuck. We can state this property formally.
+
+\thm{Type soundness}{If $\vdash e : \tau$ and $e \stepsstar e'$ and $e' \nsteps$ then $e'$ is a value and $\vdash e' : \tau$.}
+
+We will prove this theorem using two lemmas: preservation and progress. Intuitively, preservation says that if an expression $e$ is well-typed, and $e$ can take a step to $e'$, then $e'$ is well-typed. That is, evaluation preserves well-typedness. Progress says that if an expression $e$ is well-typed, then either $e$ is a value, or there is an $e'$ such that $e$ can take a step to $e'$. That is, well-typedness means that the expression cannot get stuck.
+
+Together, these two lemmas suffice to prove type soundness. Given the preservation lemma, a trivial induction on the number of steps taken to reach $e'$ from $e$ establishes that $\vdash e' : \tau$. Then the progress lemma ensures that, if $e'$ cannot take a step, then it must be a value.
+
+\subsection{Preservation}
+
+To prove preservation, we will need some extra tiny lemmas.
+
+\mlenma{Substitution}{If $\Gamma, x:\tau' \vdash e : \tau$ and $\vdash v : \tau'$ then $\Gamma \vdash e\subst{v}{x} : \tau$.}
+
+\mlenma{Context}{If $\vdash E[e] : \tau$, where the derivation of this judgment gives $e$ the type $\tau'$, and $\vdash e' : \tau'$, then $\vdash E[e'] : \tau$.}
+
+We'll assume these without proof. (They're not difficult, but the proof of substitution can get rather long. It is by induction on the typing derivation, which is why the lemma is stated for an arbitrary context $\Gamma$: the case for $\lam{y}{\tau_1} e_1$ needs the induction hypothesis for the body $e_1$, in the larger context $\Gamma, y:\tau_1$. Preservation only uses the case where $\Gamma$ is empty.) Equipped with these little lemmas, we're ready to move on to the main proof of preservation.
+
+A quick note on proof strategy: to prove preservation, it's possible to induct either on the typing relation or on the small-step relation. Both have their advantages and disadvantages; we'll use the small-step relation here.
+
+\mlenma{Preservation}{If $\vdash e : \tau$ and $e \to e'$ then $\vdash e' : \tau$.}
+
+\begin{proof}
+Assume $\vdash e : \tau$ and $e \to e'$. We need to show $\vdash e' : \tau$. We will do this by induction on the derivation of $e \to e'$.
+\begin{itemize}
+\item \rn{Arith}\\
+Here, $e \equiv n_1 \oplus n_2$, and $e' = n$ where $n = n_1 \oplus n_2$.
+
+There is only one typing rule that applies to arithmetic expressions, \rn{T-Arith}, from which we know $\tau = \tint$.
+
+By the typing rule \rn{T-Int}, we have $\vdash e' : \tint$ as required.
+
+\item $\beta$-\rn{reduction}\\
+Here, $e \equiv (\lam{x}{\tau'} e_1)\; v$ and $e' \equiv e_1\subst{v}{x}$.
+
+Since $e$ is well-typed by assumption, we have derivations showing $\vdash \lam{x}{\tau'} e_1 : \tau' \to \tau$ and $\vdash v : \tau'$. There is only one typing rule for abstractions, \rn{T-Abs}, from which we know $x:\tau' \vdash e_1 : \tau$.
+
+By our substitution lemma above, we have $\vdash e_1\subst{v}{x} : \tau$ as required.
+
+\item \rn{Context}\\
+Here, we have some context $E$ such that $e = E[e_1]$ and $e' = E[e_2]$ for some $e_1$ and $e_2$ such that $e_1 \to e_2$.
+
+Since $e$ is well-typed, we can show by induction on the structure of $E$ that $\vdash e_1 : \tau_1$ for some $\tau_1$. (This simple sub-induction is left as an exercise.)
+
+By the induction hypothesis and because we know $e_1 \to e_2$, we have $\vdash e_2 : \tau_1$. (Put intuitively, $e_2$ has the same type as the one we just established for $e_1$.)
+
+By our context lemma above, we have $\vdash E[e_2] : \tau$ as required.
+\end{itemize}
+\end{proof}
+
+\subsection{Progress}
+
+To prove our progress lemma, we'll need one extra lemma that gives us the syntax forms for closed terms.
+
+\mlenma{Canonical Forms}{If $\vdash v : \tau$, then
+\begin{enumerate}
+\item If $\tau$ is $\tint$, then $v$ is an integer literal, i.e., some $n$.
+\item If $\tau$ is $\tau_1 \to \tau_2$, then $v$ is an abstraction, i.e., $\lam{x}{\tau_1} e$ for some $x$ and $e$.
+\end{enumerate}}
+
+\begin{proof}
+The proof is by inspection of the typing rules.
+\begin{enumerate}
+\item[i] If $\tau$ is $\tint$, then the only rule which lets us give a value this type is \rn{T-Int}.
+\item[ii] If $\tau$ is $\tau_1 \to \tau_2$, then the only rule which lets us give a value this type is \rn{T-Abs}.
+\end{enumerate}
+\end{proof}
+
+Now we're ready to prove progress.
+
+\mlenma{Progress}{If $\vdash e : \tau$ then either $e$ is a value or there exists an $e'$ such that $e \to e'$.}
+
+\begin{proof}
+We proceed by induction on the derivation of $\vdash e : \tau$.
+\begin{itemize}
+\item \rn{T-Var}\\
+This case is impossible, since a variable is not well-typed in the empty environment.
+
+\item \rn{T-Unit}, \rn{T-Int}, \rn{T-Abs}\\
+In all of these cases, $e$ is a value.
+
+\item \rn{T-Arith}\\
+Here $e \equiv e_1 \oplus e_2$ and $\vdash e_1 : \tint$ and $\vdash e_2 : \tint$. By the inductive hypothesis, for $i \in \{1,2\}$ (i.e., for both $e_1$ and $e_2$), either $e_i$ is a value or there is an $e_i'$ such that $e_i \to e_i'$.
+
+If $e_1$ is not a value, we have from above that $e_1 \to e_1'$. Therefore, by the \rn{Context} rule, $e_1 \oplus e_2 \to e_1' \oplus e_2$.
+
+Otherwise, $e_1$ is a value. If $e_2$ is not a value, then by \rn{Context} again, $e_1 \oplus e_2 \to e_1 \oplus e_2'$.
+
+Otherwise, both $e_1$ and $e_2$ are values. By our canonical forms lemma, $e_1 = n_1$ and $e_2 = n_2$ are both integer literals. By the \rn{Arith} rule, we have $e_1 \oplus e_2 \to n$ where $n = n_1 \oplus n_2$.
+
+\item \rn{T-App}\\
+Here $e \equiv e_1\; e_2$ and $\vdash e_1 : \tau' \to \tau$ and $\vdash e_2 : \tau'$. By the inductive hypothesis, for $i \in \{1,2\}$, either $e_i$ is a value or there is an $e_i'$ such that $e_i \to e_i'$.
+
+If $e_1$ is not a value, then by the above and by applying the \rn{Context} rule, $e_1\; e_2 \to e_1'\; e_2$.
+
+Otherwise, $e_1$ is a value. If $e_2$ is not a value, then by \rn{Context}, $e_1\; e_2 \to e_1\; e_2'$.
+
+If $e_1$ and $e_2$ are values, then, by our canonical forms lemma, $e_1$ is an abstraction $\lam{x}{\tau'} e'$. Therefore, by $\beta$-\rn{reduction}, we have $e_1\; e_2 \to e'\subst{e_2}{x}$.
+\end{itemize}
+\end{proof}
+
+\subsection{Uniqueness of Types}
+
+Our typing rules have another useful property: every well-typed expression has exactly one type.
+
+\mlenma{Uniqueness of types}{If $\Gamma \vdash e : \tau$ and $\Gamma \vdash e : \tau'$ then $\tau = \tau'$.}
+
+\begin{proof}[Proof sketch]
+By induction on $e$. The typing rules are syntax-directed: for each form of expression, exactly one typing rule can be used to conclude its type. For example, if $e \equiv \lam{x}{\tau_1} e_1$, then both derivations must end with \rn{T-Abs}, so $\tau = \tau_1 \to \tau_2$ and $\tau' = \tau_1 \to \tau_2'$, where $\Gamma, x:\tau_1 \vdash e_1 : \tau_2$ and $\Gamma, x:\tau_1 \vdash e_1 : \tau_2'$. By the induction hypothesis, $\tau_2 = \tau_2'$. Note that the annotation $\tau_1$ on the abstraction is essential here. The other cases are similar.
+\end{proof}
+
+Because the rules are syntax-directed, they also give a simple algorithm for type checking: a recursive function over the syntax of $e$ that computes the unique type of $e$, or reports that $e$ is not well-typed.
+
+\subsection{Type Completeness?}
+
+Not all expressions in the untyped lambda calculus are well-typed. Type soundness implies that any lambda calculus program that gets stuck is not well-typed.
+
+But are there programs that do not get stuck that are not well-typed? In other words, does our type system unjustly rule out legal programs?
+
+Unfortunately, the answer is yes. In particular, because the simply-typed lambda calculus requires us to specify a type for function arguments, any given function can only take arguments of one type. Consider, for example, the identity function $\lambda x.\, x$. This function may be applied to any argument, and it will not get stuck. However, we must provide a type for the argument. If we specify $\lam{x}{\tint} x$, then this function can only accept integers, and the program $(\lam{x}{\tint} x)\; ()$ is not well-typed, even though it does not get stuck. Indeed, in the simply-typed lambda calculus, there is a different identity function for each type.
+
+\subsection{Termination}
+
+The type system also rules out some programs that do not get stuck but instead run forever. Consider $\Omega \triangleq (\lambda x.\, x\; x)\;(\lambda x.\, x\; x)$. To write $\Omega$ in the simply-typed lambda calculus, we would need a type $\tau$ such that $\lam{x}{\tau} x\; x$ is well-typed. By \rn{T-App}, the application $x\; x$ requires $x$ to have a function type $\tau_1 \to \tau_2$, and also to have the argument type $\tau_1$. By \rn{T-Var}, both of these are $\tau$, so
+\[
+\tau_1 = \tau = \tau_1 \to \tau_2.
+\]
+But no type satisfies this equation, since $\tau_1$ would have to be a proper part of itself, and types are finite. So $\Omega$ is not well-typed, and neither are the fixed-point combinators $Y$ and $Z$, which use self-application in the same way.
+
+In fact, every well-typed program terminates.
+
+\thm{Strong normalization}{If $\vdash e : \tau$, then every sequence of reductions starting from $e$ is finite.}
+
+The proof uses a technique called \emph{logical relations}, due to Tait, which we will not cover here. One consequence is that the simply-typed lambda calculus is not Turing complete: since every well-typed program terminates, it cannot express all computable functions, and in particular it cannot express a function that runs forever on some inputs. This is another way in which the type system is incomplete. To recover general recursion, we will add a fixed-point operator to the language as a primitive below.
+
+\section{Advanced Types}
+
+In this lecture we will extend the simply-typed $\lambda$-calculus with several features we saw earlier in the course, including products and sums, as well as some new ones.
+
+\subsection{Booleans and Conditionals}
+
+We add the Boolean constants true and false, conditionals, and a comparison operator on integers.
+\[
+\begin{array}{rcl}
+e & ::= & \cdots \mid \kw{true} \mid \kw{false} \mid \kw{if}\; e_1\; \kw{then}\; e_2\; \kw{else}\; e_3 \mid e_1 = e_2 \\
+v & ::= & \cdots \mid \kw{true} \mid \kw{false}
+\end{array}
+\]
+The evaluation contexts evaluate the guard of a conditional, but neither branch: only the branch that is selected is evaluated.
+\[
+E ::= \cdots \mid \kw{if}\; E\; \kw{then}\; e_2\; \kw{else}\; e_3 \mid E = e \mid v = E
+\]
+\[
+\kw{if}\; \kw{true}\; \kw{then}\; e_2\; \kw{else}\; e_3 \to e_2
+\qquad
+\kw{if}\; \kw{false}\; \kw{then}\; e_2\; \kw{else}\; e_3 \to e_3
+\]
+\[
+\inferrule*{n_1 = n_2}{n_1 = n_2 \to \kw{true}}
+\qquad
+\inferrule*{n_1 \neq n_2}{n_1 = n_2 \to \kw{false}}
+\]
+We add a new type $\tbool$ of Booleans.
+\[
+\tau ::= \cdots \mid \tbool
+\]
+The typing rules are as follows. Both branches of a conditional must have the same type, which is the type of the whole conditional.
+\[
+\inferrule*[right=\rn{T-True}]{ }{\Gamma \vdash \kw{true} : \tbool}
+\qquad
+\inferrule*[right=\rn{T-False}]{ }{\Gamma \vdash \kw{false} : \tbool}
+\]
+\[
+\inferrule*[right=\rn{T-If}]{\Gamma \vdash e_1 : \tbool \\ \Gamma \vdash e_2 : \tau \\ \Gamma \vdash e_3 : \tau}{\Gamma \vdash \kw{if}\; e_1\; \kw{then}\; e_2\; \kw{else}\; e_3 : \tau}
+\]
+\[
+\inferrule*[right=\rn{T-Eq}]{\Gamma \vdash e_1 : \tint \\ \Gamma \vdash e_2 : \tint}{\Gamma \vdash e_1 = e_2 : \tbool}
+\]
+
+\subsection{What Goes Wrong?}
+
+It is instructive to see how the type soundness proof fails if we get the typing rules wrong. Suppose we changed \rn{T-If} so that the type of a conditional is the type of its first branch, and the second branch may have any type:
+\[
+\inferrule*[right=\rn{T-If?}]{\Gamma \vdash e_1 : \tbool \\ \Gamma \vdash e_2 : \tau \\ \Gamma \vdash e_3 : \tau'}{\Gamma \vdash \kw{if}\; e_1\; \kw{then}\; e_2\; \kw{else}\; e_3 : \tau}
+\]
+Then preservation fails: $\vdash \kw{if}\; \kw{false}\; \kw{then}\; 1\; \kw{else}\; () : \tint$, but it steps to $()$, which has type $\tunit$. As a result, soundness fails as well: $(\kw{if}\; \kw{false}\; \kw{then}\; 1\; \kw{else}\; ()) + 1$ has type $\tint$, but it steps to $() + 1$, which is stuck.
+
+Now suppose instead that we allowed the first argument of addition to be a Boolean:
+\[
+\inferrule*[right=\rn{T-Plus?}]{\Gamma \vdash e_1 : \tbool \\ \Gamma \vdash e_2 : \tint}{\Gamma \vdash e_1 + e_2 : \tint}
+\]
+Then progress fails: $\vdash \kw{true} + 1 : \tint$, but $\kw{true} + 1$ is stuck, because no evaluation rule adds a Boolean to an integer.
+
+Mistakes in the operational semantics can break soundness too. For example, if we forgot the evaluation context $v \oplus E$, then $1 + (2 + 3)$ would be well-typed but stuck: $1$ is already a value, so the context $E \oplus e$ does not apply, and there is no way to evaluate $2 + 3$. In general, the typing rules, the evaluation rules, and the proofs of progress and preservation must all fit together.
+
+\subsection{Products}
+
+We have previously seen how to encode products into untyped $\lambda$-calculus.
+\[
+\begin{array}{rcl}
+e & ::= & \cdots \mid (e_1, e_2) \mid \#1\; e \mid \#2\; e \\
+v & ::= & \cdots \mid (v_1, v_2)
+\end{array}
+\]
+We defined congruence rules that determine the order of evaluation, using the following evaluation contexts.
+\[
+E ::= \cdots \mid (E, e) \mid (v, E) \mid \#1\; E \mid \#2\; E
+\]
+We also defined two computation rules that determine how the pairing constructor and destructors interact.
+\[
+\#1\; (v_1, v_2) \to v_1
+\qquad
+\#2\; (v_1, v_2) \to v_2
+\]
+In simply-typed $\lambda$-calculus, the type of a product expression (or a product type) is a pair of types, written $\tau_1 \times \tau_2$. The typing rules for the product constructors and destructors are as follows:
+\[
+\inferrule*{\Gamma \vdash e_1 : \tau_1 \\ \Gamma \vdash e_2 : \tau_2}{\Gamma \vdash (e_1, e_2) : \tau_1 \times \tau_2}
+\qquad
+\inferrule*{\Gamma \vdash e : \tau_1 \times \tau_2}{\Gamma \vdash \#1\; e : \tau_1}
+\qquad
+\inferrule*{\Gamma \vdash e : \tau_1 \times \tau_2}{\Gamma \vdash \#2\; e : \tau_2}
+\]
+Note the similarities between these rules and the proof rules for conjunction in natural deduction. We will examine this relationship closely later in the course.
+
+\subsection{Derived Forms}
+
+Some useful constructs can be defined in terms of the ones we already have. These \emph{derived forms} (or \emph{syntactic sugar}) need no new evaluation or typing rules. For example, we can define local definitions and sequencing:
+\begin{align*}
+\kw{let}\; x{:}\tau = e_1\; \kw{in}\; e_2 &\triangleq (\lam{x}{\tau} e_2)\; e_1 \\
+e_1; e_2 &\triangleq (\lam{x}{\tunit} e_2)\; e_1 \quad \text{where } x \notin \mathit{fv}(e_2)
+\end{align*}
+Under CBV, $\kw{let}\; x{:}\tau = e_1\; \kw{in}\; e_2$ evaluates $e_1$ to a value and then substitutes it for $x$ in $e_2$, and $e_1; e_2$ evaluates $e_1$, discards its value, and then evaluates $e_2$. Their typing rules can be derived from \rn{T-Abs} and \rn{T-App}:
+\[
+\inferrule*{\Gamma \vdash e_1 : \tau \\ \Gamma, x:\tau \vdash e_2 : \tau'}{\Gamma \vdash \kw{let}\; x{:}\tau = e_1\; \kw{in}\; e_2 : \tau'}
+\qquad
+\inferrule*{\Gamma \vdash e_1 : \tunit \\ \Gamma \vdash e_2 : \tau}{\Gamma \vdash e_1; e_2 : \tau}
+\]
+For example, the first rule follows by applying \rn{T-Abs} to the second premise, which gives $\Gamma \vdash \lam{x}{\tau} e_2 : \tau \to \tau'$, and then \rn{T-App} with the first premise. The second rule is similar, using the fact that adding $x:\tunit$ to $\Gamma$ does not change the type of $e_2$, since $x$ is not free in $e_2$. We often omit the annotation on $\kw{let}$, since $\tau$ must be the type of $e_1$.
+
+\subsection{Sums}
+
+Our next example, sums, is dual to products. Intuitively, a product holds two values, one of type $\tau_1$, and one of type $\tau_2$, while a sum holds a single value that is either of type $\tau_1$ or of type $\tau_2$. The type of a sum is written $\tau_1 + \tau_2$. There are two constructors for sums, corresponding to whether we are constructing a sum with a value of $\tau_1$ or a value of $\tau_2$.
+\[
+\begin{array}{rcl}
+e & ::= & \cdots \mid \inl_{\tau_1+\tau_2}\, e \mid \inr_{\tau_1+\tau_2}\, e \mid \kw{case}\; e_1\; \kw{of}\; e_2 \mid e_3 \\
+v & ::= & \cdots \mid \inl_{\tau_1+\tau_2}\, v \mid \inr_{\tau_1+\tau_2}\, v
+\end{array}
+\]
+There are congruence rules that determine the order of evaluation, as defined by the following evaluation contexts.
+\[
+E ::= \cdots \mid \inl_{\tau_1+\tau_2}\, E \mid \inr_{\tau_1+\tau_2}\, E \mid \kw{case}\; E\; \kw{of}\; e_2 \mid e_3
+\]
+There are also two computation rules that show how the constructors and destructors interact.
+\[
+\kw{case}\; \inl_{\tau_1+\tau_2}\, v\; \kw{of}\; e_2 \mid e_3 \to e_2\; v
+\qquad
+\kw{case}\; \inr_{\tau_1+\tau_2}\, v\; \kw{of}\; e_2 \mid e_3 \to e_3\; v
+\]
+The type of a sum expression (or a sum type) is written $\tau_1 + \tau_2$. The typing rules for the sum constructors and destructor are the following.
+\[
+\inferrule*{\Gamma \vdash e : \tau_1}{\Gamma \vdash \inl_{\tau_1+\tau_2}\, e : \tau_1 + \tau_2}
+\qquad
+\inferrule*{\Gamma \vdash e : \tau_2}{\Gamma \vdash \inr_{\tau_1+\tau_2}\, e : \tau_1 + \tau_2}
+\]
+\[
+\inferrule*{\Gamma \vdash e : \tau_1 + \tau_2 \\ \Gamma \vdash e_1 : \tau_1 \to \tau \\ \Gamma \vdash e_2 : \tau_2 \to \tau}{\Gamma \vdash \kw{case}\; e\; \kw{of}\; e_1 \mid e_2 : \tau}
+\]
+Let's see an example of a program that uses sum types.
+\begin{align*}
+&\kw{let}\; f = \lam{a}{\tint + (\tint \to \tint)} \kw{case}\; a\; \kw{of}\; (\lam{y}{\tint} y + 1) \mid (\lam{g}{\tint \to \tint} g\; 35)\; \kw{in} \\
+&\kw{let}\; h = \lam{x}{\tint} x + 7\; \kw{in} \\
+&f\; (\inr_{\tint + (\tint \to \tint)}\, h)
+\end{align*}
+The function $f$ takes argument $a$, which is a sum---that is, the actual argument for $a$ will either be a value of type $\tint$ or a value of type $\tint \to \tint$. We destruct the sum value with a case statement, which must be prepared to take either of the two kinds of values that the sum may contain. In this instance, we end up applying $f$ to a value of type $\tint \to \tint$ (i.e., a value injected into the right type of the sum), so the entire program ends up evaluating to $42$.
+
+\subsection{Extending the Proofs}
+
+When we extend the language, we must also extend the proof of type soundness. Most of the work is in the canonical forms lemma, which gains a case for each new type of values.
+
+\mlenma{Canonical Forms, continued}{If $\vdash v : \tau$, then
+\begin{enumerate}
+\item If $\tau$ is $\tbool$, then $v$ is $\kw{true}$ or $\kw{false}$.
+\item If $\tau$ is $\tau_1 \times \tau_2$, then $v$ is a pair $(v_1, v_2)$ with $\vdash v_1 : \tau_1$ and $\vdash v_2 : \tau_2$.
+\item If $\tau$ is $\tau_1 + \tau_2$, then $v$ is $\inl_{\tau_1+\tau_2}\, v'$ or $\inr_{\tau_1+\tau_2}\, v'$.
+\end{enumerate}}
+
+Each new typing rule then adds a case to the proofs of preservation and progress. For example, here is the case of the progress proof for conditionals.
+\begin{itemize}
+\item \rn{T-If}\\
+Here $e \equiv \kw{if}\; e_1\; \kw{then}\; e_2\; \kw{else}\; e_3$ and $\vdash e_1 : \tbool$. By the inductive hypothesis, either $e_1$ is a value or there is an $e_1'$ such that $e_1 \to e_1'$.
+
+If $e_1 \to e_1'$, then by the \rn{Context} rule with the context $\kw{if}\; \hole\; \kw{then}\; e_2\; \kw{else}\; e_3$, we have $e \to \kw{if}\; e_1'\; \kw{then}\; e_2\; \kw{else}\; e_3$.
+
+Otherwise, $e_1$ is a value, so by canonical forms it is $\kw{true}$ or $\kw{false}$, and $e$ steps to $e_2$ or $e_3$ by one of the evaluation rules for conditionals.
+\end{itemize}
+Note that we did not need the inductive hypothesis for $e_2$ or $e_3$, because neither branch is evaluated before the guard. The corresponding cases of preservation follow directly from \rn{T-If}: if $e \to e_2$, then $\vdash e_2 : \tau$ is one of its premises, and similarly for $e_3$.
+
+\subsection{Fixed Points}
+
+As we saw above, fixed-point combinators such as $Y$ and $Z$ are not well-typed, and every well-typed program terminates. To obtain fixed points in the simply-typed lambda calculus, we can instead add a new primitive $\kw{fix}$ to the language. The evaluation rules for the new primitive mimic the behavior of the fixed-point combinators we saw previously.
+
+We extend the syntax with the new primitive operator. Intuitively, $\fix e$ is the fixed-point of the function $e$. Note that $\fix v$ is not a value.
+\[
+e ::= \cdots \mid \fix e
+\]
+We extend the operational semantics for the new operator. There is a new evaluation context, and a new axiom.
+\[
+E ::= \cdots \mid \fix E
+\qquad\qquad
+\fix \lam{x}{\tau} e \to e\subst{(\fix \lam{x}{\tau} e)}{x}
+\]
+Note that we can define the $\kw{letrec}\; x{:}\tau = e_1\; \kw{in}\; e_2$ construct in terms of the $\kw{fix}$ operator.
+\[
+\kw{letrec}\; x{:}\tau = e_1\; \kw{in}\; e_2 \triangleq \kw{let}\; x = \fix \lam{x}{\tau} e_1\; \kw{in}\; e_2
+\]
+The typing rule for $\kw{fix}$ says that $\fix e$ is a fixed point of a function $e$ from $\tau$ to $\tau$, so it has type $\tau$:
+\[
+\inferrule*[right=\rn{T-Fix}]{\Gamma \vdash e : \tau \to \tau}{\Gamma \vdash \fix e : \tau}
+\]
+Returning to our trusty factorial example, the following program implements the factorial function using the $\kw{fix}$ operator.
+\[
+\mathrm{FACT} \triangleq \fix \lam{f}{\tint \to \tint} \lam{n}{\tint} \kw{if}\; n = 0\; \kw{then}\; 1\; \kw{else}\; n \times (f\; (n - 1))
+\]
+Note that we can write non-terminating computations for any type: the expression $\fix \lam{x}{\tau} x$ has type $\tau$, and does not terminate.
+
+Although the $\kw{fix}$ operator is normally used to define recursive functions, it can be used to find fixed points of any type. For example, consider the following expression.
+\begin{align*}
+\fix \lam{x}{(\tint \to \tbool) \times (\tint \to \tbool)}
+ ( &\lam{n}{\tint} \kw{if}\; n = 0\; \kw{then}\; \kw{true}\; \kw{else}\; (\#2\; x)\; (n - 1), \\
+   &\lam{n}{\tint} \kw{if}\; n = 0\; \kw{then}\; \kw{false}\; \kw{else}\; (\#1\; x)\; (n - 1))
+\end{align*}
+This expression defines a pair of mutually recursive functions; the first function returns true if and only if its argument is even; the second function returns true if and only if its argument is odd.
+
+\subsection{Exceptions}
+
+Many programming languages provide support for throwing and catching exceptions. We can model an extremely simple form of exceptions by extending the simply-typed $\lambda$-calculus with a single exception representing an error. We first extend the syntax of the language:
+\[
+e ::= \cdots \mid \kw{error} \mid \kw{try}\; e_1\; \kw{with}\; e_2
+\]
+We do not add $\kw{try}$ expressions to our evaluation contexts---doing so would allow exceptions to ``jump over'' handlers. Instead, we add a special propagation rule for $\kw{try}$:
+\[
+\inferrule*{e_1 \to e_1'}{\kw{try}\; e_1\; \kw{with}\; e_2 \to \kw{try}\; e_1'\; \kw{with}\; e_2}
+\]
+and rules for propagating and catching exceptions. (The side condition $E \neq \hole$ ensures that $\kw{error}$ by itself does not step.)
+\[
+\inferrule*{E \neq \hole}{E[\kw{error}] \to \kw{error}}
+\qquad
+\kw{try}\; \kw{error}\; \kw{with}\; e \to e
+\qquad
+\kw{try}\; v\; \kw{with}\; e \to v
+\]
+The typing rule for exceptions allows them to take any type, while the typing rule for try-with expressions requires both sub-expressions to have the same type:
+\[
+\inferrule*{ }{\Gamma \vdash \kw{error} : \tau}
+\qquad
+\inferrule*{\Gamma \vdash e_1 : \tau \\ \Gamma \vdash e_2 : \tau}{\Gamma \vdash \kw{try}\; e_1\; \kw{with}\; e_2 : \tau}
+\]
+The first typing rule is extremely flexible, allowing errors to be thrown anywhere in a program. Note that it breaks the uniqueness of types: for example, both $\vdash \kw{error} : \tint$ and $\vdash \kw{error} : \tbool$ hold. However, it is not hard to see that it causes the progress lemma to become false: the expression $\kw{error}$ is not a value but is stuck. Fortunately, we can prove the following weaker version, which is still strong enough to prove a useful form of type soundness.
+
+\mlenma{Progress}{If $\vdash e : \tau$ then $e$ is a value or $e$ is $\kw{error}$ or there exists $e'$ such that $e \to e'$.}
+
+The preservation lemma remains unchanged.
+
+The actual soundness theorem is as follows:
+
+\thm{Soundness}{If $\vdash e : \tau$ and $e \stepsstar e'$ and $e' \nsteps$ then either $e'$ is a value or $e'$ is $\kw{error}$.}
+
+\end{document}
+% \end{document}

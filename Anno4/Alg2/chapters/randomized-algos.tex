@@ -1,0 +1,454 @@
+% \begin{document}
+%====================================================================
+%                          LECTURE 10
+%====================================================================
+
+\chapter{Randomized Algorithms}
+
+\section{Introduction to Randomized Algorithms}
+
+Deterministic algorithms take input and produce output. In Randomized Algorithms, in addition to input algorithms take a source of random bits and makes random choices during execution -- which leads behavior to vary even on a fixed input. For many problems a randomized algorithm is the simplest or fastest or both.
+
+Let $p>0$ be the probability that a (randomized) algorithm generates the correct (optimal) solution. It turns out that, even if $p$ is much smaller than $1$ we can obtain an algorithm with that succeeds with high probability just by executing the original algorithm independently many times. In particular, if we run the original algorithm $k$ times, the probability that at least one copy succeeds is at least $1-(1-p)^k$. For small values of $p$ one can always approximate $1-p$ with $e^{-p}$, and during this course we always use such an approximation. It follows that for $k=100/p$, at least one copy finds the correct (optimal) solution with probability at least
+\[
+  1-e^{-pk}=1-e^{-100}.
+\]
+In other words, even if we have an algorithm with a small probability of success we can boost the success probability to a number very close to $1$.
+
+In this lecture, we describe a randomized algorithm for the minimum cut problem. Let us start with the definition of minimum cut problem. Let $G=(V,E)$ be a graph with $n=|V|$ vertices. Let
+\[
+  E(S,\overline{S}):=\{(u,v):u\in S,\ v\notin S\},
+\]
+be the set of edges that have exactly one endpoint in $S$. In the minimum cut problem, we want to partition the into two subsets which are joined together with minimum number of edges, i.e.,
+\[
+  \min_{\emptyset\subset S\subset V}|E(S,\overline{S})|.
+\]
+
+%--------------------------------------------------------------------
+\section{Karger's Algorithm}
+
+In this lecture we will discuss Karger's [Kar93] and Karger-Stein's [KS93] algorithm for the minimum cut problem. We will show that the former finds the minimum cut in time $O(n^4\log n)$ and the latter finds it in time $O(n^2)$ with high probability.
+
+Before describing these algorithms, let us define a contraction procedure. Contraction of an edge $(u,v)$ in $G$, merges the endpoints $u$ and $v$ to create a new (super) node $uv$. This reduces the total number of nodes in the graph by $1$. All other edges which were previously attached to $u$ or $v$ are attached to the new (super) node $uv$. Note that this might lead to multiple parallel edges; in particular, if a node $z$ has $a$ edges to $u$ and $b$ edges to $v$, after contraction it will have $a+b$ edges to $uv$. When we contract $u,v$ we just remove the edge connecting $u$ to $v$ from the graph; in other words, we do not include the loops.
+
+Let $k$ be the size of the minimum cut of $G$; fix a minimum cut $(S^*,\overline{S^*})$. In this section we design an algorithm that finds $(S^*,\overline{S^*})$ with probability at least $1/\binom n2$.
+
+Let us start by describing the main idea. Suppose we choose a uniformly random edge $e$ in $G$. What is the probability that $e\in E(S^*,\overline{S^*})$?
+
+\clm{}{}{
+The probability that a uniformly random edge is in $E(S^*,\overline{S^*})$ is at most $2/n$.
+}
+
+\pf{}{
+Let $e$ be a uniformly random edge in $G$. Obviously,
+\[
+  \mathbb{P}\left[e\in E(S^*,\overline{S^*})\right]=\frac{|E(S^*,\overline{S^*})|}{|E|}=\frac{k}{|E|}.
+\]
+To give an upper bound we need to lower bound $|E|$. Here we use the hand-shake lemma. Let $d(v)$ be the degree of a vertex $v$. The hand-shake lemma says that in any graph $G$,
+\[
+  \sum_{v\in V}d(v)=2|E|.
+\]
+This is because in the LHS we count each edge twice. Now, we can lower bound $d(v)$ for any vertex $v$ by $k$. This is because, for any $v$,
+\[
+  d(v)=|E(\{v\},\overline{\{v\}})|\ge k.
+\]
+In other words, the size of the cut separating $v$ from the rest of the graph is at least $k$. It follows from the above two equations that $|E|\ge nk/2$. So,
+\[
+  \mathbb{P}\left[e\in E(S^*,\overline{S^*})\right]=\frac{k}{|E|}\le\frac{k}{nk/2}=\frac{2}{n}.
+\]
+}
+
+Using the above lemma if we choose $n/4$ edges of $G$ uniformly at random with probability $1/2$ none of them is in the min-cut $(S^*,\overline{S^*})$. Now, we can contract these $n/4$ edges. The new graph will have at most $3n/4$ vertices and we can recurse. After $O(\log n)$ steps, we get to a graph with just two super nodes. With probability at least $(1/2)^{O(\log n)}$ we do not contract any of the edges of $(S^*,\overline{S^*})$ throughout the process. So, the size of the cut separating the final two super-nodes is exactly $k$. In fact, one of these two super-nodes corresponds to $S^*$ being contracted and the other one corresponds to $\overline{S^*}$.
+
+In above we described the gist of the idea of Karger's algorithm. There are several missing points in the above description. First of all, when we recursively call the algorithm, we are recursively using the above claim. So, we need to make sure the size of the min-cut of $G$ does not decrease when we contract an edge.
+
+\medskip
+\noindent\textbf{Fact 2.} For any graph $G$, when we contract an edge $(u,v)$ the size of the minimum cut does not decrease.
+\medskip
+
+We leave the proof of the above fact as an exercise.
+
+Secondly, when we choose $n/4$ edges uniformly at random many of them may be parallel, so after contraction the number of vertices of $G$ may go down only by $1$. To avoid running into these special cases, it suffices to contract edges one by one. That is, each time we choose a uniformly random edge of $G$ and we contract it.
+
+\bigskip
+\noindent\fbox{\parbox{0.95\textwidth}{
+\textbf{Karger's Algorithm}\\[2pt]
+\begin{enumerate}[leftmargin=2em,label=\arabic*.]
+  \item \textbf{for} $ i = 1 \to n-2 $: Choose a uniformly random edge $(u,v)$ and contract it, i.e., remove $u,v$, add a new node $uv$, connect all edges that go to $u$ or $v$ to the new node $uv$, also remove all loops.
+  \item Return the number edges between the final two super-nodes as the size of the min-cut.
+\end{enumerate}
+}}
+
+\thm{}{
+For any graph $G=(V,E)$ with $n$ nodes and any min-cut $(S^*,\overline{S^*})$, Algorithm 1 returns $(S^*,\overline{S^*})$ with probability at least $\frac{2}{n(n-1)}$.
+}
+
+\pf{}{
+Let, $A_i$ be the event that the edge picked in step $i$ of the loop is not in $E(S^*,\overline{S^*})$. Observe that the algorithm succeeds in finding $(S^*,\overline{S^*})$ if $A_1,A_2,\ldots,A_{n-2}$ occur, i.e., if we never contract an edge of $E(S^*,\overline{S^*})$. So, we just need to lower bound $\mathbb{P}[A_1,A_2,\ldots,A_{n-2}]$. By Bayes rule we have,
+\[
+  \mathbb{P}[A_1,\ldots,A_{n-2}]=\mathbb{P}[A_1]\,\mathbb{P}[A_2\mid A_1]\,\mathbb{P}[A_3\mid A_1,A_2]\cdots\mathbb{P}[A_{n-2}\mid A_1,A_2,\ldots,A_{n-3}].
+\]
+Now, by Theorem 1 and Theorem 2, for all $i$,
+\[
+  \mathbb{P}[A_i\mid A_1,\ldots,A_{i-1}]\ge 1-\frac{2}{n-i+1}.
+\]
+Therefore,
+\[
+  \mathbb{P}[A_1,\ldots,A_{n-2}]\ge\left(1-\frac2n\right)\left(1-\frac{2}{n-1}\right)\cdots\left(1-\frac23\right)
+  =\frac{n-2}{n}\cdot\frac{n-3}{n-1}\cdot\frac{n-4}{n-2}\cdots\frac35\cdot\frac24\cdot\frac13
+  =\frac{2}{n(n-1)}=1\Big/\binom n2.
+\]
+}
+
+The following corollary is immediate from the above theorem.
+
+\cor{}{ Any graph has at most $\binom n2$ min-cuts.}
+
+\pf{}{
+Suppose there is a graph $G$ that has more than $\binom n2$ min-cuts. Then, for one of those cuts, say $(S,\overline{S})$ the probability that Algorithm 1, finds $(S,\overline{S})$ is less than $1/\binom n2$. But, this is a contradiction.
+}
+
+In fact, the above bound is tight: you will give an example showing that it is tight in the exercise session.
+
+\medskip
+\noindent\textbf{Runtime and Boosting Probability of Success.} It is not hard to see that one can run Algorithm 1 in time $O(n^2)$, but as we proved above the success probability of each execution is just $O(1/n^2)$. Using the boosting idea, we can boost the probability of success to $1-1/n$ by running $O(n^2\log n)$ independent copies of the above algorithm and returning the best cut that any of the copies find.
+
+Note that, running Karger's algorithm $n^2\log n$ times produces a min cut with high probability; but this way we have to spend time $O(n^4\log n)$ to find the min-cut. In the next section we describe a much faster algorithm due to Karger and Stein.
+
+%--------------------------------------------------------------------
+\section{Karger-Stein Algorithm}
+
+Recall that Karger's algorithm only fails if it contracts an edge of the min-cut. Also, note that the probability that we contract an edge of the min-cut at the beginning is only $2/n$ while towards the end of the algorithm this probability goes up to a constant. In particular, in the very last step there is a probability of $1/3$ that we contract an edge of the min-cut.
+
+The idea of Karger-Stein algorithm is to run multiple independent copies of the Karger's algorithm when the size of the graphs gets smaller. The idea kind of resembles the idea fault tolerant systems where one stores multiple copies of the data to decrease the probability of failure.
+
+Let us describe Karger-Stein's algorithm.
+
+\bigskip
+\noindent\fbox{\parbox{0.95\textwidth}{
+\textbf{Min-cut($G=(V,E)$)}\\[2pt]
+\begin{enumerate}[leftmargin=2em,label=\arabic*.]
+    \item Let $n=|V|$. If $n=2$ return the unique cut separating the two nodes of $G$.
+    \item \textbf{for} $ i = 1 \to n - \frac{n}{\sqrt{2}} $: Choose a uniformly random edge and contract it.
+    \item Let $G'$ be the contracted graph. Call Min-cut($G'$) twice and return the best cut that any of these two copies find.
+\end{enumerate}
+}}
+
+First, let us calculate the running time. Let $T(n)$ be the time it takes to compute the min-cut of a graph of size $n$. Then,
+\[
+  T(n)=O(n^2)+2T(n/\sqrt2)
+\]
+We can use the master theorem to solve the above recurrence. But, usually it is easier to open it up a couple of times and see the pattern. We can write
+\begin{align*}
+  T(n)&=O(n^2)+2O\big((n/2^{1/2})^2\big)+4O\big((n/2^{1})^2\big)+\cdots\\
+  &=O(n^2)+O(n^2)+O(n^2)+\cdots=O(n^2\log n).
+\end{align*}
+Let us divide the work of the algorithm into $O(\log n)$ phases; in the first phase the algorithm goes from $n$ to $n/\sqrt2$, in the second phase it goes from $n/\sqrt2$ to $n/\sqrt2^{\,2}$ and so on. The number of copies are chosen such that the algorithm spends exactly the same amount of work $O(n^2)$ in each phase.
+
+It remains the calculate the probability of success. In the next theorem we show that the algorithm succeeds with probability $\Omega(1/\log n)$. This shows that to boost the probability of success to $1-1/n$ it is enough to run $\log^2 n$ independent copies of the above algorithm. Therefore, the algorithm finds a min-cut with probability $1-1/n$ in time $O(n^2\log^3 n)$.
+
+\thm{}{
+Algorithm 2 finds a min-cut with probability at least $1/(2\log n)$.
+}
+
+\pf{}{
+Suppose we call Min-cut function from some graph $H$ (which is a contracted $G$) with $r$ vertices and let $(S^*,\overline{S^*})$ be a min-cut of $H$. By an analysis similar to Theorem 3, the probability that the we do not contract any edge of $(S^*,\overline{S^*})$ in the $r-r/\sqrt2$ steps of the loop is at least
+\[
+  \frac{r-2}{r}\cdot\frac{r-3}{r-1}\cdots\frac{r/\sqrt2-2}{r/\sqrt2}\approx\frac{(r/\sqrt2)^2}{r^2}=1/2.
+\]
+The algorithm is guaranteed in finding a min-cut if Min-cut($G$) does not contract an edge of $(S^*,\overline{S^*})$ in its for loop and at least one of the two copies succeeds in finding the cut. We prove inductively that for any graph with $n$ vertices the probability of success is at least $1/(2\log n)$. Assuming by induction hypothesis, that the algorithm succeeds on $G'$ with probability at least $p\ge 1/(2\log(n/\sqrt2))$. Here the logs are all in base $2$.
+
+The probability that the algorithm succeeds in $G$ is at least
+\[
+  \frac12\left(p+p-p^2\right).
+\]
+Note that $p+p-p^2$ is the probability that at least one of the two copies succeed in finding the cut. The term $p^2$ is the probability that both copies succeed (because they are independent); we need to subtract this quantity because it is counted twice. So, it is enough to show that
+\[
+  \frac12\left(p+p-p^2\right)=p-p^2/2\ge\frac{1}{2\log n}.
+\]
+In the worst case we have $p=1/(2\log(n/\sqrt2))$. So, we need to show
+\[
+  \frac{1}{2\log(n/\sqrt2)}-\frac{1}{8\log(n/\sqrt2)^2}\ge\frac{1}{2\log n}.
+\]
+Equivalently, it is enough to show
+\[
+  \frac{1}{\log(n/\sqrt2)}-\frac{1}{\log n}\ge\frac{1}{4\log(n/\sqrt2)^2}.
+\]
+But,
+\[
+  \frac{1}{\log(n/\sqrt2)}-\frac{1}{\log n}=\frac{\log n-\log(n/\sqrt2)}{\log n\,\log(n/\sqrt2)}=\frac{1/2}{\log n\,\log(n/\sqrt2)}\ge\frac{1}{4\log(n/\sqrt2)^2}
+\]
+as desired.
+}
+
+
+%====================================================================
+%                          LECTURE 12
+%====================================================================
+\section{Sampling and Concentration Inequalities}
+
+Suppose there is an unknown distribution, $D$ and we want to estimate the mean. A possible suggestion is to draw independent samples
+\[
+  X_1, X_2, \ldots, X_n
+\]
+from $D$ and return the empirical average,
+\[
+  \frac{1}{n}\sum_{i=1}^n X_i .
+\]
+Laws of large number say that as $n$ goes to infinity the empirical average converges to the mean. The question we want to address in this lecture is ``how large should $n$ be'' in order to get an $\epsilon$-additive approximation of the true expectation? As a real world application, we can use this idea to estimate the people opinion in polling by asking only a few of the voters randomly: e.g.\ to estimate the percentage of the students (you) that have started preparing for the midterm.
+
+We start this lecture by a simple example: Suppose that the average salary in Switzerland is 6000 CHF/month. What fraction of the working population that receives at most 8000 CHF/month? It turns out that always at least $1/4$ of the workers receive at most 8000 CHF/month. In the worst case, $\frac14$ of the workers receive 0 CHF/month, and $\frac34$ get 8000. We can justify this claim using Markov's inequality.
+
+%--------------------------------------------------------------------
+\subsection{Markov's Inequality}
+
+\thm{Markov's Inequality}{
+Let $X \ge 0$ be a random variable. Then for all $k$,
+\[
+  \mathbb{P}\left[X \ge k\cdot \mathbb{E}[X]\right] \le \frac{1}{k}
+\]
+equivalently:
+\[
+  \mathbb{P}\left[X \ge k\right] \le \frac{\mathbb{E}[X]}{k}.
+\]
+}
+
+So, in our salary example, $X$ denotes the average salary, $\mathbb{E}[X]=6000$ and $k=4/3$. The inequality says at most $3/4$ of the workers receive more than 8000 or at least $1/4$ receive less than 8000.
+
+\pf{}{
+The proof is a simple one line argument,
+\[
+  \mathbb{E}[X] = \sum_i i\cdot \mathbb{P}[X=i] \ge \sum_{i\ge k} i\cdot \mathbb{P}[X=i] \ge \sum_{i\ge k} k\cdot \mathbb{P}[X=i] = k\cdot \mathbb{P}[X\ge k]
+\]
+So, $\mathbb{P}[X\ge k]\le \mathbb{E}[X]/k$ as desired.
+}
+
+Observe that in the above proof is tight, i.e., all inequalities are equalities, if the distribution of $X$ has only two points mass,
+\[
+  X = \begin{cases} 0 & \text{w.p. } 1-1/k\\ k & \text{w.p. } 1/k. \end{cases}
+\]
+In other words, this example shows that if $\mathbb{E}[X]$ is the only information that we have about $X$, then Markov's inequality is the best bound we can prove on deviations from the expectation of $X$.
+
+%--------------------------------------------------------------------
+\subsection{Chebyshev's Inequality}
+
+Markov's Inequality is the best bound you can have if all you know is the expectation. In its worst case, the probability is very spread out. Chebyshev's Inequality lets you say more if you know the distribution's variance.
+
+\dfn{Variance}{The variance of a random variable $X$ is defined as
+\[
+  \mathrm{Var}(X) = \mathbb{E}\left[(X-\mathbb{E}X)^2\right]
+\]
+}
+Let us prove an identity on $\mathrm{Var}(X)$.
+\begin{align*}
+  \mathrm{Var}(X) = \mathbb{E}\left[(X-\mathbb{E}X)^2\right]
+  &= \mathbb{E}\left[X^2 - 2X\mathbb{E}[x] + (\mathbb{E}[X])^2\right]\\
+  &= \mathbb{E}\left[X^2\right] + (\mathbb{E}[X])^2 - 2(\mathbb{E}[X])^2\\
+  &= \mathbb{E}\left[X^2\right] - \mathbb{E}[X]^2
+\end{align*}
+where we used linearity of expectation. Note that for any number $X$, $(X-\mathbb{E}X)^2\ge 0$. Therefore, for any random variable $X$, $\mathrm{Var}(X)\ge 0$. So, by above identity we always have
+\[
+  \mathbb{E}\left[X^2\right] \ge \mathbb{E}[X]^2,
+\]
+i.e., the 2nd moment is at least the 1st moment squared.
+
+\thm{Chebyshev's Inequality}{
+For any random variable $X$,
+\[
+  \mathbb{P}\left[|X-\mathbb{E}X| > \epsilon\right] \le \frac{\mathrm{Var}(X)}{\epsilon^2}
+\]
+or equivalently
+\[
+  \mathbb{P}\left[|X-\mathbb{E}[X]| > k\sigma\right] \le \frac{1}{k^2}
+\]
+where $\sigma=\sqrt{\mathrm{Var}(X)}$ is the standard deviation of $X$.
+}
+
+The second inequality in theorem can be read that any random variable is within 3 standard deviations of the expectation with probability $8/9\ge 88\%$. It turns out that Chebyshev's inequality is just Markov's inequality applied to the variance R.V., $Y=(X-\mathbb{E}[X])^2$.
+
+\pf{}{
+Let $Y:=(X-\mathbb{E}X)^2$ be a nonnegative random variable. So, by Markov's inequality,
+\[
+  \mathbb{P}\left[Y\ge \epsilon^2\right] \le \frac{\mathbb{E}[Y]}{\epsilon^2}
+\]
+In other words,
+\[
+  \mathbb{P}\left[|X-\mathbb{E}[X]|^2 \ge \epsilon^2\right] \le \frac{\mathrm{Var}(X)}{\epsilon^2}.
+\]
+Taking square root of the both sides of the inequality gives,
+\[
+  \mathbb{P}\left[|X-\mathbb{E}[X]| \ge \epsilon\right] \le \frac{\mathrm{Var}(X)}{\epsilon^2}
+\]
+as desired
+}
+
+%--------------------------------------------------------------------
+\subsubsection{Polling}
+
+In this section we use Chebyshev's inequality to answer the question that we raised at the beginning of this lecture. Suppose there is an unknown distribution $D$ with mean $\mu$ and we want to estimate $\mu$ using independent samples of $D$,
+\[
+  X_1, X_2, \ldots, X_n
+\]
+First, observe that by linearity of expectation,
+\[
+  \mathbb{E}\left[\frac{1}{n}\sum_i X_i\right] = \mu.
+\]
+So, we want to use Chebyshev's inequality to upper bound,
+\[
+  \mathbb{P}\left[\left|\frac{X_1+X_2+\cdots+X_n}{n} - \mu\right| \ge \epsilon\right]
+\]
+To use Chebyshev's inequality, first we need to calculate the variance. Let $\overline{X}=\frac{X_1+\cdots+X_n}{n}$ be the empirical average. We use the following lemma to bound the variance of $\overline{X}$.
+
+We say a set of random variables $X_1,X_2,\ldots,X_n$ are \emph{pairwise independent} if for all $1\le i,j\le n$
+\[
+  \mathbb{E}[X_iX_j] = \mathbb{E}[X_i]\,\mathbb{E}[X_j].
+\]
+
+\mlenma{}{
+For any set of pairwise independent random variables $X_1,\ldots,X_n$
+\[
+  \mathrm{Var}(X_1+\cdots+X_n) = \mathrm{Var}(X_1)+\cdots+\mathrm{Var}(X_n).
+\]
+}
+
+\pf{}{
+We can write,
+\begin{align*}
+  \mathrm{Var}(X_1+\cdots+X_n)
+  &= \mathbb{E}\left[(X_1+\cdots+X_n)^2\right] - (\mathbb{E}X_1+\mathbb{E}X_2+\cdots+\mathbb{E}X_n)^2\\
+  &= \mathbb{E}\Big[\sum_{i,j}X_iX_j\Big] - \sum_{i,j}\mathbb{E}[X_i]\,\mathbb{E}[X_j]\\
+  &= \sum_i \mathbb{E}\left[X_i^2\right] - (\mathbb{E}[X_i])^2\\
+  &= \sum_{i=1}^n \mathrm{Var}(X_i).
+\end{align*}
+In the second to last equality we used pairwise independence.
+}
+
+Let's go back to the polling example; recall $X_1,\ldots,X_n$ are independent samples of $D$, so they are pairwise independent, and by the above lemma,
+\[
+  \mathrm{Var}(\overline{X}) = \mathrm{Var}\left(\frac{X_1+\cdots+X_n}{n}\right)
+  = \frac{1}{n^2}\mathrm{Var}(X_1+\cdots+X_n)
+  = \frac{1}{n^2}\big(\mathrm{Var}(X_1)+\cdots+\mathrm{Var}(X_n)\big)
+  = \frac{\mathrm{Var}(D)}{n}
+\]
+Therefore, by Chebyshev's inequality,
+\begin{equation}\label{eq:cheb-poll}
+  \mathbb{P}\left[|\overline{X}-\mu|\ge\epsilon\right] \le \frac{\mathrm{Var}(D)}{n\epsilon^2}
+\end{equation}
+Now, let's continue on the polling example, suppose for all $i$,
+\[
+  X_i = \begin{cases} 1 & \text{w.p. } p\\ 0 & \text{otherwise,}\end{cases}
+\]
+i.e., $p$ fraction of the population would vote yes on the election, and we want to estimate $p$ within $\epsilon$ additive error. So, all we need to do is to upper bound the variance of $X_i$, First, we calculate the second moment, for all $i$,
+\[
+  \mathbb{E}\left[X_i^2\right] = 1^2\cdot p + 0^2\cdot(1-p) = p.
+\]
+Therefore,
+\[
+  \mathrm{Var}(X_i) = \mathbb{E}\left[X_i^2\right] - \mathbb{E}[X_i]^2 = p-p^2 = p(1-p)\le\frac14.
+\]
+Therefore, by \eqref{eq:cheb-poll}
+\[
+  \mathbb{P}\left[\left|\frac{\sum_i X_i}{n}-p\right|\ge\epsilon\right] \le \frac{1}{4n\epsilon^2}
+\]
+Suppose we choose $10{,}000$ individuals from the population randomly and we calculate the empirical mean; by above inequality with probability $15/16$ our estimate is within $2\%$ of the true mean. Note that the importance of this inequality is that the size of the sample is independent of the size of the population. In general if we want to obtain an $\epsilon$-additive error with probability $1-\delta$ we need $O(1/(\delta\epsilon^2))$ many samples.
+
+We now move on to stronger concentration bounds, a.k.a., Chernoff bounds that can applied when the random variables are mutually independent. We will see that for the same polling example it is enough to use $O\!\left(\frac{1}{\epsilon^2}\log\frac1\delta\right)$ samples to obtain an $\epsilon$-additive approximation of the mean with probability $1-\delta$.
+
+%--------------------------------------------------------------------
+\subsection{Chernoff bounds}
+
+Chernoff bounds is a family of strong concentration inequalities named after the mathematician Herman Chernoff\footnote{See \texttt{http://math.mit.edu/\string~goemans/18310S15/chernoff-notes.pdf} that also form a basis of these notes. for more comprehensive notes of these bounds.}. We start with some intuition before stating one of these inequalities formally. After that we return to our polling example. Finally, we give the sketch of a proof of the inequality.
+
+\subsubsection{Law of Large Numbers}
+
+The Law of Large Numbers (LLN) is a theorem which states that the average of the results obtained from a large number of independent trials of an experiment tends towards the expected value. Central limit theorems state that for an infintie sequence of random independent variables $X_1,X_2,\ldots$ with mean $\mu$ and unit variance.
+\begin{equation}\label{eq:clt}
+  \sqrt{n}\left(\frac1n\sum_{i=1}^n X_i-\mu\right)\to\mathcal{N}(0,1).
+\end{equation}
+as $n$ goes to infinity. In this course, we are interested in quantitative forms of this convergence. We will study this in the form of strong concentration bounds, a.k.a., Chernoff bounds.
+
+Recall that Chebyshev's inequality implies that for any random variable $X$,
+\begin{equation}\label{eq:cheb}
+  \mathbb{P}\left[|X-\mathbb{E}[X]|\ge k\sigma\right]\le\frac{1}{k^2}
+\end{equation}
+Strong concentration bounds imply that if $X$ is an average of independent random variables with standard deviation $\sigma$ that satisfy certain other nice properties, then
+\[
+  \mathbb{P}\left[|X-\mathbb{E}X|\ge k\sigma\right]\le e^{-\Omega(k^2)}
+\]
+In other words, they give exponentially improved bounds compared to Chebyshev's inequality. Note that to get this strong bound we want $X$ to be an average of mutually independent random variables; so unlike Chebyshev's inequality pairwise independent is not enough.
+
+\subsubsection{Formal statements}
+
+There are many different forms of Chernoff bounds, each tuned to slightly different assumptions. We will start with the statement of the bound for the simple case of a sum of independent Bernoulli trials, i.e., the case in which each random variable only takes the values 0 or 1. For example, the polling application is such an example.
+
+\thm{Chernoff Bounds}{
+Let $X=\sum_{i=1}^n X_i$, where $X_i=1$ with probability $p_i$ and $X_i=0$ with probability $1-p_i$, and all $X_i$ are independent. Let $\mu=\mathbb{E}[X]=\sum_{i=1}^n p_i$. Then
+\begin{enumerate}
+  \item[(i)] Upper Tail: $\mathbb{P}\left[X\ge(1+\delta)\mu\right]\le e^{-\frac{\delta^2}{2+\delta}\mu}$ for all $\delta>0$;
+  \item[(ii)] Lower Tail: $\mathbb{P}\left[X\le(1-\delta)\mu\right]\le e^{-\frac{\delta^2}{2}\mu}$ for all $\delta>0$.
+\end{enumerate}
+}
+
+Notice that the lower and upper tail take slightly different forms. Curiously, this is necessary and boils down to the use of different approximation of the logarithmic function.
+
+Before returning to our polling example, let us mention this very useful Chernoff Bound (often called Hoeffding's Inequality).
+
+\thm{}{
+Let $X_1,X_2,\ldots,X_n$ be independent random variables such that $a\le X_i\le b$ for all $i$. Let $X=\sum_{i=1}^n X_i$ and set $\mu=\mathbb{E}[X]$. Then
+\begin{enumerate}
+  \item[(i)] Upper Tail: $\mathbb{P}\left[X\ge(1+\delta)\mu\right]\le e^{-\frac{2\delta^2\mu^2}{n(b-a)^2}}$ for all $\delta>0$;
+  \item[(ii)] Lower Tail: $\mathbb{P}\left[X\le(1-\delta)\mu\right]\le e^{-\frac{\delta^2\mu^2}{n(b-a)^2}}$ for all $\delta>0$.
+\end{enumerate}
+}
+
+Notice, that the above tail bounds apply to bounded random variables, regardless of their distribution!
+
+\subsubsection{Application: Polling}
+
+Let us continue our polling example: Consider a set of $n$ Bernoulli random variables $X_1,X_2,\ldots,X_n$ where for all $i$, $X_i=1$ w.p.\ $p$ and $X_i=0$ w.p.\ $1-p$. By Theorem 5,
+\begin{align*}
+  \mathbb{P}\left[\left|\frac{\sum X_i}{n}-p\right|\ge\epsilon\right]
+  &= \mathbb{P}\left[\left|\sum X_i-pn\right|\ge\epsilon n\right]\\
+  &\le \mathbb{P}\left[\sum X_i\ge(1+\epsilon/p)pn\right]+\mathbb{P}\left[\sum X_i\le(1-\epsilon/p)pn\right]\\
+  &\le e^{-\frac{\epsilon^2 n}{3}}+e^{-\frac{\epsilon^2 n}{2}}
+\end{align*}
+So, if we want to estimate the probability $p$ within an additive error $\epsilon$ with probability $1-\delta$ it is enough to let
+\[
+  n = 3\,\frac{\ln(2/\delta)}{\epsilon^2}.
+\]
+To give you a point of comparison, recall that we showed that using Chebyshev inequality, to estimate $p$ with additive error of $\epsilon$ with probability at $1-\delta$ we need about $1/(\delta\epsilon^2)$. So, for example, if we want $1-2^{-100}$ probability of success the Chernoff bound implies we only need about $100/\epsilon^2$ many samples, whereas Chebyshev's inequality says we want $2^{100}/\epsilon^2$ many samples. You can see that Chernoff bounds implies a significantly smaller number of samples.
+
+\medskip
+\noindent\textbf{Upshot:} The failure probability decreases exponentially with respect to the number of samples whereas the confidence interval $\epsilon$ only decreases proportional to the square-root of the number of samples.
+
+\subsubsection{Proof sketch of Theorem 5}
+
+We show how to prove the upper tail bound. The proof for the lower tail is analogous. Perhaps surprisingly, we again resort to Markov's inequality (similar to the proof of Chebychev's inequality, however, here the calculations become a little more involved). For any $s>0$,
+\[
+  \mathbb{P}[X\ge a]=\mathbb{P}\left[e^{sX}\ge e^{sa}\right]\le\frac{\mathbb{E}\left[e^{sX}\right]}{e^{sa}}\qquad\text{(by Markov's inequality).}
+\]
+We now analyze the numerator. By the independence of the random variables $X_1,\ldots,X_n$
+\[
+  \mathbb{E}\left[e^{sX}\right]=\mathbb{E}\left[e^{s(X_1+X_2+\cdots+X_n)}\right]=\prod_{i=1}^n\mathbb{E}\left[e^{sX_i}\right]
+\]
+Now using that $X_i$ is a Bernoulli random variable that takes value 1 with probability $p_i$:
+\begin{align*}
+  \prod_{i=1}^n\mathbb{E}\left[e^{sX_i}\right]
+  &= \prod_{i=1}^n\left(p_i\cdot e^s+(1-p_i)\cdot 1\right)\\
+  &= \prod_{i=1}^n\left(1+p_i(e^s-1)\right)\\
+  &\le \prod_{i=1}^n e^{p_i(e^s-1)}\qquad\text{(using that $1+y\le e^y$ with $y=p(e^s-1)$)}\\
+  &= e^{\mu(e^s-1)}
+\end{align*}
+Now setting $a=(1+\delta)\mu$ and $s=\ln(1+\delta)$ we get\footnote{Our choice of $s$ is motivated as follows: we are trying to make our upper bound for the tail probability to be as small as possible. To do this, we can minimize our expression for the upper bound as a function of $s$.}
+\[
+  \mathbb{P}[X\ge a]\le\frac{e^{\mu\delta}}{(1+\delta)^{\mu(1+\delta)}}=\left(\frac{e^{\delta}}{(1+\delta)^{1+\delta}}\right)^{\mu},
+\]
+which can be simplified to be at most $e^{-\frac{\delta^2}{2+\delta}\mu}$.
+
+The lower tail follows by similar calculations: For any $s>0$,
+\[
+  \mathbb{P}[X\le a]=\mathbb{P}\left[e^{-sX}\ge e^{-sa}\right]\le\frac{\mathbb{E}\left[e^{-sX}\right]}{e^{-sa}}\qquad\text{(by Markov's inequality).}
+\]
+Now same simplifications follow and at the end we choose $a=(1-\delta)\mu$ and $s=-\ln(1-\delta)$.
+
+% \end{document}

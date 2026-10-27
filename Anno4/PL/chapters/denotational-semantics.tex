@@ -75,10 +75,6 @@ The denotations for commands are as follows:
 
 All these can be expressed in function-style notation too.\\
 
-\nt{
-  If the denotation of $ \sigma $ under $ b $ is undefined, then the function should also be undefined, hence the case completeness.
-}
-
 Note that $\mathcal{C}[\![c_1; c_2]\!] = \mathcal{C}[\![c_2]\!] \circ \mathcal{C}[\![c_1]\!]$,
 where $\circ$ is the composition of relations, defined as follows: if $R_1 \subseteq A \times
 B$ and $R_2 \subseteq B \times C$ then $R_2 \circ R_1 \subseteq A \times C$ is $R_2 \circ R_1 =
@@ -93,6 +89,10 @@ function composition.
 &\quad \cup \{(\sigma, \sigma') \mid (\sigma, \mathbf{false}) \in \mathcal{B}[\![b]\!] \wedge
 (\sigma, \sigma') \in \mathcal{C}[\![c_2]\!]\}
 \end{align*}
+
+\nt{
+  If the denotation of $ \sigma $ under $ b $ is undefined, then the function should also be undefined, hence the case completeness.
+}
 
 \begin{align*}
 \mathcal{C}[\![\mathbf{while}\ b\ \mathbf{do}\ c]\!] &= \{(\sigma, \sigma) \mid (\sigma,
@@ -213,9 +213,18 @@ A function $F$ from $U$ to $U$ is said to be \emph{Scott-continuous} if for ever
 \subseteq X_2 \subseteq \ldots$ we have $F(\bigcup_i X_i) = \bigcup_i F(X_i)$.
 }
 
-It is not hard to show that if $F$ is Scott continuous, then it is also \emph{monotonic}---that
-is, $X \subseteq Y$ implies $F(X) \subseteq F(Y)$. The proof of this fact is left as an
-exercise.
+It is not hard to show that
+\mprop{Monotonicity of Scott-continuous function}{
+  If $F$ is Scott continuous, then it is also \emph{monotonic}---that is, $X \subseteq Y$ implies $F(X) \subseteq F(Y)$.}
+\pf{}{
+  Assume $ X \subseteq Y $, so $ Y = Y \cup X $. By Scott-continuity
+  \[
+    F(Y) = F(Y \cup X) = F(Y) U F(X)
+  \]
+  So if $ x \in F(X) $, then $ x $ is also in $ F(Y) $. Not too sure if this is correct because is used a finite chain.
+
+}
+
 
 \thm{Kleene Fixpoint}{
 Let $F$ be a Scott-continuous function. The least fixed point of $F$ is $\bigcup_i F^i

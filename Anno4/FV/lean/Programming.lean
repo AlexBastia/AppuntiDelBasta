@@ -43,8 +43,8 @@ theorem appendMorph {A: Type} (xs ys : MyList A):  -- holds for arbitrary A,xs,y
   match xs with                  -- by induction, looks like recursive function def
   | .nil => grind [append, len]   -- base case
   | .cons h t =>                 -- inductive case
-     let IH : (len (append t ys) = len t + len ys) := appendMorph t ys
-     grind [append, len]         -- grind: a prover for equalities and linear arithmetic
+     -- let IH : (len (append t ys) = len t + len ys) := appendMorph t ys
+     grind [appendMorph t ys, append, len]         -- grind: a prover for equalities and linear arithmetic
      -- grind will use IH automatically but needs to be told to use function definitions
 
 -- Higher order functions
