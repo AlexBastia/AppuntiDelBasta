@@ -6,6 +6,7 @@
 
 \usepackage[utf8]{inputenc}
 \usepackage{fontawesome}
+\usepackage{mathpartir}
 \usetikzlibrary{positioning,arrows.meta}
 
 \newcommand{\kw}[1]{\mathbf{#1}}
@@ -52,7 +53,18 @@
 \newcommand{\Y}{\mathsf{Y}}
 \newcommand{\Z}{\mathsf{Z}}
 \newcommand{\ite}[3]{\mathbf{if}\ #1\ \mathbf{then}\ #2\ \mathbf{else}\ #3}
-
+\newcommand{\tint}{\mathbf{int}}
+\newcommand{\tunit}{\mathbf{unit}}
+\newcommand{\tbool}{\mathbf{bool}}
+\newcommand{\lam}[2]{\lambda #1\!:\!#2.\,}
+\newcommand{\inl}{\mathsf{inl}}
+\newcommand{\inr}{\mathsf{inr}}
+\newcommand{\fix}{\mathsf{fix}\;}
+\newcommand{\steps}{\to}
+\newcommand{\stepsstar}{\to^{*}}
+\newcommand{\nsteps}{\not\to}
+\newcommand{\subst}[2]{\{#1/#2\}}
+\newcommand{\typ}[3]{#1 \vdash #2 : #3}
 
 \setlength{\parindent}{0pt}
 
@@ -81,5 +93,6 @@
 \include{chapters/sep-logic2}
 \include{chapters/lambda}
 \include{chapters/lambda2}
+\include{chapters/typed-lambda}
 
 \end{document}

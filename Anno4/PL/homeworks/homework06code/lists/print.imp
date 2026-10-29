@@ -1,0 +1,12 @@
+@ list(l) @
+
+p := l;
+while (p != 0) do @ lseg(l, p) * list(p) @
+{
+  v := *p;
+  print(v);
+  tmp := *(p + 1);
+  p := tmp;
+}
+
+@ list(l) @

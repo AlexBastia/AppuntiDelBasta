@@ -1,0 +1,14 @@
+@ true and x = 1 @
+while (true) do 
+@ x = 1 @
+{
+  skip
+}; 
+x := 2;
+@ false and x = 2 @
+while (false) do
+@ false and x = 2 @
+{
+  skip
+}
+@ false @

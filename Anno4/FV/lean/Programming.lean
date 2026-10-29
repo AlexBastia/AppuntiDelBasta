@@ -61,7 +61,7 @@ def map {A B : Type} (f: A → B) (lst: MyList A) : MyList B :=
   | .cons hd tl => cons (f hd) (map f tl)
 
 theorem mapKeepsLength {A B : Type} (as : MyList A) (f : A -> B) :
-    len as = len (map f as) := by
+  len as = len (map f as) := by
   match as with
   | .nil => grind [map, len]
   | .cons h t =>
@@ -75,4 +75,3 @@ theorem mapComp {A B C : Type} (f : A → B) (g : B → C) (lst : MyList A) :
   | .cons hd tl =>
     let IH: (map g (map f tl)) = map (fun a => g (f a)) tl  := mapComp f g tl
     grind [map]
-

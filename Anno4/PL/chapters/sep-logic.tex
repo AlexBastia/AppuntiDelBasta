@@ -267,14 +267,15 @@ $\triple{\emp}{\kw{free}(x)}{\mathrm{false}}$ is not valid, because $\kw{free}(x
 on the empty heap. On the other hand, $\triple{\emp}{\kw{while}\ \mathrm{true}\ \kw{do}\ \kw{skip}}{\mathrm{false}}$
 is valid: the loop never crashes and never terminates. As usual for partial correctness,
 termination must be proved separately if it is needed.
-%
-\medskip
-\noindent\textbf{Definition (Valid Triple).} A triple is \emph{valid}, written
+
+\dfn{Valid Triple}{
+A triple is \emph{valid}, written
 $\models\triple{H}{c}{J}$, if for all $\sigma,h$, and $I$ with $\sigma,h\models_I H$:
 \begin{itemize}
   \item $\ev{\sigma,h,c}\sem\err$ is not derivable, and
   \item every $\sigma',h'$ with $\ev{\sigma,h,c}\sem(\sigma',h')$ satisfies $\sigma',h'\models_I J$.
 \end{itemize}
+} 
 Because \rn{New} makes the semantics nondeterministic, both conditions quantify over all
 executions: a valid triple rules out an error for every possible choice of fresh addresses.
 %
