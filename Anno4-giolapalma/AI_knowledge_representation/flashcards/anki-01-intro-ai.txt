@@ -1,7 +1,7 @@
 #separator:tab
 #html:true
 #notetype:Basic
-#deck:AI Knowledge Representation::01 Introduzione all'IA
+#deck:AI Knowledge Representation::Modulo 1::Introduction to AI::01 Introduzione all'IA
 
 Come viene definita l'<b>intelligenza</b> nei lucidi (da Wikipedia)?	Capacità di logica, comprensione, autoconsapevolezza, apprendimento, conoscenza emotiva, ragionamento, pianificazione, creatività, pensiero critico e problem solving.<br>Più in generale: la capacità di <b>percepire o inferire informazioni</b> e di <b>conservarle come conoscenza</b> da applicare a <b>comportamenti adattivi</b> in un ambiente o contesto.
 

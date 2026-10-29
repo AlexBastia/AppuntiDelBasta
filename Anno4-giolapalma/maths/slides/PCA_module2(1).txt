@@ -1,0 +1,1262 @@
+# Module 2: Principal Component Analysis
+
+#### Maria-Pia Victoria-Feser
+
+#### Autumn Semester 2026
+
+- [1 Introduction](#introduction)
+  - [1.1 Module Roadmap](#module-roadmap)
+  - [1.2 Notation](#notation)
+- [2 Fundamentals of PCA](#fundamentals-of-pca)
+  - [2.1 Empirical Covariance Matrices](#empirical-covariance-matrices)
+  - [2.2 Basic Properties](#basic-properties)
+  - [2.3 Link With Linear Algebra](#link-with-linear-algebra)
+  - [2.4 Maximum Variance Principle](#maximum-variance-principle)
+  - [2.5 Illustration with an `R` Toy 2D Dataset](#illustration-with-an-r-toy-2d-dataset)
+    - [2.5.1 Interpretation](#interpretation)
+    - [2.5.2 Covariance Matrix and Spectral Decomposition](#covariance-matrix-and-spectral-decomposition)
+    - [2.5.3 Principal Directions](#principal-directions)
+    - [2.5.4 Interpretation](#interpretation-1)
+    - [2.5.5 Explained Variance Ratio](#explained-variance-ratio)
+    - [2.5.6 Projection and Reconstruction](#projection-and-reconstruction)
+    - [2.5.7 Interpretation](#interpretation-2)
+    - [2.5.8 Reconstruction and Projection Error](#reconstruction-and-projection-error)
+  - [2.6 Choosing the Dimension of the Projection Subspace](#choosing-the-dimension-of-the-projection-subspace)
+    - [2.6.1 Practical Workflow for Choosing $q$](#practical-workflow-for-choosing-q)
+    - [2.6.2 Illustration with `R`](#illustration-with-r)
+  - [2.7 Projection into the Latent Space](#projection-into-the-latent-space)
+  - [2.8 PCA of Iris Data](#pca-of-iris-data)
+    - [2.8.1 Standard Analysis](#standard-analysis)
+    - [2.8.2 A Colored Manual Version](#a-colored-manual-version)
+- [3 PCA in High-Dimensional Settings](#pca-in-high-dimensional-settings)
+  - [3.1 Decompositions](#decompositions)
+  - [3.2 Eckart--Young--Mirsky Theorem](#eckartyoungmirsky-theorem)
+  - [3.3 High-Dimensional Image Example](#high-dimensional-image-example)
+    - [3.3.1 Data](#data)
+    - [3.3.2 PCA](#pca)
+    - [3.3.3 Eigenimages](#eigenimages)
+    - [3.3.4 Interpretation of the Principal Directions](#interpretation-of-the-principal-directions)
+    - [3.3.5 PCA Latent Scores](#pca-latent-scores)
+    - [3.3.6 Reconstruction with Different Numbers of Principal Components](#reconstruction-with-different-numbers-of-principal-components)
+
+# 1 Introduction
+
+## 1.1 Module Roadmap
+
+This module, based on *Mathematics for Machine Learning*, presents PCA from three complementary points of view:
+
+1.  **Variance maximization**: PCA finds directions along which the projected data have the largest variance.
+2.  **Projection and reconstruction**: PCA projects the data onto a low-dimensional subspace and reconstructs them approximately from that subspace.
+3.  **Low-rank approximation**: PCA is closely related to the best rank-$q$ approximation of the data matrix.
+
+These three points of view are mathematically equivalent and will reappear throughout the module. Keeping them in mind helps connect the geometric, statistical, and computational interpretations of PCA.
+
+## 1.2 Notation
+
+Throughout the module, we use the following notation:
+
+- $\mathbf{X} \in \mathbb{R}^{n \times p}$: centered data matrix, with observations in rows and variables in columns;
+- $\mathbf{S} = \frac{1}{n}\mathbf{X}^\top \mathbf{X}$: empirical covariance matrix;
+- $\mathbf{S} = \mathbf{P}\mathbf{\Lambda}\mathbf{P}^\top$: spectral decomposition of the covariance matrix;
+- $\mathbf{P} = [\mathbf{p}_1, \dots, \mathbf{p}_p]$: orthogonal matrix whose columns are the principal directions;
+- $\mathbf{P}_q = [\mathbf{p}_1, \dots, \mathbf{p}_q]$: matrix containing the first $q$ principal directions;
+- $\mathbf{Z} = \mathbf{X}\mathbf{P}_q$: matrix of PCA latent scores;
+- $\widehat{\mathbf{X}} = \mathbf{X}\mathbf{P}_q\mathbf{P}_q^\top$: rank-$q$ PCA reconstruction.
+
+# 2 Fundamentals of PCA
+
+## 2.1 Empirical Covariance Matrices
+
+Before deriving PCA, it is useful to make explicit the role of the **empirical covariance matrix**. For a dataset of observations $\mathbf{x}_1, \ldots, \mathbf{x}_n \in \mathbb{R}^p$, the empirical mean is
+
+$$ \overline{\mathbf{x}} = \frac{1}{n}\sum_{i=1}^n \mathbf{x}_i= \begin{bmatrix} \overline{x}_1 \\ \overline{x}_2 \\ \vdots \\ \overline{x}_p \end{bmatrix} \in \mathbb{R}^p. $$
+
+The empirical covariance matrix is
+
+$$ \mathbf{S} = \frac{1}{n}\sum_{i=1}^n (\mathbf{x}_i - \overline{\mathbf{x}})(\mathbf{x}_i - \overline{\mathbf{x}})^\top \in \mathbb{R}^{p\times p}. $$
+
+This version uses $n$ in the denominator and follows the empirical-distribution, or maximum-likelihood, convention. The usual unbiased sample-covariance estimator uses $n-1$ instead. PCA directions and explained-variance ratios are unchanged by this common rescaling, although the numerical eigenvalues are multiplied by a constant.
+
+Let
+
+$$ \mathbf{X} = \begin{bmatrix} \mathbf{x}_1^\top \\ \ldots \\ \mathbf{x}_n^\top \end{bmatrix} \in \mathbb{R}^{n \times p}, $$
+
+i.e. the matrix containing the $n$ observation vectors $\mathbf{x}_i$, $i=1,\ldots,n$, by row. When the observations are centered, i.e. $\overline{\mathbf{x}}=\mathbf{0}_p$, the empirical covariance matrix can be written compactly as
+
+$$ \mathbf{S} = \frac{1}{n}\mathbf{X}^\top\mathbf{X}. $$
+
+The covariance matrix summarizes how the variables vary and covary:
+
+- the diagonal entries are the variances of the variables;
+- the off-diagonal entries are covariances between pairs of variables;
+- large positive or negative off-diagonal terms indicate strong linear association between variables, relative to their scales.
+
+## 2.2 Basic Properties
+
+1.  **Symmetry**: $\mathbf{S}^\top = \mathbf{S}$.
+
+2.  **Positive semidefiniteness**: For every vector $\mathbf{a} \in \mathbb{R}^p$, $\mathbf{a}^\top \mathbf{S}\mathbf{a} \ge 0$.
+
+3.  **Rank bound**: If $\mathbf{X} \in \mathbb{R}^{n \times p}$, then $\operatorname{rank}(\mathbf{S}) = \operatorname{rank}(\mathbf{X}^\top\mathbf{X}) \le \min(p, n)$. Because centering imposes one linear constraint on the rows, the sharper bound for centered data is $\min(p,n-1)$.
+
+Positive semidefiniteness is crucial because it implies that the eigenvalues of $\mathbf{S}$ are nonnegative.
+
+When $n \ll p$, the covariance matrix is low rank. This situation is called a high-dimensional setting and requires special treatment.
+
+**Suggested Exercise 21.**
+
+## 2.3 Link With Linear Algebra
+
+PCA is one of the main applications of the linear algebra developed in Module 1.
+
+In particular, the following facts are fundamental:
+
+- the covariance matrix $\mathbf{S}$ is symmetric positive semidefinite;
+- its eigenvectors form an orthonormal basis of principal directions;
+- the matrix $\mathbf{P}_q\mathbf{P}_q^\top$ is the orthogonal projector onto the principal subspace;
+- and the reconstruction $$ \widehat{\mathbf{X}} = \mathbf{X}\mathbf{P}_q\mathbf{P}_q^\top $$ is therefore the orthogonal projection of the data onto that subspace.
+
+So PCA is not only a statistical method: it is also a concrete application of spectral decomposition, orthogonal projection, and low-rank approximation.
+
+**Suggested Exercise 22.**
+
+## 2.4 Maximum Variance Principle
+
+The main objective of PCA is to find a low-dimensional subspace such that the projected data have **maximum variance**. Indeed, if the projected points still spread out substantially, then the projection retains information. If the projected points collapse into a small subspace, then much structure has been removed.
+
+Let $\mathbf{S}$ be the covariance matrix of centered data. Let $z_i = \mathbf{p}^\top\mathbf{x}_i$ be the latent score. If $\mathbf{p}\in \mathbb{R}^p$ is a eigenvector, then the variance of the latent scores is
+
+$$ \operatorname{var}(z) = \mathbf{p}^\top \mathbf{S}\mathbf{p} \qquad \text{subject to } \mathbf{p}^\top \mathbf{p}=1. $$
+
+Note that the constraint $\mathbf{p}^\top \mathbf{p}=1$ ensures $\mathbf{p}$ is an orthonormal eigenvector. Without this constraint, the problem has no finite maximum. Indeed, for any scalar $c\in\mathbb{R}$, the variance would be
+
+$$ \operatorname{var}(cz)=(c\mathbf{p})^\top \mathbf{S}(c\mathbf{p}) = c^2 \mathbf{p}^\top \mathbf{S}\mathbf{p}. $$
+
+Whenever $\mathbf{p}^\top \mathbf{S}\mathbf{p}>0$, this quantity can be made arbitrarily large by choosing $|c|$ large. The constraint therefore fixes the scale and ensures that we compare only **directions**.
+
+**Suggested Exercises 23 and 24.**
+
+Maximizing the variance of the projection leads to the optimization problem
+
+$$ \max_{\mathbf{p}} \; \mathbf{p}^\top \mathbf{S}\mathbf{p} \quad \text{subject to} \quad \mathbf{p}^\top \mathbf{p}=1. $$
+
+Using a Lagrange multiplier, the optimization problem leads to
+
+$$ \mathbf{S}\mathbf{p} = \lambda \mathbf{p}, $$
+
+which is an eigenvalue equation. Therefore:
+
+- the principal directions are eigenvectors of the covariance matrix $\mathbf{S}$;
+- the variance along each principal direction is the corresponding eigenvalue.
+
+**Suggested Exercise 25.**
+
+Thus, because the empirical covariance matrix is symmetric, it has the spectral decomposition
+
+$$ \mathbf{S}=\mathbf{P}\mathbf{\Lambda}\mathbf{P}^\top, $$
+
+with $\mathbf{P}$ the $p\times p$ orthogonal matrix whose columns are the eigenvectors $\mathbf{p}_j$, and $\mathbf{\Lambda}$ the $p\times p$ diagonal matrix with diagonal entries the eigenvalues $\lambda_1,\ldots,\lambda_p$.
+
+If the eigenvalues are ordered
+
+$$ \lambda_1 \ge \lambda_2 \ge \cdots \ge \lambda_p \ge 0, $$
+
+then the best $q$-dimensional PCA subspace is spanned by the eigenvectors corresponding to the $q$ largest eigenvalues.
+
+The variance captured by the first $q$ principal components is
+
+$$ V_q = \sum_{j=1}^q \lambda_j, $$
+
+and the variance lost is
+
+$$ J_{p-q} = \sum_{j=q+1}^p \lambda_j. $$
+
+**Suggested Exercises 26 and 27.**
+
+## 2.5 Illustration with an `R` Toy 2D Dataset
+
+We simulate two correlated variables:
+
+``` r
+n <- 150
+x1 <- rnorm(n, mean = 0, sd = 2)
+x2 <- 0.6 * x1 + rnorm(n, mean = 0, sd = 0.5)
+
+X <- cbind(x1, x2)
+df <- data.frame(x1 = x1, x2 = x2)
+
+head(df)
+```
+
+    ##           x1          x2
+    ## 1 -1.1209513 -0.27870135
+    ## 2 -0.4603550  0.10830813
+    ## 3  3.1174166  2.03655127
+    ## 4  0.1410168 -0.41957823
+    ## 5  0.2585755  0.09541898
+    ## 6  3.4301300  1.91788032
+
+The first graph is just a scatterplot of the data:
+
+``` r
+ggplot(df, aes(x = x1, y = x2)) +
+  geom_point(alpha = 0.6) +
+  coord_equal() +
+  labs(title = "Toy dataset in two dimensions") +
+  theme_minimal()
+```
+
+\[immagine\]
+
+### 2.5.1 Interpretation
+
+This graph is the starting point. PCA is a geometric method, so we first look at the shape of the data cloud.
+
+If the cloud is elongated, then most of the variation may lie close to one direction. PCA formalizes that intuition.
+
+### 2.5.2 Covariance Matrix and Spectral Decomposition
+
+We center the data and compute the covariance matrix:
+
+``` r
+X_centered <- scale(X, center = TRUE, scale = FALSE)
+S <- crossprod(X_centered) / nrow(X_centered)
+
+S
+```
+
+    ##          x1       x2
+    ## x1 3.584051 2.004268
+    ## x2 2.004268 1.334890
+
+``` r
+eig <- eigen(S)
+
+eig$values
+```
+
+    ## [1] 4.757681 0.161260
+
+``` r
+eig$vectors
+```
+
+    ##            [,1]       [,2]
+    ## [1,] -0.8629393  0.5053075
+    ## [2,] -0.5053075 -0.8629393
+
+The eigenvectors of $\mathbf{S}$ give the principal directions, and the eigenvalues measure the amount of variance explained along those directions.
+
+Here the covariance matrix uses denominator $n$. By contrast, `prcomp()` reports component variances using denominator $n-1$, following R's sample-covariance convention. This changes the eigenvalues by the common factor $n/(n-1)$ but does not change the principal directions, latent scores up to sign, reconstructions, or explained-variance ratios.
+
+### 2.5.3 Principal Directions
+
+``` r
+mu <- colMeans(X)
+P <- eig$vectors
+lambda <- eig$values
+
+arrows_df <- data.frame(
+  x0 = mu[1], y0 = mu[2],
+  x1 = mu[1] + 2 * sqrt(lambda[1]) * P[1, 1],
+  y1 = mu[2] + 2 * sqrt(lambda[1]) * P[2, 1],
+  x2 = mu[1] + 2 * sqrt(lambda[2]) * P[1, 2],
+  y2 = mu[2] + 2 * sqrt(lambda[2]) * P[2, 2]
+)
+
+arrows_df
+```
+
+    ##             x0        y0        x1        y1        x2         y2
+    ## x1 -0.04872574 0.0173874 -3.813231 -2.186977 0.3571088 -0.6756769
+
+Now plot the arrows:
+
+``` r
+ggplot(df, aes(x = x1, y = x2)) +
+  geom_point(alpha = 0.6) +
+  geom_segment(
+    data = arrows_df,
+    aes(x = x0, y = y0, xend = x1, yend = y1),
+    linewidth = 1,
+    arrow = arrow(length = grid::unit(0.2, "cm")),
+    inherit.aes = FALSE
+  ) +
+  geom_segment(
+    data = arrows_df,
+    aes(x = x0, y = y0, xend = x2, yend = y2),
+    linewidth = 1,
+    linetype = 2,
+    arrow = arrow(length = grid::unit(0.2, "cm")),
+    inherit.aes = FALSE
+  ) +
+  coord_equal() +
+  labs(title = "Principal directions from the covariance matrix") +
+  theme_minimal()
+```
+
+\[immagine\]
+
+### 2.5.4 Interpretation
+
+The starting point of both arrows is the empirical mean:
+
+$$ \boldsymbol{\mu} = \frac{1}{n}\sum_{i=1}^n \mathbf{x}_i. $$
+
+This is why both arrows start at `(mu[1], mu[2])`.
+
+The direction of each arrow is given by an eigenvector:
+
+- `P[, 1]` for the first principal direction,
+- `P[, 2]` for the second principal direction.
+
+The factor `sqrt(lambda[j])` is used because the eigenvalue gives the variance along the corresponding direction, so its square root is a standard-deviation scale. Multiplying by `2` is only a visualization choice to make the arrows clearly visible.
+
+So the construction
+
+``` r
+mu + 2 * sqrt(lambda[j]) * P[, j]
+```
+
+means:
+
+- start at the center of the cloud,
+- move in the eigenvector direction,
+- scale the arrow according to the variability explained by that component.
+
+### 2.5.5 Explained Variance Ratio
+
+``` r
+prop_var <- eig$values / sum(eig$values)
+kable(data.frame(
+  Component = 1:length(prop_var),
+  Eigenvalue = round(eig$values, 4),
+  ExplainedVarianceRatio = round(prop_var, 4)
+))
+```
+
+    Component   Eigenvalue   ExplainedVarianceRatio
+  ----------- ------------ ------------------------
+            1       4.7577                   0.9672
+            2       0.1613                   0.0328
+
+In this example, one component already explains most of the variability.
+
+### 2.5.6 Projection and Reconstruction
+
+In PCA with one retained component, each observation is projected onto the line spanned by the first principal direction.
+
+We compute this with `prcomp()`:
+
+``` r
+pca_fit <- prcomp(X, center = TRUE, scale. = FALSE)
+
+scores1 <- pca_fit$x[, 1, drop = FALSE]
+loadings1 <- pca_fit$rotation[, 1, drop = FALSE]
+
+Xhat1 <- scores1 %*% t(loadings1)
+Xhat1 <- sweep(Xhat1, 2, pca_fit$center, "+")
+
+recon_df <- data.frame(
+  x1 = X[, 1], x2 = X[, 2],
+  x1_hat = Xhat1[, 1], x2_hat = Xhat1[, 2]
+)
+
+head(recon_df)
+```
+
+    ##           x1          x2      x1_hat      x2_hat
+    ## 1 -1.1209513 -0.27870135 -0.97628325 -0.52575832
+    ## 2 -0.4603550  0.10830813 -0.31560537 -0.13888812
+    ## 3  3.1174166  2.03655127  3.18944333  1.91354762
+    ## 4  0.1410168 -0.41957823 -0.09797001 -0.01144835
+    ## 5  0.2585755  0.09541898  0.21413615  0.17131026
+    ## 6  3.4301300  1.91788032  3.37056335  2.01960526
+
+Now draw the graph:
+
+``` r
+ggplot(recon_df) +
+  geom_point(aes(x = x1, y = x2), alpha = 0.5) +
+  geom_point(aes(x = x1_hat, y = x2_hat), shape = 1) +
+  geom_segment(
+    aes(x = x1, y = x2, xend = x1_hat, yend = x2_hat),
+    alpha = 0.25
+  ) +
+  coord_equal() +
+  labs(
+    title = "Projection onto the first principal component",
+    subtitle = "Segments represent reconstruction errors"
+  ) +
+  theme_minimal()
+```
+
+\[immagine\]
+
+### 2.5.7 Interpretation
+
+There are three geometric objects in this figure:
+
+- the original data points `(x1, x2)`,
+- the reconstructed points `(x1_hat, x2_hat)`,
+- the segments between the original and reconstructed points.
+
+The reconstructed points, denoted by $\widehat{\mathbf{x}}_i$, are the projections of the original observations onto the first principal component.
+
+So each segment represents:
+
+$$ \mathbf{x}_i - \widehat{\mathbf{x}}_i, $$
+
+that is, the reconstruction error.
+
+This is why the graph is useful: it shows visually what PCA does when only one component is kept.
+
+### 2.5.8 Reconstruction and Projection Error
+
+``` r
+mean_squared_distance1 <- mean(rowSums((X - Xhat1)^2))
+mean_squared_distance1
+```
+
+    ## [1] 0.16126
+
+This is the average squared Euclidean reconstruction distance per observation. A mean squared error per matrix entry would divide this value by the number of variables $p$.
+
+## 2.6 Choosing the Dimension of the Projection Subspace
+
+Suppose $\mathbf{P}_q = [\mathbf{p}_1, \ldots, \mathbf{p}_q]$ contains an **orthonormal basis** (i.e. orthonormal columns) of a $q$-dimensional subspace. Then the projection of $\mathbf{x}_i$ onto that subspace is
+
+$$ \widetilde{\mathbf{x}}_i = \mathbf{P}_q\mathbf{P}_q^\top \mathbf{x}_i. $$
+
+Note that the matrix $\mathbf{P}_q$ has the following properties:
+
+1.  $\mathbf{P}_q^\top\mathbf{P}_q=\mathbf{I}_q$,
+2.  $\mathbf{P}_q\mathbf{P}_q^\top$ is an orthogonal projector, so that $(\mathbf{P}_q\mathbf{P}_q^\top)^\top=\mathbf{P}_q\mathbf{P}_q^\top$ and $(\mathbf{P}_q\mathbf{P}_q^\top)^2=\mathbf{P}_q\mathbf{P}_q^\top$.
+
+PCA chooses the subspace that minimizes the average squared reconstruction error, i.e.
+
+$$ J_{p-q} = \sum_{j=q+1}^p \lambda_j = \frac{1}{n} \sum_{i=1}^n \lVert \mathbf{x}_i - \widetilde{\mathbf{x}}_i \rVert^2, $$
+
+or equivalently, that maximizes the average **explained variance** by the first $q$ principal components.
+
+**Suggested Exercises 28 and 29.**
+
+Then, a practical question in principal component analysis (PCA) is: How many principal components should we keep? If we keep too few components, we may lose important structure in the data. If we keep too many, we may keep noise and lose the benefit of dimensionality reduction.
+
+Recall that the eigenvalues of the empirical covariance matrix $\mathbf{S}$ measure how much variance is explained by each principal direction. The total variance in the data is
+
+$$ \operatorname{tr}(\mathbf{S}) = \sum_{j=1}^p \lambda_j. $$
+
+Let
+
+$$ \widetilde{\mathbf{S}}_q=\mathbf{P}_q\mathbf{\Lambda}_q\mathbf{P}_q^\top\in\mathbb{R}^{p\times p}, $$
+
+where $\mathbf{\Lambda}_q$ is the diagonal matrix containing the first $q$ eigenvalues. The cumulative proportion of explained variance is
+
+$$ \operatorname{PEV}(q) = \frac{\operatorname{tr}\left(\widetilde{\mathbf{S}}_q\right)} {\operatorname{tr}(\mathbf{S})} = \frac{\sum_{j=1}^q \lambda_j}{\sum_{j=1}^p \lambda_j}. $$
+
+One common criterion is to choose the smallest $q$ such that $\operatorname{PEV}(q)\geq\tau$, with, for example, $\tau=0.80,0.90$, or $0.95$. Another common diagnostic is the **scree plot**, which displays the individual eigenvalues, or explained-variance ratios, against the component index. The idea is to look for an **elbow**:
+
+- before the elbow, eigenvalues decrease quickly,
+- after the elbow, they flatten out.
+
+The components before the elbow are usually considered important, while those after the elbow are often interpreted as mostly noise or weak structure.
+
+### 2.6.1 Practical Workflow for Choosing $q$
+
+In practice, a reasonable workflow is:
+
+1.  compute the PCA;
+2.  inspect the scree plot;
+3.  inspect the cumulative explained variance curve;
+4.  choose a first candidate value of $q$;
+5.  check whether that value is appropriate for the intended purpose.
+
+The best value of $q$ depends on the goal:
+
+- for visualization, one often takes $q = 2$ or $q = 3$;
+- for compression, one takes the smallest $q$ giving acceptable reconstruction quality;
+- for preprocessing in machine learning, one may choose $q$ based on downstream predictive performance.
+
+So the choice of $q$ should combine statistical criteria, interpretability, and the final objective of the analysis.
+
+### 2.6.2 Illustration with `R`
+
+``` r
+set.seed(123)
+
+n <- 200
+
+z1 <- rnorm(n, sd = 3)
+z2 <- rnorm(n, sd = 1.5)
+z3 <- rnorm(n, sd = 0.5)
+
+x1 <- z1 + rnorm(n, sd = 0.2)
+x2 <- 0.8 * z1 + rnorm(n, sd = 0.2)
+x3 <- z2 + rnorm(n, sd = 0.2)
+x4 <- 0.7 * z2 + rnorm(n, sd = 0.2)
+x5 <- z3 + rnorm(n, sd = 0.2)
+
+X <- cbind(x1, x2, x3, x4, x5)
+X <- scale(X, center = TRUE, scale = FALSE)
+
+pca <- prcomp(X, center = FALSE, scale. = FALSE)
+
+eigenvalues <- pca$sdev^2
+eigenvalues
+```
+
+    ## [1] 13.06986281  3.37695148  0.28067228  0.04648912  0.03056518
+
+``` r
+screeplot(pca, type = "lines", main = "Scree Plot from prcomp")
+```
+
+\[immagine\]
+
+Because `prcomp()` uses the $n-1$ sample-covariance convention, these eigenvalues are on a slightly different scale from eigenvalues computed earlier with denominator $n$. Explained-variance ratios are unaffected.
+
+*Explained Variance Ratio and Cumulative Explained Variance*
+
+``` r
+pev <- eigenvalues / sum(eigenvalues)
+cum_pev <- cumsum(pev)
+
+data.frame(
+  component = seq_along(eigenvalues),
+  eigenvalue = round(eigenvalues, 4),
+  explained_variance_ratio = round(pev, 4),
+  cumulative_explained_variance = round(cum_pev, 4)
+)
+```
+
+    ##   component eigenvalue explained_variance_ratio cumulative_explained_variance
+    ## 1         1    13.0699                   0.7778                        0.7778
+    ## 2         2     3.3770                   0.2010                        0.9787
+    ## 3         3     0.2807                   0.0167                        0.9954
+    ## 4         4     0.0465                   0.0028                        0.9982
+    ## 5         5     0.0306                   0.0018                        1.0000
+
+``` r
+plot(
+  cum_pev,
+  type = "b",
+  pch = 19,
+  ylim = c(0, 1),
+  xlab = "Number of components q",
+  ylab = "Cumulative explained variance",
+  main = "Cumulative Explained Variance"
+)
+abline(h = c(0.8, 0.9, 0.95), lty = 2)
+```
+
+\[immagine\]
+
+## 2.7 Projection into the Latent Space
+
+It is important to distinguish three objects:
+
+- the **original observations** in the variable space;
+- the **latent scores** in the PCA space;
+- the **reconstructed observations** back in the original space.
+
+More precisely,
+
+$$ \mathbf{Z} = \mathbf{X}\mathbf{P}_q $$
+
+gives the coordinates of the observations in the reduced PCA space, i.e., the latent scores, whereas
+
+$$ \widehat{\mathbf{X}} = \mathbf{Z}\mathbf{P}_q^\top = \mathbf{X}\mathbf{P}_q\mathbf{P}_q^\top $$
+
+maps them back to the original variable space. When $q=2$, the projected observations $\mathbf{X}$ in the latent space $\mathbf{P}_2$ (latent scores) can be illustrated in a **biplot** which helps interpreting the decomposition. Often, one uses several biplots, with, e.g., the first 2 eigenvectors or the first and third eigenvectors, etc.
+
+Let $\mathbf{S}$ be the (symmetric and positive semidefinite) empirical covariance matrix which admits the spectral decomposition
+
+$$ \mathbf{S} = \mathbf{P}\mathbf{\Lambda}\mathbf{P}^\top. $$
+
+The eigenvectors $\mathbf{p}_1, \dots, \mathbf{p}_p$ in $\mathbf{P}$, also called **loading vectors**, give the **principal directions**, and the eigenvalues $\lambda_1, \dots, \lambda_p$ in $\mathbf{\Lambda}$ measure the variance explained along those directions.
+
+If we keep only the first two principal directions, we define
+
+$$ \mathbf{P}_2 = [\mathbf{p}_1, \mathbf{p}_2] \in \mathbb{R}^{p \times 2}. $$
+
+These vectors describe how the original variables contribute to the first two principal components, from which the PCA **latent scores** are obtained by projecting the observations onto the principal directions:
+
+$$ \mathbf{Z}_2 = \mathbf{X}\mathbf{P}_2 \in \mathbb{R}^{n \times 2}. $$
+
+Hence, the rows of $\mathbf{Z}_2$ are the coordinates of the observations in the two-dimensional PCA space.
+
+The rows of $\mathbf{P}_2$ contain the coefficients used to construct the two latent scores from the original variables. Indeed, observations in the original variable space,
+
+$$ \mathbf{x}_i = (x_{i1}, \dots, x_{ip}) \in \mathbb{R}^p, $$
+
+are projected onto the first two principal components, i.e.
+
+$$ \mathbf{z}_i = \mathbf{x}_i \mathbf{P}_2= \sum_{j=1}^p x_{ij} \begin{bmatrix} p_{j1} & p_{j2} \end{bmatrix}. $$ Therefore, the row vector
+
+$$ \bigl(p_{j1}, p_{j2}\bigr) $$
+
+gives the two coefficients associated with variable $j$ in the first two principal directions.
+
+These coefficients are interpreted as follows:
+
+- if $|p_{j1}|$ is large, variable $j$ receives a large weight in PC1;
+- if $|p_{j2}|$ is large, variable $j$ receives a large weight in PC2;
+- the signs indicate whether variables enter a component in the same or opposite directions.
+
+Coefficient magnitudes are directly comparable only when the original variables have comparable units or have been standardized. Hence, one sometimes prefer transform the loadings into interpretable correlations. If $s_j$ is the sample standard deviation of variable $j$, its correlation coordinates are
+
+$$ \left( \frac{\sqrt{\lambda_1}p_{j1}}{s_j}, \frac{\sqrt{\lambda_2}p_{j2}}{s_j} \right). $$
+
+These are the correlations between variable $j$ and the first two latent scores.
+
+The joint representation of the observations $\mathbf{x}_i$ and the variables $\mathbf{x}_j$ is plotted in a biplot, i.e. 
+
+1.  **Observation points**: Each row of $\mathbf{Z}_2$ is plotted as a point.
+
+2.  **Variable arrows**: Each original variable is represented by an arrow, based on its coordinates in the loading matrix.
+
+The exact interpretation of a biplot depends on its scaling convention. In a latent score plot with correlation-coordinate arrows, the following information can be drawn:
+
+- observations that are close to each other have similar PCA latent scores,
+- observations far apart differ strongly along the displayed components,
+- clusters may reveal structure in the data,
+- a long correlation-coordinate arrow for a variable means that the variable is well represented in the plane spanned by PC1 and PC2,
+- a short arrow means that a substantial part of that variable's variation may lie in later components,
+- arrows pointing in similar directions correspond to positively associated variables,
+- arrows pointing in opposite directions correspond to negatively associated variables,
+- arrows that are close to orthogonal indicate weak association in the displayed PCA plane,
+- the angle between correlation-coordinate arrows approximates the correlation between variables when the displayed plane represents them well,
+- if an observation lies far in the direction of a variable arrow, then that observation tends to have a relatively large value for that variable,
+- if it lies in the opposite direction, it tends to have a relatively small value.
+
+In practice, arrows are often rescaled for visualization. For raw loading arrows, one may plot
+
+$$ c \begin{bmatrix} p_{j1} & p_{j2} \end{bmatrix}, $$
+
+for some constant $c > 0$ to make the arrows easier to see. This changes their visual length but not their direction. After arbitrary rescaling, arrow length must not be interpreted as a correlation magnitude or quality of representation.
+
+Note also that when using a biplot:
+
+- always check the explained variance of PC1 and PC2;
+- standardize variables if they are on very different scales;
+- avoid over-interpreting tiny differences in arrow lengths;
+- use the biplot together with scree plots and explained-variance summaries.
+
+## 2.8 PCA of Iris Data
+
+### 2.8.1 Standard Analysis
+
+The `iris` dataset is a classical PCA example.
+
+``` r
+data(iris)
+
+X <- iris[, 1:4]
+species <- iris$Species
+
+pca_iris <- prcomp(X, center = TRUE, scale. = TRUE)
+
+summary(pca_iris)
+```
+
+    ## Importance of components:
+    ##                           PC1    PC2     PC3     PC4
+    ## Standard deviation     1.7084 0.9560 0.38309 0.14393
+    ## Proportion of Variance 0.7296 0.2285 0.03669 0.00518
+    ## Cumulative Proportion  0.7296 0.9581 0.99482 1.00000
+
+``` r
+screeplot(pca_iris, type = "lines", main = "Scree Plot of Iris Data")
+```
+
+\[immagine\]
+
+``` r
+biplot(pca_iris, cex = 0.6)
+```
+
+\[immagine\]
+
+### 2.8.2 A Colored Manual Version
+
+``` r
+scores <- pca_iris$x[, 1:2]
+loadings <- pca_iris$rotation[, 1:2]
+
+cols <- c("tomato", "steelblue", "darkgreen")[as.numeric(species)]
+
+plot(
+  scores[, 1], scores[, 2],
+  col = cols,
+  pch = 19,
+  xlab = "PC1",
+  ylab = "PC2",
+  main = "Iris PCA Latent Scores with Loading Directions"
+)
+
+arrows(
+  x0 = 0, y0 = 0,
+  x1 = 2.5 * loadings[, 1],
+  y1 = 2.5 * loadings[, 2],
+  length = 0.1,
+  col = "black",
+  lwd = 2
+)
+
+text(
+  2.5 * loadings[, 1],
+  2.5 * loadings[, 2],
+  labels = rownames(loadings),
+  pos = 4
+)
+
+legend(
+  "topright",
+  legend = levels(species),
+  col = c("tomato", "steelblue", "darkgreen"),
+  pch = 19,
+  bty = "n"
+)
+
+abline(h = 0, v = 0, lty = 2, col = "lightgray")
+```
+
+\[immagine\]
+
+One can see that the different species are well separated with only the first loading vector (PCA1), which can be interpreted as an average between petal.lenght and petal-width, hence petal size. Sepal length is also important in the first loading vector.
+
+# 3 PCA in High-Dimensional Settings
+
+## 3.1 Decompositions
+
+Recall that the centered data matrix is
+
+$$ \mathbf{X} = \begin{bmatrix} \mathbf{x}_1^\top \\ \ldots \\ \mathbf{x}_n^\top \end{bmatrix} \in \mathbb{R}^{n \times p}, $$
+
+and the covariance matrix is
+
+$$ \mathbf{S} = \frac{1}{n}\mathbf{X}^\top\mathbf{X}\in\mathbb{R}^{p\times p}. $$
+
+In the high-dimensional setting $n \ll p$, $\mathbf{S}$ may be very large and is low rank, at most $n$. In that case, it is often preferable to work with the smaller matrix
+
+$$ \widetilde{\mathbf{S}} = \frac{1}{n}\mathbf{X}\mathbf{X}^\top \in \mathbb{R}^{n \times n}. $$
+
+The two matrices have the same nonzero eigenvalues, and the principal directions in the original variable space can be recovered afterward. This is one of the key computational ideas behind PCA for image and text data.
+
+One can, in principle, compute PCA directly from the spectral decomposition of $\mathbf{S}$ and keep the $q\le n$ eigenvectors associated with the largest eigenvalues, i.e.
+
+$$ \mathbf{S}=\mathbf{P}\mathbf{\Lambda}\mathbf{P}^\top. $$
+
+However, this may be numerically inefficient when $p$ is very large, since it requires building a $p \times p$ matrix, which can also be memory intensive if $p$ is in the thousands or millions.
+
+Equivalently, one can proceed with the SVD of $\mathbf{X}$:
+
+$$ \mathbf{X} = \mathbf{U}\mathbf{\Sigma}\mathbf{V}^\top, $$ with
+
+- $\mathbf{U} \in \mathbb{R}^{n \times n}$,
+- $\mathbf{V} \in \mathbb{R}^{p \times p}$,
+- $\mathbf{\Sigma} \in \mathbb{R}^{n \times p}$ with nonzero diagonal elements $\sigma_1,\ldots,\sigma_r$, where $r=\operatorname{rank}(\mathbf{X})\leq\min(n-1,p)$ for centered data.
+
+Then, we have that
+
+- the nonzero eigenvalues in the spectral decomposition of $\mathbf{S}$ are $\lambda_j=\sigma_j^2/n$, $j=1,\ldots,r$,
+- the columns of $\mathbf{V}$ are the columns of $\mathbf{P}$, up to possible sign changes; therefore, they are the eigenvectors of $\mathbf{S}$.
+
+**Suggested Exercise 30.**
+
+However, when $n \ll p$, it is often preferable to compute the spectral decomposition of $\widetilde{\mathbf{S}}$, i.e.
+
+$$ \widetilde{\mathbf{S}}=\widetilde{\mathbf{P}}\widetilde{\mathbf{\Lambda}}\widetilde{\mathbf{P}}^\top. $$
+
+$\widetilde{\mathbf{P}}\in \mathbb{R}^{n \times n}$ is orthogonal and $\widetilde{\mathbf{\Lambda}}\in \mathbb{R}^{n \times n}$ is diagonal with nonnegative entries $\widetilde{\lambda}_j$, $j=1,\ldots,n$. We then have
+
+- for every nonzero eigenvalue, the corresponding eigenvector of $\mathbf{S}$ is proportional to $\mathbf{X}^\top\widetilde{\mathbf{p}}_j$, more precisely $\mathbf{p}_j=\mathbf{X}^\top\widetilde{\mathbf{p}}_j/\sqrt{n\widetilde{\lambda}_j}$; and
+- $\lambda_j=\widetilde{\lambda}_j$ for the nonzero eigenvalues.
+
+Hence, the spectral decomposition of $\widetilde{\mathbf{S}}$ provides the same nonzero eigenvalues as $\mathbf{S}$, and the eigenvectors of the latter are obtained from $\mathbf{X}^\top\widetilde{\mathbf{p}}_j$ after normalization.
+
+**Suggested Exercise 31.**
+
+## 3.2 Eckart--Young--Mirsky Theorem
+
+Let the rank-$r$ matrix $\mathbf{X} \in \mathbb{R}^{n \times p}$ have SVD
+
+$$ \mathbf{X} = \mathbf{U}\mathbf{\Sigma}\mathbf{V}^\top, $$
+
+and let
+
+$$ \widehat{\mathbf{X}}^{(q)} = \sum_{j=1}^q \sigma_j \mathbf{u}_j \mathbf{v}_j^\top. $$
+
+Then the **Eckart--Young--Mirsky theorem** states that the truncated SVD solves
+
+$$ \widehat{\mathbf{X}}^{(q)} = \arg\min_{\operatorname{rank}(\mathbf{X}^*) \le q} \|\mathbf{X} - \mathbf{X}^*\|_2, $$
+
+and that
+
+$$ \left\|\mathbf{X} - \widehat{\mathbf{X}}^{(q)}\right\|_2 = \sigma_{q+1}. $$
+
+So the truncated SVD is the **best rank-$q$ approximation** of $\mathbf{X}$ in spectral norm.
+
+The error matrix is
+
+$$ \mathbf{X} - \widehat{\mathbf{X}}^{(q)} = \sum_{j=q+1}^r \sigma_j \mathbf{u}_j \mathbf{v}_j^\top. $$
+
+Its singular values are exactly the discarded singular values $$ \sigma_{q+1}, \dots, \sigma_r. $$
+
+Hence its spectral norm is
+
+$$ \|\mathbf{X} - \widehat{\mathbf{X}}^{(q)}\|_2 = \sigma_{q+1}. $$
+
+The theorem says that no other rank-$q$ matrix can produce a smaller spectral norm error.
+
+## 3.3 High-Dimensional Image Example
+
+### 3.3.1 Data
+
+A common application of PCA in high-dimensional settings is the analysis of image data, such as images of handwritten digits. One considers a collection of grayscale digit images and treats each image as one observation. If an image has height $h$ and width $w$, then it contains $h \times w$ pixels. After vectorization, one image becomes a point in $\mathbb{R}^{h \times w}$. Therefore, image data are naturally high-dimensional, with $p = hw$. For example, if the image size is $28 \times 28$, then each observation is a vector in $\mathbb{R}^{784}$, i.e. $p=784$.
+
+Each coordinate $j=1,\ldots,p$ corresponds to one pixel intensity, represented on a normalized grayscale scale between 0 and 1, where 0 corresponds to background and 1 to the highest intensity within the image.
+
+When PCA is applied to handwritten-digit images, the goal is usually to:
+
+1.  represent each image with a smaller number of coordinates,
+2.  identify the dominant modes of variation in the dataset,
+3.  reconstruct the images approximately from a few principal components,
+4.  and show that many images can be compressed without losing their main visual structure.
+
+In this context, the principal directions are often interpreted as **eigenimages**: they represent typical directions along which the images vary.
+
+For example, in a set of handwritten `8`s, the main modes of variation may correspond to:
+
+- slightly thicker or thinner loops,
+- small horizontal or vertical shifts,
+- changes in the relative size of the upper and lower loops,
+- or more global deformations of the digit.
+
+In this example, synthetic data are used: handwritten-style digit-8 images are generated from a smooth reference shape plus random perturbations. The perturbations affect the position, size, thickness, and pixel noise level. Such an exercise makes it possible to investigate PCA performance, since the results can be compared with the underlying reference shape, which is not observed in practice. The pedagogical motivation is similar to that of the MNIST dataset, a collection of 70,000 labeled $28 \times 28$ grayscale images of handwritten digits that is widely used as a benchmark for classification and dimensionality-reduction methods.
+
+The following function generates the synthetic images:
+
+``` r
+img_h <- 28
+img_w <- 28
+
+make_digit8 <- function(h = 28, w = 28,
+                        top_y = 10, bottom_y = 19,
+                        x0 = 14,
+                        a1 = 5.0, b1 = 4.0,
+                        a2 = 5.5, b2 = 4.5,
+                        thickness = 0.35,
+                        noise_sd = 0.05) {
+  xx <- matrix(rep(1:w, each = h), nrow = h, ncol = w)
+  yy <- matrix(rep(1:h, times = w), nrow = h, ncol = w)
+
+  top_loop <- exp(-((sqrt(((xx - x0)/a1)^2 + ((yy - top_y)/b1)^2) - 1)^2) / thickness)
+  bottom_loop <- exp(-((sqrt(((xx - x0)/a2)^2 + ((yy - bottom_y)/b2)^2) - 1)^2) / thickness)
+
+  bridge <- exp(-((xx - x0)^2) / 7 - ((yy - (top_y + bottom_y)/2)^2) / 15)
+
+  img <- pmax(top_loop, bottom_loop) + 0.35 * bridge
+  img <- img + matrix(rnorm(h * w, sd = noise_sd), nrow = h, ncol = w)
+  img <- pmax(img, 0)
+  img / max(img)
+}
+```
+
+The reference image is generated without noise as follows:
+
+``` r
+set.seed(1234)
+img_clean <- make_digit8(noise_sd = 0)
+
+image(
+  t(img_clean[img_h:1, ]),
+  col = gray.colors(256),
+  axes = FALSE,
+  main = "Noiseless reference digit 8"
+)
+```
+
+\[immagine\]
+
+The $n = 60$ observed images are noisy and slightly deformed versions of this reference shape:
+
+``` r
+n <- 60
+p <- img_h * img_w
+
+images <- vector("list", n)
+X <- matrix(0, nrow = n, ncol = p)
+
+set.seed(5678)
+for (i in 1:n) {
+  img <- make_digit8(
+    top_y = round(rnorm(1, mean = 10, sd = 0.7)),
+    bottom_y = round(rnorm(1, mean = 19, sd = 0.8)),
+    x0 = round(rnorm(1, mean = 14, sd = 0.7)),
+    a1 = rnorm(1, mean = 5.0, sd = 0.4),
+    b1 = rnorm(1, mean = 4.0, sd = 0.3),
+    a2 = rnorm(1, mean = 5.4, sd = 0.5),
+    b2 = rnorm(1, mean = 4.5, sd = 0.3),
+    thickness = abs(rnorm(1, mean = 0.34, sd = 0.05)),
+    noise_sd = 0.04
+  )
+  images[[i]] <- img
+  X[i, ] <- as.vector(img)
+}
+
+c(n = n, p = p)
+```
+
+    ##   n   p 
+    ##  60 784
+
+To make the comparison easier, we first display the reference image and then a few noisy observations generated from it.
+
+``` r
+par(mfrow = c(2, 4), mar = c(1, 1, 2, 1))
+image(t(img_clean[img_h:1, ]), col = gray.colors(256), axes = FALSE, main = "Reference (no noise)")
+for (i in 1:7) {
+  image(t(images[[i]][img_h:1, ]), col = gray.colors(256), axes = FALSE, main = paste("Image", i))
+}
+```
+
+\[immagine\]
+
+### 3.3.2 PCA
+
+We center the data matrix before applying PCA.
+
+``` r
+X_centered <- scale(X, center = TRUE, scale = FALSE)
+mu <- attr(X_centered, "scaled:center")
+
+dim(X_centered)
+```
+
+    ## [1]  60 784
+
+Since $n = 60 \ll p = 784$, we use the smaller empirical covariance matrix
+
+$$ \widetilde{\mathbf{S}} = \frac{1}{n}\mathbf{X}\mathbf{X}^\top \in \mathbb{R}^{60 \times 60} $$
+
+where $\mathbf{X}$ contains the 60 images by row, with the 784 pixel intensities in columns.
+
+We compute the spectral decomposition
+
+$$ \widetilde{\mathbf{S}}=\widetilde{\mathbf{P}}\widetilde{\mathbf{\Lambda}}\widetilde{\mathbf{P}}^\top. $$
+
+``` r
+S_small <- (1 / n) * X_centered %*% t(X_centered)
+eig_small <- eigen(S_small)
+
+lambda <- eig_small$values
+P_tilde <- eig_small$vectors
+
+head(lambda)
+```
+
+    ## [1] 2.6141122 1.9787963 1.3592923 0.7745353 0.5222881 0.3148945
+
+Keep only the positive eigenvalues:
+
+``` r
+tol <- 1e-8
+keep <- which(lambda > tol)
+
+lambda_pos <- lambda[keep]
+P_tilde_pos <- P_tilde[, keep, drop = FALSE]
+
+length(lambda_pos)
+```
+
+    ## [1] 59
+
+Recover the principal directions in pixel space using
+
+$$ \mathbf{p}_j = \frac{\mathbf{X}^\top \widetilde{\mathbf{p}}_j}{\sqrt{n\widetilde{\lambda}_j}}. $$
+
+Note that $\lambda_j = \widetilde{\lambda}_j$.
+
+``` r
+P <- sapply(seq_along(lambda_pos), function(j) {
+  as.vector(t(X_centered) %*% P_tilde_pos[, j] / sqrt(n * lambda_pos[j]))
+})
+
+dim(P)
+```
+
+    ## [1] 784  59
+
+We then produce a scree plot:
+
+``` r
+plot(
+  lambda_pos,
+  type = "b",
+  pch = 19,
+  xlab = "Component",
+  ylab = "Eigenvalue",
+  main = "Scree plot for the synthetic digit-8 images"
+)
+```
+
+\[immagine\]
+
+The first few eigenvalues should dominate because the images vary around a small number of latent shape changes.
+
+### 3.3.3 Eigenimages
+
+In PCA, each principal direction is a vector
+
+$$ \mathbf{p}_j \in \mathbb{R}^p. $$
+
+Since one image is also represented as a vector in $\mathbb{R}^p$, we can reshape $\mathbf{p}_j$ back into a $28 \times 28$ array and display it as an image, i.e. an eigenimage. Note that an eigenimage is not an average image: It is a direction of variation around the mean image.
+
+- positive values indicate pixels that tend to increase together when moving in that principal direction,
+- negative values indicate pixels that tend to decrease,
+- large absolute values indicate the pixels most involved in that mode of variation.
+
+When the latent score of an image on component $j$ is large and positive, its reconstruction moves from the mean image in the direction of that eigenimage. When the latent score is negative, it moves in the opposite direction. For interpretation, a grayscale display can represent the signs and magnitudes of the entries of $\mathbf{p}_j$:
+
+- lighter values correspond to one sign,
+- darker values correspond to the opposite sign,
+- values near the middle of the scale correspond to small weights.
+
+The symmetric color scale is centered around zero:
+
+``` r
+eig_mats <- lapply(1:6, function(j) {
+  matrix(P[, j], nrow = img_h, ncol = img_w)
+})
+eig_lim <- max(abs(unlist(eig_mats)))
+eig_lim
+```
+
+    ## [1] 0.1590836
+
+We display the first six eigenimages:
+
+``` r
+layout(matrix(c(1,2,3,7,
+                4,5,6,7), nrow = 2, byrow = TRUE), widths = c(1,1,1,0.45))
+
+op <- par(no.readonly = TRUE)
+
+for (j in 1:6) {
+  par(mar = c(1, 1, 2, 1))
+  image(
+    t(eig_mats[[j]][img_h:1, ]),
+    col = gray.colors(256),
+    zlim = c(-eig_lim, eig_lim),
+    axes = FALSE,
+    main = paste("PC", j)
+  )
+}
+
+par(mar = c(3, 2, 2, 4))
+plot.new()
+plot.window(xlim = c(0, 1), ylim = c(-eig_lim, eig_lim))
+
+cols <- gray.colors(256)
+breaks <- seq(-eig_lim, eig_lim, length.out = length(cols) + 1)
+
+for (i in seq_along(cols)) {
+  rect(0, breaks[i], 1, breaks[i + 1], col = cols[i], border = NA)
+}
+
+axis(4, at = pretty(c(-eig_lim, eig_lim)))
+mtext("Weight in the eigenimage", side = 4, line = 2)
+box()
+```
+
+\[immagine\]
+
+``` r
+par(op)
+layout(1)
+```
+
+These eigenimages are not always easy to interpret directly, since they represent directions of variation rather than ordinary observed images. Their interpretation should therefore be based on how they deform the mean image.
+
+### 3.3.4 Interpretation of the Principal Directions
+
+A better way to interpret a principal direction is to look at:
+
+- the **mean image**,
+- the image obtained by moving in the **positive** direction,
+- and the image obtained by moving in the **negative** direction.
+
+For $\mathbf{p}_j$, a natural display is
+
+$$ \overline{\mathbf{x}} \pm 2\sqrt{\lambda_j}\,\mathbf{p}_j, $$
+
+because $\lambda_j$ is the variance along that component.
+
+``` r
+mean_img <- matrix(mu, nrow = img_h, ncol = img_w)
+
+par(mfrow = c(6, 3), mar = c(1, 1, 2, 1))
+for (j in 1:6) {
+  pj <- matrix(P[, j], nrow = img_h, ncol = img_w)
+  minus_img <- mean_img - 2 * sqrt(lambda_pos[j]) * pj
+  plus_img  <- mean_img + 2 * sqrt(lambda_pos[j]) * pj
+
+  minus_display <- pmin(pmax(minus_img, 0), 1)
+  mean_display  <- pmin(pmax(mean_img, 0), 1)
+  plus_display  <- pmin(pmax(plus_img, 0), 1)
+
+  image(t(minus_display[img_h:1, ]), col = gray.colors(256), zlim = c(0, 1), axes = FALSE,
+        main = paste("PC", j, ": mean - 2 sd"))
+  image(t(mean_display[img_h:1, ]), col = gray.colors(256), zlim = c(0, 1), axes = FALSE,
+        main = "Mean image")
+  image(t(plus_display[img_h:1, ]), col = gray.colors(256), zlim = c(0, 1), axes = FALSE,
+        main = paste("PC", j, ": mean + 2 sd"))
+}
+```
+
+\[immagine\]
+
+The common display range $[0,1]$ makes the three images directly comparable. Some coordinates of the theoretical endpoints may nevertheless lie outside $[0,1]$; the displayed values are clipped to the grayscale range. Thus, the endpoints are best understood as theoretical points in PCA space rather than necessarily valid pixel images.
+
+Because this is a synthetic digit-8 generator, the sign of each eigenvector is arbitrary, and the order of the later components may change when the simulation changes. For that reason, the safest interpretation is always based on the plots $$ \overline{\mathbf{x}} \pm 2\sqrt{\lambda_j}\,\mathbf{p}_j. $$
+
+With the fixed seed used here, the first six principal directions can be interpreted qualitatively as follows:
+
+1.  **PC1:** horizontal position: primarily a left--right translation of the entire digit.
+2.  **PC2:** vertical position: mainly an upward--downward displacement of the digit, with a somewhat stronger effect on the lower loop.
+3.  **PC3:** vertical separation of the loops: changes the distance between the upper and lower loops; one endpoint brings them closer together, whereas the other separates them.
+4.  **PC4:** overall width and stroke thickness: combines a widening or narrowing of both loops with a change in the apparent thickness of the digit.
+5.  **PC5:** relative loop width: contrasts the widths of the two loops; as one loop becomes wider, the other becomes narrower.
+6.  **PC6:** weaker mixed deformation: captures a smaller residual pattern involving localized changes in loop shape and the central connection. It does not correspond as clearly to a single parameter of the generator.
+
+So the first six eigenvectors should be interpreted as the first six dominant **shape variation patterns** in this particular simulated dataset, not as fixed universal features of all handwritten 8s.
+
+### 3.3.5 PCA Latent Scores
+
+The PCA Latent scores are
+
+$$ \mathbf{Z} = \mathbf{X}_{\mathrm{centered}}\mathbf{P}. $$
+
+``` r
+Z <- X_centered %*% P
+dim(Z)
+```
+
+    ## [1] 60 59
+
+``` r
+head(Z[, 1:3])
+```
+
+    ##            [,1]       [,2]       [,3]
+    ## [1,] -0.3791712  0.4870712  0.6761959
+    ## [2,] -2.5222515  0.7516631  1.5389542
+    ## [3,]  2.1744691  1.5100075 -0.6520721
+    ## [4,] -0.6245734  0.6638917  1.5949328
+    ## [5,] -3.2489200 -0.9588561 -1.1084540
+    ## [6,]  1.9604335  2.1748880 -0.8159656
+
+One can produce a scatterplot of the latent scores on the first two dimensions:
+
+``` r
+plot(
+  Z[, 1], Z[, 2],
+  pch = 19,
+  col = "steelblue",
+  xlab = "PC1",
+  ylab = "PC2",
+  main = "Synthetic digit-8 images in the first two PCA coordinates"
+)
+abline(h = 0, v = 0, lty = 2, col = "gray70")
+```
+
+\[immagine\]
+
+The exact visual pattern of this latent score plot depends on the simulated sample and therefore on the random seed. With the seed fixed in this module, the interpretation should be tied to the current figures rather than to a generic description reused from another simulation.
+
+With a fixed seed, the scatterplot may display some visible internal structure, for example a few denser regions or an apparent grouping of points. This does not mean that the images come from predefined classes. Rather, it reflects the way the synthetic images were generated.
+
+Each image is a combination of a few latent shape variations:
+
+- horizontal position,
+- vertical position,
+- relative size of the upper and lower loops,
+- thickness,
+- and pixel noise.
+
+Because PCA keeps the two dominant directions of variation, images with similar values of these latent shape features are mapped to nearby latent score coordinates. As a result, the scatterplot can display denser regions, elongated subclouds, or an apparent grouping structure.
+
+### 3.3.6 Reconstruction with Different Numbers of Principal Components
+
+We now reconstruct one image with different values of `q`.
+
+``` r
+reconstruct_image <- function(x, P, q, mu) {
+  Pq <- P[, 1:q, drop = FALSE]
+  zq <- (x - mu) %*% Pq
+  xhat <- zq %*% t(Pq) + mu
+  matrix(as.vector(xhat), nrow = img_h, ncol = img_w)
+}
+
+idx <- 1
+orig <- matrix(X[idx, ], nrow = img_h, ncol = img_w)
+
+rec1   <- reconstruct_image(X[idx, ], P, q = 1,  mu = mu)
+rec5   <- reconstruct_image(X[idx, ], P, q = 5,  mu = mu)
+rec15  <- reconstruct_image(X[idx, ], P, q = 15, mu = mu)
+rec30  <- reconstruct_image(X[idx, ], P, q = 30, mu = mu)
+```
+
+``` r
+par(mfrow = c(2, 3), mar = c(1, 1, 2, 1))
+image(t(orig[img_h:1, ]),  col = gray.colors(256), zlim = c(0, 1), axes = FALSE, main = "Original")
+image(t(rec1[img_h:1, ]),  col = gray.colors(256), zlim = c(0, 1), axes = FALSE, main = "q = 1")
+image(t(rec5[img_h:1, ]),  col = gray.colors(256), zlim = c(0, 1), axes = FALSE, main = "q = 5")
+image(t(rec15[img_h:1, ]), col = gray.colors(256), zlim = c(0, 1), axes = FALSE, main = "q = 15")
+image(t(rec30[img_h:1, ]), col = gray.colors(256), zlim = c(0, 1), axes = FALSE, main = "q = 30")
+plot.new()
+text(0.5, 0.6, "", cex = 1.2)
+text(0.5, 0.4, "", cex = 1.2)
+```
+
+\[immagine\]
+
+We now compute the mean squared reconstruction error as a function of $q$.
+
+``` r
+qs <- c(1, 2, 5, 10, 15, 20, 30, 40)
+
+recon_error <- sapply(qs, function(q) {
+  Pq <- P[, 1:q, drop = FALSE]
+  Zq <- X_centered %*% Pq
+  Xhat <- Zq %*% t(Pq)
+  mean(rowSums((X_centered - Xhat)^2))
+})
+
+data.frame(q = qs, reconstruction_error = recon_error)
+```
+
+    ##    q reconstruction_error
+    ## 1  1            6.6291087
+    ## 2  2            4.6503124
+    ## 3  5            1.9941966
+    ## 4 10            0.9878614
+    ## 5 15            0.6067231
+    ## 6 20            0.4297861
+    ## 7 30            0.2562209
+    ## 8 40            0.1441428
+
+``` r
+plot(
+  qs, recon_error,
+  type = "b",
+  pch = 19,
+  xlab = "Number of principal components q",
+  ylab = "Average reconstruction error",
+  main = "Reconstruction error decreases with q"
+)
+```
+
+\[immagine\]

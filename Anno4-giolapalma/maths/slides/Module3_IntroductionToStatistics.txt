@@ -1,0 +1,2172 @@
+# Module 3: Introduction to Statistics
+
+#### Maria-Pia Victoria-Feser
+
+#### Autumn Semester 2026
+
+- [1 Introduction](#introduction)
+  - [1.1 Module Roadmap](#module-roadmap)
+  - [1.2 Notation](#notation)
+- [2 Introduction to Probability Theory for Statistics](#introduction-to-probability-theory-for-statistics)
+  - [2.1 The Outcome Space and Events](#the-outcome-space-and-events)
+    - [2.1.1 Outcome Space](#outcome-space)
+    - [2.1.2 Events](#events)
+    - [2.1.3 Venn Diagrams](#venn-diagrams)
+    - [2.1.4 Basic Set Identities for Events](#basic-set-identities-for-events)
+  - [2.2 Probability Function](#probability-function)
+    - [2.2.1 Conditional Probability](#conditional-probability)
+    - [2.2.2 Example: A Medical Screening Context](#example-a-medical-screening-context)
+    - [2.2.3 Law of Total Probability](#law-of-total-probability)
+    - [2.2.4 Independence of Events](#independence-of-events)
+  - [2.3 Random Variables](#random-variables)
+    - [2.3.1 Discrete and Continuous Cases](#discrete-and-continuous-cases)
+  - [2.4 Joint Distributions](#joint-distributions)
+  - [2.5 Empirical Distribution Function](#empirical-distribution-function)
+  - [2.6 Moments](#moments)
+    - [2.6.1 Expectation](#expectation)
+    - [2.6.2 Variance](#variance)
+    - [2.6.3 Discrete Case](#discrete-case)
+    - [2.6.4 Properties](#properties)
+    - [2.6.5 Covariance](#covariance)
+    - [2.6.6 Correlation](#correlation)
+    - [2.6.7 Empirical Moments](#empirical-moments)
+  - [2.7 Quantiles](#quantiles)
+  - [2.8 Some Well-Known Probability Distributions](#some-well-known-probability-distributions)
+    - [2.8.1 Bernoulli Distribution](#bernoulli-distribution)
+    - [2.8.2 Binomial Distribution](#binomial-distribution)
+    - [2.8.3 Uniform Distribution](#uniform-distribution)
+    - [2.8.4 Gaussian Distribution](#gaussian-distribution)
+    - [2.8.5 Exponential Distribution](#exponential-distribution)
+    - [2.8.6 Distribution of Combinations of Gaussian Random Variables](#distribution-of-combinations-of-gaussian-random-variables)
+    - [2.8.7 Multivariate Gaussian Distribution](#multivariate-gaussian-distribution)
+- [3 Estimation](#estimation)
+  - [3.1 Plug-in Estimators](#plug-in-estimators)
+  - [3.2 Maximum Likelihood Estimation](#maximum-likelihood-estimation)
+  - [3.3 Properties of Estimators](#properties-of-estimators)
+    - [3.3.1 Bias](#bias)
+    - [3.3.2 Variance of an Estimator](#variance-of-an-estimator)
+    - [3.3.3 Mean Squared Error](#mean-squared-error)
+    - [3.3.4 Consistency](#consistency)
+    - [3.3.5 Asymptotic Normality](#asymptotic-normality)
+    - [3.3.6 Monte Carlo Study](#monte-carlo-study)
+- [4 Interval Estimation](#interval-estimation)
+  - [4.1 Construction of Confidence Intervals](#construction-of-confidence-intervals)
+    - [4.1.1 Example with Asymptotic CDF](#example-with-asymptotic-cdf)
+    - [4.1.2 Example with Exact CDF](#example-with-exact-cdf)
+  - [4.2 Bootstrap Confidence Intervals](#bootstrap-confidence-intervals)
+  - [4.3 Coverage](#coverage)
+
+# 1 Introduction
+
+## 1.1 Module Roadmap
+
+This module introduces the statistical viewpoint that will be used throughout the rest of the course.
+
+The main themes are:
+
+1.  **Probability distributions as data generating processes**: a model is not only a formula, but also a mechanism that can generate observations;
+2.  **Basic probability functions and standard distributions**: a few key distributions are introduced and interpreted from a generative point of view;
+3.  **Population quantities, empirical distributions, and empirical moments**: theoretical moments are linked to their sample analogues;
+4.  **Estimation**: parameters of a model are learned from data through plug-in ideas, likelihood, and optimization;
+5.  **Monte Carlo simulation**: repeated simulation allows us to study the behavior of statistical procedures;
+6.  **Properties of estimators and interval estimation**: uncertainty is quantified through sampling distributions and confidence intervals.
+
+The goal is that students understand the relation between:
+
+- an assumed probability model,
+- the data generated from that model,
+- the empirical quantities computed from the data,
+- the estimators built from those quantities,
+- and the inferential or computational questions built on top of them.
+
+## 1.2 Notation
+
+Throughout the module, we use the following notation:
+
+- **bold lowercase letters** such as $\mathbf{x}$ denote vectors;
+- **bold uppercase letters** such as $\mathbf{X}$ denote matrices;
+- $X$ denotes a random variable and $x$ a realization;
+- $\mathbf{X}$ may denote a random vector, and $\mathbf{x}$ one observed value of that vector;
+- $\mathbb{E}[X]$ denotes the expectation of $X$;
+- $\operatorname{var}(X)$ denotes the variance of $X$;
+- $\mathbf{\Sigma}$ denotes a population covariance matrix;
+- $\mathbf{S}$ denotes an empirical covariance matrix;
+- $\overline{X}$ denotes a sample mean as a random quantity, $\overline{x}$ its observed value, and $\overline{\mathbf{x}}$ an empirical mean vector.
+
+# 2 Introduction to Probability Theory for Statistics
+
+Probability theory provides the foundation for statistics. A probability model is built from the following elements:
+
+- an **outcome space**;
+- **events**;
+- a **probability function**, which can take several forms;
+- **random variables**.
+
+## 2.1 The Outcome Space and Events
+
+### 2.1.1 Outcome Space
+
+A probabilistic model starts with a set of all possible outcomes, usually denoted by
+
+$$ \Omega. $$
+
+This set is called the **outcome space** (or **sample space**). When a random experiment is performed, its outcome, or **realization**, is an element $\omega\in\Omega$.
+
+Examples:
+
+- for one coin toss, $$ \Omega=\{\mathrm{H},\mathrm{T}\}; $$
+- for one die roll, $$ \Omega=\{1,2,3,4,5,6\}; $$
+- for a nonnegative lifetime measurement, $$ \Omega=[0,\infty). $$
+
+### 2.1.2 Events
+
+An **event** is a subset of the outcome space. Thus, an event $A$ satisfies
+
+$$ A\subseteq\Omega. $$
+
+The event occurs when the observed outcome belongs to that subset. For example, for one die roll, the event "the result is even" is
+
+$$ A=\{2,4,6\}\subseteq\Omega. $$
+
+The outcome $4$ makes $A$ occur because $4\in A$, whereas the outcome $3$ does not because $3\notin A$.
+
+The **intersection** of two events $A$ and $B$, denoted by $A\cap B$, is the event that both $A$ and $B$ occur:
+
+$$ A\cap B =\{\omega\in\Omega:\omega\in A\text{ and }\omega\in B\}. $$
+
+For one die roll, let
+
+$$ A=\{2,4,6\} \quad\text{and}\quad B=\{4,5,6\}, $$
+
+where $A$ is the event "the result is even" and $B$ is the event "the result is at least 4." Their intersection is
+
+$$ A\cap B=\{4,6\}. $$
+
+Therefore, $A\cap B$ occurs only when the result is both even and at least 4.
+
+Two events are **disjoint** or **mutually exclusive** if they cannot occur simultaneously, that is,
+
+$$ A\cap B=\varnothing. $$
+
+For example, in one die roll, "the result is even" and "the result is odd" are mutually exclusive events.
+
+The **union** of two events $A$ and $B$, denoted by $A\cup B$, is the event that $A$, $B$, or both occur:
+
+$$ A\cup B =\{\omega\in\Omega:\omega\in A\text{ or }\omega\in B\}. $$
+
+Here, "or" is inclusive: an outcome in both events also belongs to their union. Using the die-roll events above,
+
+$$ A\cup B=\{2,4,5,6\}. $$
+
+Thus, $A\cup B$ occurs when the result is even, at least 4, or both.
+
+The definitions extend to any finite collection of events $A_1,\ldots,A_m$:
+
+$$ \bigcap_{i=1}^{m}A_i =\{\omega\in\Omega:\omega\in A_i\text{ for every }i\}, $$
+
+and
+
+$$ \bigcup_{i=1}^{m}A_i =\{\omega\in\Omega:\omega\in A_i\text{ for at least one }i\}. $$
+
+The **complement** of an event $A$, denoted by $A^c$, is the event that $A$ does not occur:
+
+$$ A^c=\Omega\setminus A =\{\omega\in\Omega:\omega\notin A\}. $$
+
+For the event $A=\{2,4,6\}$ in the die-roll example,
+
+$$ A^c=\{1,3,5\}, $$
+
+which is the event "the result is odd."
+
+### 2.1.3 Venn Diagrams
+
+A **Venn diagram** represents the outcome space $\Omega$ by a rectangle and events by regions inside that rectangle. Overlapping regions represent outcomes that belong to several events. For example, the overlap of the regions representing $A$ and $B$ corresponds to $A\cap B$.
+
+Venn diagrams are useful for visualizing relations between events, but they are schematic: the sizes and shapes of the regions do not represent probabilities unless this is stated explicitly.
+
+For three labelled events $A$, $B$, and $C$, there are three pairwise intersections:
+
+$$ A\cap B,\qquad A\cap C,\qquad B\cap C. $$
+
+Each pair may be disjoint or non-disjoint. This gives $2^3=8$ possible patterns of pairwise intersection. However, when all three pairwise intersections are nonempty, the common intersection $A\cap B\cap C$ may itself be empty or nonempty. Consequently, nine configurations must be distinguished.
+
+``` r
+draw_circle <- function(x, y, radius, border, fill, label, label_x, label_y) {
+  theta <- seq(0, 2 * pi, length.out = 300)
+  polygon(
+    x + radius * cos(theta),
+    y + radius * sin(theta),
+    border = border,
+    col = fill,
+    lwd = 2
+  )
+  text(label_x, label_y, label, col = border, font = 2, cex = 1.1)
+}
+
+draw_configuration <- function(centres, radii, main) {
+  plot.new()
+  plot.window(xlim = c(-2.15, 2.15), ylim = c(-1.65, 1.65), asp = 1)
+  rect(-2.05, -1.55, 2.05, 1.55, border = "grey35", lwd = 1.4)
+  text(-1.88, 1.35, expression(Omega), cex = 1.05)
+
+  event_colours <- c("#2C7FB8", "#D95F0E", "#31A354")
+  event_fills <- grDevices::adjustcolor(event_colours, alpha.f = 0.20)
+
+  for (i in seq_len(3)) {
+    label_angle <- c(145, 35, 90)[i] * pi / 180
+    label_x <- centres[i, 1] + 0.68 * radii[i] * cos(label_angle)
+    label_y <- centres[i, 2] + 0.68 * radii[i] * sin(label_angle)
+    draw_circle(
+      centres[i, 1], centres[i, 2], radii[i],
+      event_colours[i], event_fills[i],
+      c("A", "B", "C")[i], label_x, label_y
+    )
+  }
+
+  title(main = main, line = 1.1, cex.main = 0.88)
+}
+
+old_par <- par(
+  mfrow = c(3, 3),
+  mar = c(1.1, 0.7, 2.5, 0.7),
+  oma = c(0, 0, 0, 0)
+)
+
+r <- c(0.58, 0.58, 0.58)
+
+# 1. No pair overlaps.
+draw_configuration(
+  rbind(c(-1.25, 0), c(0, 0), c(1.25, 0)), r,
+  "1. All three pairs are disjoint"
+)
+
+# 2--4. Exactly one pair overlaps.
+draw_configuration(
+  rbind(c(-0.48, 0), c(0.22, 0), c(1.45, 0)), r,
+  "2. Only A and B overlap"
+)
+draw_configuration(
+  rbind(c(-0.48, 0), c(1.45, 0), c(0.22, 0)), r,
+  "3. Only A and C overlap"
+)
+draw_configuration(
+  rbind(c(1.45, 0), c(-0.48, 0), c(0.22, 0)), r,
+  "4. Only B and C overlap"
+)
+
+# 5--7. Exactly two pairs overlap.
+draw_configuration(
+  rbind(c(0, 0), c(-0.77, 0), c(0.77, 0)), c(0.70, 0.62, 0.62),
+  "5. AB and AC overlap"
+)
+draw_configuration(
+  rbind(c(-0.77, 0), c(0, 0), c(0.77, 0)), c(0.62, 0.70, 0.62),
+  "6. AB and BC overlap"
+)
+draw_configuration(
+  rbind(c(-0.77, 0), c(0.77, 0), c(0, 0)), c(0.62, 0.62, 0.70),
+  "7. AC and BC overlap"
+)
+
+# 8--9. Every pair overlaps; the triple intersection may be empty or nonempty.
+triangle_centres <- rbind(
+  c(-0.52, -0.30),
+  c(0.52, -0.30),
+  c(0, 0.60)
+)
+draw_configuration(
+  triangle_centres, rep(0.57, 3),
+  "8. Every pair overlaps; no triple overlap"
+)
+draw_configuration(
+  triangle_centres, rep(0.78, 3),
+  "9. A common triple overlap"
+)
+```
+
+\[immagine\]
+
+The nine labelled configurations of disjointness and overlap for three events.
+
+``` r
+par(old_par)
+```
+
+### 2.1.4 Basic Set Identities for Events
+
+The following identities hold for events $A$, $B$, and $C$:
+
+- complement laws: $A\cup A^c=\Omega$ and $A\cap A^c=\varnothing$;
+- commutative laws: $A\cap B=B\cap A$ and $A\cup B=B\cup A$;
+- distributive laws: $A\cap(B\cup C)=(A\cap B)\cup(A\cap C)$ and $A\cup(B\cap C)=(A\cup B)\cap(A\cup C)$;
+- De Morgan's laws: $(A\cup B)^c=A^c\cap B^c$ and $(A\cap B)^c=A^c\cup B^c$.
+
+**Suggested Exercise 32.**
+
+## 2.2 Probability Function
+
+A probability function assigns numbers in $[0,1]$ to events. The numbers are called **probabilities**. Formally, a probability function is a mapping
+
+$$ \mathbb{P}:\mathcal{A}\to [0,1], $$
+
+where $\mathcal{A}$ is a collection of events and $\mathbb{P}(A)$ is the probability of event $A$. It satisfies the following properties:
+
+- $0\leq \mathbb{P}(A)\leq 1$ for all $A\in\mathcal{A}$;
+- $\mathbb{P}(\Omega)=1$;
+- $\mathbb P(A\cup B)=\mathbb P(A)+\mathbb P(B)-\mathbb P(A\cap B)$;
+- for disjoint events $A_1,A_2,\dots\in\mathcal{A}$, $\mathbb{P}(\bigcup_{j\ge 1} A_j)=\sum_{j\ge 1}\mathbb{P}(A_j)$.
+
+### 2.2.1 Conditional Probability
+
+Let $A$ and $B$ be events with $\mathbb{P}(B)>0$. The **conditional probability** of $A$ given $B$ is
+
+$$ \mathbb{P}(A\mid B) = \frac{\mathbb{P}(A\cap B)}{\mathbb{P}(B)}. $$
+
+Conditioning restricts attention to situations in which $B$ has occurred. Rearranging the definition gives the multiplication rule
+
+$$ \mathbb{P}(A\cap B) = \mathbb{P}(A\mid B)\mathbb{P}(B). $$
+
+If both $\mathbb{P}(A)>0$ and $\mathbb{P}(B)>0$, then
+
+$$ \mathbb{P}(A\mid B)\mathbb{P}(B) = \mathbb{P}(B\mid A)\mathbb{P}(A). $$
+
+This equality leads to the **Bayes' rule**:
+
+$$ \mathbb{P}(A\mid B) = \frac{\mathbb{P}(B\mid A)\mathbb{P}(A)}{\mathbb{P}(B)}. $$
+
+**Suggested Exercise 33.**
+
+### 2.2.2 Example: A Medical Screening Context
+
+Suppose that $D$ denotes the event that an individual has a condition and $T$ denotes a positive screening result. Assume
+
+$$ \mathbb{P}(D)=0.02, \qquad \mathbb{P}(T\mid D)=0.95, \qquad \mathbb{P}(T\mid D^c)=0.05. $$
+
+The probability of a positive result is obtained using the law of total probability:
+
+$$ \mathbb{P}(T) = \mathbb{P}(T\mid D)\mathbb{P}(D) + \mathbb{P}(T\mid D^c)\mathbb{P}(D^c) =0.95\cdot0.02+0.05\cdot0.98 = 0.068 $$
+
+``` r
+p_D <- 0.02
+p_T_given_D <- 0.95
+p_T_given_not_D <- 0.05
+
+p_T <- p_T_given_D * p_D + p_T_given_not_D * (1 - p_D)
+p_T
+```
+
+    ## [1] 0.068
+
+Using Bayes' rule, we have that
+
+$$ \mathbb{P}(D\mid T) = \frac{\mathbb{P}(T\mid D)\mathbb{P}(D)}{\mathbb{P}(T)}, $$ which is more informative. Indeed, $\mathbb{P}(D\mid T)$ is the probability of having the the condition $D$ given that the test is positive (i.e., $T$ is true).
+
+``` r
+p_D_given_T <- p_T_given_D * p_D / p_T
+p_D_given_T
+```
+
+    ## [1] 0.2794118
+
+The calculation illustrates that $\mathbb{P}(T\mid D)$ and $\mathbb{P}(D\mid T)$ are different quantities.
+
+### 2.2.3 Law of Total Probability
+
+If $B_1,\ldots,B_K$ form a partition of the outcome space, then
+
+$$ \mathbb{P}(A) = \sum_{k=1}^K \mathbb{P}(A\mid B_k)\mathbb{P}(B_k). $$
+
+The events $B_k$ must be mutually disjoint and satisfy $\bigcup_{k=1}^K B_k=\Omega$.
+
+### 2.2.4 Independence of Events
+
+Two events $A$ and $B$ are **independent** if
+
+$$ \mathbb{P}(A\cap B) = \mathbb{P}(A)\mathbb{P}(B). $$
+
+When $\mathbb{P}(B)>0$, this is equivalent to
+
+$$ \mathbb{P}(A\mid B)=\mathbb{P}(A). $$
+
+Thus, learning that $B$ occurred does not change the probability of $A$.
+
+Independence should not be confused with mutual exclusivity. If two events with positive probability are mutually exclusive, then they cannot be independent because their intersection has probability zero.
+
+**Suggested Exercise 34.**
+
+## 2.3 Random Variables
+
+A random variable can be viewed as a function of outcomes. It can be written as a mapping
+
+$$ X:\Omega \to \mathbb{S}_X. $$
+
+The set $\mathbb{S}_X$ contains the values that the random variable may take. Thus, a random variable maps an outcome $\omega\in\Omega$ to a value $X(\omega)\in \mathbb{S}$.
+
+For example, when rolling a die, we have $\Omega=\{1,2,3,4,5,6\}$. Now define:
+
+- $X(\omega)=\omega$, then $X$ is the random variable "value of the die" and $\mathbb{S}=\Omega$;
+- Let $$ Y(\omega)= \begin{cases} 1 & \text{if } \omega \text{ is even},\\ 0 & \text{if } \omega \text{ is odd}, \end{cases} $$ then $Y$ records only whether the result is even and $\mathbb{S}=\{0,1\}$.
+
+For a random variable $X$ and a set $B$ of possible values, the probability induced by $X$ is
+
+$$ \mathbb{P}(X\in B) = \mathbb{P}\bigl(\{\omega\in\Omega : X(\omega)\in B\}\bigr). $$
+
+### 2.3.1 Discrete and Continuous Cases
+
+In most applications, the set $\mathbb{S}_X$ is
+
+- **discrete and finite**, e.g. $\mathbb{S}=\{1,2,3,4,5,6\}$;
+- **discrete and countably infinite**, e.g. $\mathbb{S}=\{0,1,2,3,\ldots\}$;
+- **continuous**, e.g. $\mathbb{S}=\mathbb{R}_+$.
+
+The set $\mathbb{S}_X$ is called the **support** of the random variable $X$.
+
+In these cases, one can define the **cumulative distribution function** (CDF) of a random variable $X$ as
+
+$$ F_X:\mathbb{S}_X\to[0,1], $$
+
+with
+
+$$ F_X(x)=\mathbb{P}(X\le x), x\in\mathbb{S}_X. $$
+
+Conventionally, one writes
+
+$$ X\sim F_X, $$
+
+where "$\sim$" means **is distributed according to**.
+
+A distribution satisfies:
+
+- $0\le F_X(x)\le 1$,
+- it is nondecreasing,
+- $\lim_{x\to \inf\mathbb{S}_X}F_X(x)=0$,
+- $\lim_{x\to \sup\mathbb{S}_X}F_X(x)=1$.
+
+If $X$ takes discrete or countably many values, one often uses a probability mass function
+
+$$ \mathbb{P}(X=x), $$
+
+and the distribution is obtained as
+
+$$ F_X(x)=\sum_{t\le x} \mathbb{P}(X=t). $$
+
+If $X$ is continuous, then $\mathbb{P}(X=x)=0$ for every individual value $x\in\mathbb{S}_X$. Its distribution can instead be described by a **density** $f_X$, such that
+
+$$ \mathbb{P}(a\le X\le b)=\int_a^b f_X(x)\,dx. $$
+
+The CDF is
+
+$$ F_X(x)=\int_{\inf\mathbb{S}_X}^x f_X(t)\,dt. $$
+
+One can see that
+
+$$ \mathbb{P}(X=a)=\int_a^a f_X(t)\,dt=0. $$
+
+since a singleton has length zero.
+
+Since a (absolutely) continuous random variable assigns probability zero to every individual point in the support, including or excluding either endpoint does not change the probability, i.e.,
+
+$$ \mathbb{P}(a<X<b) =\mathbb{P}(a\le X<b) =\mathbb{P}(a<X\le b) =\mathbb{P}(a\le X\le b). $$
+
+**Suggested Exercise 35.**
+
+## 2.4 Joint Distributions
+
+A pair of random variables $(X,Y)$ is described by a **joint distribution**. For continuous variables, the joint density satisfies
+
+$$ f_{X,Y}(x,y)\geq 0, \qquad \int_{\inf\mathbb{S_Y}}^{\sup\mathbb{S_Y}}\int_{\inf\mathbb{S_X}}^{\sup\mathbb{S_x}} f_{X,Y}(x,y)\,dx\,dy =\int_{-\infty}^{\infty}\int_{-\infty}^{\infty} f_{X,Y}(x,y)\,dx\,dy =1. $$
+
+Indeed, $f_{X,Y}(x,y)=0$ for $x\notin\mathbb{S}_X$ or $y\notin\mathbb{S}_Y$.
+
+Probabilities of regions are obtained by integration. For example,
+
+$$ \mathbb{P}(X\leq a,Y\leq b) = \int_{-\infty}^{a}\int_{-\infty}^{b} f_{X,Y}(x,y)\,dy\,dx. $$
+
+The **marginal density** of $X$ is obtained by integrating the joint density over all possible values of $Y$:
+
+$$ f_X(x) = \int_{-\infty}^{\infty}f_{X,Y}(x,y)\,dy. $$
+
+Similarly,
+
+$$ f_Y(y) = \int_{-\infty}^{\infty}f_{X,Y}(x,y)\,dx. $$
+
+For discrete random variables, the corresponding operation is summation rather than integration.
+
+For continuous random variables and $f_X(x)>0$, the **conditional density** of $Y$ given $X=x$ is
+
+$$ f_{Y\mid X}(y\mid x) = \frac{f_{X,Y}(x,y)}{f_X(x)}. $$
+
+Random variables $X$ and $Y$ are **independent** if their joint distribution, in the continuous case, is
+
+$$ f_{X,Y}(x,y)=f_X(x)f_Y(y) $$
+
+for all relevant $x$ and $y$. In the discrete case,
+
+$$ \mathbb{P}(X=x,Y=y) = \mathbb{P}(X=x)\mathbb{P}(Y=y). $$
+
+**Suggested Exercise 36.**
+
+## 2.5 Empirical Distribution Function
+
+A distribution $F_X$, through its random variable $X$, can be interpreted as a **data generating process**. In other words, repeated draws of $X$ generate observations distributed according to $F_X$.
+
+For example, a **random sample**
+
+$$ X_1,\dots,X_n $$
+
+represent repeated copies of the same random variable $X$. They are often assumed to be **independent and identically distributed (i.i.d.)**. They are used to study properties of sample quantities such as means and estimators.
+
+On the other hand, we have **observed data**
+
+$$ x_1,\dots,x_n, $$
+
+which are realizations of these random variables. Note that $\{x_1,\dots,x_n\}\subset \mathbb{S}_X$, so that, in statistical terms, $\{x_1,\dots,x_n\}$ is called the sample.
+
+Once data $x_1,\dots,x_n$ are observed, one can construct the **Empirical Distribution Function** (EDF)
+
+$$ F^{(n)}:\mathbb{S}\to[0,1], $$
+
+$$ F^{(n)}(x)=\frac{1}{n}\sum_{i=1}^n \mathbf{1}(x_i\le x), $$
+
+with
+
+$$ \mathbf{1}(A)=\begin{cases} 1 & \text{if } A \text{ is true},\\ 0 & \text{if } A \text{ is false}, \end{cases}. $$
+
+The EDF plays, for the observed sample, the same role that $F_X$ plays for the population.
+
+**Suggested Exercise 37.**
+
+**Empirical distribution in `R`**
+
+``` r
+x <- rnorm(100, mean = 0, sd = 1)
+Fn <- ecdf(x)
+
+plot(Fn, main = "Empirical distribution", xlab = "x", ylab = expression(hat(F)[n](x)))
+curve(pnorm(x), add = TRUE, lty = 2)
+legend("bottomright", legend = c("Empirical distribution", "Population distribution"),
+       lty = c(1, 2), bty = "n")
+```
+
+\[immagine\]
+
+## 2.6 Moments
+
+A **moment** is a quantity that summarizes an aspect of a probability distribution. Population moments are computed using $F_X$, whereas sample moments are computed using $F^{(n)}$ and are called **empirical moments**.
+
+Typical examples are:
+
+- the mean, which measures location;
+- the variance, which measures spread;
+- higher-order moments, which describe shape more finely.
+
+Let $X$ be a continuous random variable with support $\mathbb{S}_X$ and cumulative distribution function $F_X$. For a suitable function $g$, the **population moment** is
+
+$$ \mathbb{E}[g(X)]=\int_{\mathcal{S}_X} g(x)\, dF_X(x)=\int_{\mathcal{S}_X} g(x)\, f_X(x)dx. $$
+
+Note that in the continuous case
+
+$$ dF_X(x)=f_X(x)dx. $$
+
+### 2.6.1 Expectation
+
+The first moment, obtained by taking $g(x)=x$, is the **expected value** or **population mean** $$ \mu=\mathbb{E}[X]=\int_{\mathbb{S}_X} x\, dF_X(x)=\int_{\mathbb{S}_X} x\, f_X(x)dx. $$
+
+The population mean $\mathbb{E}[X]$ is a quantity that describes the center of the distribution.
+
+### 2.6.2 Variance
+
+The second raw moment is
+
+$$ \mathbb{E}[X^2] = \int_{\mathbb{S}_X} x^2\, dF_X(x)=\int_{\mathbb{S}_X} x^2\, f_X(x)dx. $$
+
+It is the basis of the **population variance**
+
+$$ \sigma^2 = \operatorname{var}(X) = \mathbb{E}\bigl[(X-\mu)^2\bigr] = \int_{\mathbb{S}_X} (x-\mu)^2\, dF_X(x)=\int_{\mathbb{S}_X} (x-\mu)^2\, f_X(x)dx\geq 0. $$
+
+This is the second **central** moment, because it is centered around the population mean.
+
+The population variance can also be written as
+
+$$ \operatorname{var}(X) = \mathbb{E}[X^2]-\bigl(\mathbb{E}[X]\bigr)^2. $$
+
+So the variance can be computed from the first two raw moments.
+
+**Suggested Exercises 38 and 39.**
+
+### 2.6.3 Discrete Case
+
+If $X\in\mathbb{S}_X$ is discrete and takes values $x_1,x_2,\dots$ with probabilities $\mathbb{P}(X=x)$ and with distribution
+
+$$ F_X(x)=\sum_{t\in\mathcal{S}_X\le x} \mathbb{P}(X=t), $$
+
+then, given that
+
+$$ dF_X(x)=\begin{cases} \mathbb{P}(X=x) & \text{if } x\in \mathcal{S}_X \\ 0 & \text{if } x\notin \mathbb{S}_X. \end{cases} $$
+
+the expectation becomes
+
+$$ \mathbb{E}[g(X)] = \int_{\mathbb{S}_X}g(x) dF_X(x) = \sum_{x\in\mathcal{S}_X} g(x)\mathbb{P}(X=x). $$
+
+### 2.6.4 Properties
+
+For constants $a,b,c\in\mathbb{R}$, we have the following properties
+
+1.  $\mathbb{E}[c]=c$,
+2.  $\mathbb{E}[aX+bY]=a\mathbb{E}[X]+b\mathbb{E}[Y]$, and $\mathbb{E}\!\left[\sum_{i=1}^n a_iX_i\right]=\sum_{i=1}^n a_i\mathbb{E}[X_i]$,
+3.  $\mathbb{E}[aX+b]=a\mathbb{E}[X]+b$,
+4.  if $X$ and $Y$ are independent, then $\mathbb{E}[XY]=\mathbb{E}[X]\mathbb{E}[Y]$, the converse is not true in general,
+5.  $\operatorname{var}(c)=0$,
+6.  $\operatorname{var}(X+b)=\operatorname{var}(X)$,
+7.  $\operatorname{var}(aX)=a^2\operatorname{var}(X)$,
+8.  $\operatorname{var}(aX+b)=a^2\operatorname{var}(X)$,
+9.  $\operatorname{var}(X+Y) =\operatorname{var}(X)+\operatorname{var}(Y) +2\operatorname{cov}(X,Y)$,
+10. $\operatorname{var}(aX+bY) =a^2\operatorname{var}(X)+b^2\operatorname{var}(Y) +2ab\operatorname{cov}(X,Y)$,
+11. if $X$ and $Y$ are independent, then $\operatorname{cov}(X,Y)=0$, so $\operatorname{var}(X+Y)=\operatorname{var}(X)+\operatorname{var}(Y)$,
+12. more generally, for independent $X_1,\ldots,X_n$, $\operatorname{var}\!\left(\sum_{i=1}^n a_iX_i\right)=\sum_{i=1}^n a_i^2\operatorname{var}(X_i)$.
+
+**Suggested Exercise 40.**
+
+### 2.6.5 Covariance
+
+For jointly distributed random variables $X$ and $Y$, with finite second moments, one defines their **covariance** as
+
+$$ \operatorname{cov}(X,Y) = \mathbb{E}\left[(X-\mathbb{E}[X])(Y-\mathbb{E}[Y])\right]=\mathbb{E}[XY]-\mathbb{E}[X]\mathbb{E}[Y]. $$
+
+The covariance describes the direction of linear association:
+
+- positive covariance indicates that large values of one variable tend to occur with large values of the other;
+- negative covariance indicates that large values of one tend to occur with small values of the other;
+- covariance near zero indicates little linear association, but it does not imply independence.
+
+If $X$ and $Y$ are independent (and have finite second moments), then
+
+$$ \operatorname{cov}(X,Y)=0. $$
+
+The converse is generally false.
+
+The covariance plays a role in the variance of the sum of random variables. Indeed,
+
+$$ \operatorname{var}(X+Y) = \operatorname{var}(X) + \operatorname{var}(Y) + 2\operatorname{cov}(X,Y). $$
+
+If $X$ and $Y$ are independent, the covariance term is zero.
+
+**Suggested Exercise 41.**
+
+### 2.6.6 Correlation
+
+A standardized version od the covariance is given by the **correlation** between $X$ and $Y$, i.e.
+
+$$ \rho_{X,Y} = \operatorname{cor}(X,Y) = \frac{\operatorname{cov}(X,Y)} {\sqrt{\operatorname{var}(X)\operatorname{var}(Y)}}. $$
+
+It satisfies
+
+$$ -1\leq\rho_{X,Y}\leq1. $$
+
+Unlike covariance, correlation is invariant to positive changes of measurement scale, i.e.
+
+$$ \operatorname{cor}(X,Y)=\operatorname{cor}(aX,bY),\;ab> 0. $$
+
+**Suggested Exercise 42.**
+
+### 2.6.7 Empirical Moments
+
+For a given sample $x_1,\dots,x_n$ with EDF $F^{(n)}(x)=\frac{1}{n}\sum_{i=1}^n \mathbf{1}(x_i\le x)$, given that
+
+$$ dF^{(n)}(x)=\frac{1}{n}\mathbf{1}(x_i= x), $$
+
+we naturally obtain empirical moments:
+
+- the **sample mean** or **empirical mean**: $$ \overline{x}=\int_{\mathbb{S}_X}x dF^{(n)}(x)=\frac{1}{n}\sum_{i=1}^n x_i, $$
+- the **sample variance** or **empirical variance**: $$ s^2=\int_{\mathbb{S}_X}\left(x-\overline{x}\right)^2 dF^{(n)}(x)=\frac{1}{n}\sum_{i=1}^n (x_i-\overline{x})^2. $$
+
+The empirical values are close, but not equal to the population values, because they depend on the random sample on which they are computed. Moreover, empirical quantities fluctuate from sample to sample, even if the samples are drawn from the same population $F_X$.
+
+Given paired observations $(x_i,y_i)$, $i=1,\ldots,n$, the empirical covariance using denominator $n$ is
+
+$$ \widehat{\operatorname{cov}}(X,Y) = \frac{1}{n}\sum_{i=1}^n (x_i-\overline{x})(y_i-\overline{y}). $$
+
+The usual unbiased sample covariance uses denominator $n-1$. `R`'s `cov()` function uses this latter convention. The correlation is unaffected when the same denominator convention is used in the covariance and standard deviations.
+
+**Suggested Exercises 43 and 44.**
+
+**Example of simulated correlated random variables**
+
+``` r
+set.seed(123)
+n <- 200
+x <- rnorm(n)
+y <- 0.8 * x + rnorm(n, sd = 0.6)
+
+c(
+  covariance = cov(x, y),
+  correlation = cor(x, y)
+)
+```
+
+    ##  covariance correlation 
+    ##   0.6960265   0.7772878
+
+``` r
+ggplot(data.frame(x = x, y = y), aes(x = x, y = y)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_minimal() +
+  labs(
+    title = "Positively Correlated Variables",
+    x = "X",
+    y = "Y"
+  )
+```
+
+\[immagine\]
+
+## 2.7 Quantiles
+
+Let $X$ be a real-valued random variable with cumulative distribution function
+
+$$ F_X(x)=\mathbb{P}(X\le x). $$
+
+For a probability level $p\in(0,1)$, a $p$-quantile is a value $q_p$ such that
+
+$$ F_X(q_p)\ge p. $$
+
+The standard mathematical definition is
+
+$$ q_p = \inf\{x\in\mathbb{S}_X: F_X(x)\ge p\}. $$
+
+This is called the **generalized inverse** of the CDF.
+
+If $F_X$ is continuous and strictly increasing, then the usual inverse function exists, and one can simply write
+
+$$ q_p = F_X^{-1}(p). $$
+
+In other terms,
+
+$$ F_X(q_p)=p. $$
+
+Several quantiles are of particular interest:
+
+- The **median**: it is the $0.5$-quantile: $m=q_{0.5}$.
+- The first **quartile**: $q_{0.25}$,
+- The second **quartile**: $q_{0.5}$ (the median),
+- The third **quartile**: $q_{0.75}$.
+- The **percentiles**: the $100p$-th percentile is just the $p$-quantile. For example: the $90$-th percentile is $q_{0.90}$.
+
+**Suggested Exercise 45.**
+
+R provides built-in quantile functions for many standard distributions. This is useful when $F_X$ is difficult to invert.
+
+**Examples**
+
+``` r
+qnorm(0.95)
+```
+
+    ## [1] 1.644854
+
+``` r
+qbinom(0.95, size = 10, prob = 0.3)
+```
+
+    ## [1] 5
+
+``` r
+qunif(0.25, min = -1, max = 3)
+```
+
+    ## [1] 0
+
+``` r
+qexp(0.5, rate = 2)
+```
+
+    ## [1] 0.3465736
+
+For EDF, one can also use the function `quantile()`.
+
+``` r
+set.seed(123)
+x <- rnorm(100)
+quantile(x, probs = c(0.25, 0.5, 0.75))
+```
+
+    ##         25%         50%         75% 
+    ## -0.49385424  0.06175631  0.69181917
+
+## 2.8 Some Well-Known Probability Distributions
+
+### 2.8.1 Bernoulli Distribution
+
+The Bernoulli distribution models a single binary outcome:
+
+$$ X \in \mathbb{S}_X=\{0,1\}, \qquad \mathbb{P}(X=1)=\pi,\; \mbox{ with }\; X=1\; \mbox{ for a success} \qquad \mathbb{P}(X=0)=1-\pi,\; \mbox{ with }\; X=0\; \mbox{ for a failure.} $$
+
+In this case, $X\sim\mathcal{B}(1,\pi)$, with the value of one for one **trial** leading to a **success** with probability $\pi$ and, hence, a **failure** with probability $1-\pi$. The probability mass function can be written compactly as
+
+$$ \mathbb{P}(X=x\mid \pi)=\pi^x(1-\pi)^{1-x},\qquad x\in\{0,1\}. $$
+
+Its mean and variance are
+
+$$ \mu=\mathbb{E}[X]=\pi, \qquad \sigma^2=\operatorname{var}(X)=\pi(1-\pi). $$
+
+Quantiles are particular:
+
+- if $p\le 1-\pi$, the $p$-quantile is $0$;
+- if $p>1-\pi$, the $p$-quantile is $1$.
+
+So in this case, several probability levels may correspond to the same quantile.
+
+Examples of Bernoulli outcomes include:
+
+- a coin flip coded as heads/tails;
+- whether a customer clicks on an advertisement;
+- whether a classifier prediction is correct or incorrect.
+
+**Generating Bernoulli data in `R`**
+
+``` r
+p=0.7
+n=10
+rbinom(n, size = 1, prob = p)
+```
+
+    ##  [1] 1 0 1 1 1 0 1 1 1 1
+
+**Suggested Exercise 46.**
+
+### 2.8.2 Binomial Distribution
+
+The binomial distribution extends the Bernoulli case to repeated independent binary trials. Let $N$ be the number of Bernoulli trials with success probability $\pi$, and let $X$ count the number of **successes**, where a success is coded as $1$. Then
+
+$$ \mathbb{S}_X=\{0,1,2,\ldots,N\} $$
+
+and we write
+
+$$ X \sim \mathcal{B}(N,\pi). $$
+
+Its probability mass function is
+
+$$ \mathbb{P}(X=x\mid N,\pi)=\binom{N}{x}\pi^x(1-\pi)^{N-x},\qquad x\in\{0,1,\dots,N\}. $$
+
+with
+
+$$ \binom{N}{x}=\frac{N!}{x!(N-x)!}, \; x!=x(x-1)(x-2)\cdots 1 $$
+
+Its mean and variance are
+
+$$ \mathbb{E}[X]=N\pi, \qquad \operatorname{var}(X)=N\pi(1-\pi). $$
+
+**Data generating process in `R`**
+
+``` r
+N=20
+p=0.3
+n=10
+rbinom(n, size = N, prob = p)
+```
+
+    ##  [1] 6 5 4 7 3 7 5 5 8 9
+
+### 2.8.3 Uniform Distribution
+
+A continuous random variable $X$ is uniformly distributed on an interval $[a,b]$ if all values in that interval are equally plausible.
+
+Hence, $\mathbb{S}_X=[a,b]$ and its density is
+
+$$ f_X(x)= \begin{cases} \dfrac{1}{b-a}, & a\le x \le b,\\[0.5em] 0, & \text{otherwise.} \end{cases} $$
+
+Its mean and variance are
+
+$$ \mathbb{E}[X]=\frac{a+b}{2}, \qquad \operatorname{var}(X)=\frac{(b-a)^2}{12}. $$
+
+The median is
+
+$$ q_{0.5}=\frac{a+b}{2}. $$
+
+**Data generating process in `R`**
+
+``` r
+runif(10, min = -1, max = 1)
+```
+
+    ##  [1] -0.43494334  0.92220959  0.45678886  0.37275016 -0.89431211 -0.20955973
+    ##  [7] -0.04430924  0.12050653  0.39652319  0.83136708
+
+**Suggested Exercise 47.**
+
+This distribution is useful for simulations because it is easy to generate from, and many simulation algorithms start from uniform random numbers. Indeed, assume that $X\sim F_X$ is a continuous random variable and that $F_X$ is continuous and strictly increasing, and let
+
+$$ U = F_X(X)\in [0,1]. $$
+
+We have by definition, $$ \mathbb P(U\le u) = \mathbb P(F_X(X)\le u) = \mathbb P(X\le F_X^{-1}(u)). $$
+
+By definition of the cumulative distribution function of $X$, we get
+
+$$ \mathbb P(X\le F_X^{-1}(u)) = F_X(F_X^{-1}(u))=u. $$
+
+Therefore, $$ \mathbb P(U\le u)=P(F_X(X)\le u)=u, \qquad 0\le u\le 1, $$
+
+which is exactly the distribution of the uniform distribution on $(0,1)$. In other words,
+
+$$ U = F_X(X)\sim \mathcal U(0,1). $$
+
+The direct consequence is that if $U\sim \mathcal{U}(0,1)$, then
+
+$$ X=F_X^{-1}(U) $$
+
+has distribution function $F_X$. This result is important because many simulation algorithms start from pseudo-random numbers generated from a uniform distribution on $(0,1)$, and then transform them into samples from more complex distributions using $F_X^{-1}$.
+
+**Suggested Exercise 48.**
+
+### 2.8.4 Gaussian Distribution
+
+The Gaussian (or normal) distribution is the most important continuous distribution in statistics. Let
+
+$$ X\sim\mathcal{N}(\mu,\sigma^2), $$
+
+then its density is
+
+$$ f(x\mid \mu,\sigma^2) = \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left( -\frac{(x-\mu)^2}{2\sigma^2} \right). $$
+
+Its mean and variance are
+
+$$ \mathbb{E}[X]=\mu, \qquad \operatorname{var}(X)=\sigma^2. $$
+
+An important property of Gaussian random variables is that an affine transformation remains Gaussian. If $X\sim\mathcal{N}(\mu,\sigma^2)$ and $Y=aX+b$, then
+
+$$ Y\sim\mathcal{N}\left(a\mu+b,a^2\sigma^2\right). $$
+
+Consequently, we have that
+
+$$ Z=\frac{X-\mu}{\sigma}\sim\mathcal{N}(0,1), $$
+
+where $Z$ is called a **standardized** Gaussian variable.
+
+**Suggested Exercise 49.**
+
+### 2.8.5 Exponential Distribution
+
+The exponential distribution is a standard model for a positive waiting time.
+
+If
+
+$$ X\sim\operatorname{Exp}(\lambda), $$
+
+then its density is
+
+$$ f(x)= \lambda e^{-\lambda x}, \qquad x\ge 0. $$
+
+Its mean and variance are
+
+$$ \mathbb{E}[X]=\frac{1}{\lambda}, \qquad \operatorname{var}(X)=\frac{1}{\lambda^2}. $$
+
+This model is often used for waiting times and inter-arrival times. It is also a useful example of a distribution supported only on positive values.
+
+**Data generating process in `R`**
+
+``` r
+rexp(10, rate = 2)
+```
+
+    ##  [1] 0.11835123 0.36684069 0.36828730 0.64087750 0.98412613 0.33192756
+    ##  [7] 0.80469607 0.30341854 0.04682616 0.16231764
+
+### 2.8.6 Distribution of Combinations of Gaussian Random Variables
+
+Another important property is that a sum of jointly Gaussian random variables is Gaussian. The mean of the sum is the sum of their means. Its variance also includes covariance terms unless the variables are independent. In the independent case, if $X_j\sim\mathcal{N}\left(\mu_j,\sigma^2_j\right)$, $j=1,\ldots,p$, then
+
+$$ \sum_{j=1}^pX_j\sim\mathcal{N}\left(\sum_{j=1}^p\mu_j,\sum_{j=1}^p\sigma^2_j\right). $$
+
+From the data generating point of view, a Gaussian distribution generates observations concentrated around the mean $\mu$, with spread governed by $\sigma^2$.
+
+``` r
+xg <- rnorm(1000, mean = 0, sd = 1)
+ggplot(data.frame(x = xg), aes(x = x)) +
+  geom_histogram(aes(y = after_stat(density)), bins = 35, color = "white") +
+  stat_function(fun = dnorm, args = list(mean = 0, sd = 1), linetype = 2) +
+  theme_minimal() +
+  labs(title = "Gaussian Sample and Density")
+```
+
+\[immagine\]
+
+### 2.8.7 Multivariate Gaussian Distribution
+
+For a random vector $\mathbf{X}\in\mathbb{R}^p$, the multivariate Gaussian distribution is defined by a mean vector $\boldsymbol{\mu}\in\mathbb{R}^p$ and a covariance matrix $\mathbf{\Sigma}\in\mathbb{R}^{p\times p}$:
+
+$$ \mathbf{X}\sim\mathcal{N}(\boldsymbol{\mu},\mathbf{\Sigma}). $$
+
+Its density is
+
+$$ f(\mathbf{x}\mid \boldsymbol{\mu},\mathbf{\Sigma}) = (2\pi)^{-p/2}|\mathbf{\Sigma}|^{-1/2} \exp\left( -\frac12(\mathbf{x}-\boldsymbol{\mu})^\top \mathbf{\Sigma}^{-1} (\mathbf{x}-\boldsymbol{\mu}) \right). $$
+
+This is the natural population model behind covariance matrices and therefore behind PCA. In particular, the population covariance matrix
+
+$$ \mathbf{\Sigma} = \mathbb{E} \left[ (\mathbf{X}-\mathbb{E}[\mathbf{X}]) (\mathbf{X}-\mathbb{E}[\mathbf{X}])^\top \right] $$
+
+is exactly the object approximated by the empirical covariance matrix, i.e.
+
+$$ \mathbf{S} = \frac1n\sum_{i=1}^n (\mathbf{x}_i-\overline{\mathbf{x}}) (\mathbf{x}_i-\overline{\mathbf{x}})^\top, $$
+
+with $$ \overline{\mathbf{x}}=\frac1n\sum_{i=1}^n \mathbf{x}_i. $$
+
+**Data generating process in `R`**
+
+``` r
+library(MASS)
+library(ggplot2)
+
+set.seed(123)
+
+n <- 500
+
+mu <- c(0, 1)
+
+Sigma <- matrix(c(1, 0.7,
+                  0.7, 2),
+                nrow = 2, byrow = TRUE)
+
+X <- mvrnorm(n = n, mu = mu, Sigma = Sigma)
+
+df <- data.frame(x1 = X[, 1], x2 = X[, 2])
+
+ggplot(df, aes(x = x1, y = x2)) +
+  geom_point(alpha = 0.5) +
+  theme_minimal() +
+  labs(
+    title = "Simulated Multivariate Normal Data",
+    x = expression(X[1]),
+    y = expression(X[2])
+  )
+```
+
+\[immagine\]
+
+# 3 Estimation
+
+A distribution, or **statistical model**, provides a structured way to think about data. The observed data and their EDF contain information about the underlying model. For example, if a sample appears approximately normal, we may model it using a normal distribution with unknown parameters $\mu$ and $\sigma^2$. A central statistical task is then to use the data to learn about the unknown parameters of the data-generating process. This process is called **estimation**, and it links a probability model to an observed dataset.
+
+There are many different ways to estimate population parameters. Traditionally, one starts with a **point estimator**, which is simply a function of the data $X_1,\dots,X_n$. For example:
+
+- the sample mean $\overline{x}$ is a point estimator of a population mean $\mu$;
+- the empirical covariance matrix $\mathbf{S}$ is a point estimator of the population covariance matrix $\mathbf{\Sigma}$;
+
+## 3.1 Plug-in Estimators
+
+A plug-in estimator usually targets population quantities, such as moments. These can be written as a **functional** of the distribution, e.g.
+
+$$ \theta = T\left(F_X\right), $$
+
+and then the plug-in estimator is
+
+$$ \widehat{\theta} = T(F^{(n)}), $$
+
+where $F^{(n)}$ is the EDF.
+
+For example, the population mean can be written as
+
+$$ \mu = \mathbb{E}[X] = \int x\, dF_X(x). $$
+
+Replacing $F_X$ by the empirical distribution $F^{(n)}$ gives
+
+$$ \widehat{\mu} = \int x\, dF^{(n)}(x) = \frac{1}{n}\sum_{i=1}^n x_i = \overline{x}, $$
+
+and $\widehat{\mu}$ is the (plug-in) estimator of the unknown population mean $\mu$.
+
+We can also consider the population variance
+
+$$ \sigma^2 = \int (x-\mu)^2\, dF(x), $$
+
+with (plug-in) estimator
+
+$$ \widehat{\sigma}^2 = \frac{1}{n}\sum_{i=1}^n (x_i-\overline{x})^2. $$
+
+The same reasoning extends to multivariate random variables; see, for example, the multivariate normal distribution and the empirical covariance matrix.
+
+## 3.2 Maximum Likelihood Estimation
+
+An alternative and more general estimation method is based on the **likelihood** function. Suppose that the data are modeled by a probability distribution
+
+$$ \mathbb{P}(X=x\mid \theta)=p(x\mid \theta), $$
+
+where $\theta$ denotes the unknown parameter (or parameter vector). Once data $x_1,\dots,x_n$ are observed, we can consider the joint probability of the sample as a function of $\theta$:
+
+$$ L(\theta) = \prod_{i=1}^n p(x_i\mid \theta). $$
+
+This function is called the likelihood function.
+
+This function is then maximized with respect to $\theta$, which leads to **maximum likelihood estimation**. Namely, the Maximum Likelihood Estimator (MLE) is defined as:
+
+$$ \widehat{\theta} = \arg\max_{\theta} L(\theta). $$
+
+Since products are often inconvenient to optimize directly, one usually works with the log-likelihood
+
+$$ \ell(\theta) = \log L(\theta) = \sum_{i=1}^n \log p(x_i\mid \theta). $$
+
+Because the logarithm is increasing, maximizing $L(\theta)$ and maximizing $\ell(\theta)$ are equivalent.
+
+So the MLE can be written as
+
+$$ \widehat{\theta} = \arg\max_{\theta} \ell(\theta). $$
+
+For example, suppose that
+
+$$ X_1,\dots,X_n \overset{\text{i.i.d.}}{\sim} \mathcal{B}(1,\pi), \qquad \pi\in[0,1], $$
+
+with $p(x_i)=\pi^{x_i}(1-\pi)^{(1-x_i)}$, the MLE of $\pi$ is
+
+$$ \widehat{\pi} = \frac{1}{n}\sum_{i=1}^n x_i = \overline{x}. $$
+
+So in this case, the maximum likelihood estimator is exactly the sample mean. Therefore, some familiar empirical quantities are not only intuitive summaries of the data, they also arise naturally from a probabilistic estimation principle.
+
+**Suggested Exercise 50.**
+
+The same is true for the Gaussian distribution, which is parameterized by its expected value $\mu$ and variance $\sigma^2$. Let
+
+$$ X_1,\dots,X_n \overset{\text{i.i.d.}}{\sim} \mathcal{N}(\mu,\sigma^2), $$
+
+The MLEs of $\mu$ and $\sigma^2$ are
+
+$$ \widehat{\mu}_{\mathrm{ML}}=\overline{x}, \qquad \widehat{\sigma}^2_{\mathrm{ML}} = \frac{1}{n}\sum_{i=1}^n (x_i-\overline{x})^2. $$
+
+**Suggested Exercise 51.**
+
+## 3.3 Properties of Estimators
+
+Once an estimator $\widehat{\theta}$ has been defined, we want to know whether it is a good estimator of the unknown parameter $\theta$. It is important to distinguish between an:
+
+- **estimator**: a function of a random sample $X_i$, $i=1,\ldots,n$; and
+- **estimate**: the value of the estimator for an observed sample.
+
+An estimator is therefore a random variable because it is a function of random variables. It has a sampling distribution, which is often unknown, although moments of this distribution can sometimes be derived. These moments are used to study the **properties of estimators**.
+
+### 3.3.1 Bias
+
+The **bias** of an estimator $\widehat{\theta}$ is defined as
+
+$$ \operatorname{Bias}(\widehat{\theta})=\mathbb{E}[\widehat{\theta}]-\theta. $$
+
+An estimator is said to be **unbiased** if
+
+$$ \mathbb{E}[\widehat{\theta}]=\theta. $$
+
+This means that, on average over repeated samples, the estimator hits the true parameter.
+
+For example, the sample mean $\overline{X}=\frac{1}{n}\sum_{i=1}^n X_i$ is an unbiased estimator of the population mean $\mu$, i.e. if $X_1,\dots,X_n$ are i.i.d. with mean $\mu$, then
+
+$$ \mathbb{E}[\overline{X}] = \mu. $$
+
+### 3.3.2 Variance of an Estimator
+
+Even an unbiased estimator can vary substantially from sample to sample.
+
+The **variance** of $\widehat{\theta}$ is
+
+$$ \operatorname{var}(\widehat{\theta}) = \mathbb{E}\left[(\widehat{\theta}-\mathbb{E}[\widehat{\theta}])^2\right]. $$
+
+A good estimator should typically have small variance.
+
+For the sample mean of i.i.d. observations with variance $\sigma^2$, we have
+
+$$ \operatorname{var}(\overline{X})=\frac{\sigma^2}{n}. $$
+
+So increasing the sample size reduces the variability of the estimator.
+
+If two unbiased estimators both estimate the same parameter, one often prefers the one with smaller variance. This idea motivates the notion of **efficiency**: among unbiased estimators, more efficient estimators have smaller variance.
+
+The properties can be explored using simulations (see also below).
+
+Let us estimate the mean $\mu$ of a Gaussian distribution and look at the sampling distribution of the sample mean, for increasing values of $n$.
+
+``` r
+set.seed(123)
+
+B <- 5000
+sample_sizes <- c(5, 10, 30, 100, 300)
+mu <- 2
+sigma <- 3
+
+# Simulate B sample means for every sample size.
+simulation_results <- do.call(
+  rbind,
+  lapply(sample_sizes, function(n) {
+    data.frame(
+      n = n,
+      replication = seq_len(B),
+      xbar = replicate(B, mean(rnorm(n, mean = mu, sd = sigma)))
+    )
+  })
+)
+
+simulation_results$n <- factor(
+  simulation_results$n,
+  levels = sample_sizes,
+  labels = paste0("n = ", sample_sizes)
+)
+```
+
+For each sample size, we compare the empirical mean and variance of the estimators with their theoretical values.
+
+``` r
+summary_results <- do.call(
+  rbind,
+  lapply(sample_sizes, function(current_n) {
+    current_label <- paste0("n = ", current_n)
+    current_xbar <- simulation_results$xbar[
+      simulation_results$n == current_label
+    ]
+
+    data.frame(
+      n = current_n,
+      mean_of_estimator = mean(current_xbar),
+      true_mean = mu,
+      empirical_bias = mean(current_xbar) - mu,
+      empirical_variance = var(current_xbar),
+      theoretical_variance = sigma^2 / current_n,
+      theoretical_standard_error = sigma / sqrt(current_n)
+    )
+  })
+)
+
+knitr::kable(
+  summary_results,
+  digits = 4,
+  caption = "Empirical and theoretical properties of the sample mean"
+)
+```
+
+  -------------------------------------------------------------------------------------------------------------------------------
+      n   mean_of_estimator   true_mean   empirical_bias   empirical_variance   theoretical_variance   theoretical_standard_error
+  ----- ------------------- ----------- ---------------- -------------------- ---------------------- ----------------------------
+      5              1.9805           2          -0.0195               1.8050                   1.80                       1.3416
+
+     10              2.0151           2           0.0151               0.8786                   0.90                       0.9487
+
+     30              2.0156           2           0.0156               0.3006                   0.30                       0.5477
+
+    100              1.9954           2          -0.0046               0.0903                   0.09                       0.3000
+
+    300              1.9969           2          -0.0031               0.0305                   0.03                       0.1732
+  -------------------------------------------------------------------------------------------------------------------------------
+
+  : Empirical and theoretical properties of the sample mean
+
+The empirical means should remain close to $\mu=2$ for all sample sizes. In contrast, the empirical variance should become smaller as $n$ increases and should remain close to the theoretical variance $\sigma^2/n$.
+
+``` r
+# Use the range corresponding to the smallest sample size for every panel.
+largest_standard_error <- sigma / sqrt(min(sample_sizes))
+common_x_limits <- mu + c(-4, 4) * largest_standard_error
+
+# Construct each exact density over the same horizontal range.
+density_curves <- do.call(
+  rbind,
+  lapply(sample_sizes, function(n) {
+    standard_error <- sigma / sqrt(n)
+    x_values <- seq(
+      common_x_limits[1],
+      common_x_limits[2],
+      length.out = 400
+    )
+
+    data.frame(
+      n = paste0("n = ", n),
+      xbar = x_values,
+      density = dnorm(x_values, mean = mu, sd = standard_error)
+    )
+  })
+)
+
+density_curves$n <- factor(
+  density_curves$n,
+  levels = paste0("n = ", sample_sizes)
+)
+
+ggplot(simulation_results, aes(x = xbar)) +
+  geom_histogram(
+    aes(y = after_stat(density)),
+    bins = 35,
+    fill = "steelblue",
+    color = "white",
+    alpha = 0.75
+  ) +
+  geom_line(
+    data = density_curves,
+    aes(x = xbar, y = density),
+    linetype = 2,
+    linewidth = 0.9,
+    color = "firebrick",
+    inherit.aes = FALSE
+  ) +
+  geom_vline(
+    xintercept = mu,
+    linewidth = 0.5,
+    color = "grey30"
+  ) +
+  facet_wrap(~ n, scales = "free_y", ncol = 3) +
+  coord_cartesian(xlim = common_x_limits) +
+  theme_minimal() +
+  labs(
+    title = "Sampling distribution of the sample mean",
+    subtitle = "",
+    x = expression(bar(X)[n]),
+    y = "Density"
+  )
+```
+
+\[immagine\]
+
+In the graphs, the dashed curve in each panel is the exact Gaussian density
+
+$$ \overline{X}_n\sim \mathcal{N}\!\left(\mu,\frac{\sigma^2}{n}\right). $$
+
+Although the center remains at $\mu$, the width of the sampling distribution decreases with the sample size.
+
+This simulation shows that:
+
+- the estimator is centered close to the true value $\mu$, which is consistent with unbiasedness;
+- the estimator has nonzero variance;
+- and its distribution becomes more concentrated as $n$ increases.
+
+### 3.3.3 Mean Squared Error
+
+The **mean squared error** (MSE) combines bias and variance:
+
+$$ \operatorname{MSE}(\widehat{\theta}) = \mathbb{E}\left[(\widehat{\theta}-\theta)^2\right]. $$
+
+A fundamental identity is
+
+$$ \operatorname{MSE}(\widehat{\theta}) = \operatorname{var}(\widehat{\theta}) + \operatorname{Bias}(\widehat{\theta})^2. $$
+
+This decomposition is important because it shows that an estimator with a small bias but very small variance can sometimes be preferable to an unbiased estimator with high variance.
+
+**Suggested Exercise 52.**
+
+### 3.3.4 Consistency
+
+The preceding properties are defined for a **finite** sample of $n$ random variables. They are therefore also called **finite-sample** properties.
+
+However, in many cases these quantities cannot be obtained explicitly. An alternative is to study the behavior of an estimator as $n\to\infty$. These are called **asymptotic properties**.
+
+A fundamental theorem for studying the properties of an estimator as $n\to\infty$, is the **law of large numbers**. Let $X_1,X_2,\ldots$ be i.i.d. random variables from $F_X$ (any) with finite mean $\mu=\mathbb{E}[X_i]$, the (weak) law of large numbers states that the sample mean
+
+$$ \overline{X} = \frac{1}{n}\sum_{i=1}^nX_i $$
+
+converges **in probability** to $\mu$:
+
+$$ \overline{X} \xrightarrow{\mathbb{P}} \mu. $$
+
+Equivalently, for every $\varepsilon>0$,
+
+$$ \mathbb{P}\left( |\overline{X}-\mu|>\varepsilon \right) \longrightarrow 0 \qquad\text{as }n\to\infty. $$
+
+This property is called **consistency**. More generally, an estimator $\widehat{\theta}$ is **consistent** if it converges to the true parameter as the sample size grows, i.e.,
+
+$$ \widehat{\theta} \xrightarrow{\mathbb{P}} \theta \qquad\text{as } n\to\infty. $$
+
+To prove consistency of estimators, one uses fundamental theorems in statistics. This part is left to statisticians.
+
+### 3.3.5 Asymptotic Normality
+
+An important theorem is statistics is that sums of independent and i.i.d. random variables tend to become approximately Gaussian when the number of terms grows. This is the content of the **central limit theorem**. In informal terms, if
+
+$$ X_1,\dots,X_n\sim F_X $$
+
+are i.i.d. with mean $\mu$ and variance $\sigma^2$, then the sum
+
+$$ S_n = X_1+\cdots+X_n $$
+
+has mean
+
+$$ \mathbb{E}[S_n]=n\mu $$
+
+and variance
+
+$$ \operatorname{var}(S_n)=n\sigma^2, $$
+
+and for moderately large $n$, its distribution is often close to a Gaussian distribution with mean $n\mu$ and variance $n\sigma^2$.
+
+For example, let
+
+$$ X_i \sim \operatorname{Gamma}(\alpha,\theta), \qquad i=1,\dots,n, $$
+
+be i.i.d. random variables distributed according to a Gamma distribution, where $\alpha$ is the shape parameter and $\theta$ the scale parameter. We also have that
+
+$$ \mathbb{E}[X_i]=\alpha\theta, \qquad \operatorname{var}(X_i)=\alpha\theta^2. $$
+
+Therefore, for the sum
+
+$$ S_n = \sum_{i=1}^n X_i, $$
+
+we have
+
+$$ \mathbb{E}[S_n]=n\alpha\theta, \qquad \operatorname{var}(S_n)=n\alpha\theta^2. $$
+
+When $n$ is not too small, the distribution of $S_n$ should be close to
+
+$$ \mathcal{N}(n\alpha\theta,\; n\alpha\theta^2). $$
+
+We now simulate many sums of Gamma random variables and compare the histogram with the Gaussian density having the same mean and variance.
+
+``` r
+set.seed(123)
+
+B <- 5000
+n_sum <- 30
+alpha <- 2
+theta <- 1.5
+
+sum_gamma <- replicate(B, sum(rgamma(n_sum, shape = alpha, scale = theta)))
+
+mu_sum <- n_sum * alpha * theta
+sd_sum <- sqrt(n_sum * alpha * theta^2)
+
+c(mu_sum = mu_sum, sd_sum = sd_sum)
+```
+
+    ##   mu_sum   sd_sum 
+    ## 90.00000 11.61895
+
+``` r
+ggplot(data.frame(sum_gamma = sum_gamma), aes(x = sum_gamma)) +
+  geom_histogram(aes(y = after_stat(density)), bins = 40, color = "white") +
+  stat_function(
+    fun = dnorm,
+    args = list(mean = mu_sum, sd = sd_sum),
+    linetype = 2,
+    linewidth = 1
+  ) +
+  theme_minimal() +
+  labs(
+    title = "Sum of Gamma Random Variables and Gaussian Approximation",
+    subtitle = "Histogram of simulated sums with matching Gaussian density",
+    x = expression(S[n]),
+    y = "Density"
+  )
+```
+
+\[immagine\]
+
+The histogram is based on simulated sums of Gamma random variables, whereas the dashed curve is the Gaussian density with the same theoretical mean and variance.
+
+Even though the individual $X_i$ are not Gaussian, the sum is much closer to a Gaussian shape.
+
+The central limit theorem is often stated for the standardized sum
+
+$$ Z_n = \frac{S_n-n\mu}{\sqrt{n}\sigma}=n\frac{\overline{X}_n-\mu}{\sqrt{n}\sigma} =\sqrt{n}\frac{\overline{X}_n-\mu}{\sigma}, $$
+
+with $\overline{X}_n=S_n/n$.
+
+In our Gamma example, this becomes
+
+$$ Z_n = \sqrt{n}\frac{\overline{X}_n-\alpha\theta}{\sqrt{\alpha\theta^2}}. $$
+
+### 3.3.6 Monte Carlo Study
+
+A **Monte Carlo** simulation consists of repeatedly generating data from a statistical model and computing quantities of interest.
+
+The basic structure is:
+
+1.  choose a probability model;
+2.  choose true parameter values;
+3.  generate a sample from the model;
+4.  compute a statistic or estimator;
+5.  repeat many times;
+6.  study the distribution and/or moments of the resulting outputs.
+
+Monte Carlo simulations are useful because they let us study how estimators behave under controlled conditions.
+
+They are useful for understanding the **sampling distribution** (or EDF) of estimators, using boxplots and/or histograms.
+
+Hence, the properties of, e.g., estimators can be explored using Monte Carlo simulations.
+
+For example, consider the empirical variance estimator
+
+$$ \widehat{\sigma}^2 = \frac{1}{n}\sum_{i=1}^n (X_i-\overline{X})^2 $$
+
+when $X_1,\dots,X_n$ are i.i.d. with variance $\sigma^2$. It is well known that $\widehat{\sigma}^2$ is a biased estimator of $\sigma^2$. However $\widehat{\sigma}^2$ is consistent.
+
+We simulate i.i.d. Gaussian samples with true variance $\sigma^2 = 4$. For each sample size $n$, we repeat the simulation many times and compute $\widehat{\sigma}^2$. Then we compare the average simulated value of the estimator with the true variance.
+
+``` r
+set.seed(123)
+
+B <- 5000
+sigma2_true <- 4
+sigma_true <- sqrt(sigma2_true)
+
+sample_sizes <- c(3, 5, 10, 20, 50, 100, 500)
+
+sim_results <- data.frame(
+  n = sample_sizes,
+  mean_estimator = NA_real_,
+  bias = NA_real_,
+  sd_estimator = NA_real_
+)
+
+all_simulated_values <- data.frame()
+
+for (k in seq_along(sample_sizes)) {
+  n <- sample_sizes[k]
+
+  s2_hat <- replicate(B, {
+    x <- rnorm(n, mean = 0, sd = sigma_true)
+    mean((x - mean(x))^2)
+  })
+
+  sim_results$mean_estimator[k] <- mean(s2_hat)
+  sim_results$bias[k] <- mean(s2_hat) - sigma2_true
+  sim_results$sd_estimator[k] <- sd(s2_hat)
+
+  all_simulated_values <- rbind(
+    all_simulated_values,
+    data.frame(
+      n = factor(n, levels = sample_sizes),
+      s2_hat = s2_hat
+    )
+  )
+}
+
+sim_results
+```
+
+    ##     n mean_estimator         bias sd_estimator
+    ## 1   3       2.658664 -1.341335684    2.6700967
+    ## 2   5       3.206314 -0.793685586    2.2687434
+    ## 3  10       3.616929 -0.383070880    1.7179879
+    ## 4  20       3.820383 -0.179616669    1.2352279
+    ## 5  50       3.915517 -0.084483442    0.7969148
+    ## 6 100       3.955951 -0.044049033    0.5418757
+    ## 7 500       3.993149 -0.006850682    0.2514952
+
+The table reports, for each sample size $n$:
+
+- the Monte Carlo mean of the estimator;
+- the Monte Carlo bias;
+- the Monte Carlo standard deviation of the estimator.
+
+For $n=3$, the average simulated value of $\widehat{\sigma}^2$ is clearly smaller than the true variance $\sigma^2=4$. This shows that the estimator is biased.
+
+We now study the bias as a function of the sample size.
+
+``` r
+ggplot(sim_results, aes(x = n, y = mean_estimator)) +
+  geom_point(size = 2) +
+  geom_line() +
+  geom_hline(yintercept = sigma2_true, linetype = 2) +
+  theme_minimal() +
+  labs(
+    title = "Bias and Consistency of the Empirical Variance",
+    subtitle = "Mean of the estimator over repeated simulations",
+    x = "Sample size n",
+    y = expression(E[MC](hat(sigma)[n]^2))
+  )
+```
+
+\[immagine\]
+
+The dashed horizontal line is the true variance $\sigma^2=4$. For small $n$, the Monte Carlo mean of the estimator lies below the true value, which illustrates the bias. As $n$ increases, the mean of the estimator moves closer to the true variance.
+
+One can also study the sampling distributions for different sample sizes.
+
+``` r
+ggplot(all_simulated_values, aes(x = s2_hat)) +
+  geom_histogram(bins = 35, color = "white") +
+  geom_vline(xintercept = sigma2_true, linetype = 2) +
+  facet_wrap(~ n, scales = "free_y") +
+  theme_minimal() +
+  labs(
+    title = "Sampling Distribution of the Empirical Variance",
+    subtitle = "The dashed line is the true variance",
+    x = expression(hat(sigma)[n]^2),
+    y = "Frequency"
+  )
+```
+
+\[immagine\]
+
+For $n=3$, the estimator is very spread out and its distribution is visibly centered below the true variance. As $n$ increases:
+
+- the estimator becomes less variable;
+- its distribution becomes more concentrated;
+- and it moves closer to the true value.
+
+# 4 Interval Estimation
+
+Point estimators provide one number, but they do not describe uncertainty directly.
+
+For this reason, we also use **interval estimators**, namely **Confidence Intervals** (CI).
+
+A confidence interval for a parameter $\theta$ is a random interval
+
+$$ [C_l(X_1,\dots,X_n),\; C_u(X_1,\dots,X_n)] $$
+
+constructed from the sample so that, under repeated sampling, it contains the true value $\theta$ with a prescribed probability, usually $95\%$. The bounds $C_l(X_1,\dots,X_n)$ and $C_u(X_1,\dots,X_n)$ are functions of the $n$ random variables and are therefore random themselves.
+
+## 4.1 Construction of Confidence Intervals
+
+A CI for a population parameter $\theta$ is generally built from the CDF of an unbiased or consistent estimator $\widehat{\theta}$. This CDF can be derived theoretically using fundamental theorems in statistics, or by simulations when the estimator is too complex.
+
+The CDF of $\widehat{\theta}$ can be **exact**, i.e. valid for any $n$, or **asymptotic**, i.e. valid as $n\to\infty$. Hence, the CI can be valid either exactly or only asymptotically. In the latter case, one should assess the accuracy of the CI at relevant finite sample sizes, for example using Monte Carlo simulations.
+
+To derive an asymptotic CI, the important step is to show that
+
+$$ \sqrt{n}\frac{\widehat{\theta}-\theta}{\sigma_{\widehat{\theta}}}\sim\mathcal{N}(0,1) \;\text{as }\; n\to\infty. $$
+
+This is typically justified using the central limit theorem.
+
+Then, given the CDF of $\widehat{\theta}$ (exact or asymptotic), say $F_{\widehat{\theta}}$, one can state
+
+$$ \mathbb{P}\bigl(T_l \le \widehat{\theta} \le T_u\bigr)= \int_{T_l}^{T_u}dF_{\widehat{\theta}}(x) =1-\alpha, $$
+
+where $1-\alpha$ is the **confidence level**, with usually $\alpha=5\%$.
+
+Many values of $T_l$ and $T_u$ satisfy the preceding probability statement. A common choice in the asymptotic normal case is the central interval, which is symmetric around the expected value $\theta$.
+
+The distribution of $\widehat{\theta}$ usually depends on $\theta$ so that the inequality $T_l \le \widehat{\theta} \le T_u$ can be manipulated so that one gets a CI of the form
+
+$$ \mathbb{P}\bigl(g(T_l) \le \theta \le g(T_u)\bigr)=1-\alpha, $$
+
+where $g(T_l)$ and $g(T_u)$ do not depend on $\theta$, but possibly on other population parameters. Then the interval
+
+$$ [g(T_l),g(T_u)] $$
+
+is a CI at the $1-\alpha$ confidence level for $\theta$. It can be exact if $F_{\widehat{\theta}}$ is finite sample, or asymptotic if $F_{\widehat{\theta}}$ is asymptotic.
+
+### 4.1.1 Example with Asymptotic CDF
+
+Asymptotically, most consistent estimators are Gaussian. Their standardized version
+
+$$ Z=\sqrt{n}\frac{\widehat{\theta}-\theta}{\sigma_{\widehat{\theta}}} $$
+
+has therefore a standard Gaussian CDF $\mathcal{N}(0,1)$ as $n\to\infty$. The smallest interval of probability $1-\alpha$ is the one that is symmetric around the center $\mu=0$. Hence, by defining
+
+$$ z_{\alpha/2}=F_Z^{-1}(\alpha/2),\; z_{1-\alpha/2}=F_Z^{-1}(1-\alpha/2), $$
+
+i.e., the quantiles on $F_Z=\mathcal{N}(0,1)$ leaving $\alpha/2$ probability below and, respectively, above, are such that
+
+$$ \mathbb{P}\left(z_{\alpha/2}<Z<z_{1-\alpha/2}\right)=\mathbb{P}\left(z_{\alpha/2}<\sqrt{n}\frac{\widehat{\theta}-\theta}{\sigma_{\widehat{\theta}}}<z_{1-\alpha/2}\right)=1-\alpha, $$
+
+asymptotically.
+
+Hence, a $1-\alpha$ CI for $\theta$ is given by
+
+$$ \theta \in \left[ \widehat{\theta}-z_{1-\alpha/2}\frac{\sigma_{\widehat{\theta}}}{\sqrt{n}}, \; \widehat{\theta}+z_{1-\alpha/2}\frac{\sigma_{\widehat{\theta}}}{\sqrt{n}} \right]. $$
+
+**Suggested Exercise 53.**
+
+**Illustration in `R`**
+
+``` r
+alpha <- 0.05
+z_left  <- qnorm(alpha / 2)
+z_right <- qnorm(1 - alpha / 2)
+
+grid <- data.frame(z = seq(-4, 4, length.out = 1000))
+grid$density <- dnorm(grid$z)
+grid$inside <- (grid$z >= z_left) & (grid$z <= z_right)
+
+ggplot(grid, aes(x = z, y = density)) +
+  geom_line(linewidth = 1) +
+  geom_area(data = subset(grid, inside), fill = "grey70") +
+  geom_vline(xintercept = c(z_left, z_right), linetype = 2) +
+  theme_minimal() +
+  labs(
+    title = "Central Probability Region of the Standard Normal Distribution",
+    subtitle = "The shaded area has probability 1 - alpha",
+    x = "z",
+    y = "Density"
+  )
+```
+
+\[immagine\]
+
+The shaded region corresponds to the event
+
+$$ z_{\alpha/2}<Z<z_{1-\alpha/2}. $$
+
+### 4.1.2 Example with Exact CDF
+
+The most well-known example of an exact distribution is the one of the sample mean (or MLE) $\overline{X}$ with unbiased variance estimator
+
+$$ s^2=\frac{1}{n-1}\sum_{i=1}^n\left(X_i-\overline{X}\right)^2, $$
+
+when the random variables $X_i$, $i=1,\ldots,n$, are i.i.d. $\mathcal{N}(\mu,\sigma^2)$.
+
+Indeed, one can prove that
+
+$$ \sqrt{n}\frac{\overline{X}-\mu}{s} \sim St_{n-1}, $$
+
+where $St_{n-1}$ is a **Student distribution** with $n-1$ **degrees of freedom**.
+
+This gives the confidence interval
+
+$$ \mu \in \left[ \overline{X}-t_{n-1,\,1-\alpha/2}\frac{s}{\sqrt{n}}, \; \overline{X}+t_{n-1,\,1-\alpha/2}\frac{s}{\sqrt{n}} \right]. $$
+
+**Suggested Exercise 54.**
+
+## 4.2 Bootstrap Confidence Intervals
+
+Sometimes the distribution of an estimator is difficult to derive, even asymptotically, or the standard error is cumbersome to compute.
+
+In such cases, the **bootstrap** provides a computational alternative.
+
+Suppose we observe a sample
+
+$$ x_1,\dots,x_n, $$
+
+and compute a consistent estimator $\widehat{\theta}$. The bootstrap then proceeds as follows:
+
+1.  resample with replacement from the observed data;
+2.  compute the estimator on each resample;
+3.  use the EDF of these bootstrap estimates to approximate the sampling distribution of $\widehat{\theta}$.
+
+So the bootstrap replaces the unknown population distribution by the empirical distribution of the bootstrap replicates, i.e.
+
+$$ \widehat{\theta}^{\ast 1},\dots,\widehat{\theta}^{\ast B}, $$
+
+for $B$ replicates or **bootstrap samples**. These replicates are then used to compute **percentile intervals**.
+
+Indeed, let $q_{\alpha/2}^{\ast}$ and $q_{1-\alpha/2}^{\ast}$ be the empirical quantiles of the bootstrap estimates at probabilities of, respectively, $\alpha/2$ and $1-\alpha/2$. Then a bootstrap confidence interval is
+
+$$ [q_{\alpha/2}^{\ast}, q_{1-\alpha/2}^{\ast}]. $$
+
+For example, the empirical median is a good example because its exact sampling distribution is much less convenient than that of the mean. We simulate a skewed sample, compute the sample median, and then build a 95% percentile bootstrap confidence interval. We draw samples of size $n=50$ from an exponential distribution with rate 2. Its population median is
+
+$$ \theta=\frac{\log(2)}{2}\approx 0.3466. $$
+
+``` r
+set.seed(123)
+
+n <- 50
+rate <- 2
+x <- rexp(n, rate = rate)
+
+theta_true <- qexp(0.5, rate = rate)
+theta_hat <- median(x)
+
+c(
+  population_median = theta_true,
+  sample_median = theta_hat
+)
+```
+
+    ## population_median     sample_median 
+    ##         0.3465736         0.4222948
+
+We draw $B=10{,}000$ samples of size $n$, with replacement, from the observed data. For every resample, we calculate the sample median.
+
+``` r
+set.seed(456)
+
+B <- 10000
+
+theta_boot <- replicate(
+  B,
+  median(sample(x, size = n, replace = TRUE))
+)
+
+summary(theta_boot)
+```
+
+    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    ##  0.2102  0.3953  0.4223  0.4273  0.4829  0.6732
+
+The simulated bootstrap medians provide an approximation to the sampling distribution of the sample median. Its main numerical features are:
+
+``` r
+c(
+  bootstrap_mean = mean(theta_boot),
+  bootstrap_variance = var(theta_boot),
+  bootstrap_standard_error = sd(theta_boot)
+)
+```
+
+    ##           bootstrap_mean       bootstrap_variance bootstrap_standard_error 
+    ##              0.427303298              0.006345927              0.079661324
+
+The bootstrap distribution can be represented by and histogram.
+
+``` r
+ci_manual <- unname(
+  quantile(theta_boot, probs = c(0.025, 0.975), type = 7)
+)
+
+ggplot(data.frame(theta_boot = theta_boot), aes(x = theta_boot)) +
+  geom_histogram(
+    aes(y = after_stat(density)),
+    bins = 40,
+    fill = "#9ECAE1",
+    color = "white"
+  ) +
+  geom_density(
+    linewidth = 0.9,
+    color = "#2C7FB8"
+  ) +
+  geom_vline(
+    xintercept = ci_manual,
+    linetype = 2,
+    color = "#D95F0E"
+  ) +
+  geom_vline(
+    xintercept = theta_hat,
+    linewidth = 0.8,
+    color = "#238B45"
+  ) +
+  theme_minimal() +
+  labs(
+    title = "Bootstrap Distribution of the Sample Median",
+    subtitle = paste(
+      "Orange dashed lines: 95% percentile endpoints;",
+      "green line: observed median"
+    ),
+    x = "Bootstrap median",
+    y = "Density"
+  )
+```
+
+\[immagine\]
+
+The percentile method uses the 2.5th and 97.5th percentiles of the simulated bootstrap estimates:
+
+$$ CI_{0.95}^{\mathrm{perc}} = \left[ q^*_{0.025}, q^*_{0.975} \right]. $$
+
+``` r
+manual_results <- data.frame(
+  quantity = c(
+    "Population median",
+    "Observed sample median",
+    "Percentile lower endpoint",
+    "Percentile upper endpoint"
+  ),
+  value = c(theta_true, theta_hat, ci_manual)
+)
+
+knitr::kable(manual_results, digits = 4)
+```
+
+  quantity                       value
+  --------------------------- --------
+  Population median             0.3466
+  Observed sample median        0.4223
+  Percentile lower endpoint     0.2919
+  Percentile upper endpoint     0.5896
+
+This interval is a bootstrap percentile interval: its endpoints are quantiles of the bootstrap distribution itself.
+
+The recommended `R` package `boot` provides `boot()` for resampling and `boot.ci()` for confidence intervals. The statistic function must accept the data and a vector of resampled indices.
+
+``` r
+if (!requireNamespace("boot", quietly = TRUE)) {
+  stop("The recommended R package 'boot' is required for this section.")
+}
+
+median_statistic <- function(data, indices) {
+  median(data[indices])
+}
+
+set.seed(789)
+
+boot_fit <- boot::boot(
+  data = x,
+  statistic = median_statistic,
+  R = B
+)
+
+boot_ci_object <- boot::boot.ci(
+  boot.out = boot_fit,
+  conf = 0.95,
+  type = "perc"
+)
+
+boot_ci_object
+```
+
+    ## BOOTSTRAP CONFIDENCE INTERVAL CALCULATIONS
+    ## Based on 10000 bootstrap replicates
+    ## 
+    ## CALL : 
+    ## boot::boot.ci(boot.out = boot_fit, conf = 0.95, type = "perc")
+    ## 
+    ## Intervals : 
+    ## Level     Percentile     
+    ## 95%   ( 0.2919,  0.5960 )  
+    ## Calculations and Intervals on Original Scale
+
+For a percentile interval, the fourth and fifth entries in the `percent` component are the lower and upper endpoints.
+
+``` r
+ci_boot_function <- unname(boot_ci_object$percent[4:5])
+
+interval_comparison <- data.frame(
+  method = c(
+    "Bootstrap using sample() and quantile()",
+    "R boot::boot() and boot::boot.ci(type = 'perc')"
+  ),
+  lower = c(ci_manual[1], ci_boot_function[1]),
+  upper = c(ci_manual[2], ci_boot_function[2])
+)
+
+knitr::kable(interval_comparison, digits = 4)
+```
+
+  method                                               lower    upper
+  ------------------------------------------------- -------- --------
+  Bootstrap using sample() and quantile()             0.2919   0.5896
+  R boot::boot() and boot::boot.ci(type = 'perc')     0.2919   0.5960
+
+The two intervals should be very close. They need not be identical because the direct calculation and `boot::boot()` above use different random bootstrap resamples. Increasing $B$ reduces this Monte Carlo variation.
+
+## 4.3 Coverage
+
+Because confidence intervals can be constructed in different ways, it is important to assess their accuracy at given sample sizes $n$. This measure is called the **coverage** of a confidence interval. It is the probability that the interval contains the population parameter.
+
+Namely, let $\theta$ be an unknown parameter and, given a sample, a method provides the confidence interval
+
+$$ [C_l(X_1,\dots,X_n),\, C_u(X_1,\dots,X_n)]. $$
+
+The **coverage probability** of the interval procedure is
+
+$$ \mathbb{P}\bigl(C_l(X_1,\dots,X_n)\le \theta \le C_u(X_1,\dots,X_n)\bigr). $$
+
+If a method is advertised as a $95\%$ confidence interval, then the goal is that this probability should be close to $0.95$.
+
+Coverage is a property of the **procedure**, not of one realized interval. Namely, if we repeated the experiment many times and built a confidence interval each time, then about $95\%$ of those intervals should contain the true parameter.
+
+Monte Carlo simulation provides a practical way to estimate coverage:
+
+1.  choose a data generating process with a known true parameter $\theta$ and a sample size $n$;
+2.  generate many samples from that model;
+3.  compute a confidence interval from each sample;
+4.  record whether the interval contains the true parameter;
+5.  average the results.
+
+If we repeat this $B$ times, the Monte Carlo estimate of coverage is the proportion of intervals that contain $\theta$.
+
+For example, we consider CIs for the population mean with a positively skewed distribution so that the comparison between methods is more interesting than in the Gaussian case.
+
+Let
+
+$$ X_1,\dots,X_n \overset{i.i.d.}{\sim} \operatorname{Exp}(1). $$
+
+Then the population mean is
+
+$$ \theta=\mathbb{E}[X]=1. $$
+
+For each simulated sample, we compute three confidence intervals for the mean using
+
+- The asymptotic Gaussian interval: $\overline{X}\pm z_{1-\alpha/2}\frac{s}{\sqrt{n}}$ with $s$ the sample standard deviation.
+- The bootstrap normal interval: one uses the bootstrap replications of the sample mean to estimate its standard error, i.e. $\widehat{\operatorname{se}}_{\overline{X}}=\operatorname{se}\left(\overline{X}_1^{*},\ldots,\overline{X}_B^{*}\right)$, to produce the CI $\overline{X}\pm z_{1-\alpha/2}\widehat{\operatorname{se}}_{\overline{X}}$.
+- The bootstrap percentile interval: obtained from the empirical quantiles of the bootstrap replications $\overline{X}_1^{*},\ldots,\overline{X}_B^{*}$.
+
+We now simulate the coverage for $95\%$ CIs of these three methods.
+
+``` r
+cache_file_main <- file.path(cache_dir, "coverage_mean_methods_n30.RData")
+
+if (file.exists(cache_file_main)) {
+  load(cache_file_main)
+} else {
+  set.seed(123)
+
+  # True model
+  theta_true <- 1            # mean of Exp(1)
+  n <- 30                    # sample size
+  alpha <- 0.05
+  z975 <- qnorm(1 - alpha / 2)
+
+  # Monte Carlo settings
+  B_mc <- 2000
+  B_boot <- 1000
+
+  covered_asymptotic <- logical(B_mc)
+  covered_boot_normal <- logical(B_mc)
+  covered_boot_percentile <- logical(B_mc)
+
+  ci_lengths <- data.frame(
+    asymptotic = numeric(B_mc),
+    boot_normal = numeric(B_mc),
+    boot_percentile = numeric(B_mc)
+  )
+
+  for (b in 1:B_mc) {
+    x <- rexp(n, rate = 1)
+
+    # Point estimate
+    xbar <- mean(x)
+    s <- sd(x)
+
+    # 1. Asymptotic normal CI
+    lower_asym <- xbar - z975 * s / sqrt(n)
+    upper_asym <- xbar + z975 * s / sqrt(n)
+
+    covered_asymptotic[b] <- (lower_asym <= theta_true) & (theta_true <= upper_asym)
+    ci_lengths$asymptotic[b] <- upper_asym - lower_asym
+
+    # Bootstrap replications
+    boot_means <- numeric(B_boot)
+    for (j in 1:B_boot) {
+      x_star <- sample(x, size = n, replace = TRUE)
+      boot_means[j] <- mean(x_star)
+    }
+
+    # 2. Bootstrap normal CI
+    se_boot <- sd(boot_means)
+    lower_boot_norm <- xbar - z975 * se_boot
+    upper_boot_norm <- xbar + z975 * se_boot
+
+    covered_boot_normal[b] <- (lower_boot_norm <= theta_true) & (theta_true <= upper_boot_norm)
+    ci_lengths$boot_normal[b] <- upper_boot_norm - lower_boot_norm
+
+    # 3. Bootstrap percentile CI
+    qs <- quantile(boot_means, probs = c(alpha / 2, 1 - alpha / 2))
+    lower_boot_perc <- qs[1]
+    upper_boot_perc <- qs[2]
+
+    covered_boot_percentile[b] <- (lower_boot_perc <= theta_true) & (theta_true <= upper_boot_perc)
+    ci_lengths$boot_percentile[b] <- upper_boot_perc - lower_boot_perc
+  }
+
+  coverage_results <- data.frame(
+    method = c("Asymptotic normal", "Bootstrap normal", "Bootstrap percentile"),
+    coverage = c(
+      mean(covered_asymptotic),
+      mean(covered_boot_normal),
+      mean(covered_boot_percentile)
+    ),
+    avg_length = c(
+      mean(ci_lengths$asymptotic),
+      mean(ci_lengths$boot_normal),
+      mean(ci_lengths$boot_percentile)
+    )
+  )
+
+  save(
+    theta_true, n, alpha, z975, B_mc, B_boot,
+    covered_asymptotic, covered_boot_normal, covered_boot_percentile,
+    ci_lengths, coverage_results,
+    file = cache_file_main
+  )
+}
+
+coverage_results
+```
+
+    ##                 method coverage avg_length
+    ## 1    Asymptotic normal   0.9060  0.6958669
+    ## 2     Bootstrap normal   0.9020  0.6840438
+    ## 3 Bootstrap percentile   0.9075  0.6781401
+
+The table reports two quantities for each method:
+
+- the **Monte Carlo coverage**, that is, the proportion of intervals containing the true mean;
+- the **average interval length**.
+
+A good confidence interval method should ideally have:
+
+- coverage close to the nominal level, here $0.95$;
+- and intervals that are not unnecessarily wide.
+
+It is also useful to see how the methods behave as $n$ increases. We then repeat the same Monte Carlo comparison for several sample sizes.
+
+``` r
+cache_file_sizes <- file.path(cache_dir, "coverage_by_sample_size.RData")
+
+if (file.exists(cache_file_sizes)) {
+  load(cache_file_sizes)
+} else {
+  set.seed(123)
+
+  sample_sizes <- c(10, 20, 30, 50, 100)
+
+  all_results <- data.frame()
+
+  for (n in sample_sizes) {
+    covered_asymptotic <- logical(B_mc)
+    covered_boot_normal <- logical(B_mc)
+    covered_boot_percentile <- logical(B_mc)
+
+    for (b in 1:B_mc) {
+      x <- rexp(n, rate = 1)
+      xbar <- mean(x)
+      s <- sd(x)
+
+      # Asymptotic interval
+      lower_asym <- xbar - z975 * s / sqrt(n)
+      upper_asym <- xbar + z975 * s / sqrt(n)
+      covered_asymptotic[b] <- (lower_asym <= theta_true) & (theta_true <= upper_asym)
+
+      # Bootstrap
+      boot_means <- numeric(B_boot)
+      for (j in 1:B_boot) {
+        x_star <- sample(x, size = n, replace = TRUE)
+        boot_means[j] <- mean(x_star)
+      }
+
+      # Bootstrap normal
+      se_boot <- sd(boot_means)
+      lower_boot_norm <- xbar - z975 * se_boot
+      upper_boot_norm <- xbar + z975 * se_boot
+      covered_boot_normal[b] <- (lower_boot_norm <= theta_true) & (theta_true <= upper_boot_norm)
+
+      # Bootstrap percentile
+      qs <- quantile(boot_means, probs = c(alpha / 2, 1 - alpha / 2))
+      lower_boot_perc <- qs[1]
+      upper_boot_perc <- qs[2]
+      covered_boot_percentile[b] <- (lower_boot_perc <= theta_true) & (theta_true <= upper_boot_perc)
+    }
+
+    tmp <- data.frame(
+      n = n,
+      method = c("Asymptotic normal", "Bootstrap normal", "Bootstrap percentile"),
+      coverage = c(
+        mean(covered_asymptotic),
+        mean(covered_boot_normal),
+        mean(covered_boot_percentile)
+      )
+    )
+
+    all_results <- rbind(all_results, tmp)
+  }
+
+  save(sample_sizes, all_results, file = cache_file_sizes)
+}
+
+all_results
+```
+
+    ##      n               method coverage
+    ## 1   10    Asymptotic normal   0.8665
+    ## 2   10     Bootstrap normal   0.8535
+    ## 3   10 Bootstrap percentile   0.8620
+    ## 4   20    Asymptotic normal   0.8975
+    ## 5   20     Bootstrap normal   0.8885
+    ## 6   20 Bootstrap percentile   0.8930
+    ## 7   30    Asymptotic normal   0.9210
+    ## 8   30     Bootstrap normal   0.9180
+    ## 9   30 Bootstrap percentile   0.9190
+    ## 10  50    Asymptotic normal   0.9450
+    ## 11  50     Bootstrap normal   0.9435
+    ## 12  50 Bootstrap percentile   0.9410
+    ## 13 100    Asymptotic normal   0.9395
+    ## 14 100     Bootstrap normal   0.9380
+    ## 15 100 Bootstrap percentile   0.9375
+
+``` r
+ggplot(all_results, aes(x = n, y = coverage, color = method)) +
+  geom_point(size = 2) +
+  geom_line() +
+  geom_hline(yintercept = 0.95, linetype = 2) +
+  theme_minimal() +
+  labs(
+    title = "Coverage as a Function of the Sample Size",
+    subtitle = "Dashed line: nominal 95% coverage",
+    x = "Sample size n",
+    y = "Estimated coverage"
+  )
+```
+
+\[immagine\]
+
+This graph shows how the performance of the different interval procedures changes with the sample size.

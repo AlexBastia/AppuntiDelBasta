@@ -1,0 +1,52 @@
+\documentclass{report}
+
+\input{../LatexTemp/preamble.tex}
+\input{../LatexTemp/macros}
+\input{../LatexTemp/letterfonts}
+
+\usepackage{booktabs}
+\usepackage{listings}
+
+% --- stile per il codice (Prolog / MiniZinc / pseudocodice) ---
+\lstset{
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{red!70!black}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  columns=fullflexible,
+  keepspaces=true,
+  breaklines=true,
+  frame=single,
+  rulecolor=\color{gray!40},
+  xleftmargin=4pt, xrightmargin=4pt,
+  literate={à}{{\`a}}1 {è}{{\`e}}1 {é}{{\'e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1
+}
+\lstdefinelanguage{MiniZinc}{
+  morekeywords={var,constraint,solve,maximize,minimize,satisfy,output,int,array,of},
+  sensitive=true, morecomment=[l]{\%}, morestring=[b]"
+}
+
+% --- notazione logica ---
+\newcommand{\PROP}{\mathit{PROP}}
+\newcommand{\sem}[1]{[\![ #1 ]\!]}
+\newcommand{\Mod}{\mathcal{M}}
+
+\setlength{\parindent}{0pt}
+
+\title{\Huge{Languages and Algorithms for AI}\\Modulo 2 -- Logica, LP e CLP}
+\author{\huge{Giovanni "Qua' Qua' dancer" Palma}}
+\date{}
+\pagenumbering{gobble}
+
+\begin{document}
+
+\maketitle
+\newpage
+\pdfbookmark[section]{\contentsname}{toc}
+\tableofcontents
+
+\pagebreak
+
+\include{paginette/01-intro}
+\include{paginette/02-truth}
+
+\end{document}

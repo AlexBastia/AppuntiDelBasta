@@ -1,0 +1,941 @@
+\chapter{Introduzione: AI simbolica e bisogno della logica}
+
+\textit{Modulo 2 -- M. Gabbrielli, DISI, Università di Bologna.}
+Lucidi: \texttt{lucidi/1.Intro.Logica}. Materiale di approfondimento:
+Van Dalen, \emph{Logic and Structure}; Bratko, \emph{Prolog Programming for AI};
+Gabbrielli--Martini, capitolo su LP e CLP; Tutorial MiniZinc;
+Russell \& Norvig, cap.~1.
+
+% =====================================================================
+\section{Organizzazione del corso}
+% =====================================================================
+
+\nt{
+  \begin{itemize}
+    \item 1\textsuperscript{o} modulo: Felli (sulla slide il prof ha corretto
+          a mano ``Lodi'' $\to$ ``Felli'').
+    \item 2\textsuperscript{o} modulo: questo (Gabbrielli).
+    \item Il corso integrato con Dal Lago è stato \textbf{cancellato} a mano dal
+          prof: non fa parte di questo esame.
+    \item Esami \textbf{separati} per ogni modulo; per questo modulo l'esame è
+          \textbf{solo scritto}.
+    \item Parte del materiale viene dal corso di logica (in italiano) di
+          \textbf{Claudio Sacerdoti Coen} (UniBo), nome scritto a mano sulla
+          copertina; il resto da Russell--Norvig, Van Dalen, E.~Clarke.
+  \end{itemize}
+}
+
+\subsection{Programma del modulo}
+\begin{enumerate}
+  \item AI simbolica e bisogno della logica.
+  \item Introduzione alla logica: logica proposizionale, logica del primo
+        ordine (FOL), risoluzione, unificazione.
+  \item Logic Programming: interpretazione procedurale, interpretazione
+        dichiarativa, Prolog (prima parte; la seconda in un altro corso).
+  \item Constraint Programming: CLP, MiniZinc (prima parte).
+\end{enumerate}
+
+\subsection{Testi}
+\begin{itemize}
+  \item Dispense (su Virtuale).
+  \item D.~van Dalen, \emph{Logic and Structure}, 4\textsuperscript{a} ed.,
+        Springer --- riferimento per la parte di logica.
+  \item I.~Bratko, \emph{Prolog Programming for Artificial Intelligence}.
+  \item M.~Triska, \emph{The Power of Prolog} (online).
+  \item Russell, Norvig, \emph{Artificial Intelligence: A Modern Approach}.
+  \item \emph{The MiniZinc Handbook} (online).
+\end{itemize}
+
+% =====================================================================
+\section{Due esempi motivazionali}
+% =====================================================================
+
+Prima di parlare di logica il prof mostra due problemi che si risolvono
+\emph{descrivendoli} invece di scrivere un algoritmo:
+\begin{enumerate}
+  \item un problema \textbf{combinatorio} (risolto in Prolog);
+  \item un problema di \textbf{ottimizzazione} (risolto in MiniZinc).
+\end{enumerate}
+
+\subsection{Esempio 1: un problema combinatorio}
+
+\dfn{Il problema (sequenza di Langford a tre copie)}{
+  Disporre in una sequenza tre $1$, tre $2$, \dots, tre $9$ (in totale
+  $27$ numeri) in modo che, per ogni $i \in [1,9]$, tra due occorrenze
+  \emph{successive} di $i$ ci siano \textbf{esattamente $i$ numeri}.
+}
+
+\ex{Una soluzione}{
+  \[
+    1,9,1,2,1,8,2,4,6,2,7,9,4,5,8,6,3,4,7,5,3,9,6,8,3,5,7
+  \]
+  Verifica per $i=1$: gli $1$ stanno nelle posizioni $1,3,5$; tra due $1$
+  consecutivi c'è esattamente un numero. Per $i=2$: posizioni $4,7,10$,
+  quindi due numeri in mezzo. (Sulla slide il prof sottolinea a colori le
+  occorrenze di ciascun numero.)
+}
+
+Il programma Prolog che lo risolve:
+
+\begin{lstlisting}[language=Prolog]
+sequence([_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_]).
+% sequence(X) -> X e' una lista di 27 variabili
+
+question(S) :-
+    sequence(S),
+    sublist([9,_,_,_,_,_,_,_,_,_,9,_,_,_,_,_,_,_,_,_,9], S),
+    sublist([8,_,_,_,_,_,_,_,_,8,_,_,_,_,_,_,_,_,8], S),
+    sublist([7,_,_,_,_,_,_,_,7,_,_,_,_,_,_,_,7], S),
+    sublist([6,_,_,_,_,_,_,6,_,_,_,_,_,_,6], S),
+    sublist([5,_,_,_,_,_,5,_,_,_,_,_,5], S),
+    sublist([4,_,_,_,_,4,_,_,_,_,4], S),
+    sublist([3,_,_,_,3,_,_,_,3], S),
+    sublist([2,_,_,2,_,_,2], S),
+    sublist([1,_,1,_,1], S).
+% S e' una soluzione
+\end{lstlisting}
+
+\nt{
+  \textbf{Come leggerlo (approfondimento, Bratko cap.~1--3).}
+  \begin{itemize}
+    \item \texttt{\_} è una \textbf{variabile anonima}: ogni occorrenza è una
+          variabile nuova, diversa dalle altre.
+    \item Il programma \emph{non dice come} cercare la soluzione: dice solo
+          \emph{che cosa} è una soluzione. $S$ è una lista di 27 elementi, e per
+          ogni $i$ il ``pattern'' $[i, \underbrace{\_,\dots,\_}_{i}, i,
+          \underbrace{\_,\dots,\_}_{i}, i]$ deve comparire come
+          \textbf{sottolista contigua} di $S$.
+    \item \texttt{sublist/2} non è un predicato standard di SWI-Prolog; una
+          definizione possibile è
+          \begin{center}
+          \texttt{sublist(L, S) :- append(\_, T, S), append(L, \_, T).}
+          \end{center}
+          cioè $L$ è sottolista di $S$ se $S = A \cdot L \cdot B$ per qualche
+          $A,B$.
+    \item Il ``come'' lo fa l'interprete: \textbf{unificazione} (il pattern
+          viene ``incollato'' su un tratto di $S$, legando le variabili) e
+          \textbf{backtracking} (se un \texttt{sublist} successivo fallisce si
+          torna indietro e si prova un'altra posizione).
+          Mettere prima il $9$ (il pattern più lungo) riduce le posizioni
+          possibili e quindi lo spazio di ricerca.
+  \end{itemize}
+}
+
+\subsection{Esempio 2: un problema di ottimizzazione (Cakes)}
+
+\dfn{Il problema delle torte}{
+  Si possono fare due tipi di torte:
+  \begin{enumerate}
+    \item \textbf{banana}: 250\,g farina, 2 banane, 75\,g zucchero, 100\,g burro;
+    \item \textbf{cioccolato}: 200\,g farina, 75\,g cacao, 150\,g zucchero,
+          150\,g burro.
+  \end{enumerate}
+  Prezzi di vendita: cioccolato \$4.50, banana \$4.00.
+  Disponibilità: 4\,kg farina, 6 banane, 2\,kg zucchero, 500\,g burro,
+  500\,g cacao.
+  \textbf{Domanda}: quante torte di ciascun tipo fare per \textbf{massimizzare
+  il profitto}?
+}
+
+\begin{lstlisting}[language=MiniZinc]
+% Baking cakes for the school fete
+var 0..100: b;   % no. of banana cakes
+var 0..100: c;   % no. of chocolate cakes
+
+constraint 250*b + 200*c <= 4000;   % flour
+constraint 2*b <= 6;                % bananas
+constraint 75*b + 150*c <= 2000;    % sugar
+constraint 100*b + 150*c <= 500;    % butter
+constraint 75*c <= 500;             % cocoa
+
+solve maximize 400*b + 450*c;       % profit (in cents)
+
+output ["no. of banana cakes = \(b)\n",
+        "no. of chocolate cakes = \(c)\n"];
+\end{lstlisting}
+
+\nt{
+  \textbf{Struttura di un modello MiniZinc (Tutorial MiniZinc).}
+  \begin{itemize}
+    \item \texttt{var 0..100: b;} dichiara una \textbf{variabile decisionale}
+          intera con dominio $[0,100]$;
+    \item \texttt{constraint} aggiunge un \textbf{vincolo} che ogni soluzione
+          deve rispettare;
+    \item \texttt{solve maximize} $f$ chiede una soluzione \textbf{ottima}
+          rispetto a $f$ (con \texttt{solve satisfy} se ne chiede una qualsiasi);
+    \item i prezzi sono scritti in centesimi per restare negli interi.
+  \end{itemize}
+  Anche qui scriviamo solo \emph{che cosa} vogliamo; il solver decide come
+  esplorare le combinazioni.
+}
+
+\ex{La soluzione ottima (approfondimento)}{
+  Il vincolo stringente è il burro: $100b + 150c \le 500$, cioè
+  $2b + 3c \le 10$; inoltre le banane danno $b \le 3$. Le coppie
+  ammissibili ``sul bordo'' sono:
+  \[
+  \begin{array}{c|c|c}
+    (b,c) & \text{burro} & 400b + 450c \\ \hline
+    (3,1) & 450 & 1650 \\
+    (2,2) & 500 & \mathbf{1700} \\
+    (1,2) & 400 & 1300 \\
+    (0,3) & 450 & 1350
+  \end{array}
+  \]
+  Gli altri vincoli (farina, zucchero, cacao) sono soddisfatti da tutte.
+  L'ottimo è $b = 2$, $c = 2$, profitto \$17.00.
+}
+
+% =====================================================================
+\section{Programmazione dichiarativa}
+% =====================================================================
+
+\dfn{Algorithm = Logic + Control (Kowalski)}{
+  Un algoritmo si scompone in due parti:
+  \begin{itemize}
+    \item \textbf{Logic}: \emph{che cosa} va calcolato (la specifica del problema);
+    \item \textbf{Control}: \emph{come} lo si calcola (ordine dei passi,
+          strategia di ricerca).
+  \end{itemize}
+}
+
+\dfn{Programmazione tradizionale vs.\ dichiarativa}{
+  \begin{itemize}
+    \item Nella programmazione \textbf{tradizionale} (imperativa) il
+          programmatore si occupa sia della Logic sia del Control.
+    \item Nella programmazione \textbf{dichiarativa} il programmatore si
+          occupa \textbf{solo della Logic}; il Control lo gestisce
+          l'interprete del linguaggio.
+  \end{itemize}
+  Il compito del programmatore è \emph{dichiarare} il problema: \textbf{cosa}
+  vogliamo ottenere e non \textbf{come} ottenerlo.
+}
+
+\dfn{Tre paradigmi dichiarativi}{
+  \begin{enumerate}
+    \item \textbf{Logic Programming} (Prolog, \dots): basato sulla nozione di
+          \emph{relazione}.
+    \item \textbf{Functional programming} (ML, Haskell, OCaml, \dots): basato
+          sulla composizione di \emph{funzioni}.
+    \item \textbf{Constraint Programming} (MiniZinc, CLP, ILOG, \dots): basato
+          su relazioni e su \emph{solver} specifici per un dominio.
+  \end{enumerate}
+}
+
+\nt{
+  \emph{``Constraint programming represents one of the closest approaches
+  computer science has yet made to the Holy Grail of programming: the user
+  states the problem, the computer solves it.''} --- E.~C.~Freuder.
+
+  \textbf{Approfondimento (Gabbrielli--Martini).} In Prolog il Control è
+  fissato: le clausole si provano dall'alto in basso, i letterali del corpo
+  da sinistra a destra, con ricerca in profondità e backtracking.
+  Per questo in pratica l'ordine delle clausole \emph{conta} (può cambiare
+  efficienza e perfino terminazione), e la separazione Logic/Control in
+  Prolog non è perfetta. Il significato dichiarativo (l'insieme delle
+  risposte \emph{vere}) resta però indipendente da quest'ordine.
+}
+
+% =====================================================================
+\section{Che cos'è la logica}
+% =====================================================================
+
+\dfn{Logica}{
+  La logica è lo studio sistematico della \textbf{forma delle inferenze
+  valide} e delle leggi più generali della \textbf{verità}.
+  Un'\textbf{inferenza valida} è una in cui esiste una specifica relazione di
+  supporto logico tra le \emph{premesse} e la \emph{conclusione}.
+}
+
+Tradizionalmente la logica comprende: classificazione degli argomenti,
+esposizione della ``forma logica'' comune a tutti gli argomenti validi, studio
+della dimostrazione e dell'inferenza (compresi paradossi e fallacie), studio di
+\textbf{sintassi} e \textbf{semantica}. È studiata in filosofia (dall'antichità),
+in matematica (da metà Ottocento) e oggi nelle scienze cognitive (informatica,
+linguistica, filosofia, psicologia).
+
+\subsection{Tante logiche diverse}
+
+Ogni logica fissa \emph{che cosa} conserva un'inferenza. Con premesse $X, Y$ e
+conclusione $W$:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Logica} & \textbf{Domanda} & \textbf{Uso in CS/AI} \\
+\midrule
+Classica (prop., FOL) & se $X$ e $Y$ sono veri, $W$ è vero? & AI, linguaggi logici, verifica \\
+Intuizionista & da prove di $X$, $Y$ costruisco una prova di $W$? & software corretto per costruzione \\
+Lineare & avendo $X$ e $Y$ posso \emph{scambiarli} per $W$? & controllo delle risorse \\
+Epistemica & se credo che tu sappia $X$, $Y$, credo $W$? & sicurezza \\
+Temporale & se $X$, $Y$ accadranno, $W$ potrà accadere? & specifica e verifica \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\nt{
+  Logiche diverse, ma problemi e tecniche simili. La logica è
+  interdisciplinare (filosofia, matematica, informatica, AI).
+  \textbf{Logica matematica} = applicazione del metodo matematico allo studio
+  della logica, \emph{ma anche} logica come fondamento della matematica
+  (logiche diverse $\Rightarrow$ matematiche diverse).
+}
+
+% =====================================================================
+\section{Perché studiare logica in informatica}
+% =====================================================================
+
+Cinque motivi (numerati a mano dal prof sulla slide):
+\begin{enumerate}
+  \item l'informatica deriva dalla logica;
+  \item la logica fonda la computazione e i linguaggi dichiarativi;
+  \item la logica fonda l'informatica teorica (calcolabilità);
+  \item serve a dimostrare la correttezza del software;
+  \item la logica è un linguaggio privo di paradossi.
+\end{enumerate}
+
+\subsection{1) L'informatica deriva dalla logica}
+
+\qs{È nato prima il computer o l'informatica?}{
+  La risposta sembra ovvia, ma l'informatica esiste \textbf{prima e
+  indipendentemente} dal computer, come \textbf{studio della calcolabilità}.
+}
+
+La storia, in breve:
+\begin{itemize}
+  \item La matematica antica (geometria a parte) non aveva basi formali
+        rigorose; queste vengono cercate nella logica e nell'aritmetica.
+  \item Si applicano metodi matematici allo studio della logica: la
+        derivazione logica viene identificata con un processo di calcolo
+        (\emph{calculemus!}).
+  \item Studiando i processi di calcolo si scoprono risultati sorprendenti:
+        esistono funzioni \textbf{non calcolabili} (anzi, sono la maggioranza),
+        ed esiste una classe di funzioni calcolabili definibile in modi del
+        tutto diversi (lambda calcolo, macchine di Turing, programmi logici,
+        RAM).
+  \item Intorno al 1930 nasce l'informatica.
+\end{itemize}
+
+\nt{
+  \emph{``Computer Science is no more about computers than Astronomy is about
+  telescopes.''} --- E.~W.~Dijkstra.
+
+  Il fatto che formalismi così diversi definiscano \emph{la stessa} classe di
+  funzioni è alla base della \textbf{tesi di Church--Turing}: le funzioni
+  ``calcolabili da un procedimento effettivo'' sono esattamente quelle
+  calcolabili da una macchina di Turing.
+}
+
+\subsection{2) Fondamento della computazione e dei linguaggi dichiarativi}
+
+Due grandi classi di linguaggi: \textbf{dichiarativi} (funzionali, logici, a
+vincoli) e \textbf{imperativi}.
+\begin{itemize}
+  \item \textbf{Linguaggi funzionali} (LISP, ML, Haskell, OCaml): basati sulla
+        composizione di funzioni. Legame forte con la logica:
+        \emph{programmare corrisponde a dimostrare} (in una logica
+        opportuna) e \emph{i tipi corrispondono ad enunciati di teoremi}
+        (corrispondenza di Curry--Howard).
+  \item \textbf{Linguaggi logici} (Prolog, CLP, CHR, CCP): basati sulla nozione
+        di relazione. Legame ancora più forte: \textbf{computazione =
+        deduzione}; Algorithm = Logic + Control.
+  \item \textbf{Linguaggi a vincoli} (CLP, CHR, CCP, MiniZinc): relazioni +
+        solver specifici di dominio; esistono sia basati sulla logica sia
+        imperativi; molto usati in applicazioni pratiche.
+\end{itemize}
+
+\subsection{3) Fondamento dell'informatica teorica (calcolabilità)}
+
+Due domande:
+\begin{enumerate}
+  \item Data un'affermazione vera o falsa, possiamo sempre \emph{dimostrarla}?
+  \item Data una funzione generica, possiamo \emph{calcolarla} con un computer?
+\end{enumerate}
+La risposta è \textbf{no} in entrambi i casi: la logica studia i limiti della
+conoscenza. Non tutto si può dimostrare vero o falso (incompletezza), non
+tutto si può calcolare. Sono limiti \emph{inevitabili} per l'informatica e
+l'AI.
+
+\subsection{4) Dimostrare la correttezza del software}
+
+\qs{Possiamo essere sicuri che un generico programma scritto in un linguaggio
+comune sia corretto?}{}
+
+\thm{Risultato fondamentale}{
+  La maggior parte delle proprietà (non banali) dei programmi \textbf{non è
+  decidibile}. In particolare non può esistere uno strumento automatico che,
+  dato un programma generico (in un linguaggio Turing-completo), decida se è
+  corretto (ad esempio se termina).
+}
+
+\nt{
+  Questo è il \textbf{teorema di Rice} (approfondimento): ogni proprietà non
+  banale della \emph{funzione calcolata} da un programma è indecidibile.
+  Il caso della terminazione è dimostrato più sotto
+  (Teorema~\ref{th:halting}).
+}
+
+Come se ne esce:
+\begin{itemize}
+  \item si scrive una \textbf{specifica} e si usa la logica per dimostrare
+        che il programma la soddisfa;
+  \item \textbf{prove automatiche}: solo in casi specifici o su
+        \emph{approssimazioni} delle proprietà;
+  \item \textbf{prove assistite}: l'umano fa la dimostrazione (in logica), il
+        computer la \emph{verifica}.
+\end{itemize}
+
+\nt{
+  \textbf{Note a mano del prof: il disegno della ``trusted code base''.}
+  \begin{itemize}
+    \item Dato un programma (il foglio) e un oracolo ``?'' che dovrebbe dire
+          se è corretto: un tale oracolo è \textbf{non decidibile} (croce
+          rossa).
+    \item Strada alternativa: l'umano scrive la \emph{specifica} e la
+          \emph{dimostrazione} in logica (il riquadro con $\forall, \exists,
+          \Rightarrow$); un piccolo programma \textbf{verificatore di prove}
+          controlla la dimostrazione e risponde sì/no (spunta verde).
+    \item Controllare una prova data è \emph{decidibile}, trovarla in generale
+          no. Ci si deve fidare solo del verificatore, che è piccolo e
+          semplice: questa è la \textbf{trusted code base} (evidenziata in
+          giallo). È l'idea dei proof assistant (Coq/Rocq, Lean, Isabelle).
+  \end{itemize}
+}
+
+\dfn{Specifica di un algoritmo di ordinamento (dagli appunti del prof)}{
+  \textbf{Pre-condizione:} l'input è un array $b$ di interi.
+
+  \textbf{Post-condizione:} l'output è un array $a$ di interi tale che
+  \[
+    \bigl(\forall i < a.\mathit{length}-1.\ a[i] \le a[i+1]\bigr)
+    \ \wedge\ \bigl(\forall i < a.\mathit{length}.\ \exists j.\ a[i] = b[j]\bigr)
+    \ \wedge\ \bigl(\forall i < b.\mathit{length}.\ \exists j.\ b[i] = a[j]\bigr).
+  \]
+  La prima congiunzione dice che $a$ è \textbf{ordinato}; le altre due che $a$
+  e $b$ contengono \textbf{gli stessi valori}.
+}
+
+\nt{
+  \textbf{Osservazione (approfondimento).} Le ultime due clausole dicono
+  ``stessi valori'' ma \emph{non} ``stesse molteplicità'': l'output
+  $a = [1,2,2]$ soddisfa la specifica con input $b = [2,1,1]$.
+  La specifica corretta richiede che $a$ sia una \textbf{permutazione} di $b$
+  (stessa lunghezza e, per ogni valore $x$, lo stesso numero di occorrenze).
+  Esempio di quanto è facile sbagliare una specifica: anche la specifica va
+  verificata. (Negli appunti gli indici sono scritti con $\le$; con array
+  indicizzati da $0$ servono le disuguaglianze strette, come sopra.)
+}
+
+\subsubsection{Tre limiti delle funzioni calcolate da un computer}
+
+\textbf{Nota importante:} i risultati seguenti valgono per linguaggi
+\textbf{Turing-completi}, cioè con il massimo potere espressivo noto.
+
+\mprop{Limite 1: le funzioni calcolate non sono solo totali}{
+  Definiamo nel linguaggio
+  \[ f(g) = \mathtt{not}\,(g(g)) \]
+  e applichiamo $f$ a sé stessa: $f(f) = \mathtt{not}\,(f(f))$.
+  Se $f(f)$ restituisse un booleano $v$ avremmo $v = \neg v$, assurdo.
+  Quindi la computazione di $f(f)$ \textbf{non termina}: le funzioni calcolate
+  dai programmi sono in generale \textbf{parziali}.
+}
+
+\nt{
+  Accanto a questa slide il prof ha scritto
+  \[ X = \{Y \mid Y \notin Y\} \qquad X \in X \iff X \notin X \]
+  cioè il \textbf{paradosso di Russell} (Sezione~\ref{sec:paradossi}):
+  $f(g) = \mathtt{not}(g(g))$ è la stessa costruzione, con
+  ``$g$ applicata a $g$'' al posto di ``$Y \in Y$''. In matematica genera un
+  paradosso; in un linguaggio di programmazione genera una funzione
+  \emph{parziale}.
+}
+
+\begin{Theorem}{Limite 2: la terminazione non è decidibile}{halting}
+  Non esiste un programma $f$ (in alcun linguaggio) tale che, per ogni
+  programma $g$ e argomento $x$,
+  \[
+    f(g,x) = \begin{cases}
+      \mathtt{true} & \text{se } g(x) \text{ termina},\\
+      \mathtt{false} & \text{se } g(x) \text{ non termina}.
+    \end{cases}
+  \]
+\end{Theorem}
+
+\pf{Dimostrazione}{
+  Per assurdo, supponiamo che $f$ esista. Definiamo
+  \begin{center}
+  \texttt{h(g) = if f(g,g) = true then while true do skip else return 0}
+  \end{center}
+  e consideriamo $h(h)$:
+  \[
+    h(h) \text{ termina} \iff f(h,h) = \mathtt{false}
+    \iff h(h) \text{ non termina}.
+  \]
+  Contraddizione, quindi $f$ non può esistere.
+}
+
+\nt{
+  $f$ deve essere essa stessa \emph{totale} (risponde sempre) perché
+  l'argomento funzioni: è proprio questo che la rende impossibile.
+  La struttura è di nuovo la \textbf{diagonalizzazione}: $h$ applicata a sé
+  stessa fa il contrario di quello che $f$ prevede.
+}
+
+\mlenma{I programmi sono numerabili}{
+  L'insieme dei programmi esprimibili in un qualsiasi linguaggio di
+  programmazione è \textbf{numerabile}.
+}
+
+\pf{Dimostrazione}{
+  Un programma è una stringa finita su un alfabeto finito $\Sigma$. Le
+  stringhe di lunghezza $n$ sono $|\Sigma|^n$, un numero finito. Elencando
+  prima le stringhe di lunghezza $0$, poi quelle di lunghezza $1$, poi $2$,
+  \dots\ (ciascun gruppo in ordine lessicografico) si ottiene
+  un'enumerazione di $\Sigma^*$. I programmi sono un sottoinsieme di
+  $\Sigma^*$, quindi sono al più numerabili.
+}
+
+\thm{Le funzioni booleane non sono numerabili}{
+  Sia $F = \{ f \mid f : \mathbb{N} \to \{0,1\} \}$. Allora $F$ non è
+  numerabile.
+}
+
+\pf{Dimostrazione (diagonale)}{
+  Per assurdo, sia $f_1, f_2, f_3, \dots$ un'enumerazione di tutte le
+  funzioni di $F$. Definiamo
+  \[
+    f^*(n) = \begin{cases} 1 & \text{se } f_n(n) = 0,\\ 0 & \text{se } f_n(n) = 1. \end{cases}
+  \]
+  Allora $f^* \in F$, ma per ogni $i$ si ha $f^*(i) \ne f_i(i)$, quindi
+  $f^* \ne f_i$ per ogni $i$. Dunque $f^*$ non compare nell'enumerazione,
+  contro l'ipotesi che fosse completa.
+}
+
+\cor{Limite 3: i linguaggi esprimono pochissime funzioni}{
+  Nessun linguaggio di programmazione può esprimere tutte le funzioni
+  booleane $\mathbb{N}\to\{0,1\}$ (e quindi, a fortiori, tutte le funzioni
+  matematiche).
+}
+
+\pf{Dimostrazione}{
+  I programmi sono numerabili (lemma), $F$ no (teorema): non può esistere una
+  suriezione dai programmi su $F$.
+}
+
+\subsubsection{Dimostrazione alternativa: il diagonale di Cantor}
+
+\thm{Cantor}{
+  Sia $T$ un insieme con almeno due elementi. Allora $|T| < |T^T|$, dove
+  $T^T$ è l'insieme delle funzioni $T \to T$.
+}
+
+\pf{Dimostrazione}{
+  Non può essere $|T| > |T^T|$: la mappa $t \mapsto (\text{funzione costante }
+  t)$ è iniettiva da $T$ in $T^T$. Basta dunque mostrare $|T| \ne |T^T|$.
+
+  Per assurdo, sia $g : T \to T^T$ una biiezione. Definiamo $f \in T^T$
+  ponendo, per ogni $t \in T$, $f(t) = t'$ con $t' \ne g(t)(t)$
+  (esiste perché $T$ ha almeno due elementi). Allora per ogni $t$ si ha
+  $f(t) \ne g(t)(t)$, quindi $f \ne g(t)$. Dunque $f$ non è nell'immagine
+  di $g$, che non è suriettiva: assurdo.
+}
+
+\cor{Fatto 3, versione alternativa}{
+  Sia $T$ l'insieme di tutti i valori di un linguaggio, che contiene almeno
+  i booleani e le funzioni. Se le funzioni del linguaggio fossero
+  \emph{tutte} le funzioni matematiche $T\to T$, avremmo
+  $T \supseteq \{0,1\} \cup T^T$, quindi $|T| \ge |T^T|$, contro Cantor.
+  Quindi un linguaggio non può esprimere tutte le funzioni matematiche.
+}
+
+\subsection{5) La logica come linguaggio privo di paradossi}
+\label{sec:paradossi}
+
+\dfn{Paradosso}{
+  Un \textbf{paradosso} è un ragionamento apparentemente corretto (rispetto
+  a regole e assiomi dati), da premesse apparentemente corrette, che porta a
+  una conclusione apparentemente contraddittoria.
+}
+
+Il linguaggio naturale permette di esprimere paradossi, quindi non è adatto
+come base per la matematica o l'informatica. La logica fornisce linguaggi
+privi di paradossi.
+
+\ex{Falso paradosso (trova l'errore)}{
+  \[
+    x = 1 \Rightarrow x^2 = x \Rightarrow x^2 - 1 = x - 1
+    \Rightarrow (x-1)(x+1) = x-1 \Rightarrow x + 1 = 1 \Rightarrow x = 0.
+  \]
+  L'errore: si divide per $x - 1$, che vale $0$.
+}
+
+\ex{Il mentitore}{
+  ``Io sono un bugiardo.'' Sono bugiardo sse quello che dico non è vero, sse
+  ``io sono un bugiardo'' non è vero.
+}
+
+\ex{Paradosso di Berry}{
+  ``Sia $x$ il più piccolo numero che non può essere definito con meno di 1000
+  parole.'' Allora $x$ è definito (con meno di 1000 parole, quelle della frase)
+  sse $x$ non è definibile con meno di 1000 parole.
+}
+
+\dfn{Metalinguaggio}{
+  Un \textbf{metalinguaggio} è un linguaggio usato per parlare di un
+  linguaggio. ``Metalinguistico'': relativo a un metalinguaggio.
+}
+
+\mprop{Perché nascono questi paradossi}{
+  \begin{enumerate}
+    \item uso \textbf{metalinguistico} del linguaggio naturale (la frase parla
+          di frasi, di definizioni, \dots);
+    \item \textbf{auto-applicazione} di un concetto metalinguistico (la frase
+          parla di sé stessa).
+  \end{enumerate}
+  Rimedio: abbandonare il linguaggio naturale e usare un linguaggio
+  opportuno della logica matematica, in cui linguaggio oggetto e
+  metalinguaggio sono separati.
+}
+
+\subsubsection{Paradossi in matematica}
+
+\thm{Paradosso di Russell}{
+  Sia $X = \{ Y \mid Y \notin Y \}$. Allora $X \in X \iff X \notin X$.
+}
+
+\nt{
+  \textbf{Soluzione:} $\{Y \mid Y \notin Y\}$ \emph{non è un insieme}.
+  \begin{itemize}
+    \item Non si può usare la nozione di insieme in modo metalinguistico: la
+          collezione di tutti gli insiemi non è un insieme.
+    \item Gli insiemi si costruiscono solo \textbf{selezionando elementi da un
+          insieme già dato} (assioma di separazione di ZF:
+          $\{ Y \in A \mid \varphi(Y)\}$). Così
+          $\{Y \in \text{classe di tutti gli insiemi} \mid Y \notin Y\}$ è una
+          \textbf{classe}, non un insieme, e quindi non contiene sé stessa.
+  \end{itemize}
+}
+
+\subsubsection{Paradossi in informatica}
+
+Molti linguaggi ammettono funzioni di ordine superiore (che prendono funzioni
+in input): sono caratteristiche metalinguistiche che rendono possibile
+l'auto-applicazione. Qui i paradossi \textbf{non sono evitabili}; ma invece di
+produrre contraddizioni mostrano i \emph{limiti} dei nostri modelli di calcolo
+(funzioni parziali, indecidibilità: vedi i Limiti 1--3).
+
+\subsubsection{Il paradosso di Curry}
+
+\ex{Versione in linguaggio naturale}{
+  $A$ = ``Se questa frase è vera, allora Babbo Natale esiste''; sia $B$ =
+  ``Babbo Natale esiste''.
+  Per dimostrare $A$ (un'implicazione) assumiamo la premessa, ``questa frase
+  è vera'', cioè $A$. Ma $A$ è $A \to B$, quindi per modus ponens $B$. Abbiamo
+  dimostrato $A \to B$, cioè $A$. Ora $A$ è vera e $A \to B$ è vera: per modus
+  ponens $B$. Babbo Natale esiste.
+}
+
+\mprop{Curry in un contesto logico}{
+  \begin{enumerate}
+    \item $X := (X \to Y)$ \hfill assunzione (``se questa frase è vera allora $Y$'')
+    \item $X \to X$ \hfill legge di identità
+    \item $X \to (X \to Y)$ \hfill da 2, sostituendo il lato destro con 1
+    \item $X \to Y$ \hfill da 3 per \emph{contrazione}
+    \item $X$ \hfill da 4, per la definizione 1
+    \item $Y$ \hfill da 5 e 4 per modus ponens
+  \end{enumerate}
+}
+
+\nt{
+  \textbf{È di nuovo un paradosso?} Dipende dal passo 1. In molte logiche,
+  se $Y$ è falso, la 1 non è possibile.
+  In logica proposizionale classica (approfondimento): se $Y$ è falso,
+  $X \leftrightarrow (X \to Y)$ diventa $X \leftrightarrow \neg X$, che non è
+  soddisfatta da nessuna valutazione. Quindi non esiste alcuna formula $X$ con
+  $X \equiv (X\to Y)$ e $Y$ falso: la ``definizione'' 1 non è esprimibile, e
+  la derivazione è corretta ma parte da un'ipotesi impossibile.
+  Il problema nasce solo se il linguaggio permette a una frase di riferirsi a
+  sé stessa.
+
+  (Sulla slide la derivazione è barrata a mano dal prof.)
+}
+
+% =====================================================================
+\section{Perché studiare logica in AI}
+% =====================================================================
+
+\begin{enumerate}[label=\alph*)]
+  \item È uno strumento per \textbf{esprimere il ragionamento umano}.
+  \item È il fondamento di un \textbf{approccio classico all'AI} (vedi anche
+        il corso Foundations).
+  \item È il fondamento dei \textbf{linguaggi (dichiarativi) usati in AI}.
+  \item Ha applicazione diretta in linguaggi usati in AI, come
+        \textbf{Prolog e CLP} (questo corso).
+\end{enumerate}
+
+% =====================================================================
+\section{Che cos'è l'AI: un po' di storia}
+% =====================================================================
+
+Come l'informatica, anche l'AI esiste \emph{prima} dei computer.
+
+\begin{itemize}
+  \item \textbf{Ramon Llull} (1232--1316), \emph{Ars combinatoria}: dischi di
+        carta che combinano concetti rappresentati simbolicamente.
+  \item \textbf{Cartesio} (1596--1650): influenzato dagli automi esposti a
+        Parigi, studia il rapporto mente--corpo (\textbf{dualismo}: il corpo
+        funziona come una macchina, la mente non è materiale, interagiscono
+        nella ghiandola pineale). Precursore delle scienze cognitive e
+        dell'AI perché considera la costruzione di automi un processo
+        cognitivo importante.
+  \item \textbf{Leibniz} (1646--1716), \emph{calculus ratiocinator}: un
+        linguaggio universale in cui risolvere ogni controversia calcolando
+        (\emph{``calculemus!''}).
+  \item XVIII secolo: automi di \textbf{Vaucanson} (l'anatra che ``mangia'') e
+        \textbf{Jaquet-Droz} (lo scrivano e il musicista, con movimenti
+        controllati da un \emph{disco metallico}: un programma ante litteram).
+  \item Il \textbf{Turco meccanico} (XVIII sec.): un ``automa'' che giocava a
+        scacchi, in realtà con un giocatore umano nascosto. \emph{AI ante
+        litteram\dots\ fake!} (Il nome è stato ripreso da Amazon Mechanical
+        Turk, lavoro umano nascosto dietro servizi ``automatici''.)
+  \item \textbf{Turing}: 1935 macchina universale; 1947 talk ``What we want is
+        a machine that can learn from experience''; 1948 \emph{Intelligent
+        Machinery} (mai pubblicato in vita, un vero manifesto dell'AI con
+        sistemi simbolici e reti neurali); 1950 \emph{Computing Machinery and
+        Intelligence} (imitation game).
+  \item \textbf{Neuroni e apprendimento}: McCulloch--Pitts (1943), primo
+        modello computazionale del neurone (logica a soglia); Hebb (1949),
+        apprendimento hebbiano; Rosenblatt (1958), \textbf{perceptron}.
+  \item \textbf{1956, Dartmouth}: John McCarthy conia il termine
+        \emph{Artificial Intelligence}: ``ogni aspetto dell'apprendimento o
+        dell'intelligenza può in principio essere descritto così precisamente
+        da poter costruire una macchina che lo simuli''. McCarthy inventa
+        anche il LISP.
+\end{itemize}
+
+\subsection{Le quattro visioni dell'AI (Russell--Norvig)}
+
+\begin{center}
+\begin{tabular}{l|l}
+  \textbf{Thinking humanly} & \textbf{Thinking rationally} \\ \hline
+  \textbf{Acting humanly} & \textbf{Acting rationally}
+\end{tabular}
+\end{center}
+
+\dfn{Thinking humanly}{
+  Sistemi che \textbf{pensano come gli umani}: imitare il cervello.
+  Non ne sappiamo abbastanza (Broca 1861, Golgi 1873, EEG 1929, fMRI 1990):
+  conosciamo relazioni tra aree e funzioni, non come funzionano un processo
+  cognitivo o la memoria.
+  L'approccio delle \textbf{scienze cognitive} (anni '60, ``rivoluzione
+  cognitiva'' contro il comportamentismo) richiede teorie validate o
+  top-down (predire e testare il comportamento di soggetti umani) o
+  bottom-up (dati neurologici). Oggi è distinto dall'AI.
+}
+
+\dfn{Thinking rationally}{
+  Sistemi che \textbf{pensano razionalmente}: le ``leggi del pensiero'',
+  cioè la \textbf{logica}. Approccio \emph{normativo} (prescrittivo) e non
+  descrittivo, da Aristotele in poi.
+  Problemi: (1) non tutto il comportamento intelligente passa per la
+  deliberazione logica; (2) qual è lo scopo del pensare, quali pensieri
+  \emph{dovrei} avere?
+}
+
+\dfn{Acting rationally}{
+  Sistemi che \textbf{agiscono razionalmente}: fare la cosa giusta, cioè
+  quella che ci si aspetta massimizzi il raggiungimento dell'obiettivo date le
+  informazioni disponibili. Non richiede necessariamente il pensiero (es.\
+  il riflesso di chiudere gli occhi), ma il pensiero dovrebbe essere al
+  servizio dell'azione razionale.
+}
+
+\dfn{Acting humanly: il test di Turing}{
+  Turing (1950) sostituisce ``le macchine possono pensare?'' con ``le
+  macchine possono \emph{comportarsi} in modo intelligente?'', e propone un
+  test operativo: l'\textbf{imitation game}. Un interrogatore dialoga per
+  scritto con un umano e una macchina e deve capire chi è chi.
+}
+
+\nt{
+  Turing prevedeva che entro il 2000 una macchina avrebbe avuto il 30\% di
+  probabilità di ingannare una persona comune per 5 minuti; anticipò le
+  principali obiezioni all'AI e indicò le componenti chiave: conoscenza,
+  ragionamento, linguaggio, apprendimento.
+  \textbf{Problema}: il test non è riproducibile, costruttivo, né analizzabile
+  matematicamente.
+
+  Sul ``solipsismo'' Turing osserva che l'unico modo di sapere se una
+  macchina pensa sarebbe \emph{essere} la macchina; ma lo stesso varrebbe per
+  gli altri esseri umani. Invece di discutere all'infinito, ``è usuale avere
+  la cortese convenzione che tutti pensino''.
+}
+
+\nt{
+  \textbf{Posizione del corso:} da informatici adottiamo il punto di vista
+  ``semplice'' di Turing, e consideriamo AI i sistemi che agiscono
+  umanamente (o almeno razionalmente).
+}
+
+\dfn{Definizione ufficiale di AI}{
+  L'AI è la capacità di un computer di svolgere compiti comunemente associati
+  a esseri intelligenti. Due approcci principali:
+  \begin{enumerate}
+    \item \textbf{AI simbolica};
+    \item \textbf{AI sub-simbolica} (connessionista, incluso il ML).
+  \end{enumerate}
+}
+
+\nt{
+  Peter Norvig: l'AI è \emph{``knowing what to do when you don't know what to
+  do''}.
+}
+
+% =====================================================================
+\section{AI simbolica vs.\ sub-simbolica}
+% =====================================================================
+
+\subsection{AI simbolica: i sistemi esperti}
+
+\ex{Un sistema per le infezioni batteriche (stile MYCIN)}{
+  \textbf{Sys}: la coltura è Gram positiva? \textbf{User}: NO.\\
+  \textbf{Sys}: è Gram negativa? \textbf{User}: SÌ.\\
+  \textbf{Sys}: il paziente è allergico agli antibiotici? \textbf{User}: NO.\\
+  \textbf{Sys}: suggerirei una terapia a base di antibiotici.
+
+  \smallskip
+  Non è ChatGPT: il sistema \textbf{spiega} le proprie decisioni.
+  Alla domanda \textbf{WHY?} (perché ti serve questa informazione?) risponde
+  indicando la regola che sta cercando di applicare; alla domanda
+  \textbf{HOW?} (come hai dedotto questo?) risponde indicando la regola usata
+  e le premesse.
+}
+
+\dfn{Sistema esperto}{
+  Un \textbf{sistema esperto} (anni '70 in poi):
+  \begin{itemize}
+    \item usa conoscenza di dominio fornita da umani, tipicamente come
+          \textbf{regole logiche} (\textbf{knowledge base});
+    \item risolve problemi in un dominio limitato con prestazioni simili a un
+          esperto;
+    \item cerca e costruisce dinamicamente la soluzione con un
+          \textbf{motore inferenziale} che elabora le regole.
+  \end{itemize}
+}
+
+\mprop{Caratteristiche della computazione simbolica}{
+  \begin{enumerate}[label=\Roman*.]
+    \item ragionamento basato sulla logica;
+    \item può fornire \textbf{spiegazioni} delle decisioni;
+    \item non adatta a problemi come il riconoscimento di immagini (che non si
+          risolvono algoritmicamente).
+  \end{enumerate}
+}
+
+\subsubsection{Formalizzare la diagnosi in logica}
+
+\textbf{Obiettivo}: suggerire un farmaco adatto al paziente, cioè dimostrare
+$\mathit{prescribe}(\mathit{Drug})$.
+
+\textbf{Fatti:} $\mathit{gram}(\mathit{neg})$, \
+$\neg\mathit{allergic}(\mathit{antb})$.
+
+\textbf{Regole:}
+\begin{itemize}
+  \item[R1:] $\mathit{gram}(\mathit{neg}) \to \mathit{id}(\mathit{ecoli})$
+             \hfill (Gram-negativo $\Rightarrow$ enterium-coli)
+  \item[R2:] $\mathit{gram}(\mathit{pos}) \to \mathit{id}(\mathit{strep})$
+             \hfill (Gram-positivo $\Rightarrow$ streptococco)
+  \item[R3:] $\mathit{id}(\mathit{strep}) \vee \mathit{id}(\mathit{bact}) \to \mathit{ind}(\mathit{pen})$
+             \hfill (strepto o batterio $\Rightarrow$ indicata la penicillina)
+  \item[R4:] $\mathit{ind}(X) \wedge \neg\mathit{allergic}(X) \to \mathit{prescribe}(X)$
+  \item[R5:] $\mathit{id}(\mathit{ecoli}) \to \mathit{ind}(\mathit{antb})$
+\end{itemize}
+
+\dfn{Motore inferenziale (backward chaining)}{
+  Si parte dal \textbf{goal} e si va all'indietro:
+  \begin{enumerate}
+    \item il goal $\mathit{prescribe}(\mathit{Drug})$ fa \emph{match} con la
+          testa di R4 ($\mathit{Drug}/X$); si attiva R4: nuovi sotto-goal
+          $\mathit{ind}(X)$ e $\neg\mathit{allergic}(X)$;
+    \item $\mathit{ind}(X)$ fa match con R3 ($X/\mathit{pen}$) e con R5
+          ($X/\mathit{antb}$): due rami alternativi;
+    \item ramo R3: serve $\mathit{id}(\mathit{strep})$ (via R2, serve
+          $\mathit{gram}(\mathit{pos})$: \textbf{NO}) oppure
+          $\mathit{id}(\mathit{bact})$ (nessuna regola: \textbf{NO}).
+          Il ramo fallisce;
+    \item ramo R5: serve $\mathit{id}(\mathit{ecoli})$, via R1 serve
+          $\mathit{gram}(\mathit{neg})$: è un fatto, \textbf{SÌ};
+          con $X = \mathit{antb}$ anche $\neg\mathit{allergic}(\mathit{antb})$
+          è un fatto: \textbf{SÌ}.
+  \end{enumerate}
+  Risposta: $\mathit{prescribe}(\mathit{antb})$, con il legame
+  $X/\mathit{antb}$ (annotato a mano dal prof sull'albero).
+}
+
+\begin{note}
+  \textbf{Approfondimento: lo stesso in Prolog.} È esattamente il modo di
+  ragionare di Prolog (risoluzione SLD: goal-directed, depth-first,
+  sinistra-destra, backtracking):
+\begin{lstlisting}[language=Prolog]
+gram(neg).
+not_allergic(antb).
+
+id(ecoli)  :- gram(neg).          % R1
+id(strep)  :- gram(pos).          % R2
+ind(pen)   :- id(strep).          % R3 (due clausole per l'OR)
+ind(pen)   :- id(bact).
+ind(antb)  :- id(ecoli).          % R5
+prescribe(X) :- ind(X), not_allergic(X).   % R4
+
+?- prescribe(Drug).
+Drug = antb.
+\end{lstlisting}
+  Osservazioni: la disgiunzione nel corpo di R3 diventa \emph{due clausole};
+  il fatto negativo $\neg\mathit{allergic}$ è stato reso con un predicato
+  positivo, perché le clausole di Prolog (clausole di Horn) non ammettono
+  negazioni nei fatti. Le spiegazioni WHY/HOW corrispondono a mostrare il
+  ramo dell'albero di derivazione.
+\end{note}
+
+\subsection{Logica e AI}
+\begin{itemize}
+  \item Molte logiche: proposizionale, primo ordine, modali (epistemica,
+        temporale, deontica), \dots
+  \item Molte tecniche di ragionamento: \textbf{deduzione}, \textbf{induzione},
+        \textbf{abduzione}.
+  \item Molti linguaggi e strumenti: Prolog, constraint programming.
+  \item Base di molti sistemi esperti.
+\end{itemize}
+
+\nt{
+  \textbf{Deduzione, induzione, abduzione} (approfondimento). Con regola
+  $A \to B$:
+  \begin{itemize}
+    \item \emph{deduzione}: da $A$ e $A \to B$ concludo $B$ (corretta);
+    \item \emph{abduzione}: da $B$ e $A \to B$ ipotizzo $A$ come spiegazione
+          (es.\ diagnosi: dal sintomo alla causa; non corretta in generale);
+    \item \emph{induzione}: da molti casi di $A$ e $B$ insieme generalizzo
+          $A \to B$ (è ciò che fa il ML).
+  \end{itemize}
+}
+
+\subsection{AI sub-simbolica}
+
+\mprop{Caratteristiche della computazione sub-simbolica}{
+  \begin{enumerate}[label=\Roman*.]
+    \item basata su reti neurali (artificiali) e ML;
+    \item molto buona per riconoscimento di immagini e problemi non
+          risolvibili algoritmicamente;
+    \item \textbf{non può fornire spiegazioni} delle decisioni (e quindi è
+          ancora lontana dal superare il test di Turing).
+  \end{enumerate}
+}
+
+\ex{Riconoscimento di tumori in istologia}{
+  \textbf{Train}: da immagini di vetrini interi si estraggono patch etichettate
+  (tumore / normale) e si addestra un modello profondo.
+  \textbf{Test}: il vetrino nuovo viene diviso in patch sovrapposte, il modello
+  restituisce una probabilità per patch, e si ottiene una \emph{mappa di
+  probabilità} del tumore. Il modello indica \emph{dove}, ma non \emph{perché}.
+}

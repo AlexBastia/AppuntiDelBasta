@@ -1,7 +1,7 @@
 #separator:tab
 #html:true
 #notetype:Basic
-#deck:AI Knowledge Representation::03 Tablut Challenge
+#deck:AI Knowledge Representation::Modulo 1::03 Tablut Challenge
 
 Qual è l'<b>obiettivo</b> della Tablut Challenge (per i docenti e per gli studenti)?	<ul><li>Per i docenti: stimolare la comprensione e la discussione degli <b>algoritmi di base per risolvere giochi</b> in ambito AI.</li><li>Per gli studenti: <b>vincere!</b></li></ul>
 

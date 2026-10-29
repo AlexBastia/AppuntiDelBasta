@@ -1,7 +1,7 @@
 #separator:tab
 #html:true
 #notetype:Basic
-#deck:AI Knowledge Representation::02 Ricerca non informata
+#deck:AI Knowledge Representation::Modulo 1::Problem Solving in AI::02 Ricerca non informata
 
 Cos'è lo <b>spazio delle soluzioni</b> e cosa si intende per <b>ricerca</b> (search)?	Lo spazio delle soluzioni contiene tutte le possibili sequenze di azioni applicabili dall'agente; alcune portano a una soluzione.<br>La <b>ricerca</b> è il processo con cui l'agente esamina sequenze alternative di azioni che portano a stati noti e sceglie poi la migliore.
 

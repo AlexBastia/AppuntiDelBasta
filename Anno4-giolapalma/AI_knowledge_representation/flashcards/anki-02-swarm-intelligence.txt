@@ -1,7 +1,7 @@
 #separator:tab
 #html:true
 #notetype:Basic
-#deck:AI Knowledge Representation::02 Swarm Intelligence
+#deck:AI Knowledge Representation::Modulo 1::Problem Solving in AI::02 Swarm Intelligence
 
 Cos'è la <b>swarm intelligence</b> (SI)?	Tecnica di IA basata sullo studio del <b>comportamento collettivo</b> in sistemi <b>decentralizzati</b> e <b>auto-organizzati</b>.<br>Una popolazione di <b>agenti semplici</b> interagisce <b>localmente</b> tra loro e con l'ambiente; senza un controllo centralizzato, le interazioni locali portano all'<b>emergere di un comportamento globale</b>.<br>Esempi in natura: colonie di formiche, stormi di uccelli, mandrie, colonie batteriche, banchi di pesci.
 

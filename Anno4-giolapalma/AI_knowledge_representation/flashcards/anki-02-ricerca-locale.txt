@@ -1,7 +1,7 @@
 #separator:tab
 #html:true
 #notetype:Basic
-#deck:AI Knowledge Representation::02 Ricerca locale e metaeuristiche
+#deck:AI Knowledge Representation::Modulo 1::Problem Solving in AI::02 Ricerca locale e metaeuristiche
 
 Che differenza c'è tra algoritmi <b>costruttivi</b> e algoritmi di <b>ricerca locale</b> (local search)?	<ul><li><b>Costruttivi</b>: generano una soluzione aggiungendo, a partire da uno stato vuoto o iniziale, componenti della soluzione in un certo ordine.</li><li><b>Ricerca locale</b>: partono da una soluzione iniziale (completa) e cercano di migliorarla iterativamente tramite <b>mosse locali</b>.</li></ul>Le mosse locali definiscono un <b>vicinato</b> (neighborhood).
 

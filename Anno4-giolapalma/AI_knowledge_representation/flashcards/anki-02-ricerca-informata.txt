@@ -1,7 +1,7 @@
 #separator:tab
 #html:true
 #notetype:Basic
-#deck:AI Knowledge Representation::02 Ricerca informata
+#deck:AI Knowledge Representation::Modulo 1::Problem Solving in AI::02 Ricerca informata
 
 Secondo i lucidi, in cosa consiste l'<b>intelligenza</b> di un sistema di ricerca?	Non nella capacità di cercare, ma nella capacità di usare <b>conoscenza sul problema</b> per ridurre/mitigare l'<b>esplosione combinatoria</b>.<br>Per un sistema con capacità di calcolo limitata, l'intelligenza è la scelta saggia di cosa fare dopo.
 

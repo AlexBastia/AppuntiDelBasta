@@ -1,7 +1,7 @@
 #separator:tab
 #html:true
 #notetype:Basic
-#deck:AI Knowledge Representation::01 Trustworthy AI
+#deck:AI Knowledge Representation::Modulo 1::Introduction to AI::01 Trustworthy AI
 
 Quale distinzione fa <b>Stuart Russell</b> tra sistemi "better at making decisions" e "making better decisions"?	Finora l'IA si è concentrata su sistemi più bravi a <b>prendere decisioni</b> (agente razionale che massimizza i propri obiettivi), ma ciò non equivale a prendere <b>decisioni migliori</b>, cioè <b>allineate con i valori umani</b>. Se la funzione di utilità non è allineata, le decisioni possono essere "ineffabilmente stupide" agli occhi di un umano.
 

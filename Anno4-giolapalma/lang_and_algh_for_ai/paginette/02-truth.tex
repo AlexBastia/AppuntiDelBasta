@@ -1,0 +1,587 @@
+\chapter{La nozione di verità e di conseguenza logica}
+
+\textit{Lucidi: \texttt{lucidi/2.Truth}. Approfondimento: Van Dalen,
+\emph{Logic and Structure}, §1.1 (Propositions and Connectives) e §1.2
+(Semantics).}
+
+% =====================================================================
+\section{Che cos'è la verità}
+% =====================================================================
+
+Abbiamo visto che la logica è lo studio sistematico della forma delle
+\textbf{inferenze valide} e delle leggi più generali della \textbf{verità}.
+Ma che cos'è la verità?
+
+\dfn{Verità (senso comune)}{
+  La verità è l'essere \textbf{in accordo con i fatti o con la realtà}
+  (oppure la fedeltà a un originale o a uno standard).
+}
+
+Nelle scienze sperimentali (fisica, chimica, biologia) la verità è associata
+al \textbf{mondo sensibile}:
+\begin{itemize}
+  \item un \textbf{esperimento ripetibile} definisce una verità;
+  \item se il mondo sensibile cambia, cambia anche la verità.
+\end{itemize}
+
+\qs{Che cosa succede quando non c'è un mondo sensibile, ad esempio in
+matematica?}{}
+
+\subsection{La verità in matematica}
+
+Le nostre ``verità probabili'' sono, ad esempio:
+\begin{itemize}
+  \item la somma degli angoli interni di un triangolo è $180^\circ$;
+  \item in modo equivalente, il \textbf{V postulato} di Euclide: dati una retta
+        e un punto fuori di essa, esiste \textbf{una e una sola} retta per il
+        punto parallela alla retta data.
+\end{itemize}
+Però\dots
+
+\ex{Geometria sferica (Riemann, 1854)}{
+  Reinterpretiamo i termini primitivi della geometria:
+  \begin{itemize}
+    \item \textbf{punto} = punto sulla superficie di una sfera;
+    \item \textbf{retta} = cerchio massimo, cioè intersezione della sfera con
+          un piano che passa per il centro.
+  \end{itemize}
+  Allora:
+  \begin{itemize}
+    \item dati due punti esiste una sola retta che li contiene;
+    \item due rette hanno sempre almeno due punti in comune (quindi
+          \emph{non esistono parallele});
+    \item la somma degli angoli interni di un triangolo è \textbf{maggiore di
+          $180^\circ$}.
+  \end{itemize}
+}
+
+\nt{
+  \textbf{Precisazione (approfondimento).} ``Dati due punti esiste una sola
+  retta'' vale per punti \emph{non antipodali}: per due punti opposti (es.\ i
+  poli) passano infiniti cerchi massimi. Per questo nella \emph{geometria
+  ellittica} si identificano i punti antipodali. Il triangolo con un vertice
+  al polo nord e due sull'equatore, distanti un quarto di giro, ha tre angoli
+  retti: somma $270^\circ$.
+}
+
+\subsection{Conseguenze}
+
+\mprop{Il metodo assiomatico descrive modelli, non il mondo}{
+  \begin{itemize}
+    \item Il metodo assiomatico \textbf{non è una descrizione del mondo
+          sensibile}.
+    \item La geometria (la matematica) non sembra fornire giudizi sintetici a
+          priori (nel senso di Kant).
+    \item Fornisce invece la descrizione di un \textbf{insieme di mondi
+          (modelli)} in cui:
+      \begin{enumerate}
+        \item si possono interpretare le entità (punti, rette, \dots) come si
+              vuole, \emph{purché gli assiomi siano rispettati};
+        \item mondi diversi hanno proprietà diverse;
+        \item solo alcune di queste proprietà sono dimostrabili dagli assiomi
+              (\textbf{incompletezza}).
+      \end{enumerate}
+  \end{itemize}
+}
+
+\nt{
+  Il punto 3 si legge così: il V postulato è vero nel piano euclideo e falso
+  sulla sfera, e \emph{entrambi} soddisfano gli altri assiomi. Quindi il V
+  postulato \textbf{non è dimostrabile} dagli altri assiomi (altrimenti sarebbe
+  vero in tutti i loro modelli), e neanche la sua negazione. È un enunciato
+  \emph{indipendente}. Questo è esattamente il metodo che useremo in logica:
+  per mostrare che $F$ \emph{non} segue da $\Gamma$ basta esibire \emph{un}
+  mondo in cui $\Gamma$ è vero e $F$ è falso (un \textbf{controesempio}).
+}
+
+Per parlarne con precisione introduciamo un po' di lessico.
+
+\dfn{Teoria, modello, consistenza}{
+  \begin{itemize}
+    \item Una \textbf{teoria} è un insieme di enunciati (assiomi).
+    \item Un \textbf{modello} di una teoria è un mondo, con un'interpretazione
+          dei simboli, in cui tutti gli assiomi sono veri.
+    \item Una teoria è \textbf{consistente} se da essa non si può derivare
+          l'assurdo.
+  \end{itemize}
+}
+
+\mprop{Impatto sulla visione della matematica}{
+  \begin{itemize}
+    \item Una teoria non si accetta o scarta perché è soddisfatta (banalmente)
+          dal mondo sensibile, ma perché \textbf{ammette dei modelli}.
+    \item Una teoria che ammette modelli \textbf{non è mai inconsistente}: da
+          essa non si può derivare l'assurdo.
+    \item La nozione assoluta di verità (data dal mondo sensibile) viene
+          sostituita dalla nozione di \textbf{conseguenza logica}.
+  \end{itemize}
+}
+
+\nt{
+  Perché ``ha un modello $\Rightarrow$ consistente''? Le regole di deduzione
+  sono \textbf{corrette} (\emph{soundness}): trasformano enunciati veri in un
+  mondo in enunciati veri nello stesso mondo. In un modello tutti gli assiomi
+  sono veri, quindi è vero tutto ciò che si deriva; ma l'assurdo $\bot$ non è
+  vero in nessun mondo, quindi non si deriva. Il viceversa (consistente
+  $\Rightarrow$ ha un modello) è il \textbf{teorema di completezza}, che
+  vedremo (Van Dalen §1.5).
+}
+
+\subsection{Riassunto}
+
+\begin{itemize}
+  \item \textbf{Verità del mondo sensibile}: cambia quando cambia il mondo
+        (mutamenti \emph{ristretti}: il mondo cambia secondo le sue leggi).
+  \item \textbf{Verità della matematica}: cambia adottando nuovi mondi
+        (mutamenti \emph{non ristretti}: qualsiasi mondo che rispetta gli
+        assiomi).
+  \item Inoltre la verità cambia se si \textbf{interpretano} in modo diverso
+        le parole di un enunciato.
+\end{itemize}
+
+\qs{Che cosa resta della nozione di verità se il mondo cambia arbitrariamente?}{
+  Resta ciò che \emph{non dipende} dal mondo: la conseguenza logica.
+}
+
+% =====================================================================
+\section{Conseguenza ed equivalenza logica}
+% =====================================================================
+
+\dfn{Conseguenza logica (lucidi)}{
+  Sia $\Gamma = \{F_1, \dots, F_n\}$ un insieme di enunciati (\textbf{ipotesi}
+  o \textbf{premesse}) e $F$ un enunciato (\textbf{conclusione}).
+  $F$ è \textbf{conseguenza logica} di $\Gamma$, e si scrive
+  \[ \Gamma \models F, \]
+  se, per tutte le interpretazioni delle formule nei vari mondi possibili,
+  vale sempre: \emph{se tutte le formule di $\Gamma$ sono vere (nel mondo in
+  esame) allora anche $F$ è vera}.
+}
+
+\nt{
+  \textbf{Come leggerla.}
+  \begin{itemize}
+    \item Non si chiede che $F$ sia vera: si chiede che sia vera \emph{in ogni
+          mondo in cui le premesse sono vere}.
+    \item I mondi in cui qualche premessa è falsa non contano.
+    \item $\Gamma \not\models F$ significa che esiste \emph{almeno un} mondo
+          (un controesempio) in cui tutte le premesse sono vere e $F$ è falsa.
+    \item Con $\Gamma = \emptyset$: $\models F$ significa che $F$ è vera in
+          tutti i mondi ($F$ è \textbf{valida}, o \textbf{tautologia} nel caso
+          proposizionale).
+  \end{itemize}
+}
+
+\dfn{Equivalenza logica}{
+  $F$ è \textbf{logicamente equivalente} a $G$, e si scrive $F \equiv G$, sse
+  $F$ è conseguenza logica di $G$ e $G$ è conseguenza logica di $F$:
+  \[ F \equiv G \iff F \models G \ \text{e}\ G \models F. \]
+}
+
+\mlenma{Caratterizzazione dell'equivalenza}{
+  $F \equiv G$ sse in ogni mondo (con ogni interpretazione) $F$ e $G$ hanno lo
+  \textbf{stesso valore di verità}.
+}
+
+\pf{Dimostrazione}{
+  ($\Rightarrow$) Fissato un mondo: se $F$ è vera, da $F \models G$ anche $G$
+  è vera; se $G$ è vera, da $G \models F$ anche $F$ è vera. Quindi $F$ è vera
+  sse $G$ è vera: stesso valore.
+
+  ($\Leftarrow$) Se in ogni mondo $F$ e $G$ hanno lo stesso valore, in ogni
+  mondo in cui $F$ è vera lo è anche $G$ ($F \models G$) e viceversa
+  ($G \models F$).
+}
+
+\thm{L'equivalenza logica è una relazione di equivalenza}{
+  (Esercizio dei lucidi.) Per tutte le formule $F, G, H$:
+  \begin{enumerate}
+    \item \textbf{riflessività}: $F \equiv F$;
+    \item \textbf{simmetria}: $F \equiv G \Rightarrow G \equiv F$;
+    \item \textbf{transitività}: $F \equiv G$ e $G \equiv H \Rightarrow F \equiv H$.
+  \end{enumerate}
+}
+
+\pf{Dimostrazione}{
+  Basta mostrare che $\models$ tra singole formule è riflessiva e transitiva;
+  la simmetria di $\equiv$ viene gratis dalla definizione.
+  \begin{enumerate}
+    \item $F \models F$: in ogni mondo in cui $F$ è vera, $F$ è vera.
+          Quindi $F \models F$ e $F \models F$, cioè $F \equiv F$.
+    \item $F \equiv G$ significa ``$F \models G$ e $G \models F$'', che è la
+          stessa cosa di ``$G \models F$ e $F \models G$'', cioè $G \equiv F$.
+    \item Transitività di $\models$: se $F \models G$ e $G \models H$, prendiamo
+          un mondo in cui $F$ è vera; allora $G$ è vera (da $F \models G$),
+          quindi $H$ è vera (da $G \models H$). Dunque $F \models H$.
+          Allo stesso modo da $H \models G$ e $G \models F$ si ha $H \models F$.
+          Quindi $F \equiv H$.
+  \end{enumerate}
+  (In alternativa: per il lemma, $F \equiv G$ sse ``stesso valore in ogni
+  mondo'', e ``avere lo stesso valore'' è chiaramente riflessiva, simmetrica e
+  transitiva.)
+}
+
+\subsection{Conclusioni sulla verità}
+
+\begin{itemize}
+  \item La verità è sempre definita \textbf{rispetto a un mondo} e a una data
+        \textbf{interpretazione} dei simboli in quel mondo.
+  \item La verità di un singolo enunciato \textbf{non è interessante}: cambia
+        quando cambia il mondo.
+  \item Ciò che interessa sono la \textbf{conseguenza logica} e
+        l'\textbf{equivalenza logica}: \textbf{non cambiano} al variare del
+        mondo.
+\end{itemize}
+
+% =====================================================================
+\section{Logica proposizionale}
+% =====================================================================
+
+La logica proposizionale è la logica più semplice; illustra le idee di base
+usando le \textbf{proposizioni}.
+
+\dfn{Proposizione atomica e valore di verità}{
+  Una \textbf{proposizione} è un enunciato \emph{dichiarativo}, a cui si può
+  (in linea di principio) assegnare un valore vero o falso. Esempi:
+  \begin{itemize}
+    \item $P_1$: la neve è bianca;
+    \item $P_2$: oggi piove;
+    \item $P_3$: questo corso è noioso.
+  \end{itemize}
+  Ogni $P_i$ che non ha parti che siano a loro volta proposizioni è un
+  \textbf{atomo} (o formula atomica).
+  Ogni $P_i$ è \textbf{vero o falso, ma mai entrambi} (logica a due valori).
+  Il valore vero o falso assegnato a una proposizione è il suo
+  \textbf{valore di verità}.
+}
+
+\nt{
+  (Van Dalen §1.1) Non serve sapere \emph{di fatto} quale sia il valore (la
+  congettura di Goldbach è una proposizione anche se non sappiamo se è vera);
+  basta che un valore ci sia. Domande e ordini (``chiudi la porta!'') non sono
+  proposizioni: non hanno valore di verità.
+}
+
+\subsection{I connettivi}
+
+Il linguaggio naturale ha molti connettivi: \emph{and, or, not, but, since,
+if\dots then}, \dots\ Perché la logica ne usa pochi?
+
+\ex{``But'' vs.\ ``and''}{
+  \begin{itemize}
+    \item ``Max è marxista, \emph{ma} non è privo di umorismo.''
+    \item ``$\pi$ è irrazionale, \emph{ma} non è algebrico.''
+  \end{itemize}
+  Nel primo ``ma'' porta un significato emotivo (sorpresa). Nel secondo la
+  sorpresa è meno immediata (bisognerebbe sapere che ``quasi tutti'' gli
+  irrazionali sono algebrici) e si può usare ``e'' senza cambiare significato.
+}
+
+Per \textbf{economia} scegliamo solo connettivi utili per esprimere le
+dimostrazioni, come ``e'' e ``o''. Ma anche questi sono ambigui.
+
+\ex{Problema 1: ``and'' e il tempo}{
+  \begin{itemize}
+    \item John è ripartito \emph{e} ha investito un pedone.
+    \item John ha investito un pedone \emph{e} è ripartito.
+  \end{itemize}
+  In italiano ``e'' può avere una funzione di \textbf{ordinamento temporale}
+  (le due frasi dicono cose diverse). In matematica e in logica no:
+  $A \wedge B$ significa solo che valgono entrambe, e $A \wedge B$ e
+  $B \wedge A$ dicono la stessa cosa.
+}
+
+\ex{Problema 2: ``if\dots then'' e ``or''}{
+  \begin{enumerate}
+    \item Se apro la finestra allora avremo aria fresca.
+    \item Se apro la finestra allora $1 + 3 = 4$.
+    \item Se $1 + 2 = 4$ allora avremo aria fresca.
+    \item John sta lavorando o è a casa.
+    \item Euclide era un greco o un matematico.
+  \end{enumerate}
+  \begin{itemize}
+    \item In 1 c'è una \textbf{relazione} tra premessa e conclusione.
+    \item In 2 e 3 non c'è alcuna relazione, eppure in matematica sono
+          perfettamente accettabili: è l'\textbf{implicazione materiale}.
+    \item Tendiamo ad accettare 4 e a rifiutare 5: nel parlato ``o'' suona
+          esclusivo, e non si usa ``o'' quando si potrebbe dire ``e''.
+          In logica ``o'' è \textbf{inclusivo}: 5 è vera.
+  \end{itemize}
+}
+
+\mprop{Conclusione}{
+  Serve un \textbf{linguaggio artificiale} con un significato \textbf{preciso}
+  dei connettivi.
+}
+
+\nt{
+  \textbf{Perché l'implicazione materiale} (Van Dalen §1.2). ``Se Smith è
+  dentro allora Jones è dentro'' è sicuramente \emph{falsa} solo quando Smith
+  è dentro e Jones è fuori. Quando Smith è fuori, l'informazione non è falsa,
+  è solo ``poco utile''; avendo deciso che ogni enunciato è vero o falso, la
+  si dichiara vera. È una \emph{scelta}, motivata dall'eleganza del sistema
+  che ne risulta. Da ricordare: \textbf{c'è un solo caso in cui
+  un'implicazione è falsa} (premessa vera, conclusione falsa). Quindi 2 è vera
+  (conclusione vera) e 3 è vera (premessa falsa).
+}
+
+% =====================================================================
+\section{Approfondimento: sintassi e semantica (Van Dalen §1.1--1.2)}
+% =====================================================================
+
+Formalizziamo ora quanto detto. Si procede in due passi: (1) si definisce il
+\textbf{linguaggio} (sintassi); (2) si definisce quando una formula è
+\textbf{vera} (semantica). La nozione informale di ``mondo con
+un'interpretazione'' diventa, nel caso proposizionale, una
+\textbf{valutazione}.
+
+\subsection{Sintassi}
+
+\dfn{Alfabeto della logica proposizionale}{
+  \begin{enumerate}[label=(\roman*)]
+    \item simboli proposizionali: $p_0, p_1, p_2, \dots$;
+    \item connettivi: $\wedge$ (and), $\vee$ (or), $\to$ (implicazione),
+          $\neg$ (not), $\leftrightarrow$ (sse), $\bot$ (falsum, l'assurdo);
+    \item simboli ausiliari: $($ \ $)$.
+  \end{enumerate}
+  I simboli proposizionali e $\bot$ sono gli \textbf{atomi}.
+}
+
+\dfn{Proposizioni (formule)}{
+  L'insieme $\PROP$ è il \textbf{più piccolo} insieme $X$ tale che:
+  \begin{enumerate}[label=(\roman*)]
+    \item $p_i \in X$ per ogni $i$, e $\bot \in X$;
+    \item se $\varphi, \psi \in X$ allora $(\varphi \wedge \psi),
+          (\varphi \vee \psi), (\varphi \to \psi), (\varphi \leftrightarrow
+          \psi) \in X$;
+    \item se $\varphi \in X$ allora $(\neg\varphi) \in X$.
+  \end{enumerate}
+}
+
+\nt{
+  ``Il più piccolo'' significa: in $\PROP$ ci sono \emph{solo} le stringhe
+  ottenibili applicando un numero finito di volte le regole (i)--(iii).
+  Le lettere greche $\varphi, \psi$ \emph{non} sono formule: sono
+  \textbf{metavariabili}, cioè simboli del metalinguaggio che stanno per
+  formule qualsiasi. È la separazione linguaggio/metalinguaggio che evita i
+  paradossi del capitolo precedente.
+}
+
+\thm{Principio di induzione sulle formule}{
+  Sia $A$ una proprietà. Se
+  \begin{enumerate}[label=(\roman*)]
+    \item $A(\varphi)$ vale per ogni atomo $\varphi$,
+    \item $A(\varphi)$ e $A(\psi)$ implicano $A(\varphi \square \psi)$ per
+          $\square \in \{\wedge, \vee, \to, \leftrightarrow\}$,
+    \item $A(\varphi)$ implica $A(\neg\varphi)$,
+  \end{enumerate}
+  allora $A(\varphi)$ vale per ogni $\varphi \in \PROP$.
+}
+
+\pf{Dimostrazione}{
+  Sia $X = \{\varphi \in \PROP \mid A(\varphi)\}$. Per (i)--(iii), $X$ soddisfa
+  le tre clausole della definizione di $\PROP$. Poiché $\PROP$ è il più piccolo
+  insieme con queste proprietà, $\PROP \subseteq X$, cioè $A$ vale per tutte le
+  formule.
+}
+
+\subsection{Semantica}
+
+Usiamo $1$ per ``vero'' e $0$ per ``falso''.
+
+\dfn{Valutazione}{
+  Una funzione $v : \PROP \to \{0,1\}$ è una \textbf{valutazione} se
+  \begin{align*}
+    v(\varphi \wedge \psi) &= \min(v(\varphi), v(\psi)), \\
+    v(\varphi \vee \psi) &= \max(v(\varphi), v(\psi)), \\
+    v(\varphi \to \psi) = 0 &\iff v(\varphi) = 1 \text{ e } v(\psi) = 0, \\
+    v(\varphi \leftrightarrow \psi) = 1 &\iff v(\varphi) = v(\psi), \\
+    v(\neg\varphi) &= 1 - v(\varphi), \\
+    v(\bot) &= 0.
+  \end{align*}
+}
+
+Le stesse regole come \textbf{tavole di verità}:
+\begin{center}
+\begin{tabular}{cc|ccccc}
+  $\varphi$ & $\psi$ & $\neg\varphi$ & $\varphi\wedge\psi$ & $\varphi\vee\psi$ & $\varphi\to\psi$ & $\varphi\leftrightarrow\psi$ \\ \hline
+  0 & 0 & 1 & 0 & 0 & 1 & 1 \\
+  0 & 1 & 1 & 0 & 1 & 1 & 0 \\
+  1 & 0 & 0 & 0 & 1 & \textbf{0} & 0 \\
+  1 & 1 & 0 & 1 & 1 & 1 & 1
+\end{tabular}
+\end{center}
+
+\thm{Estensione unica}{
+  Se $v$ è una funzione dagli atomi in $\{0,1\}$ con $v(\bot) = 0$, esiste
+  un'\textbf{unica} valutazione $\sem{\cdot}_v$ tale che $\sem{\varphi}_v =
+  v(\varphi)$ per ogni atomo $\varphi$.
+}
+
+\nt{
+  Si definisce $\sem{\cdot}_v$ per ricorsione sulla struttura della formula,
+  usando le clausole della definizione di valutazione; l'unicità si dimostra
+  per induzione. Conseguenza pratica: \textbf{una valutazione è determinata
+  dai valori sugli atomi}. Nel caso proposizionale un ``mondo'' è quindi
+  semplicemente un'assegnazione di $0/1$ alle proposizioni atomiche.
+}
+
+\mlenma{Dipendenza dai soli atomi presenti}{
+  Se $v(p_i) = v'(p_i)$ per tutti i $p_i$ che compaiono in $\varphi$, allora
+  $\sem{\varphi}_v = \sem{\varphi}_{v'}$.
+}
+
+\pf{Dimostrazione}{
+  Induzione su $\varphi$. Se $\varphi$ è un atomo $p_i$ è l'ipotesi; se è
+  $\bot$ entrambe valgono $0$. Se $\varphi = \varphi_1 \square \varphi_2$, gli
+  atomi di $\varphi_1$ e $\varphi_2$ sono atomi di $\varphi$, quindi per
+  ipotesi induttiva $\sem{\varphi_j}_v = \sem{\varphi_j}_{v'}$ per $j = 1,2$, e
+  il valore di $\varphi$ si calcola dagli stessi valori con la stessa
+  regola. Analogo per $\neg$.
+}
+
+\cor{Decidibilità}{
+  Se $\varphi$ contiene $n$ atomi distinti, per sapere se è vera in tutte le
+  valutazioni basta controllarne $2^n$ (le righe della tavola di verità).
+  Quindi la validità proposizionale è \textbf{decidibile} (ma con costo
+  esponenziale nel caso peggiore).
+}
+
+\dfn{Tautologia e conseguenza semantica}{
+  \begin{enumerate}[label=(\roman*)]
+    \item $\varphi$ è una \textbf{tautologia}, e si scrive $\models \varphi$,
+          se $\sem{\varphi}_v = 1$ per ogni valutazione $v$.
+    \item Sia $\Gamma$ un insieme di formule. $\Gamma \models \varphi$ sse per
+          ogni $v$: se $\sem{\psi}_v = 1$ per ogni $\psi \in \Gamma$, allora
+          $\sem{\varphi}_v = 1$. Si dice che $\varphi$ è
+          \textbf{conseguenza semantica} di $\Gamma$.
+  \end{enumerate}
+  Convenzione: $\varphi_1, \dots, \varphi_n \models \psi$ sta per
+  $\{\varphi_1, \dots, \varphi_n\} \models \psi$.
+}
+
+\nt{
+  È esattamente la definizione dei lucidi, con ``mondo + interpretazione''
+  sostituito da ``valutazione''.
+}
+
+\ex{Tautologie e conseguenze (Van Dalen)}{
+  \begin{itemize}
+    \item $\models \varphi \to \varphi$, \quad $\models \neg\neg\varphi \to
+          \varphi$, \quad $\models \varphi \vee \psi \leftrightarrow \psi \vee
+          \varphi$;
+    \item $\varphi, \psi \models \varphi \wedge \psi$;
+    \item $\varphi, \varphi \to \psi \models \psi$ \hfill (\emph{modus ponens});
+    \item $\varphi \to \psi, \neg\psi \models \neg\varphi$ \hfill (\emph{modus tollens}).
+  \end{itemize}
+  Verifica di modus ponens: le valutazioni con $\sem{\varphi} = 1$ e
+  $\sem{\varphi \to \psi} = 1$ sono solo quelle con $\sem{\psi} = 1$ (riga
+  $1,1$ della tavola).
+}
+
+\ex{Un controesempio: affermazione del conseguente}{
+  $\varphi \to \psi, \psi \not\models \varphi$: con $v(\varphi) = 0$ e $v(\psi)
+  = 1$ le premesse sono vere e la conclusione è falsa. (È l'inferenza
+  dell'\emph{abduzione}: plausibile ma non corretta.)
+}
+
+\subsection{Legami tra $\models$, connettivi ed equivalenza}
+
+\mprop{Equivalenza e bi-implicazione}{
+  $\varphi \equiv \psi$ sse $\models \varphi \leftrightarrow \psi$.
+}
+
+\pf{Dimostrazione}{
+  Per il lemma di caratterizzazione, $\varphi \equiv \psi$ sse
+  $\sem{\varphi}_v = \sem{\psi}_v$ per ogni $v$, sse
+  $\sem{\varphi \leftrightarrow \psi}_v = 1$ per ogni $v$ (definizione di
+  $\leftrightarrow$), sse $\models \varphi \leftrightarrow \psi$.
+}
+
+\thm{Teorema di deduzione semantico}{
+  $\Gamma, \varphi \models \psi$ \ sse \ $\Gamma \models \varphi \to \psi$.
+}
+
+\pf{Dimostrazione}{
+  ($\Rightarrow$) Sia $v$ che rende vere tutte le formule di $\Gamma$. Se
+  $\sem{\varphi}_v = 0$, allora $\sem{\varphi \to \psi}_v = 1$. Se
+  $\sem{\varphi}_v = 1$, $v$ rende vero $\Gamma \cup \{\varphi\}$, quindi
+  $\sem{\psi}_v = 1$ e $\sem{\varphi\to\psi}_v = 1$.
+
+  ($\Leftarrow$) Sia $v$ che rende vero $\Gamma \cup \{\varphi\}$. Allora
+  $\sem{\varphi \to \psi}_v = 1$ e $\sem{\varphi}_v = 1$, quindi (unico caso
+  falso dell'implicazione escluso) $\sem{\psi}_v = 1$.
+}
+
+\cor{Conseguenza e validità}{
+  $\varphi_1, \dots, \varphi_n \models \psi$ sse
+  $\models (\varphi_1 \wedge \dots \wedge \varphi_n) \to \psi$.
+}
+
+\thm{Conseguenza e insoddisfacibilità}{
+  $\Gamma \models \varphi$ \ sse \ $\Gamma \cup \{\neg\varphi\}$ non ha
+  alcuna valutazione che rende vere tutte le sue formule
+  (è \textbf{insoddisfacibile}).
+}
+
+\pf{Dimostrazione}{
+  $\Gamma \not\models \varphi$ sse esiste $v$ con $\Gamma$ tutto vero e
+  $\sem{\varphi}_v = 0$, sse esiste $v$ con $\Gamma$ tutto vero e
+  $\sem{\neg\varphi}_v = 1$, sse $\Gamma \cup \{\neg\varphi\}$ è
+  soddisfacibile. Negando entrambi i lati si ottiene la tesi.
+}
+
+\nt{
+  Quest'ultimo teorema è l'idea su cui si basano la \textbf{risoluzione} e
+  quindi Prolog: per dimostrare che un goal segue dal programma, si aggiunge
+  la sua \emph{negazione} e si cerca di derivare la contraddizione (la
+  clausola vuota). Lo vedremo nelle prossime lezioni.
+}
+
+\subsection{Alcune equivalenze notevoli}
+
+\thm{Leggi algebriche (Van Dalen 1.3.1, 1.3.4)}{
+  Sono tautologie:
+  \begin{itemize}
+    \item associatività e commutatività di $\wedge$ e $\vee$;
+    \item distributività: $\varphi \vee (\psi \wedge \sigma) \leftrightarrow
+          (\varphi \vee \psi) \wedge (\varphi \vee \sigma)$ e
+          $\varphi \wedge (\psi \vee \sigma) \leftrightarrow (\varphi \wedge
+          \psi) \vee (\varphi \wedge \sigma)$;
+    \item De Morgan: $\neg(\varphi \vee \psi) \leftrightarrow \neg\varphi \wedge
+          \neg\psi$ e $\neg(\varphi \wedge \psi) \leftrightarrow \neg\varphi
+          \vee \neg\psi$;
+    \item doppia negazione: $\neg\neg\varphi \leftrightarrow \varphi$;
+    \item $(\varphi \to \psi) \leftrightarrow (\neg\varphi \vee \psi)$;
+    \item $(\varphi \leftrightarrow \psi) \leftrightarrow (\varphi \to \psi)
+          \wedge (\psi \to \varphi)$;
+    \item $\neg\varphi \leftrightarrow (\varphi \to \bot)$.
+  \end{itemize}
+}
+
+\pf{Dimostrazione (De Morgan, le altre sono analoghe)}{
+  $\sem{\neg(\varphi\vee\psi)} = 1 \iff \sem{\varphi\vee\psi} = 0 \iff
+  \sem{\varphi} = \sem{\psi} = 0 \iff \sem{\neg\varphi} = \sem{\neg\psi} = 1
+  \iff \sem{\neg\varphi \wedge \neg\psi} = 1$, per ogni valutazione.
+}
+
+\ex{Esercizio svolto: contrapposizione}{
+  $(\varphi \to \psi) \equiv (\neg\psi \to \neg\varphi)$. Infatti
+  \[
+    \neg\psi \to \neg\varphi \equiv \neg\neg\psi \vee \neg\varphi
+    \equiv \psi \vee \neg\varphi \equiv \neg\varphi \vee \psi
+    \equiv \varphi \to \psi .
+  \]
+  Ogni passo usa una delle leggi sopra; il passaggio da un'equivalenza
+  all'altra è lecito perché $\equiv$ è transitiva (teorema precedente) e
+  perché sostituire una sottoformula con una equivalente dà una formula
+  equivalente (\emph{teorema di sostituzione}, Van Dalen 1.2.6).
+}
+
+\ex{Esercizio svolto: Curry rivisto}{
+  Esiste una valutazione con $\sem{X \leftrightarrow (X \to Y)} = 1$ e
+  $\sem{Y} = 0$? Con $\sem{Y} = 0$ si ha $\sem{X \to Y} = 1 - \sem{X}$, quindi
+  servirebbe $\sem{X} = 1 - \sem{X}$: impossibile. Dunque
+  $X \leftrightarrow (X \to Y) \models Y$: l'``assunzione 1'' del paradosso di
+  Curry implica già $Y$ da sola, ed è soddisfacibile solo nei mondi dove $Y$ è
+  vero. Nessun paradosso.
+}

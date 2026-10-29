@@ -1,7 +1,7 @@
 #separator:tab
 #html:true
 #notetype:Basic
-#deck:AI Knowledge Representation::01 Applicazioni dell'IA
+#deck:AI Knowledge Representation::Modulo 1::Introduction to AI::01 Applicazioni dell'IA
 
 Quali sono le principali <b>aree applicative dell'IA</b> presentate nell'introduzione, con le loro caratteristiche?	<ul><li><b>Decision support systems</b>: molto specializzati su un dominio; knowledge based e controllo</li><li><b>Sistemi formali e giochi</b> (scacchi/Go): numero limitato di mosse e spazio; regole esplicite e non ambigue</li><li><b>Linguaggio naturale / question answering</b> (Watson): ambiguo, implicito, dipendente dal contesto; basato su stati cognitivi</li><li><b>Visione</b> (ImageNet): riconoscimento/classificazione di oggetti; incertezza e rumore (simbolico/sub-simbolico)</li><li><b>Robotica e sistemi autonomi</b>: agenti in un ambiente; decisioni dinamiche e in tempo reale</li></ul>
 
