@@ -35,6 +35,7 @@ Let $k$ be the size of the minimum cut of $G$; fix a minimum cut $(S^*,\overline
 
 Let us start by describing the main idea. Suppose we choose a uniformly random edge $e$ in $G$. What is the probability that $e\in E(S^*,\overline{S^*})$?
 
+\label{clm:KargEdgeProb}
 \clm{}{}{
 The probability that a uniformly random edge is in $E(S^*,\overline{S^*})$ is at most $2/n$.
 }
@@ -63,6 +64,7 @@ Using the above lemma if we choose $n/4$ edges of $G$ uniformly at random with p
 In above we described the gist of the idea of Karger's algorithm. There are several missing points in the above description. First of all, when we recursively call the algorithm, we are recursively using the above claim. So, we need to make sure the size of the min-cut of $G$ does not decrease when we contract an edge.
 
 \medskip
+\label{fact:KargMinNotDec}
 \noindent\textbf{Fact 2.} For any graph $G$, when we contract an edge $(u,v)$ the size of the minimum cut does not decrease.
 \medskip
 
@@ -88,7 +90,7 @@ Let, $A_i$ be the event that the edge picked in step $i$ of the loop is not in $
 \[
   \mathbb{P}[A_1,\ldots,A_{n-2}]=\mathbb{P}[A_1]\,\mathbb{P}[A_2\mid A_1]\,\mathbb{P}[A_3\mid A_1,A_2]\cdots\mathbb{P}[A_{n-2}\mid A_1,A_2,\ldots,A_{n-3}].
 \]
-Now, by Theorem 1 and Theorem 2, for all $i$,
+Now, by Claim \ref{clm:KargEdgeProb} and Fact 2, for all $i$,
 \[
   \mathbb{P}[A_i\mid A_1,\ldots,A_{i-1}]\ge 1-\frac{2}{n-i+1}.
 \]
