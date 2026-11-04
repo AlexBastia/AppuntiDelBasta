@@ -1,0 +1,350 @@
+% \begin{document}
+\chapter{Polymorphism}
+
+\section{Parametric Polymorphism}
+
+In the simply-typed $\lambda$-calculus every argument carries a type annotation,
+so each type needs its own identity function: $\lambda x : \kw{int}.\, x$,
+$\lambda x : \kw{bool}.\, x$, $\lambda x : \kw{int} \to \kw{int}.\, x$, and so on.
+\emph{Polymorphism} is the ability to use code with values of different types.
+Three common kinds:
+\begin{itemize}
+  \item \emph{Subtype polymorphism}: a subsumption rule lets a value of type
+        $\tau$ be used as type $\tau'$ whenever $\tau$ is a subtype of $\tau'$.
+  \item \emph{Ad-hoc polymorphism}: code that looks polymorphic but is not
+        (e.g.\ overloading); the argument types dispatch, at compile time or run
+        time, to one of several separate implementations.
+  \item \emph{Parametric polymorphism}: code written without knowledge of the
+        actual argument types (polymorphic functions in OCaml; generics in Java,
+        Scala, Rust). This is the subject of this lecture.
+\end{itemize}
+
+\section{System F}
+
+System F extends the simply-typed $\lambda$-calculus with abstraction over types.
+It was invented independently by Girard (1972, ``System F'') and Reynolds (1974,
+``polymorphic $\lambda$-calculus''). A \emph{type abstraction} $\Lambda X.\, e$ is
+a function from types to terms; a \emph{type application} $e\,[\tau]$ instantiates
+it at $\tau$. For example, the polymorphic identity is
+\[
+\mathit{ID} \triangleq \Lambda X.\ \lambda x : X.\ x.
+\]
+
+\subsection{Syntax and operational semantics}
+\begin{align*}
+e &::= x \mid \lambda x : \tau.\, e \mid e_1\, e_2 \mid () \mid n \mid e_1 \oplus e_2
+      \mid \ttkw{true} \mid \ttkw{false} \mid \ttkw{if}\ e_1\ \ttkw{then}\ e_2\ \ttkw{else}\ e_3
+      \mid \Lambda X.\, e \mid e\,[\tau] \\
+v &::= \lambda x : \tau.\, e \mid () \mid n \mid \ttkw{true} \mid \ttkw{false} \mid \Lambda X.\, e \\
+\tau &::= \kw{unit} \mid \kw{int} \mid \kw{bool} \mid \tau_1 \to \tau_2 \mid X \mid \forall X.\, \tau
+\end{align*}
+Here $\oplus \in \{+, -, \times\}$. Both $\Lambda X.\, e$ and $\forall X.\, \tau$ bind
+$X$, giving the usual free/bound type variables and $\alpha$-equivalence (e.g.\
+$\forall X.\, X \to X$ and $\forall Y.\, Y \to Y$ are the same type). Evaluation is
+CBV as before, with one new context and one new rule:
+\[
+E ::= \cdots \mid E\,[\tau]
+\qquad\qquad
+\inferrule*[Right=\textsc{Type-$\beta$}]
+  { }
+  {(\Lambda X.\, e)\,[\tau] \to \tsub{e}{\tau}{X}}
+\]
+Note $\Lambda X.\, e$ is a value: we do not evaluate under $\Lambda$ (just as not
+under $\lambda$). For example,
+\[
+\mathit{ID}\,[\kw{int}]\ 5 = (\Lambda X.\, \lambda x : X.\, x)\,[\kw{int}]\ 5
+  \to (\lambda x : \kw{int}.\, x)\ 5 \to 5,
+\]
+and $\mathit{ID}\,[\kw{int} \to \kw{int}]$ steps to $\lambda x : \kw{int} \to \kw{int}.\, x$.
+
+Type substitution must be capture-avoiding. E.g.\ in
+$\Lambda Y.\, (\Lambda X.\, \Lambda Y.\, \lambda x : X.\, \lambda y : Y.\, x)\,[Y]$
+we must rename the inner bound variable:
+\[
+(\forall Y.\, X \to Y \to X)\{Y/X\} = \forall Y'.\, Y \to Y' \to Y,
+\]
+not $\forall Y.\, Y \to Y \to Y$, which would capture the outer $Y$.
+
+\subsection{Type system}
+
+$\Lambda X.\, e$ has type $\forall X.\, \tau$ where $\tau$ is the type of $e$
+(which may mention $X$). Typing now tracks, besides the term context $\Gamma$, a
+set $\Delta$ of type variables in scope, so judgments are
+$\Delta, \Gamma \vdash e : \tau$; e.g.\ $\lambda x : X.\, x$ is ill-typed on its
+own. An auxiliary judgment $\Delta \vdash \tau\ \mathit{ok}$ says every free type
+variable of $\tau$ is in $\Delta$. The rules of the simply-typed fragment carry
+$\Delta$ unchanged, and annotations must be well-formed:
+\[
+\inferrule*[Right=\textsc{T-Var}]
+  {\Gamma(x) = \tau}
+  {\Delta, \Gamma \vdash x : \tau}
+\qquad\qquad
+\inferrule*[Right=\textsc{T-Abs}]
+  {\Delta \vdash \tau\ \mathit{ok} \\ \Delta, \Gamma, x : \tau \vdash e : \tau'}
+  {\Delta, \Gamma \vdash \lambda x : \tau.\, e : \tau \to \tau'}
+\]
+\[
+\inferrule*[Right=\textsc{T-App}]
+  {\Delta, \Gamma \vdash e_1 : \tau \to \tau' \\ \Delta, \Gamma \vdash e_2 : \tau}
+  {\Delta, \Gamma \vdash e_1\, e_2 : \tau'}
+\qquad\qquad
+\inferrule*[Right=\textsc{T-If}]
+  {\Delta, \Gamma \vdash e_1 : \kw{bool} \\ \Delta, \Gamma \vdash e_2 : \tau \\ \Delta, \Gamma \vdash e_3 : \tau}
+  {\Delta, \Gamma \vdash \ttkw{if}\ e_1\ \ttkw{then}\ e_2\ \ttkw{else}\ e_3 : \tau}
+\]
+Rules for $()$, integers, arithmetic, and Booleans are similar. The two new rules:
+\[
+\inferrule*[Right=\textsc{T-TAbs}]
+  {\Delta \cup \{X\}, \Gamma \vdash e : \tau}
+  {\Delta, \Gamma \vdash \Lambda X.\, e : \forall X.\, \tau}
+\qquad\qquad\quad
+\inferrule*[Right=\textsc{T-TApp}]
+  {\Delta, \Gamma \vdash e : \forall X.\, \tau' \\ \Delta \vdash \tau\ \mathit{ok}}
+  {\Delta, \Gamma \vdash e\,[\tau] : \tsub{\tau'}{\tau}{X}}
+\]
+In \textsc{T-TAbs} we choose $X \notin \Delta$ by $\alpha$-renaming. Well-formedness
+of types:
+\[
+\inferrule{X \in \Delta}{\Delta \vdash X\ \mathit{ok}}
+\quad
+\Delta \vdash \kw{unit}\ \mathit{ok}
+\quad
+\Delta \vdash \kw{int}\ \mathit{ok}
+\quad
+\Delta \vdash \kw{bool}\ \mathit{ok}
+\quad
+\inferrule{\Delta \vdash \tau_1\ \mathit{ok} \\ \Delta \vdash \tau_2\ \mathit{ok}}{\Delta \vdash \tau_1 \to \tau_2\ \mathit{ok}}
+\quad
+\inferrule{\Delta \cup \{X\} \vdash \tau\ \mathit{ok}}{\Delta \vdash \forall X.\, \tau\ \mathit{ok}}
+\]
+Derivation that the polymorphic identity has type $\forall X.\, X \to X$:
+\[
+\inferrule*[Right=\textsc{T-TAbs}]
+{
+  \inferrule*[Right=\textsc{T-Abs}]
+  {
+    \inferrule{X \in \{X\}}{\{X\} \vdash X\ \mathit{ok}}
+    \\
+    \inferrule*[Right=\textsc{T-Var}]
+      {(x : X)(x) = X}
+      {\{X\}, x : X \vdash x : X}
+  }
+  {\{X\}, \cdot \vdash \lambda x : X.\, x : X \to X}
+}
+{\emptyset, \cdot \vdash \Lambda X.\, \lambda x : X.\, x : \forall X.\, X \to X}
+\]
+By \textsc{T-TApp}, $\mathit{ID}\,[\kw{int}]$ has type
+$(X \to X)\{\kw{int}/X\} = \kw{int} \to \kw{int}$.
+
+\section{Programming in System F}
+
+\subsection{Self application}
+The term $\lambda x.\, x\,x$ is untypable in the simply-typed $\lambda$-calculus,
+but in System F we can give $x$ a polymorphic type and instantiate it at that same
+type:
+\[
+\vdash \lambda x : \forall X.\, X \to X.\ x\,[\forall X.\, X \to X]\ x
+  \ :\ (\forall X.\, X \to X) \to (\forall X.\, X \to X).
+\]
+Applied to $\mathit{ID}$ it returns $\mathit{ID}$. We still cannot type $\Omega$,
+since every well-typed System F program terminates (Section~\ref{sec:meta}).
+
+\subsection{Church numerals}
+All Church numerals share one type:
+\[
+\mathit{NAT} \triangleq \forall X.\, (X \to X) \to X \to X.
+\]
+\begin{align*}
+0 &\triangleq \Lambda X.\ \lambda f : X \to X.\ \lambda x : X.\ x \\
+1 &\triangleq \Lambda X.\ \lambda f : X \to X.\ \lambda x : X.\ f\,x \\
+\mathit{SUCC} &\triangleq \lambda n : \mathit{NAT}.\ \Lambda X.\ \lambda f : X \to X.\ \lambda x : X.\ f\,(n\,[X]\ f\ x)
+\end{align*}
+$\mathit{SUCC}$ must instantiate $n$ at $X$ before applying it to $f$ and $x$. Note
+that $\mathit{twice}$ is exactly $2$.
+
+\subsection{Products and sums}
+Products and sums are encoded with no new types. A pair waits for a consumer $p$
+and hands it both components, with the consumer choosing the result type $R$:
+\begin{align*}
+\tau_1 \times \tau_2 &\triangleq \forall R.\, (\tau_1 \to \tau_2 \to R) \to R \\
+\mathit{pair} &\triangleq \Lambda T_1.\, \Lambda T_2.\ \lambda v_1 : T_1.\ \lambda v_2 : T_2.\
+   \Lambda R.\ \lambda p : T_1 \to T_2 \to R.\ p\ v_1\ v_2 \\
+\mathit{fst} &\triangleq \Lambda T_1.\, \Lambda T_2.\ \lambda v : T_1 \times T_2.\ v\,[T_1]\ (\lambda x : T_1.\, \lambda y : T_2.\, x) \\
+\mathit{snd} &\triangleq \Lambda T_1.\, \Lambda T_2.\ \lambda v : T_1 \times T_2.\ v\,[T_2]\ (\lambda x : T_1.\, \lambda y : T_2.\, y)
+\end{align*}
+A sum value waits for one handler per case and calls the appropriate one:
+\begin{align*}
+\tau_1 + \tau_2 &\triangleq \forall R.\, (\tau_1 \to R) \to (\tau_2 \to R) \to R \\
+\mathit{inl} &\triangleq \Lambda T_1.\, \Lambda T_2.\ \lambda v : T_1.\ \Lambda R.\ \lambda b_1 : T_1 \to R.\ \lambda b_2 : T_2 \to R.\ b_1\, v \\
+\mathit{inr} &\triangleq \Lambda T_1.\, \Lambda T_2.\ \lambda v : T_2.\ \Lambda R.\ \lambda b_1 : T_1 \to R.\ \lambda b_2 : T_2 \to R.\ b_2\, v \\
+\mathit{case} &\triangleq \Lambda T_1.\, \Lambda T_2.\, \Lambda R.\ \lambda v : T_1 + T_2.\ \lambda b_1 : T_1 \to R.\ \lambda b_2 : T_2 \to R.\ v\,[R]\ b_1\ b_2
+\end{align*}
+Even $\kw{unit}$ and $\kw{bool}$ are unnecessary: $\kw{unit} \triangleq \forall R.\, R \to R$
+(whose only value is $\mathit{ID}$) and $\kw{bool} \triangleq \kw{unit} + \kw{unit}$.
+
+\section{Existential Types}
+
+A universal type $\forall X.\, \tau$ means the \emph{user} chooses $X$. Dually, an
+existential type $\exists X.\, \tau$ means there is \emph{some} type $X$ with a
+value of type $\tau$: the \emph{creator} chooses $X$ and the user does not know it.
+This hides an implementation behind an interface, as modules do in OCaml. For
+example, an interface for counters (an initial counter, an increment, and a read):
+\[
+\mathit{COUNTER} \triangleq \exists C.\ C \times (C \to C) \times (C \to \kw{int}).
+\]
+(We write $(e_1, e_2, e_3)$ for tuples and $\#i\ e$ for projections; these may be
+added directly or encoded as above.)
+
+\subsection{Syntax and semantics}
+\begin{align*}
+e &::= \cdots \mid \ttkw{pack}\ \{\tau_1, e\}\ \ttkw{as}\ \exists X.\, \tau_2
+      \mid \ttkw{unpack}\ \{X, x\} = e_1\ \ttkw{in}\ e_2 \\
+v &::= \cdots \mid \ttkw{pack}\ \{\tau_1, v\}\ \ttkw{as}\ \exists X.\, \tau_2 \\
+\tau &::= \cdots \mid \exists X.\, \tau
+\end{align*}
+$\ttkw{pack}\ \{\tau_1, e\}\ \ttkw{as}\ \exists X.\, \tau_2$ pairs a witness type
+$\tau_1$ with a value of type $\tsub{\tau_2}{\tau_1}{X}$.
+$\ttkw{unpack}\ \{X, x\} = e_1\ \ttkw{in}\ e_2$ opens the package, binding the hidden
+type to $X$ and the value to $x$ in $e_2$ (so $\exists X.\, \tau$ binds $X$ in
+$\tau$, and $\ttkw{unpack}$ binds $X$ and $x$ in $e_2$). Semantics:
+\[
+E ::= \cdots \mid \ttkw{pack}\ \{\tau_1, E\}\ \ttkw{as}\ \exists X.\, \tau_2
+  \mid \ttkw{unpack}\ \{X, x\} = E\ \ttkw{in}\ e
+\]
+\[
+\ttkw{unpack}\ \{X, x\} = (\ttkw{pack}\ \{\tau_1, v\}\ \ttkw{as}\ \exists Y.\, \tau_2)\ \ttkw{in}\ e
+  \ \to\ \tsub{\tsub{e}{v}{x}}{\tau_1}{X}
+\]
+
+\subsection{Typing}
+\[
+\inferrule*[Right=\textsc{T-Pack}]
+  {\Delta \vdash \tau_1\ \mathit{ok} \\ \Delta, \Gamma \vdash e : \tsub{\tau_2}{\tau_1}{X}}
+  {\Delta, \Gamma \vdash \ttkw{pack}\ \{\tau_1, e\}\ \ttkw{as}\ \exists X.\, \tau_2 : \exists X.\, \tau_2}
+\]
+\[
+\inferrule*[Right=\textsc{T-Unpack}]
+  {\Delta, \Gamma \vdash e_1 : \exists X.\, \tau_1 \\
+   \Delta \cup \{X\}, \Gamma, x : \tau_1 \vdash e_2 : \tau_2 \\
+   \Delta \vdash \tau_2\ \mathit{ok}}
+  {\Delta, \Gamma \vdash \ttkw{unpack}\ \{X, x\} = e_1\ \ttkw{in}\ e_2 : \tau_2}
+\]
+In \textsc{T-Pack} the annotation $\exists X.\, \tau_2$ says which occurrences of
+the witness are hidden (otherwise a value of type $\kw{int} \to \kw{int}$ could be
+typed $C \to C$, $C \to \kw{int}$, $\kw{int} \to C$, or $\kw{int} \to \kw{int}$). In
+\textsc{T-Unpack}, $e_2$ is checked with $X$ an opaque new type variable ($X \notin
+\Delta$), and $\Delta \vdash \tau_2\ \mathit{ok}$ ensures the hidden type does not
+escape through the result type.
+
+\subsection{Example: counters}
+\[
+\mathit{counter} \triangleq \ttkw{pack}\ \{\kw{int},\ (0,\ \lambda i : \kw{int}.\, i + 1,\ \lambda i : \kw{int}.\, i)\}\ \ttkw{as}\ \exists C.\ C \times (C \to C) \times (C \to \kw{int})
+\]
+A client:
+\[
+\ttkw{unpack}\ \{C, c\} = \mathit{counter}\ \ttkw{in}\ (\#3\ c)\ ((\#2\ c)\ ((\#2\ c)\ (\#1\ c))) \to^* 2.
+\]
+Inside the $\ttkw{unpack}$, the client only knows
+$c : C \times (C \to C) \times (C \to \kw{int})$; e.g.\ $(\#1\ c) + 1$ is ill-typed,
+and $\ttkw{unpack}\ \{C, c\} = \mathit{counter}\ \ttkw{in}\ \#1\ c$ is rejected by
+\textsc{T-Unpack} because its type $C$ would escape. Hence implementations are
+interchangeable, e.g.\ one that counts down internally:
+\[
+\mathit{counter}' \triangleq \ttkw{pack}\ \{\kw{int},\ (0,\ \lambda i : \kw{int}.\, i - 1,\ \lambda i : \kw{int}.\, 0 - i)\}\ \ttkw{as}\ \exists C.\ C \times (C \to C) \times (C \to \kw{int}).
+\]
+No client can distinguish $\mathit{counter}$ from $\mathit{counter}'$ (\emph{representation
+independence}, a consequence of parametricity).
+
+\subsection{Encoding existentials}
+Existentials are definable from universals: a package takes a result type $Y$ and a
+client that works for any hidden type, and calls it with its witness and value.
+\begin{align*}
+\exists X.\, \tau &\triangleq \forall Y.\, (\forall X.\, \tau \to Y) \to Y \\
+\ttkw{pack}\ \{\tau_1, e\}\ \ttkw{as}\ \exists X.\, \tau_2 &\triangleq \Lambda Y.\ \lambda f : \forall X.\, \tau_2 \to Y.\ f\,[\tau_1]\ e \\
+\ttkw{unpack}\ \{X, x\} = e_1\ \ttkw{in}\ e_2 &\triangleq e_1\,[\tau_2]\ (\Lambda X.\, \lambda x : \tau_1.\, e_2)
+\end{align*}
+where $e_1 : \exists X.\, \tau_1$ and $e_2 : \tau_2$. The side condition that $X$ not
+occur free in $\tau_2$ appears here as well: the client $\Lambda X.\, \lambda x :
+\tau_1.\, e_2$ must have type $\forall X.\, \tau_1 \to \tau_2$, which only makes sense
+if $\tau_2$ does not mention $X$.
+
+\section{Metatheory}\label{sec:meta}
+
+System F is type sound, with the same proof structure as for the simply-typed
+$\lambda$-calculus (progress and preservation).
+
+\thm{Type soundness}{
+If $\emptyset, \cdot \vdash e : \tau$ and $e \to^* e'$ and $e' \not\to$, then $e'$ is
+a value.
+}
+
+The canonical forms lemma gains a case: if $\emptyset, \cdot \vdash v : \forall X.\,
+\tau$ then $v = \Lambda X.\, e$ for some $e$. Preservation for \textsc{Type-$\beta$}
+needs a new lemma:
+
+\mlenma{Type substitution}{
+If $\Delta \cup \{X\}, \Gamma \vdash e : \tau$ and $\Delta \vdash \tau'\ \mathit{ok}$,
+then $\Delta, \tsub{\Gamma}{\tau'}{X} \vdash \tsub{e}{\tau'}{X} : \tsub{\tau}{\tau'}{X}$.
+}
+
+\thm{Strong normalization (Girard, 1972)}{
+If $\emptyset, \cdot \vdash e : \tau$, then every reduction sequence starting from $e$
+is finite.
+}
+
+The proof is much harder than for the simply-typed case, since the type of
+$\Lambda X.\, e$ quantifies over all types, including $\forall X.\, \tau$ itself;
+Girard's proof uses \emph{reducibility candidates}. Consequently System F is not
+Turing complete, and $\Omega$, $Y$, and $Z$ remain untypable. It is nonetheless very
+expressive: the functions on naturals definable in System F are exactly those
+provably total in second-order arithmetic, far beyond the primitive recursive
+functions.
+
+\section{Type Erasure}
+
+Types never affect the result of a program, so they can be erased before running:
+\begin{align*}
+\erase(x) &= x \\
+\erase(\lambda x : \tau.\, e) &= \lambda x.\, \erase(e) \\
+\erase(e_1\, e_2) &= \erase(e_1)\ \erase(e_2) \\
+\erase(\Lambda X.\, e) &= \lambda z.\, \erase(e) \qquad \text{where } z \text{ is fresh for } e \\
+\erase(e\,[\tau]) &= \erase(e)\ ()
+\end{align*}
+The remaining cases erase types in subexpressions. A type abstraction becomes a
+function of a dummy argument (so it is still a value), and a type application passes
+$()$, so each \textsc{Type-$\beta$} step becomes an ordinary $\beta$ step:
+\[
+\erase((\Lambda X.\, e)\,[\tau]) = (\lambda z.\, \erase(e))\ () \to \erase(e) = \erase(\tsub{e}{\tau}{X}).
+\]
+
+\thm{Erasure}{
+For all expressions $e$ and $e'$, $e \to e'$ if and only if $\erase(e) \to \erase(e')$.
+}
+
+So we can type check with full types and run without them, as OCaml does.
+
+\section{Parametricity}
+
+A function of type $\forall X.\, X \to X$ knows nothing about $X$: it cannot inspect,
+create, or modify a value of type $X$, so it must be the identity. Likewise a
+function of type $\forall X.\, X \to X \to X$ can only return one of its arguments,
+so there are exactly two (up to equivalence): the Church Booleans. And there is no
+closed term of type $\forall X.\, \forall Y.\, X \to Y$, since no value of an
+arbitrary type $Y$ can be produced.
+
+This is \emph{parametricity}: Reynolds (1983) showed polymorphic functions treat
+type arguments uniformly, and Wadler (1989) showed how to derive ``theorems for
+free'' from types. For instance, any $f : \forall X.\, X\ \mathit{list} \to X\
+\mathit{list}$ can only rearrange, drop, or duplicate elements, hence for every $g$,
+\[
+\mathit{map}\ g\ (f\ l) = f\ (\mathit{map}\ g\ l).
+\]
+
+\section{Type Inference}
+
+Writing type abstractions, applications, and annotations explicitly is tedious. The
+\emph{type reconstruction} problem asks: given an untyped $\lambda$-term $e'$, is
+there a well-typed System F term $e$ with $\erase(e) = e'$? Wells (1994) showed this
+is undecidable. The next lecture introduces \emph{let-polymorphism}, a restricted
+form for which inference is decidable and which underlies OCaml and the ML family.
+% \end{document}

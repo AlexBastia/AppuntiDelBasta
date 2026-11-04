@@ -1,0 +1,379 @@
+% \begin{document}
+\chapter{Automating Resolution}
+\section{Formal Proof Systems} 
+We consider a set of logical formulas $F$ (e.g.\ the formulas of propositional logic).
+ 
+\dfn{Proof system}{A \emph{proof system} is a pair $(F, \mathit{Infer})$ where $\mathit{Infer} \subseteq F^* \times F$ is a decidable set of \emph{inference steps}. $F^*$ denotes the set of all finite sequences with elements from $F$.}
+ 
+An inference step $((P_1, \ldots, P_n), C) \in \mathit{Infer}$ is written schematically as
+\[
+\frac{P_1 \quad \ldots \quad P_n}{C}
+\]
+and we say that from the \emph{premises} $P_1, \ldots, P_n$ we derive the \emph{conclusion} $C$. An inference step with $n = 0$ (no premises) is called an \emph{axiom instance}.
+ 
+\dfn{Proof}{Given a proof system $(F, \mathit{Infer})$, a \emph{proof} is a finite sequence of inference steps $S_0, \ldots, S_m \in \mathit{Infer}$ such that for each $S_i$ with $0 \le i \le m$ and for each premise $P_j$ of $S_i$, there exists $0 \le k < i$ such that $P_j$ is the conclusion of $S_k$.}
+ 
+\subsubsection*{Index representation}
+ 
+Given this definition, each premise $P_j$ can be replaced by the index $k$ of the step $S_k$ whose conclusion it is ($P_j \equiv \mathrm{Conc}(S_k)$). A proof is then a sequence of elements of $\{0, 1, \ldots\}^* \times F$, where each $S_i$ has the form $(k_1, \ldots, k_n, C)$ with $0 \le k_1, \ldots, k_n < i$ and
+\[
+(\mathrm{Conc}(S_{k_1}), \ldots, \mathrm{Conc}(S_{k_n}), C) \in \mathit{Infer}.
+\]
+ 
+\subsubsection*{Proofs as DAGs}
+ 
+Proofs can be viewed as directed acyclic graphs. For each step $(k_1, \ldots, k_n, C)$ in the sequence we introduce a node labelled by $C$, and directed labelled edges $(\mathrm{Conc}(S_{k_j}), j, C)$ for all premises $k_1, \ldots, k_n$.
+ 
+To check such a proof, for each node we follow its incoming edges backwards, in the order of their indices, to find the premises, and then check that the resulting inference step belongs to $\mathit{Infer}$.
+ 
+\subsection{Derivations from Assumptions}
+ 
+\dfn{Derivation}{Given $(F, \mathit{Infer})$ with $\mathit{Infer} \subseteq F^* \times F$ and a set of assumptions $A \subseteq F$, a \emph{derivation from $A$} in $(F, \mathit{Infer})$ is a proof in $(F, \mathit{Infer}')$ where
+\[
+\mathit{Infer}' = \mathit{Infer} \cup \{ ((), G) \mid G \in A \}.
+\]
+Thus assumptions from $A$ are treated just like axioms.}
+ 
+\dfn{Provability}{A formula $G \in F$ is \emph{provable from assumptions $A$}, written $A \vdash_{\mathit{Infer}} G$, iff there exists a derivation from $A$ in $\mathit{Infer}$ containing an inference step whose conclusion is $G$. We write $\vdash_{\mathit{Infer}} G$ to denote that there is a proof in $\mathit{Infer}$ with $G$ as a conclusion; this is the same as $\emptyset \vdash_{\mathit{Infer}} G$.}
+ 
+\subsection{Consequence and Soundness in Propositional Logic}
+ 
+\dfn{Semantic consequence}{Let $A \subseteq F$ be a set of propositional formulas and $C \in F$. Then $C$ is a \emph{semantic consequence} of $A$, written $A \models C$, iff for every environment $e$ that defines all variables in $FV(C) \cup \bigcup_{P \in A} FV(P)$, if $\llbracket P \rrbracket_e = 1$ for all $P \in A$, then $\llbracket C \rrbracket_e = 1$.}
+ 
+\dfn{Soundness}{Given $(F, \mathit{Infer})$ with $F$ propositional, an inference step $((P_1, \ldots, P_n), C) \in \mathit{Infer}$ is \emph{sound} iff $\{P_1, \ldots, P_n\} \models C$. The proof system $\mathit{Infer}$ is \emph{sound} if every inference step in it is sound.}
+ 
+For axioms ($n = 0$), this reduces to saying that $C$ is true under all interpretations, i.e.\ that $C$ is a valid formula (tautology).
+ 
+\thm{Soundness}{Let $(F, \mathit{Infer})$ be a proof system over propositional formulas. If every inference rule in $\mathit{Infer}$ is sound, then $A \vdash_{\mathit{Infer}} G$ implies $A \models G$.}
+ 
+\subsection{Semantic vs.\ Syntactic Consequence}
+ 
+\begin{itemize}
+  \item \textbf{Semantic consequence.} To check $\{A_1\} \models G$, we check all possible interpretations: in every propositional assignment (every ``world'' we can imagine), if $A_1$ is true then so is $G$. For propositional logic, a world assigns truth values ($0$ or $1$) to the variables.
+  \item \textbf{Syntactic consequence (provability).} To check $\{A_1\} \vdash G$, we look for a derivation of $G$ with $A_1$ as an additional axiom. Syntactic consequence is specific to a particular proof system.
+\end{itemize}
+ 
+In general we have a set of assumptions $A = \{A_1, A_2, \ldots\}$. For a given proof system there are two possible inclusions:
+\begin{itemize}
+  \item \textbf{Soundness:} if $A \vdash G$, then $A \models G$. Without this, the proof system is ``broken''.
+  \item \textbf{Completeness:} if $A \models G$, then $A \vdash G$. Without this, there are true statements that cannot be proved, which may be acceptable.
+\end{itemize}
+
+
+\section{Propositional Resolution}
+ 
+\subsection{Decision and Simplification}
+ 
+\dfn{Literal}{A \emph{propositional literal} is either a variable (e.g.\ $x$) or its negation ($\neg x$).}
+ 
+\dfn{Clause}{A \emph{clause} is a disjunction of literals. Because $\vee$ is associative, commutative and idempotent, a clause can be represented as a finite set of literals. If $C$ is a clause, then $\llbracket C \rrbracket_e = 1$ iff there exists a literal $L \in C$ such that $\llbracket L \rrbracket_e = 1$. The constant $0$ is represented by the \emph{empty clause} $\emptyset$.}
+ 
+As for any formulas, a finite set of clauses $A$ can be interpreted as the conjunction of its elements. A set of clauses is therefore a formula in conjunctive normal form: for instance $\{\{a\},\{b\},\{\neg a,\neg b\}\}$ represents $a \wedge b \wedge (\neg a \vee \neg b)$.
+ 
+\subsubsection*{Unit resolution}
+ 
+\dfn{Unit clause and complement}{A \emph{unit clause} is a clause with precisely one literal, i.e.\ of the form $\{L\}$. The \emph{complement} $\overline{L}$ of a literal $L$ is defined by $\overline{x} = \neg x$ and $\overline{\neg x} = x$.}
+ 
+\dfn{Unit resolution}{\emph{Unit resolution} is the special case of resolution in which one of the clauses is a unit clause:
+\[
+\frac{C \qquad \{L\}}{C \setminus \{\overline{L}\}}
+\]}
+ 
+\noindent\emph{Soundness.} If $L$ is true, then $\overline{L}$ is false, so $\overline{L}$ can be deleted from the disjunction $C$.
+ 
+\subsubsection*{Subsumption}
+ 
+\dfn{Subsumption}{When applying resolution, if we obtain a clause $C' \subseteq C$ that is a subset of a previously derived clause $C$, we can delete $C$ and no longer consider it. Any use of $C$ can be replaced by a use of $C'$, with progress towards $\emptyset$ at least as good. We say that $C'$ \emph{subsumes} $C$.}
+ 
+In particular, if we derive a unit clause $\{L\}$, we can remove all other occurrences of $L$ and $\overline{L}$. If $L \in C$ then $C$ is subsumed by $\{L\}$, and if $\overline{L} \in C$ then $C$ is subsumed by $C \setminus \{\overline{L}\}$.
+ 
+\subsection{Resolution on Clauses}
+ 
+\dfn{Clausal resolution rule}{The \emph{clausal resolution} rule (a decision rule for clauses) resolves two clauses with respect to a variable $x$:
+\[
+\frac{C_1 \cup \{x\} \qquad C_2 \cup \{\neg x\}}{C_1 \cup C_2}
+\]}
+ 
+\noindent\textbf{Theorem (Soundness).} Clausal resolution is sound: for all clauses $C_1, C_2$ and propositional variables $x$,
+\[
+\{C_1 \cup \{x\},\; C_2 \cup \{\neg x\}\} \models C_1 \cup C_2.
+\]
+ 
+\thm{Refutational completeness}{A finite set of clauses $A$ is unsatisfiable if and only if there exists a derivation of the empty clause from $A$ using clausal resolution.}
+ 
+\subsubsection*{Resolution as transitivity of implication}
+ 
+For formulas $F_1, F_2, F_3$, if $F_1 \rightarrow F_2$ and $F_2 \rightarrow F_3$ are true, so is $F_1 \rightarrow F_3$; thus $\rightarrow$ is a transitive relation on $\{0,1\}$. Resolution can be viewed as a consequence of this transitivity, using the fact that $P \rightarrow Q$ is equivalent to $\neg P \vee Q$: the clauses $C_1 \vee x$ and $C_2 \vee \neg x$ are equivalent to $(\neg C_1) \rightarrow x$ and $x \rightarrow C_2$, from which we obtain $(\neg C_1) \rightarrow C_2$, i.e.\ $C_1 \vee C_2$.
+ 
+\subsection{Flatenning}
+ 
+\subsubsection*{Converting formulas to clauses}
+ 
+To check a formula with resolution we must first turn it into a set of clauses, that is, a conjunctive normal form. The equivalences guaranteed to produce a conjunctive normal form are negation propagation (De Morgan's laws) together with distributivity of $\vee$ over $\wedge$:
+\[
+\neg(F_1 \wedge F_2) \leftrightarrow (\neg F_1) \vee (\neg F_2), \qquad
+F_1 \vee (F_2 \wedge F_3) \leftrightarrow (F_1 \vee F_2) \wedge (F_1 \vee F_3).
+\]
+In general this transformation is exponential: applying distributivity from left to right duplicates the subformula $F_1$, which may produce an exponentially larger formula.
+ 
+If we were willing to pay this cost, we might as well transform into disjunctive normal form, because satisfiability of a disjunction of conjunctions $D_1 \vee \ldots \vee D_n$ is trivial to check:
+\[
+\exists e.\, \llbracket D_1 \vee \ldots \vee D_n \rrbracket_e = 1 \iff (\exists e.\, \llbracket D_1 \rrbracket_e = 1) \vee \ldots \vee (\exists e.\, \llbracket D_n \rrbracket_e = 1),
+\]
+and each conjunction $D_i$ is checked separately. Hence, when the conversion is exponential, converting to CNF is no better than converting to DNF for checking satisfiability. This motivates a cheaper transformation that preserves only satisfiability.
+ 
+\subsubsection*{Equivalence and equisatisfiability}
+ 
+\dfn{Equivalence}{Formulas $F_1$ and $F_2$ are \emph{equivalent} iff $F_1 \models F_2$ and $F_2 \models F_1$, i.e.\ $\forall e.\, \llbracket F_1 \rrbracket_e = \llbracket F_2 \rrbracket_e$. A transformation producing an equivalent formula is \emph{equivalence preserving}.}
+ 
+\dfn{Equisatisfiability}{Formulas $F_1$ and $F_2$ are \emph{equisatisfiable} iff $F_1$ is satisfiable whenever $F_2$ is satisfiable, and vice versa. A transformation producing an equisatisfiable formula is \emph{satisfiability preserving}.}
+ 
+Equivalent formulas are always equisatisfiable, but the converse does not hold in general: two different satisfiable formulas are equisatisfiable. An equisatisfiable formula may use additional variables, and not every assignment of the original formula is a model of the new one, but every model of the original can be extended to a model of the new formula.
+ 
+\subsubsection*{Flattening}
+ 
+\dfn{Flattening}{Let $F$ be a formula, $G$ another formula, and $x \notin FV(F)$ a propositional variable. Let $F[G := x]$ denote the result of replacing an occurrence of the subformula $G$ inside $F$ with $x$. Then $F$ is equisatisfiable with
+\[
+(x \leftrightarrow G) \wedge F[G := x].
+\]
+This satisfiability-preserving transformation is called \emph{flattening}: a subformula is picked and given a name by a fresh variable.}
+ 
+\emph{Proof of equisatisfiability.} A satisfying assignment of the new formula is also a satisfying assignment of the old one. Conversely, since $x$ does not occur in $F$, if $\llbracket F \rrbracket_e = 1$ we can redefine $e(x)$ to be $\llbracket G \rrbracket_e$, which makes the new formula true.
+ 
+Flattening works in any formalism that supports equality (here: equivalence). The strategy is to apply it starting from the smallest non-variable subformulas.
+ 
+\subsubsection*{Tseytin's transformation}
+ 
+Tseytin's transformation converts a formula with $\neg, \wedge, \vee, \rightarrow, =, \oplus$ into an equisatisfiable set of clauses in polynomial time:
+\begin{enumerate}
+  \item Replace $F_1 \rightarrow F_2$ with $\neg F_1 \vee F_2$, and push negations into the propositional variables using De Morgan's laws and by switching between $\oplus$ and $=$.
+  \item Repeatedly flatten an occurrence of a binary connective whose arguments are literals.
+  \item In the resulting conjunction, express each equivalence as a conjunction of clauses. For example,
+  \begin{align*}
+  x = (a \wedge b) &\;\leadsto\; \{\neg x, a\},\ \{\neg x, b\},\ \{\neg a, \neg b, x\},\\
+  x = (a \vee b) &\;\leadsto\; \{\neg x, a, b\},\ \{x, \neg a\},\ \{x, \neg b\},
+  \end{align*}
+  and similarly for $=$ and $\oplus$.
+\end{enumerate}
+(See also Section 1.7.3 of \emph{The Calculus of Computation}.)
+ 
+\subsection{SAT Solvers}
+ 
+A SAT solver takes as input a set of clauses. To check satisfiability of a formula, convert it to an equisatisfiable set of clauses in polynomial time using Tseytin's transformation. To check validity of a formula, take its negation, check satisfiability, and negate the answer.
+ 
+To check satisfiability of a set of clauses there are two basic approaches:
+\begin{itemize}
+  \item \textbf{Resolution on clauses}, favoring unit resolution and applying subsumption (complete; Davis and Putnam, 1960).
+  \item \textbf{Truth table method:} try one value of a variable, then the other (space efficient).
+\end{itemize}
+ 
+\subsubsection*{The DPLL algorithm}
+ 
+The Davis--Putnam--Logemann--Loveland (DPLL) algorithm combines these ideas. Given a set of clauses $S$, it first applies unit propagation (boolean constraint propagation) and subsumption, obtaining $S_1$:
+\begin{itemize}
+  \item if $\emptyset \in S_1$, the set is unsatisfiable;
+  \item if $S_1$ contains only unit clauses, it is satisfiable and $S_1$ gives a satisfying assignment;
+  \item otherwise, instead of doing general resolution, it creates more unit literals: it picks a literal $L$ occurring in a clause of $S_1$ with $\{L\} \notin S_1$ and recursively solves $S_1 \cup \{\{L\}\}$ and $S_1 \cup \{\{\overline{L}\}\}$; the set is satisfiable if either call succeeds.
+\end{itemize}
+Unit propagation repeatedly takes a unit clause $\{U\}$ and a clause $C$ with $\overline{U} \in C$, and replaces $C$ by $C \setminus \{\overline{U}\}$. Subsumption repeatedly deletes a clause $C_2$ whenever another clause $C_1 \subseteq C_2$ is present.
+ 
+\subsubsection*{Data structures}
+ 
+The simple algorithm above generates new clauses in unit propagation and deletes clauses in unit propagation and subsumption, which is very inefficient. SAT solvers use better data structures instead:
+\begin{itemize}
+  \item All unit clauses are represented as a \emph{current assignment}: a partial map (environment) $e$ from some of the variables to truth values, initially empty. The unit clause $\{\neg a\}$ becomes $e(a) = 0$ and $\{a\}$ becomes $e(a) = 1$.
+  \item Whenever a new literal $L$ becomes true, the solver checks whether $e$ already assigns the variable in a contradictory way; if so, a \emph{conflict} is detected, which corresponds to $\emptyset$.
+  \item Instead of resolving $\{L_1, L_2, \ldots, L_n\}$ with a unit literal, each clause is interpreted in the context of the current $e$: once $\llbracket L_1 \rrbracket_e = 0$, the clause is read as $\{L_2, \ldots, L_n\}$.
+  \item When all literals of a clause are $0$ except one literal, say a variable $p$, then $p$ must be true, so the assignment is updated to $e' = e \cup \{(p, 1)\}$, reporting a contradiction if already $e(p) = 0$. The \emph{two-watched-literal} data structure makes detecting this situation fast.
+  \item Instead of subsumption, clauses that are true in the current $e$ are marked and ignored.
+\end{itemize}
+ 
+\subsubsection*{Clause learning and proofs}
+ 
+\dfn{CDCL}{\emph{Conflict-driven clause learning} (CDCL) maintains the progress of exploring the search space using \emph{learned clauses}. Each learned clause is derived by resolution from existing ones. For instance, if decisions setting literals $L_1, L_2, L_3$ to true lead to a conflict, then $\neg(L_1 \wedge L_2 \wedge L_3)$ is a resolution consequence of the input formula and can be added to the clause set.}
+ 
+Given the subtlety of SAT solvers, one uses proof representations (e.g.\ DRAT) that can be checked independently by simple and efficient proof checkers, which run in polynomial time.
+ 
+\subsubsection*{Limits of resolution}
+ 
+There are combinatorial statements (e.g.\ the pigeonhole principle) that give an infinite family of unsatisfiable formulas $F_1, F_2, \ldots$ such that the shortest resolution proof $F_i \vdash \emptyset$ is exponential in the size of $F_i$ (Urquhart, 1987). No such hard cases are known for \emph{extended resolution}, which can introduce fresh propositional variables that name given clauses (Audemard, Katsirelos, Simon, AAAI-10). An efficiently checkable proof system with short proofs for all unsatisfiable formulas would imply $\mathrm{NP} = \mathrm{coNP}$.
+
+
+\section{FOL Resolution}
+ 
+\subsection*{Automating first-order logic}
+ 
+First-order logic (FOL) supports arbitrary (uninterpreted) predicates and functions, whose meaning is constrained through axioms. FOL can be used in practice to formalize most of mathematics (e.g.\ through set theory axioms), and thus all program verification problems.
+ 
+To prove that a property holds, we describe the property by a formula $F$, describe the functions and relations in $F$ by a sequence of axioms $S$, and check whether the sequence $(\neg F;\, S)$ is contradictory. If it is, then $F$ follows from $S$.
+ 
+There is a procedure that, if $F$ does follow from $S$, establishes this in finite time (we do not know how long it will take, and if $F$ does not follow, the procedure may loop). Resolution for FOL is one such procedure.
+ 
+\subsection*{Syntax}
+ 
+\dfn{First-order signature}{A first-order signature $L$ (also called a \emph{language}) specifies a countable set of function symbols $f$ and predicate symbols $p$. Constants $c$ are function symbols taking no arguments. The arity $\mathit{ar}$ of a function or predicate symbol is its number of arguments.}
+ 
+Formulas $F$ and terms $t$ are given by
+\begin{align*}
+F &::= p(t_1, \ldots, t_n) \mid \forall x.\, F \mid \exists x.\, F \mid \top \mid \bot \mid \neg F \mid F_1 \wedge F_2 \mid F_1 \vee F_2 \mid F_1 \rightarrow F_2 \mid F_1 \leftrightarrow F_2\\
+t &::= x \mid c \mid f(t_1, \ldots, t_n)
+\end{align*}
+where $x \in \mathit{Var}$ ranges over a countably infinite fixed set of variables. If $\mathit{ar}(f) = 2$ we may form the term $f(t_1, t_2)$, and if $\mathit{ar}(p) = 2$ we may form the formula $p(t_1, t_2)$. Quantifiers range only over variables, not over function or predicate symbols; this is what makes the logic first-order.
+ 
+\dfn{Atomic formula, literal, clause}{An \emph{atomic formula} is $p(t_1, \ldots, t_n)$ (it contains no logical connectives or quantifiers). A \emph{literal} is an atomic formula or its negation $\neg p(t_1, \ldots, t_n)$. A \emph{clause} is a disjunction of literals.}
+ 
+\subsection*{Semantics}
+ 
+\dfn{First-order interpretation}{A \emph{first-order interpretation} is $I = (D, e)$ where $D \neq \emptyset$ (finite or infinite) and $e$ maps
+\begin{itemize}
+  \item each predicate symbol $p$ with $\mathit{ar}(p) = n$ to $e(p) : D^n \to \{0,1\}$,
+  \item each function symbol $f$ with $\mathit{ar}(f) = n$ to a total function $e(f) : D^n \to D$ (each constant $c$ to an element $e(c) \in D$),
+  \item each variable $x$ to an element $e(x) \in D$.
+\end{itemize}}
+ 
+The truth value $\llbracket F \rrbracket_I \in \{0,1\}$ is defined by recursion on the formula tree with the expected rules, for example:
+\begin{align*}
+\llbracket F_1 \wedge F_2 \rrbracket_I &= \llbracket F_1 \rrbracket_I \wedge \llbracket F_2 \rrbracket_I, &
+\llbracket \neg F \rrbracket_I &= \neg \llbracket F \rrbracket_I, &
+\llbracket \bot \rrbracket_I &= 0,\\
+\llbracket f(t_1, \ldots, t_n) \rrbracket_I &= e(f)(\llbracket t_1 \rrbracket_I, \ldots, \llbracket t_n \rrbracket_I), &
+\llbracket p(t_1, \ldots, t_n) \rrbracket_I &= e(p)(\llbracket t_1 \rrbracket_I, \ldots, \llbracket t_n \rrbracket_I), &
+\llbracket x \rrbracket_I &= e(x),
+\end{align*}
+\[
+\llbracket \forall x.\, F \rrbracket_{(D,e)} = 1 \text{ iff } \forall d \in D.\ \llbracket F \rrbracket_{(D, e[x := d])} = 1, \qquad
+\llbracket \exists x.\, F \rrbracket_{(D,e)} = 1 \text{ iff } \exists d \in D.\ \llbracket F \rrbracket_{(D, e[x := d])} = 1,
+\]
+where $e[x := d](y) = d$ if $x = y$ and $e(y)$ otherwise. The meaning of function and relation symbols is fixed in $e$, so quantification over them (second-order or higher-order logic) is not expressible.
+ 
+\dfn{Validity and satisfiability}{A formula $F$ is \emph{valid} if $\llbracket F \rrbracket_{(D,e)} = 1$ for all interpretations $(D, e)$, for arbitrarily small or large sets $D$ and all choices of $e$. A formula $F$ is \emph{satisfiable} if there exists an interpretation $(D,e)$ such that $\llbracket F \rrbracket_{(D,e)} = 1$.}
+ 
+Satisfiability and validity are statements in the metatheory: the domain, functions and relations are all existentially quantified when asking about satisfiability, and all universally quantified when asking about validity. $F$ is valid if and only if $\neg F$ is not satisfiable. To check validity of $F$ we therefore check satisfiability of $\neg F$, aiming for a negative answer, after transforming $\neg F$ into a normal form.
+ 
+\subsection{NNF and Skolemization}
+ 
+\subsubsection*{Negation normal form}
+ 
+If $F \leftrightarrow G$ is a valid FOL formula, then inside any formula $H$ we can replace a subformula $F$ by $G$ without changing the truth value: $H[F] \leadsto H[G]$. Using this we transform formulas to negation normal form with the rewrites
+\begin{align*}
+F_1 \leftrightarrow F_2 &\leadsto (F_1 \rightarrow F_2) \wedge (F_2 \rightarrow F_1), &
+F_1 \rightarrow F_2 &\leadsto \neg F_1 \vee F_2, &
+\neg\neg F &\leadsto F,\\
+\neg(F_1 \wedge F_2) &\leadsto \neg F_1 \vee \neg F_2, &
+\neg(F_1 \vee F_2) &\leadsto \neg F_1 \wedge \neg F_2, &&\\
+\neg\forall x.\, F &\leadsto \exists x.\, \neg F, &
+\neg\exists x.\, F &\leadsto \forall x.\, \neg F, &&\\
+\neg\bot &\leadsto \top, &
+\neg\top &\leadsto \bot. &&
+\end{align*}
+ 
+\dfn{Negation normal form (NNF)}{A formula is in \emph{negation normal form} if negation is applied only to atomic formulas and the only other propositional connectives are $\wedge$ and $\vee$.}
+ 
+\subsubsection*{Skolemization}
+ 
+\dfn{Skolem function}{Replacing an existential quantifier by a function symbol is justified as follows. For a fresh function symbol $s$, the formula $p(x, s(x)) \rightarrow \exists y.\, p(x, y)$ is valid (take $y$ to be $s(x)$), so if $\forall x.\, p(x, s(x))$ is satisfiable, so is $\forall x.\, \exists y.\, p(x, y)$. Conversely, given an interpretation in which $\forall x.\, \exists y.\, p(x,y)$ holds, we construct (by the axiom of choice) a function $\bar s$ assigning to each $x_d \in D$ some $y_d$ with $e(p)(x_d, y_d) = 1$, and extend the interpretation with $e' = e[s := \bar s]$, in which $\forall x.\, p(x, s(x))$ holds. A new function symbol $s$ used in this way is a \emph{Skolem function} (after Thoralf Skolem). The same works for any quantifier-free formula in place of $p$, and the transformation preserves satisfiability.}
+ 
+\dfn{Skolemization}{In a formula in negation normal form, \emph{Skolemization} replaces a subformula
+\[
+\exists y.\, F(x_1, \ldots, x_n, y)
+\]
+by
+\[
+F(x_1, \ldots, x_n, g(x_1, \ldots, x_n)),
+\]
+where $g$ is a new function symbol of arity $n$ (a Skolem function) and $\{x_1, \ldots, x_n\}$ are the free variables of the subformula, computed by
+\begin{align*}
+FV(c) &= \emptyset, & FV(x) &= \{x\}, & FV(f(t_1, \ldots, t_n)) &= FV(t_1) \cup \ldots \cup FV(t_n) = FV(p(t_1, \ldots, t_n)),\\
+FV(F_1 \wedge F_2) &= FV(F_1) \cup FV(F_2), & FV(\neg F) &= FV(F), & FV(\forall x.\, F) &= FV(F) \setminus \{x\} = FV(\exists x.\, F).
+\end{align*}}
+ 
+For quantifiers $Q_1 x_1.\, \ldots Q_n x_n.\, F$ we eliminate existentials starting from the outside (left), and the arguments of the Skolem function for $\exists x_i$ are only the universally quantified variables among $x_1, \ldots, x_{i-1}$.
+ 
+\subsubsection*{Prenex and conjunctive normal form}
+ 
+Bound variables can be renamed while preserving equivalence, and a quantifier can be pulled in or out of a formula in which the variable does not occur:
+\begin{itemize}
+  \item $(\forall x.\, F) \leftrightarrow \forall y.\, F[x := y]$, where $y$ is fresh;
+  \item $(\forall x.\, F) \vee G \leftrightarrow \forall x.\, (F \vee G)$;
+  \item $(\forall x.\, F) \wedge G \leftrightarrow \forall x.\, (F \wedge G)$.
+\end{itemize}
+We can thus move quantifiers outwards.
+ 
+\dfn{Prenex normal form}{A formula is in \emph{prenex normal form} if it has the form $Q_1 x_1.\, Q_2 x_2.\, \ldots Q_n x_n.\, G$ where $Q_i \in \{\forall, \exists\}$ and $G$ has no quantifiers.}
+ 
+The quantifier-free part $G$ can then be transformed into conjunctive normal form as in propositional logic, using $(F \wedge G) \vee H \leftrightarrow (F \vee H) \wedge (G \vee H)$. As before, fresh predicate symbols can be introduced to avoid exponential blow-up.
+ 
+\subsubsection*{Resulting conjunction of clauses}
+ 
+\noindent\textbf{Theorem.} Each formula $F$ can be transformed into an equisatisfiable formula of the form
+\[
+(\forall x_1, \ldots, x_n.\, C_1) \wedge \ldots \wedge (\forall x_1, \ldots, x_n.\, C_m)
+\]
+where each $C_i$ is quantifier-free and, moreover, a disjunction of first-order literals.
+ 
+Indeed, we move negations to the predicates (NNF), eliminate $\exists$ by Skolemization, and pull $\forall$ and $\wedge$ to the outside, leaving $\vee$ applied to literals.
+ 
+\dfn{First-order clause}{Each $C_i$ above is a \emph{first-order clause}: a disjunction of first-order literals, where a literal is an atomic formula $p(t_1, \ldots, t_k)$ or its negation. A clause can also be viewed as a set of literals, because the order of disjuncts does not matter up to equivalence; the empty clause means $\bot$. For a formula $F$, the set of clauses obtained is denoted $\mathit{clauses}(F)$.}
+ 
+Universal quantifiers are omitted because all variables are universally quantified. By convention, variables are denoted $x, y, z, \ldots$ and constants $a, b, c, \ldots$.
+ 
+\subsubsection*{Sets of formulas}
+ 
+A set of formulas $S$ is true in an interpretation $I$ if every formula in it is true:
+\[
+\llbracket S \rrbracket_I = 1 \iff \forall F \in S.\ \llbracket F \rrbracket_I = 1.
+\]
+For finite $S$ this equals the truth value of the conjunction of the elements of $S$. Two sets are \emph{equivalent} iff the sets of interpretations in which they are true are equal, and $S$ is \emph{satisfiable} iff there is an $I$ with $\llbracket S \rrbracket_I = 1$. Consequently, $F$ is satisfiable iff $\mathit{clauses}(F)$ is satisfiable.
+ 
+\subsection{Instantiation and Resolution}
+ 
+\subsubsection*{Sound inference rules and instantiation}
+ 
+\dfn{Sound inference rule}{An inference rule
+\[
+\frac{F_1 \quad \ldots \quad F_n}{G}
+\]
+is \emph{sound} iff the formula $(F_1 \wedge \ldots \wedge F_n) \rightarrow G$ is valid.}
+ 
+If $(*)$ is a sound inference rule and $F_1, \ldots, F_n \in S$, then $S$ and $S \cup \{G\}$ are equivalent. Using the convention that variables are universally quantified, the \emph{instantiation} rule
+\[
+\frac{C}{C[x := t]}
+\]
+is sound, where $C[x := t]$ denotes substituting variables of $C$ by terms. In general the terms $t$ may contain other variables. Special cases are:
+\begin{itemize}
+  \item \textbf{renaming:} replace variables with fresh variables;
+  \item \textbf{ground instantiation:} replace variables with ground terms, which have no variables (they are built only from constants and function symbols).
+\end{itemize}
+ 
+\subsubsection*{Resolution for FOL clauses}
+ 
+The following transitivity of universal implication is valid for all formulas $F, G, H$, where $\bar x$ is the finite list of all free variables in $F, G, H$:
+\[
+\big((\forall \bar x.\, (F \rightarrow G)) \wedge (\forall \bar x.\, (G \rightarrow H))\big) \rightarrow (\forall \bar x.\, (F \rightarrow H)).
+\]
+As an inference rule, with all formulas universally quantified,
+\[
+\frac{F \rightarrow G \qquad G \rightarrow H}{F \rightarrow H}.
+\]
+Expressing $\rightarrow$ using $\vee$ and $\neg$ gives $\neg F \vee G$, $\neg G \vee H$ $\vdash$ $\neg F \vee H$. Taking $G$ to be a literal $L$, and letting $\neg F$ and $H$ be equivalent to clauses $C_1$ and $C_2$, we obtain the (simple, propositional-style) resolution rule without unification:
+\[
+\frac{C_1 \vee L \qquad \neg L \vee C_2}{C_1 \vee C_2}
+\]
+ 
+\subsubsection*{Resolution with instantiation}
+ 
+\dfn{Complementary literals}{Literals $L$ and $\neg L$ are called \emph{complementary}.}
+ 
+If two literals are not complementary, we may still be able to apply the instantiation rule to make them complementary. This gives the general resolution rule
+\[
+\frac{C_1' \vee L' \qquad \neg L'' \vee C_2''}{C_1 \vee C_2}
+\]
+where $C_1 \vee L$ is an instance of $C_1' \vee L'$, $\neg L \vee C_2$ is an instance of $\neg L'' \vee C_2''$ (obtained by instantiating the two clauses so that the literals become identical), and the conclusion is $C_1 \vee C_2$.
+ 
+To check whether a substitution exists making $L'$ and $L''$ identical, we use (syntactic, first-order) \emph{unification}, which has a linear-time algorithm. The procedure is:
+\begin{enumerate}
+  \item rename the variables in the two clauses so that they are disjoint;
+  \item compute a \emph{most general unifier} so that the literals become complementary (one an atomic formula, the other its negation);
+  \item instantiate both clauses with it and apply the resolution rule.
+\end{enumerate}
+% \end{document}

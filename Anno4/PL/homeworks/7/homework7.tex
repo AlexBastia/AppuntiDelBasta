@@ -1,0 +1,102 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{stmaryrd}   % \llbracket, \rrbracket
+\usepackage{mathpartir} % \inferrule
+
+% ---------- macros ----------
+\newcommand{\ST}[1]{\mathcal{ST}\llbracket #1 \rrbracket}
+\newcommand{\lam}[2]{\lambda #1.\,#2}
+\newcommand{\defeq}{\triangleq}
+\newcommand{\kw}[1]{\mathsf{#1}}
+\newcommand{\TRUE}{\mathsf{TRUE}}
+\newcommand{\FALSE}{\mathsf{FALSE}}
+\newcommand{\PLUS}{\mathsf{PLUS}}
+\newcommand{\MAX}{\mathsf{MAX}}
+\newcommand{\leaf}{\mathsf{leaf}}
+\newcommand{\node}{\mathsf{node}}
+\newcommand{\sub}[2]{\{#1/#2\}}
+
+\title{Homework \#7}
+\author{Alex Bastianini}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+%------------------------------------------------------------
+\section*{Exercise 1}
+
+Large-step semantics under call-by-name:
+\[
+\inferrule{e_1 \Downarrow \lam{x}{e}\quad e\sub{e_2}{x} \Downarrow v}{e_1\, e_2 \Downarrow v}
+\qquad\qquad
+\inferrule{ }{\lam{x}{e} \Downarrow \lam{x}{e}}
+\]
+
+%------------------------------------------------------------
+\section*{Exercise 2}
+\subsection*{(a)}
+\[
+\mathit{is\_leaf} \;:=\; \lam{t}{t\;(\lam{\_\,\_\,\_}{\FALSE})\;\TRUE}
+\]
+
+\subsection*{(b)}
+\[
+\mathit{root} \;:=\; \lam{t}{t\;(\lam{\_\,v\,\_}{v})\;0}
+\]
+
+\subsection*{(c)}
+\[
+\mathit{nodes} \;:=\; \lam{t}{t\;(\lam{s_1\,\_\,s_2}{\PLUS\; s_1\; (\PLUS\; s_2\; 1)})\;0}
+\]
+
+\subsection*{(d)}
+\[
+\mathit{height} \;:=\; \lam{t}{t\;(\lam{h_1\,\_\,h_2}{\PLUS\; 1\; (\MAX\; h_1\; h_2)})\;0}
+\]
+
+%------------------------------------------------------------
+\section*{Exercise 3}
+
+\subsection*{(a)}
+\begin{align*}
+\ST{()}\,s &= ((),\, s)\\
+\ST{\kw{get}}\,s &= (s,\, s)\\
+\ST{\kw{set}(e)}\,s &= \big((),\, \#1\,(\ST{e}\,s)\big)\\
+  \ST{\lam{x}{e}}\,s &= \big(\lam{x}{\lam{s_1}{\ST{e}\,s_1}},\; s)\big)\\[4pt]
+\ST{e_1\, e_2}\,s &=\\
+  & \kw{let}\; ste_1 = \ST{e_1}\, s\; \kw{in}\\
+  & \kw{let}\; ste_2 = \ST{e_2}\, (\#2\, ste_1)\; \kw{in}\\
+  & (\#1 ste_1)\, (\#1 ste_2)\, (\#2 ste_2)
+\end{align*}
+
+\subsection*{(b)}
+\begin{align*}
+\ST{\kw{while}\; e_1\; \kw{do}\; e_2}\,s \;=\; \Big(&(),\\
+&Z\,\big(\lam{f}{\lam{s}{\\
+&\qquad \kw{let}\; \mathit{ste}_1 = \ST{e_1}\,s\; \kw{in}\\
+&\qquad \kw{if}\; (\#1\;\mathit{ste}_1)\; \kw{then}\;
+        \big(f\;(\#2\,(\ST{e_2}\,(\#2\;\mathit{ste}_1)))\big)\\
+&\qquad \kw{else}\; (\#2\;\mathit{ste}_1)}}\big)\; s\Big)
+\end{align*}
+where $Z$ is the call-by-value fixed-point combinator
+\[
+Z \defeq \lam{f}{(\lam{x}{f\,(\lam{y}{x\,x\,y})})\,(\lam{x}{f\,(\lam{y}{x\,x\,y})})}.
+\]
+
+\section*{AI Disclosure}
+\begin{enumerate}
+\item Claude LLM
+\item Asked to convert handwriting to LaTeX
+\item Saved time writing
+\end{enumerate}
+\section*{Debriefing}
+\begin{enumerate}
+\item 3 to 4 hours
+\item moderate-difficult
+\item yes
+\item 85\%
+\end{enumerate}
+
+\end{document}

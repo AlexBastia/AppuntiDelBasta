@@ -1,0 +1,186 @@
+% \begin{document}
+\chapter{Abstract Interpretation}
+ 
+\section{Programs as Control Flow Graphs}
+ 
+\dfn{Abstract interpretation}{\emph{Abstract interpretation} is a way to infer properties of program computations. An ordinary interpreter executes a statement on one concrete state. An \emph{abstract interpreter} executes it on an \emph{abstract state}, which represents a set of concrete states (for example, a range of possible values for each variable) and so describes many executions at once. (Cousot and Cousot, POPL 1977.)}
+ 
+A program can be represented as a \emph{control-flow graph} (CFG): vertices are program points, and edges are labelled by statements, either assignments or conditions $[p]$ (assume statements coming from \texttt{if} and \texttt{while}). An edge without a label is denoted \texttt{skip}.
+ 
+\subsection*{Sets of states at each program point}
+ 
+Given the initial states, the exact meaning of the program can be described by the set of states that can reach each program point. One way to obtain them is to run the CFG from each initial state and insert the resulting states at the appropriate points.
+ 
+For a command $c$ labelling an edge, let $\rho(c)$ denote the relation between initial and final state that gives the meaning of $c$.
+ 
+\dfn{Transfer function}{The \emph{transfer function} $T(S, c)$ is the image of the set of states $S$ under the relation $\rho(c)$. In general it is defined using the strongest postcondition,
+\[
+T(S, c) = sp(S, \rho(c)).
+\]
+For a condition $[p]$ we have $T(S, [p]) = \{x \in S \mid p\}$, and for an unlabelled edge $T(S, \mathit{skip}) = S$.}
+ 
+\subsection*{Reachable states as a system of equations}
+ 
+The sets of reachable states $S(v)$ for the vertices $v$ of the CFG are described by recursive equations. The entry vertex has the set of all possible initial states, and every other vertex is the union, over its incoming edges $(u, c, v)$, of $T(S(u), c)$:
+\[
+S(v) = \bigcup_{(u, c, v)} T(S(u), c).
+\]
+The solution we want is the unique \emph{least} solution of these equations. It can be computed by iterating the equations starting from empty sets as the initial solution.
+ 
+The problem is that these exact equations are as difficult to solve as running the program on all possible input states. Instead, we consider approximate descriptions of these sets of states.
+ 
+\section{Approximating Sets}
+ 
+\subsection*{Domains of intervals}
+ 
+A large analysis domain is the set of all integer intervals $\{x \mid L \le x \wedge x \le U\}$ for $L, U \in \mathbb{Z}$. It has infinitely many elements, but is already an approximation of all possible sets of integers.
+ 
+A smaller domain allows only sets of the form $[L, U]$ denoting $\{x \mid L \le x \wedge x \le U\}$ with $L \le U$, where the bounds come from a fixed finite set of constants including \texttt{MININT} and \texttt{MAXINT}. Then:
+\begin{itemize}
+  \item $[\texttt{MININT}, \texttt{MAXINT}]$ denotes all integers and is written $\top$;
+  \item all empty intervals are written $\bot$;
+  \item the domain $D$ has only finitely many elements.
+\end{itemize}
+ 
+\subsection*{Abstract equations}
+ 
+Because only finitely many sets are available, we must approximate, and we approximate sets by possibly larger sets. The equations are rewritten with abstract values $S^\#(v) \in D$, abstract transfer functions $T^\#(S, c)$ giving results in $D$, and the operation $\sqcup$ in place of $\cup$:
+\[
+S^\#(v) = \bigsqcup_{(u, c, v)} T^\#(S^\#(u), c).
+\]
+Here $S_1 \sqcup S_2$ denotes the approximation of $S_1 \cup S_2$: the set that contains both $S_1$ and $S_2$, belongs to $D$, and is otherwise as small as possible. For intervals,
+\[
+[a, b] \sqcup [c, d] = [\min(a, c), \max(b, d)].
+\]
+ 
+\subsection*{Solving the equations}
+ 
+We solve the equations by starting in the initial state and repeatedly applying them: at the entry point we put $\top$, and at all other vertices $\bot$. We iterate until nothing changes, i.e.\ until a \emph{fixpoint} is found. Mapping the resulting intervals to sets gives a solution of the original constraints (an over-approximation of the reachable states).
+ 
+\subsection*{Abstract domains are partial orders}
+ 
+Program semantics is given by sets (such as sets of reachable states), which are compared with the subset relation $\subseteq$ and combined with union (for instance at the join after an \texttt{if}). To approximate them we introduce a domain of elements $d \in D$, each representing a set.
+ 
+\dfn{Concretization function}{The function $\gamma$ maps an abstract element $d \in D$ to the set of concrete states $\gamma(d)$ it represents. It is called the \emph{concretization function}.}
+ 
+Given $d_1, d_2$ there need not be an element $d$ with $\gamma(d_1) \cup \gamma(d_2) = \gamma(d)$. Instead we use an element that approximates the union, denoted $d_1 \sqcup d_2$. This leads us to review the theory of partial orders and (semi)lattices.
+ 
+\section{Partial Orders and Extreme Elements}
+ 
+\subsection*{Partial orders}
+ 
+\dfn{Partial order}{A \emph{partial ordering relation} is a binary relation $\le$ that is, for all $x, y, z$,
+\begin{itemize}
+  \item reflexive: $x \le x$;
+  \item antisymmetric: $x \le y \wedge y \le x \rightarrow x = y$;
+  \item transitive: $x \le y \wedge y \le z \rightarrow x \le z$.
+\end{itemize}
+If $A$ is a set and $\le$ a binary relation on $A$ with these properties, the pair $(A, \le)$ is called a \emph{partial order}.}
+ 
+Given $\le$, the corresponding \emph{strict} order $x < y$ is the shorthand for $x \le y \wedge x \ne y$. Orders on integers, rationals and reals are special cases called \emph{linear orders}. Given a set $U$ and any set $A \subseteq 2^U$ of subsets of $U$, $(A, \subseteq)$ is a partial order.
+ 
+A partial order can be drawn as a \emph{Hasse diagram}, a directed graph in the plane in which the direction of an edge is given by which node is drawn above, and transitive and reflexive edges are not drawn (they can be derived).
+ 
+\subsection*{Extreme elements}
+ 
+\dfn{Extreme elements}{Let $(A, \le)$ be a partial order and $S \subseteq A$. An element $a \in A$ is
+\begin{itemize}
+  \item an \emph{upper bound} of $S$ if $a' \le a$ for all $a' \in S$;
+  \item a \emph{lower bound} of $S$ if $a \le a'$ for all $a' \in S$;
+  \item a \emph{minimal element} of $S$ if $a \in S$ and there is no $a' \in S$ with $a' < a$;
+  \item a \emph{maximal element} of $S$ if $a \in S$ and there is no $a' \in S$ with $a < a'$;
+  \item the \emph{greatest element} of $S$ if $a \in S$ and $a' \le a$ for all $a' \in S$;
+  \item the \emph{least element} of $S$ if $a \in S$ and $a \le a'$ for all $a' \in S$;
+  \item the \emph{least upper bound} (lub, supremum, join, $\sqcup$) of $S$ if $a$ is the least element of the set of all upper bounds of $S$;
+  \item the \emph{greatest lower bound} (glb, infimum, meet, $\sqcap$) of $S$ if $a$ is the greatest element of the set of all lower bounds of $S$.
+\end{itemize}
+Taking $S = A$ gives the minimal, maximal, greatest and least elements of the entire partial order.}
+ 
+Notes:
+\begin{itemize}
+  \item a minimal element need not exist (e.g.\ the open interval $(0,1)$ of rationals);
+  \item there may be several minimal elements (e.g.\ in $\{\{a\}, \{b\}, \{a,b\}\}$);
+  \item if a minimal element exists, it need not be least;
+  \item there are no two distinct least elements of the same set;
+  \item the least element is always a glb and minimal;
+  \item if the glb belongs to the set, it is always least and minimal;
+  \item on a family of sets closed under $\cap$ and $\cup$, the glb for the order $\subseteq$ is $\cap$ and the lub is $\cup$; not all families of sets are closed, but the family of all subsets and the family of open sets from topology are.
+\end{itemize}
+ 
+\subsection*{Least upper bound}
+ 
+\dfn{Least upper bound}{The \emph{least upper bound} $\mathit{lub}(S)$ of $S$ is the element $M$, if it exists, that is the least element of the set $U = \{x \mid x \text{ is an upper bound of } S\}$. That is, $M$ is an upper bound of $S$, and for every other upper bound $M'$ of $S$ we have $M \le M'$. This is the same definition as the supremum in real analysis.}
+ 
+We write $a_1 \sqcup a_2$ for $\mathit{lub}(\{a_1, a_2\})$, and $(\ldots(a_1 \sqcup a_2) \ldots) \sqcup a_n$ is in fact $\mathit{lub}(\{a_1, \ldots, a_n\})$. The binary operation $\sqcup$ is therefore associative, commutative and idempotent. The greatest lower bound $\sqcap$ is defined dually.
+ 
+\subsection*{Order on the interval domain}
+ 
+The domain of intervals is $D = \{\bot\} \cup \{(L, U) \mid L \in \{-\infty\} \cup \mathbb{Z},\ U \in \{+\infty\} \cup \mathbb{Z}\}$ with $L \le U$, and its elements denote sets via
+\[
+\gamma : D \to 2^{\mathbb{Z}}, \qquad \gamma((L, U)) = \{x \mid L \le x \wedge x \le U\}.
+\]
+The order is induced by $\gamma$: $d_1 \sqsubseteq d_2 \leftrightarrow \gamma(d_1) \subseteq \gamma(d_2)$, hence
+\begin{align*}
+(L_1, U_1) \sqsubseteq (L_2, U_2) &\leftrightarrow L_2 \le L_1 \wedge U_1 \le U_2,\\
+\bot \sqsubseteq d &\quad \text{for all } d \in D,\\
+(L_1, U_1) \sqcup (L_2, U_2) &= (\min(L_1, L_2), \max(U_1, U_2)).
+\end{align*}
+ 
+\mlenma{Orders from inverse images}{Let $\gamma : D \to C$ where $C$ is a collection of sets, and define $d_1 \sqsubseteq d_2 \iff \gamma(d_1) \subseteq \gamma(d_2)$. Then
+\begin{enumerate}
+  \item $\sqsubseteq$ is reflexive;
+  \item $\sqsubseteq$ is transitive;
+  \item $\sqsubseteq$ is antisymmetric if and only if $\gamma$ is injective.
+\end{enumerate}}
+ 
+If $\sqsubseteq$ is not antisymmetric, we can define the equivalence relation $d_1 \sim d_2 \iff \gamma(d_1) = \gamma(d_2)$ and take $D'$ to be the set of equivalence classes. This is why all empty intervals ($L > U$) are identified and represented by the single element $\bot$.
+ 
+\section{Lattices}
+ 
+\dfn{Lattice}{A \emph{lattice} is a partial order in which every two-element set has a least upper bound and a greatest lower bound. Hence $\sqcap$ and $\sqcup$ are well-defined binary operations.}
+ 
+\mlenma{Finite sets in a lattice}{In a lattice every non-empty finite set has a lub ($\sqcup$) and a glb ($\sqcap$).}
+ 
+\pf{Proof}{By induction on the size of the set. For a three-element set $S = \{x, y, z\}$, let $a = (x \sqcup y) \sqcup z$. By definition of $\sqcup$, $z \sqsubseteq a$ and $x \sqcup y \sqsubseteq a$, and also $x \sqsubseteq x \sqcup y$ and $y \sqsubseteq x \sqcup y$, so by transitivity $x \sqsubseteq a$ and $y \sqsubseteq a$; thus $a$ is an upper bound of $S$. If $a'$ is any upper bound of $S$, then $x, y \sqsubseteq a'$ gives $x \sqcup y \sqsubseteq a'$, and with $z \sqsubseteq a'$ we get $(x \sqcup y) \sqcup z \sqsubseteq a'$. So $a$ is the least upper bound. The general step is the same, and the argument for $\sqcap$ is dual.}
+ 
+\mlenma{Linear orders}{Every linear order is a lattice.}
+ 
+Further facts about lattices:
+\begin{itemize}
+  \item Every bounded subset of the reals has a lub; this is an axiom of the real numbers (as constructed from the rationals).
+  \item If a lattice has a least and a greatest element, then every finite set (including the empty set) has a lub and a glb.
+  \item This does not imply the existence of lub and glb for infinite sets. For example, $([0,1), \le)$ is a lattice, but the entire set has no lub in it; the rationals in $[0,10]$ form a lattice, but $\{x \mid 0 \le x \wedge x^2 < 2\}$ has no lub there.
+\end{itemize}
+ 
+\mlenma{Absorption}{In every lattice, $x \sqcup (x \sqcap y) = x$.}
+ 
+\pf{Proof}{Trivially $x \sqsubseteq x \sqcup (x \sqcap y)$. For the converse, $x$ is an upper bound of both $x$ and $x \sqcap y$, and $x \sqcup (x \sqcap y)$ is the \emph{least} upper bound of these two elements, hence $x \sqcup (x \sqcap y) \sqsubseteq x$.}
+ 
+\dfn{Distributive lattice}{A lattice is \emph{distributive} iff
+\begin{align*}
+x \sqcap (y \sqcup z) &= (x \sqcap y) \sqcup (x \sqcap z),\\
+x \sqcup (y \sqcap z) &= (x \sqcup y) \sqcap (x \sqcup z).
+\end{align*}
+The lattice of all subsets of a set is distributive, and every linear order is a distributive lattice.}
+ 
+\subsection*{Products of lattices}
+ 
+For $n = 2$, a function $f : \{1, 2\} \to (L_1 \cup L_2)$ with $f(1) \in L_1$, $f(2) \in L_2$ is isomorphic to the ordered pair $(f(1), f(2))$; the product is denoted $(L_1, \le_1) \times (L_2, \le_2)$, and the order is componentwise. Lattice elements can thus be combined into finite or infinite-dimensional vectors, and the result is again a lattice.
+ 
+\mlenma{Product of partial orders and lattices}{Let $(A_1, \le_1), \ldots, (A_n, \le_n)$ be partial orders. Define
+\[
+A = \{f \mid f : \{1, \ldots, n\} \to (A_1 \cup \ldots \cup A_n) \text{ where } \forall i.\, f(i) \in A_i\},
+\]
+and for $f, g \in A$ let $f \le g \iff \forall i.\, f(i) \le_i g(i)$. Then $(A, \le)$ is a partial order, denoted $\prod_{i=1}^{n} (A_i, \le_i)$. Moreover, if each $(A_i, \le_i)$ is a lattice, then $(A, \le)$ is also a lattice, with $\sqcup$ and $\sqcap$ computed componentwise.}
+ 
+This is a special case of the Feferman--Vaught theorem.
+ 
+\subsection*{Properties of $\sqcup S$ and $\sqcap S$}
+ 
+Consider a partial order $(A, \sqsubseteq)$.
+\begin{itemize}
+  \item If $S_1 \subseteq S_2 \subseteq A$ and $\sqcup S_1$ and $\sqcup S_2$ exist, then $\sqcup S_1 \sqsubseteq \sqcup S_2$.
+  \item If $S_1 \subseteq S_2 \subseteq A$ and $\sqcap S_1$ and $\sqcap S_2$ exist, then $\sqcap S_2 \sqsubseteq \sqcap S_1$.
+  \item If $\sqcup \emptyset$ exists, it is the least element $\bot$; if $\sqcap \emptyset$ exists, it is the greatest element $\top$. This is because every element is both an upper bound and a lower bound of $\emptyset$: the formulas $\forall x.\, \forall y \in \emptyset.\, y \sqsubseteq x$ and $\forall x.\, \forall y \in \emptyset.\, y \sqsupseteq x$ are valid.
+\end{itemize}
+% \end{document}
