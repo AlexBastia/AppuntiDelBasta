@@ -1,0 +1,335 @@
+% \begin{document}
+\section{Reference Types}
+
+We extend the language with OCaml-style mutable references. The syntax and
+semantics are:
+\begin{align*}
+e &::= \cdots \mid \ttkw{ref}\ e \mid\, !e \mid e_1 := e_2 \mid \ell \\
+v &::= \cdots \mid \ell \\
+E &::= \cdots \mid \ttkw{ref}\ E \mid\, !E \mid E := e \mid v := E
+\end{align*}
+\[
+\inferrule*[Right=\textsc{Alloc}]
+  {\ell \notin \dom(\sigma)}
+  {\langle \ttkw{ref}\ v, \sigma\rangle \to \langle \ell, \sigma[\ell \mapsto v]\rangle}
+\qquad
+\inferrule*[Right=\textsc{Deref}]
+  {\sigma(\ell) = v}
+  {\langle !\ell, \sigma\rangle \to \langle v, \sigma\rangle}
+\]
+\[
+\inferrule*[Right=\textsc{Assign}]
+  {\ell \in \dom(\sigma)}
+  {\langle \ell := v, \sigma\rangle \to \langle (), \sigma[\ell \mapsto v]\rangle}
+\]
+
+We add a type $\tau\ \kw{ref}$ for locations holding values of type $\tau$. For
+instance, $\ttkw{ref}\ 7 : \kw{int\ ref}$. Assignment is performed only for its
+effect, so it has type $\kw{unit}$.
+\[
+\tau ::= \cdots \mid \tau\ \kw{ref}
+\]
+\[
+\inferrule{\Gamma \vdash e : \tau}{\Gamma \vdash \ttkw{ref}\ e : \tau\ \kw{ref}}
+\qquad
+\inferrule{\Gamma \vdash e : \tau\ \kw{ref}}{\Gamma \vdash !e : \tau}
+\qquad
+\inferrule{\Gamma \vdash e_1 : \tau\ \kw{ref} \\ \Gamma \vdash e_2 : \tau}
+          {\Gamma \vdash e_1 := e_2 : \kw{unit}}
+\]
+
+\subsection*{Store typings}
+
+There is no rule yet for typing a location $\ell$. Its type should be
+$\tau\ \kw{ref}$ where $\tau$ is the type of the value stored at $\ell$, but
+inspecting the store is inefficient and may be inconclusive (e.g.\ if
+$\sigma(\ell) = \ell$). Instead we use \emph{store typings} $\Sigma$, which are
+partial functions from locations to types. The typing judgment now has four
+components and is written $\Gamma, \Sigma \vdash e : \tau$. The reference rules
+become (other rules are modified to carry $\Sigma$ in the obvious way):
+\[
+\inferrule{\Gamma, \Sigma \vdash e : \tau}{\Gamma, \Sigma \vdash \ttkw{ref}\ e : \tau\ \kw{ref}}
+\qquad
+\inferrule{\Gamma, \Sigma \vdash e : \tau\ \kw{ref}}{\Gamma, \Sigma \vdash !e : \tau}
+\]
+\[
+\inferrule{\Gamma, \Sigma \vdash e_1 : \tau\ \kw{ref} \\ \Gamma, \Sigma \vdash e_2 : \tau}
+          {\Gamma, \Sigma \vdash e_1 := e_2 : \kw{unit}}
+\qquad
+\inferrule{\Sigma(\ell) = \tau}{\Gamma, \Sigma \vdash \ell : \tau\ \kw{ref}}
+\]
+
+\subsection*{Type soundness}
+
+The earlier soundness statement must be adapted to account for the store and the
+store typing.
+
+\medskip
+\noindent\textbf{Definition.} A store $\sigma$ is \emph{well-typed} with respect to
+$\Gamma$ and $\Sigma$, written $\Gamma, \Sigma \vdash \sigma$, if
+$\dom(\sigma) = \dom(\Sigma)$ and for all $\ell \in \dom(\sigma)$ we have
+$\Gamma, \Sigma \vdash \sigma(\ell) : \Sigma(\ell)$.
+
+\thm{Type soundness}{
+If $\cdot, \Sigma \vdash e : \tau$ and $\cdot, \Sigma \vdash \sigma$ and
+$\langle e, \sigma\rangle \to^* \langle e', \sigma'\rangle$, then either $e'$ is a
+value, or there exist $e''$ and $\sigma''$ such that
+$\langle e', \sigma'\rangle \to \langle e'', \sigma''\rangle$.
+}
+
+The proof uses progress and preservation as before. Progress adapts easily.
+Preservation is subtler: \textsc{Alloc} grows the store, so $\dom(\sigma') \neq
+\dom(\Sigma)$, and the store typing must be allowed to grow too.
+
+\mlenma{Preservation}{
+If $\Gamma, \Sigma \vdash e : \tau$ and $\Gamma, \Sigma \vdash \sigma$ and
+$\langle e, \sigma\rangle \to \langle e', \sigma'\rangle$, then there exists
+$\Sigma' \supseteq \Sigma$ such that $\Gamma, \Sigma' \vdash e' : \tau$ and
+$\Gamma, \Sigma' \vdash \sigma'$.
+}
+
+Here $\Sigma' \supseteq \Sigma$ means $\Sigma(\ell) = \Sigma'(\ell)$ for all
+$\ell \in \dom(\Sigma)$; viewing $\Sigma$ as the set of pairs
+$\{(\ell, \tau) \mid \ell \in \dom(\Sigma) \wedge \Sigma(\ell) = \tau\}$, this is
+set inclusion. Intuitively, $\Sigma'$ is either $\Sigma$ or $\Sigma$ extended with
+a newly allocated location.
+
+\subsection*{Landin's knot}
+
+References recover recursion (and hence Turing completeness): create a cell
+holding a dummy function and ``backpatch'' it with the real definition.
+\begin{verbatim}
+let r = ref (fun x:int. 0) in
+let f = fun x:int. if x = 0 then 1 else x * (!r) (x - 1) in
+let a = (r := f) in
+f 5
+\end{verbatim}
+After the assignment, $!r$ is $f$ itself, so $f\ 5$ evaluates to $120$.
+
+\section{Recursive Types}
+
+Languages commonly allow recursive data types, e.g.\ in OCaml
+\begin{verbatim}
+type tree = Leaf | Node of int * tree * tree
+\end{verbatim}
+We want $\mathit{tree}$ to satisfy
+$\mathit{tree} = \kw{unit} + \kw{int} \times \mathit{tree} \times \mathit{tree}$,
+i.e.\ to be a solution of
+\[
+\alpha = \kw{unit} + \kw{int} \times \alpha \times \alpha,
+\]
+but no such type exists among the types seen so far. There are two standard
+approaches: \emph{equirecursive} and \emph{isorecursive}.
+
+\section{Equirecursive Types}
+
+Repeatedly unwinding the equation gives
+\begin{align*}
+\alpha &= \kw{unit} + \kw{int} \times \alpha \times \alpha \\
+       &= \kw{unit} + \kw{int} \times (\kw{unit} + \kw{int} \times \alpha \times \alpha)
+          \times (\kw{unit} + \kw{int} \times \alpha \times \alpha) \\
+       &= \cdots
+\end{align*}
+a sequence of ever deeper finite trees, each a substitution instance of the
+previous one. Taking the limit yields an infinite labeled tree whose nodes are
+labeled by the constructors $\times, +, \kw{int}, \kw{unit}$; this infinite tree
+is the solution, and it is what we take as the type $\mathit{tree}$.
+
+Finite types over constructors such as $\to, \times, +, \kw{unit}, \kw{int}$ are
+finite labeled trees (e.g.\ $\kw{int} \to \kw{int} \to \kw{int}$). Infinite types
+are infinite labeled trees respecting arities: binary constructors have exactly
+two children, nullary ones are leaves.
+
+\begin{center}
+\begin{tikzpicture}[level distance=8mm, sibling distance=14mm]
+\node {$\to$}
+  child {node {$\kw{int}$}}
+  child {node {$\to$}
+    child {node {$\kw{int}$}}
+    child {node {$\to$}
+      child {node {$\kw{int}$}}
+      child {node {$\vdots$}}}};
+\end{tikzpicture}
+\end{center}
+
+A (finite or infinite) tree with only finitely many distinct subtrees (up to
+isomorphism) is called \emph{regular}. The tree above is regular: its only
+subtrees are itself and $\kw{int}$. The limit defining $\mathit{tree}$ is also
+regular, with five subtrees: $\mathit{tree}$, $\kw{unit}$,
+$\kw{int} \times \mathit{tree} \times \mathit{tree}$,
+$\mathit{tree} \times \mathit{tree}$, and $\kw{int}$.
+
+Regular trees suffice for finite systems of equations
+\[
+\alpha_1 = \tau_1, \quad \ldots, \quad \alpha_n = \tau_n,
+\]
+where each $\tau_i$ is a finite type over the constructors and
+$\alpha_1, \ldots, \alpha_n$. Such a system has a solution $\sigma_1, \ldots,
+\sigma_n$ of regular trees, and the solution is unique if no $\tau_i$ is a bare
+variable.
+
+\subsection{The $\mu$ constructor}
+
+The solution of $\alpha = \tau$ (with $\tau \neq \alpha$) is finite if $\alpha
+\notin \mathit{FV}(\tau)$ and infinite otherwise; we denote it $\mu\alpha.\,\tau$.
+The operator $\mu$ binds $\alpha$ just as $\lambda$ binds variables in terms
+(same scope, free/bound variables, $\alpha$-conversion, substitution). Since
+$\mu\alpha.\,\tau$ solves $\alpha = \tau$,
+\[
+\mu\alpha.\,\tau = \tsub{\tau}{\mu\alpha.\,\tau}{\alpha}.
+\]
+For example,
+\[
+\mathit{tree} \triangleq \mu\alpha.\ \kw{unit} + \kw{int} \times \alpha \times \alpha.
+\]
+Solutions of mutually recursive systems are also expressible with $\mu$. If
+neither $\tau_1$ nor $\tau_2$ is a variable, the system
+$\alpha_1 = \tau_1,\ \alpha_2 = \tau_2$ has the unique solution
+\[
+\sigma_1 = \mu\alpha_1.\ \tsub{\tau_1}{\mu\alpha_2.\,\tau_2}{\alpha_2}
+\qquad
+\sigma_2 = \mu\alpha_2.\ \tsub{\tau_2}{\mu\alpha_1.\,\tau_1}{\alpha_1}.
+\]
+Mutual recursion arises in practice, e.g.\ Java classes \texttt{Node} and
+\texttt{Edge} that refer to each other.
+
+\subsection{Typing rules}
+
+Since $\mu\alpha.\,\tau = \tsub{\tau}{\mu\alpha.\,\tau}{\alpha}$, the rules are
+simple (equivalently: allow substituting equals for equals in types):
+\[
+\inferrule*[Right=$\mu$-\textsc{Intro}]
+  {\Gamma \vdash e : \tsub{\tau}{\mu\alpha.\,\tau}{\alpha}}
+  {\Gamma \vdash e : \mu\alpha.\,\tau}
+\qquad
+\inferrule*[Right=$\mu$-\textsc{Elim}]
+  {\Gamma \vdash e : \mu\alpha.\,\tau}
+  {\Gamma \vdash e : \tsub{\tau}{\mu\alpha.\,\tau}{\alpha}}
+\]
+
+\section{Isorecursive Types}
+
+Here there are no infinite types: $\mu\alpha.\,\tau$ is itself a type, and it is
+\emph{distinct but isomorphic} to $\tsub{\tau}{\mu\alpha.\,\tau}{\alpha}$.
+Substituting $\mu\alpha.\,\tau$ for $\alpha$ is \emph{unfolding}; the reverse is
+\emph{folding}, and both are explicit operations:
+\begin{align*}
+\ttkw{unfold}_{\mu\alpha.\,\tau} &: \mu\alpha.\,\tau \to \tsub{\tau}{\mu\alpha.\,\tau}{\alpha} \\
+\ttkw{fold}_{\mu\alpha.\,\tau} &: \tsub{\tau}{\mu\alpha.\,\tau}{\alpha} \to \mu\alpha.\,\tau
+\end{align*}
+Subscripts are often suppressed.
+
+\subsection{Typing rules}
+\[
+\inferrule*[Right=$\mu$-\textsc{Intro}]
+  {\Gamma \vdash e : \tsub{\tau}{\mu\alpha.\,\tau}{\alpha}}
+  {\Gamma \vdash \ttkw{fold}\ e : \mu\alpha.\,\tau}
+\qquad
+\inferrule*[Right=$\mu$-\textsc{Elim}]
+  {\Gamma \vdash e : \mu\alpha.\,\tau}
+  {\Gamma \vdash \ttkw{unfold}\ e : \tsub{\tau}{\mu\alpha.\,\tau}{\alpha}}
+\]
+
+\subsection{Operational semantics}
+
+Under CBV, $\ttkw{fold}\ v$ is a value, and arguments of $\ttkw{fold}$ and
+$\ttkw{unfold}$ are evaluated first:
+\begin{align*}
+v &::= \cdots \mid \ttkw{fold}\ v \\
+E &::= \cdots \mid \ttkw{fold}\ E \mid \ttkw{unfold}\ E
+\end{align*}
+with the single new rule
+\[
+\ttkw{unfold}\ (\ttkw{fold}\ v) \to v.
+\]
+A value of type $\mu\alpha.\,\tau$ can only have been created by a $\ttkw{fold}$,
+so unfolding it always succeeds.
+
+\subsection{Example}
+
+Let $\mathit{intlist} \triangleq \mu\alpha.\ \kw{unit} + \kw{int} \times \alpha$.
+To sum a list $l : \mathit{intlist}$ with a recursive function $f$, we must
+unfold $l$ to expose the sum type before casing:
+\[
+\ttkw{case}\ (\ttkw{unfold}\ l)\ \ttkw{of}\ 
+(\lambda u : \kw{unit}.\ 0)\ \mid\ 
+(\lambda p : \kw{int} \times \mathit{intlist}.\ (\#1\ p) + f\ (\#2\ p)).
+\]
+This is the OCaml code with the folds and unfolds that OCaml hides made explicit.
+
+\section{Equirecursive vs.\ Isorecursive}
+
+Java and Modula-3 are equirecursive: folded and unfolded types are equal and
+$\ttkw{fold}$/$\ttkw{unfold}$ act as the identity, so e.g.\ a class
+\texttt{E} with a field \texttt{E e} permits \texttt{e.e.e.e.x}. The ML family,
+CLU, and C are isorecursive: $\mu\alpha.\,\tau$ and
+$\tsub{\tau}{\mu\alpha.\,\tau}{\alpha}$ are different types and explicit casts
+are needed (CLU calls them ``up'' and ``down''). In OCaml, \texttt{match} and
+\texttt{let} perform $\ttkw{unfold}$ implicitly, and datatype constructors act as
+$\ttkw{fold}$:
+\begin{verbatim}
+# type tree = Leaf | Node of int * tree * tree;;
+# Node (4, Leaf, Leaf);;
+- : tree = Node (4, Leaf, Leaf)
+\end{verbatim}
+
+\section{Numbers as a Recursive Type}
+
+$\kw{bool}$ can be encoded as $\kw{unit} + \kw{unit}$ (with $\mathit{true}$ and
+$\mathit{false}$ the left and right injections). With recursive types, $\kw{int}$
+need not be primitive either. Natural numbers are
+\begin{align*}
+\mathit{nat} &\triangleq \mu\alpha.\ \kw{unit} + \alpha \\
+0 &\triangleq \ttkw{fold}\ (\ttkw{inl}_{\kw{unit}+\mathit{nat}}\ ()) \\
+1 &\triangleq \ttkw{fold}\ (\ttkw{inr}_{\kw{unit}+\mathit{nat}}\ 0) \\
+2 &\triangleq \ttkw{fold}\ (\ttkw{inr}_{\kw{unit}+\mathit{nat}}\ 1),
+\end{align*}
+and so on. Arithmetic can be coded over $\mathit{nat}$, e.g.\ successor:
+\[
+(\lambda x : \mathit{nat}.\ \ttkw{fold}\ (\ttkw{inr}_{\kw{unit}+\mathit{nat}}\ x)) : \mathit{nat} \to \mathit{nat}.
+\]
+Thus $\kw{unit}$, functions, products, sums, and recursive types suffice to build
+integers, lists, trees, floats, etc.
+
+\section{Self-Application and $\Omega$}
+
+Recall $\omega \triangleq \lambda x.\, x\, x$ and $\Omega \triangleq \omega\,\omega$.
+In $\omega$, $x$ is applied as a function, so $x : \sigma \to \tau$, but it is also
+its own argument, so $\sigma = \sigma \to \tau$. This suggests
+$\mu\alpha.\,(\alpha \to \tau)$ for any $\tau$. Unfolding gives
+\[
+\ttkw{unfold}\ x : (\mu\alpha.\,(\alpha \to \tau)) \to \tau,
+\]
+so $(\ttkw{unfold}\ x)\ x : \tau$ and
+\[
+\omega \triangleq (\lambda x : \mu\alpha.\,(\alpha \to \tau).\ (\ttkw{unfold}\ x)\ x)
+  : (\mu\alpha.\,(\alpha \to \tau)) \to \tau.
+\]
+Folding gives $\ttkw{fold}\ \omega : \mu\alpha.\,(\alpha \to \tau)$, hence
+\[
+\omega\ (\ttkw{fold}\ \omega) : \tau,
+\]
+which is $\Omega$ with explicit folds and unfolds. In OCaml:
+\begin{verbatim}
+# type u = Fold of (u -> u);;
+# let omega = fun x -> match x with Fold f -> f x;;
+val omega : u -> u = <fun>
+# omega (Fold omega);;   (* runs forever *)
+\end{verbatim}
+So recursive types alone, without $\ttkw{fix}$ or references, allow
+non-terminating yet well-typed programs.
+
+\section{Untyped to Typed $\lambda$-Calculus}
+
+With recursive types every pure untyped $\lambda$-term can be typed by
+\[
+U \triangleq \mu\alpha.\ \alpha \to \alpha,
+\]
+via the translation
+\begin{align*}
+[\![x]\!] &\triangleq x \\
+[\![e_0\ e_1]\!] &\triangleq (\ttkw{unfold}\ [\![e_0]\!])\ [\![e_1]\!] \\
+[\![\lambda x.\, e]\!] &\triangleq \ttkw{fold}\ (\lambda x : U.\ [\![e]\!]).
+\end{align*}
+Every untyped term maps to a term of type $U$.
+% \end{document}

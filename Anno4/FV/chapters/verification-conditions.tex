@@ -1,0 +1,174 @@
+% \begin{document}
+\chapter{Generating Verification Conditions for Imperative Programs}
+ 
+\section{Programs and Specifications as Formulas}
+ 
+Given a program and a specification, we want to express program correctness as a \emph{verification condition} (VC), a formula implying that the program satisfies the specification, and to implement VC generation as an algorithm.
+ 
+A program fragment can be represented by a formula relating the initial and final state. For a program with variables $x, y$, the program denotes a relation on pairs of states (initial values $(x,y)$, final values $(x', y')$), and this relation is described by a formula over the unprimed (initial) and primed (final) variables.
+ 
+A specification is likewise a formula relating the old and new values. The program satisfies the specification when its relation is a subset of the relation described by the specification:
+\[
+\{(\bar x, \bar x') \mid R(c)\} \subseteq \{(\bar x, \bar x') \mid \mathit{Spec}(\bar x, \bar x')\}.
+\]
+This subset statement reduces to the validity of the implication
+\[
+R(c) \rightarrow \mathit{Spec}(\bar x, \bar x').
+\]
+Thus both programs and specifications are formulas, and correctness is the validity of a formula, which can be checked by a theorem prover.
+ 
+\section{Rules for Simple Imperative Programs}
+ 
+\dfn{Simple imperative programs}{Let $F$ range over formulas and $t$ over terms (with only pure mathematical operations). A program has a fixed number of mutable variables $V = \{x_1, \ldots, x_n\}$. The statements are
+\begin{itemize}
+  \item \texttt{x = t}: change $x \in V$ to have the value of $t$, leaving the variables in $V \setminus \{x\}$ unchanged;
+  \item \texttt{if(F) c1 else c2}: if $F$ holds execute $c_1$, else execute $c_2$;
+  \item \texttt{c1 ; c2}: first execute $c_1$, then $c_2$.
+\end{itemize}
+To introduce and restrict non-determinism there are also
+\begin{itemize}
+  \item \texttt{havoc(x)}: non-deterministically change $x \in V$ to an arbitrary value, leaving $V \setminus \{x\}$ unchanged;
+  \item \texttt{if(*) c1 else c2}: arbitrarily choose to run $c_1$ or $c_2$;
+  \item \texttt{assume(F)}: block all executions in which $F$ does not hold.
+\end{itemize}}
+ 
+Given a loop-free program $c$ with conditionals, the goal is to compute a polynomial-sized formula $R(c)$ of the form $\exists \bar z.\, F(\bar x, \bar z, \bar x')$ describing the relation between the initial values $x_1, \ldots, x_n$ and the final values $x_1', \ldots, x_n'$.
+ 
+\dfn{Relation formula $R(c)$}{For an imperative command $c$ with relation $\rho(c)$ between initial and final states, $R(c)$ is a formula over unprimed variables $\bar x$ and primed variables $\bar x'$ such that
+\[
+\rho(c) = \{(\bar x, \bar x') \mid R(c)\}.
+\]}
+ 
+\subsection*{Assignment}
+\[
+R(x = t) \;:\; x' = t \;\wedge \bigwedge_{v \in V \setminus \{x\}} v' = v.
+\]
+The formula must explicitly state which variables remain the same (all except $x$); otherwise those variables would not be constrained by the relation and could take arbitrary values after the command.
+ 
+\subsection*{Conditional}
+\[
+R(\texttt{if(b) } c_1 \texttt{ else } c_2) \;:\; (b \wedge R(c_1)) \vee (\neg b \wedge R(c_2)).
+\]
+ 
+\subsection*{Sequential composition}
+ 
+Sequencing $c_1; c_2$ corresponds to relation composition:
+\[
+r_1 \circ r_2 = \{(\bar x, \bar x') \mid \exists \bar x''.\, (\bar x, \bar x'') \in r_1 \wedge (\bar x'', \bar x') \in r_2\}.
+\]
+Both $R(c_1)$ and $R(c_2)$ are expressed in terms of $\bar x$ and $\bar x'$. Let $r_i = \{(\bar x, \bar x') \mid R(c_i)\}$. Then $(\bar x, \bar x'') \in r_1$ iff $R(c_1)[\bar x' := \bar x'']$ and $(\bar x'', \bar x') \in r_2$ iff $R(c_2)[\bar x := \bar x'']$, so
+\[
+R(c_1; c_2) \;\iff\; \exists \bar x''.\; R(c_1)[\bar x' := \bar x''] \wedge R(c_2)[\bar x := \bar x''],
+\]
+where $\bar x''$ are freshly picked names for the intermediate state. A useful convention is to let the names of intermediate variables refer to positions in the program source code.
+ 
+The resulting existentials can be simplified with the \emph{one-point rule} of logic with equality:
+\[
+(\exists u.\, (u = t \wedge F)) \iff F[u := t] \qquad \text{if } u \notin FV(t).
+\]
+ 
+\subsection*{Havoc}
+\[
+R(\texttt{havoc}(x)) \;:\; \bigwedge_{v \in V \setminus \{x\}} v' = v.
+\]
+Destroying the value of a variable is described by simply not mentioning the primed variable $x'$, so that it is unconstrained.
+ 
+\subsection*{Non-deterministic choice}
+\[
+R(\texttt{if(*) } c_1 \texttt{ else } c_2) \;:\; R(c_1) \vee R(c_2).
+\]
+The translation is simply a disjunction, which is why the construct is interesting; it corresponds to branching in control-flow graphs.
+ 
+\subsection*{Assume}
+\[
+R(\texttt{assume}(F)) \;:\; F \wedge \bigwedge_{v \in V} v' = v.
+\]
+This command does not change any state. If $F$ does not hold, it stops with ``instantaneous success'' (no execution continues), so such executions impose no obligation.
+ 
+\subsection*{Summary}
+ 
+\dfn{Diagonal relation and state set}{For a formula $F$, $S(F) = \{\bar x \mid F\}$ denotes the set of states satisfying $F$. For a set $A$ of states, $\Delta_A = \{(\bar x, \bar x) \mid \bar x \in A\}$ is the \emph{diagonal relation} on $A$. Without a subscript, $\Delta$ is the identity relation on the entire set of states (a no-op).}
+ 
+\begin{center}
+\begin{tabular}{lll}
+\hline
+command $c$ & $R(c)$ & $\rho(c)$ \\
+\hline
+$x = t$ & $x' = t \wedge \bigwedge_{v \in V\setminus\{x\}} v' = v$ & $\{(\bar x, \bar x') \mid x' = t \wedge \bigwedge_{v \neq x} v' = v\}$ \\
+$c_1; c_2$ & $\exists \bar z.\, R(c_1)[\bar x' := \bar z] \wedge R(c_2)[\bar x := \bar z]$ & $\rho(c_1) \circ \rho(c_2)$ \\
+\texttt{if(*) $c_1$ else $c_2$} & $R(c_1) \vee R(c_2)$ & $\rho(c_1) \cup \rho(c_2)$ \\
+\texttt{assume}$(F)$ & $F \wedge \bigwedge_{v \in V} v' = v$ & $\Delta_{S(F)}$ \\
+\hline
+\end{tabular}
+\end{center}
+We always have $\rho(c) = \{(\bar x, \bar x') \mid R(c)\}$.
+ 
+\dfn{Shorthands}{The non-deterministic choice \texttt{if(*) $c_1$ else $c_2$} is written $c_1 \;[\!]\; c_2$ (a choice between $c_1$ and $c_2$), and \texttt{assume}$(F)$ is written $[F]$. With these,
+\[
+\texttt{if } (F)\ c_1 \texttt{ else } c_2 \;\equiv\; ([F];\, c_1) \;[\!]\; ([\neg F];\, c_2), \qquad
+\texttt{if } (F)\ c \;\equiv\; ([F];\, c) \;[\!]\; [\neg F].
+\]}
+ 
+\section{Loop-Free Programs}
+ 
+Let $c$ be a loop-free program whose assignments, havocs and assumes are $c_1, \ldots, c_n$. Its relation $\rho(c)$ has the form $E(\rho(c_1), \ldots, \rho(c_n))$: it composes the meanings of $c_1, \ldots, c_n$ using only union ($\cup$) and composition ($\circ$). A conditional \texttt{if (F) $c_1$ else $c_2$} contributes $\Delta_{S(F)} \circ \rho(c_1) \;\cup\; \Delta_{S(\neg F)} \circ \rho(c_2)$. Here $\circ$ binds stronger than $\cup$, so $r \circ s \cup t = (r \circ s) \cup t$.
+ 
+\subsection*{Normal form}
+ 
+Composition distributes through union:
+\[
+(r_1 \cup r_2) \circ (s_1 \cup s_2) = r_1 \circ s_1 \cup r_1 \circ s_2 \cup r_2 \circ s_1 \cup r_2 \circ s_2.
+\]
+Applying this repeatedly (for instance to two conditionals in sequence) rewrites the relation of any loop-free program as a union of sequential compositions of basic statements.
+ 
+\dfn{Basic path}{A sequential composition of basic statements (assignments, havocs, assumes) is called a \emph{basic path}.}
+ 
+Loop-free code thus describes finitely many, but in general exponentially many, basic paths. This is why the polynomial-sized formula $R(c)$, with its intermediate existentially quantified variables, is preferable to enumerating paths.
+ 
+\section{Hoare Triples}
+ 
+\subsection*{Strength of conditions}
+ 
+Let $P_1$ and $P_2$ be formulas (``conditions'') whose free variables are among $\bar x$, which may denote program state.
+ 
+\dfn{Stronger and weaker condition}{Condition $P_1$ is \emph{stronger} than $P_2$ (and $P_2$ is \emph{weaker} than $P_1$) iff $\forall \bar x.\, (P_1 \rightarrow P_2)$. If we know $P_1$ we immediately conclude $P_2$, but knowing $P_2$ does not allow us to conclude $P_1$.}
+ 
+A stronger condition denotes a smaller set: if $P_1$ is stronger than $P_2$ then $\{\bar x \mid P_1\} \subseteq \{\bar x \mid P_2\}$. The strongest possible condition, \emph{false}, denotes the smallest set $\emptyset$, and the weakest condition, \emph{true}, denotes the set of all tuples. Weakest conditions correspond to the largest sets, and strongest conditions to the smallest sets, satisfying a given property.
+ 
+\subsection*{Hoare logic}
+ 
+Hoare logic is a proof system for inserting annotations (assertions) into code to make proofs about imperative program behavior simpler. The assertions are written in braces between statements, and for loops include a loop invariant. We use the relations from the previous sections as program meaning.
+ 
+\dfn{Hoare triple}{Let $P, Q \subseteq S$ be sets of states and $r \subseteq S \times S$ a relation. The \emph{Hoare triple} is
+\[
+\{P\}\; r\; \{Q\} \iff \forall s, s' \in S.\ (s \in P \wedge (s, s') \in r \rightarrow s' \in Q).
+\]
+Here $\{P\}$ and $\{Q\}$ do not denote singleton sets; they are just notation for assertions.}
+ 
+\dfn{Strongest postcondition}{For $P \subseteq S$ and $r \subseteq S \times S$,
+\[
+sp(P, r) = \{s' \mid \exists s.\, s \in P \wedge (s, s') \in r\}.
+\]
+This is simply the relation image of the set $P$.}
+ 
+\dfn{Weakest precondition}{For $Q \subseteq S$ and $r \subseteq S \times S$,
+\[
+wp(r, Q) = \{s \mid \forall s'.\, (s, s') \in r \rightarrow s' \in Q\}.
+\]
+This is in general not the same as $sp(Q, r^{-1})$ when the relation is non-deterministic or partial.}
+ 
+\noindent\textbf{Lemma (three forms of a Hoare triple).} The following three conditions are equivalent:
+\begin{itemize}
+  \item $\{P\}\; r\; \{Q\}$;
+  \item $P \subseteq wp(r, Q)$;
+  \item $sp(P, r) \subseteq Q$.
+\end{itemize}
+ 
+\noindent\emph{Proof.} The three conditions expand into
+\begin{align*}
+&\forall s, s'.\ [(s \in P \wedge (s, s') \in r) \rightarrow s' \in Q],\\
+&\forall s.\ [s \in P \rightarrow (\forall s'.\, (s, s') \in r \rightarrow s' \in Q)],\\
+&\forall s'.\ [(\exists s.\, s \in P \wedge (s, s') \in r) \rightarrow s' \in Q],
+\end{align*}
+which are easily shown equivalent using basic first-order logic properties: $(P \wedge Q \rightarrow R) \iff (P \rightarrow (Q \rightarrow R))$; $(\forall u.\, (A \rightarrow B)) \iff (A \rightarrow \forall u.\, B)$ when $u \notin FV(A)$; and $(\forall u.\, (A \rightarrow B)) \iff ((\exists u.\, A) \rightarrow B)$ when $u \notin FV(B)$.
+% \end{document}

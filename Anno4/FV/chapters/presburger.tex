@@ -1,0 +1,223 @@
+% \begin{document}
+\chapter{Quantifier Elimination with Presburger Arithmetic}
+ 
+\section{Verification Conditions and One-Point Rule}
+ 
+\subsection*{Formal verification methodology}
+ 
+Formal verification of programs can be viewed as a three-step approach:
+\begin{enumerate}
+  \item Express properties in logic or code (assertions, preconditions, postconditions, invariants, run-time error conditions).
+  \item Compile the program's meaning to logical formulas (verification-condition generation, symbolic execution).
+  \item Develop and use an automated theorem prover for the generated conditions (SAT and SMT solving, resolution-based theorem proving, proof assistants).
+\end{enumerate}
+The question is which logic to use. Here we study integer linear arithmetic, i.e.\ Presburger arithmetic.
+ 
+\subsection*{Presburger arithmetic}
+ 
+Presburger arithmetic is integer arithmetic with the logical operations (and, or, not), quantifiers, only addition as an arithmetic operation, and $<$ and $=$ as relations. Minimalistically, a variant over the non-negative integers can be defined with $\wedge, \neg, \forall, +, =$ as the only symbols.
+  
+\subsection*{Use in verification}
+ 
+For a loop with invariant $I$, the verification condition for preservation of the invariant has the form
+\[
+[\,I(\mathit{res}, i) \wedge i' = i - 1 \wedge \mathit{res}' = \mathit{res} + 2 \wedge 0 < i\,] \rightarrow I(\mathit{res}', i').
+\]
+To prove that such a condition is valid, we check whether its negation is satisfiable, i.e.\ whether the corresponding existentially quantified Presburger arithmetic formula is true.
+ 
+\subsection*{One-point rule}
+ 
+\dfn{One-point rule}{Let $\bar y$ be a tuple of variables not containing $x$. Then
+\[
+\exists x.\,(x = t(\bar y) \wedge F(x, \bar y)) \iff F(t(\bar y), \bar y).
+\]}
+ 
+\noindent\emph{Proof sketch.} ($\Rightarrow$) If some value $x_1$ satisfies $x_1 = t(\bar y) \wedge F(x_1, \bar y)$, then since $x_1$ and $t(\bar y)$ have the same value, $F(t(\bar y), \bar y)$ holds. ($\Leftarrow$) If $F(t(\bar y), \bar y)$ holds, take $x$ to be the value of $t(\bar y)$; then $x = t(\bar y)$ and $F(x, \bar y)$ both hold, so the existential holds.
+ 
+The rule replaces the left-hand side by the right-hand side, eliminating the quantified variable. The reverse direction, used when $t$ is complex, is called \emph{flattening}.
+ 
+\dfn{Dual one-point rule}{For universal quantification,
+\[
+\forall x.\,(x = t(\bar y) \rightarrow F(x, \bar y)) \iff F(t(\bar y), \bar y).
+\]
+It follows from the rule for $\exists$ by negating both sides.}
+ 
+Applied repeatedly to the negated verification condition, the one-point rule substitutes away the variables defined by equalities. In the loop case this leaves a formula that simplifies to \emph{false}, so the verification condition is valid. The one-point rule is only one of many steps used in quantifier elimination procedures.
+ 
+\section{Sufficient Condition for Quantifier Elimination}
+ 
+\dfn{Quantifier elimination}{Given a formula $F(\bar y)$ containing quantifiers, \emph{quantifier elimination} (QE) finds a formula $G(\bar y)$ that
+\begin{itemize}
+  \item is equivalent to $F(\bar y)$, i.e.\ for all $\bar y$ the two formulas have the same truth value,
+  \item has no quantifiers, and
+  \item has a subset (or equal set) of the free variables of $F$.
+\end{itemize}
+Here $\bar y$ is a possibly empty tuple of variables. A theory \emph{admits} QE if such a $G$ exists for every $F$.}
+ 
+Since $G$ is equivalent to $F$, we can use it instead of $F$, and quantifier-free formulas are easier to check for satisfiability.
+ 
+\subsection*{Consequence for decision procedures}
+ 
+If $F$ has no free variables, then the result of QE has no free variables (they are a subset of the original, empty set) and no quantified variables (it has no quantifiers). It is therefore a formula without any variables, and its truth value is found by simply evaluating it.
+ 
+Hence, if a theory admits QE:
+\begin{itemize}
+  \item To check satisfiability of $H(\bar y)$, eliminate the quantifiers from $\exists \bar y.\, H(\bar y)$ and evaluate.
+  \item To check validity of $H(\bar y)$, eliminate the quantifiers from $\forall \bar y.\, H(\bar y)$ and evaluate.
+\end{itemize}
+This also lets us decide formulas with arbitrary quantifier structure.
+ 
+\subsection*{Choice of symbols}
+ 
+Whether Presburger arithmetic admits QE depends on the set of symbols. If we lack operations that can be expressed using quantifiers, there may be no equivalent quantifier-free formula; for instance $\exists y.\, x = y + y + y$ forces us to include divisibility. QE says that if a relation $r \stackrel{\mathit{def}}{=} \{(x,y) \mid F(x,y)\}$ is definable by an arbitrary, possibly quantified, formula, then it is also definable by a quantifier-free formula.
+ 
+\dfn{Presburger arithmetic (PA)}{The theory of integers with addition, over the language with the following symbols.
+\begin{itemize}
+  \item A constant for each integer constant.
+  \item $+$, $-$, $=$, and $<$ (to compare values and restrict them to natural numbers when needed).
+  \item For each $K \in \mathbb{Z}$ a function $m_K$, interpreted as multiplication by the constant $K$, i.e.\ $m_K(x) = K \cdot x$. There is no multiplication between variables.
+  \item For each $K$ a divisibility predicate $K \mid y$, meaning $y \,\%\, K = 0$. This enables quantifier elimination from $\exists x.\, y = K \cdot x$.
+\end{itemize}
+Formulas are built with $\wedge, \vee, \neg, \rightarrow, \exists, \forall$.}
+ 
+\subsection*{Reduction to eliminating a single existential}
+ 
+\textbf{Nested existentials.} A block $\exists x_1.\exists x_2.\exists x_3.\, F_0$ with $F_0$ quantifier-free is handled by eliminating the innermost quantifier first: eliminating $x_3$ gives a quantifier-free $F_1$, then eliminating $x_2$ gives $F_2$, and so on, until a quantifier-free $F_3(\bar y)$ remains.
+ 
+\textbf{Universal quantifiers.} Since $F_0$ universally holds iff it has no counterexample,
+\[
+\forall x.\, F_0(x, \bar y) \iff \neg[\exists x.\, \neg F_0(x, \bar y)].
+\]
+As $\neg F_0$ is quantifier-free, we can eliminate $\exists x.\, \neg F_0(x,\bar y)$, obtaining some quantifier-free $F_1(\bar y)$, and the result is $\neg F_1(\bar y)$.
+ 
+\textbf{Alternation.} Quantifier alternations (switches between $\exists$ and $\forall$) are removed by rewriting every $\forall$ as $\neg\exists\neg$ and eliminating quantifiers from the innermost one outwards. Each alternation involves a disjunctive normal form transformation; in practice there are not many alternations.
+ 
+\medskip
+\noindent\textbf{Conclusion.} It suffices to be able to eliminate a single existential quantifier from a quantifier-free formula.
+ 
+\section{DNF transformation}
+ 
+\dfn{Atomic formula, literal, conjunction of literals}{An \emph{atomic formula} is a relation applied to arguments. In PA the atomic formulas are $t_1 = t_2$, $t_1 < t_2$ and $K \mid t$. A \emph{literal} is an atomic formula or its negation. A \emph{conjunction of literals} is a formula $L_1 \wedge \ldots \wedge L_n$ with no disjunctions or implications, and with negation applied only to atomic formulas.}
+ 
+It suffices to eliminate $\exists y.\, L_1 \wedge \ldots \wedge L_n$ from conjunctions of literals, because any quantifier-free formula $F$ (built from $\wedge, \vee, \neg$ over atomic formulas) can be converted to disjunctive normal form
+\[
+F \iff \bigvee_{i=1}^{m} C_i,
+\]
+where each $C_i$ is a conjunction of literals, and existential quantification distributes over disjunction:
+\[
+\Big[\exists x.\, \bigvee_{i=1}^{m} C_i\Big] \iff \bigvee_{i=1}^{m} (\exists x.\, C_i).
+\]
+ 
+\subsection*{How the DNF transformation works}
+ 
+\begin{itemize}
+  \item \textbf{Negation propagation} uses the rewrites $\neg(p \wedge q) \leadsto (\neg p) \vee (\neg q)$, $\neg(p \vee q) \leadsto (\neg p) \wedge (\neg q)$ and $\neg\neg p \leadsto p$. The result is in \emph{negation normal form} (NNF), and the transformation is polynomial.
+  \item \textbf{Distributivity} uses $a \wedge (b_1 \vee b_2) \leadsto (a \wedge b_1) \vee (a \wedge b_2)$. This can lead to exponential blow-up, and the blow-up cannot be avoided in general: one can prove that for some formulas no equivalent DNF of smaller size exists (this is unrelated to the question of NP versus P).
+\end{itemize}
+ 
+\section{Eliminating Existentials from Conjunctions of PA Literals}
+ 
+We now consider $\exists y.\, L_1 \wedge \ldots \wedge L_n$ where each $L_i$ is a PA literal.
+ 
+\subsection{Normalizing literals}
+ 
+For integers, $\neg(x < y) \iff y \le x$, $x < y \iff x + 1 \le y$, and $x \le y \iff x < y + 1$. We use only $<$ (never $\le$, $>$).
+ 
+\dfn{Linear term}{All terms are built from constants $K$, $+$, $-$ and $K \cdot \_$, so by standard transformations they can be written as $K_0 + \sum_{i=1}^{n} K_i x_i$. Such a term is called a \emph{linear term}.}
+ 
+Literals are brought into normal form by the following rewrites.
+\begin{align*}
+\neg(t_1 < t_2) &\leadsto t_2 < t_1 + 1 \\
+\neg(t_1 = t_2) &\leadsto t_1 < t_2 \vee t_2 < t_1 \\
+t_1 = t_2 &\leadsto t_1 < t_2 + 1 \wedge t_2 < t_1 + 1 \\
+\neg(K \mid t) &\leadsto \bigvee_{i=1}^{K-1} K \mid t + i \\
+t_1 < t_2 &\leadsto 0 < t_2 - t_1
+\end{align*}
+The disjunctions this introduces are removed by computing the DNF again. (The rewrite of equalities is used only for simplicity; in practice equalities are usually handled directly.) After normalization every literal has the form $0 < t$ or $K \mid t$ with $t$ linear.
+ 
+The one-point rule alone is not enough: we must handle inequalities, not just equalities, and over the integers we cannot always divide exactly, so the variable to eliminate may occur as, e.g., $3y$ rather than $y$.
+ 
+\subsection{Exposing the variable: making the coefficient $\pm 1$}
+ 
+We eliminate $y$ from a conjunction of literals of the form $0 < t$ and $K \mid t$. The following equivalences hold for any positive integer $c$:
+\begin{itemize}
+  \item $0 < t$ is equivalent to $0 < c\,t$;
+  \item $K \mid t$ is equivalent to $c K \mid c\,t$.
+\end{itemize}
+Let $K_1, \ldots, K_n$ be all coefficients next to $y$ in the formula and let $M = \operatorname{lcm}(K_1, \ldots, K_n)$ (or any positive integer divisible by every $K_i$). Multiply each literal in which $y$ occurs in a subterm $K_i y$ by $M/|K_i|$. Then every occurrence of $y$ has coefficient $M$ or $-M$, so the formula has the form $\exists y.\, F(M \cdot y)$. Letting $x = M y$, this is equivalent to
+\[
+\exists x.\, F(x) \wedge (M \mid x),
+\]
+where the coefficient next to $x$ is now $1$ or $-1$.
+ 
+\subsection{Lower and upper bounds}
+ 
+For each literal $0 < t$, if the coefficient of $x$ is $-1$ move $x$ to the left side, and if it is $1$ move the remaining terms to the left side. We obtain a formula $F_1(x)$ of the form
+\[
+\bigwedge_{i=1}^{L} a_i < x \;\wedge\; \bigwedge_{j=1}^{U} x < b_j \;\wedge\; \bigwedge_{i=1}^{D} K_i \mid (x + t_i),
+\]
+where $a_i$, $b_j$, $t_i$ do not contain $x$ (the constraint $M \mid x$ is among the divisibility constraints).
+ 
+\textbf{No divisibility constraints ($D = 0$).} The formula is satisfiable iff $\max_i a_i + 1 \le \min_j b_j - 1$, which is equivalent to
+\[
+\bigwedge_{i,j} a_i + 1 < b_j.
+\]
+ 
+\subsection{Replacing the variable by test terms}
+ 
+An alternative common technique in quantifier elimination is to replace $\exists x.\, F_1(x)$ by a disjunction $\bigvee_k F_1(t_k)$ of instances at \emph{test terms} $t_k$ not containing $x$. If some $F_1(t_k)$ holds then certainly $\exists x.\, F_1(x)$ holds.
+ 
+\begin{itemize}
+  \item If $D = 0$ and $L > 0$, it suffices to try the smallest value allowed by each lower bound:
+  \[
+  \bigvee_{k=1}^{L} F_1(a_k + 1),
+  \]
+  since one of these terms evaluates to $\max_i a_i + 1$.
+  \item If $D > 0$, let $N = \operatorname{lcm}(K_1, \ldots, K_D)$. Then
+  \[
+  \bigvee_{k=1}^{L} \bigvee_{i=1}^{N} F_1(a_k + i)
+  \]
+  is equivalent to $\exists x.\, F_1(x)$. Correctness of this reduction relies on the fact that if $F_1(u)$ holds then so does $F_1(u - N)$, as long as the lower bounds still hold. Hence any solution can be moved down to one within $N$ of the largest lower bound.
+\end{itemize}
+ 
+\subsection{No lower bounds ($L = 0$)}
+ 
+When there are no lower bounds, we cannot try the lower bounds. The formula has the form
+\[
+\bigwedge_{j=1}^{U} x < b_j \;\wedge\; \bigwedge_{i=1}^{D} K_i \mid (x + t_i).
+\]
+Because $x$ can be made arbitrarily small, we may drop all constraints except the divisibility constraints, obtaining
+\[
+F_2(x) = \bigwedge_{i=1}^{D} K_i \mid (x + t_i),
+\]
+and the quantifier is eliminated as
+\[
+\bigvee_{i=1}^{N} F_2(i).
+\]
+ 
+\subsection{Summary of the algorithm and its consequences}
+ 
+Together, these steps give a quantifier elimination algorithm for Presburger arithmetic. Its correctness shows that:
+\begin{itemize}
+  \item PA admits quantifier elimination;
+  \item satisfiability, validity, entailment and equivalence of PA formulas are decidable;
+  \item quantified and quantifier-free PA formulas have the same expressive power.
+\end{itemize}
+The algorithm can be used to prove verification conditions. Even though it is not the most efficient approach, it provides insights on which better algorithms can be built.
+ 
+\subsection{Improving efficiency in practice}
+ 
+\begin{itemize}
+  \item \textbf{Cooper's algorithm} avoids converting to conjunctions of literals and works directly on negation normal form. This removes the need for DNF, at the cost of possibly trying irrelevant bounds. Improvements are due to Reddy and Loveland (bounded quantifier alternation); see also Section 7.2 of \emph{The Calculus of Computation} (Bradley and Manna).
+  \item \textbf{Handling equalities efficiently:} treat a system of equalities directly, without eagerly introducing inequalities and divisibility constraints, using Euclid's GCD algorithm for solving linear Diophantine equations (Hermite normal form of a matrix).
+  \item \textbf{Weak quantifier elimination:} only eliminate alternations of quantifiers.
+\end{itemize}
+ 
+\subsection{Complexity}
+ 
+Regardless of the approach, deciding quantified Presburger arithmetic formulas has inherent computational complexity, characterized by Berman using alternating complexity classes.
+ 
+\dfn{Class $STA(s(n), t(n), a(n))$}{A set $A$ is in $STA(s(n), t(n), a(n))$ iff there exists a single-tape alternating Turing machine $M_i$ (making both $\wedge$ and $\vee$ choices) that accepts $A$ and runs within space $s(n)$ and time $t(n)$, performing at most $a(n)$ alternations between $\wedge$ and $\vee$ choices.}
+ 
+Deciding a PA formula of size $n$ with $m$ quantifiers is in $STA(*, 2^{n^{O(m)}}, m)$. The complexity is particularly sensitive to the number of quantifiers $m$.
+% \end{document}

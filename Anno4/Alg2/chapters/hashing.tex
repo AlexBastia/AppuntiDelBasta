@@ -1,0 +1,112 @@
+% \begin{document}
+
+\section{Hashing}
+ 
+\textbf{Overview.} We introduce hashing, construct a family of 2-universal hash functions, extend it to $k$-wise independence, and analyze load balancing, including the power of two choices.
+  
+\textbf{Setting.} We want to maintain a subset $S$ of a huge universe $U$ ($|U|\gg|S|$) supporting \texttt{insert}$(x)$, \texttt{delete}$(x)$ and \texttt{query}$(x)$. We use a table $T$ of size $N$ and a hash function $h:U\to\{1,\ldots,N\}$, placing $x$ in $T[h(x)]$. Elements with equal hash values (collisions) are stored in a linked list at that location, so we want the longest list to be short.
+ 
+\textbf{Why randomize.} For any fixed $h$ (e.g.\ $h(i)=i \bmod N$) an adversary can choose inputs that all collide, so no worst-case guarantee is possible. Instead, we draw $h$ at random from a family $\mathcal{H}$ and show that few collisions occur in expectation.
+ 
+\textbf{Fully random hashing.} If $h(x)$ is uniform and independent for each $x$, let $L_x$ be the length of the list containing $x$ and $I_y=\mathbf 1[h(y)=h(x)]$. Then $L_x=1+\sum_{y\in S,\,y\neq x}I_y$ and, by linearity of expectation,
+\begin{equation}\label{eq:exp-len}
+  \mathbb{E}[L_x]=1+\frac{|S|-1}{N}.
+\end{equation}
+For $N>|S|$ this is less than $2$. The drawback is that storing such a function takes $|U|\log N$ bits. Since \eqref{eq:exp-len} only uses pairwise independence, we can use a much smaller family with limited independence.
+ 
+%--------------------------------------------------------------------
+\subsection{2-Universal hash families}
+ 
+\medskip
+\noindent\textbf{Definition 1} (Carter--Wegman, 1979)\textbf{.} A family $\mathcal{H}$ is \emph{2-universal} if for all $x\neq y\in U$,
+\[
+  \mathbb{P}_{h\in\mathcal{H}}[h(x)=h(y)]\le\frac1N.
+\]
+(Often relaxed to $2/N$ or $3/N$, which barely affects bucket sizes.)
+\medskip
+ 
+\textbf{Construction.} Choose a prime $p\in\{|U|,\ldots,2|U|\}$ and set
+\[
+  f_{a,b}(x)=ax+b \bmod p\quad(a,b\in[p],\ a\neq0),\qquad h_{a,b}(x)=f_{a,b}(x)\bmod N.
+\]
+This works because the integers mod a prime $p$ form a field.
+ 
+\mlenma{}{
+For any $x\neq y$ and $s\neq t$, the system $ax+b=s \bmod p$, $ay+b=t \bmod p$ has exactly one solution.
+}
+ 
+\pf{}{
+Since $[p]$ is a finite field, $a=(x-y)^{-1}(s-t)$ and $b=s-ax$.
+}
+ 
+The same argument shows there is no solution with $a\neq0$ when $s=t$. As there are $p(p-1)$ choices of $(a,b)$ with $a$ and $b$ uniform,
+\begin{equation}\label{eq:pair}
+  \mathbb{P}_{a,b}[f_{a,b}(x)=s\wedge f_{a,b}(y)=t]=
+  \begin{cases}\frac{1}{p(p-1)} & s\neq t,\\ 0 & s=t.\end{cases}
+\end{equation}
+ 
+\mlenma{}{
+$\mathcal{H}=\{h_{a,b}:a,b\in[p],\ a\neq0\}$ is 2-universal.
+}
+ 
+\pf{}{
+For $x\neq y$, by \eqref{eq:pair},
+\[
+  \mathbb{P}[h_{a,b}(x)=h_{a,b}(y)]=\sum_{s,t\in[p]}\mathbf 1_{s=t \bmod N}\,\mathbb{P}[f_{a,b}(x)=s\wedge f_{a,b}(y)=t]
+  =\frac{1}{p(p-1)}\sum_{s\neq t}\mathbf 1_{s=t \bmod N}\le\frac{1}{p(p-1)}\cdot\frac{p(p-1)}{N}=\frac1N,
+\]
+because for each $s$ there are at most $(p-1)/N$ values $t\neq s$ with $t\equiv s \pmod N$.
+}
+ 
+\textbf{Space.} A function from this family is stored via $a,b\in[p]$, i.e.\ $O(\log|U|)$ bits, compared with $O(|U|\log N)$ for a fully random function.
+ 
+\textbf{Collisions.} The expected number of colliding pairs in $S$ is
+\begin{equation}\label{eq:coll}
+  \sum_{x\neq y\in S}\mathbb{P}_{h}[h(x)=h(y)]\le\binom{|S|}{2}\Big/N.
+\end{equation}
+So $N\gtrsim|S|^2$ gives no collisions with good probability, but such a table is usually unrealistic. Alternatives are linked lists or two-layer hash tables.
+ 
+\textbf{Two-layer tables.} Let $s_i$ be the number of elements at location $i$. A second-level table of size about $s_i^2$ can be made collision-free, so the total second-level size is $\sum_i s_i^2$. Since $\sum_i s_i(s_i-1)$ is twice the number of collisions in \eqref{eq:coll}, and $N\ge|S|$,
+\[
+  \mathbb{E}\Big[\sum_i s_i^2\Big]=\mathbb{E}\Big[\sum_i s_i(s_i-1)\Big]+\mathbb{E}\Big[\sum_i s_i\Big]\le\frac{|S|(|S|-1)}{N}+|S|\le2|S|.
+\]
+ 
+\textbf{Unknown $|S|$.} We need not know $|S|$ in advance. Keep a table of size $2^i$; when the expected bucket size exceeds $2$ (the set has about $2^i$ elements), rebuild with a new hash function into a table of size $2^{i+1}$. Rebuilding costs $O(2^{i+1})$, a constant factor times the current set size, so the cost is $O(1)$ per element (amortized analysis).
+ 
+%--------------------------------------------------------------------
+\subsubsection{Pairwise independence}
+ 
+Allowing $a=0$ in the construction above gives pairwise independence: $\mathcal{H}$ is \emph{2-wise independent} if for all $x\neq y$ and $s,t\in[N]$,
+\[
+  \mathbb{P}_{h\in\mathcal{H}}[h(x)=s,\ h(y)=t]=\frac1{N^2}.
+\]
+This implies \emph{1-wise independence}: $\mathbb{P}_{h}[h(x)=s]=1/N$ for all $x\in U$, $s\in[N]$.
+ 
+\textbf{$k$-wise independence.} For a prime $p$, take
+\[
+  f_{a_0,\ldots,a_{k-1}}(x)=a_{k-1}x^{k-1}+\cdots+a_1x+a_0,
+\]
+with $a_0,\ldots,a_{k-1}$ uniform in $\{0,\ldots,p-1\}$. The proof of $k$-wise independence uses that the Vandermonde matrix with rows $(1,\ldots,1)$, $(x_1,\ldots,x_k)$, \ldots, $(x_1^{k-1},\ldots,x_k^{k-1})$ is invertible for distinct $x_1,\ldots,x_k$. Such a function needs only $O(k\log|U|)$ bits.
+ 
+%--------------------------------------------------------------------
+\subsection{Load balancing}
+ 
+Hash $n$ keys into $n$ bins, modeled as balls thrown independently and uniformly into bins (a fully random hash function). Each bin has expected load $1$, but the maximum is larger. For a fixed bin $i$, by the union bound over $k$-subsets of balls,
+\[
+  \mathbb{P}[\text{bin } i \text{ gets more than } k \text{ elements}]\le\binom nk\cdot\frac1{n^k}\le\frac1{k!}.
+\]
+By Stirling's formula $k!\approx\sqrt{2\pi k}\,(k/e)^k$, so $k=O\!\left(\frac{\log n}{\log\log n}\right)$ gives $1/k!\le1/n^2$. A union bound over the $n$ bins gives $\mathbb{P}[\exists\text{ bin with}\ge k\text{ balls}]\le n\cdot n^{-2}=1/n$. Hence, with probability at least $1-1/n$,
+\[
+  \text{max load}\le O\!\left(\frac{\log n}{\log\log n}\right),
+\]
+and the success probability can be improved to $1-1/n^c$ for any constant $c$.
+ 
+\textbf{Exercise.} Show that with high probability the max load is also $\Omega(\log n/\log\log n)$.
+ 
+%--------------------------------------------------------------------
+\subsubsection{Power of two choices}
+ 
+Instead of one random bin, pick \emph{two} random bins for each ball and place the ball in the less loaded one. This reduces the maximum load from $O(\log n/\log\log n)$ to $O(\log\log n)$, an exponential improvement, while avoiding the cost of inspecting all $n$ bins (as in the ``shortest supermarket queue'' rule).
+ 
+\textbf{Intuition.} Although the max load is large, most bins have very few balls; e.g.\ at most a $1/10$ fraction of bins have more than $10$ balls. So two random bins likely include one with constant load. (The full proof is omitted in the notes.)
+% \end{document}

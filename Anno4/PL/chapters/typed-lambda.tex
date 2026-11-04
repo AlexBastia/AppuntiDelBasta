@@ -1,5 +1,4 @@
 % \begin{document}
-
 \chapter{Type Systems}
 \noindent
 A \emph{type} is a collection of computational entities that share some common property. For example, the type $\tint$ represents all expressions that evaluate to an integer, the type $\tbool$ represents all expressions that evaluate to a Boolean, the type $\tint \to \tint$ represents all functions from integers to integers, and the type $\tint \times \tbool$ represents all pairs of an integer and a Boolean.
@@ -452,5 +451,4 @@ The actual soundness theorem is as follows:
 
 \thm{Soundness}{If $\vdash e : \tau$ and $e \stepsstar e'$ and $e' \nsteps$ then either $e'$ is a value or $e'$ is $\kw{error}$.}
 
-\end{document}
 % \end{document}

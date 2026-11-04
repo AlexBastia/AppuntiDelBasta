@@ -1,0 +1,138 @@
+% \begin{document}
+\chapter{Checking Transition Systems}
+\section{Transition Systems}
+\dfn{Transition System}{
+  A \textit{transition system} is an $ n $-uple $M = (S, I, r, A) $ where:
+  \begin{itemize}
+  \item $ S  $ is the set of all states of the system
+  \item $ I \subseteq S $ is the set of initial states
+  \item $ A $ is the set of all inputs
+  \item $ r \subseteq S \times A \times S $ is the transition relation (not necessarily deterministic)
+  \end{itemize}
+}
+
+We can define a set of error states $ E \subseteq S  $ and determine if the system can reach one of these or not.
+
+\dfn{Trace}{
+  A finite or infinite sequence $ s_0, a_0, s_1, a_1, s_2 ... $ such that $ \forall i. s_i \in S, a_i \in A $ and $ s_0 \in I $.\\
+
+  If the trace is finite and finishes with $ s_n $, it has length $ n $.\\
+
+  $ \mathit{Traces}(M) $ is the set of all traces of a system $ M $.
+}
+
+\dfn{Reachable States}{
+  A state $ s_n \in S  $ is \textit{reachable} if there exists $ t \in \mathit{Traces}(M) $ such that $ t $ ends with $ s_n $.\\
+
+  $ \mathit{Reach}(M) = \{s_n | \exists(s_0,a_0,...,s_n) \in \mathit{Traces}(M)\} $
+}
+
+We can construct the state graph and explore it starting from the initial states, building $ \mathit{Reach}(M) $.
+
+\dfn{Simplified Transition}{
+  We can define the simplyfied transition of a system $ M $ as
+  \[
+    \overline{r} = \{(s, s') | \exists a \in A. (s, a, s') \in r \}
+  \]
+}
+\nt{
+  Even if $ r $ is deterministic, $ \overline{r} $ can become non-deterministic.
+}
+
+\dfn{Operations on relations}{
+  Let $ r_1, r_2 $ be relations, we can define:
+  \begin{itemize}
+  \item \textbf{Composition}
+    \[
+      r_1 \circ r_2 \coloneq \{(x, z) | \exists y. (x, y) \in r_1 \land (y, z) \in r_2\}
+    \]
+    \textbf{Iteration}
+      \[
+        r_1^0 = \Delta \coloneq \{(x, x) | x \in S \} \quad r_1^{n+1} \coloneq r_1 \circ r_1^n
+      \]
+    \textbf{Transitive Closure}
+      \[
+      r_1^* \coloneq \bigcup_{n \geq 0}r_1^n
+      \]
+    \textbf{Image of a set under relation}
+      \[
+        r_1[X] \coloneq \{y | \exists x \in X. (x, y) \in r_1\}
+      \]
+  \end{itemize}
+}
+
+\thm{}{
+  \[
+  \mathit{Reach}(M) = \overline{r}^*[I] 
+  \]
+}
+
+\dfn{Post}{
+  Let $ post(X) \coloneq \overline{r}[X] $. We can now define
+  \[
+    post^0(X) \coloneq X\quad post^{n+1}(X) \coloneq post(post^n(X))
+  \]
+}
+\thm{}{
+  \[
+    \bigcup_{n \geq 0} \mathit{post}^n(X) = \mathit{Reach}(M)
+  \]
+}
+
+\dfn{Invariant}{
+  Given a system $ M $, $ P \subseteq S  $ is an \textit{invariant} of $ M $ if
+  \[
+    \mathit{Reach}(M) \subseteq P
+  \]
+}
+\dfn{Inductive Invariant}{
+  Given a system M, $ P' \subseteq S  $ is an \textit{inductive invariant} of $ M $ if
+  \begin{itemize}
+  \item $ I \subseteq P' $
+  \item $ \forall s \in S. (s, a, s') \in r \implies s' \in P' $
+  \end{itemize}
+}
+\nt{
+  These two definitions aren't the same, since an invariant can contain a non-reachable state but not any of its (still non-reachable) neighburs. This would not be a valid inductive invariant.
+}
+
+Usually the set of states for a system (reachable, invariant) will be too large to store explicitly, so we can use formulas and data structures to represent them complactly. This allows us to use bounded model checking with SAT solvers instead of explicit-state exploration.
+
+\section{Boolean Encoding of Finite-State Systems}
+\dfn{Boolean Encoding of a System}{
+If we pick $ n \geq log |S|, m \geq log |A| $ we can represent the system as follows:
+\begin{itemize}
+\item $ S = \{0,1\}^n $, $ A = \{0,1\}^m $
+\item $ I $ is the characteristic function $ \{0,1\}^n \to \{0,1\} $
+\item $ r = \{0,1\}^n \times \{0,1\}^n \times \{0,1\}^n $
+\end{itemize}
+}
+
+To represent a boolean relation $ r $, we could use a binary table. These are very fast, but require exponential space. Another option is to encode $ r $ as a propositional formula $ P $ with variables $ s_1,...,s_n, a_1,...,a_m, s'_1,...,s'_n $ such that
+\[
+  ((v_1,...,v_n),(u_1,...,u_m),(v'_1,...,v'_n)) \in r \iff P[s_i = v_i, a_j = u_j, s'_i = v'_i] \text{ is true}
+\]
+This can be achieved by simply listing all the triples in $ r $ as a conjunction between the respective logical variables (negated if the bit is 0)
+
+\[
+  \bigvee_{((v_1,...,v_n),(u_1,...,u_m),(v'_1,...,v'_n)) \in r} \left( \bigwedge s_i^{v_i} \land \bigwedge a_j^{u_j} \land \bigwedge s'_i^{v'_i} \right)
+\]
+
+Formulas correspond to trees where variables are leaves and operations are nodes. We can use DAGs to avoid having to repeat parts of the tree, saving space in the representation. We can view DAGs as formulas with auxiliary variables that act as placeholders for parts of formulas.\\
+
+\subsection{Inductive Invariant checking with SAT}
+By representing $ I $ as a boolean formula in the same way, we can check if a given formula $ Inv $ is an inductive invariant by proving that $ I \models Inv $ and $ Inv, r \models Inv[\overline{s} \coloneq \overline{s'}] $. This can be achieved by flipping the problem and proving that it's impossible to satisfy the negations by using SAT solvers on the formulas
+\begin{itemize}
+\item $ I \land \lnot Inv $
+\item $ Inv \land r \land \lnot Inv[\overline{s} \coloneq \overline{s'}] $
+\end{itemize}
+
+\subsection{Reachability checking}
+We construct a propositional formula $ T_j $ such that is satisfiable iff there exists a trace of length $ j $ that satisfies a certain error formula $ E $. We use the notation $ p^i $ to denote the variable at step $ i $.
+\[
+  T_j \coloneq Init[\overline{s} \coloneq \overline{s}^0] \land \left( \bigwedge_{i = 0}^{j - 1} r_i \right) \land E[\overline{s} \coloneq \overline{s}^j]
+\]
+where $ r^i \coloneq r[\overline{s}, \overline{a}, \overline{x}, \overline{s'} \coloneq \overline{s}^i, \overline{a}^i, \overline{x}^i, \overline{s'}^{i+1} ] $
+
+
+% \end{document}
