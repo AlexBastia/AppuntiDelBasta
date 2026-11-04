@@ -853,6 +853,207 @@ congestione permanente.
 }
 
 
+\section{Backbone link condiviso tra due router}
+
+\begin{Exercise}{Scritto 2021-02-18, n.\ 5 (10 punti)}{backbone-2router}
+$N$ router spediscono ognuno $Y$ pkt/s al \textbf{Router 1} da sinistra; ogni
+pacchetto è $K$ kilobit. Allo stesso modo $M$ router spediscono $Y$ pkt/s ($K$
+kbit) al \textbf{Router 2} da destra. Il \textbf{Backbone link} centrale tra R1 e
+R2 ha un contratto che fissa l'utilizzo percentuale massimo: $\alpha$ da R1 a R2 e
+$(1-\alpha)$ da R2 a R1. La capacità massima del backbone è $Y\!\cdot\!N\!\cdot\!M$
+kbit/s.
+\begin{enumerate}
+\item[a)] In quale caso il backbone causerà \emph{di certo} congestione a uno dei
+due router, e quale router sarà congestionato? Spiegare.
+\item[b)] Qual è il valore limite di $\alpha$ per non creare congestione in
+nessuno dei due router?
+\end{enumerate}
+\footnotesize(Suggerimento del prof: usare notazione algebrica e sostituire i numeri
+solo alla fine. Dalla matricola: $N=$ somma delle prime due cifre non nulle da
+destra, $M=$ da sinistra.)
+\end{Exercise}
+
+\begin{solution}
+\textbf{Passo 1 -- carico che ciascun router riversa sul backbone.} Tutto il
+traffico di sinistra passa da R1 verso R2; tutto quello di destra da R2 verso R1:
+\[
+\lambda_{R1\to R2} = N\,Y\,K \ \text{kbit/s}, \qquad
+\lambda_{R2\to R1} = M\,Y\,K \ \text{kbit/s}.
+\]
+
+\textbf{Passo 2 -- quota di backbone concessa dal contratto.} La capacità è
+$C = Y\,N\,M$; la direzione R1$\to$R2 può usarne al più $\alpha C$, la R2$\to$R1 al
+più $(1-\alpha)C$. Congestione $=$ carico $\ge$ quota concessa:
+\[
+\textbf{R1 congesto} \iff N Y K \ge \alpha\,(Y N M)
+\iff \boxed{K \ge \alpha M}
+\]
+\[
+\textbf{R2 congesto} \iff M Y K \ge (1-\alpha)(Y N M)
+\iff \boxed{K \ge (1-\alpha)N}
+\]
+($Y$ e un fattore $N$ o $M$ si semplificano: restano solo $K,M,N,\alpha$).
+
+\medskip
+\noindent\textbf{a) Di certo congestione, e quale router.}
+C'è congestione ad \emph{almeno} un router quando
+\[
+K \ge \min\big(\alpha M,\; (1-\alpha)N\big),
+\]
+e si congestiona quello con la \textbf{soglia più bassa}:
+\begin{itemize}
+\item se $\alpha$ è \textbf{troppo piccolo} ($\alpha \le K/M$) $\Rightarrow$ la quota
+di R1 non basta per $NYK$ $\Rightarrow$ \textbf{si congestiona R1};
+\item se $\alpha$ è \textbf{troppo grande} ($\alpha \ge 1-K/N$) $\Rightarrow$ la
+quota $(1-\alpha)$ di R2 non basta per $MYK$ $\Rightarrow$ \textbf{si congestiona R2}.
+\end{itemize}
+La congestione è \textbf{inevitabile (di certo)} quando \emph{non esiste} alcun
+$\alpha$ che salvi entrambi, cioè quando la finestra del punto (b) è vuota:
+\[
+\frac{K}{M} \ge 1-\frac{K}{N}
+\iff K \ge \frac{N M}{N+M}.
+\]
+Sopra questa soglia, qualunque $\alpha$ scegli, uno dei due router cade (R1 per
+$\alpha$ piccolo, R2 per $\alpha$ grande).
+
+\medskip
+\noindent\textbf{b) Valore limite di $\alpha$ per non congestionare nessuno.}
+Servono \emph{entrambe} le condizioni di non-congestione ($K<\alpha M$ e
+$K<(1-\alpha)N$):
+\[
+\boxed{\;\dfrac{K}{M} \;<\; \alpha \;<\; 1-\dfrac{K}{N}\;}
+\]
+intervallo non vuoto solo se $K < \dfrac{NM}{N+M}$.
+
+\medskip
+\noindent\textbf{Esempio numerico} ($N=10,\ M=20$, come nella soluzione del prof).
+Congestione se $K \ge \min(20\alpha,\; 10-10\alpha)$. Niente congestione se
+$\frac{K}{20} < \alpha < 1-\frac{K}{10}$, possibile solo se
+$K < \frac{200}{30} \approx 6{,}67$ kbit.
+\end{solution}
+
+\nt{Differenza col caso a un solo router (esercizio precedente): qui
+i \emph{due} flussi si contendono lo \emph{stesso} link, e $\alpha$ è la
+\textbf{leva} che divide la banda. Spostare $\alpha$ aiuta un lato ma penalizza
+l'altro: esiste una soluzione solo se il backbone è abbastanza grande rispetto a
+$K$ (cioè $K<NM/(N+M)$).}
+
+
+%==================================================================
+\chapter{Routing: Link State e Dijkstra}
+%==================================================================
+
+\section{Cammino minimo e tabella di instradamento (Dijkstra)}
+
+\begin{Exercise}{Link State -- cammino A--B e tabella di R4}{dijkstra-R4}
+Applicando un protocollo di routing \textbf{Link State}, trovare il cammino di
+costo minimo tra $A$ e $B$ e la \textbf{tabella di instradamento del nodo $R4$}
+verso tutte le destinazioni ($R1,\dots,R9$), nella forma
+$[\text{destinazione } R_x,\ \text{prossimo router } R_y]$.
+\begin{center}
+\begin{tikzpicture}[font=\footnotesize,
+  n/.style={circle,draw,fill=blue!12,minimum size=0.85cm,inner sep=1pt},
+  w/.style={fill=white,inner sep=1.2pt,font=\scriptsize}]
+  \node[n] (A)  at (0,4)   {A};
+  \node[n] (R1) at (2.2,4) {R1};
+  \node[n] (R2) at (4.4,4) {R2};
+  \node[n] (R3) at (7.4,4) {R3};
+  \node[n] (B)  at (9.6,4) {B};
+  \node[n] (R4) at (2.2,2) {R4};
+  \node[n] (R5) at (4.4,2) {R5};
+  \node[n] (R6) at (7.0,2) {R6};
+  \node[n] (R7) at (2.2,0) {R7};
+  \node[n] (R8) at (4.4,0) {R8};
+  \node[n] (R9) at (7.0,0) {R9};
+  \draw (A)--(R1)  node[w,midway]{1};
+  \draw (R1)--(R2) node[w,midway]{6};
+  \draw (R3)--(B)  node[w,midway]{2};
+  \draw (A)--(R4)  node[w,midway]{2};
+  \draw (R2)--(R4) node[w,midway]{3};
+  \draw (R2)--(R6) node[w,pos=0.4]{7};
+  \draw (R4)--(R5) node[w,midway]{3};
+  \draw (R5)--(R6) node[w,midway]{9};
+  \draw (R3)--(R6) node[w,midway]{2};
+  \draw (R4)--(R7) node[w,midway]{1};
+  \draw (R7)--(R5) node[w,pos=0.4]{1};
+  \draw (R5)--(R8) node[w,midway]{1};
+  \draw (R5)--(R9) node[w,pos=0.4]{3};
+  \draw (R8)--(R9) node[w,midway]{1};
+  \draw (R9)--(B)  node[w,pos=0.4]{11};
+\end{tikzpicture}
+\end{center}
+\end{Exercise}
+
+\begin{solution}
+\textbf{Idea (Dijkstra a ``macchia d'olio'').} Si parte dalla sorgente con costo
+$0$; a ogni passo si \emph{chiude} (rende definitivo) il nodo aperto col costo
+minore, poi si \emph{rilassano} i suoi vicini (se passando da lì il costo cala, si
+aggiorna). Notazione: \texttt{costo(da-chi)}.
+
+\medskip
+\noindent\textbf{Dijkstra da $R4$} (tabella dei costi che evolve):
+\begin{center}
+\begin{tabular}{l l}
+\hline
+chiudo (costo) & aggiornamenti \\
+\hline
+$R4$ (0)  & $R7{=}1$, $A{=}2$, $R2{=}3$, $R5{=}3$ \\
+$R7$ (1)  & $R5{=}\mathbf{2}$ (via $R7$, batte 3) \\
+$R5$ (2)  & $R8{=}3$, $R9{=}5$, $R6{=}11$ \\
+$A$ (2)   & $R1{=}3$ \\
+$R2$ (3)  & $R6{=}\mathbf{10}$ (via $R2$) \\
+$R8$ (3)  & $R9{=}\mathbf{4}$ (via $R8$) \\
+$R1$ (3)  & --- \\
+$R9$ (4)  & $B{=}15$ \\
+$R6$ (10) & $R3{=}12$ \\
+$R3$ (12) & $B{=}\mathbf{14}$ (via $R3$) \\
+$B$ (14)  & fine \\
+\hline
+\end{tabular}
+\end{center}
+
+\noindent Per il \textbf{next-hop} si risale la catena ``da-chi'' fino a $R4$ e si
+prende il primo passo. \textbf{Tabella di instradamento di $R4$:}
+\begin{center}
+\begin{tabular}{l l l l}
+\hline
+dest & cammino & next-hop & costo \\
+\hline
+$R1$ & $R4\!\to\!A\!\to\!R1$ & $A$ & 3 \\
+$R2$ & $R4\!\to\!R2$ & $R2$ & 3 \\
+$R3$ & $R4\!\to\!R2\!\to\!R6\!\to\!R3$ & $R2$ & 12 \\
+$R5$ & $R4\!\to\!R7\!\to\!R5$ & $R7$ & 2 \\
+$R6$ & $R4\!\to\!R2\!\to\!R6$ & $R2$ & 10 \\
+$R7$ & $R4\!\to\!R7$ & $R7$ & 1 \\
+$R8$ & $R4\!\to\!R7\!\to\!R5\!\to\!R8$ & $R7$ & 3 \\
+$R9$ & $R4\!\to\!R7\!\to\!R5\!\to\!R8\!\to\!R9$ & $R7$ & 4 \\
+\hline
+\end{tabular}
+\end{center}
+\nt{Pur esistendo l'arco diretto $R4$--$R5$ (peso 3), a $R5$ si va \textbf{via
+$R7$} ($1{+}1=2$): il next-hop è $R7$, non $R5$.}
+
+\medskip
+\noindent\textbf{Cammino minimo $A\to B$.} Non serve rifare tutto: $A$ è attaccato
+a $R4$ (costo 2) e dal calcolo sopra $R4\to B = 14$, quindi il cammino
+$A\to R4\to\dots\to B$ costa $2+14=16$. L'unica altra uscita di $A$ è $R1$:
+$A\!\to\!R1\!\to\!R2\!\to\!R6\!\to\!R3\!\to\!B = 1{+}6{+}7{+}2{+}2 = 18 > 16$. Quindi
+\[
+\boxed{A\to R4\to R2\to R6\to R3\to B,\quad \text{costo } 16.}
+\]
+\end{solution}
+
+\dfn{Metodo rapido (Link State all'esame)}{
+1) \textbf{un solo} Dijkstra dalla sorgente richiesta (qui $R4$) $\Rightarrow$
+\emph{una} tabella, con tutti gli altri nodi come \emph{destinazioni} (righe);
+2) \textbf{next-hop} $=$ primo nodo del ramo dell'albero (risali ``da-chi'' fino
+alla radice);
+3) per un \emph{singolo} cammino (es.\ $A$--$B$) non rifai l'algoritmo: se la
+sorgente è incollata a un nodo già calcolato, \textbf{riusa} quel risultato e
+sommi l'arco, controllando solo le poche uscite alternative.
+}
+
+
 %==================================================================
 \chapter{Diagnostica e comandi di rete}
 %==================================================================
@@ -948,6 +1149,61 @@ perso o host/firewall che scarta).
 $\Rightarrow$ stima la distanza; \texttt{time} $=$ RTT.
 \end{itemize}
 }
+
+
+%==================================================================
+\chapter{Livello Trasporto: throughput e Stop\&Wait}
+%==================================================================
+
+\section{Throughput e utilizzo con TCP Stop\&Wait}
+
+\begin{Exercise}{Throughput Stop\&Wait tra A e B}{stopwait}
+A quanto ammonterebbe il \textbf{throughput} della rete tra i nodi finali $A$ e
+$B$ se il protocollo TCP fosse \textbf{Stop\&Wait}, con dimensione di un
+segmento $L=10$ KB e \textbf{RTT} medio $=1$ ms? E a quanto ammonterebbe
+l'\textbf{utilizzo percentuale} della rete? Se non è possibile fornire risposta,
+spiegare perché.
+\end{Exercise}
+
+\begin{solution}
+\textbf{Dati.} $L = 10\ \text{KB} = 10\,000\cdot 8 = 80\,000$ bit; $RTT = 1\ \text{ms}
+= 10^{-3}$ s; bit rate del collegamento $R$ \textbf{NON dato} ($\leftarrow$ è il
+punto della domanda).
+
+\textbf{Meccanismo.} In Stop\&Wait si spedisce \emph{un} segmento e si \emph{attende
+l'ACK} prima del successivo: finestra sempre $=1$. Un ciclo dura
+\[
+T_{ciclo} = T_x + RTT, \qquad T_x = \frac{L}{R}\ (\text{tempo di trasmissione}).
+\]
+
+\medskip
+\noindent\textbf{Throughput.}
+\[
+\text{Thr} = \frac{L}{T_x + RTT} = \frac{L}{\frac{L}{R}+RTT}.
+\]
+Senza $R$ non si può includere $T_x$; assumendo $T_x \ll RTT$ (link veloce, domina
+l'attesa dell'ACK) si manda \textbf{1 segmento per RTT}:
+\[
+\text{Thr} \approx \frac{L}{RTT} = \frac{80\,000\ \text{bit}}{10^{-3}\ \text{s}}
+= 8\times10^{7} = \boxed{80\ \text{Mbit/s}}
+\]
+($\approx 81{,}9$ Mbps se $1\ \text{KB}=1024$ B).
+
+\medskip
+\noindent\textbf{Utilizzo percentuale --- non calcolabile.}
+\[
+U = \frac{T_x}{T_x + RTT} = \frac{L/R}{L/R + RTT}.
+\]
+L'utilizzo è una \emph{frazione della capacità del link}, quindi richiede il bit
+rate $R$, che non è dato: \textbf{l'utilizzo \% non è determinabile}. È questa la
+parte ``se non è possibile, spiegare perché'': manca la banda nominale $R$.
+\end{solution}
+
+\nt{\textbf{Errori da evitare.} (1) Il bit rate $R$ è un \emph{dato fisico} del
+link, non si ricava dall'RTT (niente $2^{RTT}$). (2) Il raddoppio $2^{n}$ è la
+\emph{finestra di congestione} dello \emph{Slow Start} del TCP normale (raddoppia
+ogni RTT), \emph{non} il bit rate; e comunque in Stop\&Wait la finestra è sempre
+$1$, quindi non c'è alcun raddoppio.}
 
 
 %==================================================================
@@ -1164,6 +1420,79 @@ con $\text{FOM} \geq 10\ \text{dB}$ per nebbia/pioggia.
 \textbf{Conversione mW $\leftrightarrow$ dBm:} $0\ \text{dBm}=1\ \text{mW}$;
 ogni $+3\ \text{dB}$ raddoppia la potenza; ogni $+10\ \text{dB}$ la moltiplica
 per 10. Esempio: $32\ \text{mW} = 2^5\ \text{mW} = +15\ \text{dBm}$.
+}
+
+\dfn{Decibel: conversioni rapide (conta zeri e raddoppi)}{
+\textbf{Definizioni.} $X\,[\text{dB}] = 10\log_{10}\!\frac{P_2}{P_1}$ (rapporto di
+potenze); $\;P\,[\text{dBm}] = 10\log_{10}\!\frac{P}{1\,\text{mW}}$ (assoluto, rif.\
+$1$ mW); $\;\text{dBi}=$ guadagno d'antenna rispetto all'isotropa.
+
+\medskip
+\textbf{Non calcolare il log: scomponi in fattori.}
+\[
+\times 10 \to +10\ \text{dB},\quad \times 2 \to +3\ \text{dB},\quad
+\div 10 \to -10\ \text{dB},\quad \div 2 \to -3\ \text{dB}.
+\]
+Da cui $\times4\to+6$, $\times5(=\!\times10\div2)\to+7$, $\times100\to+20$,
+$\times1000\to+30$.
+
+\textbf{Riferimenti chiave:} $1\ \text{mW}=0\ \text{dBm}$,\quad
+$\mathbf{1\ W = 30\ dBm}$ (il \emph{tranello}: ai watt aggiungi sempre $+30$).
+Es.\ $2\ \text{W}=2000\ \text{mW}=30+3=33\ \text{dBm}$.
+}
+
+\dfn{EIRP e radiatore intenzionale (IR)}{
+La potenza efficace irradiata isotropicamente è la potenza del radiatore
+intenzionale (uscita verso l'antenna) più il guadagno dell'antenna:
+\[
+\text{EIRP}\,[\text{dBm}] = P_{IR}\,[\text{dBm}] + G_{ant}\,[\text{dBi}]
+\quad(\text{meno eventuali perdite di cavo}).
+\]
+È il $P_{tx}+G_{tx}$ del link budget visto ``dal lato trasmettitore''.
+Es.\ $P_{IR}=2\ \text{W}=33\ \text{dBm}$, $G_{ant}=18\ \text{dBi}\Rightarrow
+\text{EIRP}=51\ \text{dBm}\approx126\ \text{W}$.
+}
+
+\dfn{Path loss free-space (varianti di unità)}{
+Forma di Friis: $\text{PL} = 20\log_{10}\!\left(\dfrac{4\pi d}{\lambda}\right)$, che
+in pratica si usa come
+\[
+\text{PL}\,[\text{dB}] = K + 20\log_{10}(d) + 20\log_{10}(f),
+\]
+con la costante $K$ che dipende dalle unità:
+\begin{center}
+\begin{tabular}{lll}
+\hline
+distanza $d$ & frequenza $f$ & costante $K$ \\
+\hline
+km     & MHz & $32{,}45$ \\
+km     & GHz & $92{,}45$ \\
+miglia & MHz & $36{,}6$ \\
+miglia & GHz & $96{,}6$ \\
+\hline
+\end{tabular}
+\end{center}
+\textbf{Errore tipico:} mettere $f$ in GHz tenendo la costante $36{,}6$ (delle MHz):
+$1\ \text{GHz}=1000\ \text{MHz}\Rightarrow 20\log_{10}(1000)=60$, non $0$.
+\textbf{Per decade:} $\times10$ di distanza (o frequenza) $\to +20\ \text{dB}$ di PL;
+\textbf{regola dei 6 dB:} $\times2$ di distanza $\to +6\ \text{dB}$.
+}
+
+\dfn{Lunghezza d'onda, fase e multipath}{
+\textbf{Lunghezza d'onda:} $\lambda = \dfrac{c}{f}$, con $c = 3\times10^8$ m/s
+(nel vuoto/aria; nel cavo $v\approx2\times10^8$ m/s).
+
+\textbf{Fase accumulata} su un percorso di lunghezza $d$:
+$\varphi = 2\pi\,\dfrac{d}{\lambda}$ (radianti).
+
+\textbf{Multipath} -- due raggi con differenza di cammino $\Delta d$ hanno sfasamento
+$\Delta\varphi = 2\pi\,\dfrac{\Delta d}{\lambda}$:
+\[
+\Delta d = n\lambda \Rightarrow \text{interferenza \textbf{costruttiva}} \;(+);
+\qquad
+\Delta d = \Big(n+\tfrac12\Big)\lambda \Rightarrow \text{\textbf{distruttiva}} \;(-).
+\]
+(Onde in fase si sommano, in opposizione di fase si annullano.)
 }
 
 \dfn{Modulazione digitale}{

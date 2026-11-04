@@ -1,0 +1,1031 @@
+\documentclass{report}
+
+\input{../LatexTemp/preamble}
+\input{../LatexTemp/macros}
+\input{../LatexTemp/letterfonts}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{array}
+\usepackage{longtable}
+\PassOptionsToPackage{hyphens}{url}
+\usepackage{url}
+\Urlmuskip=0mu plus 1mu
+
+%==============================================================
+\definecolor{codebg}{HTML}{F7F7FB}
+\definecolor{codekw}{HTML}{2D6FB1}
+\definecolor{codecm}{HTML}{388C46}
+\definecolor{codestr}{HTML}{C74440}
+\definecolor{coderule}{HTML}{CCCCCC}
+
+\lstset{
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{codekw}\bfseries,
+    commentstyle=\color{codecm}\itshape,
+    stringstyle=\color{codestr},
+    numberstyle=\tiny\color{gray},
+    showstringspaces=false,
+    breaklines=true,
+    breakatwhitespace=false,
+    frame=single,
+    rulecolor=\color{coderule},
+    backgroundcolor=\color{codebg},
+    tabsize=2,
+    columns=fullflexible,
+    keepspaces=true,
+    captionpos=b,
+    xleftmargin=1.2em,
+    aboveskip=0.9em,
+    belowskip=0.9em,
+}
+
+\newcommand{\code}[1]{\texttt{\small #1}}
+\newcommand{\fonteslide}[1]{{\footnotesize\itshape\color{gray} Fonte: slide \emph{ExtraLectureOnVF}, pag.~#1.\par}}
+\newcommand{\fontewiki}[1][Virtual function]{{\footnotesize\itshape\color{gray} Fonte: Wikipedia, \emph{#1}.\par}}
+\newcommand{\fontelibro}[1]{{\footnotesize\itshape\color{gray} Fonte: \emph{Thinking in C++}, Vol.~2, #1.\par}}
+\newcommand{\fonteprove}[1]{{\footnotesize\itshape\color{gray} Verificato in \code{prove/#1} (compilato ed eseguito).\par}}
+
+\graphicspath{{./img/}}
+
+%==============================================================
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \vspace*{2.3cm}
+    {\Huge\sffamily\bfseries Virtual Functions\par}
+    \vspace{0.3cm}
+    {\LARGE\sffamily e Ereditarietà Virtuale\par}
+    \vspace{0.5cm}
+    {\LARGE\sffamily Teoria completa\par}
+    \vspace{1.2cm}
+    {\Large Appunti di Ingegneria del Software\par}
+    \vspace{0.4cm}
+    {\large Basato sulle slide del corso (\emph{Virtual Functions and Late
+    Bindings}), su Wikipedia (\emph{Virtual function}, \emph{Virtual
+    inheritance}) e su \emph{Thinking in C++} (Bruce Eckel)\par}
+    \vspace{1.6cm}
+    {\large\itshape Late binding, overriding, VFT/VFTP, dominanza,\\
+    diamond problem, basi virtuali\par}
+    \vspace{0.6cm}
+    {\footnotesize\itshape Ogni esempio di codice di questo documento è
+    stato compilato ed eseguito davvero (cartella \code{prove/}): dove il
+    comportamento reale si è rivelato diverso da quello ``da manuale'',
+    è segnalato esplicitamente.\par}
+    \vfill
+    {\large Anno 3\par}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+%==============================================================
+\chapter{Perché servono le funzioni virtuali}\label{ch:intro}
+%==============================================================
+
+\section{Il problema: comportamento deciso il più tardi possibile}
+
+Una delle idee centrali della programmazione a oggetti è che il
+comportamento di un oggetto venga determinato \textbf{al momento più
+tardo possibile}, se possibile a runtime. Nei linguaggi imperativi
+convenzionali, questo era di solito possibile solo tramite istruzioni
+\code{switch} o \code{if}. Le cosiddette \textbf{funzioni virtuali} sono
+una soluzione elegante e flessibile a questo problema: implementano un
+meccanismo chiamato \textbf{late binding}.
+
+\fonteslide{3}
+
+\dfn{Funzione virtuale}{
+    Un metodo (non statico) di una classe base che può essere
+    ``ridefinito'' nelle classi derivate. Questa ridefinizione si chiama
+    \textbf{overriding}.
+}
+
+\fonteslide{5}
+
+\section{Overriding: le condizioni}
+
+L'overriding avviene solo se:
+\begin{itemize}
+    \item il metodo sovrascritto (nella base) è \textbf{virtual};
+    \item il metodo che sovrascrive (nella derivata) ha la \textbf{stessa
+          signature} e lo \textbf{stesso return type} del metodo
+          sovrascritto.
+\end{itemize}
+L'overriding può essere impedito in certi linguaggi di programmazione.
+
+\fonteslide{6}
+
+\dfn{Signature vs. prototype}{
+    La \textbf{signature} di una funzione include: nome, numero di
+    parametri formali, tipi dei parametri formali. Il \textbf{return type
+    non è incluso} nella signature. Signature + return type insieme si
+    chiamano il \textbf{prototype} della funzione.
+}
+
+\fonteslide{7}
+
+\mprop{Conseguenze pratiche delle regole di overriding}{
+    \begin{itemize}
+        \item i metodi \textbf{static non possono essere overridden};
+        \item stessa signature ma return type diverso $\to$ \textbf{errore
+              di compilazione} (il C++ ammette solo lievi variazioni
+              covarianti del return type);
+        \item in \textbf{Java}, stesso nome ma signature diversa $\to$
+              \textbf{l'overriding non avviene} (overloading, non
+              override);
+        \item in \textbf{C++}, stesso nome ma signature diversa $\to$ il
+              metodo con quel nome nella base diventa \textbf{invisibile}
+              (hiding) nella derivata. L'overloading può avvenire o meno a
+              seconda del linguaggio.
+    \end{itemize}
+}
+
+\fonteslide{8-9}
+\fonteprove{03\_name\_hiding\_overload.cpp}
+
+\section{Le tre possibilità del dispatch}
+
+Quando una funzione virtuale \code{f} viene invocata su un oggetto
+\code{o} di classe \code{D} derivata da \code{B}, ci sono tre
+possibilità: (1) \code{f} è definita solo in \code{D} $\to$ si chiama
+\code{D.f}; (2) \code{f} è definita solo in \code{B} $\to$ si chiama
+\code{B.f} (ereditata); (3) \code{f} è overridden in \code{D} $\to$ si
+chiama la versione overridden \code{D.f}.
+
+\mprop{La regola fondamentale}{
+    Si usa sempre la \textbf{classe reale} dell'oggetto, \underline{non}
+    la classe della variabile/riferimento/puntatore usato per accedervi.
+}
+
+\fonteslide{11}
+\fonteprove{01\_dispatch\_realtype.cpp}
+
+Il vero vantaggio delle funzioni virtuali emerge quando si manipolano
+oggetti tramite \textbf{riferimenti o puntatori alla loro classe base}:
+solo in questo caso il comportamento ``virtuale'' diventa visibile
+all'utente.
+
+\fonteslide{12}
+
+%==============================================================
+\chapter{Virtual functions in Java e in C++}\label{ch:javacpp}
+%==============================================================
+
+\section{Java: tutto è virtual di default}
+
+In Java \textbf{tutti} i metodi non statici sono virtual: l'overriding è
+sempre un'opzione. Per impedire l'overriding (e l'hiding) di un metodo si
+usa la keyword \code{final}; dichiarare \code{final} un'intera classe ne
+impedisce l'estensione (non può essere usata come base per ulteriore
+derivazione).
+
+\fonteslide{16}
+
+\begin{Example}{L'esempio Animal/Dog/Cat delle slide}{}
+\begin{lstlisting}[language=Java]
+public class Animal {
+    public void voice() { System.out.println("???"); }
+}
+public class Dog extends Animal {
+    public void voice() { System.out.println("bau"); }
+}
+public class Cat extends Animal {
+    public void voice() { System.out.println("miao"); }
+}
+public class VirtualF {
+    public static void main(String argv[]) {
+        Animal a = new Dog();
+        Animal b = new Cat();
+        a.voice();   // both a and b are references to "Animals"
+        b.voice();
+    }
+}
+\end{lstlisting}
+Output: \code{bau} (\code{a} fa riferimento a un \code{Dog}), \code{miao}
+(\code{b} a un \code{Cat}) --- il dispatch usa sempre la classe reale.
+\end{Example}
+
+\fonteslide{25}
+\fonteprove{10\_VirtualFunctionsInJava.java}
+
+\section{C++: virtual va dichiarato esplicitamente}
+
+In C++ un metodo deve essere dichiarato \code{virtual} esplicitamente.
+Un metodo \textbf{non} dichiarato \code{virtual} \textbf{non può essere
+overridden}: può solo essere \textbf{nascosto} da una nuova definizione.
+Non esiste, in C++, una keyword equivalente a \code{final} di Java: non è
+possibile impedire l'hiding di un metodo. La derivazione di classe è
+invece sempre possibile.
+
+\fonteslide{18}
+
+\begin{lstlisting}[language=C++]
+class B {
+public:
+    virtual int compute(int x) { return theInt + x; }
+};
+class D : public B {
+public:
+    int compute(int x) { return x * theInt; }   // 'virtual' puo' essere omesso
+};
+\end{lstlisting}
+
+\fonteslide{20}
+\fonteprove{02\_hiding\_non\_virtual.cpp}
+
+\wc{Se scrivo una funzione con lo stesso nome in una derivata, sto sempre facendo l'override}{
+    No: se la funzione della base \textbf{non} è \code{virtual}, quella
+    che scrivi nella derivata \textbf{nasconde} la versione della base,
+    non la sovrascrive. Late binding non viene mai eseguito per quel
+    metodo (esempio 02): chiamandolo tramite un puntatore/riferimento alla
+    base, si esegue sempre la versione della base, indipendentemente
+    dalla classe reale dell'oggetto.
+}
+
+%==============================================================
+\chapter{Come si implementa il late binding}\label{ch:vtable}
+%==============================================================
+
+\section{Early binding vs late binding}
+
+\dfn{Early binding (compile-time binding)}{
+    Nei linguaggi imperativi non-OO (C, Pascal...), quando il compilatore
+    incontra una chiamata a funzione scrive codice macchina che esegue
+    una chiamata a un \textbf{indirizzo ben definito} --- l'indirizzo di
+    memoria dove inizia il codice macchina della funzione. Il compilatore
+    ``lega'' il punto di chiamata al codice giusto già a \textbf{compile
+    time}. È il comportamento standard per funzioni e metodi C++ non
+    virtual.
+}
+
+\fonteslide{29-30}
+
+\dfn{Late binding (run-time binding)}{
+    In presenza di funzioni virtuali, il binding \textbf{non può} essere
+    fatto a compile time: il compilatore sa quale funzione è virtual, ma
+    non può sempre dedurre quale codice eseguire guardando solo la
+    chiamata. Scrive invece codice macchina che deduce l'indirizzo
+    corretto della chiamata \textbf{a runtime}.
+}
+
+\fonteslide{31}
+
+\section{VFT e VFTP: l'implementazione}
+
+Ogni classe con funzioni virtuali ha una tabella associata, chiamata
+\textbf{Virtual Function Table (VFT)}, contenente i puntatori al codice
+di ciascuna funzione virtuale della classe. Ogni oggetto di una classe
+con funzioni virtuali porta un puntatore, \textbf{nascosto all'utente},
+alla VFT della propria classe: il \textbf{Virtual Function Table Pointer
+(VFTP)}.
+
+\fonteslide{33}
+
+\nt{
+    In questo contesto ``pointer'' significa sia un puntatore C++ sia un
+    riferimento Java: il meccanismo è concettualmente lo stesso nei due
+    linguaggi, anche se Java lo nasconde completamente.
+}
+
+\mprop{I cinque passi del dispatch a runtime}{
+    Per completare una chiamata late-bound:
+    \begin{enumerate}
+        \item dal puntatore/riferimento si raggiunge l'\textbf{oggetto};
+        \item si cerca la \textbf{VFTP} nell'oggetto;
+        \item tramite la VFTP si trova la \textbf{VFT della classe reale}
+              dell'oggetto;
+        \item si cerca nella VFT l'\textbf{entry giusta} (es. VFP2 per la
+              funzione VF2);
+        \item tramite il puntatore in quella entry si raggiunge ed
+              \textbf{esegue} il codice corretto.
+    \end{enumerate}
+}
+
+\fonteslide{32,34-35}
+
+Questa è esattamente la traduzione in C che si può scrivere a mano
+(struct con un puntatore a una tabella di puntatori a funzione): vedi il
+capitolo sui template per il parallelo con la genericità in C.
+
+%==============================================================
+\chapter{Virtual vs. non-virtual: l'efficienza}\label{ch:efficienza}
+%==============================================================
+
+Se la ``virtualità'' è così comoda, perché non usare sempre metodi
+virtual? Java prende questo approccio, vincolando l'utente a usare solo
+metodi virtual. Il C++ dà più libertà, permettendo anche metodi non
+virtual --- ma perché?
+
+\fonteslide{36}
+
+\mprop{La risposta: efficienza}{
+    Il late binding è un meccanismo relativamente costoso in termini di
+    tempo di esecuzione (in misura diversa secondo l'implementazione
+    usata). Se un metodo viene chiamato molto frequentemente ed è
+    relativamente semplice, l'overhead può diventare un collo di
+    bottiglia.
+}
+
+\fonteslide{37}
+
+In pratica, però, ci sono pochissimi punti (se non nessuno) in un
+programma medio dove questi problemi di efficienza sono determinanti; ma
+in \textbf{sistemi real-time}, \textbf{routine matematiche core} o
+\textbf{programmazione di sistema di basso livello} può essere il caso.
+
+\fonteslide{38}
+
+\nt{
+    Questo è lo stesso trade-off discusso nella sezione trasversale del
+    fascicolo di domande d'esame: C++ non-virtual-by-default segue lo
+    \emph{zero-overhead principle}; Java virtual-by-default recupera il
+    costo con la devirtualizzazione JIT (Class Hierarchy Analysis + inline
+    cache).
+}
+
+%==============================================================
+\chapter{L'esercizio del corso}\label{ch:esercizio}
+%==============================================================
+
+Le slide concludono con un esercizio completo su una gerarchia a sei
+classi (\code{A}, \code{B}, \code{C}, \code{D}, \code{E}, \code{G}), che
+mescola deliberatamente metodi virtual e non-virtual, override e hiding,
+per costringere a ragionare riga per riga.
+
+\fonteslide{40-45}
+
+\begin{Example}{Le classi della gerarchia (estratto)}{}
+\begin{lstlisting}[language=C++]
+class A {
+public:
+    virtual void f() { prn("A::f()"); }
+             void g() { prn("A::g()"); }
+    virtual void h() { prn("A::h()"); }
+             void i() { prn("A::i()"); }
+};
+class D : public A {
+public:
+    virtual void h() { prn("D::h()"); }
+             void m() { prn("D::m()"); h(); }
+    virtual void g() { prn("D::g()"); }
+};
+class G : public E {   // E deriva da D
+public:
+    virtual void f(int i) { prn("G::f(int)"); }
+};
+\end{lstlisting}
+\end{Example}
+
+\wc{Basta guardare quale metodo è virtual per sapere cosa stampa una chiamata}{
+    No: bisogna anche controllare, per ogni chiamata, il \textbf{tipo
+    statico} usato per farla (variabile, puntatore, riferimento). Tre
+    righe di questo esercizio non compilano affatto, per \textbf{name
+    hiding}: \code{G} dichiara \code{f(int)}, che nasconde ogni
+    \code{f()} ereditato --- quindi \code{aG.f()} (senza argomenti) non
+    trova nulla da chiamare, anche se una \code{f()} esiste più in alto
+    nella gerarchia.
+}
+
+L'esercizio completo, da fare tu stesso prima di guardare la soluzione, è
+in \code{prove/es\_00\_slide\_ABCDEG.cpp} (soluzione verificata in
+\code{prove/soluzioni.md}).
+
+%==============================================================
+\chapter{Ereditarietà virtuale}\label{ch:vinherit}
+%==============================================================
+
+Le slide del corso non trattano l'ereditarietà virtuale: questo intero
+capitolo si appoggia alla voce Wikipedia \emph{Virtual inheritance} e a
+\emph{Thinking in C++} (Vol.~2, cap.~9, \emph{Multiple Inheritance}).
+
+\fontewiki[Virtual inheritance]
+
+\section{Il problema: sotto-oggetti duplicati}
+
+Quando due classi \code{B} e \code{C} derivano da \code{A}, e una classe
+\code{D} deriva da entrambe \code{B} e \code{C}, l'oggetto \code{D}
+contiene \textbf{due copie} delle variabili membro di \code{A} --- una
+via \code{B}, una via \code{C} --- accessibili indipendentemente tramite
+scope resolution. Questo è il \textbf{diamond problem}.
+
+\fontewiki[Virtual inheritance]
+\fontelibro{cap.~9, ``Multiple Inheritance''}
+
+\dfn{Ereditarietà virtuale}{
+    Tecnica C++ che garantisce che \textbf{una sola copia} delle
+    variabili membro di una classe base venga ereditata dalle classi
+    derivate ``nipote''. Si dichiara con \code{virtual} nella lista delle
+    basi: \code{class Derived : virtual public Base \{ ... \};}
+}
+
+\fontewiki[Virtual inheritance]
+\fontelibro{cap.~9}
+
+\section{Chi costruisce la base virtuale}
+
+\mprop{La regola dell'inizializzazione}{
+    La base virtuale viene inizializzata \textbf{sempre} dal costruttore
+    della classe \textbf{most derived} --- mai da una classe intermedia,
+    anche se quella intermedia scrive un mem-initializer per la base
+    virtuale: se la classe intermedia non è quella davvero istanziata,
+    quel mem-initializer viene \textbf{ignorato}. Questo impedisce che
+    più classi intermedie inizializzino la base virtuale più volte.
+}
+
+\fontelibro{cap.~9, sezione ``Virtual base classes''}
+\fonteprove{08\_virtual\_base\_ctor\_order.cpp}
+
+\begin{Example}{Chi vince, tra i mem-initializer scritti a ogni livello}{}
+\begin{lstlisting}[language=C++]
+struct A { A(const char* who) { std::cout << who << " "; } };
+struct B : virtual A { B() : A("da B") {} };
+struct C : virtual A { C() : A("da C") {} };
+struct D : B, C  { D() : A("da D"), B(), C() {} };
+struct E : D     { E() : A("da E"), D()      {} };
+int main() { E e; }
+\end{lstlisting}
+Output verificato: \code{A("da E") B() C() D() E()} --- solo il
+mem-initializer di \code{E} (la classe most-derived) conta;
+\code{"da B"}, \code{"da C"}, \code{"da D"} vengono tutti ignorati in
+questa costruzione. Costruendo un \code{D} da solo, invece, vince
+\code{"da D"}.
+\end{Example}
+
+\section{Dominanza}
+
+\dfn{Dominanza}{
+    Con basi virtuali esiste un \textbf{solo} sotto-oggetto condiviso: se
+    solo una delle due classi intermedie fa l'override di un metodo
+    virtuale della base condivisa, quell'override \textbf{domina}
+    sull'implementazione originale, e diventa l'unico \emph{final
+    overrider}: nessuna ambiguità.
+}
+
+\fonteprove{06\_diamond\_dominance.cpp}
+
+\wc{Senza virtual, il diamante darebbe semplicemente lo stesso risultato ma più lento}{
+    No: senza \code{virtual} nelle basi, esistono \textbf{due}
+    sotto-oggetti \code{A} distinti, e la chiamata diventa
+    \textbf{ambigua} --- errore di compilazione, non un semplice calo di
+    prestazioni. Va risolta con una chiamata qualificata
+    (\code{d.B::f();}).
+}
+
+\fonteprove{07\_diamond\_no\_virtual\_ambiguous.cpp}
+
+Se \textbf{entrambe} le classi intermedie facessero l'override, non
+esisterebbe più un final overrider unico: il programma diventa
+\textbf{ill-formed alla definizione} della classe che le unisce (non al
+punto di chiamata!) --- a meno che quella classe non fornisca il proprio
+override, che allora domina su entrambi.
+
+\fonteprove{es\_03\_diamond\_twist.cpp}
+
+\section{Layout e costo in memoria}
+
+\begin{Example}{L'esempio Animal/Mammal/WingedAnimal/Bat}{}
+Con ereditarietà virtuale il layout di \code{Bat} diventa:
+\begin{center}
+\code{(vpointer, Mammal, vpointer, WingedAnimal, Bat, Animal)}
+\end{center}
+Il sotto-oggetto \code{Animal} finisce \textbf{in fondo} (non
+all'inizio): \code{Mammal} e \code{WingedAnimal} devono conservare il
+layout che avrebbero da soli, quindi l'unica copia condivisa di
+\code{Animal} va in una posizione che non appartiene a nessuno dei due
+rami. Servono \textbf{due vpointer}: ciascun ramo deve sapere ``quanto
+dista da qui il mio \code{Animal}'' (\emph{vbase offset}), e questa
+distanza non è nota a compile time (dipende da come il sotto-oggetto sarà
+usato). La dimensione dell'oggetto cresce di due puntatori rispetto alla
+versione non virtuale, in cambio dell'unicità di \code{Animal} e
+dell'assenza di ambiguità.
+\end{Example}
+
+\fontewiki[Virtual inheritance]
+
+\mprop{static\_cast è vietato, serve dynamic\_cast}{
+    Un \code{static\_cast} da un puntatore a base virtuale verso la
+    derivata è \textbf{vietato} (il compilatore dovrebbe sottrarre un
+    offset che non conosce staticamente). Va usato \code{dynamic\_cast},
+    che legge l'informazione dalla vtable a runtime --- l'unico caso in
+    cui è \textbf{obbligatorio} pur non essendoci incertezza sul tipo
+    effettivo.
+}
+
+\section{Metodi virtuali puri nel diamante}
+
+Con ereditarietà virtuale, un metodo virtuale puro va implementato
+\textbf{una sola volta} nella gerarchia: il ramo che non lo implementa
+eredita l'implementazione dall'altra parte del diamante, per dominanza.
+
+\fonteprove{09\_pure\_virtual\_diamond.cpp}
+
+\section{Quando usarla}
+
+\mprop{Il criterio}{
+    L'ereditarietà virtuale serve quando l'ereditarietà esprime una
+    \textbf{restrizione di un insieme} (un \code{Bat} \emph{è} un
+    \code{Animal}, uno solo) e non una \textbf{composizione di parti}
+    indipendenti (nel qual caso copie separate sono accettabili).
+}
+
+Esempio reale nella libreria standard: \code{basic\_istream} e
+\code{basic\_ostream} derivano virtualmente da \code{basic\_ios}, così
+\code{basic\_iostream} (da cui \code{stringstream}, \code{fstream}) ha un
+solo stato di stream condiviso invece di due.
+
+%==============================================================
+\chapter{Oltre le slide: approfondimenti da Wikipedia}\label{ch:oltre}
+%==============================================================
+
+La voce Wikipedia \emph{Virtual function} elenca, in fondo alla pagina,
+una serie di riferimenti specifici sul tema più insidioso di questo
+capitolo: cosa succede chiamando una funzione virtuale dal costruttore o
+dal distruttore. Questo capitolo li riprende.
+
+\fontewiki
+
+\section{Il corner case: una funzione virtuale pura può avere un corpo}
+
+\wc{Una funzione virtuale pura (\code{= 0}) non può avere nessuna implementazione}{
+    Falso, ed è un ``corner case'' citato esplicitamente da Wikipedia
+    (Raymond Chen, \emph{``C++ corner case: you can implement pure
+    virtual functions in the base class''}): \code{= 0} impone solo che
+    le derivate concrete facciano l'override, non vieta un corpo. Quel
+    corpo è chiamabile solo per chiamata qualificata --- o, come nel caso
+    seguente, dal costruttore della classe stessa.
+}
+
+\fontewiki
+
+\begin{Example}{Verificato: cosa succede DAVVERO chiamando una pura dal ctor}{}
+Contrariamente a quanto ci si aspetterebbe (un crash a runtime), il
+comportamento reale osservato (g++ 15.2.1, compilando esattamente il
+codice sotto) è un \textbf{errore di link}, non un crash a runtime:
+\begin{lstlisting}[language=C++]
+struct Base {
+    virtual void f() = 0;
+    Base() { f(); }             // chiamata dal ctor
+};
+struct Derivata : Base {
+    void f() override { std::cout << "Derivata::f\n"; }
+};
+// g++: undefined reference to `Base::f()'
+\end{lstlisting}
+Il motivo: dentro il costruttore di \code{Base}, il compilatore \emph{sa}
+che il tipo dinamico dell'oggetto è esattamente \code{Base} (non ancora
+\code{Derivata}): la chiamata \code{f()} viene \textbf{devirtualizzata a
+compile time} in una chiamata diretta a \code{Base::f()}. Ma
+\code{Base::f()} non esiste (pura, senza corpo): è il \textbf{linker},
+non il runtime, ad accorgersene. Fornendo un corpo a \code{Base::f()}
+(il corner case sopra), tutto funziona e quel corpo viene eseguito.
+\end{Example}
+
+\fonteprove{05\_pure\_virtual\_ctor.cpp}
+
+\section{Il consiglio più citato: mai chiamare virtual da ctor/dtor}
+
+Tra i riferimenti in fondo alla voce Wikipedia compare l'articolo di
+Scott Meyers, \emph{``Never Call Virtual Functions during Construction or
+Destruction''} (il capitolo 9 della terza edizione di \emph{Effective
+C++}): la regola pratica --- indipendentemente dal fatto che il metodo sia
+puro o abbia un corpo --- è di non farlo mai, perché il risultato
+(dispatch sulla classe ``corrente'', non su quella finale) è quasi sempre
+contro-intuitivo per chi legge il codice.
+
+\fontewiki
+
+\fonteprove{04\_ctor\_dtor\_virtual\_call.cpp}
+
+\section{Argomenti collegati (See also)}
+
+La voce Wikipedia elenca, tra gli argomenti collegati: \emph{Abstract
+method}, \emph{Inheritance}, \emph{Superclass}, \emph{Virtual
+inheritance} (capitolo~\ref{ch:vinherit}), \emph{Virtual class},
+\emph{Interface}, \textbf{Component Object Model (COM)} e \emph{Virtual
+method table} (capitolo~\ref{ch:vtable}).
+
+\fontewiki
+
+\nt{
+    Il \textbf{Component Object Model} di Microsoft è l'esempio più noto
+    di VFT usata come formato di interoperabilità binaria \emph{fuori}
+    da un singolo linguaggio: un'interfaccia COM è, letteralmente, un
+    puntatore a una VFT con un layout standardizzato --- lo stesso
+    meccanismo di questo capitolo, usato per far comunicare linguaggi
+    diversi (C++, VB, ecc.) tramite un contratto binario comune.
+}
+
+%==============================================================
+\chapter{Overriding in Java}\label{ch:java-full}
+%==============================================================
+
+Questo capitolo si appoggia sulla voce Wikipedia \emph{Method overriding}
+(sezione Java), sulla parte già vista dalle slide (capitolo~\ref{ch:javacpp})
+e sul file verificato \code{prove/17\_JavaOverrideAnnotationAndCovariance.java}.
+
+\fontewiki[Method overriding]
+
+\section{Overriding automatico, e l'annotazione \code{@Override}}
+
+\mprop{In Java l'overriding è automatico}{
+    A differenza del C++, dove serve dichiarare esplicitamente
+    \code{virtual}, in Java l'overriding avviene \textbf{automaticamente}
+    ogni volta che un metodo di una sottoclasse combina lo stesso nome, gli
+    stessi parametri e lo stesso return type (o uno covariante) di un
+    metodo della superclasse.
+}
+
+\fontewiki[Method overriding]
+
+L'annotazione \code{@Override} è \textbf{opzionale ma raccomandata}: non
+cambia il comportamento a runtime, ma dice al compilatore ``questo metodo
+deve essere un override di qualcosa: se non lo è, dammi errore''.
+
+\fontewiki[Method overriding]
+
+\begin{Example}{Perché \code{@Override} va sempre usata}{}
+\begin{lstlisting}[language=Java]
+class Animal { public void makeSound() { System.out.println("..."); } }
+class Dog extends Animal {
+    @Override
+    public void makeSound() { System.out.println("bau"); }
+
+    // Un typo nel nome del metodo, SENZA @Override, compila
+    // silenziosamente: diventa un OVERLOAD inutile, non un override.
+    // public void makeSund() { System.out.println("bau (typo)"); }
+    //
+    // Con @Override, lo stesso typo da' un errore di compilazione:
+    // "method does not override a method from its superclass".
+}
+\end{lstlisting}
+\end{Example}
+
+\fonteprove{17\_JavaOverrideAnnotationAndCovariance.java}
+
+\section{Cosa non può essere overridden}
+
+\code{final}, \code{private} e \code{static} non possono essere
+overridden; una classe \code{final} non può essere estesa affatto.
+
+\fontewiki[Method overriding]
+\fonteslide{16}
+
+\wc{Un metodo private in una sottoclasse con lo stesso nome della base fa l'override}{
+    No: i metodi \code{private} non sono ereditati né virtual
+    (invocati con \code{invokespecial}, non con dispatch dinamico). Un
+    metodo omonimo nella sottoclasse è un metodo del tutto
+    \textbf{indipendente}, non un override --- esattamente come i metodi
+    \code{private} in C++ (capitolo sul pattern NVI del fascicolo
+    d'esame).
+}
+
+\section{super: chiamare l'implementazione della base}
+
+Java usa la keyword \code{super} per invocare esplicitamente
+l'implementazione della superclasse --- concettualmente equivalente al
+\code{Base::f()} del C++ (che invece usa lo scope-resolution operator, non
+una keyword dedicata).
+
+\fontewiki[Method overriding]
+
+\section{I campi NON sono polimorfici}
+
+\wc{Se un metodo overridden dispatcha sul tipo reale, anche i campi si comportano cosi'}{
+    No. I \textbf{campi} sono risolti a compile time sul tipo
+    \textbf{statico} della variabile/riferimento, indipendentemente dal
+    tipo reale dell'oggetto --- il polimorfismo in Java riguarda
+    \emph{solo} i metodi.
+}
+
+\begin{lstlisting}[language=Java]
+class A { String x = "A"; String get() { return x; } }
+class B extends A { String x = "B"; String get() { return x; } }
+A a = new B();
+System.out.println(a.x);       // "A": campo, risolto sul tipo statico A
+System.out.println(a.get());   // "B": metodo, risolto sul tipo dinamico B
+\end{lstlisting}
+
+\code{B.x} non sostituisce \code{A.x}: lo \textbf{nasconde} (nell'oggetto
+esistono due campi distinti, accessibili con \code{super.x} o un cast).
+
+\section{Return type covariante}
+
+Da Java 5, un override può restituire un \textbf{sottotipo} del return
+type dichiarato nella base (non necessariamente lo stesso tipo esatto).
+
+\fonteprove{17\_JavaOverrideAnnotationAndCovariance.java}
+
+\begin{lstlisting}[language=Java]
+class Animal2 { Animal2 clone2() { return new Animal2(); } }
+class Dog2 extends Animal2 {
+    @Override
+    Dog2 clone2() { return new Dog2(); }   // Dog2 e' un sottotipo di Animal2
+}
+\end{lstlisting}
+
+\section{La chiamata a un metodo overridabile dal costruttore}
+
+Il punto di confronto più importante con il C++ (capitolo~\ref{ch:oltre}):
+in Java il tipo dinamico di un oggetto è \textbf{già quello finale} fin
+dal primo istante della costruzione (a differenza del C++, dove ``cresce''
+durante la costruzione, capitolo~\ref{ch:vtable}). Chiamare un metodo
+overridabile dal costruttore della base dispatcha quindi
+\textbf{correttamente} sulla sottoclasse --- ma i campi di quella
+sottoclasse valgono ancora il \textbf{default} (anche se \code{final}!),
+perché i suoi inizializzatori girano solo \emph{dopo} il ritorno da
+\code{super()}.
+
+\fonteprove{10\_VirtualFunctionsInJava.java}
+
+\nt{
+    Regola pratica identica a quella del C++ (Scott Meyers,
+    capitolo~\ref{ch:oltre}), anche se il meccanismo che la causa è
+    diverso: \textbf{mai chiamare, dal costruttore, un metodo che una
+    sottoclasse potrebbe overridare}, in nessuno dei due linguaggi.
+}
+
+%==============================================================
+\chapter{Overriding in Python}\label{ch:python-full}
+%==============================================================
+
+Questo capitolo si appoggia sulla voce Wikipedia \emph{Method overriding}
+(sezione Python) e sui file verificati \code{prove/14}--\code{16}.
+
+\fontewiki[Method overriding]
+
+\section{Nessuna keyword, perché non serve}
+
+In Python \textbf{ogni} metodo è dinamicamente dispatchato per
+costruzione: il lookup di un attributo segue sempre l'MRO (\emph{Method
+Resolution Order}) del tipo \textbf{reale} dell'oggetto. Non esiste una
+versione ``non virtuale'' tra cui scegliere, quindi non c'è nulla da
+dichiarare esplicitamente --- a differenza di C++ (dove serve
+\code{virtual}) e, in misura minore, di Java (dove tutto è virtual di
+default, ma esiste comunque \code{final} per vietarlo).
+
+\fonteprove{11\_python\_no\_virtual\_keyword.py}
+
+\section{super() e l'MRO: ereditarietà multipla cooperativa}
+
+Wikipedia nota che Python usa \code{super(Subclass, self).method()} (o,
+in Python 3, la forma semplificata \code{super().method()}) per invocare
+l'implementazione della classe base.
+
+\fontewiki[Method overriding]
+
+\wc{super() chiama sempre ``la superclasse''}{
+    Non è la superclasse: è il \textbf{prossimo elemento nell'MRO
+    dell'oggetto}. In una gerarchia con ereditarietà multipla, questo è
+    ciò che garantisce che un metodo comune a più rami del diamante venga
+    eseguito \textbf{una sola volta}, non una per ramo.
+}
+
+\begin{Example}{Il diamante cooperativo, verificato}{}
+\begin{lstlisting}[language=Python]
+class A:
+    def f(self): print("A.f")
+class B(A):
+    def f(self): print("B.f"); super().f()
+class C(A):
+    def f(self): print("C.f"); super().f()
+class D(B, C):
+    def f(self): print("D.f"); super().f()
+
+print(D.__mro__)   # (D, B, C, A, object)
+D().f()
+\end{lstlisting}
+Output verificato: \code{D.f B.f C.f A.f} (poi il ``dopo'' di ciascuno, in
+ordine inverso) --- \code{A.f} viene eseguito \textbf{una sola volta}.
+Dentro \code{B.f}, con \code{type(self) is D}, il successivo nell'MRO
+dopo \code{B} è \code{C}, non \code{A}: è per questo che \code{super()} in
+\code{B} non salta direttamente ad \code{A}.
+\end{Example}
+
+\fonteprove{14\_python\_mro\_c3.py}
+
+\section{Name mangling: l'equivalente di un metodo non virtuale}
+
+Python non ha \code{private} né un modo di impedire l'override in senso
+stretto, ma il \textbf{doppio underscore} iniziale (\code{\_\_nome}) dà un
+effetto simile tramite il \textbf{name mangling}: il compilatore riscrive
+\code{self.\_\_helper} in \code{self.\_NomeClasse\_\_helper}, in base alla
+classe \textbf{dentro cui} il codice è scritto (non alla classe reale
+dell'oggetto a runtime).
+
+\begin{Example}{Perché \code{B.\_\_helper} non fa l'override di \code{A.\_\_helper}}{}
+\begin{lstlisting}[language=Python]
+class A:
+    def __init__(self): self.__helper()   # diventa self._A__helper()
+    def __helper(self): print("A helper")
+class B(A):
+    def __helper(self): print("B helper")  # diventa _B__helper: nome diverso!
+B()   # stampa "A helper", non "B helper"
+\end{lstlisting}
+I due metodi hanno nomi mangled \textbf{diversi} (\code{\_A\_\_helper} e
+\code{\_B\_\_helper}): non c'è alcuna collisione, quindi nessun override.
+Non è un meccanismo di sicurezza: il nome mangled resta accessibile da
+fuori (\code{b.\_A\_\_helper()}).
+\end{Example}
+
+\fonteprove{15\_python\_name\_mangling.py}
+
+\section{Metodi ``abstract'': @abstractmethod da solo non basta}
+
+\wc{@abstractmethod impedisce di istanziare una classe che non fa l'override}{
+    Da solo, no: \code{@abstractmethod} si limita a impostare
+    \code{\_\_isabstractmethod\_\_ = True} sulla funzione. Il controllo
+    che impedisce l'istanziazione è fatto dalla \textbf{metaclasse}
+    \code{ABCMeta} (che popola \code{\_\_abstractmethods\_\_} alla
+    creazione della classe): senza ereditare da \code{abc.ABC} (o
+    impostare esplicitamente quella metaclasse), l'istanziazione riesce
+    comunque, senza alcun errore.
+}
+
+\fonteprove{16\_python\_abc\_not\_enforced.py}
+
+\section{Il costruttore e il dispatch}
+
+Come in Java (capitolo~\ref{ch:java-full}), il tipo dinamico di
+\code{self} è già quello finale dal primo istante della costruzione: una
+chiamata a un metodo overridabile da \code{\_\_init\_\_} dispatcha
+correttamente sulla sottoclasse. Vale però lo stesso avvertimento: se
+quel metodo legge un attributo che l'\code{\_\_init\_\_} della sottoclasse
+non ha ancora assegnato, il risultato può essere sbagliato (o, in Python,
+un \code{AttributeError} se l'attributo non esiste affatto prima della
+prima assegnazione).
+
+\fonteprove{11\_python\_no\_virtual\_keyword.py}
+
+%==============================================================
+\chapter{Polimorfismo manuale in C}\label{ch:c-full}
+%==============================================================
+
+Il C non ha funzioni virtuali, classi, né alcuna forma di overriding nel
+linguaggio: la voce Wikipedia \emph{Method overriding} non ha nemmeno una
+sezione dedicata al C, per questo motivo. Questo capitolo traduce
+\textbf{letteralmente a mano} il meccanismo VFT/VFTP del
+capitolo~\ref{ch:vtable}, verificando col compilatore reale sia il
+funzionamento sia i modi in cui si rompe.
+
+\section{La traduzione letterale di VFT e VFTP}
+
+\begin{Example}{Dispatch scritto a mano, verificato}{}
+\begin{lstlisting}[language=C]
+/* la VFT: una tabella di puntatori a funzione, UNA per classe */
+typedef struct {
+    void   (*draw)(const void *self);
+    double (*area)(const void *self);
+} ShapeVT;
+
+/* la "classe base": porta solo il VFTP */
+typedef struct { const ShapeVT *vptr; } Shape;
+
+/* la "classe derivata": incorpora Shape come PRIMO membro */
+typedef struct { Shape base; double r; } Circle;
+
+static double circle_area(const void *self) {
+    const Circle *c = (const Circle *)self;
+    return 3.14159265 * c->r * c->r;
+}
+static const ShapeVT CIRCLE_VT = { circle_draw, circle_area };
+
+Circle *circle_new(double r) {
+    Circle *c = malloc(sizeof *c);
+    c->base.vptr = &CIRCLE_VT;   /* il "costruttore" installa il vptr a mano */
+    c->r = r;
+    return c;
+}
+/* dispatch "virtuale": gli stessi 5 passi della teoria (cap. 3) */
+double shape_area(const Shape *s) { return s->vptr->area(s); }
+\end{lstlisting}
+Un ciclo su un array di \code{Shape*} misti (\code{Circle}, \code{Rectangle})
+chiama \code{shape\_area} \textbf{senza nessun \code{if}/\code{switch}
+sul tipo}: esattamente il late binding della teoria, scritto a mano.
+\end{Example}
+
+\fonteprove{12\_manual\_vtable\_in\_c.c}
+
+\mprop{Il primo membro deve essere la base}{
+    Lo standard C garantisce l'assenza di padding all'inizio di una
+    struct: quindi \code{(Shape*)circle == \&circle->base}, e la
+    conversione derivata$\to$base è un no-op, senza bisogno di alcun
+    aggiustamento del puntatore (nessun \emph{thunk}, a differenza
+    dell'ereditarietà multipla C++).
+}
+
+\section{Chi inizializza il vptr: qui nessuno, se non tu}
+
+\wc{Se dimentico di inizializzare il vptr, il programma comunque funziona un po'}{
+    No: senza quella riga, il vptr è memoria non inizializzata
+    (\code{malloc} non azzera la memoria). Chiamare una funzione
+    attraverso un vptr indeterminato è undefined behavior, e nella
+    pratica \textbf{crasha davvero} (verificato: \code{Segmentation
+    fault}).
+}
+
+In C++, questa riga di inizializzazione il programmatore \textbf{non la
+scrive mai a mano}: il compilatore la genera automaticamente in ogni
+costruttore, per ogni livello della gerarchia (capitolo~\ref{ch:vtable}).
+In C, dimenticarla è un errore reale e frequente.
+
+\fonteprove{13\_c\_no\_forgotten\_vptr.c}
+
+\section{Esempi reali: non è un esercizio accademico}
+
+Questo identico schema (struct con un puntatore a una tabella di
+puntatori a funzione) è usato da progetti C reali su larga scala:
+
+\begin{itemize}
+    \item il \textbf{VFS} (Virtual File System) del kernel Linux, dove
+          \code{struct file\_operations} è, letteralmente, una VFT: ogni
+          filesystem (ext4, procfs, un driver...) fornisce la propria
+          tabella, e il kernel dispatcha tramite quella tabella senza
+          sapere di che filesystem si tratti;
+    \item \textbf{GObject} (la base di GTK): implementa un intero sistema
+          di classi con ereditarietà single/multipla (via interfacce) e
+          dispatch virtuale, tutto scritto a mano sopra il C puro,
+          esattamente con questo schema.
+\end{itemize}
+
+\nt{
+    Da distinguere dallo schema di \code{qsort(arr, n, sizeof(int), cmp)}:
+    lì il puntatore a funzione (\code{cmp}) è passato \textbf{per
+    parametro alla singola chiamata}, non associato al \emph{tipo} degli
+    oggetti ordinati. È il pattern \emph{Strategy}, non l'overriding: non
+    esiste alcuna ``classe'' che eredita quel comportamento.
+}
+
+%==============================================================
+\chapter{Riferimenti e link aggiuntivi}\label{ch:riferimenti}
+%==============================================================
+
+Come indicato dal docente: Wikipedia va bene come riferimento, ma è
+meglio eseguire gli esempi ed approfondire con i link che Wikipedia
+stessa elenca in fondo alla pagina, più il libro \emph{Thinking in C++}.
+
+\section{Dalla voce ``Virtual function''}
+
+\textbf{See also}: Abstract method, Inheritance, Superclass, Virtual
+inheritance, Virtual class, Interface, Component Object Model, Virtual
+method table.
+
+\textbf{Riferimenti specifici sul tema ctor/dtor} (il più utile per
+questo capitolo): Raymond Chen, \emph{``What is \_\_purecall?''}; Scott
+Meyers, \emph{``Never Call Virtual Functions during Construction or
+Destruction''}; Raymond Chen, \emph{``C++ corner case: you can implement
+pure virtual functions in the base class''}; S.G. Ganesh, \emph{``Joy of
+Programming: Calling Virtual Functions from Constructors''}.
+
+\section{Dalla voce ``Virtual inheritance''}
+
+Milea, \emph{``Solving the Diamond Problem with Virtual Inheritance''}
+(Cprogramming.com); McArdell, \emph{``C++/What is virtual
+inheritance?''}.
+
+\section{Dalla voce ``Method overriding''}
+
+\textbf{See also}: Implementation inheritance, Inheritance semantics,
+Method overloading, Polymorphism in object-oriented programming,
+Template method pattern, Virtual inheritance.
+
+\section{Thinking in C++ (Bruce Eckel) --- libero, due volumi}
+
+\begin{itemize}
+    \item Vol.~2, cap.~9 --- \emph{Multiple Inheritance}, sezione
+          \emph{Virtual base classes}: \url{https://web.mit.edu/merolish/ticpp/TicV2.html\#_Toc53985825}
+    \item Vol.~2, cap.~5 --- \emph{Templates in Depth} (per il capitolo
+          sui template: non-type/template template parameter, SFINAE,
+          CRTP, metaprogramming): \url{https://web.mit.edu/merolish/ticpp/TicV2.html\#_Toc53985706}
+\end{itemize}
+
+%==============================================================
+\chapter{Fonti}\label{ch:fonti}
+%==============================================================
+
+\begin{itemize}
+    \item Slide del corso: \emph{Virtual Functions and Late Bindings}
+          (\code{20250922.ExtraLectureOnVF.pdf}), 45 pagine --- fonte
+          primaria dei capitoli~\ref{ch:intro}--\ref{ch:esercizio}.
+    \item Wikipedia, \emph{Virtual function},
+          \url{https://en.wikipedia.org/wiki/Virtual_function} --- fonte
+          primaria del capitolo~\ref{ch:oltre}.
+    \item Wikipedia, \emph{Virtual inheritance},
+          \url{https://en.wikipedia.org/wiki/Virtual_inheritance} ---
+          fonte primaria del capitolo~\ref{ch:vinherit}.
+    \item Wikipedia, \emph{Method overriding},
+          \url{https://en.wikipedia.org/wiki/Method_overriding} ---
+          fonte primaria dei capitoli~\ref{ch:java-full} e
+          \ref{ch:python-full}.
+    \item Bruce Eckel, \emph{Thinking in C++}, Vol.~2 (\emph{Practical
+          Programming}), cap.~9 --- fonte di supporto per il
+          capitolo~\ref{ch:vinherit}.
+    \item Cartella \code{prove/} (questo stesso computer): ogni esempio
+          citato con \fonteprove{} è stato compilato ed eseguito
+          davvero, non solo descritto.
+\end{itemize}
+
+\end{document}

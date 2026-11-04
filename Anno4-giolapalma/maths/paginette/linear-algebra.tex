@@ -1,0 +1,1411 @@
+% --- Module 1 ---
+
+\chapter{Basics of Linear Algebra}
+
+This module collects the linear algebra tools used throughout the course, and in particular in the
+PCA module (it follows \emph{Mathematics for Machine Learning}). The main themes are:
+\begin{itemize}
+  \item \textbf{matrices and matrix operations}: dimensions, multiplication, rank, determinants,
+        inverses, traces, block matrices, Kronecker products;
+  \item \textbf{norms and distances}: measures of size and separation of vectors;
+  \item \textbf{matrix decompositions}: Cholesky, eigendecomposition / spectral decomposition, SVD;
+  \item \textbf{vector calculus}: gradients, quadratic forms, Jacobians, chain rule, Hessians;
+  \item \textbf{R illustrations}.
+\end{itemize}
+
+\textbf{Notation.} Lowercase letters $x$ are (column) vectors, uppercase letters $A$ are matrices;
+$0_p$ is the zero vector of $\mathbb{R}^p$, $I_p$ the $p \times p$ identity, $\mathbf{1}_n$ the vector of ones;
+$x^\top y$ is the Euclidean inner product and $\|x\|_2$ the Euclidean norm.
+Dimensions are written explicitly when useful, e.g.\ $A \in \mathbb{R}^{n \times p}$.
+
+% =====================================================================
+\section{Matrices}
+
+\dfn{Matrix}{
+  An $n \times m$ matrix is a rectangular array with $n$ rows and $m$ columns:
+  \[
+    A = [a_{ij}] =
+    \begin{bmatrix}
+      a_{11} & \cdots & a_{1m} \\
+      \vdots & \ddots & \vdots \\
+      a_{n1} & \cdots & a_{nm}
+    \end{bmatrix},
+  \]
+  where $a_{ij}$ is the entry in row $i$ and column $j$.
+}
+
+\subsection{Addition, scalar multiplication and transposition}
+
+Two matrices can be added only if they have the \textbf{same dimensions}: for $A, B \in \mathbb{R}^{n \times m}$,
+$A + B = [a_{ij} + b_{ij}]$, and for $\alpha \in \mathbb{R}$, $\alpha A = [\alpha a_{ij}]$. We have
+\[
+  A + B = B + A, \qquad (A+B)+C = A+(B+C), \qquad \alpha(A+B) = \alpha A + \alpha B.
+\]
+
+\dfn{Transpose}{
+  The transpose of $A \in \mathbb{R}^{n \times m}$ is the $m \times n$ matrix obtained by swapping rows
+  and columns: $A^\top = [a_{ji}]$, i.e.\ $(A^\top)_{ij} = a_{ji}$.
+}
+
+\thm{Properties of the transpose}{
+  $(A^\top)^\top = A$; for $B \in \mathbb{R}^{n \times m}$, $(A+B)^\top = A^\top + B^\top$;
+  for $C \in \mathbb{R}^{m \times k}$,
+  \[
+    (AC)^\top = C^\top A^\top .
+  \]
+}
+
+\pf{Proof}{
+  The first two identities hold entry by entry: $((A+B)^\top)_{ij} = (A+B)_{ji} = a_{ji} + b_{ji}$.
+  For the product, with $i \le k$ and $j \le n$,
+  \[
+    \big((AC)^\top\big)_{ij} = (AC)_{ji} = \sum_{\ell=1}^{m} a_{j\ell}\,c_{\ell i}
+    = \sum_{\ell=1}^{m} (C^\top)_{i\ell}\,(A^\top)_{\ell j} = (C^\top A^\top)_{ij},
+  \]
+  and both sides are $k \times n$.
+}
+
+\osservazione{
+  Iterating: $(ABC)^\top = C^\top B^\top A^\top$. The order is \red{reversed}.
+}
+
+\begin{Exercise}{Suggested exercise 1}{}
+  Let $A, B \in \mathbb{R}^{2\times 3}$. Show that $(A+B)^\top = A^\top + B^\top$.
+\end{Exercise}
+
+\pf{Solution}{
+  For $i = 1,2,3$ and $j = 1,2$: $((A+B)^\top)_{ij} = (A+B)_{ji} = a_{ji} + b_{ji} = (A^\top)_{ij} + (B^\top)_{ij}$.
+  Explicitly,
+  \[
+    (A+B)^\top =
+    \begin{pmatrix} a_{11}+b_{11} & a_{21}+b_{21} \\ a_{12}+b_{12} & a_{22}+b_{22} \\ a_{13}+b_{13} & a_{23}+b_{23} \end{pmatrix}
+    = \begin{pmatrix} a_{11} & a_{21} \\ a_{12} & a_{22} \\ a_{13} & a_{23} \end{pmatrix}
+    + \begin{pmatrix} b_{11} & b_{21} \\ b_{12} & b_{22} \\ b_{13} & b_{23} \end{pmatrix}.
+  \]
+}
+
+\begin{Exercise}{Suggested exercise 2}{}
+  Let $A \in \mathbb{R}^{2\times 3}$ and $C \in \mathbb{R}^{3\times 2}$. Show that $(AC)^\top = C^\top A^\top$.
+\end{Exercise}
+
+\pf{Solution}{
+  $(AC)_{ij} = \sum_{k=1}^3 a_{ik}c_{kj}$, hence
+  \[
+    \big((AC)^\top\big)_{ij} = (AC)_{ji} = \sum_{k=1}^3 a_{jk}c_{ki} = \sum_{k=1}^3 (C^\top)_{ik}(A^\top)_{kj} = (C^\top A^\top)_{ij}.
+  \]
+  Both matrices are $2 \times 2$ and agree entry by entry. For instance, entry $(1,2)$ of $(AC)^\top$ is
+  $(AC)_{21} = a_{21}c_{11} + a_{22}c_{21} + a_{23}c_{31}$, i.e.\ row 1 of $C^\top$ times column 2 of $A^\top$.
+}
+
+\subsection{Multiplication}
+
+\dfn{Matrix product}{
+  Let $A \in \mathbb{R}^{n \times m}$ and $B \in \mathbb{R}^{m \times k}$ (columns of $A$ = rows of $B$).
+  The product $C = AB \in \mathbb{R}^{n \times k}$ has entries
+  \[
+    c_{ij} = \sum_{\ell=1}^{m} a_{i\ell}\, b_{\ell j},
+  \]
+  i.e.\ the inner product of row $i$ of $A$ with column $j$ of $B$.
+}
+
+For matrices of suitable dimensions:
+\[
+  (AB)C = A(BC), \qquad A(B+C) = AB + AC, \qquad (A+C)B = AB + CB,
+\]
+but \red{in general $AB \neq BA$}.
+
+\esempio{
+  With $A = \begin{bmatrix} 0 & 1 \\ 0 & 0 \end{bmatrix}$ and $B = \begin{bmatrix} 0 & 0 \\ 1 & 0 \end{bmatrix}$:
+  \[
+    AB = \begin{bmatrix} 1 & 0 \\ 0 & 0 \end{bmatrix} \neq BA = \begin{bmatrix} 0 & 0 \\ 0 & 1 \end{bmatrix}.
+  \]
+}
+
+\osservazione{
+  Two useful ways of reading a product: the $j$-th column of $AB$ is $A b_j = \sum_\ell b_{\ell j} a_\ell$,
+  a linear combination of the columns of $A$; and $AB = \sum_{\ell} a_\ell\, \tilde b_\ell^\top$ is a sum of
+  \emph{column $\times$ row} products ($a_\ell$ columns of $A$, $\tilde b_\ell^\top$ rows of $B$).
+}
+
+\begin{Exercise}{Suggested exercise 3}{}
+  Let $A \in \mathbb{R}^{n \times m}$ and $B \in \mathbb{R}^{m \times k}$. Which dimension must $C$ have for
+  (1) $(AB)C = A(BC)$, (2) $A(B+C) = AB + AC$, (3) $(A+C)B = AB + CB$ to make sense?
+\end{Exercise}
+
+\pf{Solution}{
+  \begin{enumerate}
+    \item $AB$ is $n \times k$, so $C$ must have $k$ rows: $C \in \mathbb{R}^{k \times \ell}$ for any $\ell$.
+          Then $BC$ is $m \times \ell$ and $A(BC)$ is $n \times \ell$.
+    \item $B + C$ requires $C$ of the same size as $B$: $C \in \mathbb{R}^{m \times k}$.
+    \item $A + C$ requires $C$ of the same size as $A$: $C \in \mathbb{R}^{n \times m}$.
+  \end{enumerate}
+}
+
+\subsection{Identity and special matrices}
+
+\dfn{Identity matrix}{
+  $I_n = [\delta_{ij}] \in \mathbb{R}^{n\times n}$ has ones on the diagonal and zeros elsewhere.
+}
+
+\mprop{Neutral element}{
+  For $A \in \mathbb{R}^{n \times m}$: $A I_m = I_n A = A$.
+}
+
+\pf{Proof}{
+  $(AI_m)_{ij} = \sum_{\ell=1}^m a_{i\ell}\delta_{\ell j} = a_{ij}$ and
+  $(I_nA)_{ij} = \sum_{\ell=1}^n \delta_{i\ell}a_{\ell j} = a_{ij}$.
+  Note that for rectangular $A$ the identities on the two sides have \emph{different sizes}.
+}
+
+\dfn{Special types of matrices}{
+  \begin{itemize}
+    \item \textbf{zero matrix} $0$; \textbf{vector} = $n \times 1$ matrix; $\mathbf{1}_n$ = vector of ones;
+    \item \textbf{square}: $A \in \mathbb{R}^{n \times n}$; \textbf{symmetric}: $A = A^\top$;
+    \item \textbf{orthonormal} (square): $A^\top A = AA^\top = I$; rows and columns are orthonormal vectors;
+    \item $A \in \mathbb{R}^{n \times m}$, $m < n$, has \textbf{orthonormal columns} if $A^\top A = I_m$
+          (then $AA^\top \neq I_n$);
+    \item \textbf{diagonal}: only diagonal entries may be nonzero;
+          \textbf{triangular}: all entries above (lower triangular) or below (upper triangular) the diagonal are zero;
+    \item \textbf{idempotent}: $A^2 = A$; \textbf{orthogonal projector}: $A^2 = A$ and $A = A^\top$;
+    \item \textbf{positive definite} (symmetric $A$): $x^\top A x > 0$ for all $x \neq 0$.
+  \end{itemize}
+}
+
+\mprop{Orthonormal matrices}{
+  Let $A \in \mathbb{R}^{n\times n}$ with $A^\top A = I$. Then $AA^\top = I$, $\det A = \pm 1$, and
+  $\|Ax\|_2 = \|x\|_2$ for every $x$.
+}
+
+\pf{Proof}{
+  $\det(A^\top)\det(A) = \det(A)^2 = \det(I) = 1$, so $\det A = \pm1 \neq 0$ and $A$ is invertible.
+  Multiplying $A^\top A = I$ on the right by $A^{-1}$ gives $A^\top = A^{-1}$, hence $AA^\top = AA^{-1} = I$.
+  Finally $\|Ax\|_2^2 = x^\top A^\top A x = x^\top x = \|x\|_2^2$ (orthonormal matrices are rotations/reflections;
+  similarly $(Ax)^\top(Ay) = x^\top y$).
+}
+
+\mprop{Orthonormal columns}{
+  Let $A \in \mathbb{R}^{n \times m}$, $m < n$, with $A^\top A = I_m$. Then $AA^\top \neq I_n$, and $AA^\top$ is the
+  orthogonal projector onto the column space of $A$.
+}
+
+\pf{Proof}{
+  $\operatorname{rank}(AA^\top) \le \operatorname{rank}(A) \le m < n = \operatorname{rank}(I_n)$, so $AA^\top \ne I_n$.
+  $AA^\top$ is symmetric, and idempotent: $(AA^\top)(AA^\top) = A(A^\top A)A^\top = AI_mA^\top = AA^\top$.
+}
+
+\osservazione{
+  This is exactly the situation of $P_qP_q^\top$ in PCA.
+}
+
+\thm{Eigenvalues of idempotent matrices}{
+  If $A^2 = A$, every eigenvalue of $A$ is $0$ or $1$.
+}
+
+\pf{Proof}{
+  Let $Ap = \lambda p$, $p \neq 0$. Then $A^2 p = \lambda A p = \lambda^2 p$, but also $A^2p = Ap = \lambda p$.
+  Hence $(\lambda^2 - \lambda)p = 0$ and, since $p \ne 0$, $\lambda \in \{0, 1\}$.
+}
+
+\osservazione{
+  If $A$ is idempotent, so is $I - A$: $(I-A)^2 = I - 2A + A^2 = I - A$.
+  If $A$ is an orthogonal projector, $A = P\Lambda P^\top$ with $\Lambda$ made of $0$s and $1$s, so
+  $\operatorname{tr}(A) = \operatorname{rank}(A)$. For instance $\operatorname{tr}(P_qP_q^\top) = \operatorname{tr}(P_q^\top P_q) = q$.
+}
+
+\thm{Positive definite matrices}{
+  If $A$ is symmetric positive definite then (1) all its eigenvalues are $> 0$; (2) $a_{ii} > 0$ for every $i$;
+  (3) $A$ is invertible.
+}
+
+\pf{Proof}{
+  (1) If $Ap = \lambda p$ with $p \neq 0$: $0 < p^\top A p = \lambda\, p^\top p = \lambda \|p\|^2$, so $\lambda > 0$.
+  (2) Take $x = e_i$: $a_{ii} = e_i^\top A e_i > 0$.
+  (3) If $Ax = 0$ then $x^\top A x = 0$, which forces $x = 0$: the kernel is trivial and $A$ is invertible
+  (equivalently $\det A = \prod_i \lambda_i > 0$).
+}
+
+\subsection{Rank}
+
+\dfn{Rank}{
+  The \emph{rank} of $A$, $\operatorname{rank}(A)$, is the number of linearly independent columns of $A$;
+  equivalently the number of linearly independent rows, i.e.\ the dimension of the column space.
+  \[
+    \operatorname{rank}(A) = \operatorname{rank}(A^\top) \le \min(n, m).
+  \]
+  $A$ has \textbf{full rank} if $\operatorname{rank}(A) = \min(n,m)$.
+}
+
+For a square matrix, full rank is equivalent to invertibility (see below).
+
+\thm{Rank of products and sums}{
+  \[
+    \operatorname{rank}(AB) \le \min\{\operatorname{rank}(A), \operatorname{rank}(B)\}, \qquad
+    \operatorname{rank}(A+B) \le \operatorname{rank}(A) + \operatorname{rank}(B).
+  \]
+}
+
+\pf{Proof}{
+  The $j$-th column of $AB$ is $Ab_j$, a linear combination of the columns of $A$, so
+  $\operatorname{col}(AB) \subseteq \operatorname{col}(A)$ and $\operatorname{rank}(AB) \le \operatorname{rank}(A)$.
+  Applying this to $B^\top A^\top$: $\operatorname{rank}(AB) = \operatorname{rank}((AB)^\top) = \operatorname{rank}(B^\top A^\top)
+  \le \operatorname{rank}(B^\top) = \operatorname{rank}(B)$.
+
+  For the sum, the $j$-th column $a_j + b_j$ of $A+B$ lies in $\operatorname{col}(A) + \operatorname{col}(B)$, so
+  $\operatorname{rank}(A+B) \le \dim(\operatorname{col}A + \operatorname{col}B) \le \dim\operatorname{col}A + \dim\operatorname{col}B$.
+}
+
+\cor{Rank-one matrices}{
+  If $u, v \ne 0$, then $\operatorname{rank}(uv^\top) = 1$. Hence $\sum_{i=1}^r \sigma_i u_i v_i^\top$ has rank $\le r$.
+}
+
+\pf{Proof}{
+  The columns of $uv^\top$ are $v_j u$: all multiples of $u$, and not all zero.
+  The second claim follows from the rank of a sum.
+}
+
+\subsection{Determinant}
+
+The determinant associates a scalar $|A| = \det(A)$ to a square matrix. For small matrices,
+\[
+  |a_{11}| = a_{11}, \qquad
+  \begin{vmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \end{vmatrix} = a_{11}a_{22} - a_{12}a_{21},
+\]
+and for $3 \times 3$ matrices one uses the Laplace (cofactor) expansion along the first row:
+\[
+  |A| = a_{11}\begin{vmatrix} a_{22} & a_{23} \\ a_{32} & a_{33} \end{vmatrix}
+      - a_{12}\begin{vmatrix} a_{21} & a_{23} \\ a_{31} & a_{33} \end{vmatrix}
+      + a_{13}\begin{vmatrix} a_{21} & a_{22} \\ a_{31} & a_{32} \end{vmatrix}.
+\]
+
+\thm{Properties of the determinant}{
+  For $A, B \in \mathbb{R}^{n\times n}$ and $\alpha \in \mathbb{R}$:
+  \[
+    |AB| = |A|\,|B|, \qquad |A^\top| = |A|, \qquad |\alpha A| = \alpha^n |A|, \qquad |I_n| = 1.
+  \]
+  A square matrix is \textbf{singular} if and only if $|A| = 0$.
+}
+
+\osservazione{
+  $|\alpha A| = \alpha^n|A|$ and \red{not} $\alpha|A|$: writing $\alpha A = (\alpha I_n)A$ and using
+  $|\alpha I_n| = \alpha^n$ (product of the diagonal) and the product rule. Also, from $AA^{-1} = I$,
+  $|A|\,|A^{-1}| = 1$, i.e.\ $|A^{-1}| = 1/|A|$.
+}
+
+\mprop{Triangular matrices}{
+  The determinant of a triangular matrix is the product of its diagonal entries.
+}
+
+\pf{Proof}{
+  Induction on $n$; $n = 1$ is trivial. For $L$ lower triangular, expanding along the first row, the only nonzero
+  entry is $l_{11}$, so $|L| = l_{11}|L'|$ where $L'$ (removing row and column $1$) is lower triangular of size $n-1$;
+  by induction $|L'| = \prod_{i \ge 2} l_{ii}$. For upper triangular $U$ use $|U| = |U^\top|$.
+}
+
+\begin{Exercise}{Suggested exercise 4}{}
+  For $A = \begin{pmatrix} a & b \\ c & d \end{pmatrix}$ and $B = \begin{pmatrix} e & f \\ g & h \end{pmatrix}$ show that
+  $|AB| = |A|\,|B|$.
+\end{Exercise}
+
+\pf{Solution}{
+  $AB = \begin{pmatrix} ae+bg & af+bh \\ ce+dg & cf+dh \end{pmatrix}$, so
+  \begin{align*}
+    |AB| &= (ae+bg)(cf+dh) - (af+bh)(ce+dg) \\
+         &= acef + adeh + bcfg + bdgh - acef - adfg - bceh - bdgh \\
+         &= adeh + bcfg - adfg - bceh = ad(eh - fg) - bc(eh - fg) \\
+         &= (ad - bc)(eh - fg) = |A|\,|B|.
+  \end{align*}
+}
+
+% =====================================================================
+\section{Matrix Operations}
+
+\subsection{Linear systems}
+
+A system of $n$ linear equations in $p$ unknowns
+\[
+  \begin{cases}
+    a_{11}x_1 + \cdots + a_{1p}x_p = b_1,\\
+    \qquad\vdots\\
+    a_{n1}x_1 + \cdots + a_{np}x_p = b_n
+  \end{cases}
+\]
+is written compactly as $Ax = b$, with $A \in \mathbb{R}^{n \times p}$ the coefficient matrix (each row is an equation,
+each column contains the coefficients of one unknown), $x \in \mathbb{R}^p$ the unknowns and $b \in \mathbb{R}^n$
+the right-hand side. A system may have no solution, exactly one, or infinitely many.
+
+\thm{Rouch\'e--Capelli}{
+  \begin{itemize}
+    \item $Ax = b$ has a solution $\iff b \in \operatorname{col}(A) \iff \operatorname{rank}(A) = \operatorname{rank}([A \mid b])$;
+    \item if $x_0$ is a solution, the set of all solutions is $x_0 + \ker(A)$;
+    \item the solution is unique $\iff \ker(A) = \{0\} \iff \operatorname{rank}(A) = p$; otherwise there are infinitely many.
+  \end{itemize}
+}
+
+\pf{Proof}{
+  $Ax = \sum_j x_j a_j$ ranges exactly over $\operatorname{col}(A)$, which gives the first point.
+  If $Ax_0 = Ax_1 = b$ then $A(x_1 - x_0) = 0$, i.e.\ $x_1 \in x_0 + \ker A$; conversely $A(x_0 + k) = b$ for $k \in \ker A$.
+  Finally $\dim\ker A = p - \operatorname{rank}(A)$ (rank--nullity).
+}
+
+\begin{Exercise}{Suggested exercise 5}{}
+  Solve $x_1 + x_2 + x_3 = 3$, $x_1 - x_2 + 2x_3 = 2$, $x_2 + x_3 = 2$. Is the solution unique?
+\end{Exercise}
+
+\pf{Solution}{
+  First minus third: $x_1 = 1$. Then the second gives $-x_2 + 2x_3 = 1$; adding the third, $3x_3 = 3$, so $x_3 = 1$
+  and $x_2 = 1$: $x = (1,1,1)^\top$. It is unique: every step was forced; equivalently
+  \[
+    \det\begin{pmatrix} 1 & 1 & 1 \\ 1 & -1 & 2 \\ 0 & 1 & 1 \end{pmatrix} = 1(-1-2) - 1(1-0) + 1(1-0) = -3 \neq 0,
+  \]
+  so the matrix is invertible and $x = M^{-1}b$ is the only solution.
+}
+
+\subsection{Inverse matrix}
+
+\dfn{Inverse}{
+  For a full-rank square matrix $A \in \mathbb{R}^{n\times n}$, the inverse $A^{-1}$ satisfies
+  $A^{-1}A = AA^{-1} = I_n$. Then $Ax = b$ has the solution $x = A^{-1}b$.
+}
+
+\mprop{Uniqueness of the inverse}{
+  If $B$ and $C$ are both inverses of $A$, then $B = C$.
+}
+
+\pf{Proof}{
+  $B = BI = B(AC) = (BA)C = IC = C$.
+}
+
+\thm{Invertibility}{
+  For $A \in \mathbb{R}^{n \times n}$ the following are equivalent:
+  $A$ is invertible; $|A| \neq 0$; $A$ has full rank; $Ax = 0 \Rightarrow x = 0$.
+}
+
+\pf{Proof (sketch)}{
+  Invertible $\Rightarrow |A|\,|A^{-1}| = 1 \Rightarrow |A| \ne 0$.
+  Conversely, if $|A| \ne 0$ then $A^{-1} = \frac{1}{|A|}\operatorname{adj}(A)$ (transposed cofactor matrix).
+  Full rank $\iff$ independent columns $\iff$ ($Ax = \sum_j x_j a_j = 0 \Rightarrow x = 0$).
+  A trivial kernel means $A$ is injective, hence (square, rank--nullity) surjective, hence invertible.
+}
+
+\osservazione{
+  Consequently a homogeneous system $Mx = 0$ has a nontrivial solution $\iff |M| = 0$:
+  this is the key fact behind the computation of eigenvalues.
+}
+
+For a $2 \times 2$ matrix,
+\[
+  A = \begin{bmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \end{bmatrix}
+  \quad\Longrightarrow\quad
+  A^{-1} = \frac{1}{a_{11}a_{22} - a_{12}a_{21}} \begin{bmatrix} a_{22} & -a_{12} \\ -a_{21} & a_{11} \end{bmatrix},
+\]
+provided $a_{11}a_{22} - a_{12}a_{21} \neq 0$ (swap the diagonal, change sign off the diagonal, divide by the determinant).
+
+\thm{Properties of the inverse}{
+  For $A, B \in \mathbb{R}^{n \times n}$ invertible:
+  \[
+    (A^{-1})^{-1} = A, \qquad (AB)^{-1} = B^{-1}A^{-1}, \qquad (A^\top)^{-1} = (A^{-1})^\top.
+  \]
+}
+
+\pf{Proof}{
+  $A^{-1}A = AA^{-1} = I$ says exactly that $A$ is the inverse of $A^{-1}$.
+  $(AB)(B^{-1}A^{-1}) = A(BB^{-1})A^{-1} = AA^{-1} = I$ and similarly $(B^{-1}A^{-1})(AB) = I$; conclude by uniqueness.
+  Finally $A^\top (A^{-1})^\top = (A^{-1}A)^\top = I^\top = I$.
+}
+
+\begin{Exercise}{Suggested exercise 6}{}
+  For $A = \begin{pmatrix} a & b \\ c & d \end{pmatrix}$ with $ad - bc \neq 0$ show that $AA^{-1} = A^{-1}A = I_2$.
+\end{Exercise}
+
+\pf{Solution}{
+  With $A^{-1} = \frac{1}{ad-bc}\begin{pmatrix} d & -b \\ -c & a \end{pmatrix}$:
+  \[
+    AA^{-1} = \frac{1}{ad-bc}\begin{pmatrix} ad - bc & -ab + ba \\ cd - dc & -cb + da \end{pmatrix} = I_2,
+    \qquad
+    A^{-1}A = \frac{1}{ad-bc}\begin{pmatrix} da - bc & db - bd \\ -ca + ac & -cb + ad \end{pmatrix} = I_2.
+  \]
+}
+
+\subsection{Diagonal and trace}
+
+\dfn{Trace}{
+  The \emph{diagonal} of a square matrix is $a_{11}, \dots, a_{nn}$; the \emph{trace} is their sum:
+  $\operatorname{tr}(A) = \sum_{i=1}^n a_{ii}$.
+}
+
+$\operatorname{tr}(A+B) = \operatorname{tr}(A) + \operatorname{tr}(B)$ and $\operatorname{tr}(\alpha A) = \alpha \operatorname{tr}(A)$.
+
+\thm{Cyclic property}{
+  For $A \in \mathbb{R}^{n\times m}$ and $B \in \mathbb{R}^{m \times n}$: $\operatorname{tr}(AB) = \operatorname{tr}(BA)$.
+}
+
+\pf{Proof}{
+  \[
+    \operatorname{tr}(AB) = \sum_{i=1}^n \sum_{\ell=1}^m a_{i\ell}b_{\ell i}
+    = \sum_{\ell=1}^m \sum_{i=1}^n b_{\ell i}a_{i\ell} = \operatorname{tr}(BA).
+  \]
+  Note that $AB$ is $n\times n$ while $BA$ is $m \times m$.
+}
+
+\osservazione{
+  Consequences: $\operatorname{tr}(ABC) = \operatorname{tr}(CAB) = \operatorname{tr}(BCA)$ (cyclic permutations only);
+  $x^\top A x = \operatorname{tr}(Axx^\top)$; $\operatorname{tr}(A^\top A) = \sum_{i,j} a_{ij}^2$.
+}
+
+\cor{Trace and determinant from eigenvalues}{
+  If $A = P\Lambda P^{-1}$ with $\Lambda = \operatorname{diag}(\lambda_1, \dots, \lambda_n)$, then
+  $\operatorname{tr}(A) = \sum_i \lambda_i$ and $\det(A) = \prod_i \lambda_i$.
+}
+
+\pf{Proof}{
+  $\operatorname{tr}(P\Lambda P^{-1}) = \operatorname{tr}(\Lambda P^{-1}P) = \operatorname{tr}(\Lambda)$ and
+  $\det(P\Lambda P^{-1}) = \det P \det\Lambda \det P^{-1} = \det \Lambda$.
+  In PCA: the total variance is $\operatorname{tr}(S) = \sum_j \lambda_j$.
+}
+
+\begin{Exercise}{Suggested exercise 7}{}
+  For generic $A, B \in \mathbb{R}^{2 \times 2}$ show that $\operatorname{tr}(AB) = \operatorname{tr}(BA)$.
+\end{Exercise}
+
+\pf{Solution}{
+  With $A = \begin{pmatrix} a & b \\ c & d \end{pmatrix}$, $B = \begin{pmatrix} e & f \\ g & h \end{pmatrix}$:
+  $\operatorname{tr}(AB) = (ae + bg) + (cf + dh)$ and
+  $BA = \begin{pmatrix} ea + fc & eb + fd \\ ga + hc & gb + hd \end{pmatrix}$, so
+  $\operatorname{tr}(BA) = ea + fc + gb + hd$: the same four terms.
+}
+
+\subsection{Partitioned matrices}
+
+Many computations are easier when a matrix is split into blocks,
+$A = \begin{bmatrix} A_{11} & A_{12} \\ A_{21} & A_{22} \end{bmatrix}$. For \textbf{conformably} partitioned matrices
+one computes as with scalars, \emph{keeping the order} of the factors:
+\[
+  A + B = \begin{bmatrix} A_{11}+B_{11} & A_{12}+B_{12} \\ A_{21}+B_{21} & A_{22}+B_{22} \end{bmatrix}, \qquad
+  AB = \begin{bmatrix} A_{11}B_{11}+A_{12}B_{21} & A_{11}B_{12}+A_{12}B_{22} \\ A_{21}B_{11}+A_{22}B_{21} & A_{21}B_{12}+A_{22}B_{22} \end{bmatrix}.
+\]
+For instance $\begin{bmatrix} A_{11} & A_{12} \\ A_{21} & A_{22} \end{bmatrix}\begin{bmatrix} x_1 \\ x_2 \end{bmatrix}
+= \begin{bmatrix} A_{11}x_1 + A_{12}x_2 \\ A_{21}x_1 + A_{22}x_2 \end{bmatrix}$.
+A \textbf{block-diagonal} matrix has square blocks $A_{ii}$ (not necessarily of the same size) on the diagonal and zeros elsewhere.
+
+\thm{Block determinant (Schur complement)}{
+  If $A_{11}$ is invertible,
+  \[
+    |A| = |A_{11}|\,\big|A_{22} - A_{21}A_{11}^{-1}A_{12}\big|;
+  \]
+  if $A_{22}$ is invertible, $|A| = |A_{22}|\,\big|A_{11} - A_{12}A_{22}^{-1}A_{21}\big|$.
+}
+
+\pf{Proof}{
+  By block multiplication one checks
+  \[
+    \begin{bmatrix} A_{11} & A_{12} \\ A_{21} & A_{22} \end{bmatrix}
+    = \begin{bmatrix} I & 0 \\ A_{21}A_{11}^{-1} & I \end{bmatrix}
+      \begin{bmatrix} A_{11} & A_{12} \\ 0 & A_{22} - A_{21}A_{11}^{-1}A_{12} \end{bmatrix}:
+  \]
+  the second block row gives $A_{21}A_{11}^{-1}A_{11} = A_{21}$ and
+  $A_{21}A_{11}^{-1}A_{12} + A_{22} - A_{21}A_{11}^{-1}A_{12} = A_{22}$.
+  The first factor is triangular with unit diagonal (determinant $1$); the second is block triangular, whose determinant
+  is the product of the determinants of the diagonal blocks. Conclude by the product rule. The second formula is symmetric.
+}
+
+\cor{Block-diagonal matrices}{
+  \[
+    \begin{vmatrix} A_{11} & 0 \\ 0 & A_{22} \end{vmatrix} = |A_{11}|\,|A_{22}|, \qquad
+    \begin{bmatrix} A_{11} & 0 \\ 0 & A_{22} \end{bmatrix}^{-1} = \begin{bmatrix} A_{11}^{-1} & 0 \\ 0 & A_{22}^{-1} \end{bmatrix}.
+  \]
+}
+
+\pf{Proof}{
+  The determinant is the Schur formula with $A_{12} = A_{21} = 0$. For the inverse, block multiplication gives
+  $\operatorname{diag}(A_{11}, A_{22})\operatorname{diag}(A_{11}^{-1}, A_{22}^{-1}) = \operatorname{diag}(I, I) = I$
+  (the mixed terms vanish).
+}
+
+\subsection{Kronecker product}
+
+\dfn{Kronecker product}{
+  For $A \in \mathbb{R}^{n\times m}$ and $B \in \mathbb{R}^{k \times l}$,
+  \[
+    A \otimes B = \begin{bmatrix} a_{11}B & \cdots & a_{1m}B \\ \vdots & \ddots & \vdots \\ a_{n1}B & \cdots & a_{nm}B \end{bmatrix}
+    \in \mathbb{R}^{nk \times ml}.
+  \]
+}
+
+\esempio{
+  \[
+    \begin{bmatrix} 1 & 2 \\ 3 & 4 \end{bmatrix} \otimes \begin{bmatrix} 0 & 1 \\ 1 & 0 \end{bmatrix}
+    = \begin{bmatrix} 0 & 1 & 0 & 2 \\ 1 & 0 & 2 & 0 \\ 0 & 3 & 0 & 4 \\ 3 & 0 & 4 & 0 \end{bmatrix}.
+  \]
+}
+
+It is useful for structured covariance matrices (e.g.\ $I_n \otimes \Sigma$ for $n$ independent stacked vectors)
+and vectorization identities. Some properties (beyond the slides):
+
+\mprop{Mixed product}{
+  $(A \otimes B)(C \otimes D) = AC \otimes BD$ (when the products are defined); hence
+  $(A \otimes B)^{-1} = A^{-1} \otimes B^{-1}$. Also $(A \otimes B)^\top = A^\top \otimes B^\top$, but in general
+  $A \otimes B \ne B \otimes A$.
+}
+
+\pf{Proof}{
+  The block $(i,j)$ of $(A \otimes B)(C \otimes D)$ is $\sum_\ell (a_{i\ell}B)(c_{\ell j}D) = (AC)_{ij}\,BD$, which is
+  the block $(i,j)$ of $AC \otimes BD$. With $C = A^{-1}$, $D = B^{-1}$ we get $I \otimes I = I$.
+}
+
+% =====================================================================
+\section{Norms and Distances}
+
+\dfn{Norm}{
+  Let $V$ be a vector space. A function $\|\cdot\| : V \to \mathbb{R}$ is a \emph{norm} if for all $x, y \in V$ and
+  $\lambda \in \mathbb{R}$:
+  \begin{enumerate}
+    \item \textbf{positive definiteness}: $\|x\| \ge 0$ and $\|x\| = 0 \iff x = 0$;
+    \item \textbf{absolute homogeneity}: $\|\lambda x\| = |\lambda|\,\|x\|$;
+    \item \textbf{triangle inequality}: $\|x + y\| \le \|x\| + \|y\|$.
+  \end{enumerate}
+}
+
+These properties guarantee that a norm behaves like a sensible measure of length.
+
+\subsection{Common norms on $\mathbb{R}^n$}
+
+\[
+  \|x\|_1 = \sum_{i=1}^n |x_i| \ \text{(Manhattan)}, \qquad
+  \|x\|_2 = \sqrt{\sum_{i=1}^n x_i^2} \ \text{(Euclidean)},
+\]
+\[
+  \|x\|_p = \Big(\sum_{i=1}^n |x_i|^p\Big)^{1/p} \ (p \ge 1), \qquad
+  \|x\|_\infty = \max_{1 \le i \le n} |x_i| \ \text{(maximum)}.
+\]
+$\ell_1$ and $\ell_2$ are special cases of $\ell_p$; $\|x\|_\infty$ measures the largest absolute component.
+
+\mprop{Relations between norms}{
+  $\|x\|_\infty \le \|x\|_2 \le \|x\|_1 \le n\|x\|_\infty$, and $\|x\|_p \to \|x\|_\infty$ as $p \to \infty$.
+}
+
+\pf{Proof}{
+  $\max_i x_i^2 \le \sum_i x_i^2 \le \big(\sum_i |x_i|\big)^2$ (the cross terms are nonnegative), and
+  $\sum_i|x_i| \le n\max_i|x_i|$. For the limit, with $M = \max_i |x_i|$, $M \le \|x\|_p \le (nM^p)^{1/p} = n^{1/p}M \to M$.
+}
+
+\thm{Cauchy--Schwarz and triangle inequality}{
+  For $x, y \in \mathbb{R}^n$: $|x^\top y| \le \|x\|_2\|y\|_2$, and consequently $\|x+y\|_2 \le \|x\|_2 + \|y\|_2$.
+}
+
+\pf{Proof}{
+  For every $t \in \mathbb{R}$, $0 \le \|x + ty\|_2^2 = \|x\|^2 + 2t\,x^\top y + t^2\|y\|^2$. A degree-two polynomial in
+  $t$ that is always nonnegative has nonpositive discriminant: $4(x^\top y)^2 - 4\|x\|^2\|y\|^2 \le 0$. Then
+  \[
+    \|x+y\|_2^2 = \|x\|^2 + 2x^\top y + \|y\|^2 \le \|x\|^2 + 2\|x\|\|y\| + \|y\|^2 = (\|x\|_2 + \|y\|_2)^2.
+  \]
+  For $\ell_1$ and $\ell_\infty$ the triangle inequality follows from $|x_i + y_i| \le |x_i| + |y_i|$ (sum, resp.\ max over $i$).
+}
+
+\osservazione{
+  In $\mathbb{R}^2$ the unit balls $\{\|x\| \le 1\}$ are: a \textbf{diamond} for $\ell_1$, the \textbf{disk} for $\ell_2$,
+  the \textbf{square} $[-1,1]^2$ for $\ell_\infty$. They are nested, consistently with $\|x\|_\infty \le \|x\|_2 \le \|x\|_1$.
+}
+
+\begin{Exercise}{Suggested exercise 8}{}
+  Compute the $\ell_1$, $\ell_2$ and maximum norms of $x = (1, -2, 2)^\top$.
+\end{Exercise}
+
+\pf{Solution}{
+  $\|x\|_1 = 1 + 2 + 2 = 5$, $\|x\|_2 = \sqrt{1 + 4 + 4} = 3$, $\|x\|_\infty = \max(1,2,2) = 2$.
+}
+
+\begin{Exercise}{Suggested exercise 9}{}
+  Show that $\|\lambda x\|_2 = |\lambda|\,\|x\|_2$ for $x \in \mathbb{R}^n$, $\lambda \in \mathbb{R}$.
+\end{Exercise}
+
+\pf{Solution}{
+  $\|\lambda x\|_2 = \sqrt{\sum_i (\lambda x_i)^2} = \sqrt{\lambda^2 \sum_i x_i^2} = \sqrt{\lambda^2}\sqrt{\sum_i x_i^2} = |\lambda|\,\|x\|_2$.
+}
+
+\subsection{Distances}
+
+\dfn{Distance}{
+  Given a norm, the distance between $x$ and $y$ is $d(x, y) = \|x - y\|$.
+}
+
+\mprop{Properties of the induced distance}{
+  $d(x,y) \ge 0$; $d(x,y) = 0 \iff x = y$; $d(x,y) = d(y,x)$; $d(x,z) \le d(x,y) + d(y,z)$.
+}
+
+\pf{Proof}{
+  The first two come from positive definiteness applied to $x - y$. Symmetry:
+  $\|x - y\| = \|-(y - x)\| = |-1|\,\|y - x\|$. Triangle: $\|x - z\| = \|(x-y) + (y-z)\| \le \|x-y\| + \|y-z\|$.
+}
+
+In particular $d(x, 0) = \|x\|$: the length of a vector is its distance from the origin.
+
+\begin{Exercise}{Suggested exercise 10}{}
+  Compute the $\ell_1$, $\ell_2$ and maximum distances between $x = (1,0,-1)^\top$ and $y = (2,-2,3)^\top$.
+\end{Exercise}
+
+\pf{Solution}{
+  $x - y = (-1, 2, -4)^\top$, so $d_1 = 1 + 2 + 4 = 7$, $d_2 = \sqrt{1 + 4 + 16} = \sqrt{21} \approx 4.583$, $d_\infty = 4$.
+}
+
+% =====================================================================
+\section{Matrix Decompositions}
+
+\subsection{Cholesky decomposition}
+
+\thm{Cholesky decomposition}{
+  If $A \in \mathbb{R}^{n\times n}$ is \textbf{square, symmetric and positive definite}, it admits a unique factorization
+  \[
+    A = LL^\top,
+  \]
+  with $L$ lower triangular with positive diagonal entries (the \emph{Cholesky factor}).
+}
+
+It is the matrix analogue of a square root. Conversely, the conditions are necessary:
+
+\mprop{}{
+  If $A = LL^\top$ with $L$ lower triangular with positive diagonal, then $A$ is symmetric positive definite.
+}
+
+\pf{Proof}{
+  $(LL^\top)^\top = LL^\top$. Since $\det L = \prod_i l_{ii} > 0$, $L^\top$ is invertible, so $L^\top x \neq 0$ for $x \neq 0$ and
+  $x^\top A x = x^\top LL^\top x = \|L^\top x\|_2^2 > 0$.
+}
+
+\textbf{Computing $L$.} From $a_{ij} = \sum_{k \le j} l_{ik}l_{jk}$ ($i \ge j$), column by column:
+\[
+  l_{jj} = \sqrt{a_{jj} - \sum_{k<j} l_{jk}^2}, \qquad l_{ij} = \frac{a_{ij} - \sum_{k<j} l_{ik}l_{jk}}{l_{jj}} \quad (i > j).
+\]
+If a square root of a nonpositive number appears, $A$ is not positive definite.
+
+\esempio{
+  For $A = \begin{bmatrix} 4 & 2 & 2 \\ 2 & 2 & 1 \\ 2 & 1 & 3 \end{bmatrix}$:
+  $l_{11} = 2$, $l_{21} = l_{31} = 1$; $l_{22} = \sqrt{2 - 1} = 1$, $l_{32} = (1 - 1)/1 = 0$; $l_{33} = \sqrt{3 - 1 - 0} = \sqrt 2$:
+  \[
+    L = \begin{bmatrix} 2 & 0 & 0 \\ 1 & 1 & 0 \\ 1 & 0 & \sqrt2 \end{bmatrix}.
+  \]
+}
+
+For a diagonal matrix $A = \operatorname{diag}(a_{11}, a_{22}, a_{33})$ a valid Cholesky factor is simply
+$L = \operatorname{diag}(\sqrt{a_{11}}, \sqrt{a_{22}}, \sqrt{a_{33}})$.
+
+\begin{Exercise}{Suggested exercise 11}{}
+  Find the Cholesky factor of $A = \begin{bmatrix} 4 & 2 \\ 2 & 3 \end{bmatrix}$.
+\end{Exercise}
+
+\pf{Solution}{
+  $L = \begin{pmatrix} l_{11} & 0 \\ l_{21} & l_{22} \end{pmatrix}$ gives
+  $LL^\top = \begin{pmatrix} l_{11}^2 & l_{11}l_{21} \\ l_{11}l_{21} & l_{21}^2 + l_{22}^2 \end{pmatrix}$.
+  Then $l_{11}^2 = 4 \Rightarrow l_{11} = 2$; $l_{11}l_{21} = 2 \Rightarrow l_{21} = 1$; $1 + l_{22}^2 = 3 \Rightarrow l_{22} = \sqrt 2$:
+  \[
+    L = \begin{pmatrix} 2 & 0 \\ 1 & \sqrt2 \end{pmatrix}, \qquad LL^\top = \begin{pmatrix} 4 & 2 \\ 2 & 3 \end{pmatrix} = A.
+  \]
+}
+
+\begin{Exercise}{Suggested exercise 12}{}
+  Show that for $A = \operatorname{diag}(a_{11}, a_{22}, a_{33})$ a valid Cholesky factor is
+  $L = \operatorname{diag}(\sqrt{a_{11}}, \sqrt{a_{22}}, \sqrt{a_{33}})$.
+\end{Exercise}
+
+\pf{Solution}{
+  $A$ positive definite means $a_{ii} > 0$, so the square roots are real and positive. $L$ is diagonal, hence lower triangular
+  with positive diagonal, and $L^\top = L$:
+  $LL^\top = L^2 = \operatorname{diag}(a_{11}, a_{22}, a_{33}) = A$. By uniqueness it is \emph{the} Cholesky factor.
+}
+
+\subsubsection{Solving systems using Cholesky factors}
+
+The Cholesky decomposition is computationally important because it allows us to
+\begin{itemize}
+  \item solve linear systems efficiently when $A$ is symmetric positive definite;
+  \item compute determinants efficiently: $\det(A) = \det(L)^2 = \big(\prod_{i=1}^n l_{ii}\big)^2$
+        ($L$ triangular, $|L^\top| = |L|$, product rule);
+  \item avoid computing a full inverse.
+\end{itemize}
+Indeed, if $A = LL^\top$, then $Ax = b$ is solved in two triangular steps:
+\[
+  \text{(1) solve } Lz = b, \qquad \text{(2) solve } L^\top x = z.
+\]
+Triangular systems are easy: \emph{forward substitution} gives
+$z_1 = b_1/l_{11}$, $z_i = \big(b_i - \sum_{k<i} l_{ik}z_k\big)/l_{ii}$, at cost $O(n^2)$,
+while the factorization costs $O(n^3)$ once and can be reused for many right-hand sides.
+
+\begin{Exercise}{Suggested exercise 13}{}
+  $A$ symmetric positive definite with Cholesky factor $L$. Show that $Ax = b$ can be solved in two triangular steps:
+  $Lz = b$, then $L^\top x = z$.
+\end{Exercise}
+
+\pf{Solution}{
+  $Ax = b \iff L(L^\top x) = b$. Set $z := L^\top x$.
+  (1) $L$ is lower triangular with positive diagonal, hence invertible: $Lz = b$ is solved by forward substitution.
+  (2) $L^\top$ is upper triangular and invertible: $L^\top x = z$ is solved by backward substitution.
+  Check: $Ax = LL^\top x = Lz = b$. Since $A$ is invertible, this is the unique solution.
+}
+
+\subsection{Spectral decomposition}
+
+\dfn{Eigenvalues and eigenvectors}{
+  A nonzero $p \in \mathbb{R}^n$ is an \emph{eigenvector} of $A \in \mathbb{R}^{n \times n}$ with \emph{eigenvalue} $\lambda$ if
+  \[
+    Ap = \lambda p:
+  \]
+  applying $A$ to $p$ only changes its scale, not its direction.
+}
+
+\dfn{Diagonalization}{
+  $A$ is \emph{diagonalizable} if there is an invertible $P$ such that $\Lambda = P^{-1}AP$ is diagonal.
+  If the columns of $P$ are eigenvectors and $\Lambda$ contains the corresponding eigenvalues,
+  $A = P\Lambda P^{-1}$ is the \emph{eigendecomposition} of $A$.
+  For a real symmetric matrix $P$ can be chosen orthonormal, $P^\top P = I_n$, and
+  \[
+    \Lambda = P^\top A P, \qquad A = P\Lambda P^\top \qquad \text{(\textbf{spectral decomposition})}.
+  \]
+}
+
+\begin{Exercise}{Suggested exercise 14}{}
+  Let $P = [p_1 \cdots p_n]$ be invertible with $Ap_i = \lambda_ip_i$. Show that $A = P\Lambda P^{-1}$ with
+  $\Lambda = \operatorname{diag}(\lambda_1, \dots, \lambda_n)$.
+\end{Exercise}
+
+\pf{Solution}{
+  Column by column, $AP = [Ap_1 \mid \cdots \mid Ap_n] = [\lambda_1p_1 \mid \cdots \mid \lambda_np_n]$. The $i$-th column of $P\Lambda$
+  is $P(\lambda_i e_i) = \lambda_i p_i$, so $AP = P\Lambda$. Multiply on the right by $P^{-1}$: $A = P\Lambda P^{-1}$.
+}
+
+\subsubsection{How to compute eigenvalues and eigenvectors}
+
+$Ax = \lambda x$ with $x \ne 0$ is equivalent to $(A - \lambda I)x = 0$: for a given $\lambda$, an eigenvector is a nonzero
+solution of a homogeneous system with matrix $A - \lambda I$. Such a solution exists precisely when $A - \lambda I$ is not invertible, i.e.
+\[
+  \det(A - \lambda I) = 0.
+\]
+The roots of this polynomial of degree $n$ (the \emph{characteristic polynomial}) are the eigenvalues. Procedure:
+\begin{enumerate}
+  \item form $A - \lambda I$ and compute $\det(A - \lambda I)$;
+  \item solve $\det(A - \lambda I) = 0$;
+  \item for each eigenvalue, solve $(A - \lambda I)x = 0$; any nonzero solution is an eigenvector;
+        normalize it, $\|x\|_2 = 1$, to obtain an orthonormal $P$.
+\end{enumerate}
+
+\esempio{
+  $S = \begin{bmatrix} 2 & 1 \\ 1 & 2 \end{bmatrix}$: $(2 - \lambda)^2 - 1 = 0 \Rightarrow \lambda = 3, 1$.
+  For $\lambda = 3$: $-x_1 + x_2 = 0$, $p_1 = \frac{1}{\sqrt2}(1,1)^\top$; for $\lambda = 1$: $x_1 + x_2 = 0$,
+  $p_2 = \frac{1}{\sqrt2}(-1,1)^\top$ (as returned by \texttt{eigen(S)} in R).
+}
+
+\begin{Exercise}{Suggested exercise 15}{}
+  Diagonalize $A = \frac12\begin{bmatrix} 5 & -2 \\ -2 & 5 \end{bmatrix}$ as $A = P\Lambda P^\top$.
+\end{Exercise}
+
+\pf{Solution}{
+  For $M = \begin{bmatrix} 5 & -2 \\ -2 & 5 \end{bmatrix}$: $(5 - \mu)^2 - 4 = 0 \Rightarrow \mu = 7, 3$, so the eigenvalues of
+  $A = M/2$ are $\frac72$ and $\frac32$.
+  $\lambda = \frac72$: $A - \frac72 I = \begin{bmatrix} -1 & -1 \\ -1 & -1 \end{bmatrix}$, $p_1 = \frac{1}{\sqrt2}(1,-1)^\top$.
+  $\lambda = \frac32$: $A - \frac32 I = \begin{bmatrix} 1 & -1 \\ -1 & 1 \end{bmatrix}$, $p_2 = \frac{1}{\sqrt2}(1,1)^\top$.
+  \[
+    \Lambda = \begin{bmatrix} 7/2 & 0 \\ 0 & 3/2 \end{bmatrix}, \qquad
+    P = \frac{1}{\sqrt2}\begin{bmatrix} 1 & 1 \\ -1 & 1 \end{bmatrix}, \qquad P^{-1} = P^\top.
+  \]
+  Check: $A(1,-1)^\top = \frac12(7,-7)^\top = \frac72(1,-1)^\top$.
+}
+
+\subsubsection{Symmetric matrices}
+
+\thm{Real eigenvalues}{
+  The eigenvalues of a real symmetric matrix are real.
+}
+
+\pf{Proof}{
+  Let $Ap = \lambda p$ with $\lambda \in \mathbb{C}$, $p \in \mathbb{C}^n \setminus\{0\}$, and $p^* = \bar p^\top$. Then
+  $p^*Ap = \lambda\, p^*p = \lambda\|p\|^2$ with $\|p\|^2 > 0$ real. The scalar $p^*Ap$ is real: its conjugate is
+  $p^\top A \bar p$ ($A$ real), and transposing this scalar gives $\bar p^\top A^\top p = p^*Ap$ ($A = A^\top$).
+  Hence $\lambda = p^*Ap/\|p\|^2 \in \mathbb{R}$.
+}
+
+\thm{Orthogonal eigenvectors}{
+  Eigenvectors of a symmetric matrix associated with distinct eigenvalues are orthogonal.
+}
+
+\pf{Proof}{
+  Let $Ap_1 = \lambda_1p_1$, $Ap_2 = \lambda_2p_2$, $\lambda_1 \ne \lambda_2$. Then
+  \[
+    \lambda_1\, p_1^\top p_2 = (Ap_1)^\top p_2 = p_1^\top A^\top p_2 = p_1^\top A p_2 = \lambda_2\, p_1^\top p_2,
+  \]
+  so $(\lambda_1 - \lambda_2)p_1^\top p_2 = 0$ and $p_1^\top p_2 = 0$. For repeated eigenvalues one chooses an orthonormal basis of the eigenspace.
+}
+
+\thm{Spectral theorem}{
+  Every real symmetric $A \in \mathbb{R}^{n\times n}$ can be written as $A = P\Lambda P^\top$ with $P$ orthonormal and $\Lambda$
+  real diagonal. Equivalently, as a sum of rank-one matrices,
+  \[
+    A = \sum_{j=1}^n \lambda_j\, p_jp_j^\top.
+  \]
+}
+
+\pf{Proof (idea)}{
+  Induction on $n$. There is a real eigenvalue $\lambda_1$ with unit eigenvector $p_1$. Complete it to an orthonormal basis
+  $Q = [p_1 \ Q_2]$. Then $Q_2^\top A p_1 = \lambda_1 Q_2^\top p_1 = 0$ and, by symmetry, $p_1^\top A Q_2 = 0$, so
+  \[
+    Q^\top A Q = \begin{bmatrix} \lambda_1 & 0 \\ 0 & Q_2^\top A Q_2 \end{bmatrix},
+  \]
+  with $Q_2^\top A Q_2$ symmetric of size $n-1$: apply the induction hypothesis. The sum form is $P\Lambda P^\top$ written
+  as column $\times$ row products.
+}
+
+\subsubsection{Additional properties}
+
+For a diagonal matrix the eigendecomposition is immediate: $\Lambda = A$, $P = I$, with the standard basis vectors as eigenvectors.
+
+\mprop{Functions of a diagonalizable matrix}{
+  If $A = P\Lambda P^{-1}$ then $A^k = P\Lambda^kP^{-1}$ with $\Lambda^k = \operatorname{diag}(\lambda_1^k, \dots, \lambda_n^k)$.
+  If moreover $A$ is symmetric ($P^{-1} = P^\top$): $A^{-1} = P\Lambda^{-1}P^\top$ when all $\lambda_i \ne 0$, and
+  $A^{1/2} = P\Lambda^{1/2}P^\top$ when all $\lambda_i \ge 0$.
+}
+
+\pf{Proof}{
+  Powers: see Exercise 16. Inverse: $P\Lambda P^\top P\Lambda^{-1}P^\top = P\Lambda\Lambda^{-1}P^\top = PP^\top = I$.
+  Square root: $P\Lambda^{1/2}P^\top$ is symmetric PSD and $P\Lambda^{1/2}P^\top P\Lambda^{1/2}P^\top = P\Lambda P^\top = A$.
+}
+
+\begin{Exercise}{Suggested exercise 16}{}
+  If $A = P\Lambda P^{-1}$, show that $A^k = P\Lambda^kP^{-1}$ with $\Lambda^k = \operatorname{diag}(\lambda_1^k, \dots, \lambda_n^k)$.
+\end{Exercise}
+
+\pf{Solution}{
+  Induction on $k$; $k = 1$ is the hypothesis. Then
+  \[
+    A^{k+1} = A^kA = P\Lambda^kP^{-1}P\Lambda P^{-1} = P\Lambda^k(P^{-1}P)\Lambda P^{-1} = P\Lambda^{k+1}P^{-1}.
+  \]
+  The product of diagonal matrices is diagonal with the products of the entries, so $\Lambda^k = \operatorname{diag}(\lambda_i^k)$.
+}
+
+\subsection{Singular value decomposition}
+
+The SVD extends eigendecomposition to \textbf{any} real matrix: square or rectangular, full rank or rank deficient,
+symmetric or not.
+
+\thm{Singular value decomposition}{
+  Every $A \in \mathbb{R}^{m \times n}$ can be written as
+  \[
+    A = U\Sigma V^\top,
+  \]
+  with $U \in \mathbb{R}^{m\times m}$ and $V \in \mathbb{R}^{n \times n}$ orthonormal, and $\Sigma \in \mathbb{R}^{m \times n}$ diagonal
+  (in the rectangular sense) with nonnegative entries, the \emph{singular values}
+  $\sigma_1 \ge \sigma_2 \ge \cdots \ge \sigma_r > 0$, where $r = \operatorname{rank}(A)$.
+}
+
+If $\operatorname{rank}(A) = r$, the \textbf{reduced SVD} $A = U_r\Sigma_rV_r^\top$, with $U_r \in \mathbb{R}^{m \times r}$,
+$\Sigma_r \in \mathbb{R}^{r\times r}$, $V_r \in \mathbb{R}^{n \times r}$, keeps only the singular vectors associated with nonzero singular values.
+
+\mprop{Singular vectors and rank-one expansion}{
+  For each $i \le r$: $Av_i = \sigma_iu_i$ and $A^\top u_i = \sigma_iv_i$. Moreover
+  \[
+    A = \sum_{i=1}^r \sigma_i\, u_iv_i^\top,
+  \]
+  a sum of rank-one matrices ordered from most to least important.
+}
+
+\pf{Proof}{
+  Multiplying $A = U\Sigma V^\top$ on the right by $V$: $AV = U\Sigma$, whose $i$-th column reads $Av_i = \sigma_iu_i$.
+  Similarly $A^\top U = V\Sigma^\top$ gives $A^\top u_i = \sigma_iv_i$. Writing the reduced SVD as a sum of column $\times$ row
+  products: $U_r\Sigma_rV_r^\top = \sum_{i=1}^r (\sigma_iu_i)v_i^\top$.
+}
+
+\osservazione{
+  Truncating the sum to the first $q$ terms gives the best rank-$q$ approximation of $A$ (Eckart--Young--Mirsky, see the PCA chapter).
+}
+
+\subsubsection{Relation with eigenvalues}
+
+\thm{SVD and eigendecomposition}{
+  \[
+    A^\top A = V(\Sigma^\top\Sigma)V^\top, \qquad AA^\top = U(\Sigma\Sigma^\top)U^\top.
+  \]
+  Hence the right singular vectors $V$ are eigenvectors of $A^\top A$, the left singular vectors $U$ are eigenvectors of $AA^\top$,
+  and the nonzero eigenvalues of both are $\sigma_1^2, \dots, \sigma_r^2$.
+}
+
+\pf{Proof}{
+  $A^\top A = V\Sigma^\top U^\top U\Sigma V^\top = V\Sigma^\top\Sigma V^\top$, with
+  $\Sigma^\top\Sigma = \operatorname{diag}(\sigma_1^2, \dots, \sigma_r^2, 0, \dots, 0)$: this is a spectral decomposition.
+  The same computation works for $AA^\top$.
+}
+
+\osservazione{
+  So $\sigma_i = \sqrt{\lambda_i(A^\top A)}$; for a symmetric PSD matrix SVD and spectral decomposition coincide; for a symmetric
+  matrix $\sigma_i = |\lambda_i|$. In PCA, $S = \frac1n X^\top X$ has eigenvalues $\sigma_i^2/n$.
+}
+
+\esempio{
+  $A = \begin{bmatrix} 3 & 2 & 2 \\ 2 & 3 & -2 \end{bmatrix}$: $AA^\top = \begin{bmatrix} 17 & 8 \\ 8 & 17 \end{bmatrix}$ has eigenvalues
+  $25, 9$, so $\sigma_1 = 5$, $\sigma_2 = 3$. With $u_1 = \frac{1}{\sqrt2}(1,1)^\top$, $u_2 = \frac{1}{\sqrt2}(1,-1)^\top$ and
+  $v_i = A^\top u_i/\sigma_i$:
+  \[
+    v_1 = \tfrac{1}{\sqrt2}(1,1,0)^\top, \qquad v_2 = \tfrac{1}{3\sqrt2}(1,-1,4)^\top \approx (0.236, -0.236, 0.943)^\top.
+  \]
+  R returns the same vectors up to sign ($u_i$ and $v_i$ can be flipped together).
+}
+
+% =====================================================================
+\section{Vector Calculus}
+
+Many estimation and learning problems are \textbf{optimization problems}: we choose parameters to minimize a loss or maximize a
+likelihood. Gradients tell us how the objective changes with the parameters and give the directions used by optimization algorithms.
+
+\subsection{Gradient}
+
+For $f : \mathbb{R}^p \to \mathbb{R}$, a partial derivative $\frac{\partial f}{\partial x_j}$ measures the rate of change with respect to
+$x_j$ keeping the other variables fixed. For instance, if $f(x_1,x_2) = x_1^2x_2 + 3x_2^2$ then
+$\frac{\partial f}{\partial x_1} = 2x_1x_2$ and $\frac{\partial f}{\partial x_2} = x_1^2 + 6x_2$.
+
+\dfn{Gradient}{
+  The gradient of $f : \mathbb{R}^p \to \mathbb{R}$ is the \textbf{column} vector of partial derivatives
+  \[
+    \nabla f(x) = \begin{bmatrix} \frac{\partial f}{\partial x_1} \\ \vdots \\ \frac{\partial f}{\partial x_p} \end{bmatrix}.
+  \]
+}
+
+\thm{Steepest ascent}{
+  The gradient points in the direction of steepest increase of $f$.
+}
+
+\pf{Proof}{
+  For a unit vector $u$, the directional derivative is $D_uf(x) = \frac{d}{dt}f(x + tu)\big|_{t=0} = \nabla f(x)^\top u$.
+  By Cauchy--Schwarz, $\nabla f^\top u \le \|\nabla f\|_2\|u\|_2 = \|\nabla f\|_2$, with equality iff $u = \nabla f/\|\nabla f\|$.
+}
+
+\osservazione{
+  Hence gradient descent $x_{t+1} = x_t - \eta\nabla f(x_t)$ moves along the steepest decrease; stationary points satisfy $\nabla f = 0$.
+}
+
+\begin{Exercise}{Suggested exercise 17}{}
+  Compute the gradient of $f(x_1,x_2) = x_1^2 + 3x_1x_2 + x_2^2$.
+\end{Exercise}
+
+\pf{Solution}{
+  $\frac{\partial f}{\partial x_1} = 2x_1 + 3x_2$, $\frac{\partial f}{\partial x_2} = 3x_1 + 2x_2$, so
+  $\nabla f(x) = (2x_1 + 3x_2,\ 3x_1 + 2x_2)^\top$.
+  Matrix check: $f = x^\top Ax$ with $A = \begin{bmatrix} 1 & 3/2 \\ 3/2 & 1 \end{bmatrix}$ symmetric, and $\nabla f = 2Ax$.
+}
+
+\subsubsection{Useful results}
+
+\thm{Linear and quadratic forms}{
+  \[
+    \nabla_x(a^\top x) = \nabla_x(x^\top a) = a, \qquad \nabla_x(x^\top x) = 2x, \qquad
+    \nabla_x(x^\top Ax) = (A + A^\top)x,
+  \]
+  and $\nabla_x(x^\top Ax) = 2Ax$ if $A$ is symmetric.
+}
+
+\pf{Proof}{
+  See Supplementary exercises 1, 4 and 5 below ($x^\top a = a^\top x$ is a scalar, and $x^\top x = x^\top I x$).
+}
+
+\subsubsection{Quadratic forms}
+
+\dfn{Quadratic form}{
+  A quadratic form in $x \in \mathbb{R}^n$ with $A \in \mathbb{R}^{n \times n}$ is $f(x) = x^\top A x$. For $A$ symmetric:
+  \begin{itemize}
+    \item \textbf{positive definite} if $x^\top Ax > 0$ for all $x \neq 0$;
+    \item \textbf{positive semidefinite} if $x^\top Ax \ge 0$;
+    \item \textbf{negative definite} if $x^\top Ax < 0$ for all $x \neq 0$;
+    \item \textbf{indefinite} if the sign depends on $x$.
+  \end{itemize}
+}
+
+These notions appear everywhere in statistics, especially for covariance matrices and Hessians.
+
+\osservazione{
+  One can always assume $A$ symmetric: $x^\top Ax$ is a scalar, so $x^\top Ax = x^\top A^\top x = x^\top\frac{A + A^\top}{2}x$;
+  the antisymmetric part does not contribute.
+}
+
+\thm{Definiteness through eigenvalues}{
+  Let $A$ be symmetric. $A$ is positive definite $\iff$ all $\lambda_j > 0$; positive semidefinite $\iff$ all $\lambda_j \ge 0$;
+  negative definite $\iff$ all $\lambda_j < 0$; indefinite $\iff$ it has eigenvalues of both signs.
+}
+
+\pf{Proof}{
+  Write $A = P\Lambda P^\top$ and $y = P^\top x$ (a bijection, with $x \ne 0 \iff y \ne 0$). Then
+  $x^\top Ax = y^\top\Lambda y = \sum_j\lambda_jy_j^2$, which is positive for all $y \neq 0$ iff every $\lambda_j > 0$
+  (take $y = e_j$ for necessity). The other cases are analogous.
+}
+
+\subsection{Jacobian and Hessian matrices}
+
+\dfn{Jacobian}{
+  For $f : \mathbb{R}^p \to \mathbb{R}^n$ with components $f_1, \dots, f_n$,
+  \[
+    J(x) = \frac{\partial f}{\partial x^\top} =
+    \begin{bmatrix}
+      \frac{\partial f_1}{\partial x_1} & \cdots & \frac{\partial f_1}{\partial x_p} \\
+      \vdots & \ddots & \vdots \\
+      \frac{\partial f_n}{\partial x_1} & \cdots & \frac{\partial f_n}{\partial x_p}
+    \end{bmatrix} \in \mathbb{R}^{n \times p}.
+  \]
+}
+
+The Jacobian gives the best local linear approximation $f(x + h) \approx f(x) + J(x)h$. For scalar $f$, $J = \nabla f^\top$.
+
+\mprop{Jacobian of a linear map}{
+  If $f(x) = Ax$ then $J(x) = A$.
+}
+
+\pf{Proof}{
+  $f_i(x) = \sum_k a_{ik}x_k$, so $\frac{\partial f_i}{\partial x_j} = a_{ij}$.
+}
+
+\subsubsection{Chain rule}
+
+\thm{Chain rule}{
+  Let $g : \mathbb{R}^p \to \mathbb{R}^k$, $f : \mathbb{R}^k \to \mathbb{R}^n$ and $h = f \circ g$. Then $J_h(x) = J_f(g(x))\,J_g(x)$.
+  In the scalar-output case ($n = 1$):
+  \[
+    \nabla_x h(x) = J_g(x)^\top\, \nabla_u f(u)\big|_{u = g(x)}.
+  \]
+}
+
+\pf{Proof}{
+  By the multivariable chain rule,
+  \[
+    \frac{\partial h}{\partial x_j} = \sum_{\ell=1}^k \frac{\partial f}{\partial u_\ell}\frac{\partial g_\ell}{\partial x_j}
+    = \sum_\ell (J_g)_{\ell j}(\nabla f)_\ell = (J_g^\top\nabla f)_j.
+  \]
+  Dimension check: $(p \times k)(k \times 1) = p \times 1$.
+}
+
+\begin{Exercise}{Suggested exercise 18}{}
+  Let $g(x) = x_1 + 2x_2$ and $f(u) = u^2$. Use the chain rule to compute $\nabla h$ for $h(x) = f(g(x))$.
+\end{Exercise}
+
+\pf{Solution}{
+  $\nabla h(x) = f'(g(x))\,\nabla g(x) = 2(x_1 + 2x_2)\begin{bmatrix} 1 \\ 2 \end{bmatrix} = \begin{bmatrix} 2x_1 + 4x_2 \\ 4x_1 + 8x_2 \end{bmatrix}$.
+  Direct check: $h = x_1^2 + 4x_1x_2 + 4x_2^2$.
+}
+
+\begin{Exercise}{Suggested exercise 19}{}
+  Least squares: $L(\beta) = \|y - X\beta\|^2$ with $X \in \mathbb{R}^{n\times p}$ of full rank. Compute $\nabla L$ and the minimizer.
+\end{Exercise}
+
+\pf{Solution}{
+  $L(\beta) = y^\top y - 2\beta^\top X^\top y + \beta^\top X^\top X\beta$ ($y^\top X\beta = \beta^\top X^\top y$ is a scalar). Hence
+  \[
+    \nabla L(\beta) = -2X^\top y + 2X^\top X\beta = -2X^\top(y - X\beta).
+  \]
+  $\nabla L = 0 \iff X^\top X\beta = X^\top y$ (\emph{normal equations}). Full rank makes $X^\top X$ positive definite
+  ($v^\top X^\top Xv = \|Xv\|^2 > 0$ for $v \ne 0$), hence invertible:
+  \[
+    \hat\beta = (X^\top X)^{-1}X^\top y.
+  \]
+  It is the global minimum since the Hessian $2X^\top X$ is positive definite.
+}
+
+\subsubsection{Hessian matrix}
+
+\dfn{Hessian}{
+  For $f : \mathbb{R}^p \to \mathbb{R}$,
+  \[
+    H_f(x) =
+    \begin{bmatrix}
+      \frac{\partial^2 f}{\partial x_1^2} & \cdots & \frac{\partial^2 f}{\partial x_1\partial x_p} \\
+      \vdots & \ddots & \vdots \\
+      \frac{\partial^2 f}{\partial x_p\partial x_1} & \cdots & \frac{\partial^2 f}{\partial x_p^2}
+    \end{bmatrix},
+  \]
+  i.e.\ the Jacobian of the gradient. If $f \in C^2$ it is symmetric (Schwarz).
+}
+
+\osservazione{
+  By Taylor, $f(x + h) \approx f(x) + \nabla f(x)^\top h + \frac12 h^\top H_f(x)h$. At a stationary point the sign of
+  $h^\top Hh$ decides: $H$ positive definite $\Rightarrow$ local minimum, negative definite $\Rightarrow$ local maximum,
+  indefinite $\Rightarrow$ saddle point. If $H$ is PSD everywhere, $f$ is convex.
+}
+
+\esempio{
+  $\nabla(x^\top Ax) = (A + A^\top)x$ is linear, so the Hessian is the constant $A + A^\top$. For least squares,
+  $\nabla L = -2X^\top y + 2X^\top X\beta$ and $H = 2X^\top X$, which is PSD since $h^\top X^\top Xh = \|Xh\|^2 \ge 0$: $L$ is convex.
+}
+
+\begin{Exercise}{Suggested exercise 20}{}
+  Compute the Hessian of $f = x_1^2 + 3x_1x_2 + x_2^2$, knowing $\nabla f = (2x_1 + 3x_2,\ 3x_1 + 2x_2)^\top$.
+\end{Exercise}
+
+\pf{Solution}{
+  \[
+    \nabla^2 f = \begin{bmatrix} 2 & 3 \\ 3 & 2 \end{bmatrix},
+  \]
+  constant and symmetric. Its eigenvalues are $5$ and $-1$: it is indefinite, so the origin is a saddle point.
+}
+
+% =====================================================================
+\section{Supplementary Exercises}
+
+Throughout these exercises, gradients are column vectors, and for $g : \mathbb{R}^p \to \mathbb{R}^m$ the Jacobian is
+\[
+  J_g(x) = \frac{\partial g}{\partial x^\top} = \Big[\frac{\partial g_i}{\partial x_j}\Big]_{i = 1..m,\ j = 1..p}
+\]
+($i$ row index, $j$ column index). The chain rule for gradients reads $\nabla_x\,h(g(x)) = J_g(x)^\top\,\nabla h(g(x))$.
+
+\begin{Exercise}{Supplementary 1}{}
+  Let $a \in \mathbb{R}^p$ be fixed and $f(x) = a^\top x$. Using componentwise differentiation, show that $\nabla_x(a^\top x) = a$.
+\end{Exercise}
+
+\pf{Solution}{
+  $f(x) = \sum_{k=1}^p a_kx_k$, so $\frac{\partial f}{\partial x_j} = \sum_k a_k\frac{\partial x_k}{\partial x_j} = \sum_k a_k\delta_{kj} = a_j$.
+  Stacking the components, $\nabla_x(a^\top x) = a$.
+}
+
+\begin{Exercise}{Supplementary 2}{}
+  Let $g(b) = b$, $b \in \mathbb{R}^p$. Compute $J_g(b) = \frac{\partial g}{\partial b^\top}$.
+\end{Exercise}
+
+\pf{Solution}{
+  $g_i(b) = b_i$, so $(J_g)_{ij} = \frac{\partial b_i}{\partial b_j} = \delta_{ij}$, i.e.\ $J_g(b) = I_p$.
+}
+
+\begin{Exercise}{Supplementary 3}{}
+  Let $y \in \mathbb{R}^n$, $X \in \mathbb{R}^{n\times p}$, $\beta \in \mathbb{R}^p$ and $g(\beta) = y - X\beta$. Show that
+  $J_g(\beta) = \frac{\partial g(\beta)}{\partial \beta^\top} = -X$.
+\end{Exercise}
+
+\pf{Solution}{
+  $g_i(\beta) = y_i - \sum_{k=1}^p X_{ik}\beta_k$, hence
+  $(J_g)_{ij} = \frac{\partial g_i}{\partial\beta_j} = -\sum_k X_{ik}\delta_{kj} = -X_{ij}$ ($y$ does not depend on $\beta$).
+}
+
+\begin{Exercise}{Supplementary 4}{}
+  Let $A \in \mathbb{R}^{p\times p}$ be fixed and $f(x) = x^\top Ax$. Using componentwise differentiation, show that
+  $\nabla_x(x^\top Ax) = (A + A^\top)x$.
+\end{Exercise}
+
+\pf{Solution}{
+  $f(x) = \sum_{k=1}^p\sum_{l=1}^p x_kA_{kl}x_l$. By the product rule,
+  \[
+    \frac{\partial f}{\partial x_j} = \sum_{k,l}\big(\delta_{kj}A_{kl}x_l + x_kA_{kl}\delta_{lj}\big)
+    = \sum_l A_{jl}x_l + \sum_k A_{kj}x_k = (Ax)_j + (A^\top x)_j.
+  \]
+  Hence $\nabla_x(x^\top Ax) = (A + A^\top)x$, and $2Ax$ if $A$ is symmetric.
+}
+
+\begin{Exercise}{Supplementary 5}{}
+  Let $f(x) = \|x\|_2^2$. Using the quadratic-form result, show that $\nabla_x\|x\|_2^2 = 2x$.
+\end{Exercise}
+
+\pf{Solution}{
+  $\|x\|_2^2 = x^\top I_px$; by S4 with $A = I_p$: $\nabla_x\|x\|_2^2 = (I_p + I_p^\top)x = 2x$.
+}
+
+\begin{Exercise}{Supplementary 6}{}
+  Let $f(x,y) = x^\top Ay$ with $x \in \mathbb{R}^m$, $y \in \mathbb{R}^n$, $A \in \mathbb{R}^{m\times n}$.
+  Compute $\nabla_x f(x,y)$ and $\nabla_y f(x,y)$.
+\end{Exercise}
+
+\pf{Solution}{
+  $f = \sum_{i,j}x_iA_{ij}y_j$.
+  \begin{enumerate}
+    \item $\frac{\partial f}{\partial x_k} = \sum_j A_{kj}y_j = (Ay)_k$, so $\nabla_xf = Ay$ (equivalently $f = (Ay)^\top x$ and S1).
+    \item $\frac{\partial f}{\partial y_k} = \sum_i x_iA_{ik} = (A^\top x)_k$, so $\nabla_yf = A^\top x$ (equivalently $f = (A^\top x)^\top y$).
+  \end{enumerate}
+}
+
+\begin{Exercise}{Supplementary 7}{}
+  Let $f(x) = a^\top(Bx + c)$ with $x \in \mathbb{R}^p$, $a, c \in \mathbb{R}^m$, $B \in \mathbb{R}^{m\times p}$. Show that $\nabla_xf(x) = B^\top a$.
+\end{Exercise}
+
+\pf{Solution}{
+  $f(x) = a^\top Bx + a^\top c = (B^\top a)^\top x + \text{const}$, so by S1 $\nabla_xf = B^\top a$.
+  Componentwise: $f = \sum_i a_i\big(\sum_j B_{ij}x_j + c_i\big)$ and $\partial_{x_k}f = \sum_i a_iB_{ik} = (B^\top a)_k$.
+}
+
+\begin{Exercise}{Supplementary 8}{}
+  Let $f(x) = \frac12x^\top Ax - b^\top x + c$ with $A \in \mathbb{R}^{p\times p}$, $b \in \mathbb{R}^p$, $c \in \mathbb{R}$.
+  (1) Compute $\nabla_xf(x)$. (2) Compute the Hessian $\nabla_x^2f(x)$. (3) Simplify both when $A$ is symmetric.
+\end{Exercise}
+
+\pf{Solution}{
+  \begin{enumerate}
+    \item By S4 and S1: $\nabla_xf = \frac12(A + A^\top)x - b$.
+    \item The Hessian is the Jacobian of the gradient: $\nabla_x^2f = \frac{\partial}{\partial x^\top}\big(\frac12(A + A^\top)x - b\big) = \frac12(A + A^\top)$, constant.
+    \item If $A = A^\top$: $\nabla f = Ax - b$ and $\nabla^2 f = A$. The stationary point solves $Ax = b$; if $A$ is positive definite
+          it is the global minimum.
+  \end{enumerate}
+}
+
+\begin{Exercise}{Supplementary 9}{}
+  Let $f(x) = \varphi(a^\top x + b)$ with $x, a \in \mathbb{R}^p$, $b \in \mathbb{R}$ and $\varphi : \mathbb{R} \to \mathbb{R}$ differentiable.
+  Show that $\nabla_xf(x) = \varphi'(a^\top x + b)\,a$. Use this to compute the gradients of $f_1(x) = (a^\top x + b)^k$ and
+  $f_2(x) = \exp(a^\top x + b)$.
+\end{Exercise}
+
+\pf{Solution}{
+  Let $u = a^\top x + b$. By the scalar chain rule $\frac{\partial f}{\partial x_j} = \varphi'(u)\frac{\partial u}{\partial x_j} = \varphi'(u)\,a_j$,
+  hence $\nabla_xf = \varphi'(a^\top x + b)\,a$.
+  \begin{itemize}
+    \item $\varphi(u) = u^k$, $\varphi'(u) = ku^{k-1}$: $\nabla f_1 = k(a^\top x + b)^{k-1}\,a$.
+    \item $\varphi(u) = e^u$, $\varphi'(u) = e^u$: $\nabla f_2 = \exp(a^\top x + b)\,a$.
+  \end{itemize}
+}
+
+\begin{Exercise}{Supplementary 10}{}
+  Let $f(x) = \varphi(x^\top Ax)$ with $A \in \mathbb{R}^{p\times p}$ and $\varphi$ differentiable. Show that
+  $\nabla_xf(x) = \varphi'(x^\top Ax)(A + A^\top)x$. Then compute the gradient of $\exp(-x^\top Ax)$ for $A$ symmetric.
+\end{Exercise}
+
+\pf{Solution}{
+  Let $u = x^\top Ax$. Then $\frac{\partial f}{\partial x_j} = \varphi'(u)\frac{\partial u}{\partial x_j}$ and by S4 $\nabla_xu = (A + A^\top)x$, so
+  $\nabla_xf = \varphi'(x^\top Ax)(A + A^\top)x$. With $\varphi(u) = e^{-u}$, $\varphi'(u) = -e^{-u}$ and $A + A^\top = 2A$:
+  \[
+    \nabla_x\exp(-x^\top Ax) = -2\exp(-x^\top Ax)\,Ax
+  \]
+  (the gradient of a Gaussian kernel).
+}
+
+\begin{Exercise}{Supplementary 11}{}
+  Let $g(x) = Ax - b$ with $A \in \mathbb{R}^{m\times p}$, $x \in \mathbb{R}^p$, $b \in \mathbb{R}^m$, and $f(x) = \|g(x)\|_2^2$.
+  Use the chain rule to show that $\nabla_xf(x) = 2A^\top(Ax - b)$.
+\end{Exercise}
+
+\pf{Solution}{
+  $f = h \circ g$ with $h(u) = \|u\|_2^2$, $\nabla_uh = 2u$ (S5), and $J_g(x) = A$ (as in S3). By the chain rule
+  \[
+    \nabla_xf = J_g^\top\,\nabla h(g(x)) = A^\top \cdot 2(Ax - b) = 2A^\top(Ax - b).
+  \]
+  With $A = X$, $b = y$, $x = \beta$ this is the least-squares gradient (Exercise 19).
+}
+
+\begin{Exercise}{Supplementary 12}{}
+  Let $S(\beta) = (y - X\beta)^\top W(y - X\beta)$ with $W \in \mathbb{R}^{n \times n}$ symmetric. Use the chain rule to show that
+  $\nabla_\beta S(\beta) = -2X^\top W(y - X\beta)$.
+\end{Exercise}
+
+\pf{Solution}{
+  $r(\beta) = y - X\beta$ has $J_r = -X$ (S3); $h(r) = r^\top Wr$ has $\nabla_rh = (W + W^\top)r = 2Wr$ (S4, $W$ symmetric). Hence
+  \[
+    \nabla_\beta S = J_r^\top\,\nabla_rh = (-X)^\top\,2W(y - X\beta) = -2X^\top W(y - X\beta).
+  \]
+  (Weighted least squares: $\nabla S = 0 \Rightarrow \hat\beta = (X^\top WX)^{-1}X^\top Wy$.)
+}
+
+\begin{Exercise}{Supplementary 13}{}
+  Let $\sigma(z) = \frac{1}{1 + \exp(-z)}$ and $f(\beta) = \sigma(x^\top\beta)$ with $x, \beta \in \mathbb{R}^p$.
+  (1) Show that $\sigma'(z) = \sigma(z)(1 - \sigma(z))$. (2) Use the chain rule to compute $\nabla_\beta f(\beta)$.
+\end{Exercise}
+
+\pf{Solution}{
+  \begin{enumerate}
+    \item $\sigma'(z) = \frac{e^{-z}}{(1 + e^{-z})^2} = \frac{1}{1 + e^{-z}}\cdot\frac{e^{-z}}{1 + e^{-z}}$, and
+          $1 - \sigma(z) = \frac{1 + e^{-z} - 1}{1 + e^{-z}} = \frac{e^{-z}}{1 + e^{-z}}$. Hence $\sigma' = \sigma(1 - \sigma)$.
+    \item By S9 with $\varphi = \sigma$ and $a = x$: $\nabla_\beta\,\sigma(x^\top\beta) = \sigma(x^\top\beta)\big(1 - \sigma(x^\top\beta)\big)\,x$.
+  \end{enumerate}
+}
+
+\begin{Exercise}{Supplementary 14}{}
+  Let $y \in \{-1, 1\}$ and $\ell(\beta) = \log\big(1 + \exp(-yx^\top\beta)\big)$. Use the chain rule to show that
+  \[
+    \nabla_\beta\ell(\beta) = -\frac{yx}{1 + \exp(yx^\top\beta)}.
+  \]
+\end{Exercise}
+
+\pf{Solution}{
+  Let $u = -yx^\top\beta$, so $\nabla_\beta u = -yx$ (S1). $\ell = \log(1 + e^u)$ and $\frac{d\ell}{du} = \frac{e^u}{1 + e^u}$. Then
+  \[
+    \nabla_\beta\ell = \frac{e^u}{1 + e^u}(-yx) = -\frac{yx}{e^{-u} + 1} = -\frac{yx}{1 + \exp(yx^\top\beta)},
+  \]
+  dividing numerator and denominator by $e^u$ and using $-u = yx^\top\beta$. Equivalently $\nabla\ell = -\sigma(-yx^\top\beta)\,yx$.
+}
+
+\begin{Exercise}{Supplementary 15}{}
+  Let $r(\theta) = (r_1(\theta), \dots, r_n(\theta))^\top \in \mathbb{R}^n$ be a differentiable vector of residuals, $\theta \in \mathbb{R}^p$, and
+  $S(\theta) = \frac12\|r(\theta)\|_2^2$. Show that $\nabla_\theta S(\theta) = J_r(\theta)^\top r(\theta)$.
+\end{Exercise}
+
+\pf{Solution}{
+  $S = \frac12\sum_{i=1}^n r_i(\theta)^2$, so
+  \[
+    \frac{\partial S}{\partial\theta_j} = \sum_{i=1}^n r_i\frac{\partial r_i}{\partial\theta_j} = \sum_i (J_r)_{ij}\,r_i = (J_r^\top r)_j,
+  \]
+  i.e.\ $\nabla_\theta S = J_r(\theta)^\top r(\theta)$ (or: chain rule with $h(u) = \frac12\|u\|^2$, $\nabla h = u$).
+  This is the basis of Gauss--Newton; for $r = y - X\theta$, $J_r = -X$ and we recover $-X^\top(y - X\theta)$.
+}
+
+% =====================================================================
+\section{R Illustrations}
+
+In practice one does \textbf{not} compute inverses explicitly unless necessary: to solve a system use
+\texttt{solve(A, b)} rather than \texttt{solve(A) \%*\% b}, which is numerically better and more efficient.
+
+\subsection{Basic operations, products, systems}
+
+\begin{lstlisting}
+A <- matrix(c(1, 2, 3,
+              4, 5, 6), nrow = 2, byrow = TRUE)
+B <- matrix(c(1, 0, 1,
+              0, 1, 1), nrow = 2, byrow = TRUE)
+A + B          # elementwise sum
+t(A)           # transpose
+A %*% t(B)     # matrix product (A * B is elementwise!)
+
+A <- matrix(c(2, 3, 5,
+              4, -2, -7,
+              9, 5, -3), nrow = 3, byrow = TRUE)
+b <- c(1, 8, 2)
+solve(A, b)    # 2.445378 -3.285714 1.193277
+\end{lstlisting}
+
+\subsection{Rank, determinant, inverse, Kronecker}
+
+\begin{lstlisting}
+A <- matrix(c(1, 2,
+              3, 5), nrow = 2, byrow = TRUE)
+det(A)         # -1
+solve(A)       # inverse: [-5 2; 3 -1]
+qr(A)$rank     # 2
+
+A <- matrix(c(1, 2, 3, 4), nrow = 2, byrow = TRUE)
+B <- matrix(c(0, 1, 1, 0), nrow = 2, byrow = TRUE)
+kronecker(A, B)   # 4 x 4 matrix
+\end{lstlisting}
+
+\subsection{Norms and distances}
+
+\begin{lstlisting}
+x <- c(3, -4)
+c(l1 = sum(abs(x)), l2 = sqrt(sum(x^2)), linf = max(abs(x)))   # 7 5 4
+
+distance_p <- function(x, y, p = 2) {
+  z <- x - y
+  if (is.infinite(p)) {
+    return(max(abs(z)))
+  }
+  (sum(abs(z)^p))^(1/p)
+}
+distance_p(c(1, 0, -1), c(2, -2, 3), p = 2)    # 4.582576
+distance_p(c(1, 0, -1), c(2, -2, 3), p = 1)    # 7
+distance_p(c(1, 0, -1), c(2, -2, 3), p = Inf)  # 4
+\end{lstlisting}
+
+\subsection{Decompositions}
+
+\begin{lstlisting}
+# Cholesky: chol() returns the UPPER factor R with A = t(R) %*% R
+A <- matrix(c(4, 2, 2,
+              2, 2, 1,
+              2, 1, 3), nrow = 3, byrow = TRUE)
+L <- t(chol(A))
+L %*% t(L)                    # gives back A
+
+# Eigendecomposition: values in decreasing order, unit eigenvectors (sign arbitrary)
+S <- matrix(c(2, 1, 1, 2), nrow = 2, byrow = TRUE)
+eigen(S)                      # values 3 1
+
+# SVD
+A <- matrix(c(3, 2, 2,
+              2, 3, -2), nrow = 2, byrow = TRUE)
+s <- svd(A)                   # s$d = 5 3, s$u, s$v
+A_rec <- s$u %*% diag(s$d, nrow = length(s$d)) %*% t(s$v)
+round(A_rec, 10)              # gives back A
+\end{lstlisting}
+
+\osservazione{
+  \texttt{nrow = length(s\$d)} avoids that \texttt{diag(3)}, with a single value, builds $I_3$ instead of the $1\times1$ matrix $[3]$.
+}

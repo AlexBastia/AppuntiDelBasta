@@ -1,0 +1,76 @@
+#separator:tab
+#html:true
+#notetype:Basic
+#deck:Ingegneria del Software::Templates in C++
+
+Qual è il problema comune che motiva l'esistenza dei <b>template</b>?	Molti programmi usano strutture dati comuni (stack, queue, liste). Implementare una queue di <i>customers</i> e poi doverne creare una di <i>messages</i>, poi una di <i>orders</i>, porta a <b>duplicare il codice</b> (copia-incolla-trova-sostituisci), rendendo difficile mantenerlo.
+
+Qual è la soluzione proposta al problema della duplicazione di codice per container di tipi diversi?	Implementare una queue (o altro container) che possa contenere <b>un tipo arbitrario</b>, usando la <b>type parameterization</b>, più comunemente detta <b>generics</b> (in C++: <b>templates</b>).
+
+Quali sono le <b>tre domande</b> da porsi nello sviluppo di container class riusabili?	1. È possibile costruire astrazioni di container <b>indipendenti dal tipo</b> degli elementi?<br>2. Il container può mantenere <b>un solo tipo</b> (omogeneo) o <b>tipi diversi</b> (eterogeneo)?<br>3. È possibile dare accesso agli elementi <b>senza rimuoverli</b> e <b>senza esporre</b> i dettagli implementativi del container?
+
+Come si affrontano i container eterogenei nei linguaggi <b>staticamente tipati pre-OO</b>?	Con <b>variant record</b> o <b>union</b>: si deve convivere con un numero finito di alternative, e servono <b>test e cast "sporchi"</b> per estrarre i valori. C'è inoltre il problema di nascondere i dettagli implementativi (es. il tipo di una variabile di loop rivela la struttura interna).
+
+Nei linguaggi <b>OO staticamente tipati</b>, cosa serve per costruire container sia omogenei che eterogenei?	Che il linguaggio supporti la <b>substitutability</b>, con tutti i valori istanze di sottoclassi di una comune superclasse <code>general-element</code>, e che gli oggetti conoscano il proprio <b>tipo dinamico</b> (test e cast ancora necessari, ma nascondibili con sotto-classing). Per liste <b>omogenee</b>, i <b>template sono "la" soluzione</b>.
+
+Cosa fanno i <b>template</b>, in generale?	Forniscono un modo di <b>parametrizzare una classe o una funzione con un tipo</b>. Sono stati introdotti nei linguaggi staticamente tipati per creare e manipolare strutture dati generiche come le container class riusabili.
+
+Chi genera il codice effettivo per ogni <b>istanziazione</b> di un template, e quando?	È il <b>compilatore</b> che genera il codice corretto per ogni istanziazione del template; il corpo effettivamente eseguito non è generico ma <b>molto specifico</b> per quel tipo.
+
+Un singolo template dà origine a cosa?	A una <b>famiglia di funzioni o classi</b>, tutte compilate a partire dallo stesso codice sorgente, ma che <b>operano su tipi diversi</b>.
+
+I template sono "<b>fully generic</b>"?	No. Lo scopo è costruire selettivamente una classe assemblando solo le parti di codice necessarie, tenendo <b>solo il necessario</b>. Per essere efficiente, questo va fatto <b>a compile-time</b> (per sopprimere codice inutile) — e infatti <b>non c'è type-checking completo</b> alla definizione.
+
+Quando viene generato codice durante la <b>definizione</b> di un template (function o class)?	<b>Mai</b>: nessun codice viene generato quando si incontra la <i>definizione</i> di un template. Il compilatore fa tutti i controlli possibili in quella fase, ma <b>rimanda il type-checking e la compilazione completi alla fase di istanziazione</b>.
+
+Perché le dichiarazioni e definizioni dei metodi membri di una class template devono stare tutte nello <b>stesso header file</b>?	Perché nessun codice viene generato alla definizione del template: il compilatore deve avere <b>a disposizione sia le dichiarazioni che le definizioni</b> nello stesso punto in cui, in un altro file, avviene l'istanziazione, altrimenti al momento di generare le istanze mancherebbero le definizioni.
+
+Cos'è il <b>punto di istanziazione</b> (instantiation point) di un template, e cosa fa il compilatore in quel punto?	Il punto nel codice dove un template viene <b>usato</b>. Lì il compilatore conosce i tipi attuali corrispondenti ai parametri del template e <b>genera il codice</b> per quei tipi: questo si chiama <b>template instantiation</b>, e il codice generato è una "<b>generated instance</b>" del template.
+
+Come si chiama una classe generata da una class template? E una funzione generata da una function template?	Rispettivamente <b>generated class</b> e <b>generated function</b> (esiste anche il <b>generated static data member</b> per i dati statici di template).
+
+Una "generated instance" di un template viene rigenerata ogni volta che il compilatore incontra una nuova istanziazione con gli stessi parametri?	No: viene generata <b>una sola volta</b>; una volta generata, viene <b>riusata</b> ad ogni successiva istanziazione con gli stessi parametri.
+
+In che modo può avvenire l'istanziazione di un template?	<b>Implicitamente</b> (basta usare <code>Z&lt;int&gt; zi;</code>) o <b>esplicitamente</b> (con la sintassi <code>template class Z&lt;int&gt;;</code>).
+
+Dato <code>Z&lt;int&gt;* p_zi;</code> (dichiarazione di un <b>puntatore</b> a <code>Z&lt;int&gt;</code>, non un oggetto), è richiesta l'istanziazione della classe <code>Z&lt;int&gt;</code>?	No: dichiarare solo un puntatore <b>non richiede l'istanziazione</b> della classe. È analogo a dichiarare un puntatore a una classe o struct <b>non ancora definita</b>.
+
+Cos'è un <b>function template</b>?	Permette di definire una cosiddetta <b>generic function</b>, che si applica ad argomenti i cui tipi possono essere specificati più tardi, <b>durante la chiamata</b> alla funzione.
+
+Con l'<b>overloading</b>, perché non si può gestire un tipo di parametro non ancora noto quando si scrive la funzione?	Con l'overloading il comportamento della funzione deve essere <b>completamente specificato</b>, incluso il tipo degli argomenti: il comportamento va <b>codificato in anticipo per ogni tipo</b> di parametro. Se il tipo non è noto in fase di scrittura, l'overloading <b>non può essere usato</b>.
+
+Cosa "informa" il compilatore l'uso di un <b>function template</b> rispetto al type checking?	Che <b>non deve fare il controllo completo</b> di consistenza dei tipi della definizione della funzione fino a quando non incontra una <b>chiamata</b>: è un modo di <b>rilassare il type checking</b>.
+
+Qual è la sintassi per <b>dichiarare</b> un function template?	<code>template &lt;typename T1, typename T2&gt;<br>void f(T1 t, T2* p);</code><br>La keyword <code>template</code> è seguita dalla lista dei parametri di template tra <code>&lt; &gt;</code>, che precede la dichiarazione della funzione.
+
+Nella dichiarazione di un template, la keyword <code>typename</code> può essere sostituita da <code>class</code>?	Sì, sono equivalenti in questo contesto, ma l'uso di <code>class</code> è <b>deprecato</b> (si trova spesso in codice vecchio, pre-standard).
+
+Perché il compilatore <b>non può eseguire tutti i controlli</b> sul corpo di un function template già alla sua definizione?	Perché i <b>parametri di template</b>, dal punto di vista sintattico, sono trattati come nomi di tipo, ma <b>non specificano ancora un tipo vero e completamente definito</b>: quindi non tutti i controlli tipici sui nomi di tipo reali sono possibili in quella fase.
+
+Dato: <code>template &lt;typename T1, typename T2&gt; void f(T1 t, T2&amp; r) { r = 2 * t; }</code> — perché il compilatore non può verificare subito se <code>r = 2 * t</code> è lecito?	Perché non sa ancora cosa siano realmente <code>T1</code> e <code>T2</code>: l'espressione sarebbe legale se <code>T1</code> fosse <code>int</code>/<code>float</code> e <code>T2</code> fosse <code>float</code>, ma illegale se <code>T1</code> fosse un array (non moltiplicabile per 2). Alcuni controlli devono quindi essere <b>rimandati all'istanziazione</b>.
+
+Quando vengono effettivamente compilati i <b>function template</b>?	Non vengono compilati finché non sono <b>esplicitamente istanziati</b>, cioè usati per eseguire una <b>chiamata</b>.
+
+Come fa di solito il compilatore a <b>dedurre i tipi attuali</b> (i "valori" dei parametri di template) in una chiamata a un function template?	Il compilatore <i>di solito</i> li deduce automaticamente (con algoritmi di pattern matching) <b>esaminando i tipi degli argomenti effettivi</b> forniti nella chiamata.
+
+Dato <code>template &lt;typename T1, typename T2&gt; void f(T1 t, T2&amp; r) {...}</code> e nel main <code>int x=1, y=2; f(y, x);</code> — perché questa chiamata <b>compila</b>?	Il compilatore deduce facilmente che <code>T1</code> è <code>int</code> e <code>T2</code> è "<i>reference to int</i>", perché <code>y</code> e <code>x</code> sono entrambi <code>int</code>.
+
+Stesso <code>f</code> di prima, con <code>class A {};</code> vuota e <code>A anA; f(anA, x);</code> — il compilatore deduce comunque i tipi, eppure la chiamata è <b>errata</b>. Perché?	Il compilatore deduce che <code>T1=A</code> e <code>T2</code>="reference to int" senza problemi, ma la funzione tenterebbe di <b>moltiplicare per 2 una copia di <code>anA</code></b> (<code>r = 2 * t</code>), operazione impossibile perché la classe <code>A</code> <b>non sovraccarica <code>operator*</code></b> in modo adatto: è un errore rilevato solo all'istanziazione.
+
+Nell'esempio: <code>template &lt;class T&gt; T max(T a, T b) { return a &gt; b ? a : b; }</code> — quanto vale <code>max(10, 15)</code> e <code>max('k', 's')</code>?	<code>max(10, 15) = 15</code> (T dedotto int)<br><code>max('k', 's') = s</code> (T dedotto char, confronto lessicografico)
+
+Qual è la <b>differenza principale</b> tra l'istanziazione di un <b>function template</b> e quella di una <b>class template</b>?	Nel caso delle <b>class template</b> il <b>compilatore non tenta di dedurre</b> i parametri di template: vanno sempre <b>specificati esplicitamente</b> ad ogni istanziazione.
+
+Perché la deduzione automatica dei parametri sarebbe comunque <b>impossibile</b> per una class template?	Perché non c'è nessuna informazione aggiuntiva (come la lista di argomenti attuali in una chiamata a funzione) su cui basarsi per dedurre i parametri.
+
+Cos'è una <b>specializzazione</b> (specialization) di una class template?	Ogni volta che il compilatore istanzia una class template con parametri attuali, crea una <b>nuova specializzazione</b> (se non esiste già — altrimenti viene riusata).
+
+Due specializzazioni diverse della stessa class template (es. <code>A&lt;int&gt;</code> e <code>A&lt;double&gt;</code>) sono classi correlate tra loro?	No: sono <b>classi regolari completamente indipendenti</b>, anche se generate dallo stesso template.
+
+Posso assegnare una variabile di tipo <code>A&lt;int&gt;</code> a una variabile di tipo <code>A&lt;double&gt;</code>?	No, a meno di fornire un <b>operatore di conversione esplicito</b>: sono tipi completamente slegati.
+
+Cos'è la <b>template specialization</b> (per una funzione o classe), e a cosa serve?	La possibilità, in certi casi, di <b>sovrascrivere il codice generato dal template</b> fornendo una definizione speciale per un tipo specifico, per gestire casi in cui il comportamento generico non è corretto per quel tipo.
+
+Dato il template generico <code>template &lt;class T&gt; T max(T a, T b) { return a &gt; b ? a : b; }</code>, perché <code>max("Aladdin", "Jasmine")</code> <b>non dà il risultato atteso</b>?	La chiamata fa istanziare <code>max(char*, char*)</code>: <code>operator&gt;</code> tra due <code>char*</code> confronta gli <b>indirizzi di memoria</b> delle stringhe, non il loro <b>contenuto</b> — quindi il risultato non è affidabile/corretto rispetto all'ordine alfabetico.
+
+Come si risolve il problema di <code>max</code> applicato a <code>char*</code>, tramite specializzazione?	Si fornisce una definizione specializzata:<br><code>template &lt;&gt; char* max(char* a, char* b) {<br>&nbsp;&nbsp;return strcmp(a, b) &gt; 0 ? a : b;<br>}</code><br>che confronta il <b>contenuto</b> delle stringhe con <code>strcmp</code> invece degli indirizzi.

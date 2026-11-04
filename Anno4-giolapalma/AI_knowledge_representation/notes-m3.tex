@@ -1,0 +1,49 @@
+\documentclass{report}
+
+\input{../LatexTemp/preamble.tex}
+\input{../LatexTemp/macros}
+\input{../LatexTemp/letterfonts}
+
+\usepackage[utf8]{inputenc}
+\usepackage{fontawesome}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric}
+
+% --- stile per le reti bayesiane ---
+\tikzset{
+  bn/.style={>={Stealth[length=2.2mm]}, node distance=9mm and 12mm},
+  var/.style={draw, ellipse, minimum height=6mm, inner sep=2pt, font=\small},
+  obs/.style={var, fill=gray!25},
+  blk/.style={var, fill=red!15},
+}
+
+% --- notazione probabilistica ---
+\newcommand{\Pb}{\mathbf{P}}                       % distribuzione (vettore/tabella)
+\newcommand{\Par}{\mathit{Parents}}
+\newcommand{\cind}[3]{#1 \indip #2 \mid #3}         % indipendenza condizionata
+\newcommand{\doop}{\mathit{do}}
+
+\setlength{\parindent}{0pt}
+\setcounter{secnumdepth}{3}
+
+\title{\Huge{Fundamentals of AI and KR}\\Modulo 3 -- Ragionamento probabilistico}
+\author{\huge{Giovanni "Qua' Qua' dancer" Palma}}
+\date{}
+\pagenumbering{gobble}
+
+\begin{document}
+
+\maketitle
+\newpage
+\pdfbookmark[section]{\contentsname}{toc}
+\tableofcontents
+
+\pagebreak
+
+\include{paginette/m3-probabilita}
+
+\end{document}

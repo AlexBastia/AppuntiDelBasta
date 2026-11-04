@@ -1,0 +1,254 @@
+#separator:tab
+#html:true
+#notetype:Basic
+#deck:Ingegneria del Software::Domande Esame
+
+[Processo] Nel metodo MoSCoW utilizzato per la gestione dei requisiti, cosa rappresenta la categoria "Should Have"?<br>A. Requisiti importanti ma non critici, che possono essere posticipati se necessario.<br>B. Funzionalità non essenziali ma che migliorano l'esperienza utente.<br>C. Funzionalità opzionali che possono essere implementate se c'è tempo.<br>D. Requisiti essenziali che devono essere soddisfatti per il successo del progetto.	<b>A.</b> Requisiti importanti ma non critici, che possono essere posticipati se necessario.
+
+[Processo] Il "triangolo di ferro" del project management rappresenta i tre vincoli fondamentali di un progetto. Quali sono?<br>A. Qualità, Comunicazione, Budget.<br>B. Tempo, Costo, Scopo.<br>C. Team, Product Owner, Scrum Master.<br>D. Customer, Solution, Endeavour.	<b>B.</b> Tempo, Costo, Scopo.
+
+[Processo] Cos'è lo "scope" di un progetto agile?<br>A. Gli stakeholder del progetto.<br>B. Il product backlog.<br>C. Il numero finale degli sprint.<br>D. L'architettura del prodotto.	<b>B.</b> Il product backlog.
+
+[Processo] Quale ruolo è assente in Scrum?<br>A. Product owner.<br>B. Scrum master.<br>C. Project manager.<br>D. Team member.	<b>C.</b> Project manager (i tre ruoli Scrum sono Product Owner, Scrum Master, Team di sviluppo).
+
+[Processo] Cos'è il Minimal Viable Product?<br>A. Il prodotto con il più alto ritorno sugli investimenti rispetto al rischio.<br>B. Il prodotto al termine del primo sprint.<br>C. Il prodotto al termine dell'ultimo sprint.<br>D. Il prodotto al termine dello sprint più recente.	<b>A.</b> Il prodotto con il più alto ritorno sugli investimenti rispetto al rischio.
+
+[Processo] Che cos'è la velocità di un team Scrum?<br>A. Il numero medio di story point "fatti" in uno sprint.<br>B. Il numero medio di user story "fatti" in uno sprint.<br>C. Il numero di story point "fatti" nell'ultimo sprint.<br>D. Il numero di story point "fatti" nello sprint in corso.	<b>A.</b> Il numero medio di story point "fatti" in uno sprint.
+
+[Processo] Come si chiama il testing in cui si usa il sorgente del programma?<br>A. Blackbox.<br>B. Whitebox.<br>C. Debugging.<br>D. Validazione.	<b>B.</b> Whitebox (si conosce e si sfrutta la struttura interna/il codice sorgente).
+
+[Processo] Quale delle seguenti affermazioni descrive meglio il compito principale del project manager di un prodotto software?<br>A. Assicurarsi che ogni sviluppatore scriva il codice meno costoso possibile nel minor tempo possibile.<br>B. Gestire i requisiti parlando con gli stakeholder e analizzandoli col team di sviluppo.<br>C. Gestire il testing in modo automatico cercando di risparmiare tempo e diminuire effort.<br>D. Assicurarsi che il prodotto sia completato nei tempi previsti, rimanendo entro il budget e soddisfacendo i requisiti richiesti.	<b>D.</b> Assicurarsi che il prodotto sia completato nei tempi previsti, rimanendo entro il budget e soddisfacendo i requisiti richiesti.
+
+[Processo] Quale delle seguenti caratteristiche identifica meglio un processo di sviluppo agile?<br>A. La suddivisione del lavoro in iterazioni brevi e incrementali con feedback frequenti dagli stakeholder.<br>B. L'uso delle user story per definire completamente i requisiti di prodotto prima di iniziare lo sviluppo.<br>C. La pianificazione accurata di tutte le attività necessarie al prodotto prima dell'avvio dello sviluppo.<br>D. L'individuazione di un singolo responsabile che prenda tutte le decisioni tecniche e di progetto.	<b>A.</b> La suddivisione del lavoro in iterazioni brevi e incrementali con feedback frequenti dagli stakeholder.
+
+[Processo] In un design orientato agli oggetti, cos'è un "componente riusabile"?<br>A. Una parte del codice progettata per essere facilmente integrabile in contesti diversi.<br>B. Un template HTML collegato a un controller.<br>C. Una classe che eredita da se stessa.<br>D. Un modulo Python contenente solo costanti.	<b>A.</b> Una parte del codice progettata per essere facilmente integrabile in contesti diversi.
+
+[Processo] Quale tra questi è un vantaggio dei test automatici?<br>A. Aumentano il coupling tra i moduli.<br>B. Rallentano il ciclo di sviluppo.<br>C. Eliminano la necessità del debugging.<br>D. Permettono di individuare rapidamente regressioni nel codice.	<b>D.</b> Permettono di individuare rapidamente regressioni nel codice.
+
+[Processo] Qual è l'obiettivo della tecnica del "Mocking" nei test?<br>A. Creare ambienti virtuali.<br>B. Misurare la copertura del codice.<br>C. Simulare comportamenti di componenti esterni.<br>D. Gestire errori in tempo reale.	<b>C.</b> Simulare comportamenti di componenti esterni.
+
+[Processo] Cosa caratterizza un buon design modulare?<br>A. Moduli altamente accoppiati tra loro.<br>B. Codice duplicato nei vari moduli.<br>C. Assenza di interfacce.<br>D. Alta coesione e basso accoppiamento.	<b>D.</b> Alta coesione e basso accoppiamento.
+
+[Processo] A cosa serve un diagramma delle classi UML?<br>A. A visualizzare l'output di un programma.<br>B. A rappresentare le relazioni tra classi e oggetti.<br>C. A disegnare wireframe per interfacce grafiche.<br>D. A testare il comportamento delle classi.	<b>B.</b> A rappresentare le relazioni tra classi e oggetti.
+
+[Processo] Qual è lo scopo principale della progettazione guidata dai test (TDD)?<br>A. Produrre test in ritardo rispetto allo sviluppo.<br>B. Guidare la scrittura del codice attraverso i test.<br>C. Scrivere meno codice possibile.<br>D. Testare l'usabilità dell'interfaccia utente.	<b>B.</b> Guidare la scrittura del codice attraverso i test.
+
+[Processo] Qual è lo scopo principale della fase di analisi dei requisiti?<br>A. Definire l'architettura del sistema.<br>B. Comprendere cosa il sistema deve fare.<br>C. Scrivere i test di unità.<br>D. Stimare il tempo di esecuzione del software.	<b>B.</b> Comprendere cosa il sistema deve fare.
+
+[Processo] Quale dei seguenti modelli di sviluppo è caratterizzato da fasi sequenziali e ben definite?<br>A. Modello Incrementale.<br>B. Modello a spirale.<br>C. Modello a cascata.<br>D. Modello Agile.	<b>C.</b> Modello a cascata (waterfall).
+
+[Processo] Perché è utile creare una documentazione dei requisiti?<br>A. Per decidere il linguaggio di programmazione.<br>B. Per generare automaticamente il codice sorgente.<br>C. Per evitare l'uso di librerie esterne.<br>D. Per avere una base condivisa tra sviluppatori e stakeholder.	<b>D.</b> Per avere una base condivisa tra sviluppatori e stakeholder.
+
+[Processo] Qual è l'obiettivo del testing nel processo di sviluppo software?<br>A. Ridurre la dimensione del codice.<br>B. Eliminare le dipendenze tra moduli.<br>C. Produrre documentazione automatica.<br>D. Verificare che il software si comporti come atteso.	<b>D.</b> Verificare che il software si comporti come atteso.
+
+[Processo] In Scrum, cosa rappresenta il Product Backlog?<br>A. L'elenco dei bug da correggere.<br>B. L'elenco ordinato delle funzionalità e modifiche richieste al prodotto.<br>C. Il diario delle attività svolte dallo Scrum Master.<br>D. Il piano di progetto iniziale.	<b>B.</b> L'elenco ordinato delle funzionalità e modifiche richieste al prodotto.
+
+[Processo] Chi è responsabile della massimizzazione del valore del prodotto in Scrum?<br>A. Il team di sviluppo.<br>B. Il project manager.<br>C. Il Product Owner.<br>D. Il cliente.	<b>C.</b> Il Product Owner.
+
+[Processo] Quale delle seguenti attività avviene tipicamente alla fine di uno Sprint in Scrum?<br>A. Stima dei costi del progetto.<br>B. Ridefinizione della visione del prodotto.<br>C. Sprint Review e Sprint Retrospective.<br>D. Disegno dell'architettura del sistema.	<b>C.</b> Sprint Review e Sprint Retrospective.
+
+[Processo] In cosa consiste la Daily Scrum?<br>A. Una revisione dettagliata del codice.<br>B. Un incontro con gli stakeholder.<br>C. Una breve riunione quotidiana per pianificare il lavoro delle prossime 24 ore.<br>D. Una presentazione dei risultati ottenuti al cliente.	<b>C.</b> Una breve riunione quotidiana per pianificare il lavoro delle prossime 24 ore.
+
+[Processo] Quale delle seguenti non è una delle responsabilità dello Scrum Master?<br>A. Decidere quali funzionalità implementare.<br>B. Facilitare le cerimonie Scrum.<br>C. Aiutare a rimuovere gli impedimenti al lavoro del team.<br>D. Promuovere la comprensione di Scrum nel team.	<b>A.</b> Decidere quali funzionalità implementare — è compito del Product Owner, non dello Scrum Master.
+
+[Processo] Qual è la durata raccomandata per uno Sprint in Scrum?<br>A. 1 giorno.<br>B. 1 mese e mezzo.<br>C. Massimo 1 mese.<br>D. Almeno 3 mesi.	<b>C.</b> Massimo 1 mese.
+
+[Processo] Qual è uno dei principali vantaggi dell'uso di Scrum?<br>A. Riduzione automatica del debito tecnico.<br>B. Feedback frequente e continuo da parte degli stakeholder.<br>C. Rimozione del bisogno di documentazione.<br>D. Codice generato automaticamente ad ogni sprint.	<b>B.</b> Feedback frequente e continuo da parte degli stakeholder.
+
+[Processo] Qual è l'obiettivo della Retrospective in Scrum?<br>A. Pianificare le funzionalità dello sprint successivo.<br>B. Identificare miglioramenti nel processo di lavoro del team.<br>C. Presentare il lavoro finito agli stakeholder.<br>D. Raccogliere i bug segnalati dagli utenti.	<b>B.</b> Identificare miglioramenti nel processo di lavoro del team.
+
+[Processo] In Scrum, chi partecipa alla Sprint Planning?<br>A. Solo lo Scrum Master e il Product Owner.<br>B. Solo il team di sviluppo.<br>C. Solo il cliente.<br>D. Scrum Master, Product Owner e team di sviluppo.	<b>D.</b> Scrum Master, Product Owner e team di sviluppo.
+
+[Processo] Quale delle seguenti è una caratteristica di un buon requisito software?<br>A. Essere vago e aperto a interpretazioni.<br>B. Essere chiaro, misurabile e verificabile.<br>C. Essere scritto in linguaggio tecnico.<br>D. Essere modificabile solo dal team di sviluppo.	<b>B.</b> Essere chiaro, misurabile e verificabile.
+
+[Processo] Cosa si intende per 'prototipazione' nel contesto dello sviluppo software?<br>A. Scrivere codice direttamente in produzione.<br>B. Definire il piano economico del progetto.<br>C. Costruire versioni semplificate del software per raccogliere feedback.<br>D. Creare la documentazione finale del sistema.	<b>C.</b> Costruire versioni semplificate del software per raccogliere feedback.
+
+[Processo] Cosa rappresenta una 'user story' in Scrum?<br>A. Un diagramma dei flussi di dati.<br>B. Una descrizione sintetica di una funzionalità dal punto di vista dell'utente.<br>C. Un requisito funzionale formale.<br>D. Un caso di test per l'integrazione.	<b>B.</b> Una descrizione sintetica di una funzionalità dal punto di vista dell'utente.
+
+[Processo] Quale delle seguenti attività rientra nella gestione della qualità del software?<br>A. Assegnare i task al team di sviluppo.<br>B. Stimare i costi delle licenze software.<br>C. Definire metriche per valutare il codice.<br>D. Scrivere la documentazione utente.	<b>C.</b> Definire metriche per valutare il codice.
+
+[Processo] Qual è un vantaggio dell'uso della modellazione UML nel processo di sviluppo?<br>A. Elimina la necessità del testing.<br>B. Facilita la comunicazione tra membri del team e stakeholder.<br>C. Riduce i tempi di compilazione.<br>D. Permette di testare automaticamente il codice.	<b>B.</b> Facilita la comunicazione tra membri del team e stakeholder.
+
+[Processo] La relazione include per un use case<br>A. definisce un'estensione atomica del mio use case.<br>B. definisce un use case che è una specializzazione atomica dello use case di partenza.<br>C. definisce una funzionalità coesa dello use case e quindi separata.<br>D. definisce una relazione di ereditarietà tra use case.	<b>C.</b> Definisce una funzionalità coesa dello use case e quindi separata.
+
+[Processo] La relazione extend per un use case<br>A. definisce un'estensione atomica del mio use case.<br>B. definisce un use case che è una specializzazione atomica dello use case di partenza.<br>C. crea con lo use case di partenza un nuovo use case.<br>D. definisce una relazione di ereditarietà tra use case.	<b>A.</b> Definisce un'estensione atomica del mio use case.
+
+[Processo] Un use case è<br>A. un qualunque requisito.<br>B. un caso di uso dell'interfaccia utente accettato dall'utente.<br>C. un caso di uso atomico che dà valore all'utente.<br>D. un requisito semplice del sistema validato dall'utente.	<b>C.</b> Un caso di uso atomico che dà valore all'utente.
+
+[Prodotto] Il decorator in Python<br>A. implementa nel linguaggio il design pattern del decorator.<br>B. permette la decorazione del codice con commenti necessari alla auto-documentazione.<br>C. è una funzione di ordine superiore.<br>D. definisce l'interfaccia con il C++.	<b>C.</b> È una funzione di ordine superiore (higher-order function): prende una funzione e ne restituisce una versione modificata/estesa.
+
+[Prodotto] I template in C++<br>A. sono una modalità corretta e completa di definire generici.<br>B. simulano la presenza di generici tramite la definizione di puntatori a void.<br>C. definiscono classi astratte che permettono di definire comportamenti analoghi ai generici.<br>D. producono una moltiplicazione di codice oggetto se istanziati su tipi multipli.	<b>D.</b> Producono una moltiplicazione di codice oggetto se istanziati su tipi multipli: viene generata una copia di codice specifica per ogni tipo istanziato.
+
+[Prodotto] Qual è lo scopo principale di un caso d'uso in un processo di sviluppo software?<br>A. Descrivere come il sistema è implementato internamente.<br>B. Fornire una rappresentazione grafica della struttura dei dati.<br>C. Rappresentare le interazioni tra gli attori e il sistema per soddisfare un obiettivo specifico.<br>D. Valutare la performance del sistema in ambiente di produzione.	<b>C.</b> Rappresentare le interazioni tra gli attori e il sistema per soddisfare un obiettivo specifico.
+
+[Prodotto] Quale affermazione descrive meglio la specializzazione dei template in C++?<br>A. I template sono modelli di codice precompilati da usare in fase di inclusione di header.<br>B. I template in C++ funzionano esattamente come i generici in Java, con type erasure a runtime.<br>C. I template emulano il polimorfismo parametrico generando classi o funzioni specifiche durante la compilazione, sulla base di modelli esistenti.<br>D. I template usano la specializzazione per creare gerarchie di classi simili all'ereditarietà in fase di esecuzione.	<b>C.</b> I template emulano il polimorfismo parametrico generando classi o funzioni specifiche durante la compilazione, sulla base di modelli esistenti.
+
+[Prodotto] Una funzione virtuale in UML<br>A. può limitare il numero di repliche di campi in una classe base.<br>B. permette l'overriding.<br>C. permette l'overloading.<br>D. è una forma di eredità che sembra esistere ma poi si dissolve.	<b>B.</b> Permette l'overriding.
+
+[Prodotto] Con quale strumento in C si può approssimare il polimorfismo parametrico?<br>A. Con le macro.<br>B. Con l'inclusione.<br>C. Con i puntatori a funzione.<br>D. Non è mai possibile.	<b>A.</b> Con le macro.
+
+[Prodotto] L'ereditarietà virtuale<br>A. è la tipica forma di ereditarietà che implementa il late binding.<br>B. è una forma di ereditarietà che non permette di istanziare oggetti della classe.<br>C. è una forma di ereditarietà che serve ad evitare la moltiplicazione di istanze della classe.<br>D. non esiste.	<b>C.</b> È una forma di ereditarietà che serve ad evitare la moltiplicazione di istanze della classe (risolve il diamond problem nell'ereditarietà multipla).
+
+[Prodotto] Un oggetto è<br>A. un modello di una classe.<br>B. un'istanza di una classe.<br>C. una classe.<br>D. una metaclasse.	<b>B.</b> Un'istanza di una classe.
+
+[Prodotto] UML è l'acronimo per<br>A. Universal Modeling Language.<br>B. Unified Modeling Language.<br>C. Universal Modeling Level.<br>D. Unified Modeling Level.	<b>B.</b> Unified Modeling Language.
+
+[Prodotto] Qual è la principale differenza tra requisiti funzionali e requisiti non funzionali nel contesto dello sviluppo software?<br>A. I requisiti funzionali descrivono come il software deve essere implementato, mentre i requisiti non funzionali descrivono cosa il software deve fare.<br>B. I requisiti funzionali sono sempre obbligatori, mentre i requisiti non funzionali sono opzionali.<br>C. I requisiti funzionali definiscono i comportamenti e le operazioni del sistema, mentre i requisiti non funzionali specificano vincoli o caratteristiche di qualità del sistema.<br>D. I requisiti funzionali riguardano solo l'interfaccia utente, mentre i requisiti non funzionali riguardano solo il backend del sistema.	<b>C.</b> I requisiti funzionali definiscono i comportamenti e le operazioni del sistema, mentre i requisiti non funzionali specificano vincoli o caratteristiche di qualità del sistema.
+
+[Prodotto] Il late binding permette<br>A. la definizione di modelli generici.<br>B. la definizioni di più funzioni con nomi identici ma parametri diversi risolta durante la compilazione.<br>C. la definizioni di più funzioni con nomi identici ma parametri diversi risolta durante l'esecuzione.<br>D. l'associazione del corpo di una funzione al suo nome durante l'esecuzione.	<b>D.</b> L'associazione del corpo di una funzione al suo nome durante l'esecuzione (a runtime, non a compile-time).
+
+[Prodotto] L'overloading in Python<br>A. dà un errore di compilazione.<br>B. è strutturato come in C++.<br>C. richiede una fase di preprocessamento.<br>D. è gestito tramite un decorator.	<b>D.</b> È gestito tramite un decorator (Python non ha overloading nativo per signature come C++/Java; va simulato, es. con <code>functools.singledispatch</code>).
+
+[Prodotto] Qual è uno dei principi base di Python secondo lo Zen of Python?<br>A. La velocità è tutto.<br>B. Complicato è meglio di complesso.<br>C. Esplicito è meglio che implicito.<br>D. Più codice, meglio è.	<b>C.</b> Esplicito è meglio che implicito (Explicit is better than implicit).
+
+[Prodotto] Quale tra questi NON è un paradigma supportato da Python?<br>A. Scripting.<br>B. Logico.<br>C. Imperativo.<br>D. Funzionale.	<b>B.</b> Logico (Python supporta imperativo, funzionale, OO, scripting — non logico in stile Prolog).
+
+[Prodotto] Cosa succede se dimentichi l'indentazione dopo un'istruzione if in Python?<br>A. Viene ignorata l'istruzione.<br>B. Si esegue comunque.<br>C. Si genera un SyntaxWarning.<br>D. Si genera un IndentationError.	<b>D.</b> Si genera un IndentationError.
+
+[Prodotto] Come viene gestito il typing in Python?<br>A. Statico e forte.<br>B. Dinamico e debole.<br>C. Statico e debole.<br>D. Dinamico e forte.	<b>D.</b> Dinamico e forte.
+
+[Prodotto] Qual è il risultato dell'operazione 9 // 4 in Python?<br>A. 2<br>B. 2.25<br>C. 3<br>D. Errore.	<b>A.</b> 2 (floor division: 9/4 = 2.25 → arrotondato per difetto a 2).
+
+[Prodotto] Quale tra queste affermazioni è corretta riguardo le stringhe in Python?<br>A. Le stringhe sono mutevoli.<br>B. Si può modificare un singolo carattere.<br>C. Le stringhe sono immutabili.<br>D. Le stringhe supportano operatori di assegnamento.	<b>C.</b> Le stringhe sono immutabili.
+
+[Prodotto] Cosa succede se si tenta di accedere all'indice 20 di una stringa lunga 20 caratteri?<br>A. Restituisce il carattere finale.<br>B. Solleva un IndexError.<br>C. Restituisce None.<br>D. Solleva un ValueError.	<b>B.</b> Solleva un IndexError (gli indici validi vanno da 0 a 19).
+
+[Prodotto] Quale tra questi tipi di collezioni è immutabile in Python?<br>A. Tuple.<br>B. Set.<br>C. Dictionary.<br>D. List.	<b>A.</b> Tuple.
+
+[Prodotto] Quale funzione viene usata per generare una sequenza di numeri interi in Python?<br>A. list()<br>B. seq()<br>C. range()<br>D. series()	<b>C.</b> range()
+
+[Prodotto] Qual è la differenza tra pop() e remove() in una lista?<br>A. pop() rimuove per valore, remove() per indice.<br>B. pop() rimuove per indice, remove() per valore.<br>C. Entrambe rimuovono per indice.<br>D. Nessuna differenza.	<b>B.</b> pop() rimuove per indice, remove() per valore.
+
+[Prodotto] Cosa ritorna range(2, 10, 3) una volta convertito in lista?<br>A. [2, 4, 6, 8, 10]<br>B. [2, 5, 8]<br>C. [2, 3, 4, 5, 6, 7, 8, 9]<br>D. [2, 5, 7, 9]	<b>B.</b> [2, 5, 8] (parte da 2, incrementa di 3, si ferma prima di raggiungere/superare 10).
+
+[Prodotto] Cosa rappresenta l'eccezione StopIteration in un iteratore?<br>A. L'iteratore ha raggiunto la fine della sequenza.<br>B. L'iteratore ha trovato un errore nei dati.<br>C. L'iterazione non è mai iniziata.<br>D. L'oggetto non è iterabile.	<b>A.</b> L'iteratore ha raggiunto la fine della sequenza.
+
+[Prodotto] Come si chiama una funzione senza nome in Python?<br>A. anon()<br>B. ghost<br>C. lambda<br>D. inline	<b>C.</b> lambda
+
+[Prodotto] Cosa fa il decoratore @staticmethod?<br>A. Rende un metodo accessibile solo dalla classe.<br>B. Consente di chiamare il metodo senza passare self o cls.<br>C. Rende il metodo protetto.<br>D. Aggiunge il metodo al costruttore.	<b>B.</b> Consente di chiamare il metodo senza passare self o cls.
+
+[Prodotto] Qual è l'ordine delle regole di scoping in Python (LEGB)?<br>A. Local, External, Global, Builtin<br>B. Local, Enclosing, Global, Builtin<br>C. Last, Enclosing, Global, Builtin<br>D. Last, External, Global, Builtin	<b>B.</b> Local, Enclosing, Global, Builtin.
+
+[Prodotto] A cosa serve la parola chiave global in Python?<br>A. A creare una variabile visibile solo localmente.<br>B. A limitare l'uso di variabili globali in funzioni.<br>C. A riferirsi a una variabile definita fuori dal blocco corrente.<br>D. A esportare variabili in altri moduli.	<b>C.</b> A riferirsi a una variabile definita fuori dal blocco corrente.
+
+[Prodotto] Cosa succede ai parametri con valori predefiniti mutabili in Python?<br>A. Vengono copiati ogni volta.<br>B. Mantengono il loro stato tra chiamate successive.<br>C. Generano un errore se modificati.<br>D. Vengono convertiti in valori immutabili.	<b>B.</b> Mantengono il loro stato tra chiamate successive: il default è creato una sola volta, alla definizione della funzione — bug comune se ci si aspetta un nuovo oggetto ad ogni chiamata.
+
+[Prodotto] Cosa rappresenta type(x) quando x è una funzione?<br>A. method<br>B. builtin_function_or_method<br>C. function<br>D. lambda	<b>C.</b> function
+
+[Prodotto] Dopo aver consumato un generatore in Python, cosa succede?<br>A. Può essere riutilizzato infinite volte.<br>B. Viene automaticamente rigenerato.<br>C. Viene convertito in lista.<br>D. È esaurito e non può più essere usato.	<b>D.</b> È esaurito e non può più essere usato (va ricreato).
+
+[Prodotto] Quale metodo magico permette di sovraccaricare l'operatore '+'?<br>A. __sum__<br>B. __plus__<br>C. __add__<br>D. __concat__	<b>C.</b> __add__
+
+[Prodotto] Qual è il vantaggio dell'uso di una metaclasse Singleton generalizzata?<br>A. Permette di creare oggetti da qualsiasi classe base.<br>B. Garantisce che esista solo un'istanza di qualsiasi classe che la usa.<br>C. Migliora la velocità di esecuzione.<br>D. Impedisce la modifica degli attributi.	<b>B.</b> Garantisce che esista solo un'istanza di qualsiasi classe che la usa — riusabile su più classi, senza riscrivere la logica singleton in ognuna.
+
+[Prodotto] Cosa rappresenta il concetto di "interfaccia" in ambito di programmazione orientata agli oggetti?<br>A. Una libreria esterna che estende le funzionalità.<br>B. Un contratto che specifica un insieme di metodi che una classe deve implementare.<br>C. Una classe concreta astratta.<br>D. Una classe che eredita da più superclassi.	<b>B.</b> Un contratto che specifica un insieme di metodi che una classe deve implementare.
+
+[Prodotto] Qual è lo scopo principale della separazione tra interfaccia e implementazione?<br>A. Rendere più difficile la manutenzione del codice.<br>B. Migliorare le performance in compilazione.<br>C. Ridurre l'accoppiamento tra le componenti.<br>D. Garantire la compatibilità con il sistema operativo.	<b>C.</b> Ridurre l'accoppiamento tra le componenti.
+
+[Prodotto] Quando si usa il principio di Dependency Inversion?<br>A. Per implementare ricorsione.<br>B. Per ereditare proprietà da una superclasse.<br>C. Quando si devono ottimizzare cicli annidati.<br>D. Quando si vogliono dipendenze da astrazioni e non da classi concrete.	<b>D.</b> Quando si vogliono dipendenze da astrazioni e non da classi concrete.
+
+[Prodotto] Perché è utile utilizzare il principio di Single Responsibility?<br>A. Ogni classe ha una sola ragione di cambiamento.<br>B. Aumenta la velocità di compilazione.<br>C. Riduce la quantità di codice scritto.<br>D. Evita l'uso delle classi astratte.	<b>A.</b> Ogni classe ha una sola ragione di cambiamento.
+
+[Prodotto] Qual è il risultato dell'operazione 7 // 3 in Python?<br>(a) 2.3333<br>(b) 3<br>(c) 1<br>(d) 2	<b>(d).</b> 2 (floor division: 7/3 = 2.333... → 2).
+
+[Prodotto] Cosa succede se si prova ad assegnare un nuovo carattere a un indice di una stringa in Python?<br>A. La stringa viene modificata correttamente.<br>B. Viene sollevato un TypeError.<br>C. La stringa viene copiata e modificata.<br>D. Non succede nulla.	<b>B.</b> Viene sollevato un TypeError (le stringhe sono immutabili, non supportano l'assegnamento per indice).
+
+[Prodotto] Quale operatore in Python serve a concatenare due stringhe?<br>A. *<br>B. +<br>C. &<br>D. //	<b>B.</b> + (il * applicato a stringa e intero la ripete).
+
+[Prodotto] Come si scrive una stringa multilinea in Python?<br>A. Usando il carattere \n.<br>B. Usando triple virgolette '''...''' o """...""".<br>C. Usando la funzione multistring().<br>D. Con la concatenazione di più stringhe singole.	<b>B.</b> Usando triple virgolette '''...''' o """...""".
+
+[Prodotto] Cosa produce la slice [::-1] applicata a una stringa?<br>A. Ritorna la stessa stringa.<br>B. Ritorna una copia della stringa.<br>C. Ritorna la stringa invertita.<br>D. Ritorna la stringa con solo caratteri pari.	<b>C.</b> Ritorna la stringa invertita.
+
+[Prodotto] Quale errore viene sollevato quando si accede a un indice fuori dal range di una stringa?<br>A. TypeError<br>B. ValueError<br>C. IndexError<br>D. KeyError	<b>C.</b> IndexError
+
+[Prodotto] Che differenza c'è tra gli operatori + e * usati con le stringhe?<br>A. + ripete la stringa, * concatena.<br>B. + concatena le stringhe, * ripete la stringa un certo numero di volte.<br>C. Entrambi concatenano.<br>D. Entrambi ripetono la stringa.	<b>B.</b> + concatena le stringhe, * ripete la stringa un certo numero di volte.
+
+[Prodotto] Cosa succede con questo codice?<br><code>c = 'Hello' ' ' 'World'<br>print(c)</code><br>A. Errore di sintassi.<br>B. Stampa "HelloWorld" senza spazio.<br>C. Stampa "Hello World" con spazio.<br>D. Nessuna stampa.	<b>C.</b> Stampa "Hello World" con spazio: in Python, stringhe letterali adiacenti separate solo da spazi vengono concatenate automaticamente dal parser ("string literal concatenation").
+
+[Prodotto] Come funziona la slice [start:end:step]?<br>A. Restituisce una sottostringa da start a end escluso, saltando step caratteri.<br>B. Restituisce la stringa invertita.<br>C. Restituisce una copia della stringa.<br>D. Restituisce una lista di caratteri.	<b>A.</b> Restituisce una sottostringa da start a end escluso, saltando step caratteri.
+
+[Prodotto] Qual è la differenza principale tra una stringa e una lista in Python?<br>A. Le stringhe sono mutabili, le liste sono immutabili.<br>B. Le stringhe sono immutabili, le liste sono mutabili.<br>C. Nessuna differenza.<br>D. Le liste contengono solo numeri, le stringhe solo caratteri.	<b>B.</b> Le stringhe sono immutabili, le liste sono mutabili.
+
+[Prodotto] Quale tra le seguenti affermazioni è vera riguardo le liste in Python?<br>A. Le liste sono immutabili e ordinate.<br>B. Le liste sono mutabili e ordinate.<br>C. Le liste non supportano duplicati.<br>D. Le liste sono immutabili e non ordinate.	<b>B.</b> Le liste sono mutabili e ordinate.
+
+[Prodotto] Cosa succede assegnando una lista ad un'altra variabile in Python?<br>A. Viene creata una copia profonda della lista.<br>B. Viene creata una copia superficiale della lista.<br>C. Entrambe le variabili puntano alla stessa lista.<br>D. Viene generato un errore.	<b>C.</b> Entrambe le variabili puntano alla stessa lista (assegnamento per riferimento, non copia).
+
+[Prodotto] Quale metodo permette di aggiungere un elemento alla fine di una lista?<br>A. add()<br>B. insert()<br>C. append()<br>D. extend()	<b>C.</b> append()
+
+[Prodotto] Cosa succede se si modifica un elemento interno (ad esempio una lista) contenuto in una tupla?<br>A. La tupla diventa mutabile.<br>B. La modifica genera un errore.<br>C. L'elemento interno si modifica ma la tupla resta immutabile.<br>D. La tupla si copia automaticamente prima della modifica.	<b>C.</b> L'elemento interno si modifica ma la tupla resta immutabile: l'immutabilità della tupla riguarda i riferimenti che contiene, non il contenuto mutabile a cui quei riferimenti puntano.
+
+[Prodotto] Quale tra le seguenti affermazioni sui set è corretta?<br>A. I set sono ordinati e possono contenere duplicati.<br>B. I set sono non ordinati e non possono contenere duplicati.<br>C. I set possono contenere liste come elementi.<br>D. I set supportano l'operatore + per concatenazione.	<b>B.</b> I set sono non ordinati e non possono contenere duplicati.
+
+[Prodotto] Cosa succede se si prova ad aggiungere una lista come elemento di un set?<br>A. La lista viene aggiunta correttamente.<br>B. Il set diventa mutabile.<br>C. Si genera un errore di tipo "unhashable type".<br>D. La lista viene convertita in tupla e aggiunta.	<b>C.</b> Si genera un errore di tipo "unhashable type" (le liste, essendo mutabili, non sono hashable).
+
+[Prodotto] Come si crea una copia profonda (deep copy) di una lista annidata in Python?<br>A. Usando il metodo copy() della lista.<br>B. Usando l'operatore di assegnazione =.<br>C. Usando il modulo copy con copy.deepcopy().<br>D. Non è possibile creare copie profonde di liste annidate.	<b>C.</b> Usando il modulo copy con copy.deepcopy().
+
+[Prodotto] Qual è il risultato di questa operazione su una lista 'aList = [1, 2, 3, 4]': 'aList.pop(2)'?<br>A. Rimuove e ritorna l'elemento con valore 2.<br>B. Rimuove e ritorna l'elemento all'indice 2.<br>C. Rimuove l'elemento 2 senza ritornarlo.<br>D. Genera un errore.	<b>B.</b> Rimuove e ritorna l'elemento all'indice 2, cioè il valore 3 — l'argomento di pop() è un indice, non un valore da cercare.
+
+[Prodotto] Quale tra le seguenti affermazioni descrive correttamente la differenza tra tuple e liste?<br>A. Tuple sono mutabili, liste sono immutabili.<br>B. Tuple sono immutabili, liste sono mutabili.<br>C. Entrambe sono mutabili ma con sintassi diversa.<br>D. Entrambe sono immutabili ma con sintassi diversa.	<b>B.</b> Tuple sono immutabili, liste sono mutabili.
+
+[Prodotto] Cosa succede se si concatena una tupla con un intero in Python?<br>A. L'intero viene aggiunto come elemento.<br>B. Viene generato un errore di tipo.<br>C. L'intero viene convertito in tupla automaticamente.<br>D. La tupla diventa mutabile.	<b>B.</b> Viene generato un errore di tipo (TypeError: solo tuple possono essere concatenate ad altre tuple con +).
+
+[Prodotto] Nel contesto delle API di OpenAI, quale ruolo serve a definire le regole e il comportamento del modello?<br>A. user<br>B. assistant<br>C. system<br>D. developer	<b>C.</b> system
+
+[Prodotto] Quale informazione è contenuta nel campo usage della risposta API di OpenAI?<br>A. Lo stile della risposta<br>B. Il numero di token utilizzati<br>C. Il livello di temperatura<br>D. Il modello usato	<b>B.</b> Il numero di token utilizzati.
+
+[Prodotto] A cosa serve un PromptTemplate in LangChain?<br>A. Gestire la memoria conversazionale<br>B. Definire una catena di agenti<br>C. Creare prompt strutturati e parametrizzati<br>D. Collegare database esterni	<b>C.</b> Creare prompt strutturati e parametrizzati.
+
+[Prodotto] Qual è la funzione principale della Memory in LangChain?<br>A. Salvare lo stato del modello<br>B. Ricordare il contesto delle conversazioni precedenti<br>C. Generare automaticamente prompt<br>D. Aumentare la velocità di calcolo	<b>B.</b> Ricordare il contesto delle conversazioni precedenti.
+
+[Prodotto] In CrewAI, quale elemento rappresenta una singola unità di lavoro assegnata a un agente?<br>A. Crew<br>B. Role<br>C. Task<br>D. Goal	<b>C.</b> Task
+
+[Prodotto] Qual è la differenza principale tra LangChain e CrewAI?<br>A. LangChain si concentra su pipeline e strumenti, CrewAI sulla coordinazione multi-agente.<br>B. LangChain è solo per traduzioni, CrewAI per generazione di testo.<br>C. LangChain è un modello di linguaggio, CrewAI è un framework.<br>D. LangChain funziona senza API, CrewAI solo con API OpenAI.	<b>A.</b> LangChain si concentra su pipeline e strumenti, CrewAI sulla coordinazione multi-agente.
+
+[Prodotto] Cosa rappresenta il campo finish_reason in una risposta API di OpenAI?<br>A. Il modello è andato in errore<br>B. Il motivo per cui il modello ha terminato la generazione<br>C. La quantità di token generati<br>D. La temperatura usata nella generazione	<b>B.</b> Il motivo per cui il modello ha terminato la generazione.
+
+[Prodotto] Per quale motivo può essere utile lo streaming delle risposte di un LLM?<br>A. Per ridurre il costo dei token<br>B. Per migliorare la sicurezza dei prompt<br>C. Per ridurre la latenza e visualizzare il testo man mano che viene generato<br>D. Per salvare automaticamente le risposte nel database	<b>C.</b> Per ridurre la latenza e visualizzare il testo man mano che viene generato.
+
+[Prodotto] In LangChain, cosa fa una LLMChain?<br>A. Collega un prompt a un modello e gestisce input e output<br>B. Genera automaticamente nuove API<br>C. Ottimizza l'uso dei token<br>D. Traduce i messaggi in diverse lingue	<b>A.</b> Collega un prompt a un modello e gestisce input e output.
+
+[Prodotto] Qual è il vantaggio principale di usare Agents in LangChain?<br>A. Consentono di ridurre i costi computazionali<br>B. Eliminano la necessità di definire prompt<br>C. Consentono al modello di scegliere dinamicamente quali strumenti utilizzare<br>D. Rendono l'LLM più veloce	<b>C.</b> Consentono al modello di scegliere dinamicamente quali strumenti utilizzare.
+
+[Prodotto] Qual è lo scopo dei Tools in LangChain?<br>A. Esporre funzioni esterne che il modello può invocare<br>B. Memorizzare conversazioni precedenti<br>C. Fornire dataset per il training<br>D. Modificare la temperatura del modello	<b>A.</b> Esporre funzioni esterne che il modello può invocare.
+
+[Prodotto] In CrewAI, cosa definisce il parametro goal di un agente?<br>A. Le API a cui l'agente può accedere<br>B. L'obiettivo esplicito che guida le decisioni dell'agente<br>C. Il tipo di memoria utilizzata<br>D. La sequenza dei task da eseguire	<b>B.</b> L'obiettivo esplicito che guida le decisioni dell'agente.
+
+[Prodotto] In CrewAI, come possono essere eseguiti i task?<br>A. In modo sequenziale o in parallelo<br>B. Solo in ordine gerarchico<br>C. Solo uno alla volta<br>D. Sempre in background	<b>A.</b> In modo sequenziale o in parallelo.
+
+[Prodotto] Cosa rappresenta un Crew in CrewAI?<br>A. Un singolo agente specializzato<br>B. Una memoria condivisa tra più task<br>C. Un insieme di agenti e task coordinati<br>D. Un tool esterno integrato nel sistema	<b>C.</b> Un insieme di agenti e task coordinati.
+
+[Prodotto] Quali sono le tre fasi principali dell'esecuzione di un programma Python?<br>A. Parsing, Ottimizzazione, Linking<br>B. Interpreter Initialization, Compilazione in bytecode, Bytecode Interpretation<br>C. Preprocessing, Compilazione in Assembly, Esecuzione<br>D. Traduzione in C, Compilazione, Runtime	<b>B.</b> Interpreter Initialization, Compilazione in bytecode, Bytecode Interpretation.
+
+[Prodotto] Qual è il compito principale della fase di Interpreter Initialization?<br>A. Generare i file .pyc<br>B. Caricare moduli built-in, gestire memoria e creare il GIL<br>C. Disassemblare il bytecode<br>D. Avviare la compilazione JIT	<b>B.</b> Caricare moduli built-in, gestire memoria e creare il GIL.
+
+[Prodotto] Cosa rappresenta un frame durante l'esecuzione del bytecode?<br>A. Una struttura che contiene solo variabili globali<br>B. Un'unità di esecuzione con codice, scope e stack<br>C. Una copia del sorgente .py<br>D. Un dizionario temporaneo con i built-in	<b>B.</b> Un'unità di esecuzione con codice, scope e stack.
+
+[Prodotto] Come funziona la call stack in Python?<br>A. Ogni funzione aggiunge un frame; al ritorno il frame viene rimosso<br>B. Tutte le funzioni condividono un unico frame<br>C. La call stack non esiste, si usano solo dizionari di contesto<br>D. Le funzioni ricorsive sovrascrivono i frame precedenti	<b>A.</b> Ogni funzione aggiunge un frame; al ritorno il frame viene rimosso.
+
+[Prodotto] Qual è la funzione del modulo dis in Python?<br>A. Disassemblare il bytecode in opcodes leggibili<br>B. Ottimizzare la compilazione<br>C. Mostrare i moduli built-in<br>D. Gestire i riferimenti degli oggetti	<b>A.</b> Disassemblare il bytecode in opcodes leggibili.
+
+[Prodotto] Quale meccanismo di gestione memoria usa CPython?<br>A. Garbage collection generazionale puro<br>B. Reference counting con garbage collector per cicli<br>C. Manuale come in C<br>D. Unicamente mark-and-sweep	<b>B.</b> Reference counting con garbage collector per cicli (di riferimento).
+
+[Prodotto] Perché esiste il Global Interpreter Lock (GIL)?<br>A. Per velocizzare il calcolo parallelo<br>B. Per semplificare la gestione memoria, evitando race condition<br>C. Per supportare librerie C esterne<br>D. Per ridurre la latenza del bytecode	<b>B.</b> Per semplificare la gestione memoria, evitando race condition.
+
+[Prodotto] Come fanno librerie come NumPy a ottenere parallelismo nonostante il GIL?<br>A. Usano Python puro senza bytecode<br>B. Rilasciano temporaneamente il GIL in codice C esterno<br>C. Compilano direttamente in Assembly<br>D. Ignorano completamente la call stack	<b>B.</b> Rilasciano temporaneamente il GIL in codice C esterno.
+
+[Prodotto] Qual è la caratteristica principale della Python Virtual Machine?<br>A. È un interprete stack-based che esegue bytecode<br>B. È un compilatore che genera file eseguibili nativi<br>C. È una macchina a registri per CPU multi-core<br>D. Funziona solo come ottimizzatore di memoria	<b>A.</b> È un interprete stack-based che esegue bytecode.
+
+[Prodotto] Qual è lo scopo del value stack nella VM?<br>A. Conservare moduli built-in<br>B. Salvare costanti globali<br>C. Tenere operandi e risultati temporanei durante l'esecuzione<br>D. Gestire i thread del GIL	<b>C.</b> Tenere operandi e risultati temporanei durante l'esecuzione.
+
+[Pattern - esame aperto] Come si descrive la struttura del Factory Method in un linguaggio a scelta (es. Java)?	Una classe astratta/interfaccia <code>Creator</code> dichiara un metodo <code>factoryMethod()</code> che restituisce un <code>Product</code> astratto; le sottoclassi <code>ConcreteCreator</code> implementano <code>factoryMethod()</code> restituendo istanze di un <code>ConcreteProduct</code> specifico. Es.: <code>abstract class Creator { abstract Product factoryMethod(); }</code>. La scelta della classe concreta da istanziare è demandata alla sottoclasse, disaccoppiando il client dalle classi concrete dei prodotti.
+
+[Pattern - esame aperto] Come si descrive la struttura del Prototype in Java?	Un'interfaccia (tipicamente <code>Cloneable</code>) dichiara un metodo di clonazione; le classi concrete implementano <code>clone()</code> restituendo una copia di se stesse:<br><code>class ConcretePrototype implements Cloneable {<br>&nbsp;&nbsp;public ConcretePrototype clone() {<br>&nbsp;&nbsp;&nbsp;&nbsp;return (ConcretePrototype) super.clone();<br>&nbsp;&nbsp;}<br>}</code><br>Il client crea nuovi oggetti chiamando <code>clone()</code> su un'istanza prototipica, invece di usare <code>new</code> e conoscere la classe concreta.
+
+[Pattern - esame aperto] Come si descrive la struttura del Singleton in Python?	Si realizza tipicamente intercettando <code>__new__</code>:<br><code>class Singleton:<br>&nbsp;&nbsp;_instance = None<br>&nbsp;&nbsp;def __new__(cls):<br>&nbsp;&nbsp;&nbsp;&nbsp;if cls._instance is None:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cls._instance = super().__new__(cls)<br>&nbsp;&nbsp;&nbsp;&nbsp;return cls._instance</code><br>oppure con una metaclasse Singleton generalizzata, riusabile su più classi. A differenza di Java/C++ (costruttore reso privato), in Python si intercetta la creazione dell'oggetto tramite <code>__new__</code>, perché il costruttore non può essere reso "privato" in senso stretto.
+
+[Pattern - esame aperto] Scrivi il codice minimo che implementa le caratteristiche essenziali del Singleton (istanza unica, accesso globale controllato).	Esempio in Java:<br><code>public class Singleton {<br>&nbsp;&nbsp;private static Singleton instance;<br>&nbsp;&nbsp;private Singleton() {}<br>&nbsp;&nbsp;public static Singleton getInstance() {<br>&nbsp;&nbsp;&nbsp;&nbsp;if (instance == null) instance = new Singleton();<br>&nbsp;&nbsp;&nbsp;&nbsp;return instance;<br>&nbsp;&nbsp;}<br>}</code><br>Caratteristiche chiave: costruttore privato (impedisce <code>new</code> dall'esterno), campo statico che conserva l'unica istanza, metodo statico di accesso che la crea "lazy" (alla prima richiesta) e la restituisce sempre in seguito.
+
+[Pattern - esame aperto] Come si descrive la struttura del design pattern del "clone" (Prototype)?	È lo stesso pattern Prototype: un'interfaccia comune dichiara un metodo <code>clone()</code>; ogni <code>ConcretePrototype</code> lo implementa restituendo una copia di se stesso (spesso una shallow copy tramite costrutti nativi del linguaggio, es. <code>super.clone()</code> in Java o <code>copy.deepcopy()</code>/<code>copy.copy()</code> in Python). Il <code>Client</code> usa <code>clone()</code> per creare nuovi oggetti senza dipendere dalla loro classe concreta né dal loro costruttore.
+
+[Pattern - esame aperto] Qual è la differenza tra overloading e overriding?	<b>Overloading</b>: più metodi con lo stesso nome ma signature diversa (nella stessa classe, senza bisogno di una gerarchia); la scelta di quale invocare è risolta staticamente a compile-time in base ai tipi degli argomenti.<br><b>Overriding</b>: un metodo di una sottoclasse ridefinisce (stessa signature) un metodo virtual/non-final della superclasse; la scelta di quale versione eseguire è risolta dinamicamente a runtime in base alla classe reale dell'oggetto (late binding).
+
+[Modellamento - esame aperto] Nelle domande aperte "data una storia" (Md.1-7), quali sono i passi tipicamente richiesti?	1. Generare il diagramma a classi (in un linguaggio a scelta, es. Python) della storia nel suo complesso<br>2. Estrarre gli oggetti e i metodi dalla descrizione<br>3. Generare il diagramma a classi estraendo gli oggetti<br>4. Estrarre i metodi<br>5. Determinare almeno due "storie atomiche" (user story) dalla descrizione<br>6. Presentare un diagramma di attività UML desumibile da una parte qualunque della descrizione<br>7. Descrivere il design pattern Singleton e la sua struttura specifica in Python
+
+[Modellamento - esame aperto] Nell'estrarre oggetti e metodi da una descrizione testuale (storia) per costruire un class diagram, quale euristica linguistica di base si usa?	I sostantivi (nomi comuni/propri) della descrizione suggeriscono candidati per classi/oggetti; i verbi e le azioni associati a quei sostantivi suggeriscono candidati per i metodi/operazioni di quelle classi.

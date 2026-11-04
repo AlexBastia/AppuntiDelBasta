@@ -1,0 +1,1755 @@
+\documentclass{report}
+
+\input{../LatexTemp/preamble}
+\input{../LatexTemp/macros}
+\input{../LatexTemp/letterfonts}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{array}
+\usepackage{longtable}
+
+%==============================================================
+% Stile per i blocchi di codice
+%==============================================================
+\definecolor{codebg}{HTML}{F7F7FB}
+\definecolor{codekw}{HTML}{2D6FB1}
+\definecolor{codecm}{HTML}{388C46}
+\definecolor{codestr}{HTML}{C74440}
+\definecolor{coderule}{HTML}{CCCCCC}
+
+\lstset{
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{codekw}\bfseries,
+    commentstyle=\color{codecm}\itshape,
+    stringstyle=\color{codestr},
+    numberstyle=\tiny\color{gray},
+    showstringspaces=false,
+    breaklines=true,
+    breakatwhitespace=false,
+    frame=single,
+    rulecolor=\color{coderule},
+    backgroundcolor=\color{codebg},
+    tabsize=2,
+    columns=fullflexible,
+    keepspaces=true,
+    captionpos=b,
+    xleftmargin=1.2em,
+    aboveskip=0.9em,
+    belowskip=0.9em,
+}
+
+\newcommand{\code}[1]{\texttt{\small #1}}
+\newcommand{\fonteslide}[1]{{\footnotesize\itshape\color{gray} Fonte: slide \emph{TemplatesInCpp}, pag.~#1.\par}}
+\newcommand{\fontewiki}[1][Template (C++)]{{\footnotesize\itshape\color{gray} Fonte: Wikipedia, \emph{#1}.\par}}
+\newcommand{\fontelibro}[1]{{\footnotesize\itshape\color{gray} Fonte: \emph{Thinking in C++} (Eckel), Vol.~2, #1.\par}}
+\newcommand{\fonteprove}[1]{{\footnotesize\itshape\color{gray} Verificato in \code{prove/#1} (compilato ed eseguito).\par}}
+\newcommand{\notaext}{{\footnotesize\itshape\color{gray} Nota: approfondimento non tratto da slide/Wikipedia, per completare il quadro.\par}}
+
+\graphicspath{{./img/}}
+
+%==============================================================
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \vspace*{2.5cm}
+    {\Huge\sffamily\bfseries Template in C++\par}
+    \vspace{0.5cm}
+    {\LARGE\sffamily Teoria completa\par}
+    \vspace{1.4cm}
+    {\Large Appunti di Ingegneria del Software\par}
+    \vspace{0.4cm}
+    {\large Basato sulle slide del corso (\emph{Templates in C++}) e sulla voce\\
+    Wikipedia \emph{Template (C++)}\par}
+    \vspace{2cm}
+    {\large\itshape Function template, class template, specializzazione,\\
+    template variadici, template metaprogramming, concepts\par}
+    \vfill
+    {\large Anno 3\par}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+%==============================================================
+\chapter{Perche' servono i template}\label{ch:perche}
+%==============================================================
+
+\section{Il problema: duplicazione di codice}
+
+Molti programmi usano strutture dati comuni: stack, code, liste. Il problema
+di partenza, cosi' come lo pone il corso, e' molto concreto: un programma ha
+bisogno di una \textbf{coda di clienti}; poco dopo serve anche una
+\textbf{coda di messaggi}. La tentazione naturale e' prendere il codice della
+coda di clienti e, con un copia-incolla-trova-sostituisci, produrre una coda
+di messaggi. Quando il programma cresce ancora e serve una \textbf{coda di
+ordini}, la stessa operazione va ripetuta un'altra volta.
+
+\fonteslide{3}
+
+\nt{
+    Il problema non e' scrivere la prima coda: e' che il codice viene
+    \emph{duplicato}. Se in seguito serve modificare l'implementazione della
+    coda (correggere un bug, aggiungere un controllo), la modifica va
+    replicata manualmente in ogni copia --- ed e' facile perderne una.
+    Ri-inventare codice sorgente identico e' l'opposto di cio' che
+    l'orientamento agli oggetti promette: il \textbf{riuso}.
+}
+
+\dfn{Type parameterization (genericita')}{
+    L'idea alternativa alla duplicazione: implementare la coda in modo che
+    possa contenere \textbf{un tipo arbitrario}, parametrizzando il codice
+    rispetto al tipo degli elementi. Questa tecnica e' comunemente chiamata
+    \textbf{generics}; in C++ si chiama \textbf{template}.
+}
+
+\fonteslide{4}
+
+\section{Container class: le tre domande da porsi}
+
+Le slide inquadrano il problema in modo piu' generale, parlando di
+\emph{container class} riusabili (liste, stack, code, insiemi, alberi,
+dizionari). Costruire container riusabili richiede di rispondere a tre
+domande:
+
+\begin{enumerate}
+    \item E' possibile costruire abstraction di container \textbf{indipendenti
+          dal tipo} dei loro elementi?
+    \item Questi container possono mantenere \textbf{un solo tipo} di valore
+          (container \emph{omogenei}) oppure \textbf{tipi diversi}
+          contemporaneamente (container \emph{eterogenei})?
+    \item E' possibile dare agli utenti del container accesso agli elementi
+          \textbf{senza rimuoverli} e \textbf{senza esporre} i dettagli
+          implementativi del container?
+\end{enumerate}
+
+\fonteslide{6}
+
+\subsection{Soluzioni pre-OO}
+
+In un linguaggio a \textbf{tipizzazione dinamica}, sia le abstraction
+omogenee sia quelle eterogenee si costruiscono con relativa facilita'. Nei
+linguaggi a \textbf{tipizzazione statica} pre-OO, invece:
+
+\begin{itemize}
+    \item il tipo degli elementi del container e' \emph{fisso}, quindi il
+          riuso e' limitato;
+    \item \textbf{variant record} o \textbf{union} aiutano fino a un certo
+          punto a costruire container eterogenei, ma bisogna convivere con un
+          \textbf{numero finito di alternative} e scrivere codice di test e
+          cast "sporco" per estrarre i valori;
+    \item nascondere i dettagli implementativi e' difficile: per iterare sul
+          container serve introdurre una variabile che, con il suo tipo,
+          rivela la struttura interna del container.
+\end{itemize}
+
+\fonteslide{7}
+
+\subsection{Soluzioni OO}
+
+Nei linguaggi OO a tipizzazione statica si possono costruire container sia
+omogenei sia eterogenei, a patto che:
+
+\begin{itemize}
+    \item il linguaggio supporti la \textbf{substitutability}, con tutti i
+          valori istanze di sottoclassi di una comune superclasse
+          \code{general-element};
+    \item gli oggetti conoscano il proprio \textbf{tipo dinamico} --- test e
+          cast espliciti restano necessari per estrarre i valori, ma possono
+          essere nascosti tramite sotto-classing.
+\end{itemize}
+
+Si possono introdurre \textbf{iteratori espliciti} per scorrere gli elementi
+del container senza esporne la struttura implementativa interna.
+
+\mprop{Per liste omogenee, i template SONO ``la'' soluzione}{
+    Questa e' l'affermazione centrale delle slide: per costruire container
+    \textbf{omogenei} in un linguaggio a tipizzazione statica, i template
+    (o i generics) sono la soluzione di riferimento.
+}
+
+\fonteslide{8}
+
+%==============================================================
+\chapter{Cosa sono i template}\label{ch:cosa}
+%==============================================================
+
+\section{Definizione e scopo}
+
+\dfn{Template}{
+    I template forniscono un modo di \textbf{parametrizzare una classe o una
+    funzione con un tipo}. Sono stati introdotti nei linguaggi a tipizzazione
+    statica per permettere la creazione e la manipolazione di strutture dati
+    generiche, come le container class riusabili.
+}
+
+\fonteslide{10}
+
+E' il \textbf{compilatore} che genera il codice corretto per ogni
+\textbf{istanziazione} del template: il corpo effettivamente eseguito non e'
+generico, ma \emph{molto specifico} per quel particolare tipo.
+
+I template sono usati estesamente nella \textbf{Standard Template Library}
+(STL). Un singolo template da' origine a una \textbf{famiglia di funzioni o
+classi}: tutte compilate a partire dallo stesso codice sorgente, ma che
+operano su tipi diversi.
+
+\fonteslide{11}
+
+\nt{
+    Secondo Wikipedia, dal punto di vista concettuale un template equivale,
+    prima della compilazione, a \emph{copiare e incollare} il blocco di
+    codice templatizzato nel punto in cui viene usato, sostituendo poi il
+    parametro di template con il tipo attuale. Questa e' esattamente
+    l'immagine mentale corretta per capire perche' il codice generato "non e'
+    generico ma molto specifico".
+}
+\fontewiki
+
+\subsection{Origini storiche e potere espressivo}
+
+Le principali influenze storiche sui template C++ sono i \textbf{moduli
+parametrizzati} del linguaggio CLU e i \textbf{generics} di Ada, che
+precedono i template C++. I template C++ sono inoltre dimostrati essere
+\textbf{Turing completi}: il sistema dei template, da solo, e' potente
+abbastanza da poter esprimere qualunque computazione calcolabile --- proprio
+questa proprieta' rende possibile il \emph{template metaprogramming}
+(capitolo~\ref{ch:metaprogramming}).
+
+\fontewiki
+
+\section{``I template non sono fully generic''}
+
+\wc{I template sono un mccanismo completamente generico}{
+    Le slide affermano esplicitamente il contrario: \textbf{i template non
+    sono fully generic}. L'obiettivo e' costruire selettivamente una classe
+    assemblando solo le porzioni di codice necessarie, mantenendo \textbf{solo
+    il necessario}. Per essere efficiente, questo meccanismo deve essere
+    eseguito \textbf{a compile-time}, proprio per poter sopprimere la
+    generazione di codice inutile --- e infatti \textbf{non c'e' type
+    checking completo} alla definizione del template.
+}
+
+\fonteslide{12}
+
+\section{Quando viene generato codice}
+
+\mprop{Nessun codice alla definizione}{
+    Nessun codice viene generato quando il compilatore incontra la
+    \emph{definizione} di un template. Il compilatore esegue in quella fase
+    ogni controllo possibile, ma \textbf{rimanda} il type checking completo e
+    la compilazione effettiva alla fase di \textbf{istanziazione}.
+}
+
+Di conseguenza: le dichiarazioni e le definizioni dei metodi membro di una
+class template devono stare tutte nello \textbf{stesso header file}.
+
+\fonteslide{13}
+
+\begin{Example}{La tecnicalita' declaration/definition/instantiation}{}
+Il motivo concreto per cui serve questa regola emerge da un esempio a tre
+file:
+\begin{lstlisting}[language=C++]
+// B.H  -- Declaration
+template <class t>
+class b {
+public:
+    b();
+    ~b();
+};
+
+// B.CPP -- Definition
+#include "B.H"
+template <class t> b<t>::b()  { }
+template <class t> b<t>::~b() { }
+
+// MAIN.CPP -- Instantiation
+#include "B.H"
+void main() {
+    b<int>   bi;
+    b<float> bf;
+}
+\end{lstlisting}
+Quando si compila \code{B.CPP}, il compilatore ha a disposizione sia le
+dichiarazioni sia le definizioni: a questo punto \textbf{non} deve generare
+alcuna definizione per la classe template, perche' non c'e' ancora nessuna
+istanziazione. Quando invece si compila \code{MAIN.CPP} ci sono due
+istanziazioni (\code{b<int>} e \code{b<float>}), ma in quel file il
+compilatore ha solo le \textbf{dichiarazioni}, non le definizioni: se
+dichiarazione e definizione stessero in file diversi (come qui), il linker
+non troverebbe il codice generato. Ecco perche' per i template si tengono
+dichiarazione e definizione nello \textbf{stesso header}.
+\end{Example}
+
+\fonteslide{14}
+
+\section{Istanziazione: il meccanismo generale}
+
+\dfn{Punto di istanziazione (instantiation point)}{
+    Il punto nel codice dove un template viene effettivamente \textbf{usato}.
+    Li' il compilatore conosce i tipi attuali corrispondenti ai parametri del
+    template, e \textbf{genera il codice} per quei tipi specifici. Questo
+    processo si chiama \textbf{template instantiation}; il codice generato e'
+    una \emph{generated instance} del template.
+}
+
+Una classe generata da una class template si chiama \textbf{generated
+class}; una funzione generata da una function template si chiama
+\textbf{generated function}; un dato statico generato da un membro statico
+di template si chiama \textbf{generated static data member}.
+
+\mprop{Generazione una tantum}{
+    Una generated instance viene generata \textbf{una sola volta}. Una volta
+    generata, viene \textbf{riusata} a ogni successiva istanziazione con gli
+    stessi parametri.
+}
+
+L'istanziazione di un template puo' avvenire in due modi:
+\begin{itemize}
+    \item \textbf{implicitamente}: basta usare il template con dei tipi
+          concreti, es. \code{Z<int> zi;}
+    \item \textbf{esplicitamente}: con la sintassi \code{template class
+          Z<int>;}
+\end{itemize}
+
+\fonteslide{15}
+
+\begin{Example}{Istanziazione implicita}{}
+\begin{lstlisting}[language=C++]
+template <class T> class Z {
+public:
+    Z()  {}
+    ~Z() {}
+    void f() {}
+    void g() {}
+};
+
+int main() {
+    Z<int>   zi;    // instantiation generates class Z<int>
+    zi.f();         // and generates function Z<int>::f()
+    Z<float> zf;    // instantiation generates class Z<float>
+    zf.g();         // and generates function Z<float>::g()
+    return 0;
+}
+\end{lstlisting}
+Da notare: \code{Z<int>::f()} viene generata quando viene \emph{chiamata},
+non semplicemente perche' esiste la classe \code{Z<int>}; \code{Z<float>::g()}
+viene generata a sua volta solo quando viene chiamata --- e non
+\code{Z<float>::f()} o \code{Z<int>::g()}, che nel programma non vengono
+mai usate.
+\end{Example}
+
+\fonteslide{16}
+
+\begin{Example}{Un puntatore non forza l'istanziazione}{}
+\begin{lstlisting}[language=C++]
+template <class T> class Z {
+public:
+    Z()  {} ; ~Z() {} ; void f(){} ; void g(){} ;
+};
+int main() {
+    Z<int>*   p_zi;   // instantiation of class Z<int> NOT required
+    Z<float>* p_zf;   // instantiation of class Z<float> NOT required
+    return 0;
+}
+\end{lstlisting}
+Questa volta il compilatore \textbf{non genera alcuna definizione}: non ce
+n'e' bisogno. E' analogo a dichiarare un puntatore a una classe o struct
+\textbf{non ancora definita} --- il compilatore deve solo sapere che
+\code{Z<int>} e' un tipo, non serve conoscerne il contenuto per dichiararne
+un puntatore.
+\end{Example}
+
+\fonteslide{24}
+
+%==============================================================
+\chapter{Function template}\label{ch:function}
+%==============================================================
+
+\section{Definizione e motivazione}
+
+\dfn{Function template}{
+    Permette di definire una cosiddetta \textbf{generic function}, applicabile
+    ad argomenti i cui tipi possono essere specificati piu' tardi, durante la
+    \emph{chiamata} alla funzione. In questo modo si informa il compilatore
+    di \textbf{non} eseguire il controllo completo di consistenza dei tipi
+    della definizione della funzione finche' non si incontra una chiamata: e'
+    un modo di \textbf{rilassare il type checking}.
+}
+
+\fonteslide{18}
+
+\section{Perche' non basta l'overloading}
+
+Con l'\textbf{overloading}, il comportamento di una funzione deve essere
+completamente specificato, incluso il tipo dei suoi argomenti: il
+comportamento deve essere codificato \textbf{in anticipo} per ogni tipo di
+parametro. Se, nel momento in cui si \emph{scrive} la funzione, il tipo degli
+argomenti attuali non e' ancora noto, l'overloading semplicemente \textbf{non
+si puo' usare}.
+
+\fonteslide{19}
+
+\section{Sintassi di dichiarazione}
+
+Una \emph{dichiarazione} di function template e' molto simile a quella di
+una funzione normale, a parte la keyword \code{template} seguita dalla lista
+dei parametri di template (tra \code{<>}), che deve apparire prima della
+dichiarazione della funzione:
+
+\begin{lstlisting}[language=C++]
+template <typename T1, typename T2>
+    void f(T1 t, T2* p);
+\end{lstlisting}
+
+La keyword \code{typename} puo' essere sostituita, in questo contesto, dalla
+keyword \code{class} --- ma questo uso e' \textbf{deprecato}; si trova spesso
+in codice vecchio, pre-standard.
+
+Qui si dichiara la function template \code{f}, con due argomenti \code{t} e
+\code{p} di tipo \code{T1} e "puntatore a \code{T2}" rispettivamente.
+\code{T1} e \code{T2} sono i \textbf{parametri di template}: agiscono come
+placeholder per nomi di tipo attuali, che verranno specificati alla chiamata
+della function template.
+
+\fonteslide{20}
+
+\section{Sintassi di definizione}
+
+La \emph{definizione} di una function template segue la stessa sintassi
+della dichiarazione per quanto riguarda il prototipo; il \textbf{corpo} della
+definizione e' invece sintatticamente identico al corpo di una funzione
+normale. All'interno del corpo, i parametri di template sono trattati
+\textbf{esattamente come nomi di tipo}, dal punto di vista sintattico.
+
+Il compilatore non puo' eseguire, \emph{in questa fase}, tutti i controlli
+che eseguirebbe su nomi di tipo reali, perche' i parametri di template non
+specificano ancora, in questa fase, un tipo vero e completamente definito.
+
+\fonteslide{21}
+
+\begin{Example}{Il classico esempio \code{r = 2 * t}}{}
+\begin{lstlisting}[language=C++]
+template <typename T1, typename T2> void f(T1 t, T2& r) {
+    r = 2 * t;
+}
+\end{lstlisting}
+Qui si dichiara una function template che esegue una semplice operazione
+aritmetica. Non sapendo cosa siano realmente \code{T1} e \code{T2}, il
+compilatore \textbf{non puo' controllare}, mentre analizza questo codice, se
+l'espressione \code{r = 2 * t} sia legale. Sarebbe legale se \code{T1} fosse
+\code{int} o \code{float} e \code{T2} fosse \code{float}; sarebbe invece
+\textbf{illegale} se \code{T1} fosse un tipo array arbitrario (perche' un
+array non si puo' moltiplicare per 2, come invece si tenta di fare con
+\code{t}). E' quindi chiaro che alcuni controlli devono essere rimandati fino
+a quando il template non viene \textbf{istanziato}.
+\end{Example}
+
+\fonteslide{22}
+
+\section{Istanziazione delle function template}
+
+Le function template non vengono effettivamente compilate finche' non sono
+\textbf{esplicitamente istanziate}, cioe' usate per eseguire una chiamata.
+Per chiamare una function template, la sintassi formale e', quasi sempre,
+identica a quella delle chiamate a funzioni normali.
+
+Il compilatore riesce \emph{di solito} a \textbf{dedurre automaticamente} i
+tipi attuali (i "valori" dei parametri di template), usando algoritmi di
+pattern matching piuttosto complessi, esaminando i tipi degli argomenti
+effettivi fornito nella chiamata.
+
+\fonteslide{23}
+
+\begin{Example}{Deduzione corretta ed errore rilevato solo all'istanziazione}{}
+\begin{lstlisting}[language=C++]
+template <typename T1, typename T2> void f(T1 t, T2& r) {
+    r = 2 * t;
+}
+class A {};   // empty class; for illustration purposes
+
+int main() {
+    int x = 1;
+    int y = 2;
+    f(y, x);     // OK
+    A anA;
+    f(anA, x);   // WRONG
+}
+\end{lstlisting}
+\code{f(y, x)} \textbf{compila}: il compilatore deduce facilmente che
+\code{T1} e' \code{int} e \code{T2} e' "reference to int", perche' sia
+\code{y} sia \code{x} sono \code{int}. \code{f(anA, x)} invece
+\textbf{non compila} (e il compilatore emette un errore proprio in questo
+punto): il compilatore deduce senza problemi che \code{T1} e' \code{A} e
+\code{T2} e' "reference to int" (perche' \code{anA} e' una \code{A} e
+\code{x} e' un \code{int}), ma la funzione tenterebbe poi di moltiplicare
+per 2 una copia di \code{anA}, operazione impossibile perche' la classe
+\code{A} non sovraccarica \code{operator*} in modo adatto. E' esattamente
+l'errore che, per costruzione, non poteva essere rilevato alla definizione
+del template (sezione precedente): emerge solo ora, all'istanziazione.
+\end{Example}
+
+\fonteslide{25}
+
+\begin{Example}{\code{max}: deduzione del tipo di ritorno}{}
+\begin{lstlisting}[language=C++]
+template <class T> T max(T a, T b) {
+    return a > b ? a : b;
+}
+void main() {
+    int I;
+    I = max(10, 15);
+    cout << "max(10, 15) = " << I << endl;
+    char c;
+    c = max('k', 's');
+    cout << " max('k', 's') = " << c << endl;
+}
+\end{lstlisting}
+Output: \code{max(10, 15) = 15} (\code{T} dedotto \code{int}); \code{max('k',
+'s') = s} (\code{T} dedotto \code{char}, confronto lessicografico sui codici
+carattere).
+\end{Example}
+
+\fonteslide{26}
+
+\section{Disambiguazione manuale}
+
+Ci sono casi in cui il compilatore \textbf{non riesce} a dedurre il tipo
+attuale del parametro di template dalla chiamata, perche' gli argomenti
+attuali della funzione non portano abbastanza informazione di tipo. In questi
+casi il compilatore emette un errore, segnalando la chiamata come
+\textbf{ambigua} --- anche se la chiamata sarebbe eseguibile, conoscendo i
+tipi da assegnare ai parametri di template.
+
+E' quindi necessario \textbf{disambiguare la chiamata manualmente},
+specificando i "valori" dei parametri di template in una lista (tra
+\code{<>}) subito dopo il nome della funzione e prima della lista degli
+argomenti:
+\begin{lstlisting}[language=C++]
+template_func_name<parameter_list>(arguments_list)
+\end{lstlisting}
+
+\fonteslide{27}
+
+%==============================================================
+\chapter{Class template}\label{ch:class}
+%==============================================================
+
+\section{Definizione}
+
+\dfn{Class template}{
+    Una classe \textbf{parametrizzata rispetto a uno o piu' tipi}. La sintassi
+    per definire una class template e' quasi identica a quella delle function
+    template.
+}
+
+\fonteslide{29}
+
+\section{La differenza fondamentale: nessuna deduzione}
+
+\mprop{Il compilatore non deduce i parametri di una class template}{
+    La differenza principale fra function template e class template: per le
+    \textbf{classi} il compilatore \textbf{non tenta} di dedurre i parametri
+    di template. La deduzione sarebbe comunque \textbf{impossibile}: non
+    c'e' nessuna informazione aggiuntiva su cui basarsi per dedurli (nel caso
+    delle function template c'e' la lista degli argomenti attuali della
+    chiamata, su cui la deduzione si appoggia).
+}
+
+Ogni volta che una class template viene istanziata, i "valori" (cioe' i tipi
+attuali) dei parametri di template devono essere \textbf{specificati}.
+
+\fonteslide{30}
+
+\section{Specializzazioni come classi indipendenti}
+
+\dfn{Specializzazione (di class template)}{
+    Ogni volta che il compilatore istanzia una class template con parametri
+    attuali, crea una nuova \textbf{specializzazione} --- se una
+    specializzazione con quei parametri non esiste gia' (altrimenti viene
+    riusata).
+}
+
+\mprop{Due specializzazioni sono classi scorrelate}{
+    Due specializzazioni diverse della stessa class template sono classi
+    \textbf{regolari}, e sono \textbf{completamente scorrelate} anche se
+    generate dallo stesso template. Se una class template e' dichiarata come
+    \code{A<typename T>}, allora \code{A<int>}, \code{A<double>} e
+    \code{A<B>} (con \code{B} un'altra classe) sono classi completamente
+    indipendenti fra loro.
+}
+
+Conseguenza pratica: \textbf{non} si puo' assegnare una variabile di tipo
+\code{A<int>} a una variabile di tipo \code{A<double>}, a meno di fornire un
+\textbf{operatore di conversione esplicito}.
+
+\fonteslide{31}
+
+\section{Istanziazione implicita ed esplicita}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|>{\raggedright\arraybackslash}p{6.3cm}|>{\raggedright\arraybackslash}p{6.3cm}|}
+\hline
+\textbf{implicita} & \textbf{esplicita} \\
+\hline
+\begin{lstlisting}[language=C++,frame=none,backgroundcolor=\color{white}]
+Z<int> zi;
+// implicit instantiation
+// generates class Z<int>
+\end{lstlisting}
+&
+\begin{lstlisting}[language=C++,frame=none,backgroundcolor=\color{white}]
+template class Z<int>;
+// explicit instantiation
+// of class Z<int>
+\end{lstlisting}
+\\
+\hline
+\end{tabular}
+\end{center}
+
+\fonteslide{32}
+
+\begin{Example}{Class template completa: \code{A<T>}}{}
+\begin{lstlisting}[language=C++]
+template <typename T> class A {
+    T x, y;
+public:
+    A() { x = 0; y = 0; }
+    T getSum() { return x + y; }
+    void setXY(T a, T b) { x = a; y = b; }
+};
+
+int main() {
+    A<int>    iA;
+    A<double> dA;
+    int y    = iA.getSum();
+    double w = dA.getSum();
+    iA.setXY(1,2);
+    dA.setXY(0.0,0.2);
+}
+\end{lstlisting}
+I parametri attuali di template devono essere specificati esplicitamente:
+\code{A<int>} e \code{A<double>} sono tipi completamente diversi, che in
+generale non si possono mescolare tra loro.
+\end{Example}
+
+\fonteslide{33}
+
+\begin{Example}{Il codice che il compilatore genera davvero}{}
+Per la classe template dell'esempio precedente, il compilatore genera --- a
+tutti gli effetti --- due classi regolari indipendenti:
+\begin{lstlisting}[language=C++]
+class A_int {
+    int x, y;
+public:
+    A_int() { x = 0; y = 0; }
+    int getSum() { return x + y; }
+    void setXY(int a, int b) { x = a; y = b; }
+};
+class A_double {
+    double x, y;
+public:
+    A_double() { x = 0; y = 0; }
+    double getSum() { return x + y; }
+    void setXY(double a, double b) { x = a; y = b; }
+};
+int main() {
+    A_int    iA;
+    A_double dA;
+    int    y = iA.getSum();
+    double w = dA.getSum();
+    iA.setXY(1,2);
+    dA.setXY(0.0,0.2);
+}
+\end{lstlisting}
+(I nomi \code{A\_int}/\code{A\_double} sono qui solo illustrativi: nel
+binario reale i simboli generati sono \emph{mangled}, ma il punto delle
+slide e' proprio questo --- il corpo eseguito \textbf{non e' generico}, e'
+codice specifico duplicato per ciascun tipo istanziato.)
+\end{Example}
+
+\fonteslide{34}
+
+%==============================================================
+\chapter{Template specialization}\label{ch:specialization}
+%==============================================================
+
+\section{Cos'e' e perche' serve}
+
+In alcuni casi e' possibile \textbf{sovrascrivere} il codice generato dal
+template, fornendo una definizione speciale per un tipo specifico. Questo si
+chiama \textbf{template specialization}.
+
+\fonteslide{35}
+
+\wc{Il comportamento generico del template va sempre bene per ogni tipo}{
+    Le slide costruiscono apposta un controesempio per mostrare che non e'
+    cosi': un algoritmo scritto in modo completamente generico puo'
+    comportarsi in modo tecnicamente corretto ma \textbf{semanticamente
+    sbagliato} per un tipo particolare.
+}
+
+\begin{Example}{Il tranello \code{max("Aladdin", "Jasmine")}}{}
+\begin{lstlisting}[language=C++]
+// max restituisce il massimo dei due elementi di tipo T, dove T e'
+// una classe o un tipo per cui operator> e' definito
+template <class T> T max(T a, T b) {
+    return a > b ? a : b;
+}
+int main() {
+    cout << "max(10, 15) = "     << max(10, 15)     << endl;
+    cout << "max('k', 's') = "   << max('k', 's')   << endl;
+    cout << "max(10.1, 15.2) = " << max(10.1, 15.2) << endl;
+    cout << "max(\"Aladdin\", \"Jasmine\") = "
+         << max("Aladdin", "Jasmine") << endl;
+}
+\end{lstlisting}
+I primi tre risultati sono quelli attesi: \code{15}, \code{s}, \code{15.2}.
+Il quarto \textbf{non} e' quello atteso (non stampa \code{"Jasmine"}, che
+viene dopo alfabeticamente): la chiamata \code{max("Aladdin","Jasmine")} fa
+istanziare il template con \code{T = char*}, cioe' \code{max(char*, char*)},
+che confronta gli \textbf{indirizzi di memoria} dei due puntatori, non il
+\textbf{contenuto} delle stringhe che puntano.
+\end{Example}
+
+\fonteslide{36-37}
+
+\begin{Example}{La correzione tramite specializzazione}{}
+\begin{lstlisting}[language=C++]
+// Specialization of max for char*
+template <> char* max(char* a, char* b) {
+    return strcmp(a, b) > 0 ? a : b;
+}
+\end{lstlisting}
+La specializzazione \textbf{sostituisce} la versione generica ogni volta che
+\code{max} viene chiamata con due \code{char*}, usando \code{strcmp} per un
+vero confronto del contenuto delle stringhe invece del confronto (privo di
+significato logico) tra i loro indirizzi.
+
+\fontewiki
+Secondo Wikipedia, questo stesso esempio, riportato nella versione moderna
+del linguaggio, usa \code{std::strcmp} per fornire un comportamento
+\emph{ben definito} nel confronto di C-string --- il confronto diretto tra
+puntatori sarebbe altrimenti privo di significato utile. In C++ moderno il
+problema semplicemente \textbf{non si presenta} usando \code{std::string} al
+posto di \code{char*}, perche' \code{std::string} sovraccarica
+correttamente \code{operator>} confrontando il contenuto.
+\end{Example}
+
+\subsection{Le due forme di specializzazione (da Wikipedia)}
+
+\dfn{Full specialization vs partial specialization}{
+    \textbf{Full specialization}: tutti i parametri di template vengono
+    specializzati (l'esempio di \code{max(char*, char*)} sopra e' una full
+    specialization). \textbf{Partial specialization}: solo un
+    \emph{sottoinsieme} dei parametri viene specializzato. La specializzazione
+    parziale e' disponibile \textbf{solo per le class template}: le function
+    template non possono essere specializzate parzialmente (si usa
+    l'overloading al loro posto).
+}
+
+\fontewiki
+
+%==============================================================
+\chapter{Oltre le slide: funzionalita' moderne (da Wikipedia)}\label{ch:moderne}
+%==============================================================
+
+Il corso presenta i template nella loro forma "classica". La voce Wikipedia
+\emph{Template (C++)} descrive anche le evoluzioni introdotte dagli standard
+successivi (C++11, 14, 17, 20), utili per capire dove i template sono andati
+dopo le basi viste finora. Tutto questo capitolo ha come unica fonte
+Wikipedia.
+
+\fontewiki
+
+\section{Variable template (C++14)}
+
+Da C++14 anche le \textbf{variabili} possono essere templatizzate:
+\begin{lstlisting}[language=C++]
+template <typename T>
+constexpr T PI = T{3.141592653589793238462643383L};
+\end{lstlisting}
+\code{PI<float>} e \code{PI<double>} sono due costanti distinte, ciascuna
+del tipo richiesto, generate a compile time.
+
+\section{Parametri di template non-type}
+
+Un template puo' essere parametrizzato anche su un \textbf{valore}, non solo
+su un tipo:
+\begin{lstlisting}[language=C++]
+template <int K>
+class MyClass;
+\end{lstlisting}
+L'esempio reale piu' importante e' \code{std::array} della libreria
+standard:
+\begin{lstlisting}[language=C++]
+template <class T, size_t N>
+struct Array;
+
+Array<char, 6> myArray;   // array di 6 caratteri
+\end{lstlisting}
+\code{std::array} e' parametrizzato sia su un tipo (\code{T}) sia su un
+valore intero (\code{N}, la dimensione): a differenza di un array C
+classico, la dimensione fa parte del \textbf{tipo} dell'oggetto.
+
+\section{Template variadici (C++11)}
+
+I template variadici accettano un \textbf{numero variabile} di parametri di
+template, in modo analogo alle funzioni variadiche in stile \code{printf}.
+
+\dfn{Vantaggio principale}{
+    In C++ sono supportati solo i parametri variadici "in stile C"
+    (\code{...}); l'unico modo per ottenere funzioni variadiche
+    \textbf{type-safe} (come in Java) e' proprio tramite i template
+    variadici.
+}
+
+\begin{lstlisting}[language=C++]
+template <typename... Args>
+void log(const format_string<Args...>& fmt, Args&&... args) {
+    std::println(logFile, fmt, args...);
+}
+\end{lstlisting}
+
+\section{Template alias (C++11)}
+
+Un template alias funziona come un \textbf{typedef parametrizzato},
+utile per dare un nome comodo a un'istanziazione parziale di un template
+piu' complesso:
+\begin{lstlisting}[language=C++]
+template <typename K, typename V>
+using TreeMap = std::map<K, V>;
+
+template <typename K, typename V>
+using HashMap = std::unordered_map<K, V>;
+
+// si puo' anche fissare solo alcuni parametri:
+template <typename K>
+using StringHashMap = HashMap<K, std::string>;
+
+StringHashMap<int> myMap;   // == std::unordered_map<int, std::string>
+\end{lstlisting}
+
+\section{Function template abbreviati e concepts (C++20)}
+
+Da C++20, usare \code{auto} (eventualmente vincolato da un \emph{concept})
+come tipo di un parametro di funzione dichiara implicitamente una function
+template abbreviata:
+\begin{lstlisting}[language=C++]
+void f1(auto x);                 // == template <typename T> void f1(T x);
+void f2(Concept1 auto x);        // == template <Concept1 T> void f2(T x);
+void f3(Concept2 auto... xs);    // variadico, vincolato da Concept2
+\end{lstlisting}
+
+\dfn{Concept}{
+    Un \textbf{predicato booleano valutato a compile time}, usato per
+    vincolare i parametri di template. Sono l'equivalente C++ dei wildcard
+    di Java o delle clausole \code{where} di Rust.
+}
+
+\begin{lstlisting}[language=C++]
+template <std::derived_from<Player> T>
+void processListOfPlayers(const std::vector<T>& players) { /* ... */ }
+\end{lstlisting}
+Qui il compilatore \textbf{rifiuta} qualunque \code{T} che non derivi da
+\code{Player} --- un vincolo espresso direttamente nella dichiarazione del
+template, invece che scoperto tardi tramite un errore di sostituzione
+oscuro (come succedeva, storicamente, con SFINAE).
+
+\section{Template metaprogramming}\label{ch:metaprogramming}
+
+\dfn{Template metaprogramming}{
+    Usare il meccanismo dei template per eseguire \textbf{computazioni a
+    compile time}, sfruttando il fatto che i template C++ sono Turing
+    completi (capitolo~\ref{ch:cosa}).
+}
+
+\begin{Example}{Fattoriale a compile time, stile classico (specializzazione)}{}
+\begin{lstlisting}[language=C++]
+// caso induttivo
+template <unsigned int N>
+struct Factorial {
+    static constexpr unsigned int value = N * Factorial<N - 1>::value;
+};
+// caso base, tramite full specialization
+template <>
+struct Factorial<0> {
+    static constexpr unsigned int value = 1;
+};
+// uso: Factorial<6>::value calcola 6! a compile time
+\end{lstlisting}
+Questo e' lo stile "storico" di metaprogramming: si usa la
+\textbf{specializzazione} (capitolo~\ref{ch:specialization}) come se fosse un
+caso base di una ricorsione, esattamente come si farebbe a runtime con una
+funzione ricorsiva.
+\end{Example}
+
+\begin{Example}{Lo stesso fattoriale, stile moderno (\code{constexpr} + \code{if constexpr})}{}
+\begin{lstlisting}[language=C++]
+template <unsigned int N>
+constexpr unsigned int factorial() noexcept {
+    if constexpr (N <= 1) {
+        return 1;
+    } else {
+        return N * factorial<N - 1>();
+    }
+}
+\end{lstlisting}
+Con \code{constexpr} e \code{if constexpr} (C++17) si ottiene lo stesso
+risultato con una sintassi molto piu' simile a una normale funzione
+ricorsiva, senza dover simulare l'\code{if} tramite la specializzazione.
+Per questo motivo oggi il template metaprogramming "puro" e' usato
+soprattutto per fare operazioni \textbf{sui tipi} (non sui valori), dove
+\code{constexpr} non basta.
+\end{Example}
+
+\section{Una parentesi storica: gli ``exported template''}
+
+C++03 introdusse la keyword \code{export} per permettere di dichiarare un
+template in un header senza doverne fornire la definizione in ogni unita' di
+traduzione che lo usa (il vincolo visto nel capitolo~\ref{ch:cosa}). La
+feature venne \textbf{rimossa in C++11}, perche' quasi nessun compilatore la
+implementava davvero (solo Comeau C/C++), era costosa/complessa da
+implementare, dava scarso beneficio pratico, e limitava l'evoluzione futura
+del linguaggio.
+
+Con C++20 e i \textbf{moduli}, la keyword \code{export} e' stata
+reintrodotta, ma con un significato diverso (esportare simboli da un modulo):
+il beneficio di velocita' di compilazione che gli exported template
+avrebbero dovuto offrire e' oggi fornito dai moduli stessi, rendendo la
+vecchia feature ``essenzialmente obsoleta''.
+
+\fontewiki
+
+%==============================================================
+\chapter{Genericita' in Java}\label{ch:java}
+%==============================================================
+
+Il corso non ha slide dedicate ai generics Java: questo intero capitolo si
+appoggia alla voce Wikipedia \emph{Generics in Java}.
+
+\fontewiki[Generics in Java]
+
+\section{Motivazione storica}
+
+I generics sono stati introdotti in Java nel \textbf{2004}, con J2SE 5.0. Nel
+1998 Gilad Bracha, Martin Odersky, David Stoutamire e Philip Wadler avevano
+creato \emph{Generic Java}, un'estensione del linguaggio con supporto per
+tipi generici; quel lavoro e' stato poi incorporato in Java, con l'aggiunta
+del supporto ai wildcard. La motivazione primaria era rendere
+\textbf{rilevabili a compile time} disallineamenti di tipo che prima
+emergevano solo a runtime.
+
+\begin{Example}{Il problema che i generics risolvono}{}
+\begin{lstlisting}[language=Java]
+List v = new ArrayList();
+v.add("test");
+Integer i = (Integer) v.get(0);   // ClassCastException a runtime
+\end{lstlisting}
+Il programmatore inserisce una \code{String} ma tenta un cast a
+\code{Integer}: un errore logico che, senza generics, non viene rilevato
+a compile time.
+\begin{lstlisting}[language=Java]
+List<String> v = new ArrayList<String>();
+v.add("test");
+Integer i = (Integer) v.get(0);   // ERRORE rilevato a compile time
+\end{lstlisting}
+Il parametro di tipo tra parentesi angolari dichiara che la lista contiene
+\emph{esclusivamente} \code{String}: il compilatore puo' ora verificare la
+correttezza dei tipi.
+\end{Example}
+
+\section{Le quattro forme di genericita' (dalla JLS)}
+
+Secondo la Java Language Specification, la genericita' coinvolge quattro
+elementi:
+
+\begin{itemize}
+    \item \textbf{Generic class}: una classe che dichiara una o piu' variabili
+          di tipo, che agiscono da parametri;
+    \item \textbf{Generic interface}: analogo per le interfacce;
+    \item \textbf{Generic method}: un metodo che dichiara variabili di tipo
+          come parametri di tipo formali, con sintassi analoga a quella di
+          classi/interfacce generiche;
+    \item \textbf{Generic constructor}: un costruttore che dichiara
+          indipendentemente le proprie variabili di tipo, permettendo un
+          comportamento generico anche se la classe che lo contiene non e'
+          generica.
+\end{itemize}
+
+\begin{Example}{Una classe generica \code{Entry<K,V>}}{}
+\begin{lstlisting}[language=Java]
+public class Entry<K, V> {
+    private K key;
+    private V value;
+    public Entry(K key, V value) { this.key = key; this.value = value; }
+    public K getKey()   { return key; }
+    public V getValue() { return value; }
+    public String toString() { return String.format("(%s, %s)", key, value); }
+}
+
+Entry<String, String>  grade = new Entry<>("Mike", "A");
+Entry<String, Integer> mark  = new Entry<>("Mike", 100);
+Entry<Integer, Boolean> prime = new Entry<>(13, true);
+\end{lstlisting}
+E un metodo generico:
+\begin{lstlisting}[language=Java]
+public static <T> Entry<T, T> twice(T value) {
+    return new Entry<T, T>(value, value);
+}
+
+Entry<String, String> pair = Entry.twice("Hello");          // dedotto
+Entry<String, String> pair2 = Entry.<String>twice("Hello");  // esplicito
+\end{lstlisting}
+\end{Example}
+
+\subsection{Diamond operator e varargs generici}
+
+Da Java SE 7, l'\textbf{operatore diamond} (\code{<>}) permette di omettere i
+parametri di tipo ridondanti quando sono deducibili dal contesto (vedi
+\code{new Entry<>(...)} sopra).
+
+\wc{Il diamond operator Java funziona come \code{Box<>} in C++}{
+    No: in C++ una sintassi simile a \code{Box<>} si riferisce a
+    \textbf{default template argument} (es. \code{Box<int>} con un default),
+    non a inferenza di tipo. Il diamond operator Java e' invece puro
+    \textbf{type inference} al punto di chiamata. Anche C\# e Kotlin non
+    hanno affatto il diamond operator: usano sintassi alternativa per
+    evitare la ripetizione ridondante dei tipi.
+}
+
+I metodi generici supportano anche i \textbf{varargs}:
+\begin{lstlisting}[language=Java]
+public <T> T[] toArray(T... elements) { return elements; }
+Integer[] array = toArray(1, 2, 3, 4, 5, 6);
+\end{lstlisting}
+
+\subsection{Restrizione sui tipi primitivi}
+
+I tipi primitivi sono \textbf{vietati} come parametri di tipo: serve la
+classe wrapper. \code{Entry<int, int>} non compila; serve
+\code{Entry<Integer, Integer>}. Gli \emph{array} di primitivi, essendo
+oggetti essi stessi, sono invece ammessi: \code{List<int[]>} e' legale.
+
+\section{Wildcard}
+
+I wildcard (\code{?}) sono argomenti di tipo per tipi parametrizzati,
+opzionalmente vincolati.
+
+\begin{Example}{Le tre forme di wildcard}{}
+\begin{lstlisting}[language=Java]
+// unbounded: puo' leggere solo Object, scrivere solo null
+Collection<?> c = new ArrayList<String>();
+c.add(new Object());   // ERRORE a compile time
+c.add(null);           // permesso
+
+// upper-bounded (extends): "produttore", si legge
+List<? extends Number> nums = new ArrayList<Float>();
+nums.add(3.14);         // ERRORE
+nums.add(null);          // permesso
+
+// lower-bounded (super): "consumatore", si scrive
+List<? super Number> nums2 = new ArrayList<Object>();
+nums2.add(42);           // OK: 42 e' un Number
+\end{lstlisting}
+\end{Example}
+
+\dfn{PECS (Producer Extends, Consumer Super)}{
+    Mnemonico di Joshua Bloch (\emph{Effective Java}): usa \code{? extends}
+    quando il parametrizzato \textbf{produce} valori (li leggi); usa
+    \code{? super} quando \textbf{consuma} valori (li scrivi). Corrisponde
+    esattamente alle nozioni di covarianza e controvarianza.
+}
+
+\section{Covarianza degli array vs invarianza dei generics}
+
+\begin{Example}{Perche' i generics sono invarianti (a differenza degli array)}{}
+\begin{lstlisting}[language=Java]
+Object[] objs = new Long[0];
+objs[0] = "string";     // compila; ArrayStoreException A RUNTIME
+
+Collection<Object> objs2 = new ArrayList<Long>();   // ERRORE a compile time
+\end{lstlisting}
+Gli array in Java sono \textbf{covarianti} (\code{Long[]} e' assegnabile a
+\code{Object[]}), ma questo costringe a un controllo a runtime che puo'
+fallire con \code{ArrayStoreException}. I generics sono invece
+deliberatamente \textbf{invarianti}: \code{ArrayList<Long>} non e' un
+\code{Collection<Object>}, e l'errore viene spostato interamente a compile
+time, prima ancora di eseguire il programma.
+\end{Example}
+
+\section{Type erasure: il meccanismo}
+
+\dfn{Type erasure}{
+    L'informazione di tipo generico viene \textbf{rimossa durante la
+    compilazione}. \code{List<Integer>} diventa il semplice \code{List} (non
+    generico) nel bytecode compilato; la correttezza e' garantita dai
+    controlli fatti a compile time, non da alcuna verifica residua a
+    runtime.
+}
+
+\begin{lstlisting}[language=Java]
+List<Integer> li = new ArrayList<>();
+List<Float>   lf = new ArrayList<>();
+if (li.getClass() == lf.getClass()) {
+    System.out.println("Equal");   // stampa "Equal": a runtime sono la stessa classe
+}
+\end{lstlisting}
+
+\subsection{Conseguenze dell'erasure}
+
+\begin{itemize}
+    \item \textbf{Nessuna classe eccezione generica}: una classe generica non
+          puo' estendere \code{Throwable}. Per erasure, un
+          \code{catch (GenericException<Integer> e)} e un
+          \code{catch (GenericException<String> e)} sarebbero
+          indistinguibili --- il secondo sarebbe codice \textbf{irraggiungibile},
+          quindi il linguaggio vieta la cosa a monte;
+    \item \textbf{Nessuna creazione diretta di istanze}: \code{new T()} non
+          compila, perche' a runtime \code{T} non esiste piu';
+    \item \textbf{Restrizioni sui membri static}: esiste \textbf{una sola}
+          copia a runtime di una classe generica; tutte le istanze
+          condividono le variabili static indipendentemente dal parametro di
+          tipo usato, quindi un parametro di tipo non puo' apparire in una
+          dichiarazione static;
+    \item nei \code{throws}, un parametro di tipo e' ammesso solo se
+          \textbf{vincolato} da \code{Throwable}:
+\begin{lstlisting}[language=Java]
+public <T extends Throwable> void throwMeConditional(boolean c, T exception) throws T {
+    if (c) throw exception;
+}
+\end{lstlisting}
+\end{itemize}
+
+\dfn{Reificazione}{
+    Gli \textbf{array sono reificati}: portano l'informazione di tipo a
+    runtime (ogni tipo \code{T} ha un corrispondente \code{T[]}). I
+    \textbf{generics non sono reificati}: un oggetto di tipo generico perde,
+    a runtime, i dettagli di rappresentazione che aveva a compile time. E'
+    esattamente questa distinzione che spiega perche' non si possono creare
+    array generici direttamente, e perche' \code{instanceof} su un tipo
+    parametrizzato concreto sia vietato.
+}
+
+\subsection{Perche' l'erasure: retrocompatibilita'}
+
+La scelta della type erasure ha mantenuto la \textbf{compatibilita'} con i
+programmi Java pre-generics (pre J2SE 5.0), permettendo l'introduzione dei
+generics senza richiedere modifiche alla JVM.
+
+\section{Confronto esplicito con i template C++ (da Wikipedia)}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\footnotesize
+\begin{tabular}{|>{\raggedright\arraybackslash}p{4.2cm}|>{\raggedright\arraybackslash}p{4.2cm}|>{\raggedright\arraybackslash}p{4.2cm}|}
+\hline
+ & \textbf{C++ template} & \textbf{Java generics} \\
+\hline
+Codice compilato & una versione \textbf{per ogni} istanziazione di tipo & \textbf{una sola} versione compilata, indipendentemente dai parametri di tipo usati \\
+\hline
+Specializzazione & si', supportata (cap.~\ref{ch:specialization}) & \textbf{non} supportata \\
+\hline
+Informazione di tipo & disponibile a compile time \emph{e} usata per generare codice specifico & disponibile solo a compile time, poi \textbf{cancellata} \\
+\hline
+Sintassi ``diamond'' & \code{Box<>} = default template argument & \code{Box<>} = inferenza di tipo (Java 7+) \\
+\hline
+\end{tabular}
+\end{center}
+
+\fontewiki[Generics in Java]
+
+\section{Sviluppi futuri: Project Valhalla}
+
+Il progetto \textbf{Valhalla} studia possibili miglioramenti futuri ai
+generics Java, tra cui: \textbf{generic specialization} (permettere
+\code{List<int>} invece di richiedere \code{List<Integer>}) e
+\textbf{reified generics} (rendere i tipi attuali disponibili a runtime).
+Questi miglioramenti dovrebbero convivere con la retrocompatibilita'.
+
+\fontewiki[Generics in Java]
+
+%==============================================================
+\chapter{Genericita' in Python}\label{ch:python}
+%==============================================================
+
+\section{Il punto di vista di Wikipedia: genericita' ``gratuita''}
+
+La voce Wikipedia \emph{Generic programming} osserva che nei linguaggi a
+\textbf{tipizzazione dinamica} il passaggio di valori alle funzioni e
+l'assegnazione di valori sono \textbf{type-indifferent}: la genericita' esiste
+gia' per costruzione. Questo di solito \textbf{non viene nemmeno chiamato
+``genericita'''}, perche' e' una conseguenza diretta del sistema di tipi
+dinamico, non un meccanismo dedicato come i template o i generics.
+
+\fontewiki[Generic programming]
+
+Questo e' esattamente il punto della sezione ``Container Classes Case
+Study'' delle slide (capitolo~\ref{ch:perche}), dove si diceva che in un
+linguaggio a tipizzazione dinamica le abstraction omogenee ed eterogenee "si
+costruiscono con relativa facilita'": le slide parlano di C++ e Java, ma la
+stessa osservazione vale per Python.
+
+\section{Duck typing}
+
+\dfn{Duck typing (duck test)}{
+    "Se cammina come un'anatra e starnazza come un'anatra, allora deve essere
+    un'anatra." Un oggetto e' considerato di un certo tipo se possiede
+    \textbf{tutti i metodi e le proprieta'} richiesti da quel tipo,
+    indipendentemente da qualunque dichiarazione formale di quel tipo.
+}
+
+\fontewiki[Duck Typing]
+
+La differenza rispetto alla \textbf{tipizzazione nominativa} (nominal
+typing): quest'ultima verifica il tipo tramite \textbf{dichiarazione
+esplicita} (es. \code{class MyBag(Sized)} in Python, o
+\code{implements}/\code{extends} in Java); il duck typing valuta il tipo in
+base ai \textbf{comportamenti effettivamente disponibili}. Python e'
+l'esempio principale di linguaggio dove il duck typing e' nativamente
+integrato (insieme, in misura diversa, a Ruby e JavaScript).
+
+\fontewiki[Duck Typing]
+
+\section{Il collegamento teorico con i template: lo stesso ``duck test'', due momenti diversi}
+
+Questo e' il punto di sintesi piu' importante di tutto il documento, e viene
+letteralmente dalla voce Wikipedia sul duck typing:
+
+\mprop{Template e duck typing applicano lo stesso test, in momenti diversi}{
+    Le funzioni template (C++) applicano il \emph{duck test} in un contesto
+    di tipizzazione \textbf{statica}, mantenendo vantaggi e svantaggi di
+    entrambi gli approcci. Il duck typing e' \textbf{piu' flessibile}, perche'
+    richiede solo l'implementazione dei metodi \emph{effettivamente
+    invocati a runtime}; i template richiedono invece che siano valide
+    \emph{tutte} le implementazioni non provabilmente irraggiungibili a
+    compile time.
+}
+
+\fontewiki[Duck Typing]
+
+\nt{
+    Questa e' la stessa idea, vista da un'altra angolazione, del capitolo
+    \ref{ch:cosa}: "non c'e' type checking completo" alla definizione di un
+    template, perche' il controllo e' rimandato all'istanziazione --- che e'
+    l'equivalente, a compile time, del momento in cui in Python
+    l'\code{AttributeError} emergerebbe a runtime se un metodo mancasse
+    davvero. Template e duck typing risolvono lo stesso problema
+    (``non voglio impegnarmi su un'interfaccia esplicita'') a due estremi
+    opposti dell'asse compile-time/runtime.
+}
+
+\section{Structural typing}
+
+Wikipedia distingue ulteriormente: il \textbf{structural typing} e' un
+sistema di tipizzazione \emph{statico} che determina la compatibilita' in
+base alla \textbf{struttura} del tipo; il duck typing e' invece
+\emph{dinamico} e valuta solo la parte di struttura effettivamente usata a
+runtime. Linguaggi come TypeScript, Elm e \textbf{Python} supportano il
+structural typing a vari livelli.
+
+\fontewiki[Duck Typing]
+
+\notaext
+In Python il modulo \code{typing} realizza concretamente questa idea con
+\code{Protocol}: una classe puo' "soddisfare" un protocollo avendo i metodi
+giusti, senza dichiarare mai un'ereditarieta' esplicita --- e' duck typing
+formalizzato staticamente, verificabile da uno strumento esterno come
+\code{mypy}:
+\begin{lstlisting}[language=Python]
+from typing import Protocol, TypeVar, Generic
+
+class Sized(Protocol):
+    def __len__(self) -> int: ...
+
+def describe(x: Sized) -> str:
+    return f"size {len(x)}"
+
+class MyBag:
+    def __len__(self): return 42
+
+describe(MyBag())   # OK per mypy: MyBag ha __len__, non serve ereditare da Sized
+
+T = TypeVar("T")
+class Box(Generic[T]):
+    def __init__(self, item: T) -> None:
+        self.item = item
+\end{lstlisting}
+
+\wc{I type hint di Python (\code{Generic[T]}, \code{TypeVar}) funzionano come i generics Java}{
+    No: a runtime, di default, Python \textbf{non controlla affatto} i type
+    hint. \code{Box[int]("ciao")} costruisce felicemente un \code{Box} con
+    dentro una stringa, senza alcun errore: i type hint finiscono solo nel
+    dizionario \code{\_\_annotations\_\_} della funzione/classe, pura
+    metadata. L'unico modo di intercettare una violazione e' eseguire uno
+    strumento di analisi statica \textbf{offline} (\code{mypy}) prima di
+    lanciare il programma --- esattamente l'opposto del controllo
+    obbligatorio e automatico che accompagna i generics Java o i template
+    C++.
+}
+
+%==============================================================
+\chapter{Genericita' in C}\label{ch:c}
+%==============================================================
+
+\section{``Function overloading, non true generic programming''}
+
+La voce Wikipedia \emph{Generic programming} e' molto netta sul C: lo
+standard C11 offre le cosiddette \textbf{type-generic expression} tramite la
+keyword \code{\_Generic}, che fornisce una forma di \textbf{overloading di
+funzione}, ma \textbf{non} vera programmazione generica.
+
+\fontewiki[Generic programming]
+
+Questo conferma, con l'autorita' di una fonte esterna al corso, esattamente
+il limite discusso a proposito di \code{\_Generic}: la selezione avviene a
+compile time fra un insieme \textbf{fisso e scritto a mano} di funzioni
+gia' esistenti (una per tipo elencato nella macro), non generazione
+automatica di codice per un tipo arbitrario futuro come farebbe un template.
+
+\section{L'esempio GNU C: macro + \code{typeof} + statement expression}
+
+Wikipedia mostra un esempio interessante di macro ``generica'' che risolve
+un problema classico:
+
+\begin{lstlisting}[language=C]
+#define max(a,b) \
+        ({ typeof (a) _a = (a); \
+           typeof (b) _b = (b); \
+           _a > _b ? _a : _b; })
+\end{lstlisting}
+
+\fontewiki[Generic programming]
+
+\notaext
+Questa macro e' istruttiva soprattutto per \textbf{cosa evita}: la
+classica macro \code{\#define MAX(a,b) ((a)>(b)?(a):(b))} valuta i suoi
+argomenti \textbf{piu' volte} per sostituzione testuale (se \code{a} e'
+un'espressione con effetti collaterali come \code{i++}, viene eseguita due
+volte). Qui invece \code{\_a} e \code{\_b} sono variabili temporanee, create
+una sola volta dentro uno \emph{statement expression} \code{(\{ ... \})}
+--- un'estensione GNU, non C standard --- e \code{a}/\code{b} vengono quindi
+valutati esattamente \textbf{una volta} ciascuno. \code{typeof} (altra
+estensione GNU) deduce il tipo di \code{\_a}/\code{\_b} dall'espressione
+stessa, dando un minimo di "genericita' sui tipi" pur restando pura
+espansione testuale del preprocessore --- senza alcun controllo di tipo
+reale al momento della scrittura della macro.
+
+\section{Il quadro completo delle tecniche C (slide + Wikipedia)}
+
+Il capitolo sulle slide C++ (sezione~\ref{ch:perche}, "Pre OO Solutions for
+Container Classes") aveva gia' indicato, per i linguaggi a tipizzazione
+statica pre-OO come il C, le \textbf{variant record}/\textbf{union} come
+tecnica per container eterogenei, con il costo di un numero finito di
+alternative e di codice di test/cast "sporco". A quella tecnica si
+affiancano, storicamente:
+
+\begin{itemize}
+    \item \textbf{macro del preprocessore} (sostituzione testuale, zero
+          controllo di tipo, rischio di valutazione multipla come visto
+          sopra);
+    \item \textbf{\code{void*}} (puntatore generico, richiede cast manuali
+          a ogni estrazione, zero type-safety --- e' la tecnica usata da
+          funzioni della libreria standard come \code{qsort});
+    \item \textbf{\code{\_Generic}} (C11): dispatch a compile time su un
+          insieme chiuso di tipi/funzioni scritte a mano.
+\end{itemize}
+
+\wc{\code{\_Generic} e' l'equivalente C dei template}{
+    Secondo la stessa Wikipedia, no: \code{\_Generic} da' overloading su un
+    insieme \textbf{chiuso e predefinito} di funzioni, mentre un template
+    (o un generic Java) si applica a \textbf{qualunque} tipo che soddisfi i
+    requisiti richiesti, \textbf{compresi quelli che non esistevano ancora}
+    quando il template e' stato scritto. Aggiungere un nuovo tipo a
+    \code{\_Generic} richiede di modificare a mano la macro; aggiungere un
+    nuovo tipo a un template richiede solo che quel tipo supporti le
+    operazioni usate nel corpo del template.
+}
+
+%==============================================================
+\chapter{Templates in Depth (dal libro di Eckel)}\label{ch:libro}
+%==============================================================
+
+Il docente ha indicato come approfondimento il libro \emph{Thinking in C++}
+di Bruce Eckel, liberamente accessibile. Il Vol.~2 dedica ai template
+l'intero \textbf{capitolo 5, ``Templates in Depth''}, che presenta i
+template come un vero e proprio \emph{sotto-linguaggio} dentro il C++:
+``i template fanno molto di piu' che creare container generici''.
+
+\fontelibro{cap.~5}
+
+\section{Parametri di template: le quattro forme}
+
+\dfn{Non-type parameter}{
+    Un template puo' essere parametrizzato non solo su un \emph{tipo} ma
+    anche su un \textbf{valore costante noto a compile time}:
+    \code{template<class T, int sz>}. Il valore diventa \textbf{parte del
+    tipo}.
+}
+
+\begin{Example}{Non-type parameter, verificato}{}
+\begin{lstlisting}[language=C++]
+template <class T, int sz>
+class Array {
+    T data[sz];                  // la dimensione fa parte del TIPO
+public:
+    T& operator[](int i) { return data[i]; }
+    int size() const { return sz; }
+};
+
+Array<int, 5>   a5;
+Array<int, 100> a100;
+\end{lstlisting}
+Output verificato: \code{sizeof(Array<int,5>) = 20},
+\code{sizeof(Array<int,100>) = 400} --- sono \textbf{tipi diversi}.
+Un parametro non-type deve essere una \textbf{costante di compilazione}:
+\code{int n; cin >> n; Array<int,n> a;} e' impossibile.
+E' esattamente il meccanismo di \code{std::array<T,N>}.
+\end{Example}
+
+\fontelibro{cap.~5, ``Non-type parameters''}
+\fonteprove{T04\_libro\_nontype\_typename.cpp}
+
+\dfn{Default template argument}{
+    Come le funzioni, i template ammettono valori di default:
+    \code{template<class T = int, int sz = 10>}, cosi' che
+    \code{ArrayConDefault<>} sia gia' utilizzabile.
+}
+
+\dfn{Template template parameter}{
+    Un parametro che e' esso stesso un \emph{template} (non un tipo
+    concreto), permettendo un'astrazione di livello superiore.
+}
+
+\mprop{Sono proprio queste le feature che mancano ai generics}{
+    Default template argument, non-type argument e template template
+    argument sono tre delle cinque funzionalita' che Wikipedia elenca
+    come \textbf{assenti} nei generics di Java e .NET
+    (capitolo~\ref{ch:confronto}).
+}
+
+\section{La keyword \code{typename} e i nomi dipendenti}
+
+\wc{\code{typename} e \code{class} sono sempre intercambiabili}{
+    Sono equivalenti \emph{solo} nella lista dei parametri di template.
+    \code{typename} ha un \textbf{secondo uso, non opzionale}:
+    disambiguare i \textbf{nomi dipendenti} dentro il corpo di un template.
+}
+
+\fontelibro{cap.~5, ``The typename keyword''}
+
+\begin{Example}{Perche' serve \code{typename}}{}
+\begin{lstlisting}[language=C++]
+template <typename Container>
+void stampaPrimo(const Container& c) {
+    typename Container::const_iterator it = c.begin();
+    //  ^^^^^^^^ senza questo, errore oscuro
+    std::cout << *it;
+}
+\end{lstlisting}
+Senza \code{typename}, il compilatore assume di default che
+\code{Container::const\_iterator} \textbf{non sia un tipo} (potrebbe essere
+un dato statico), e interpreta la riga come un'\emph{espressione}
+(una moltiplicazione!). L'errore che ne risulta e' notoriamente
+incomprensibile.
+\end{Example}
+
+\fonteprove{T04\_libro\_nontype\_typename.cpp}
+
+\section{Overloading e ordinamento parziale}
+
+Piu' function template possono coesistere: il compilatore sceglie il
+\textbf{match piu' specializzato}, secondo le regole di \emph{partial
+ordering}. Il libro segnala anche una complicazione pratica: prendere
+l'\textbf{indirizzo} di una function template richiede un'istanziazione
+esplicita, perche' il compilatore non ha argomenti da cui dedurre i tipi.
+
+\fontelibro{cap.~5, ``Function templates''}
+
+\section{Gli idiomi: traits, policies, CRTP}
+
+Il capitolo dedica una sezione ai \emph{template programming idioms}, cioe'
+agli usi dei template che vanno oltre il container generico.
+
+\dfn{Traits}{
+    Informazioni sul \emph{tipo} codificate dentro classi template, che
+    permettono \textbf{decisioni a compile time}: proprieta' numeriche,
+    categorie di iteratori, codifiche di caratteri. Consentono ad un
+    algoritmo di \emph{adattarsi} al proprio parametro di template.
+}
+
+\dfn{Policies}{
+    Parametri di template che \textbf{controllano il comportamento} di un
+    algoritmo, permettendo un design flessibile \textbf{senza overhead a
+    runtime} (l'esempio classico sono gli \emph{allocator} dei container
+    della STL).
+}
+
+\dfn{CRTP --- Curiously Recurring Template Pattern}{
+    Una classe \textbf{eredita da un template parametrizzato su se stessa}:
+    \code{struct Der : Base<Der>}. Permette \textbf{polimorfismo statico
+    senza funzioni virtuali} --- si scambia il dispatch dinamico per
+    un'astrazione a costo zero.
+}
+
+\fontelibro{cap.~5, ``Template programming idioms''}
+
+\begin{Example}{CRTP: polimorfismo senza vtable, verificato}{}
+\begin{lstlisting}[language=C++]
+template <typename Derived>
+struct Base {
+    void interface() {
+        static_cast<Derived*>(this)->implementation();  // dispatch STATICO
+    }
+};
+struct Der1 : Base<Der1> {
+    void implementation() { std::cout << "Der1\n"; }
+};
+\end{lstlisting}
+Output verificato: \code{sizeof(Der1) = 1} byte --- \textbf{nessun vptr}.
+Con una funzione virtuale sarebbero stati 8 byte (il vptr).
+Tutto il dispatch e' risolto a compile time e inlineabile.
+\end{Example}
+
+\fonteprove{T05\_libro\_crtp\_traits\_metaprog.cpp}
+
+\nt{
+    \textbf{Collegamento con l'altro fascicolo:} il CRTP e' l'esatto
+    equivalente C++ dell'idioma Java \code{class Enum<E extends Enum<E>>}
+    (\emph{F-bounded polymorphism}). Stessa idea --- una base generica che
+    ``sa'' quale sia il tipo concreto che la deriva --- realizzata con due
+    strategie di genericita' opposte: monomorfizzazione (nessun residuo a
+    runtime) contro erasure.
+}
+
+\section{Metaprogramming ed expression templates}
+
+Oltre al fattoriale a compile time (capitolo~\ref{ch:moderne}), il libro
+introduce le \textbf{expression templates}: una tecnica sofisticata che
+\emph{cattura le operazioni} dentro strutture template prima di valutarle,
+permettendo ottimizzazioni --- per esempio, nell'aritmetica su vettori,
+\textbf{evitare la creazione di temporanei} intermedi. E' la base di
+librerie di calcolo numerico ad alte prestazioni come Eigen e Blitz++.
+
+\fontelibro{cap.~5, ``Template metaprogramming''}
+
+\section{I due modelli di compilazione}
+
+\dfn{Inclusion model}{
+    Le definizioni dei template stanno negli \textbf{header}. Costringe a
+    ricompilare tutto quando un template cambia, ma rende immediata la
+    compilazione separata. E' il modello universalmente usato, ed e' il
+    motivo della regola vista nel capitolo~\ref{ch:cosa}.
+}
+
+\dfn{Separation model (\code{export})}{
+    La keyword \code{export} avrebbe dovuto permettere di mettere le
+    implementazioni dei template in file sorgente separati, risolvendo i
+    problemi di efficienza di compilazione nei progetti grandi. Il libro la
+    descrive come ``raramente implementata'' --- ed e' infatti stata
+    \textbf{rimossa in C++11} (capitolo~\ref{ch:moderne}).
+}
+
+\fontelibro{cap.~5, ``Compilation models''}
+
+\nt{
+    Il libro avverte inoltre che i \textbf{nomi dentro i template} seguono
+    regole di lookup complesse: i nomi dipendenti sono risolti in modo
+    diverso, e le dichiarazioni \code{friend} dentro un template richiedono
+    attenzione per mantenere le relazioni di accesso volute.
+}
+
+%==============================================================
+\chapter{Sintesi trasversale}\label{ch:confronto}
+%==============================================================
+
+Wikipedia sottolinea un punto su cui le slide non si spingono, ma che e'
+esattamente il tipo di domanda che il docente pone all'esame: template C++,
+generics Java e generics .NET sono spesso considerati simili, ma
+\textbf{i generics imitano solo il comportamento di base dei template C++}.
+
+\fontewiki
+
+\dfn{Cosa manca ai generics rispetto ai template C++}{
+    Funzionalita' avanzate dei template C++ che i generics (Java, .NET) non
+    offrono:
+    \begin{itemize}
+        \item \textbf{explicit specialization} (capitolo~\ref{ch:specialization});
+        \item \textbf{partial specialization} (solo per le classi);
+        \item \textbf{default template argument};
+        \item \textbf{non-type template argument} (es. \code{Array<char, 6>});
+        \item \textbf{template template argument}.
+    \end{itemize}
+    Queste funzionalita' avanzate sono cio' che rende possibili librerie
+    sofisticate di template metaprogramming come Boost, STLSoft e la STL
+    stessa.
+}
+
+\nt{
+    Storicamente, il concetto di template non era presente in linguaggi come
+    Java e C\# 1.0. Java ha poi adottato i \textbf{generics} (che imitano il
+    comportamento di base dei template, ma tecnicamente sono un meccanismo
+    diverso --- \emph{erasure} invece di generazione di codice); anche C\# ha
+    aggiunto i generics, in .NET 2.0. I generics di Ada, al contrario,
+    \textbf{precedono} i template C++.
+}
+
+\fontewiki
+
+\section{Tabella comparativa a quattro vie}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\setlength{\tabcolsep}{4pt}
+\footnotesize
+\begin{tabular}{|>{\raggedright\arraybackslash}p{2.0cm}|>{\raggedright\arraybackslash}p{3.0cm}|>{\raggedright\arraybackslash}p{3.0cm}|>{\raggedright\arraybackslash}p{3.0cm}|>{\raggedright\arraybackslash}p{2.6cm}|}
+\hline
+ & \textbf{C} & \textbf{C++} & \textbf{Java} & \textbf{Python} \\
+\hline
+Meccanismo & nessuno strutturato: macro, \code{void*}, \code{\_Generic} (insieme chiuso) & template: generazione di codice a compile time & generics: type erasure a compile time & nessuno: tipizzazione dinamica, duck typing \\
+\hline
+Quando si applica il duck test & mai in modo generale & a compile time, su chi verrebbe istanziato & a compile time, entro i bound dichiarati & a runtime, solo sui metodi davvero invocati \\
+\hline
+Codice a runtime & identico a quanto scritto a mano & una copia per tipo istanziato (monomorfizzazione) & una sola copia condivisa (erasure) & un solo oggetto codice, nessuna specializzazione \\
+\hline
+Type-safety & nessuna (cast manuali) & completa, ma solo dopo l'istanziazione & completa a compile time, persa a runtime & nessuna di default; opzionale e offline con mypy \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Il filo che lega tutto}
+
+Il punto piu' importante da portare all'esame, che nessuna delle fonti
+isolate dice esplicitamente ma che emerge mettendole a confronto: template
+C++, generics Java e duck typing Python sono \textbf{tre risposte allo
+stesso identico problema} (evitare di duplicare codice per tipi diversi,
+capitolo~\ref{ch:perche}), che differiscono solo per \textbf{quando}
+verificano che il tipo "vada bene" (compile time con generazione di codice,
+compile time con erasure, runtime senza generazione), non per \textbf{cosa}
+verificano (che il tipo supporti le operazioni richieste --- il "duck test",
+capitolo~\ref{ch:python}). C, privo di entrambi i meccanismi, e' li' a
+ricordare cosa succede quando quel controllo, a qualunque livello, semplicemente
+\textbf{non c'e'}.
+
+%==============================================================
+\chapter{L'esercizio proposto dal corso}\label{ch:esercizio}
+%==============================================================
+
+Le slide concludono con un esercizio proposto, che chiede di completare
+l'implementazione di una \code{List<T>} e di uno \code{Stack<T>} generici.
+
+\begin{Example}{Scheletro di \code{List<T>} da completare}{}
+\begin{lstlisting}[language=C++]
+template <class T> class List {
+public:
+    void add(T);
+    T firstElement;
+    List<T> * nextElements;
+};
+
+List<int>    A;
+List<double> B;
+
+template <class T> int length(List<T> & X) {
+    if (X==0) return 0;
+    return 1 + length(X.nextElements);
+}
+\end{lstlisting}
+\end{Example}
+
+\fonteslide{39}
+
+\begin{Example}{Scheletro di \code{Stack<T>} da completare}{}
+\begin{lstlisting}[language=C++]
+template <class T> class Stack {
+public:
+    void Push(T);
+    T Pop();
+};
+template <class T> void Stack<T>::Push(T arg) {
+    //...
+};
+template <class T> T Stack<T>::Pop() {
+    //...
+};
+
+Stack<int>    s1;
+Stack<double> s2;
+s1.Push(1);
+s1.Push(1.0);
+\end{lstlisting}
+\end{Example}
+
+\fonteslide{40}
+
+\nt{
+    Da notare: la sintassi \code{template <class T> void Stack<T>::Push(T arg)
+    \{ ... \}} per definire fuori dalla classe un metodo di una class
+    template va sempre ripetuta con la keyword \code{template
+    <class T>} anche nella definizione --- esattamente come visto nella
+    tecnicalita' declaration/definition/instantiation del
+    capitolo~\ref{ch:cosa}: la \emph{definizione} di \code{Push} e \code{Pop}
+    e' essa stessa un template, non ancora una funzione concreta.
+}
+
+%==============================================================
+\chapter{Riepilogo}\label{ch:riepilogo}
+%==============================================================
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\footnotesize
+\begin{tabular}{|>{\raggedright\arraybackslash}p{3.2cm}|>{\raggedright\arraybackslash}p{9.5cm}|}
+\hline
+\textbf{Concetto} & \textbf{Punto chiave} \\
+\hline
+Motivazione & evitare la duplicazione di codice per container che differiscono solo per il tipo degli elementi (cap.~\ref{ch:perche}) \\
+\hline
+Non fully generic & nessun type checking completo alla definizione; tutto e' rimandato all'istanziazione, per poter generare solo il codice necessario (cap.~\ref{ch:cosa}) \\
+\hline
+Function template & il compilatore \emph{deduce} i parametri dagli argomenti della chiamata; alcuni errori (es. \code{operator*} mancante) emergono solo all'istanziazione (cap.~\ref{ch:function}) \\
+\hline
+Class template & nessuna deduzione: i parametri vanno sempre specificati; ogni istanziazione e' una classe indipendente e scorrelata dalle altre (cap.~\ref{ch:class}) \\
+\hline
+Specialization & si puo' sovrascrivere il codice generato per un tipo specifico (es. \code{char*} con \code{strcmp}); parziale solo per le classi (cap.~\ref{ch:specialization}) \\
+\hline
+Oltre le slide & variable template, non-type/template-template parameter, variadic template, alias, concepts, metaprogramming (cap.~\ref{ch:moderne}) \\
+\hline
+Java & generics con \emph{type erasure}: una sola copia a runtime, wildcard e PECS, invarianza contro la covarianza degli array (cap.~\ref{ch:java}) \\
+\hline
+Python & nessun meccanismo dedicato: genericita' ``gratuita'' della tipizzazione dinamica, duck typing, \code{Protocol} come duck typing formalizzato (cap.~\ref{ch:python}) \\
+\hline
+C & nessuna vera genericita': macro (rischio di doppia valutazione), \code{void*}, \code{\_Generic} (overloading su un insieme chiuso, non generazione di codice) (cap.~\ref{ch:c}) \\
+\hline
+Vs. generics & i generics (Java/.NET) imitano solo il comportamento base dei template: mancano specializzazione, default argument, non-type/template-template argument (cap.~\ref{ch:confronto}) \\
+\hline
+Il filo che lega tutto & template, generics ed erasure, e duck typing sono tre risposte allo stesso problema, che differiscono solo per \emph{quando} verificano il ``duck test'' (cap.~\ref{ch:confronto}) \\
+\hline
+\end{tabular}
+\end{center}
+
+\section*{Fonti}
+\addcontentsline{toc}{section}{Fonti}
+
+\begin{itemize}
+    \item Slide del corso: \emph{Templates in C++} (\code{20250922.TemplatesInCpp.pdf}), 40 pagine --- fonte primaria per i capitoli~\ref{ch:perche}--\ref{ch:specialization} e~\ref{ch:esercizio}.
+    \item Wikipedia, \emph{Template (C++)}, \url{https://en.wikipedia.org/wiki/Template_(C++)} --- fonte per gli approfondimenti storici, le funzionalita' moderne del capitolo~\ref{ch:moderne} e l'apertura del confronto con i generics del capitolo~\ref{ch:confronto}.
+    \item Wikipedia, \emph{Generics in Java}, \url{https://en.wikipedia.org/wiki/Generics_in_Java} --- fonte primaria del capitolo~\ref{ch:java}.
+    \item Wikipedia, \emph{Generic programming}, \url{https://en.wikipedia.org/wiki/Generic_programming} --- fonte per la genericita' ``gratuita'' di Python (cap.~\ref{ch:python}) e per il C (cap.~\ref{ch:c}).
+    \item Wikipedia, \emph{Duck typing}, \url{https://en.wikipedia.org/wiki/Duck_typing} --- fonte primaria del capitolo~\ref{ch:python}, in particolare del collegamento teorico template/duck typing.
+    \item Bruce Eckel, \emph{Thinking in C++}, Vol.~2, cap.~5
+          (\emph{Templates in Depth}), accessibile liberamente:
+          \url{https://web.mit.edu/merolish/ticpp/TicV2.html\#_Toc53985706}
+          --- fonte primaria del capitolo~\ref{ch:libro}.
+    \item Cartella \code{prove/} (file \code{T01}--\code{T08},
+          \code{es\_T01}--\code{es\_T02}): ogni esempio citato con
+          ``Verificato in \dots'' e' stato \textbf{compilato ed eseguito}
+          su questa macchina, non solo descritto.
+\end{itemize}
+
+\end{document}

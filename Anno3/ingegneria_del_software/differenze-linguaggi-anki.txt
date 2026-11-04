@@ -1,0 +1,118 @@
+#separator:tab
+#html:true
+#notetype:Basic
+#deck:Ingegneria del Software::Differenze tra i linguaggi (C-C++-Java-Python)
+
+Quali sono le <b>4 dimensioni fondamentali</b> da cui discendono quasi tutte le differenze tra C, C++, Java e Python?	<b>Paradigma</b>, <b>tipizzazione</b> (statica/dinamica, forte/debole), <b>modello di esecuzione</b> (nativo/bytecode+VM/interpretato), <b>dispatch dei metodi</b> (early/late binding di default).
+
+Qual è la differenza tra tipizzazione <b>statica</b> e <b>dinamica</b>?	Statica: il tipo di ogni espressione è noto e controllato a <b>compile-time</b> (C, C++, Java). Dinamica: i tipi sono associati ai <b>valori</b> e controllati a <b>runtime</b> (Python).
+
+Qual è la differenza tra tipizzazione <b>forte</b> e <b>debole</b>? Dove si colloca <b>C</b>?	Forte: il linguaggio impedisce/rende esplicite le conversioni pericolose. Debole: le conversioni pericolose sono permesse implicitamente. <b>C è staticamente tipato ma debole</b> (cast e aritmetica dei puntatori permettono di reinterpretare la memoria); Java e Python sono <b>forti</b>.
+
+Qual è il <b>modello di esecuzione</b> di C e C++?	<b>Compilazione a codice macchina nativo</b>: il compilatore traduce direttamente in istruzioni CPU; il binario gira "sul metallo", massime prestazioni ma nessuna rete di sicurezza a runtime.
+
+Qual è il <b>modello di esecuzione</b> di Java?	Compilazione in <b>bytecode</b> eseguito da una <b>JVM</b> (macchina virtuale), che aggiunge controlli a runtime (bounds check, type safety, garbage collection) e dà portabilità ("write once, run anywhere").
+
+Qual è il <b>modello di esecuzione</b> di Python (CPython)?	Il sorgente è compilato in <b>bytecode</b> che viene poi <b>interpretato</b> in un ciclo di valutazione; nessun controllo statico dei tipi, gli errori di tipo emergono solo eseguendo la riga.
+
+Come viene gestita la <b>memoria</b> nei 4 linguaggi?	C: <b>manuale</b> (malloc/free). C++: manuale + <b>RAII</b>/smart pointer. Java: <b>garbage collector</b>. Python: GC (<b>reference counting</b> + gestione cicli).
+
+Qual è il comportamento di <b>default del dispatch</b> (early/late binding) nei 4 linguaggi?	C: nessun dispatch dinamico nativo (sempre early). C++: <b>early binding di default</b>, late solo se <code>virtual</code>. Java: <b>sempre late binding</b> (tutti i metodi non statici sono virtuali). Python: <b>sempre late binding</b> (dispatch dinamico via duck typing).
+
+Come si emula il <b>polimorfismo</b> in <b>C</b>, che non ha classi?	Con <b>puntatori a funzione</b> raccolti in una <code>struct</code>: si costruisce a mano quella "tabella delle funzioni virtuali" che C++/Java generano automaticamente.
+
+Perché in <b>C++</b> il dispatch non è virtuale di default, a differenza di Java?	Per <b>efficienza</b> (filosofia "zero-overhead", non paghi per ciò che non usi): il late binding costa un'indirezione (vtable) e impedisce l'inlining; C++ lascia la scelta al programmatore.
+
+Cos'è la <b>Virtual Function Table (VFT/vtable)</b>?	Una tabella, associata a ogni classe con funzioni virtuali, che contiene i <b>puntatori al codice</b> di ciascuna funzione virtuale della classe.
+
+Cos'è il <b>VFTP/vptr</b>?	Un puntatore <b>nascosto</b> che ogni oggetto di una classe con funzioni virtuali contiene, che punta alla vtable della sua classe.
+
+Quali sono i <b>5 passi</b> del late binding a runtime tramite vtable?	1) dal puntatore si raggiunge l'oggetto; 2) si legge il VFTP nell'oggetto; 3) tramite il VFTP si trova la vtable della classe reale; 4) si cerca la entry giusta; 5) si segue il puntatore trovato e si esegue il codice.
+
+Java e C++ implementano il late binding con meccanismi diversi?	No: sono <b>concettualmente identici</b>. Java/JVM ha una tabella dei metodi per classe; "puntatore" nel contesto della vtable significa puntatore C++ <b>oppure</b> riferimento Java.
+
+Come funziona il dispatch dinamico in <b>Python</b> (a differenza della vtable C++/Java)?	Il metodo viene <b>cercato a runtime</b> nel dizionario (<code>__dict__</code>) della classe, seguendo la <b>Method Resolution Order (MRO)</b>. Non esiste il concetto di "virtuale/non virtuale".
+
+Cos'è il <b>duck typing</b>?	"Se cammina come un'anatra e starnazza come un'anatra, è un'anatra": in Python non conta il <b>tipo dichiarato</b> di un oggetto ma solo il fatto che <b>possieda</b> il metodo/attributo richiesto; due classi non imparentate sono interscambiabili se offrono gli stessi metodi.
+
+Qual è la differenza profonda tra <b>generics Java</b> e <b>template C++</b>?	Template C++: <b>monomorfizzazione</b>, il compilatore genera una copia di codice specializzata per ogni tipo usato. Generics Java: <b>type erasure</b>, un'unica copia di bytecode, i parametri di tipo spariscono dopo la compilazione.
+
+Cos'è la <b>monomorfizzazione</b>?	Strategia (C++, Rust) in cui il compilatore genera una <b>copia separata</b> del codice per ciascuna combinazione di parametri di tipo. Massime prestazioni, ma possibile aumento della dimensione del binario (<i>code bloat</i>).
+
+Cos'è la <b>type erasure</b>?	Strategia (Java) in cui i parametri di tipo servono solo al type-checker e vengono <b>cancellati</b> dopo la compilazione: a runtime <code>List&lt;String&gt;</code> è semplicemente <code>List</code>.
+
+Quali sono le <b>conseguenze pratiche</b> della type erasure in Java?	Non si può fare <code>new T()</code>, <code>new T[n]</code>, né <code>o instanceof List&lt;String&gt;</code>; i generics <b>non accettano primitivi</b> (serve <code>List&lt;Integer&gt;</code>, non <code>List&lt;int&gt;</code>, con boxing/unboxing).
+
+Perché i <b>template C++ non sono "generics completi"</b>?	Perché non c'è typechecking completo sulla <b>definizione</b>: finché i tipi restano ignoti il compilatore non può verificare, ad esempio, che <code>r = 2 * t</code> sia lecito; il controllo è rimandato all'<b>istanziazione</b>.
+
+Come si ottiene genericità in <b>C</b>, che non ha template né generics?	Con <b>macro</b> del preprocessore (sostituzione testuale, nessun type-check), con <code>void*</code> (container generico ma type-unsafe, richiede cast a mano), o con <code>_Generic</code> (C11, dispatch statico sul tipo).
+
+Perché <b>Python</b> non ha bisogno di generics?	Per il <b>duck typing</b>: una funzione lavora su qualunque oggetto che supporti le operazioni usate, senza dover dichiarare vincoli di tipo; i "generics" (<code>typing.Generic</code>, <code>TypeVar</code>) esistono solo come <b>annotazioni statiche</b> controllate da tool esterni (mypy), mai a runtime.
+
+Nell'esempio classico <code>maximum("Aladdin", "Jasmine")</code> con un template C++ <code>max(T,T)</code>, cosa succede e perché è un problema?	Il compilatore genera <code>max(char*, char*)</code>, che confronta gli <b>indirizzi</b> dei puntatori invece dei contenuti delle stringhe: risultato inatteso. Si risolve con una <b>specializzazione esplicita</b> del template per <code>char*</code>.
+
+Per le <b>class template</b> C++, il compilatore deduce i parametri di tipo come fa per le function template?	No: per le <b>classi</b> il compilatore <b>non deduce</b> i parametri (non ci sono argomenti da cui dedurli); vanno sempre specificati esplicitamente, es. <code>A&lt;int&gt;</code>, <code>A&lt;double&gt;</code>.
+
+Due <b>specializzazioni</b> dello stesso template C++ (es. <code>A&lt;int&gt;</code> e <code>A&lt;double&gt;</code>) sono in relazione tra loro?	No: sono classi regolari <b>completamente scorrelate</b>, anche se generate dallo stesso template. Non si può assegnare una all'altra senza una conversione esplicita.
+
+Cos'è lo <b>Strategy pattern</b>?	Pattern comportamentale che <b>incapsula una famiglia di algoritmi intercambiabili</b> dietro una stessa interfaccia, permettendo di scegliere (anche a runtime) quale usare senza modificare il codice cliente.
+
+Su quali <b>due meccanismi alternativi</b> si può reggere lo Strategy pattern?	1) <b>Polimorfismo per overriding + late binding</b> (la strategia è un oggetto che implementa un'interfaccia comune); 2) <b>funzioni di prima classe</b> (la strategia è direttamente una funzione passata come argomento).
+
+Perché in <b>Java</b> lo Strategy pattern si realizza per forza con interfacce e polimorfismo, e non con "puntatori a funzione"?	Perché <b>Java non ha puntatori a funzione</b>: prima delle lambda (Java 8), l'unico modo di passare "un comportamento" era incapsularlo in un oggetto che implementa un'interfaccia.
+
+Come si realizza lo <b>Strategy pattern in C</b>?	Con un semplice <b>puntatore a funzione</b> passato al codice cliente: è la forma più antica ed essenziale del pattern (es. <code>typedef int (*Strategy)(int,int);</code>).
+
+Come si realizza lo <b>Strategy pattern in Python</b>?	Passando direttamente una <b>funzione</b> (o qualunque <i>callable</i>, es. una lambda) come parametro: non servono né interfacce né classi, grazie alle funzioni di prima classe.
+
+Quali <b>tre alternative</b> offre <b>C++</b> per realizzare lo Strategy pattern?	1) Classica: <b>classe astratta</b> con metodo <code>virtual</code> puro; 2) moderna: <b>funzione di prima classe</b> via <code>std::function</code>; 3) <b>policy-based design</b>: strategia scelta come parametro di <b>template</b> a compile-time (zero-overhead).
+
+Cos'è una <b>funzione virtuale pura</b> in C++ (<code>virtual f() = 0;</code>) e a cosa corrisponde in Java?	Rende la classe <b>astratta</b> (non istanziabile): è l'equivalente C++ dell'<code>interface</code> Java. Combinando più classi astratte si ottiene l'ereditarietà multipla di tipo.
+
+In Java, la distinzione tra classe <b>nested</b> e <b>inner</b>: qual è la differenza chiave?	<b>Nested (static)</b>: solo per naming/organizzazione, usa solo membri <code>static</code> dell'esterna. <b>Inner (non static)</b>: ogni istanza è legata a un'<b>istanza</b> della classe esterna e accede ai suoi membri d'istanza.
+
+Cos'è una <b>local class</b> in Java, e cosa può usare dell'ambiente circostante?	Una classe dichiarata dentro un blocco/metodo; ha accesso ai membri della classe esterna e alle variabili locali/parametri <code>final</code> (o effectively final) della funzione che la contiene.
+
+Cos'è una <b>anonymous class</b> in Java e quando si usa tipicamente?	Una classe locale <b>senza nome</b>, dichiarata e istanziata in un'unica espressione, con <b>una sola istanza</b>. Tipico uso: implementare al volo un'interfaccia a metodo singolo (es. <code>ActionListener</code>) senza creare una classe dedicata.
+
+Come si dichiara una <b>nested class</b> in <b>C++</b>, e cosa la distingue da quella di Java?	Si definisce semplicemente <b>dentro il corpo</b> della classe esterna (es. <code>class Outer { class Nested {...}; };</code>). In C++ è solo una questione di <b>visibilità e naming</b> (<code>Outer::Nested</code>): non esiste la distinzione Java nested/inner, e non c'è legame automatico con un'istanza esterna.
+
+In C++, una nested class può accedere ai membri <b>privati</b> della classe esterna?	Sì: essendo un <b>membro</b> della classe esterna, una nested class può accedere anche ai membri privati (static o, dato un oggetto, d'istanza) dell'esterna — ma non ha un <code>this</code> implicito verso l'esterna.
+
+Come si ottiene, in <b>C++</b>, l'equivalente di una <i>inner class</i> Java (legata a un'istanza esterna)?	Non esiste automaticamente: bisogna <b>passare esplicitamente</b> un riferimento/puntatore all'oggetto esterno (es. come parametro al costruttore o ai metodi della nested class).
+
+In <b>Python</b>, definire una classe dentro un'altra la rende automaticamente una "inner class" come in Java?	No: una classe annidata in Python si comporta come una <b>static nested class</b> di Java. È solo un <b>attributo</b> della classe esterna (<code>Outer.Inner</code>) e non riceve alcun riferimento automatico a un'istanza esterna.
+
+Qual è il <b>gotcha</b> sullo scope delle classi annidate in Python?	Il corpo di una classe annidata <b>non vede</b> i nomi definiti nel corpo della classe esterna: solo gli scope di <i>funzione</i> (closure), globale e built-in si concatenano (regola <b>LEGB</b>), non gli scope di classe. <code>class Outer: x=1; class Inner: y=x</code> dà <code>NameError</code>.
+
+Come si accede correttamente, in Python, a un membro della classe esterna dal corpo/metodi di una classe annidata?	Qualificandolo esplicitamente con il nome della classe esterna, es. <code>Outer.shared</code> — mai in modo implicito.
+
+Come si ottiene, in <b>Python</b>, l'equivalente di una <i>inner class</i> Java che accede a un'istanza esterna?	Passando <b>esplicitamente</b> l'oggetto esterno (tipicamente <code>self</code>) al costruttore della classe interna, che lo salva come proprio attributo (es. <code>Handle(self)</code>).
+
+Una <b>classe locale</b> in Python (definita dentro una funzione) può leggere le variabili locali della funzione? Serve <code>final</code> come in Java?	Sì: gli scope di <b>funzione</b> si annidano in Python, quindi sia il corpo della classe sia i suoi metodi possono fare <b>closure</b> sui locali della funzione, senza bisogno di alcuna dichiarazione tipo <code>final</code>.
+
+Python ha una sintassi per le <b>classi anonime</b>?	No. Si usano invece <b>lambda</b> (funzioni anonime, una sola espressione) oppure <code>type("Nome", (Base,), {...})</code> per creare una classe al volo; ma spesso non serve nulla: si passa direttamente una funzione dove Java userebbe una classe anonima.
+
+Qual è il meccanismo di <b>namespacing idiomatico</b> in Python, che rende le nested class relativamente rare?	Il <b>modulo</b> (il file <code>.py</code>), non la classe annidata. Le nested class si usano quasi solo per legare un tipo di supporto strettamente alla sua classe (es. <code>Model.Meta</code> in Django).
+
+Cosa succede al <b>tag di una struct annidata</b> in <b>C</b> (a differenza di C++)?	Il tag "leaka" nello <b>scope del file</b>: diventa visibile globalmente, senza vero namespacing. In C++ invece è scoped nella classe esterna (<code>Outer::Inner</code>) e un uso non qualificato dà errore di tipo incompleto.
+
+In <b>C</b>, come si dà a una struct "annidata" accesso ai dati della struct esterna, non essendoci inner class?	Passando <b>esplicitamente un puntatore</b> alla struct esterna — la stessa logica usata per lo Strategy pattern e per l'emulazione delle funzioni virtuali in C.
+
+Le <i>anonymous struct/union</i> del C11 sono l'equivalente delle classi anonime di Java?	No, è un <b>falso amico</b>: sono <b>membri aggregati senza nome</b> che servono per il layout di memoria (es. accedere a <code>s.a</code> invece di <code>s.u.a</code>), non hanno nulla a che vedere con le classi anonime Java.
+
+Riassumendo per i 4 linguaggi: qual è il comportamento di <b>default</b> per una classe/struct definita dentro un'altra?	C: <b>nested</b>, ma il tag leaka a livello file. C++: <b>nested</b> (scoped, <code>Outer::Nested</code>). Java: serve <code>static</code> per essere nested, altrimenti è <b>inner</b> di default. Python: <b>nested</b> di default (equivalente alla static nested di Java).
+
+Cos'è un <b>default method</b> nelle interfacce Java (da Java 8), e perché è stato introdotto?	Un metodo di interfaccia <b>con un corpo</b> (parola chiave <code>default</code>). Serve a far <b>evolvere un'interfaccia</b> senza rompere le classi che già la implementano: aggiungere un nuovo metodo astratto le romperebbe, un default no.
+
+Se una classe Java eredita <b>due default method</b> con la stessa signature da due interfacce diverse, cosa succede?	Se il conflitto non si risolve con le regole di priorità (istanza batte default; il default già "sovrascritto" da un altro è ignorato), il compilatore dà <b>errore</b>: la classe deve fare <b>override esplicito</b>, potendo invocare <code>Interfaccia.super.metodo()</code>.
+
+Perché in Java le <b>interfacce multiple</b> non causano il "diamond problem" del C++?	Perché un'interfaccia non ha <b>stato</b> (variabili d'istanza): Java ammette ereditarietà multipla di <b>tipo</b> (più interfacce) ma solo singola di <b>stato</b> (una superclasse), evitando le ambiguità sui dati tipiche del C++.
+
+Cos'è il <b>diamond problem</b> in C++ e come si risolve?	Se <code>D</code> eredita da <code>B</code> e <code>C</code>, entrambe derivate da <code>A</code>, <code>D</code> contiene <b>due copie</b> di <code>A</code> (ambiguità). Si risolve con l'<b>ereditarietà virtuale</b> (<code>class B : virtual public A</code>), che fa condividere un'unica <code>A</code>.
+
+Come risolve <b>Python</b> l'ereditarietà multipla, evitando ambiguità?	Con la <b>MRO (Method Resolution Order)</b>, calcolata con l'algoritmo di <b>linearizzazione C3</b>, che stabilisce un ordine deterministico di ricerca dei metodi tra le classi base.
+
+Perché è importante saper distinguere <b>overriding</b>, <b>overloading</b> e <b>hiding</b> tra i linguaggi?	Overriding: stessa signature + virtuale ⇒ scelto a <b>runtime</b> (polimorfismo). Overloading: stesso nome, signature <b>diversa</b> ⇒ scelto a <b>compile-time</b>. Hiding (solo C++): un metodo omonimo con signature diversa nella derivata rende <b>invisibili</b> tutti i metodi omonimi della base.
+
+Quando l'<b>overhead del late binding</b> diventa effettivamente un problema pratico?	Solo se un metodo <b>semplice</b> viene chiamato <b>moltissime volte</b>: l'indirezione impedisce l'inlining. Ambiti tipici: sistemi <b>real-time</b>, routine matematiche di base, programmazione di sistema di basso livello.

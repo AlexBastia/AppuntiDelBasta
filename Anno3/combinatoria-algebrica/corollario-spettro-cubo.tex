@@ -1,0 +1,51 @@
+\documentclass{report}
+
+\input{../LatexTemp/preamble.tex}
+\input{../LatexTemp/macros}
+\input{../LatexTemp/letterfonts}
+
+\usepackage[utf8]{inputenc}
+\usepackage{ytableau}
+\ytableausetup{notabloids,smalltableaux,centertableaux}
+
+\setlength{\parindent}{0pt}
+\pagenumbering{gobble}
+
+\begin{document}
+
+\cor{Autovettori e autovalori di $ A(C_n) $}{\label{cor:spettro-cubo}
+  Sia $ P = \{e_1, \ldots, e_n\} $ l'insieme dei vettori di peso $ 1 $ in $ \mathbb{Z}_2^n $, cosicche' la trasformata di Radon $ \Phi_P $ coincide con l'operatore di adiacenza $ A(C_n) $ del cubo. Per ogni $ u \in \mathbb{Z}_2^n $:
+  \begin{itemize}
+    \item l'\textbf{autovettore} associato a $ u $, visto come combinazione lineare dei vertici di $ C_n $, e'
+    \[
+      E_u = \sum_{v \in \mathbb{Z}_2^n} (-1)^{u \cdot v}\, v\,;
+    \]
+    \item il corrispondente \textbf{autovalore} e'
+    \[
+      \lambda_u = n - 2\, \omega(u)\,,
+    \]
+    dove $ \omega(u) $ e' il peso di Hamming di $ u $ (numero di componenti uguali a $ 1 $).
+  \end{itemize}
+  In particolare $ A(C_n) $ ha autovalore $ n - 2k $ con molteplicita' $ \binom{n}{k} $, per $ k = 0, 1, \ldots, n $. Lo spettro e' simmetrico rispetto a $ 0 $ (\(k \leftrightarrow n - k\)), coerentemente col fatto che il cubo e' bipartito.
+}
+
+\pf{Dim}{
+  \textbf{Autovettore.} Ogni $ g \in V = \{g : C_n \to \mathbb{R}\} $ si decompone nella base canonica come $ g = \sum_v g(v)\, \delta_v $. Applicandola al carattere $ \chi_u $:
+  \[
+    \chi_u = \sum_{v \in \mathbb{Z}_2^n} \chi_u(v)\, \delta_v = \sum_{v \in \mathbb{Z}_2^n} (-1)^{u \cdot v}\, \delta_v\,.
+  \]
+  La matrice di $ \Phi_P $ rispetto alla base $ \{\delta_v\} $ coincide con $ A(C_n) $ (rispetto ai vertici $ v $): identificando $ \delta_v \leftrightarrow v $, l'autovettore $ \chi_u $ del teorema di diagonalizzazione corrisponde a $ E_u = \sum_v (-1)^{u \cdot v}\, v $.
+
+  \textbf{Autovalore.} Dal teorema di diagonalizzazione di $ \Phi_P $, l'autovalore associato a $ \chi_u $ e'
+  \[
+    \lambda_u = \sum_{w \in P} (-1)^{u \cdot w} = \sum_{i=1}^{n} (-1)^{u \cdot e_i} = \sum_{i=1}^{n} (-1)^{u_i}\,,
+  \]
+  poiche' $ e_i \cdot u = u_i $. Ci sono $ n - \omega(u) $ indici $ i $ con $ u_i = 0 $ (contributo $ +1 $ ciascuno) e $ \omega(u) $ indici con $ u_i = 1 $ (contributo $ -1 $ ciascuno), quindi
+  \[
+    \lambda_u = (n - \omega(u)) - \omega(u) = n - 2\, \omega(u)\,.
+  \]
+
+  \textbf{Molteplicita'.} Al variare di $ u \in \mathbb{Z}_2^n $, $ \omega(u) $ assume i valori $ 0, 1, \ldots, n $, e $ \#\{u \mid \omega(u) = k\} = \binom{n}{k} $: dunque l'autovalore $ n - 2k $ ha molteplicita' $ \binom{n}{k} $. \Qed
+}
+
+\end{document}

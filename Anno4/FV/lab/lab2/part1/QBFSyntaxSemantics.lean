@@ -69,10 +69,11 @@ def simpf {Var : Type} (f : Formula Var) : Formula Var :=
 
 theorem simp_eval {Var : Type} [DecidableEq Var] (f : Formula Var) (e : Env Var) :
     eval (simpf f) e = eval f e := by
-      induction f <;> grind[ih, simpf, eval];
+      induction f generalizing e <;> grind[simpf]
 
 theorem simp_size {Var : Type} (f : Formula Var) :
-    size (simpf f) ≤ size f := sorry
+    size (simpf f) ≤ size f := by
+      induction f <;> grind[simpf]
 
 
 -- Negation normal form
@@ -108,19 +109,33 @@ def nnf_with {Var : Type} (polarity : Bool) (f : Formula Var) : Formula Var :=
   | .not g => nnf_with (!polarity) g
 
 theorem nnfw_eval {Var : Type} [DecidableEq Var] (polarity : Bool) (f : Formula Var) (e : Env Var) :
-    eval (nnf_with polarity f) e = ((eval f e) = polarity) := sorry
+    eval (nnf_with polarity f) e = ((eval f e) = polarity) := by
+    induction f generalizing e polarity <;> grind[nnf_with, negEval]
 
 def nnf {Var : Type} (f : Formula Var) : Formula Var := nnf_with true f
 
 theorem nnf_eval {Var : Type} [DecidableEq Var] (f : Formula Var) (e : Env Var) :
-    eval (nnf f) e = eval f e := sorry
+    eval (nnf f) e = eval f e := by
+    grind [nnf, nnfw_eval]
 
 
 -- Choose a uniform bound on the size growth of nnf.
-def blowUpConst : Nat := sorry
+def blowUpConst : Nat := 2
 
 theorem nnf_size {Var : Type} (f : Formula Var) :
-    size (nnf f) ≤ blowUpConst * size f := sorry
+    size (nnf f) ≤ blowUpConst * size f := by
+    suffices h : ∀ p, size (nnf_with p f) ≤ blowUpConst * size f from h true
+    intro p
+    rw [blowUpConst]
+    induction f generalizing p with
+    | var s =>
+      by_cases p
+      · have h : p = true := by assumption
+        grind [nnf_with]
+      · have h : ¬p = true := by assumption
+        simp [h, size, nnf_with, negate]
+    | const b | al v g ih | ex v g ih | and l r ih1 ih2 | or l r ih1 ih2 | not g ih => grind [nnf_with]
+
 
 -- Substitution
 
@@ -177,7 +192,47 @@ theorem updatedV_comm {Var : Type} [DecidableEq Var]
   funext v
   grind
 
+theorem eval_of_updateV_not_free {Var : Type} [DecidableEq Var]
+    (t : Formula Var) (v : Var) (b : Bool) (e : Env Var) (h : ¬ free v t) :
+    eval t (updatedV e v b) = eval t e := by
+    induction t generalizing e with
+    | const b => rfl
+    | var s | and l t ih1 ih2 | or l t ih1 ih2 | not g ih => grind [free]
+    | al w g ih | ex w g ih =>
+        by_cases w = v
+        · have h1 : w = v := by assumption
+          subst h1
+          simp [eval, updatedV_same]
+        · have h1 : w ≠ v := by assumption
+          have h2 : ¬ free v g := fun hg => h (by simp only [free]; exact ⟨ h1, hg⟩ )
+          simp [eval]
+          rw [updatedV_comm e v w b false (Ne.symm h1),
+          updatedV_comm e v w b true (Ne.symm h1),
+          ih (updatedV e w false) h2, ih (updatedV e w true) h2]
+
+
 theorem subst_lemma {Var : Type} [DecidableEq Var]
     (f : Formula Var) (x : Var) (t : Formula Var) (e : Env Var)
     (h : freeFor t x f) :
-  eval (subst f x t) e = eval f (updatedV e x (eval t e)) := sorry
+  eval (subst f x t) e = eval f (updatedV e x (eval t e)) := by
+  induction f generalizing e with
+  | var s | const b => grind
+  | al v g ih | ex v g ih =>
+    by_cases vxEq : v = x
+    · have h1 : v = x := by assumption
+      simp [subst, h1, eval, updatedV_same]
+    · have h1 : v ≠ x := by assumption
+      have h2 : ¬free v t ∧ freeFor t x g := by simp [freeFor, h1] at h; apply h
+      have h4 : ¬ free v t := h2.left
+      simp [subst, h1, eval]
+      rw [ih (updatedV e v false) h2.right, ih (updatedV e v true) h2.right,
+          eval_of_updateV_not_free t v false e h4, eval_of_updateV_not_free t v true e h4
+          , updatedV_comm e v x false (eval t e) h1, updatedV_comm e v x true (eval t e) h1]
+  | and l r ih1 ih2 | or l r ih1 ih2 =>
+      simp [subst, eval]
+      obtain ⟨ h1, h2 ⟩ := h
+      grind []
+  | not g ih =>
+    simp [subst, eval]
+    have h1 : freeFor t x g := by dsimp [freeFor] at h; exact h
+    grind

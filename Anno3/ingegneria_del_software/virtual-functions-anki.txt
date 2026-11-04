@@ -1,0 +1,72 @@
+#separator:tab
+#html:true
+#notetype:Basic
+#deck:Ingegneria del Software::Virtual Functions e Late Binding
+
+Cos'è una <b>funzione virtuale</b>?	Un metodo (non statico) di una classe base che può essere <b>"ridefinito"</b> nelle classi derivate. Questa ridefinizione si chiama <b>overriding</b>.
+
+Quali sono le due condizioni necessarie perché avvenga <b>overriding</b>?	• Il metodo sovrascritto (nella classe base) deve essere <b>virtual</b><br>• Il metodo che sovrascrive (nella classe derivata) deve avere la <b>stessa signature</b> e lo <b>stesso tipo di ritorno</b> del metodo sovrascritto
+
+Cosa include la <b>signature</b> di una funzione? Il tipo di ritorno ne fa parte?	Include: nome della funzione, numero di parametri formali, tipi dei parametri formali.<br><b>Il tipo di ritorno NON è incluso</b> nella signature.
+
+Cos'è il <b>prototype</b> di una funzione?	La signature della funzione insieme al suo <b>tipo di ritorno</b>.
+
+I metodi <b>static</b> possono essere overridden?	No, <b>i metodi statici non possono essere overridden</b>.
+
+Se in una classe derivata dichiaro un metodo con stessa signature ma <b>tipo di ritorno diverso</b> rispetto alla classe base, cosa succede?	È un <b>errore di compilazione</b> (C++ ammette solo lievi variazioni "covarianti" del tipo di ritorno).
+
+In <b>Java</b>: se dichiaro nella classe derivata un metodo con lo <b>stesso nome ma signature diversa</b> rispetto alla classe base, avviene overriding?	No: l'<b>overriding non avviene</b>. È invece un caso di <b>overloading</b>.
+
+In <b>C++</b>: se dichiaro nella classe derivata un metodo con lo <b>stesso nome ma signature diversa</b> rispetto alla classe base, cosa succede?	Il/i metodo/i con quel nome nella classe base diventano <b>invisibili ("hiding")</b> nella classe derivata (l'overloading può avvenire o meno a seconda del linguaggio).
+
+Quali sono le <b>tre possibilità</b> quando una funzione virtuale <code>f</code> viene invocata su un oggetto <code>o</code> di classe <code>D</code> derivata da <code>B</code>?	1. <code>f</code> è definita solo in <code>D</code> → si chiama <code>D.f</code><br>2. <code>f</code> è definita solo in <code>B</code> → si chiama <code>B.f</code> (ereditata)<br>3. <code>f</code> è overridden in <code>D</code> → si chiama la versione overridden <code>D.f</code>
+
+Qual è la regola fondamentale per stabilire quale versione di una funzione virtuale viene chiamata su un oggetto?	Si usa la <b>classe reale dell'oggetto</b>, <u>non</u> la classe della variabile/riferimento/puntatore usato per accedervi.
+
+Quando emerge davvero il <b>vantaggio</b> delle funzioni virtuali?	Quando si manipolano oggetti tramite <b>riferimenti o puntatori alla classe base</b>: solo in questo caso il comportamento "virtuale" diventa visibile all'utente.
+
+Nel codice:<br><code>TransmissionChannel tc;<br>tc = Environment.getConnection();<br>tc.transmit("Hello World");</code><br>quale metodo <code>transmit()</code> viene effettivamente chiamato, e perché?	Non necessariamente quello di <code>TransmissionChannel</code>: grazie al <b>late binding</b> (dato che <code>transmit</code> è virtual), viene chiamato il metodo della <b>classe reale dell'oggetto</b> a cui <code>tc</code> fa riferimento a runtime (es. <code>WirelessTransmissionChannel</code> o <code>SmokeSignalsTransmissionChannel</code>).
+
+In <b>Java</b>, quali metodi sono virtual di default?	<b>Tutti i metodi non statici</b> sono virtual: l'overriding è sempre un'opzione.
+
+Come si impedisce l'overriding (e l'hiding) di un metodo in <b>Java</b>? E di un'intera classe?	Dichiarando il metodo <code>final</code>. Dichiarare l'intera classe <code>final</code> impedisce che venga <b>estesa</b> (usata come base per ulteriore derivazione).
+
+In <b>C++</b>, come si dichiara esplicitamente virtual un metodo?	Con la keyword <code>virtual</code> prima della dichiarazione, es.:<br><code>class B {<br>public:<br>&nbsp;&nbsp;virtual void startEngine();<br>};</code>
+
+Cosa succede in <b>C++</b> se NON dichiari virtual un metodo e provi comunque a "sovrascriverlo" in una classe derivata?	Non avviene overriding: il metodo nella derivata semplicemente <b>nasconde (hides)</b> quello della base, e il <b>late binding non viene mai eseguito</b> per quel metodo.
+
+Esiste in <b>C++</b> un equivalente della keyword Java <code>final</code>, che impedisca l'hiding di un metodo?	No: in C++ <b>non è possibile impedire l'hiding</b> di un metodo. La derivazione di classe è invece sempre possibile.
+
+In C++, se un metodo è dichiarato <code>virtual</code> nella classe base, è obbligatorio ripetere la keyword <code>virtual</code> quando lo si sovrascrive nella classe derivata?	No, nelle classi derivate la keyword <code>virtual</code> <b>può essere omessa</b> quando si sovrascrive un metodo: resta comunque virtuale.
+
+Cos'è l'<b>early binding</b> (compile-time binding)?	Il meccanismo per cui il compilatore associa, già in fase di compilazione, il punto di chiamata di una funzione all'<b>indirizzo di memoria</b> del codice da eseguire. È il comportamento <b>standard per le funzioni/metodi C++ non virtuali</b>.
+
+Cos'è il <b>late binding</b> (run-time binding)?	Il meccanismo, usato per le funzioni virtuali, per cui il compilatore genera codice che deduce l'indirizzo corretto della chiamata <b>a runtime</b>, invece che a compile-time.
+
+Cos'è la <b>VFT</b> (Virtual Function Table)?	Una tabella associata a <b>ogni classe con funzioni virtuali</b>, contenente i <b>puntatori al codice</b> di ciascuna funzione virtuale della classe.
+
+Cos'è la <b>VFTP</b> (Virtual Function Table Pointer)?	Un puntatore, <b>nascosto all'utente</b>, che ogni oggetto di una classe con funzioni virtuali contiene, e che punta alla VFT della propria classe.
+
+Quali sono i <b>5 passi</b> eseguiti a runtime per completare una chiamata late-bound?	1. Dal puntatore/riferimento si raggiunge l'<b>oggetto</b><br>2. Si cerca la <b>VFTP</b> nell'oggetto<br>3. Tramite la VFTP si trova la <b>VFT della classe reale</b> dell'oggetto<br>4. Si cerca nella VFT l'<b>entry giusta</b> (es. VFP2 per la funzione VF2)<br>5. Tramite il puntatore in quella entry si raggiunge ed <b>esegue</b> il codice corretto
+
+Perché in C++ non si usano sempre metodi virtual, se il late binding è "più elegante" dell'early binding?	Per <b>efficienza</b>: il late binding ha un <b>overhead a runtime</b> rispetto alla chiamata diretta (early binding), che può essere significativo se il metodo è semplice e chiamato molto frequentemente.
+
+In quali contesti l'overhead del late binding può diventare davvero rilevante?	In <b>sistemi real-time</b>, <b>routine matematiche core</b> o <b>programmazione di sistema di basso livello</b>. Nella media dei programmi, invece, è raramente un problema.
+
+Dato:<br><code>Animal a = new Dog();<br>Animal b = new Cat();<br>a.voice();<br>b.voice();</code><br>(voice() è virtual/overridden in Dog e Cat) — qual è l'output e perché?	<code>bau</code><br><code>miao</code><br>Anche se <code>a</code> e <code>b</code> sono dichiarati di tipo <code>Animal</code>, <code>voice()</code> è virtual, quindi grazie al late binding vengono chiamati i metodi delle <b>classi reali</b> <code>Dog</code> e <code>Cat</code>, non quello di <code>Animal</code>.
+
+Gerarchia: <code>A</code> ha <code>virtual f()</code>, <code>g()</code> (non virtual), <code>virtual h()</code>, <code>i()</code> (non virtual).<br><code>a = new B();</code> (a è di tipo <code>A*</code>, B deriva da A e overrida f())<br><code>a->f();</code>	<code>B::f()</code> — <code>f</code> è virtual, quindi il late binding dispatcha sulla <b>classe reale dell'oggetto</b> (B), non sul tipo del puntatore (A*).
+
+Stessa gerarchia di prima:<br><code>A *a = new B();</code><br><code>a->g();</code> (g() è <b>non virtual</b> in A, anche se B la ridefinisce)	<code>A::g()</code> — essendo <code>g</code> <b>non virtual</b>, la chiamata attraverso un puntatore di tipo <code>A*</code> è risolta staticamente (early binding) in base al <b>tipo del puntatore</b>, ignorando la classe reale dell'oggetto.
+
+Nella gerarchia B : public A, se <b>B ridichiara <code>g()</code> come <code>virtual</code></b> (mentre A::g() è non-virtual), e si fa:<br><code>B *b = (B*)a;<br>b->g();</code><br>quale g() viene chiamata?	La versione determinata dinamicamente a partire dalla classe reale dell'oggetto, cercata nella VFT di B in su: essendo <code>g</code> ora virtual a partire da B, il dispatch è dinamico su quel "ramo" della gerarchia (a differenza della chiamata tramite A*, dove g resta non-virtual).
+
+<code>A &arA = *new E();</code> (E deriva, indirettamente, da A; <code>i()</code> è non virtual in A e non ridefinita in modo "virtuale" nella catena)<br><code>arA.i();</code>	Viene chiamato <code>A::i()</code>: essendo <code>i</code> <b>non virtual</b>, la chiamata attraverso un riferimento di tipo <code>A&amp;</code> è risolta in base al <b>tipo statico del riferimento</b> (A), non alla classe reale dell'oggetto (E).
+
+Perché nel codice d'esempio con le classi A,B,C,D,E,G la riga <code>aG.f();</code> (nessun argomento, <code>aG</code> oggetto di classe <code>G</code>) <b>non compila</b>, sapendo che <code>G</code> definisce solo <code>virtual void f(int i)</code>?	Perché <code>G</code> dichiara <code>f(int)</code>, che ha <b>signature diversa</b> da <code>f()</code> (definita/overridden nelle classi base come E). Per la regola di <b>hiding</b> di C++, questo rende <b>invisibili in G</b> tutte le altre versioni (overload) di <code>f</code> ereditate dalle classi base. Quindi <code>G::f()</code> senza argomenti non esiste più dal punto di vista di un oggetto di tipo G.
+
+Perché nel codice d'esempio, con <code>A *a</code> che punta a un oggetto di classe <code>G</code> (dove <code>G</code> definisce solo <code>f(int)</code>), la chiamata <code>a->f(3);</code> <b>non compila</b>?	Perché la chiamata (potenzialmente virtuale) avviene attraverso un puntatore di tipo <code>A*</code>: le uniche funzioni <b>chiamabili</b> sono quelle <b>dichiarate in A</b> con quella signature, anche se l'oggetto puntato è di una classe derivata. Il compilatore cerca <code>A::f(int)</code>, che <b>non esiste in A</b>.
+
+Nel codice d'esempio, se ho <code>G *pG = (G*)a;</code> (dove a punta a un oggetto G) e chiamo <code>pG->f(3);</code>, questa volta compila. Perché?	Perché <code>pG</code> è di tipo <code>G*</code>, e <code>G</code> dichiara esplicitamente <code>virtual void f(int i)</code>: la chiamata trova direttamente quella funzione nella classe puntata dal tipo del puntatore, senza il problema di visibilità che si aveva passando per <code>A*</code>.
+
+Nella gerarchia A→B→C, quali metodi della classe <code>A</code> sono <b>virtual</b> e quali no?	<code>A::f()</code> e <code>A::h()</code> sono <b>virtual</b>; <code>A::g()</code> e <code>A::i()</code> sono <b>non virtual</b>.

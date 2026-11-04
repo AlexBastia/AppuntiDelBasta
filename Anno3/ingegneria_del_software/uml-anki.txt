@@ -1,0 +1,126 @@
+#separator:tab
+#html:true
+#notetype:Basic
+#deck:Ingegneria del Software::UML
+
+Quali sono i <b>quattro mezzi</b> che un approccio object-oriented "più o meno" forza lo sviluppatore ad applicare per ottenere alta qualità?	<b>Information Hiding</b>, <b>Abstraction</b>, <b>Modularization</b>, <b>Reuse</b>.
+
+Quali sono i <b>tre concetti chiave</b> di un modello OO?	1. <b>Classi e gerarchie di classi</b> (attributi, metodi, ereditarietà, relazioni con altre classi)<br>2. <b>Oggetti</b>: istanze di classi (attributi con valori assegnati, relazioni istanziate)<br>3. <b>Messaggi e metodi</b> per rispondere a un messaggio
+
+Perché "<b>Inheritance is NOT Instantiation</b>"? Fai un esempio.	Sono due relazioni diverse: l'ereditarietà (is-a) collega classi tra loro (es. la classe <code>Pyrs</code> è derivata dalla classe <code>Dogs</code>), mentre l'istanziazione collega un <b>oggetto specifico</b> alla sua classe (es. <code>Pluto</code> è un'istanza della classe <code>Dog</code> — non importa a quale sotto-classe di Dog appartenga).
+
+Quali sono le <b>quattro fasi</b> del ciclo di vita in cui si usa la rappresentazione a "interacting objects" (Key Idea dell'OO)?	<b>OO Concept Modeling</b>, <b>OO Analysis</b>, <b>OO Design</b>, <b>OO Programming</b>.
+
+Quali sono le <b>tre forme di polimorfismo</b> viste nel corso?	1. <b>Ad-hoc polymorphism</b> (overloading): più funzioni con stesso nome ma parametri diversi<br>2. <b>Generic polymorphism</b>: un template generale definisce una struttura comune a un insieme di classi/funzioni<br>3. <b>Inheritance polymorphism</b> (overriding)
+
+Chi ha sviluppato UML, e chi lo ha poi standardizzato?	Sviluppato da <b>Rational</b> (produttore di CASE tool), che assunse Booch, Rumbaugh e Jacobson per integrare i loro diversi approcci OO. Standardizzato poi dall'<b>OMG</b> (Object Management Group).
+
+Quali sono le <b>due macro-categorie</b> di "Entity" in UML, e alcuni esempi per ciascuna?	<b>Classifier</b> (es. Class, Object, Interface, Datatype, Component, Node, Use Case, Subsystem, ...) e <b>Diagram</b> (es. Class Diagram, ...).
+
+UML ha <b>9+ tipi di diagrammi</b>, raggruppati in due categorie. Quali, e quali diagrammi contengono?	<b>Structural Diagrams</b>: Class, Object, Component, Deployment Diagram.<br><b>Behavioral Diagrams</b>: Use Case, Sequence, Collaboration, Statechart, Activity Diagram.
+
+Quali sono i <b>due obiettivi (goals)</b> della fase di <b>OO Concept Modeling</b>?	1. Capire il <b>contesto operativo</b> del sistema (<i>OO Context Analysis</i>)<br>2. Capire i <b>requisiti effettivi</b> del sistema (<i>OO Requirement Analysis</i>)<br>Spesso ci si riferisce a questa fase solo come "Requirement Analysis", intendendo entrambe le attività.
+
+Cosa include una <b>Use Case Description</b>?	Un <b>Diagram</b>, con <b>actors</b> (ruoli che persone o dispositivi giocano rispetto al sistema) e <b>use cases</b> (casi d'uso del sistema); e una <b>Textual Description</b> che sequenzia le attività.
+
+Cos'è un <b>Actor</b> in UML?	Il <b>ruolo</b> che un utente gioca rispetto al sistema. Gli attori "eseguono" (carry out) gli use case. <b>Non devono necessariamente essere umani</b>, e possono ricevere valore dallo use case oppure semplicemente parteciparvi.
+
+Cos'è la relazione <b>&lt;&lt;extends&gt;&gt;</b> tra use case?	Indica che uno use case è simile a un altro ma fa <b>"un po' di più"</b>. Si cattura prima lo use case semplice/normale, poi per ogni step ci si chiede cosa potrebbe andare storto o diversamente, e si <b>disegna ogni variazione come estensione</b> dello use case base.
+
+Cos'è la relazione <b>&lt;&lt;includes&gt;&gt;</b> tra use case?	Si usa quando un pezzo di comportamento è <b>simile "across" più di uno use case</b> (condiviso da più casi d'uso). Serve a evitare il <b>copy-and-paste</b> di parti delle descrizioni degli use case.
+
+Qual è la <b>differenza di intento</b> tra le relazioni <code>extends</code> e <code>includes</code> tra use case?	<code>extends</code>: lo <b>stesso attore</b> esegue lo use case base e tutte le sue estensioni; l'attore è collegato al caso "base".<br><code>includes</code>: spesso <b>nessun attore</b> è associato allo use case comune incluso, e sono possibili <b>attori diversi</b> per i casi "chiamanti" (caller).
+
+Quali sono i <b>quattro "Facts on Use Cases"</b> elencati nelle slide?	• <b>Granularity</b>: piccola o grande<br>• <i>Spesso</i>: catturano funzionalità visibile all'utente<br>• <b>Sempre</b>: raggiungono un obiettivo discreto<br>• <b>Sempre</b>: descrivono funzionalità richiesta esternamente
+
+Quali sono le <b>tre avvertenze</b> ("Notice that...") sui diagrammi Use Case?	• <b>Non tutti</b> i casi d'uso sono elencati: ogni diagramma fornisce una <b>vista parziale</b><br>• La relazione <code>include</code> supporta la <b>fattorizzazione</b> delle specifiche comuni del sistema<br>• <b>NON c'è corrispondenza 1:1</b> tra schermate (screens) e ovali (use case)
+
+Cosa mostra un <b>Class Diagram</b>?	La <b>struttura statica</b> del sistema: i tipi di oggetti (classi) e le loro relazioni — <b>Association</b>, <b>Subtypes</b>, <b>Dependency</b>. È centrale per la modellazione OO.
+
+Quali sono le <b>tre prospettive (perspectives)</b> da cui si può leggere un class diagram?	1. <b>Conceptual (OOA)</b>: mostra i concetti del dominio, indipendente dall'implementazione<br>2. <b>Specification (OOD)</b>: struttura generale del sistema in esecuzione, interfacce del software (types)<br>3. <b>Implementation (OOP)</b>: dettagli implementativi — è quella più spesso usata da sola
+
+Cosa definisce una <b>Classe</b> in un diagramma UML?	<b>name</b> (nome), <b>attributes</b> (attributi), <b>operations</b> (operazioni). È un insieme di oggetti (set of objects).
+
+Qual è la differenza tra <b>Class</b> e <b>Type</b> in UML?	<b>Type</b>: il protocollo compreso da un oggetto, cioè l'insieme di operazioni utilizzabili.<br><b>Class</b>: un costrutto orientato all'implementazione, che implementa uno o più type.<br>In <b>Java</b> un type corrisponde a un'<code>interface</code>; in <b>C++</b> a una classe astratta. UML 1.3 ha lo stereotipo <code>&lt;&lt;type&gt;&gt;</code>.
+
+Cos'è un'<b>Association</b> in un class diagram? Fai un esempio.	Una relazione tra <b>istanze di classi</b>, es. "a student is registered for a course", "a professor is teaching the course".
+
+Quali informazioni compaiono tipicamente su una linea di associazione in un class diagram?	Il <b>nome dell'associazione</b>, la <b>direzione</b> (freccia/triangolino), la <b>multiplicity</b> di ciascun estremo, e (se necessari) i <b>role name</b> agli estremi.
+
+Come si dovrebbero (e non dovrebbero) <b>nominare le associazioni</b>?	Evitare nomi <b>senza significato</b> come <code>associated_with</code>, <code>has</code>, <code>is_related_to</code>. Il nome è spesso una <b>verb phrase</b>, es. <code>has_part</code>, <code>is_contained_in</code>.
+
+Cos'è un <b>Role</b> in un'associazione UML?	Un'associazione ha <b>due ruoli</b>: il ruolo è una <b>direzione</b> sull'associazione. Può essere etichettato <b>esplicitamente</b> oppure preso implicitamente dal <b>nome della classe target</b>.
+
+Quando è <b>obbligatorio</b> esplicitare il nome del role in un'associazione?	Per le <b>associazioni tra oggetti della stessa classe</b> (es. una <code>Person</code> che "Supervises" un'altra <code>Person</code>: servono i ruoli "Manager" ed "Salesperson" per distinguere i due estremi).
+
+Cos'è la <b>Multiplicity</b> in un'associazione UML?	Indica <b>quanti oggetti</b> possono partecipare alla relazione, per ciascun estremo dell'associazione.
+
+Cosa significano le seguenti notazioni di multiplicity: <code>*</code>, <code>1</code>, <code>0..1</code>, <code>1..100</code>, <code>2,4,5</code>?	<code>*</code> = 0..infinito<br><code>1</code> = 1..1 (esattamente uno)<br><code>0..1</code> = zero o uno<br><code>1..100</code> = un range<br><code>2,4,5</code> = valori discreti enumerati
+
+Cos'è la <b>Navigability</b> in un'associazione, e come si indica graficamente?	Indica in che <b>direzione</b> l'associazione può essere "percorsa" (interrogata). Si indica con una <b>freccia</b>. Un'associazione <b>bi-direzionale</b> ha navigabilità in entrambe le direzioni e <b>richiede i ruoli</b> per una corretta identificazione.
+
+Cosa sono le <b>Responsibilities</b> di una classe rispetto a un'associazione? Fai un esempio.	Ciò che la classe "sa fare/sa" riguardo all'associazione. Esempio: nell'associazione Order–Customer, il <code>Customer</code> ha responsabilità "specifies orders", l'<code>Order</code> ha responsabilità "lists the customer".
+
+Cosa sono le <b>Association classes</b>, e quando sono utili?	Sono classi che rappresentano l'<b>associazione stessa</b>. Utili quando alcuni <b>attributi non appartengono a nessuna delle due classi</b> coinvolte ma all'associazione (es. una classe <code>Authorization</code>, con <i>priority</i> e <i>access rights</i>, tra <code>User</code> e <code>Workstation</code>).
+
+Che differenza c'è tra <b>Attributes</b> e <b>Associations</b> dal punto di vista <b>concettuale</b>?	Concettualmente <b>non c'è molta differenza</b>: gli attributi sono semplicemente a valore singolo (multiplicity 0..1).
+
+Che differenza c'è tra <b>Attributes</b> e <b>Associations</b> dal punto di vista <b>specification/implementation</b>?	La navigabilità va sempre dal tipo verso l'attributo; l'attributo memorizza <b>valori</b>, NON riferimenti (nessuna condivisione di valori tra istanze); spesso memorizza <b>oggetti semplici</b> (numeri, stringhe, date, oggetti Money).
+
+Cosa sono le <b>Operations</b> di una classe? A cosa corrispondono a livello concettuale e a livello di specifica?	Sono i <b>processi che una classe sa eseguire</b>, e corrispondono ai <b>messaggi</b> della classe.<br>Livello <b>concettuale</b>: principali responsabilità.<br>Livello di <b>specifica</b>: messaggi pubblici = interfaccia della classe.<br>Normalmente non si mostrano le operazioni che manipolano semplicemente gli attributi (get/set).
+
+Qual è la sintassi UML per un'operazione? Fai un esempio.	<code>visibility name (parameter list) : return-type-expression</code><br>Esempio: <code>+ assignAgent (a : Agent) : Boolean</code><br>dove <b>visibility</b> è public (<code>+</code>), protected (<code>#</code>), o private (<code>-</code>) — l'interpretazione è dipendente dal linguaggio, e non serve a livello concettuale.
+
+Qual è la differenza tra un'operazione <b>Query</b> e una <b>Modifier</b>?	<b>Query</b> = restituisce un valore <b>senza modificare</b> lo stato interno della classe (le query possono essere eseguite in qualsiasi ordine).<br><b>Modifier</b> = <b>cambia</b> lo stato interno. I messaggi "getting" sono query, quelli "setting" sono modifier.
+
+Cos'è l'<b>Aggregation</b> in UML? Fai un esempio, e dì se è transitiva.	Una <b>forma speciale di associazione</b> in cui i componenti sono <b>"parti di"</b> l'oggetto aggregato (es. una Car ha un motore e delle ruote come sue parti). L'aggregazione è <b>transitiva</b>.
+
+Come si riconosce se una relazione dev'essere modellata come <b>associazione</b> o come <b>aggregazione</b>?	Chiedersi: la descrizione "<b>part of</b>" è corretta per quella relazione? Un'operazione applicata al "whole" (tutto) <b>influisce anche sulle parti</b>?
+
+Qual è la differenza tra <b>Aggregation</b> e <b>Composition</b>?	Nella <b>Composition</b> i componenti appartengono a <b>un solo whole</b>, e le parti "<b>vivono e muoiono</b>" col whole (cascading delete) — usata anche per le associazioni 1..1. Nell'<b>Aggregation</b> le parti possono avere vita autonoma rispetto al whole (es. i giocatori possono essere aggregati alla squadra Flames, ma non "muoiono" quando la squadra si scioglie).
+
+Cos'è la <b>Generalization</b> in UML, in termini insiemistici?	Una <b>relazione di sottoinsieme</b> (subset relation): se <code>Truck</code> è generalizzata da <code>Car</code>, allora <code>Truck ⊆ Car</code> (l'insieme dei truck è un sottoinsieme dell'insieme delle car).
+
+La <b>Generalization</b> è transitiva? E l'<b>Instantiation</b>?	La <b>Generalization</b> È transitiva ("is kind of"). L'<b>Instantiation</b> NON è transitiva ("is instance of").
+
+Cosa succede agli attributi/operazioni di una classe antenata quando si crea una sottoclasse per <b>Generalization</b>?	<b>Extension</b>: si aggiungono nuovi attributi o operazioni.<br><b>Restriction</b>: si aggiungono ulteriori restrizioni sugli attributi ereditati (es. <code>Circle</code> = <code>Ellipse</code> con assi di uguale lunghezza — attenzione: un cambio arbitrario della dimensione di un asse del cerchio può violare la restrizione).
+
+Quali sono le <b>tre prospettive</b> sulla Generalization?	<b>Conceptual</b>: subset relationship.<br><b>Specification</b>: il subtype è conforme all'interfaccia del supertype.<br><b>Implementation</b>: implementation inheritance, subclassing.
+
+Qual è l'avvertenza (<b>BEWARE</b>) riguardo al subclassing?	Non fare subclassing quando il <b>livello concettuale non lo supporta</b> — usare invece l'aggregazione. Esempio dato: "<i>A stack is NOT a list with some overriding!</i>"
+
+Cos'è la <b>Multiple Inheritance</b>?	Una classe eredita caratteristiche da <b>più superclassi</b> contemporaneamente.
+
+Quali sono i <b>vantaggi</b> della Multiple Inheritance?	Più vicina al modo di pensare umano; maggiore <b>flessibilità</b> nello specificare le classi; maggiori possibilità di <b>riuso</b>.
+
+Quali sono gli <b>svantaggi</b> della Multiple Inheritance?	<b>Perdita di chiarezza</b> su quale metodo viene eseguito; implementazione <b>più complicata</b>; è necessaria una <b>conflict resolution</b> per le feature ereditate più volte.
+
+Quali sono le <b>tecniche</b> per ristrutturare un modello ed <b>evitare la Multiple Inheritance</b>?	1. <b>Delegation & aggregation</b><br>2. <b>Inheritance basata sulla feature più importante</b> + delegation del resto<br>3. <b>Generalization basata su dimensioni diverse</b>
+
+Cos'è il "<b>Diamond Problem</b>" con l'ereditarietà multipla in C++, e come lo risolve la <b>virtual inheritance</b>?	Se <code>TextBook</code> eredita sia da <code>EducationalTool</code> che da <code>Book</code>, ed entrambe ereditano (non virtualmente) da <code>ItemToSell</code>, allora <code>TextBook</code> conterrebbe <b>due copie separate</b> di <code>ItemToSell::price</code>. Dichiarando <code>EducationalTool</code> e <code>Book</code> come <code>virtual public ItemToSell</code>, <code>TextBook</code> contiene invece <b>una sola copia condivisa</b> di <code>ItemToSell</code>.
+
+Quali sono le "<b>rules of thumb</b>" per la creazione dei class diagram?	Una classe può far parte di <b>più diagrammi</b>; i diagrammi devono illustrare <b>aspetti specifici</b> (non troppe classi, non troppe associazioni, nascondere attributi/operazioni irrilevanti); servono <b>diverse iterazioni</b> per ottenere un diagramma "corretto".
+
+Cosa si intende con l'avvertenza di evitare le "<b>Heavy classes</b>" (DO NOT DO IT)?	Evitare un design dove un <b>unico "controller"</b> fa tutto (es. un metodo <code>doIt()</code>), mentre le altre classi servono solo per l'incapsulamento dei dati — è un <b>anti-pattern</b> da evitare.
+
+<b>[Esercizio]</b> Nel modello UML della borsa di New York (NYSE), con attori <code>Trader</code> e <code>Sales system</code>: quali relazioni <code>&lt;&lt;includes&gt;&gt;</code> e <code>&lt;&lt;extends&gt;&gt;</code> collegano gli use case "Analyze risks", "Price details", "Evaluation", "Get the deal", "Limit exceeded"?	• "Analyze risks" <code>&lt;&lt;includes&gt;&gt;</code> "Evaluation"<br>• "Price details" <code>&lt;&lt;includes&gt;&gt;</code> "Evaluation"<br>• Il <code>Trader</code> esegue "Analyze risks", "Price details", "Get the deal"; il <code>Sales system</code> è collegato a "Price details" e "Get the deal"<br>• "Limit exceeded" <code>&lt;&lt;extends&gt;&gt;</code> "Get the deal"
+
+<b>[Esercizio]</b> Quali sono i 7 passi della textual description dello use case "Get the deal" (esempio NYSE)?	1. Enter the user name &amp; bank account<br>2. Check that they are valid<br>3. Enter number of shares to buy &amp; share ID<br>4. Determine price<br>5. Check limit<br>6. Send order to NYSE<br>7. Store confirmation number
+
+<b>[Esercizio]</b> Nell'estrazione delle classi candidate dal testo dello use case "frequent flyer" del sito Lufthansa, quali sostantivi/concetti vengono evidenziati come candidate class?	<code>user</code>, <code>frequent flyer</code>, <code>frequent flyer program</code>, <code>reward schema</code>, <code>miles</code>, <code>partner companies</code>, <code>miles earned</code>, <code>status level</code>, <code>address</code> — si estraggono cercando i <b>nomi (nouns)</b> nel testo descrittivo dello use case.
+
+<b>[Esercizio]</b> Nell'esempio "An order comes from one customer: a customer may make several orders", quale multiplicity va assegnata ai due estremi dell'associazione tra <code>Order</code> e <code>Customer</code>?	Lato <code>Order</code>: <code>*</code> (molti ordini). Lato <code>Customer</code>: <code>1</code> (un solo cliente per ordine).
+
+<b>[Esercizio]</b> Nell'esempio con <code>Company</code> "Works for" <code>Person</code>, e la relazione ricorsiva "Supervises" tra due <code>Person</code> con ruoli "Manager" e "Salesperson" — perché in quest'ultimo caso i nomi di ruolo sono obbligatori?	Perché l'associazione è tra oggetti della <b>stessa classe</b> (<code>Person</code> supervisiona <code>Person</code>): senza nomi di ruolo non si potrebbe distinguere quale dei due estremi rappresenta il supervisore e quale il supervisionato.
+
+<b>[Esercizio]</b> Nel diagramma <code>Polygon</code> — <code>Point</code> (3..*, ordered) e <code>Polygon</code> — <code>GraphicsBundle</code> (1): quale delle due relazioni è aggregazione e quale composizione, e come si distinguono graficamente?	<code>Polygon</code>–<code>Point</code> è <b>aggregation</b> (rombo <b>vuoto</b>). <code>Polygon</code>–<code>GraphicsBundle</code> è <b>composition</b> (rombo <b>pieno/colorato</b>): il <code>GraphicsBundle</code> appartiene esclusivamente a quel poligono e "muore" con esso.
+
+<b>[Esercizio]</b> Nella tecnica "<b>Delegation &amp; aggregation</b>" per evitare la multiple inheritance di <code>amphibian vehicle</code> (che eredita sia da <code>land vehicle</code> che da <code>water vehicle</code>): come si ristruttura il modello?	Si rimuove l'ereditarietà multipla e si usa l'<b>aggregazione</b>: <code>vehicle</code> aggrega <code>LandFeature</code> e <code>WaterFeature</code> (che a loro volta possono generalizzare/aggregare <code>VehicleFeature</code>), invece di far ereditare <code>amphibian vehicle</code> sia da <code>land vehicle</code> che da <code>water vehicle</code>.
+
+<b>[Esercizio]</b> Nella tecnica "<b>Most important feature &amp; aggregation</b>" applicata a <code>vehicle</code>/<code>land vehicle</code>/<code>big vehicle</code>/<code>train</code>: come si ristruttura il modello per evitare la multiple inheritance?	<code>train</code> eredita solo dalla feature più importante, <code>land vehicle</code>, e <b>aggrega</b> un oggetto <code>Size</code> per rappresentare la caratteristica "big vehicle", invece di ereditare anche da <code>big vehicle</code>.
+
+<b>[Esercizio]</b> Nella tecnica "<b>Generalization based on different dimensions</b>", come si evita la multiple inheritance quando servono sia il tipo di veicolo (car/train) sia la dimensione (big/small)?	Si crea una gerarchia di generalizzazione <b>annidata su dimensioni diverse in sequenza</b>: <code>vehicle</code> → <code>land vehicle</code> → <code>car</code>/<code>train</code> → (per ciascuno) <code>small car</code>/<code>big car</code>, <code>small train</code>/<code>big train</code> — invece di ereditare da due gerarchie parallele indipendenti.
+
+<b>[Esercizio]</b> Dati i fatti: (1) "Shep is a Border Collie" [instantiation], (2) "A Border Collie is a Dog" [generalization], (3) "Dogs are Animals" [generalization], (4) "A Border Collie is a Breed" [instantiation], (5) "Dog is a Species" [instantiation] — quali composizioni tra questi fatti sono valide, e quali no?	<b>Valide</b>: 1+2 → "Shep is a Dog"; 1+2+3 → "Shep is an Animal" (si compone un'instantiation con una catena di generalization, che è transitiva).<br><b>NON valide</b>: 1+4 → "Shep is a breed???" e 2+5 → "A Border Collie is a Species???" — comporre <b>due instantiation</b> non ha senso, perché l'<b>instantiation non è transitiva</b> (a differenza della generalization).
+
+<b>[Esercizio]</b> Dato il codice:<br><code>class Graph { virtual void draw(){cout&lt;&lt;"in base";} };<br>class LineGraph : public Graph { virtual void draw(){cout&lt;&lt;"in LineGraph";} };<br>class PieChart : public Graph { virtual void draw(){cout&lt;&lt;"in piechart";} };<br>void DrawCorrect(Graph &amp;t){ t.draw(); }</code><br>Chiamando <code>DrawCorrect(lg)</code> e <code>DrawCorrect(pc)</code> (con <code>lg</code> LineGraph e <code>pc</code> PieChart), cosa viene stampato?	<code>in LineGraph</code><br><code>in piechart</code><br>Anche se il parametro di <code>DrawCorrect</code> è dichiarato <code>Graph&amp;</code>, <code>draw()</code> è virtual: per <b>late binding/overriding</b> viene chiamato il metodo della <b>classe reale</b> dell'oggetto passato, non quello di <code>Graph</code>.
