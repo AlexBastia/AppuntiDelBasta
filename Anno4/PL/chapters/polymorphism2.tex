@@ -1,0 +1,329 @@
+% \begin{document}
+\section*{Lecture \#15: Type Inference and Let-Polymorphism}
+
+\section{Polymorphism in OCaml}
+
+In System F, programmers write type abstractions, type applications, and type
+annotations explicitly; e.g.\ using the polymorphic $\mathit{twice}$ at $\kw{int}$
+requires $\mathit{twice}\,[\kw{int}]\ (\lambda n : \kw{int}.\, n + 1)\ 7$. Since
+reconstructing such annotations is undecidable (Wells 1994), a compiler cannot infer
+them in general. Yet in OCaml no types need be written and we still get
+polymorphism:
+\begin{verbatim}
+let twice f x = f (f x)
+\end{verbatim}
+is inferred to have type \texttt{('a -> 'a) -> 'a -> 'a}, which corresponds to the
+System F type $\forall X.\, (X \to X) \to X \to X$. Then
+\texttt{twice (fun n -> n + 1) 7} and \texttt{twice not true} both work, with the
+type variable instantiated automatically at $\kw{int}$ or $\kw{bool}$.
+
+OCaml can do this because its polymorphism is more restricted than System F's. We
+first see how to infer types for the simply-typed $\lambda$-calculus via constraint
+generation and \emph{unification}, then extend this to \emph{let-polymorphism}, the
+restricted polymorphism of OCaml and the ML family.
+
+\section{Type Inference}
+
+In the simply-typed $\lambda$-calculus each argument has an annotation
+$\lambda x : \tau.\, e$. Without annotations, can we still type check by
+\emph{inferring} (or \emph{reconstructing}) the missing types? Yes. Consider
+\[
+\lambda a.\, \lambda b.\, \lambda c.\ \ttkw{if}\ a\,(b + 1)\ \ttkw{then}\ b\ \ttkw{else}\ c.
+\]
+$b$ is used in an addition, so $b : \kw{int}$. $a$ is applied to $b + 1$, so $a$ is a
+function whose argument type is $\kw{int}$. The result of $a\,(b+1)$ is a guard, so
+$a$ returns $\kw{bool}$. Both branches have the same type, so $c$ has the type of
+$b$, namely $\kw{int}$:
+\[
+\lambda a : \kw{int} \to \kw{bool}.\ \lambda b : \kw{int}.\ \lambda c : \kw{int}.\ \ttkw{if}\ a\,(b + 1)\ \ttkw{then}\ b\ \ttkw{else}\ c.
+\]
+
+\subsection{Constraint-based typing}
+
+Given $\Gamma$ and $e$, the algorithm produces a type together with a set of
+\emph{constraints} (equations between types) that must hold for $e$ to be
+well-typed. We extend types with type variables $X, Y, \ldots$ (placeholders for
+unknown types, \emph{not} bound by any $\forall$, unlike System F's) and allow
+abstractions with or without annotations:
+\begin{align*}
+e &::= x \mid \lambda x : \tau.\, e \mid \lambda x.\, e \mid e_1\, e_2 \mid () \mid n \mid e_1 \oplus e_2
+      \mid \ttkw{true} \mid \ttkw{false} \mid \ttkw{if}\ e_1\ \ttkw{then}\ e_2\ \ttkw{else}\ e_3 \\
+\tau &::= \kw{unit} \mid \kw{int} \mid \kw{bool} \mid \tau_1 \to \tau_2 \mid X
+\end{align*}
+The judgment $\Gamma \vdash e : \tau \mid C$ means $e$ has type $\tau$ in $\Gamma$
+provided every constraint in $C$ is satisfied. Read bottom to top, the rules compute
+$\tau$ and $C$ from $\Gamma$ and $e$.
+\[
+\inferrule*[Right=\textsc{CT-Var}]
+  {\Gamma(x) = \tau}
+  {\Gamma \vdash x : \tau \mid \emptyset}
+\qquad
+\inferrule*[Right=\textsc{CT-Int}]
+  { }
+  {\Gamma \vdash n : \kw{int} \mid \emptyset}
+\qquad
+\inferrule*[Right=\textsc{CT-True}]
+  { }
+  {\Gamma \vdash \ttkw{true} : \kw{bool} \mid \emptyset}
+\]
+\[
+\inferrule*[Right=\textsc{CT-Arith}]
+  {\Gamma \vdash e_1 : \tau_1 \mid C_1 \\ \Gamma \vdash e_2 : \tau_2 \mid C_2}
+  {\Gamma \vdash e_1 \oplus e_2 : \kw{int} \mid C_1 \cup C_2 \cup \{\tau_1 = \kw{int},\, \tau_2 = \kw{int}\}}
+\]
+\[
+\inferrule*[Right=\textsc{CT-If}]
+  {\Gamma \vdash e_1 : \tau_1 \mid C_1 \\ \Gamma \vdash e_2 : \tau_2 \mid C_2 \\ \Gamma \vdash e_3 : \tau_3 \mid C_3}
+  {\Gamma \vdash \ttkw{if}\ e_1\ \ttkw{then}\ e_2\ \ttkw{else}\ e_3 : \tau_2 \mid C_1 \cup C_2 \cup C_3 \cup \{\tau_1 = \kw{bool},\, \tau_2 = \tau_3\}}
+\]
+\[
+\inferrule*[Right=\textsc{CT-AbsAnn}]
+  {\Gamma, x : \tau_1 \vdash e : \tau_2 \mid C}
+  {\Gamma \vdash \lambda x : \tau_1.\, e : \tau_1 \to \tau_2 \mid C}
+\qquad
+\inferrule*[Right=\textsc{CT-Abs}]
+  {\Gamma, x : X \vdash e : \tau \mid C \\ X \text{ fresh}}
+  {\Gamma \vdash \lambda x.\, e : X \to \tau \mid C}
+\]
+\[
+\inferrule*[Right=\textsc{CT-App}]
+  {\Gamma \vdash e_1 : \tau_1 \mid C_1 \\ \Gamma \vdash e_2 : \tau_2 \mid C_2 \\ X \text{ fresh}}
+  {\Gamma \vdash e_1\, e_2 : X \mid C_1 \cup C_2 \cup \{\tau_1 = \tau_2 \to X\}}
+\]
+The rules for $()$ and $\ttkw{false}$ are like \textsc{CT-True}. In
+\textsc{CT-AbsAnn} the annotation gives the argument type; in \textsc{CT-Abs} we
+invent a fresh $X$; in \textsc{CT-App} we invent a fresh $X$ for the result and
+require $e_1$ to be a function from the type of $e_2$ to $X$. ``Fresh'' means $X$
+appears nowhere else in the derivation.
+
+For our example, \textsc{CT-Abs} gives $a, b, c$ fresh types $X_a, X_b, X_c$.
+\textsc{CT-Arith} on $b + 1$ gives $\kw{int}$ with constraints
+$\{X_b = \kw{int},\, \kw{int} = \kw{int}\}$. \textsc{CT-App} on $a\,(b+1)$ gives a
+fresh $Y$ and the constraint $X_a = \kw{int} \to Y$. \textsc{CT-If} gives type $X_b$
+and adds $Y = \kw{bool}$ and $X_b = X_c$. So the whole expression has type
+\[
+X_a \to X_b \to X_c \to X_b
+\]
+subject to
+\[
+C = \{X_b = \kw{int},\ \kw{int} = \kw{int},\ X_a = \kw{int} \to Y,\ Y = \kw{bool},\ X_b = X_c\}.
+\]
+
+\subsection{Unification}
+
+A \emph{type substitution} $\sigma$ is a finite map from type variables to types,
+e.g.\ $[X \mapsto \kw{int},\, Y \mapsto \kw{int} \to \kw{int}]$. Applying it replaces
+type variables simultaneously:
+\[
+\sigma(X) =
+\begin{cases}
+\tau & \text{if } X \mapsto \tau \in \sigma \\
+X & \text{if } X \text{ is not in the domain of } \sigma
+\end{cases}
+\qquad
+\sigma(\tau_1 \to \tau_2) = \sigma(\tau_1) \to \sigma(\tau_2),
+\]
+and $\sigma(\tau) = \tau$ for $\kw{unit}, \kw{int}, \kw{bool}$. As nothing binds
+these type variables, capture is not a concern. Composition is
+$(\sigma_1 \circ \sigma_2)(\tau) = \sigma_1(\sigma_2(\tau))$.
+
+$\sigma$ \emph{unifies} a constraint $\tau_1 = \tau_2$ if $\sigma(\tau_1) =
+\sigma(\tau_2)$, and \emph{satisfies} (unifies) a set $C$ if it unifies every
+constraint in $C$. E.g.\ $[X \mapsto \kw{int},\, Y \mapsto \kw{int} \to \kw{int}]$
+unifies $X \to (X \to \kw{int}) = \kw{int} \to Y$, as both sides become
+$\kw{int} \to (\kw{int} \to \kw{int})$.
+
+If $\Gamma \vdash e : \tau \mid C$ and $\sigma$ satisfies $C$, then $e$ has type
+$\sigma(\tau)$ in $\sigma(\Gamma)$; if no substitution satisfies $C$, $e$ is not
+typable. So we need a substitution satisfying $C$:
+\begin{align*}
+\unify(\emptyset) &= [\,] \quad \text{(the empty substitution)} \\
+\unify(\{\tau_1 = \tau_2\} \cup C) &=
+\begin{cases}
+\unify(C) & \text{if } \tau_1 = \tau_2 \\
+\unify(\tsub{C}{\tau_2}{X}) \circ [X \mapsto \tau_2] & \text{if } \tau_1 = X \text{ and } X \notin \ftv(\tau_2) \\
+\unify(\tsub{C}{\tau_1}{X}) \circ [X \mapsto \tau_1] & \text{if } \tau_2 = X \text{ and } X \notin \ftv(\tau_1) \\
+\unify(C \cup \{\tau_1' = \tau_2',\, \tau_1'' = \tau_2''\}) & \text{if } \tau_1 = \tau_1' \to \tau_1'' \text{ and } \tau_2 = \tau_2' \to \tau_2'' \\
+\text{fail} & \text{otherwise}
+\end{cases}
+\end{align*}
+Here $\ftv(\tau)$ is the set of type variables occurring in $\tau$. The algorithm
+fails when asked to unify two different base types, or a base type with a function
+type.
+
+On our example: $X_b = \kw{int}$ yields $[X_b \mapsto \kw{int}]$ and turns
+$X_b = X_c$ into $\kw{int} = X_c$; $\kw{int} = \kw{int}$ is already satisfied;
+$X_a = \kw{int} \to Y$ yields $[X_a \mapsto \kw{int} \to Y]$; $Y = \kw{bool}$ yields
+$[Y \mapsto \kw{bool}]$; finally $\kw{int} = X_c$ yields $[X_c \mapsto \kw{int}]$.
+Applying the composition to $X_a \to X_b \to X_c \to X_b$ gives
+\[
+(\kw{int} \to \kw{bool}) \to \kw{int} \to \kw{int} \to \kw{int},
+\]
+matching the informal result. The algorithm is due to Robinson (1965), applied to type
+inference by Hindley (1969) and Milner (1978).
+
+\thm{Unification}{
+The algorithm $\unify(C)$ always terminates. It succeeds if and only if $C$ has a
+solution, and in that case $\unify(C)$ is a most general solution: for every solution
+$\sigma'$ of $C$ there is a substitution $\sigma''$ such that
+$\sigma' = \sigma'' \circ \unify(C)$.
+}
+
+Thus the inferred type is the most general one: every other type of the expression is
+an instance of it. For $\lambda x.\, x$ we get $X \to X$ with no constraints, so
+$\unify$ returns the empty substitution; every other type, e.g.\ $\kw{int} \to
+\kw{int}$, is an instance of $X \to X$.
+
+\subsection{The occurs check}
+
+The check $X \notin \ftv(\tau)$ before mapping $X$ to $\tau$ is the \emph{occurs
+check}. It prevents cyclic substitutions such as $[X \mapsto X \to Y]$, which make
+sense only with infinite types. For $\lambda x.\, x\,x$, \textsc{CT-Abs} gives $x$ the
+type $X$ and \textsc{CT-App} generates $X = X \to Y$; the occurs check makes
+$\unify$ fail, so $\lambda x.\, x\,x$ is not typable (as in the simply-typed
+$\lambda$-calculus). This is the source of OCaml's error ``The type variable 'a
+occurs inside 'a -> 'b'' for \texttt{fun x -> x x}.
+
+\section{Let-Polymorphism}
+
+Unification finds the most general type, which may contain unconstrained type
+variables; e.g.\ $\lambda x.\, x : X \to X$. We would like to use such a function at
+several types:
+\[
+\ttkw{let}\ \mathit{id} = \lambda x.\, x\ \ttkw{in}\ \ttkw{if}\ \mathit{id}\ \ttkw{true}\ \ttkw{then}\ \mathit{id}\ 1\ \ttkw{else}\ 0
+\]
+(where $\ttkw{let}\ x = e_1\ \ttkw{in}\ e_2$ abbreviates $(\lambda x.\, e_2)\, e_1$).
+With the rules so far, $\mathit{id}$ has the single type $X \to X$, and its two uses
+generate $X = \kw{bool}$ and $X = \kw{int}$, which are unsatisfiable together.
+
+The idea: at a $\ttkw{let}$ we know the whole definition, so we can generalize its
+type to $\forall X.\, X \to X$ and instantiate it with fresh type variables at each
+use. To keep inference decidable, $\forall$ is only allowed at the outside. A
+\emph{type scheme} is
+\[
+s ::= \tau \mid \forall X.\, s,
+\]
+and contexts map variables to type schemes. The types $\tau$ contain no $\forall$ and
+are called \emph{monotypes}.
+
+\subsection{Typing rules}
+
+For variables, abstractions, and $\ttkw{let}$ (other rules as in the simply-typed
+$\lambda$-calculus):
+\[
+\inferrule*[Right=\textsc{T-Var}]
+  {\Gamma(x) = \forall X_1 \ldots X_n.\, \tau}
+  {\Gamma \vdash x : \tsub{\tau}{\tau_1/X_1, \ldots, \tau_n/X_n}{}}
+\qquad
+\inferrule*[Right=\textsc{T-Abs}]
+  {\Gamma, x : \tau_1 \vdash e : \tau_2}
+  {\Gamma \vdash \lambda x.\, e : \tau_1 \to \tau_2}
+\]
+\[
+\inferrule*[Right=\textsc{T-Let}]
+  {\Gamma \vdash e_1 : \tau_1 \\ \Gamma, x : \gen(\Gamma, \tau_1) \vdash e_2 : \tau_2}
+  {\Gamma \vdash \ttkw{let}\ x = e_1\ \ttkw{in}\ e_2 : \tau_2}
+\]
+where $\gen(\Gamma, \tau) = \forall X_1 \ldots X_n.\, \tau$ and $X_1, \ldots, X_n$ are
+the type variables free in $\tau$ but not free in $\Gamma$. We cannot generalize over
+variables free in $\Gamma$: they stand for types of variables still in scope, which
+are not yet known. \textsc{T-Var} instantiates the quantified variables with
+arbitrary monotypes, and \textsc{T-Abs} gives the argument a monotype.
+
+So $\mathit{id}$ gets $\forall X.\, X \to X$ and its two uses instantiate $X$ with
+$\kw{bool}$ and $\kw{int}$; the whole expression has type $\kw{int}$.
+
+$\ttkw{let}$ is no longer just an abbreviation:
+\[
+(\lambda \mathit{id}.\ \ttkw{if}\ \mathit{id}\ \ttkw{true}\ \ttkw{then}\ \mathit{id}\ 1\ \ttkw{else}\ 0)\ (\lambda x.\, x)
+\]
+is not typable, since the $\lambda$-bound $\mathit{id}$ must have a single monotype.
+It is well-typed in System F, but only at $(\forall X.\, X \to X) \to \kw{int}$,
+with a $\forall$ to the left of an arrow. Restricting $\forall$ to the outside of
+type schemes is \emph{prenex polymorphism}; it makes inference decidable, and every
+typable expression has a \emph{principal type scheme} of which all its other types are
+instances.
+
+\subsection{Inference}
+
+Combine constraint generation with unification. To infer $\ttkw{let}\ x = e_1\
+\ttkw{in}\ e_2$ in $\Gamma$:
+\begin{enumerate}
+  \item Generate constraints for $e_1$: $\Gamma \vdash e_1 : \tau_1 \mid C_1$.
+  \item Solve them immediately: $\sigma = \unify(C_1)$.
+  \item Generalize: give $x$ the type scheme $\gen(\sigma(\Gamma), \sigma(\tau_1))$.
+  \item Infer $e_2$ in $\sigma(\Gamma)$ extended with this scheme for $x$.
+\end{enumerate}
+At each use of a variable with scheme $\forall X_1 \ldots X_n.\, \tau$, replace
+$X_1, \ldots, X_n$ by fresh type variables. Constraints for $e_1$ must be solved
+before generalizing, otherwise we would not know which variables are truly
+unconstrained.
+
+This is essentially Hindley--Milner inference (Algorithm~W), the core of type
+inference in OCaml, Haskell, and others. It is fast in practice, though in the worst
+case nested $\ttkw{let}$s can produce types of size exponential in the program.
+
+\subsection{The value restriction}
+
+With references, generalizing every $\ttkw{let}$ is unsound:
+\begin{verbatim}
+let r = ref (fun x -> x) in
+r := (fun n -> n + 1);
+(!r) true
+\end{verbatim}
+If $r$ were generalized to $\forall X.\, (X \to X)\ \kw{ref}$, the assignment could
+use it at $\kw{int}$ and the dereference at $\kw{bool}$, applying an integer function
+to a Boolean. OCaml's \emph{value restriction} generalizes
+$\ttkw{let}\ x = e_1\ \ttkw{in}\ e_2$ only when $e_1$ is a syntactic value (such as a
+function). Otherwise the type variables stay \emph{weak} and the first use fixes
+them: above, the assignment fixes $r : (\kw{int} \to \kw{int})\ \kw{ref}$ and the
+application to \texttt{true} is rejected.
+
+\subsection{Weak type variables}
+
+OCaml prints weak variables as \texttt{'\_weak1}, \texttt{'\_weak2}, \ldots: whereas
+\texttt{'a} means ``for all types'', \texttt{'\_weak1} means one particular, not yet
+determined type.
+\begin{verbatim}
+# let r = ref (fun x -> x);;
+val r : ('_weak1 -> '_weak1) ref
+# r := (fun n -> n + 1);;
+- : unit = ()
+# r;;
+- : (int -> int) ref
+# (!r) true;;
+Error: This expression has type bool but an expression was expected of type int
+\end{verbatim}
+In terms of our algorithm, the value restriction solves the constraints for $e_1$ as
+usual but skips $\gen$. A weak type variable is an unsolved type variable free in the
+typing context; later constraints can solve it, but only once, since it stands for a
+single type. This makes the restriction sound: a reference can only ever hold values
+of one type.
+
+The restriction also applies when nothing is mutable, since an application is not a
+value:
+\begin{verbatim}
+# let ids = List.map (fun x -> x);;
+val ids : '_weak1 list -> '_weak1 list
+\end{verbatim}
+The fix is to $\eta$-expand, making the definition a function (hence a value):
+\begin{verbatim}
+# let ids l = List.map (fun x -> x) l;;
+val ids : 'a list -> 'a list
+\end{verbatim}
+A weak variable cannot escape a compilation unit: if nothing determines it, the
+compiler reports that the type contains type variables that cannot be generalized.
+OCaml in fact uses a \emph{relaxed value restriction} (Garrigue, 2004), which also
+generalizes variables appearing only in covariant positions; e.g.\
+\texttt{let x = List.rev []} has type \texttt{'a list}, since \texttt{'a} does not
+appear under \texttt{ref} or to the left of an arrow.
+
+\section{Summary}
+
+System F gives fully general polymorphism but requires type annotations, as inference
+is undecidable. For the simply-typed $\lambda$-calculus we infer types by generating
+constraints and solving them by unification. Let-polymorphism extends this to a
+restricted polymorphism with $\forall$ only at the outside of type schemes,
+generalized at $\ttkw{let}$ and instantiated at each use. Inference is decidable and
+finds principal types, which is why OCaml can infer polymorphic types for us.
+% \end{document}

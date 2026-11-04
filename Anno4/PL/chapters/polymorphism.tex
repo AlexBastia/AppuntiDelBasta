@@ -339,12 +339,4 @@ free'' from types. For instance, any $f : \forall X.\, X\ \mathit{list} \to X\
 \[
 \mathit{map}\ g\ (f\ l) = f\ (\mathit{map}\ g\ l).
 \]
-
-\section{Type Inference}
-
-Writing type abstractions, applications, and annotations explicitly is tedious. The
-\emph{type reconstruction} problem asks: given an untyped $\lambda$-term $e'$, is
-there a well-typed System F term $e$ with $\erase(e) = e'$? Wells (1994) showed this
-is undecidable. The next lecture introduces \emph{let-polymorphism}, a restricted
-form for which inference is decidable and which underlies OCaml and the ML family.
 % \end{document}
