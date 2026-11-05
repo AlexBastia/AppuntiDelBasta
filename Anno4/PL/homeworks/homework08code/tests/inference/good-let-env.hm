@@ -1,0 +1,2 @@
+(* The let determines the type of the outer variable y. *)
+(fun y -> let z = y + 1 in z : int -> int)

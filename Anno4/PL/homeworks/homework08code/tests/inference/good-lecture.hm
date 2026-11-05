@@ -1,0 +1,2 @@
+(* The example from lecture. *)
+(fun a b c -> if a (b + 1) then b else c : (int -> bool) -> int -> int -> int)

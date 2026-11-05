@@ -1,0 +1,6 @@
+(ocamllex lexer)
+(ocamlyacc parser)
+
+(library
+ (name systemf)
+ (flags (:standard -w -a)))
