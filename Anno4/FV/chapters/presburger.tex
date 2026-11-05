@@ -136,6 +136,10 @@ t_1 < t_2 &\leadsto 0 < t_2 - t_1
 The disjunctions this introduces are removed by computing the DNF again. (The rewrite of equalities is used only for simplicity; in practice equalities are usually handled directly.) After normalization every literal has the form $0 < t$ or $K \mid t$ with $t$ linear.
  
 The one-point rule alone is not enough: we must handle inequalities, not just equalities, and over the integers we cannot always divide exactly, so the variable to eliminate may occur as, e.g., $3y$ rather than $y$.
+
+\nt{
+  In all linear terms, it's possible to group all occurances of a variable into a single occurance.
+}
  
 \subsection{Exposing the variable: making the coefficient $\pm 1$}
  
@@ -162,6 +166,9 @@ where $a_i$, $b_j$, $t_i$ do not contain $x$ (the constraint $M \mid x$ is among
 \[
 \bigwedge_{i,j} a_i + 1 < b_j.
 \]
+\nt{
+  This is only true if $ M = 1 $ and $ D = 0 $ initially.
+}
  
 \subsection{Replacing the variable by test terms}
  
