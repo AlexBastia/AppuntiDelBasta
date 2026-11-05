@@ -183,4 +183,156 @@ Consider a partial order $(A, \sqsubseteq)$.
   \item If $S_1 \subseteq S_2 \subseteq A$ and $\sqcap S_1$ and $\sqcap S_2$ exist, then $\sqcap S_2 \sqsubseteq \sqcap S_1$.
   \item If $\sqcup \emptyset$ exists, it is the least element $\bot$; if $\sqcap \emptyset$ exists, it is the greatest element $\top$. This is because every element is both an upper bound and a lower bound of $\emptyset$: the formulas $\forall x.\, \forall y \in \emptyset.\, y \sqsubseteq x$ and $\forall x.\, \forall y \in \emptyset.\, y \sqsupseteq x$ are valid.
 \end{itemize}
+
+
+\section{Complete Lattices}
+ 
+Recall that a lattice is a partial order in which every two-element set has a least upper bound and a greatest lower bound, so that $\sqcap$ and $\sqcup$ are well-defined binary operations. This means every non-empty finite set $\{x_1, \ldots, x_n\}$ has a least upper bound $x_1 \sqcup \ldots \sqcup x_n$ and a greatest lower bound $x_1 \sqcap \ldots \sqcap x_n$. In general, however, infinite sets in a lattice need not have a lub or a glb.
+ 
+\mlenma{Complete semilattice is a complete lattice}{Let $(A, \sqsubseteq)$ be a partial order such that every set $S \subseteq A$ (including infinite sets) has a greatest lower bound $\sqcap S$. Then every set $S \subseteq A$ also has a least upper bound $\sqcup S$.}
+
+\pf{Proof Idea}{
+  $ B = \{u | u \text{ is an upper bound on } S\} $, $ B \subseteq A $ and by complete-semilattice $ \exists u^* = \sqcap B$. But by definition $ u^* = \sqcup S $.
+}
+ 
+\dfn{Complete lattice}{A \emph{complete lattice} is a lattice in which for every set $S$ (including the empty set and infinite sets) both $\sqcup S$ and $\sqcap S$ exist.}
+ 
+Notes:
+\begin{itemize}
+  \item A complete lattice has a least element, usually denoted $\bot$, and a greatest element, usually denoted $\top$.
+  \item Every finite lattice is complete.
+\end{itemize}
+ 
+\section{Fixed Points and Tarski's Theorem}
+ 
+\dfn{Fixed point}{Given a set $A$ and a function $f : A \to A$, an element $x \in A$ is a \emph{fixed point} (fixpoint) of $f$ if $f(x) = x$.}
+ 
+\dfn{Least and greatest fixpoint}{Let $(A, \le)$ be a partial order and $f : A \to A$ a monotonic function (i.e.\ $x \le y$ implies $f(x) \le f(y)$), and let $S = \{x \mid f(x) = x\}$ be its set of fixpoints. If the least element of $S$ exists, it is called the \emph{least fixpoint}; if the greatest element of $S$ exists, it is called the \emph{greatest fixpoint}.}
+ 
+\dfn{Prefix, postfix and fixed points}{Let $(A, \sqsubseteq)$ be a complete lattice and $G : A \to A$ a monotonic function. Define
+\begin{align*}
+\mathit{Post} &= \{x \mid G(x) \sqsubseteq x\} \quad \text{(postfix points of } G\text{; e.g.\ } \top \text{ is one)},\\
+\mathit{Pre} &= \{x \mid x \sqsubseteq G(x)\} \quad \text{(prefix points of } G\text{)},\\
+\mathit{Fix} &= \{x \mid G(x) = x\} \quad \text{(fixed points of } G\text{)}.
+\end{align*}}
+ 
+Note that $\mathit{Fix} \subseteq \mathit{Post}$ (and likewise $\mathit{Fix} \subseteq \mathit{Pre}$). Moreover:
+\begin{itemize}
+  \item $\bot \in \mathit{Pre}$, and $x \in \mathit{Pre}$ implies $G(x) \in \mathit{Pre}$; hence $G^i(\bot) \in \mathit{Pre}$ for all $i \in \mathbb{N}$.
+  \item $\top \in \mathit{Post}$, and $x \in \mathit{Post}$ implies $G(x) \in \mathit{Post}$; hence $G^i(\top) \in \mathit{Post}$ for all $i \in \mathbb{N}$.
+\end{itemize}
+ 
+\mlenma{Tarski's fixed point theorem}{Let $(A, \sqsubseteq)$ be a complete lattice and $G : A \to A$ monotonic, and let $a = \sqcap \mathit{Post}$. Then $a$ is the least element of $\mathit{Fix}$. Dually, $\sqcup \mathit{Pre}$ is the greatest element of $\mathit{Fix}$.}
+ 
+\pf{Proof}{Let $x$ range over elements of $\mathit{Post}$.
+\begin{itemize}
+  \item From $a \sqsubseteq x$ and monotonicity of $G$ we get $G(a) \sqsubseteq G(x) \sqsubseteq x$.
+  \item So $G(a)$ is a lower bound of $\mathit{Post}$, but $a$ is the greatest lower bound, so $G(a) \sqsubseteq a$. Therefore $a \in \mathit{Post}$.
+  \item $\mathit{Post}$ is closed under $G$ by monotonicity, so $G(a) \in \mathit{Post}$. Since $a$ is a lower bound of $\mathit{Post}$, $a \sqsubseteq G(a)$.
+  \item From $a \sqsubseteq G(a)$ and $G(a) \sqsubseteq a$ we get $a = G(a)$, so $a \in \mathit{Fix}$.
+  \item Since $a$ is a lower bound of $\mathit{Post}$, it is also a lower bound of the smaller set $\mathit{Fix}$, hence the least element of $\mathit{Fix}$.
+\end{itemize}}
+ 
+In fact, the set $\mathit{Fix}$ of all fixpoints is itself a lattice.
+ 
+Tarski's theorem shows that in a complete lattice, a monotonic function $G$ has at least one fixed point, namely the least fixed point $\sqcap \mathit{Post}$. However, the proof does not say how to find it, and how difficult that is depends on the structure of the lattice.
+ 
+\section{Iteration and $\omega$-Continuity}
+ 
+Let $G$ be a monotonic function on a lattice with a bottom element. Let $a_0 = \bot$ and $a_{n+1} = G(a_n)$, giving the increasing sequence
+\[
+\bot \sqsubseteq G(\bot) \sqsubseteq G^2(\bot) \sqsubseteq \cdots,
+\]
+and let $a^* = \bigsqcup_{n \ge 0} a_n$.
+
+\nt{
+  This is a chain (remember PL)
+}
+ 
+\mlenma{The limit is a prefix point}{The value $a^*$ is a prefix point, i.e.\ $a^* \sqsubseteq G(a^*)$.}
+ 
+\pf{Proof sketch}{Since $a_n \sqsubseteq a^*$, monotonicity gives $G(G^n(\bot)) \sqsubseteq G(a^*)$ for all $n$, so $G(a^*)$ is an upper bound of $a_1, a_2, \ldots$, and also of $a_0 = \bot$. Hence $a^* \sqsubseteq G(a^*)$.}
+ 
+In general $a^*$ need not be a fixpoint (a monotonic function on $[0,1]$ can have a jump so that the iteration converges to a point that is not fixed).
+ 
+\dfn{$\omega$-continuity}{A function $G$ is \emph{$\omega$-continuous} if for every chain $x_0 \sqsubseteq x_1 \sqsubseteq \ldots \sqsubseteq x_n \sqsubseteq \ldots$ such that $\bigsqcup_{i \ge 0} x_i$ exists, also $\bigsqcup_{i \ge 0} G(x_i)$ exists and
+\[
+G\Big(\bigsqcup_{i \ge 0} x_i\Big) = \bigsqcup_{i \ge 0} G(x_i).
+\]}
+ 
+\mlenma{Kleene fixed point theorem (special case)}{For an $\omega$-continuous function $G$, the value $a^* = \bigsqcup_{n \ge 0} G^n(\bot)$ is the least fixpoint of $G$.}
+ 
+\pf{Proof}{By $\omega$-continuity,
+\[
+G\Big(\bigsqcup_{n \ge 0} G^n(\bot)\Big) = \bigsqcup_{n \ge 0} G^{n+1}(\bot) = \bigsqcup_{n \ge 1} G^n(\bot).
+\]
+But $\bigsqcup_{n \ge 0} G^n(\bot) = \big(\bigsqcup_{n \ge 1} G^n(\bot)\big) \sqcup \bot = \bigsqcup_{n \ge 1} G^n(\bot)$ because $\bot$ is the least element. Thus $G(a^*) = a^*$ and $a^*$ is a fixpoint.
+ 
+To show it is the least, let $c$ satisfy $G(c) = c$. We need $\bigsqcup_{n \ge 0} G^n(\bot) \sqsubseteq c$, which is equivalent to $\forall n \in \mathbb{N}.\, G^n(\bot) \sqsubseteq c$. This holds by induction: $\bot \sqsubseteq c$, and if $G^n(\bot) \sqsubseteq c$ then by monotonicity of $G$ and the definition of $c$, $G^{n+1}(\bot) \sqsubseteq G(c) = c$.}
+ 
+When the function is not $\omega$-continuous, we obtain $a^*$ as above (jumping over a discontinuity) and then continue iterating, taking the limit of such a sequence, the limit of limits, and so on; ultimately we obtain the fixpoint (Cousot and Cousot, 1979, \emph{Constructive versions of Tarski's fixed point theorems}).
+ 
+\mlenma{Postfix points above the limit}{Let $G$ be an $\omega$-continuous monotonic function, $a^* = \bigsqcup_{n \ge 0} G^n(\bot)$, and suppose $s'$ is such that $G(s') \sqsubseteq s'$. Then $a^* \sqsubseteq s'$.}
+ 
+\pf{Proof}{We show $G^n(\bot) \sqsubseteq s'$ for all $n$ by induction: $\bot \sqsubseteq s'$, and if $G^n(\bot) \sqsubseteq s'$ then $G^{n+1}(\bot) \sqsubseteq G(s') \sqsubseteq s'$. Hence $s'$ is an upper bound of all $G^n(\bot)$, so $a^* \sqsubseteq s'$.}
+ 
+\section{Reachable States and Proving Invariants}
+ 
+\subsection*{Reachable sets of states as a least fixpoint}
+ 
+Given a transition system $M = (S, \mathit{Init}, r, A)$, let $\bar r = \{(s, s') \mid (s, a, s') \in r\}$ and define $F : 2^S \to 2^S$ by
+\[
+F(X) = \mathit{Init} \cup \bar r[X],
+\]
+where $\bar r[X] = \{b \mid \exists a \in X.\, (a, b) \in \bar r\}$ is the image of $X$ under $\bar r$. Then $F$ is monotonic and $\omega$-continuous (like the function $G$ above), and its least fixed point is the set of reachable states of $M$.
+ 
+\subsection*{Proving through fixpoints of approximate functions}
+ 
+The meaning of a program (e.g.\ the set of reachable states) is a least fixpoint $\mathit{lfp}(F)$. Given a specification $s$ (e.g.\ $(\mathit{pc} = c) \rightarrow i \ne 42$), the goal is to prove that $s$ is an invariant, i.e.\ $\mathit{lfp}(F) \subseteq s$.
+\begin{itemize}
+  \item If $F(s) \subseteq s$ then $\mathit{lfp}(F) \subseteq s$ and we are done.
+  \item Computing $\mathit{lfp}(F) = \bigcup_{k \ge 0} F^k(\emptyset)$ directly is too hard, as it is an infinite union, unless by luck $F^{n+1}(\emptyset) = F^n(\emptyset)$ for some $n$.
+  \item Instead we search for an \emph{inductive strengthening} $s'$ of $s$, with
+  \begin{itemize}
+    \item $F(s') \subseteq s'$ ($s'$ is inductive), which gives $\mathit{lfp}(F) \subseteq s'$, and
+    \item $s' \subseteq s$ ($s'$ implies the specification), so that $\mathit{lfp}(F) \subseteq s' \subseteq s$.
+  \end{itemize}
+\end{itemize}
+Since iterating $F$ is hard, we use a simpler function $F^\#$ that is an \emph{approximation} of $F$, i.e.\ $F(r) \subseteq F^\#(r)$ for all $r$. If we find $s'$ with $F^\#(s') \subseteq s'$ (e.g.\ $s' = F^{\#\,n+1}(\emptyset) = F^{\#\,n}(\emptyset)$), then $F(s') \subseteq F^\#(s') \subseteq s'$, so $s'$ is inductive, and if $s' \subseteq s$ we conclude $\mathit{lfp}(F) \subseteq s$.
+ 
+Abstract interpretation automatically constructs $F^\#$ from $F$ and $s$.
+ 
+\section{Galois Connections}
+ 
+\dfn{Galois connection}{A \emph{Galois connection} (named after \'Evariste Galois) is given by two monotonic functions $\alpha : C \to A$ and $\gamma : A \to C$ between partial orders $\le$ on $C$ and $\sqsubseteq$ on $A$ such that
+\[
+\forall c, a.\quad \alpha(c) \sqsubseteq a \iff c \le \gamma(a). \tag{$*$}
+\]
+Intuitively, the condition means that $c$ is approximated by $a$.}
+ 
+\mlenma{Equivalent form of a Galois connection}{Condition $(*)$ holds if and only if both of the following hold for all $c$ and $a$:
+\begin{align*}
+c &\le \gamma(\alpha(c)),\\
+\alpha(\gamma(a)) &\sqsubseteq a.
+\end{align*}}
+ 
+\section{Termination and Efficiency of the Analysis}
+ 
+\dfn{Chain}{A \emph{chain of length $n$} is a sequence $s_0, s_1, \ldots, s_n$ such that $s_0 < s_1 < s_2 < \ldots < s_n$, where $x < y$ means, as usual, $x \sqsubseteq y \wedge x \ne y$.}
+ 
+\dfn{Finite height}{A partial order has \emph{finite height} $n$ if it has a chain of length $n$ and every chain has length at most $n$.}
+ 
+A finite lattice is of finite height. Infinite lattices can also have finite height, while the lattice of sets of integers has infinite height.
+ 
+\subsection*{Height of combined lattices}
+ 
+Let $H(L, \le)$ denote the height of the lattice $(L, \le)$. Two ways of combining lattices are:
+\begin{itemize}
+  \item the \emph{product} of lattices $(L_1, \sqsubseteq_1)$ and $(L_2, \sqsubseteq_2)$, with set $L_1 \times L_2$ and pointwise order;
+  \item the \emph{exponent} lattice $(L^V, \sqsubseteq')$ for a lattice $(L, \sqsubseteq)$ and a set $V$, consisting of the functions $V \to L$, ordered pointwise: $g \sqsubseteq' h$ iff $\forall v \in V.\, g(v) \sqsubseteq h(v)$.
+\end{itemize}
+The height of the exponent lattice is the height of $L$ times the cardinality of $V$:
+\[
+H(L^V) = H(L) \cdot |V|.
+\]
 % \end{document}
