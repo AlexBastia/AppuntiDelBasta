@@ -201,7 +201,7 @@ simple (equivalently: allow substituting equals for equals in types):
 \inferrule*[Right=$\mu$-\textsc{Intro}]
   {\Gamma \vdash e : \tsub{\tau}{\mu\alpha.\,\tau}{\alpha}}
   {\Gamma \vdash e : \mu\alpha.\,\tau}
-\qquad
+\qquad \qquad
 \inferrule*[Right=$\mu$-\textsc{Elim}]
   {\Gamma \vdash e : \mu\alpha.\,\tau}
   {\Gamma \vdash e : \tsub{\tau}{\mu\alpha.\,\tau}{\alpha}}
