@@ -1,0 +1,2 @@
+(* The type should be (a -> a) -> a -> a. *)
+(fun f x -> f (f x) : ('a -> 'a) -> 'a -> 'a)

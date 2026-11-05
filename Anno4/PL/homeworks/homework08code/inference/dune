@@ -1,0 +1,6 @@
+(ocamllex lexer)
+(ocamlyacc parser)
+
+(library
+ (name inference)
+ (flags (:standard -w -a)))

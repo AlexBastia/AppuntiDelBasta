@@ -1,0 +1,4 @@
+(executable
+ (name main)
+ (libraries systemf inference)
+ (flags (:standard -w -a)))

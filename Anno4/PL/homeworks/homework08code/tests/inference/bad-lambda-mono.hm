@@ -1,0 +1,2 @@
+(* A lambda-bound variable cannot be used at two types. *)
+(fun id -> if id true then id 1 else 0) (fun x -> x)
