@@ -334,5 +334,233 @@ Let $H(L, \le)$ denote the height of the lattice $(L, \le)$. Two ways of combini
 The height of the exponent lattice is the height of $L$ times the cardinality of $V$:
 \[
 H(L^V) = H(L) \cdot |V|.
+
 \]
+
+\section{AI Recipe} 
+\subsection*{Setup}
+ 
+The program is given as a control-flow graph $(V, E, r)$ where
+\begin{itemize}
+  \item $V = \{v_1, \ldots, v_n\}$ is the set of program points;
+  \item $E \subseteq V \times V$ are the control-flow graph edges;
+  \item $r : E \to 2^{S \times S}$, so each $r(v, v') \subseteq S \times S$ is the relation describing the meaning of the command between $v$ and $v'$.
+\end{itemize}
+ 
+\subsection*{Key steps of the recipe}
+ 
+\begin{enumerate}
+  \item Design an abstract domain $A$ that represents sets of program states.
+  \item Define $\gamma : A \to C$, giving meaning to the elements of $A$.
+  \item Define a lattice ordering $\sqsubseteq$ on $A$ such that $a_1 \sqsubseteq a_2 \rightarrow \gamma(a_1) \subseteq \gamma(a_2)$.
+  \item Define $sp^\# : A \times 2^{S \times S} \to A$, mapping an abstract element and a CFG statement to a new abstract element, such that
+  \[
+  sp(\gamma(a), r) \subseteq \gamma(sp^\#(a, r)).
+  \]
+  For example, define $\alpha$ so that $(\alpha, \gamma)$ becomes a Galois connection and set $sp^\#(a, r) = \alpha(sp(\gamma(a), r))$.
+\end{enumerate}
+ 
+\subsection*{Running the abstract interpretation}
+ 
+Extend $sp^\#$ to control-flow graphs by defining $F^\# : (V \to A) \to (V \to A)$ as follows (where $g^\# : V \to A$):
+\[
+F^\#(g^\#)(v') = \mathit{Init}^\#(v') \sqcup \bigsqcup_{(v, v') \in E} sp^\#(g^\#(v), r(v, v')).
+\]
+Here $\mathit{Init}^\#(v')$ is $\bot$ except at the entry into the control-flow graph, where it approximates the set of initial states at the entry point. We then compute
+\[
+g^\#_* = \mathit{lfp}(F^\#) = \bigsqcup_{n \ge 0} (F^\#)^n(\bot^\#), \qquad \bot^\#(v) = \bot_A \text{ for all } v \in V.
+\]
+This is easier than computing the exact semantics, because the lattice $A^n$ is simpler than $C^n$. The resulting fixpoint describes an inductive program invariant.
+ 
+\section{Collecting Semantics}
+ 
+\dfn{Concrete domain}{For a program state space $S$ (for a one-variable program, a state is just the integer value of the variable), the \emph{concrete domain} is the set of sets of states $C = 2^S$ (e.g.\ $C = 2^{\mathbb{Z}}$ for one integer variable). For each command $K$ there is a strongest postcondition function $sp(\cdot, K) : C \to C$.}
+ 
+\dfn{Collecting semantics}{\emph{Collecting semantics} computes with the set of states at each program point, i.e.\ with a function $g : V \to C$ (we sometimes write $g_i$ for $g(v_i)$). From the control-flow graph one derives the function $F$ that maps $g$ to its new value: the component at $v'$ is the set of initial states at $v'$ (nonempty only at the entry point) united with $sp(g(v), r(v, v'))$ over all edges $(v, v') \in E$.}
+ 
+The fixpoint condition $F(g) = g$ becomes a system of equations, one per program point, while the postfix point condition $F(g) \subseteq g$ (see Tarski's fixpoint theorem) becomes the corresponding system of inclusions ($\subseteq$ in place of $=$).
+ 
+The fixpoint is found by computing the sequence $F^n(\emptyset, \ldots, \emptyset)$ for $n \ge 0$. In general we may need infinitely many iterations to converge, so a program that terminates for every initial state does not by itself give a finite $n$ with $F^n(\emptyset, \ldots, \emptyset) = F^{n+1}(\emptyset, \ldots, \emptyset)$.
+ 
+What always works, by $\omega$-continuity, is
+\[
+\mathit{lfp}(F) = \bigcup_{n \ge 0} F^n(\emptyset, \ldots, \emptyset),
+\]
+where $\bigcup$ on tuples means taking the union of each component separately, so $(A, B) \cup (A', B') = (A \cup A', B \cup B')$.
+ 
+\section{Abstract Domain and Abstract Postcondition}
+ 
+The abstract interpretation of the collecting semantics is analogous to it, but replaces operations on sets with operations on the lattice, giving the function $F^\#$ above. We illustrate the recipe with the domain of intervals (variable range analysis).
+ 
+\subsection*{The interval domain}
+ 
+Instead of a representation for all possible sets of states ($C = 2^{\mathbb{Z}}$), we represent only certain sets, namely intervals:
+\[
+A = \{\bot\} \cup \{(-\infty, q] \mid q \in \mathbb{Z}\} \cup \{[p, +\infty) \mid p \in \mathbb{Z}\} \cup \{[p, q] \mid p \le q\} \cup \{\top\}.
+\]
+The meaning of the elements is given by a monotonic concretization function $\gamma : A \to C$:
+\begin{align*}
+\gamma(\bot) &= \emptyset, & \gamma((-\infty, q]) &= \{x \mid x \le q\}, & \gamma([p, +\infty)) &= \{x \mid p \le x\},\\
+\gamma([p, q]) &= \{x \mid p \le x \wedge x \le q\}, & \gamma(\top) &= \mathbb{Z}. &&
+\end{align*}
+ 
+\subsection*{Abstraction function}
+ 
+Define $\alpha : C \to A$ by
+\begin{itemize}
+  \item $\alpha(s) = [\min s, \max s]$ if both values exist (the set is bounded from below and above);
+  \item $\alpha(s) = [\min s, +\infty)$ if there is a lower but no upper bound;
+  \item $\alpha(s) = (-\infty, \max s]$ if there is an upper but no lower bound;
+  \item $\alpha(s) = \top$ if there is neither an upper nor a lower bound;
+  \item $\alpha(\emptyset) = \bot$.
+\end{itemize}
+ 
+\mlenma{Galois connection for intervals}{The pair $(\alpha, \gamma)$ forms a Galois connection.}
+ 
+\subsection*{Join}
+ 
+From monotonicity of $\gamma$ and $a_1 \sqsubseteq a_1 \sqcup a_2$ it follows that $\gamma(a_1) \subseteq \gamma(a_1 \sqcup a_2)$, and thus
+\[
+\gamma(a_1) \cup \gamma(a_2) \subseteq \gamma(a_1 \sqcup a_2).
+\]
+We want $a_1 \sqcup a_2$ to be as small as possible while satisfying this condition. By the properties of a Galois connection, the condition is equivalent to $\alpha(\gamma(a_1) \cup \gamma(a_2)) \sqsubseteq a_1 \sqcup a_2$. To make the join as small as possible we let equality hold:
+\[
+a_1 \sqcup a_2 = \alpha(\gamma(a_1) \cup \gamma(a_2)).
+\]
+ 
+\subsection*{Abstract postcondition}
+ 
+We had $sp(\cdot, c) : C \to C$; now we want $sp^\#(\cdot, c) : A \to A$. For correctness we need, for each $a \in A$ and each command $r$,
+\[
+sp(\gamma(a), r) \subseteq \gamma(sp^\#(a, r)).
+\]
+We want $sp^\#$ as small as possible (for the most precise result). By the properties of a Galois connection, this condition is equivalent to $\alpha(sp(\gamma(a), r)) \sqsubseteq sp^\#(a, r)$, so we let equality hold:
+\[
+sp^\#(a, r) = \alpha(sp(\gamma(a), r)).
+\]
+Since $\alpha$, $\gamma$ and $sp$ are known, the value of $sp^\#(a, r)$ can be computed by simplifying expressions involving sets of states. In particular, for every command $r$,
+\[
+sp^\#(\bot, r) = \alpha(sp(\gamma(\bot), r)) = \alpha(sp(\emptyset, r)) = \alpha(\emptyset) = \bot.
+\]
+ 
+\subsection*{Analysis}
+ 
+Doing the analysis means computing $(F^\#)^n(\bot, \ldots, \bot)$ for $n \ge 0$. The result is an approximation of the collecting semantics, which is visible in the final iteration compared to the exact sets of states.
+ 
+\section{Soundness of the Analysis}
+ 
+Soundness means that the abstraction approximates the exact computation: for all $n$,
+\[
+F^n(\emptyset, \ldots, \emptyset) \subseteq \gamma\big((F^\#)^n(\bot, \ldots, \bot)\big),
+\]
+where $\gamma$ is applied componentwise.
+ 
+\mlenma{Soundness of the iteration}{Suppose that for all $a$,
+\[
+F(\gamma(a)) \subseteq \gamma(F^\#(a)). \tag{$**$}
+\]
+Then $F^n(\bar\emptyset) \subseteq \gamma((F^\#)^n(\bar\bot))$ for all $n \ge 0$.}
+ 
+\pf{Proof}{By induction on $n$. For $n = 0$, $\bar\emptyset \subseteq \gamma(\bar\bot)$ since $\gamma(\bot) = \emptyset$. Assume the claim for $n$. Then
+\begin{align*}
+F(F^n(\bar\emptyset)) &\subseteq F\big(\gamma((F^\#)^n(\bar\bot))\big) && \text{by the induction hypothesis and monotonicity of } F,\\
+&\subseteq \gamma\big(F^\#((F^\#)^n(\bar\bot))\big) && \text{by } (**).
+\end{align*}
+Hence $F^{n+1}(\bar\emptyset) \subseteq \gamma((F^\#)^{n+1}(\bar\bot))$.}
+ 
+Passing to the limit, since $\gamma$ is monotonic and $\mathit{lfp}(F) = \bigcup_{n \ge 0} F^n(\bar\emptyset)$, each iterate is contained in $\gamma(g^\#_*)$, so the exact reachable sets are over-approximated by the abstract fixpoint: $\mathit{lfp}(F) \subseteq \gamma(g^\#_*)$.
+
+\section{Predicates as an Abstract Domain}
+ 
+\dfn{Predicate abstraction}{In \emph{predicate abstraction}, the abstract interpretation domain is determined by a finite set $\mathcal{P}$ of formulas (predicates) on program variables. The analysis tries to construct invariants from these predicates using conjunctions (and, more generally, combinations of conjunctions and disjunctions). For now we consider only conjunctions.}
+ 
+We assume $P_0 \equiv \mathit{false}$, while the other predicates in $\mathcal{P}$ are arbitrary, expressed in a logic for which we have a theorem prover. The analysis result at each program point is a conjunction of some of these predicates, an inductive invariant.
+ 
+\section{Lattice and Galois Connection}
+ 
+\subsection*{The lattice of conjunctions}
+ 
+Let $\mathcal{P} = \{P_0, P_1, \ldots, P_n\}$ be the predicates, i.e.\ formulas whose free variables denote program variables. The abstract domain is $A = 2^{\mathcal{P}}$, so each $a \in A$ satisfies $a \subseteq \mathcal{P}$. We write $s \models F$ to mean that formula $F$ is true for the variables given by the program state $s$, and $\bigwedge a$ for $\bigwedge_{P \in a} P$.
+ 
+\dfn{Concretization}{For $a \in A$,
+\[
+\gamma(a) = \{s \mid s \models \textstyle\bigwedge_{P \in a} P\}.
+\]
+The empty conjunction is \emph{true}, so $\gamma(\emptyset) = S$, the set of all states.}
+ 
+If $a_1 \subseteq a_2$ then $a_2$ implies $a_1$, so $\gamma(a_2) \subseteq \gamma(a_1)$. Accordingly, the order is defined by reverse inclusion:
+\[
+a_1 \sqsubseteq a_2 \iff a_2 \subseteq a_1,
+\]
+so the lattice is $(A, \sqsubseteq) = (2^{\mathcal{P}}, \supseteq)$.
+ 
+\mlenma{Monotonicity of $\gamma$}{If $a_1 \sqsubseteq a_2$ then $\gamma(a_1) \subseteq \gamma(a_2)$.}
+ 
+\pf{Proof}{If $a_1 \sqsubseteq a_2$ then $a_2 \subseteq a_1$, so the conjunction $\bigwedge a_1$ has all the conjuncts of $\bigwedge a_2$ and possibly more. Hence $\bigwedge a_1$ implies $\bigwedge a_2$, and every state satisfying $\bigwedge a_1$ satisfies $\bigwedge a_2$, i.e.\ $\gamma(a_1) \subseteq \gamma(a_2)$.}
+ 
+The top element of the lattice is $\emptyset$ (the empty set of predicates, i.e.\ \emph{true}) and the bottom element is $\mathcal{P}$, the set of all predicates, which contains $\mathit{false}$.
+ 
+\subsection*{Abstraction function}
+ 
+\dfn{Abstraction function}{For a set of states $c \in C = 2^S$,
+\[
+\alpha(c) = \{P \in \mathcal{P} \mid \forall s \in c.\ s \models P\},
+\]
+the set of all predicates that hold in every state of $c$.}
+ 
+\mlenma{Galois connection for predicate abstraction}{The pair $(\alpha, \gamma)$ is a Galois connection between $(A, \sqsubseteq)$ and $(C, \subseteq)$.}
+ 
+\pf{Proof}{We need to show $c \subseteq \gamma(a) \iff \alpha(c) \sqsupseteq a$, i.e.\ $c \subseteq \gamma(a) \iff a \subseteq \alpha(c)$. Unfolding the definitions of $\gamma$ and $\alpha$, both conditions reduce to
+\[
+\forall P \in a.\ \forall s \in c.\ s \models P.
+\]
+Using the shorthand that, for a set $M$ of structures and a set $\Phi$ of formulas, $M \models \Phi$ means $\forall m \in M.\, \forall F \in \Phi.\, m \models F$, both sides of the Galois connection condition reduce to $c \models a$.}
+ 
+\mlenma{Monotonicity of $\alpha$}{If $c_1 \subseteq c_2$ then $\alpha(c_1) \supseteq \alpha(c_2)$ as sets of predicates, i.e.\ $\alpha(c_1) \sqsubseteq \alpha(c_2)$ in the lattice order.}
+ 
+\pf{Proof}{Let $P \in \alpha(c_2)$. Then $P$ holds in all states of $c_2$, and since $c_1 \subseteq c_2$ it also holds in all states of $c_1$, so $P \in \alpha(c_1)$.}
+ 
+\subsection*{Not a Galois insertion}
+ 
+In general $\alpha(\gamma(a)) = a$ does not hold, because $\gamma$ is not injective. For example, any set of predicates containing $\mathit{false}$ denotes the empty set of states, whatever else it contains, so different elements have the same concretization. The analysis is nevertheless sound without the condition $\alpha(\gamma(a)) = a$; only the Galois connection property is needed.
+ 
+\section{Abstract Postcondition}
+ 
+As in the general recipe, for a command given by relation $r$ the abstract postcondition $a' = sp^\#(a, r)$ must satisfy, for correctness,
+\[
+sp(\gamma(a), r) \subseteq \gamma(a').
+\]
+Thanks to the Galois connection this is equivalent to $\alpha(sp(\gamma(a), r)) \sqsubseteq a'$. We want the smallest lattice element $a'$, which is the largest set of predicates (giving the tightest approximation), so we let
+\[
+a' = \alpha(sp(\gamma(a), r)).
+\]
+Expanding the definitions of $\gamma$ and $\alpha$,
+\[
+a' = \{P' \in \mathcal{P} \mid \forall (x', y') \in sp(\gamma(a), r).\ P'(x', y')\}.
+\]
+Let $R(x, y, x', y')$ denote the meaning of the relation $r$. Then $(x', y') \in sp(\gamma(a), r)$ means
+\[
+\exists x, y.\ \Big(\bigwedge_{P \in a} P(x, y)\Big) \wedge R(x, y, x', y').
+\]
+Plugging this into the definition of $a'$, and noting that the existential quantifiers are on the left of an implication (so become universal), we obtain
+\[
+a' = \Big\{P' \in \mathcal{P} \;\Big|\; \forall x, y, x', y'.\ \Big(\bigwedge_{P \in a} P(x, y)\Big) \wedge R(x, y, x', y') \rightarrow P'(x', y')\Big\}.
+\]
+ 
+\dfn{Computing $sp^\#$ with a theorem prover}{By the formula above, $sp^\#(a, r)$ is computed by testing, for each candidate predicate $P' \in \mathcal{P}$ separately, whether the implication
+\[
+\Big(\bigwedge_{P \in a} P(x, y)\Big) \wedge R(x, y, x', y') \rightarrow P'(x', y')
+\]
+is valid, using a theorem prover for the logic in which the predicates are expressed. The predicates for which the implication is valid form $a'$.}
+ 
+\section{Running the Analysis by Removing Predicates}
+ 
+The analysis is the instance of the abstract interpretation recipe for this lattice:
+\begin{itemize}
+  \item at program entry the abstract state is $\top$, which is the empty set of predicates;
+  \item at all other program points the initial abstract state is $\bot$, which is the set of all predicates $\mathcal{P}$;
+  \item as the analysis iterates, lattice elements grow in the order $\sqsubseteq$ along the control-flow graph, which means that the sets of predicates decrease.
+\end{itemize}
+Thus the analysis proceeds by \emph{removing predicates that do not hold}, until a fixpoint is reached; the remaining predicates at each program point form an inductive invariant.
+
 % \end{document}
