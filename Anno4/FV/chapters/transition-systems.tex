@@ -115,7 +115,11 @@ To represent a boolean relation $ r $, we could use a binary table. These are ve
 This can be achieved by simply listing all the triples in $ r $ as a conjunction between the respective logical variables (negated if the bit is 0)
 
 \[
+<<<<<<< HEAD
 \bigvee_{((v_1,\dots,v_n),(u_1,\dots,u_m),(v'_1,\dots,v'_n)) \in r} \left( \bigwedge s_i^{v_i} \land \bigwedge a_j^{u_j} \land \bigwedge {{s'}_i}^{v'_i} \right)
+=======
+  % \bigvee_{((v_1,...,v_n),(u_1,...,u_m),(v'_1,...,v'_n)) \in r} \left( \bigwedge s_i^{v_i} \land \bigwedge a_j^{u_j} \land \bigwedge s'_i^{v'_i} \right)
+>>>>>>> f1c754471e3738896c703827cdd2c5d3d9f835a7
 \]
 
 Formulas correspond to trees where variables are leaves and operations are nodes. We can use DAGs to avoid having to repeat parts of the tree, saving space in the representation. We can view DAGs as formulas with auxiliary variables that act as placeholders for parts of formulas.\\

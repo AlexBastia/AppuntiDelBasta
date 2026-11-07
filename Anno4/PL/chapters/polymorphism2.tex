@@ -1,6 +1,4 @@
 % \begin{document}
-\section*{Lecture \#15: Type Inference and Let-Polymorphism}
-
 \section{Polymorphism in OCaml}
 
 In System F, programmers write type abstractions, type applications, and type
@@ -57,11 +55,11 @@ $\tau$ and $C$ from $\Gamma$ and $e$.
 \inferrule*[Right=\textsc{CT-Var}]
   {\Gamma(x) = \tau}
   {\Gamma \vdash x : \tau \mid \emptyset}
-\qquad
+\qquad \qquad
 \inferrule*[Right=\textsc{CT-Int}]
   { }
   {\Gamma \vdash n : \kw{int} \mid \emptyset}
-\qquad
+\qquad \qquad
 \inferrule*[Right=\textsc{CT-True}]
   { }
   {\Gamma \vdash \ttkw{true} : \kw{bool} \mid \emptyset}
@@ -71,6 +69,9 @@ $\tau$ and $C$ from $\Gamma$ and $e$.
   {\Gamma \vdash e_1 : \tau_1 \mid C_1 \\ \Gamma \vdash e_2 : \tau_2 \mid C_2}
   {\Gamma \vdash e_1 \oplus e_2 : \kw{int} \mid C_1 \cup C_2 \cup \{\tau_1 = \kw{int},\, \tau_2 = \kw{int}\}}
 \]
+\nt{
+  Could we replace $ tao 1 $ with int? It would mean we can't derive a type judgement, whereas with the constraints we always have a derivation. However, there will be places where we don't know the type of $ e $, so we want to be more flexible and add the conditon in the constraints.
+}
 \[
 \inferrule*[Right=\textsc{CT-If}]
   {\Gamma \vdash e_1 : \tau_1 \mid C_1 \\ \Gamma \vdash e_2 : \tau_2 \mid C_2 \\ \Gamma \vdash e_3 : \tau_3 \mid C_3}
@@ -80,7 +81,7 @@ $\tau$ and $C$ from $\Gamma$ and $e$.
 \inferrule*[Right=\textsc{CT-AbsAnn}]
   {\Gamma, x : \tau_1 \vdash e : \tau_2 \mid C}
   {\Gamma \vdash \lambda x : \tau_1.\, e : \tau_1 \to \tau_2 \mid C}
-\qquad
+\qquad \qquad \qquad
 \inferrule*[Right=\textsc{CT-Abs}]
   {\Gamma, x : X \vdash e : \tau \mid C \\ X \text{ fresh}}
   {\Gamma \vdash \lambda x.\, e : X \to \tau \mid C}
@@ -147,6 +148,11 @@ typable. So we need a substitution satisfying $C$:
 \text{fail} & \text{otherwise}
 \end{cases}
 \end{align*}
+
+\nt{
+  It's important to compose instead of simply "smashing" the unification and substitution (first we substitute $ X $ in our term, then we apply the other constraints with $ X $ substituted) (kinda?)
+}
+
 Here $\ftv(\tau)$ is the set of type variables occurring in $\tau$. The algorithm
 fails when asked to unify two different base types, or a base type with a function
 type.
@@ -214,7 +220,7 @@ $\lambda$-calculus):
 \inferrule*[Right=\textsc{T-Var}]
   {\Gamma(x) = \forall X_1 \ldots X_n.\, \tau}
   {\Gamma \vdash x : \tsub{\tau}{\tau_1/X_1, \ldots, \tau_n/X_n}{}}
-\qquad
+\qquad \qquad
 \inferrule*[Right=\textsc{T-Abs}]
   {\Gamma, x : \tau_1 \vdash e : \tau_2}
   {\Gamma \vdash \lambda x.\, e : \tau_1 \to \tau_2}
@@ -325,5 +331,7 @@ is undecidable. For the simply-typed $\lambda$-calculus we infer types by genera
 constraints and solving them by unification. Let-polymorphism extends this to a
 restricted polymorphism with $\forall$ only at the outside of type schemes,
 generalized at $\ttkw{let}$ and instantiated at each use. Inference is decidable and
-finds principal types, which is why OCaml can infer polymorphic types for us.
+finds principal types, which is why OCaml can infer polymorphic types for us.\\
+
+For other types of inference, checkout local or bidirectional methods.
 % \end{document}

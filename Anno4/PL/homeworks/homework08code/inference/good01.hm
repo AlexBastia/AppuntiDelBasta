@@ -1,0 +1,4 @@
+let swap f x y = f y x : ('a -> 'a -> 'b) -> a' -> a' -> b' in
+let f x y = x - y in
+let g x y = if x = y then true else false in
+swap g (swap f 4 5 : Int) (f 4 5) : bool
