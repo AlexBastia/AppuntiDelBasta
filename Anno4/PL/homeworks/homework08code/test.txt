@@ -1,0 +1,13 @@
+System F
+- good01: polymorphic function twice applied to a boolean and an integer function. expected result: 2 
+- good02: the value passed to the function has a type that is alpha-equivalent to what is expected, so the types are treated as equal. expected result: 1
+- good03: substitution in type application avoids capturing outer type abstraction variable. expected result: 3
+- bad01: type abstraction doesn't shadow other type variables, so the inner A is different to the outer one. This causes a type error since the function f should have type forall A: A -> A, but the passed value has type forall A: A -> A(outer)
+- bad02: non-terminating functions, in this example omega, can't be typed.
+
+Inference
+- good01: let polymorphism of a swap function applied as Int -> Int -> Int and Int -> Int -> Bool. expected result: false
+- good02: expressions in binop/if-cond can have free variables in their types when the judgement rule occurs and not the exact required type (Int or Bool) and still be well-typed in the end (because we add constraints, not instant requirements)
+- good03: let polymorphism of a composition function. expected result: false.
+- bad01: only let bound variables are polymorphic, so the identity function passed to the lambda can't be used on different types. This causes the first application of id to bind its signature, and in the second call the types don't match, making it untypable.
+- bad02: the occurs check fails for infinite types, so the Z combinator can't be typed

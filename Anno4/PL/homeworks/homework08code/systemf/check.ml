@@ -35,6 +35,7 @@ let rec is_alpha_equiv (t1 : typ) (t2 : typ) : bool =
       let n = fresh_tvar ((fv_typ t1)@(fv_typ t2)) in
       is_alpha_equiv (subst_typ t1 s1 (TVar n)) (subst_typ t2 s2 (TVar n))
   | TBase b1, TBase b2 -> b1 = b2
+  | _ -> false
 
 let rec check_exp_with_context (e : exp) (del : StrSet.t) (gam : typ StrMap.t) : typ =
   match e with
@@ -72,7 +73,11 @@ let rec check_exp_with_context (e : exp) (del : StrSet.t) (gam : typ StrMap.t) :
       let t1 = check_exp_with_context e1 del gam and
           t2 = check_exp_with_context e2 del gam in
       (match (t1, t2) with
-      | TBase(Int), TBase(Int) -> TBase(Int)
+      | TBase(Int), TBase(Int) -> 
+          (match op with
+          | Equal -> TBase(Bool)
+          | _ -> TBase(Int)
+          )
       | _ -> raise (IllTyped "Arguments passed to Binop aren't Ints")
       )
   | If (e1, e2, e3) ->

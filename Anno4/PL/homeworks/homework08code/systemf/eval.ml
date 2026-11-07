@@ -18,7 +18,7 @@ let rec eval (e : exp) : exp =
       | Lam (y, t, e') ->
           let e2' = eval e2 in
           (match e2' with
-          | Int _ | Bool _ | Unit | Lam _ | TypLam _ -> eval (subst_exp e1' y e2')
+          | Int _ | Bool _ | Unit | Lam _ | TypLam _ -> eval (subst_exp e' y e2')
           | _ -> raise (IllformedExpression "Argument passed to application isn't a value")
           )
       | _ -> raise (IllformedExpression "Expression isn't a lambda")
