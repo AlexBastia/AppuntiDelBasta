@@ -17,13 +17,12 @@ For $N>|S|$ this is less than $2$. The drawback is that storing such a function 
 %--------------------------------------------------------------------
 \subsection{2-Universal hash families}
  
-\medskip
-\noindent\textbf{Definition 1} (Carter--Wegman, 1979)\textbf{.} A family $\mathcal{H}$ is \emph{2-universal} if for all $x\neq y\in U$,
+\dfn{2-universal hashing (Carter--Wegman, 1979)}{A family $\mathcal{H}$ is \emph{2-universal} if for all $x\neq y\in U$,
 \[
   \mathbb{P}_{h\in\mathcal{H}}[h(x)=h(y)]\le\frac1N.
 \]
 (Often relaxed to $2/N$ or $3/N$, which barely affects bucket sizes.)
-\medskip
+}
  
 \textbf{Construction.} Choose a prime $p\in\{|U|,\ldots,2|U|\}$ and set
 \[

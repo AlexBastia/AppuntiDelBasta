@@ -194,6 +194,10 @@ x_{ij} & \text{if } x_i \text{ and } y_j \text{ are joined by an edge,} \\
 \end{cases}
 \]
 
+\nt{
+  We use symbolic variables instead of numeric values (e.g. adjacency matrix) because there could be cancellations. But by Shwartz-Zippel lemma we can plug in random numbers as the probability of cancellation is very low.
+}
+
 \ex{}{ Consider the bipartite graph below with edges
 $u_1v_1$, $u_2v_2$, $u_2v_3$, $u_3v_2$, $u_3v_3$ and matrix
 \[
