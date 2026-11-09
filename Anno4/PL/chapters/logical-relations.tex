@@ -1,0 +1,345 @@
+% \begin{document}
+\chapter{Logical Relations}
+ 
+\section{Introduction}
+ 
+The simply-typed $\lambda$-calculus rules out the nonterminating
+$\Omega = (\lambda x.\, x\,x)\,(\lambda x.\, x\,x)$: typing $x\,x$ would need a type
+$\tau$ with $\tau = \tau \to \tau'$, and none exists. In fact every well-typed program
+terminates.
+ 
+\thm{Termination}{
+If $\vdash e : \tau$, then there is a value $v$ such that $e \to^* v$.
+}
+ 
+We prove this using \emph{logical relations}, a technique invented by Tait in 1967.
+Termination is a strong guarantee, on which total languages such as Rocq (Coq), Agda,
+and Lean rely for logical consistency. Unlike type soundness it is not a syntactic
+property: progress and preservation say a well-typed program never gets stuck, but
+nothing about how long it runs. The technique matters even more than the theorem;
+logical relations are used to prove
+\begin{itemize}
+  \item type soundness (semantically) and parametricity and free theorems (next lecture),
+  \item program equivalence and compiler correctness,
+  \item security properties such as noninterference, and
+  \item safety of libraries that use \texttt{unsafe} code in Rust.
+\end{itemize}
+ 
+\section{The Language}
+ 
+We work with the simply-typed $\lambda$-calculus over $\kw{unit}$:
+\begin{align*}
+e &::= x \mid \lambda x : \tau.\, e \mid e_1\, e_2 \mid () \\
+v &::= \lambda x : \tau.\, e \mid () \\
+\tau &::= \kw{unit} \mid \tau_1 \to \tau_2
+\end{align*}
+with standard call-by-value semantics
+\[
+E ::= [\cdot] \mid E\, e \mid v\, E
+\qquad
+\inferrule*[Right=\textsc{Context}]
+  {e \to e'}
+  {E[e] \to E[e']}
+\qquad \qquad
+\inferrule*[Right=\textsc{$\beta$-Reduction}]
+  { }
+  {(\lambda x : \tau.\, e)\, v \to \tsub{e}{v}{x}}
+\]
+and the typing rules \textsc{T-Var}, \textsc{T-Unit}, \textsc{T-Abs}, \textsc{T-App}
+from Lecture 12.
+ 
+\dfn{Halting}{ We write $e \halts$, pronounced ``$e$
+halts'', if $e \to^* v$ for some value $v$.
+} 
+\noindent We use these standard facts from Lecture 12:
+\begin{itemize}
+  \item \emph{Determinism}: if $e \to e_1$ and $e \to e_2$ then $e_1 = e_2$. So if
+        $e \to e'$, then $e \halts$ if and only if $e' \halts$.
+  \item \emph{Preservation}: if $\vdash e : \tau$ and $e \to e'$ then $\vdash e' : \tau$.
+  \item \emph{Canonical forms}: if $\vdash v : \kw{unit}$ then $v = ()$; if
+        $\vdash v : \tau_1 \to \tau_2$ then $v = \lambda x : \tau_1.\, e$ for some $x$
+        and $e$.
+  \item \emph{Substitution}: if $\Gamma, x : \tau' \vdash e : \tau$ and
+        $\vdash v : \tau'$ then $\Gamma \vdash \tsub{e}{v}{x} : \tau$.
+\end{itemize}
+ 
+\section{A First Attempt}
+ 
+We try to prove that $\vdash e : \tau$ implies $e \halts$ by induction on the typing
+derivation.
+\begin{itemize}
+  \item \textsc{T-Var}: impossible, the context is empty.
+  \item \textsc{T-Unit}, \textsc{T-Abs}: immediate, since $()$ and $\lambda x : \tau.\, e'$
+        are values.
+  \item \textsc{T-App}: $e = e_1\, e_2$ with $\vdash e_1 : \tau' \to \tau$ and
+        $\vdash e_2 : \tau'$. By the induction hypotheses $e_1 \to^* v_1$ and
+        $e_2 \to^* v_2$; by preservation (actually type soundness because of multistep) and canonical forms
+        $v_1 = \lambda x : \tau'.\, e'$. So
+        \[
+        e_1\, e_2 \to^* (\lambda x : \tau'.\, e')\, e_2 \to^* (\lambda x : \tau'.\, e')\, v_2 \to \tsub{e'}{v_2}{x}.
+        \]
+        We would like $\tsub{e'}{v_2}{x} \halts$, but no induction hypothesis applies:
+        it is not a subexpression of $e$, its typing derivation is not part of $e$'s,
+        and it may be larger than $e$, so induction on size does not help either.
+\end{itemize}
+The induction hypothesis for $e_1$ says only that it halts, not what happens when it
+is applied to an argument. We need a stronger hypothesis.
+ 
+\section{Logical Relations}
+ 
+For function types we need to know that the function halts \emph{and} that applying it
+to a halting argument gives a halting result. For higher-order functions arguments and
+results are themselves functions, so the same property is needed for them, and so on.
+We therefore define the property by induction on the type; a family of predicates
+indexed by types is a \emph{logical relation}, here capturing \emph{hereditary
+termination}.
+ 
+\dfn{Logical Relation}{$R_\tau(e)$ is defined by induction
+on $\tau$:
+\begin{align*}
+R_{\kw{unit}}(e) &\iff\ \vdash e : \kw{unit} \ \text{ and } \ e \halts \\
+R_{\tau_1 \to \tau_2}(e) &\iff\ \vdash e : \tau_1 \to \tau_2 \ \text{ and } \ e \halts \ \text{ and }\
+  \text{for every } e',\ R_{\tau_1}(e') \implies R_{\tau_2}(e\, e')
+\end{align*}
+}
+This is well-founded, since the clause for $\tau_1 \to \tau_2$ uses only $R_{\tau_1}$
+and $R_{\tau_2}$ at smaller types. The function clause resembles a logical implication
+(related arguments to related results), hence ``logical''.
+ 
+Termination follows from two lemmas. The first says related expressions halt.
+ 
+\mlenma{Adequacy}{
+If $R_\tau(e)$, then $e \halts$.
+}
+ 
+\pf{Proof}{
+By cases on $\tau$. If $\tau = \kw{unit}$, then $R_{\kw{unit}}(e)$ means
+$\vdash e : \kw{unit}$ and $e \halts$; in particular $e \halts$. If
+$\tau = \tau_1 \to \tau_2$, then $R_{\tau_1 \to \tau_2}(e)$ means
+$\vdash e : \tau_1 \to \tau_2$, $e \halts$, and $e$ maps related arguments to related
+results; in particular $e \halts$. (Halting is built into every clause, so this is by
+cases rather than induction.)
+}
+ 
+The second says well-typed expressions are related.
+ 
+\mlenma{Fundamental lemma, first version}{
+If $\vdash e : \tau$, then $R_\tau(e)$.
+}
+ 
+First we need a lemma about evaluation.
+ 
+\mlenma{Closure under evaluation}{
+If $\vdash e : \tau$ and $e \to e'$, then $R_\tau(e)$ if and only if $R_\tau(e')$.
+}
+ 
+\pf{Proof}{
+By induction on $\tau$.
+ 
+\emph{Case $\tau = \kw{unit}$.} $(\Rightarrow)$ Suppose $R_{\kw{unit}}(e)$. Then
+$\vdash e' : \kw{unit}$ by preservation, and since $e \halts$ and $e \to e'$,
+determinism gives $e' \halts$. So $R_{\kw{unit}}(e')$. $(\Leftarrow)$ Suppose
+$R_{\kw{unit}}(e')$. Then $\vdash e : \kw{unit}$ by assumption, and since $e \to e'$
+and $e' \halts$, we have $e \halts$. So $R_{\kw{unit}}(e)$.
+ 
+\emph{Case $\tau = \tau_1 \to \tau_2$.} Let $e''$ be any expression with
+$R_{\tau_1}(e'')$. Then $\vdash e'' : \tau_1$, so
+\begin{equation}
+\vdash e\, e'' : \tau_2 \quad\text{and}\quad e\, e'' \to e'\, e'', \tag{$*$}
+\end{equation}
+where the step uses the evaluation context $E\, e''$. So the induction hypothesis at
+$\tau_2$ applies to $e\, e''$ and $e'\, e''$.
+ 
+$(\Rightarrow)$ Suppose $R_{\tau_1 \to \tau_2}(e)$. We show the parts of
+$R_{\tau_1 \to \tau_2}(e')$: $\vdash e' : \tau_1 \to \tau_2$ by preservation;
+$e' \halts$ since $e \halts$ and $e \to e'$ (determinism); and for $R_{\tau_1}(e'')$,
+since $R_{\tau_1 \to \tau_2}(e)$ we have $R_{\tau_2}(e\, e'')$, so by $(*)$ and the
+induction hypothesis at $\tau_2$ (left to right), $R_{\tau_2}(e'\, e'')$.
+ 
+$(\Leftarrow)$ Suppose $R_{\tau_1 \to \tau_2}(e')$. We show the parts of
+$R_{\tau_1 \to \tau_2}(e)$: $\vdash e : \tau_1 \to \tau_2$ by assumption; $e \halts$
+since $e \to e'$ and $e' \halts$; and for $R_{\tau_1}(e'')$, since
+$R_{\tau_1 \to \tau_2}(e')$ we have $R_{\tau_2}(e'\, e'')$, so by $(*)$ and the
+induction hypothesis at $\tau_2$ (right to left), $R_{\tau_2}(e\, e'')$.
+}
+ 
+By induction on the derivation of $e \to^* e'$ the same holds for the multi-step
+relation, used in both directions:
+\begin{itemize}
+  \item \emph{forward}: if $R_\tau(e)$ and $e \to^* v$, then $R_\tau(v)$;
+  \item \emph{backward}: if $\vdash e : \tau$, $e \to^* e'$, and $R_\tau(e')$, then
+        $R_\tau(e)$.
+\end{itemize}
+ 
+\subsection{The Fundamental Lemma}
+ 
+\pf{Proof attempt of the first version}{
+By induction on the derivation of $\vdash e : \tau$. In every case $\vdash e : \tau$
+holds by assumption, so we only show the rest of $R_\tau(e)$.
+ 
+\emph{\textsc{T-Var}}: impossible, the context is empty.
+ 
+\emph{\textsc{T-Unit}}: $e = ()$ and $\tau = \kw{unit}$; $()$ is a value, so it halts
+and $R_{\kw{unit}}(())$.
+ 
+\emph{\textsc{T-App}}: $e = e_1\, e_2$ with $\vdash e_1 : \tau' \to \tau$ and
+$\vdash e_2 : \tau'$. By the induction hypotheses $R_{\tau' \to \tau}(e_1)$ and
+$R_{\tau'}(e_2)$. By definition of $R_{\tau' \to \tau}(e_1)$, for every $e'$ with
+$R_{\tau'}(e')$ we have $R_\tau(e_1\, e')$; taking $e' = e_2$ gives
+$R_\tau(e_1\, e_2)$. Unlike the first attempt, we never look at how $e_1\, e_2$
+evaluates: the stronger hypothesis does all the work.
+ 
+\emph{\textsc{T-Abs}}: $e = \lambda x : \tau_1.\, e_0$ and $\tau = \tau_1 \to \tau_2$
+with $x : \tau_1 \vdash e_0 : \tau_2$. We must show (1)
+$\vdash e : \tau_1 \to \tau_2$, which holds by assumption; (2) $e \halts$, since $e$
+is a value; (3) for every $e'$, $R_{\tau_1}(e') \implies R_{\tau_2}(e\, e')$. For (3),
+let $R_{\tau_1}(e')$. By adequacy $e' \to^* v'$ for some $v'$, and by closure under
+(multi)evaluation (forward) $R_{\tau_1}(v')$. Then
+\[
+(\lambda x : \tau_1.\, e_0)\, e' \to^* (\lambda x : \tau_1.\, e_0)\, v' \to \tsub{e_0}{v'}{x}.
+\]
+Since $\vdash e\, e' : \tau_2$, closure under evaluation (backward) reduces the goal
+to $R_{\tau_2}(\tsub{e_0}{v'}{x})$.
+ 
+Here we are stuck. The premise of \textsc{T-Abs} is $x : \tau_1 \vdash e_0 : \tau_2$,
+so $e_0$ is open, while the induction hypothesis concerns only closed expressions and
+says nothing about $e_0$, let alone $\tsub{e_0}{v'}{x}$.
+}
+ 
+The solution is to strengthen the lemma to open expressions, closing them with a
+substitution of related values for free variables. A substitution
+$\gamma = \{v_1/x_1, \ldots, v_k/x_k\}$ maps variables to closed values. We write
+$\gamma(e)$ for the result of substituting each $v_i$ for $x_i$ in $e$ (the order is
+irrelevant, since the values are closed), and $\gamma[x \mapsto v]$ for the
+substitution mapping $x$ to $v$ and otherwise like $\gamma$.
+ 
+\dfn{Related substitutions}{
+\[
+\gamma \models \Gamma \iff \dom(\gamma) = \dom(\Gamma) \text{ and } R_{\Gamma(x)}(\gamma(x)) \text{ for each } x \in \dom(\Gamma).
+\]
+} 
+\mlenma{Fundamental lemma}{
+If $\Gamma \vdash e : \tau$ and $\gamma \models \Gamma$, then $R_\tau(\gamma(e))$.
+}
+ 
+With $\Gamma$ and $\gamma$ empty this is the first version.
+ 
+\pf{Proof}{
+By induction on the derivation of $\Gamma \vdash e : \tau$. Each $\gamma(x)$ is a
+closed value with $\vdash \gamma(x) : \Gamma(x)$, so the substitution lemma gives
+$\vdash \gamma(e) : \tau$ in every case; we only show the rest of $R_\tau(\gamma(e))$.
+ 
+\emph{\textsc{T-Var}}: $e = x$ and $\tau = \Gamma(x)$. Since $\gamma \models \Gamma$,
+$R_{\Gamma(x)}(\gamma(x))$.
+ 
+\emph{\textsc{T-Unit}}: $e = ()$, $\tau = \kw{unit}$, and $\gamma(e) = ()$ halts.
+ 
+\emph{\textsc{T-App}}: $e = e_1\, e_2$ with $\Gamma \vdash e_1 : \tau' \to \tau$ and
+$\Gamma \vdash e_2 : \tau'$. By the induction hypotheses
+$R_{\tau' \to \tau}(\gamma(e_1))$ and $R_{\tau'}(\gamma(e_2))$. By definition of
+$R_{\tau' \to \tau}$ we get $R_\tau(\gamma(e_1)\, \gamma(e_2))$, and
+$\gamma(e_1)\, \gamma(e_2) = \gamma(e_1\, e_2)$.
+ 
+\emph{\textsc{T-Abs}}: $e = \lambda x : \tau_1.\, e_0$ and $\tau = \tau_1 \to \tau_2$
+with $\Gamma, x : \tau_1 \vdash e_0 : \tau_2$. By renaming assume $x \notin \dom(\Gamma)$,
+so $\gamma(e) = \lambda x : \tau_1.\, \gamma(e_0)$, a value, hence halting. Let
+$R_{\tau_1}(e')$.
+\begin{itemize}
+  \item By adequacy $e' \to^* v'$ for some $v'$, and by closure under evaluation
+        $R_{\tau_1}(v')$.
+  \item So $\gamma[x \mapsto v'] \models \Gamma, x : \tau_1$, and by the induction
+        hypothesis $R_{\tau_2}(\gamma[x \mapsto v'](e_0))$, i.e.\
+        $R_{\tau_2}(\tsub{\gamma(e_0)}{v'}{x})$.
+  \item But $\gamma(e)\, e' \to^* \gamma(e)\, v' \to \tsub{\gamma(e_0)}{v'}{x}$ and
+        $\vdash \gamma(e)\, e' : \tau_2$, so by closure under evaluation
+        $R_{\tau_2}(\gamma(e)\, e')$.
+\end{itemize}
+Therefore $R_{\tau_1 \to \tau_2}(\gamma(e))$.
+}
+ 
+Note that in the abstraction case the induction hypothesis is used for \emph{every}
+related value $v'$; this is why the lemma must quantify over all related substitutions
+$\gamma$.
+ 
+\thm{Termination}{
+If $\vdash e : \tau$, then $e \halts$.
+}
+ 
+\pf{Proof}{
+By the fundamental lemma with $\Gamma$ and $\gamma$ empty, $R_\tau(e)$. By adequacy,
+$e \halts$.
+}
+ 
+A proof by logical relations follows a recipe:
+\begin{enumerate}
+  \item Define a relation by induction on types, with the property of interest at base
+        types and ``related arguments to related results'' at function types.
+  \item Prove \emph{adequacy}: related terms have the property.
+  \item Prove the \emph{fundamental lemma}: well-typed terms are related, generalized to
+        open terms closed by related substitutions.
+\end{enumerate}
+ 
+\section{Extensions}
+ 
+\subsection{Booleans}
+ 
+Add $\ttkw{true}$, $\ttkw{false}$, and $\ttkw{if}\ e_1\ \ttkw{then}\ e_2\ \ttkw{else}\
+e_3$ with the semantics and typing rules from Lecture 12. The relation gains one
+clause:
+\[
+R_{\kw{bool}}(e) \iff\ \vdash e : \kw{bool} \text{ and } e \halts.
+\]
+Closure under evaluation at $\kw{bool}$ is as for $\kw{unit}$. The fundamental lemma
+gets three new cases; \textsc{T-True} and \textsc{T-False} are immediate since
+constants are values.
+ 
+\emph{\textsc{T-If}}: $e = \ttkw{if}\ e_1\ \ttkw{then}\ e_2\ \ttkw{else}\ e_3$ with
+$\Gamma \vdash e_1 : \kw{bool}$, $\Gamma \vdash e_2 : \tau$, $\Gamma \vdash e_3 : \tau$.
+By the induction hypothesis $R_{\kw{bool}}(\gamma(e_1))$, so $\gamma(e_1) \to^* v$ for
+some $v$, which by preservation and canonical forms is $\ttkw{true}$ or
+$\ttkw{false}$. If $v = \ttkw{true}$,
+\[
+\gamma(e) \to^* \ttkw{if}\ \ttkw{true}\ \ttkw{then}\ \gamma(e_2)\ \ttkw{else}\ \gamma(e_3) \to \gamma(e_2).
+\]
+By the induction hypothesis $R_\tau(\gamma(e_2))$, so by closure under evaluation
+$R_\tau(\gamma(e))$. The case $v = \ttkw{false}$ is symmetric. We never needed to know
+anything about the branch not taken.
+ 
+\subsection{Products}
+ 
+An expression of product type is related if it halts and both projections are related:
+\[
+R_{\tau_1 \times \tau_2}(e) \iff\ \vdash e : \tau_1 \times \tau_2 \text{ and } e \halts \text{ and } R_{\tau_1}(\#1\ e) \text{ and } R_{\tau_2}(\#2\ e).
+\]
+In general each type constructor gets a clause saying how its values are used:
+functions are applied, pairs are projected, Booleans are tested. Sums are similar and
+are a homework exercise.
+ 
+\subsection{What breaks}
+ 
+\emph{Fixed points.} Adding $\ttkw{fix}$ (Lecture 12) makes the termination theorem
+false, so the proof must fail. It fails in the case for
+$\ttkw{fix}\ (\lambda f : \tau.\, e)$, which steps to
+$\tsub{e}{\ttkw{fix}\ (\lambda f : \tau.\, e)}{f}$: to use the induction hypothesis for
+$e$ we would need $R_\tau$ of the $\ttkw{fix}$ expression itself, which is exactly what
+we are trying to prove.
+ 
+\emph{Recursive types.} With the recursive types of Lecture 13 we cannot even define
+the relation: the clause for $\mu\alpha.\, \tau$ would refer to
+$R_{\tsub{\tau}{\mu\alpha.\,\tau}{\alpha}}$, at a type that is not smaller.
+ 
+\subsection{Strong normalization}
+ 
+We proved that CBV evaluation of a well-typed program terminates. The strong
+normalization theorem from Lecture 12 says every sequence of full $\beta$-reductions is
+finite. The same proof structure works, with ``$e$ is strongly normalizing'' in place of
+``$e \halts$''; closure under reduction is more delicate, since reduction is no longer
+deterministic.
+ 
+For System F, defining the relation is harder: the relation for $\forall X.\, \tau$ must
+say what happens for every instantiation of $X$, including $\forall X.\, \tau$ itself,
+so it cannot be defined by induction on types. Girard (1972) solved this by quantifying
+over all sets of terms satisfying certain closure properties, called \emph{reducibility
+candidates}. The next lecture gives a similar idea in a binary logical relation for
+System F.
+% \end{document}
