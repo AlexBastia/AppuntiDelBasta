@@ -1,0 +1,133 @@
+#separator:tab
+#html:true
+#notetype:Basic
+#deck:Lang and Alg for AI::3 - Propositional Logic
+
+Cosa sono <b>sintassi</b> e <b>semantica</b> di un sistema formale? Quali sono i due \"regni\" della semantica di una logica?	• <b>Sintassi</b>: regole per costruire le frasi <b>ben formate</b> (BNF, definizioni induttive, ...)<br>• <b>Semantica</b>: il <b>significato</b> delle frasi ben formate<br>Due regni: <b>model theory</b> (cosa è <b>vero</b>) e <b>proof theory</b> (cosa è <b>dimostrabile</b>); si spera coincidano (completezza).
+
+Dai la sintassi delle formule proposizionali in <b>BNF</b>.	\(\langle F \rangle ::= \text{Atom} \mid \neg\langle F\rangle \mid \langle F\rangle \wedge \langle F\rangle \mid \langle F\rangle \vee \langle F\rangle \mid \langle F\rangle \to \langle F\rangle \mid \langle F\rangle \leftrightarrow \langle F\rangle \mid (\langle F\rangle)\)<br>\(::=\) si legge \"is\", \(\mid\) si legge \"or\".
+
+BNF dei numeri naturali (lavagna): come si scrive 3?	\(\langle nat \rangle ::= 0 \mid \langle nat \rangle\, S\) (S = successore).<br>\(3 = (((0)S)S)S\): caso base + passo, come la definizione induttiva di PROP.
+
+Perché si usa la <b>definizione induttiva</b> di PROP (PROP = il più piccolo insieme chiuso rispetto ad atomi e connettivi)?	Perché permette di <b>dimostrare per induzione</b> proprietà delle formule (e definire funzioni per ricorsione).
+
+Differenza tra <b>sintassi concreta</b> e <b>sintassi astratta</b>.	• <b>Concreta</b>: la stringa scritta, es. \(A \wedge B \vee C\)<br>• <b>Astratta</b>: l'<b>albero</b> della formula (nodi interni = connettivi, foglie = atomi)<br>Una stringa senza parentesi può dare più alberi: servono precedenze e associatività.
+
+Quale albero corrisponde a \(A \wedge B \vee C\)?	\((A \wedge B) \vee C\): radice \(\vee\), figlio sinistro \(A \wedge B\). Perché \(\wedge\) lega più di \(\vee\). (\(A \wedge (B \vee C)\) è sbagliato.)
+
+<b>Precedenze</b> e <b>associatività</b> dei connettivi (lavagna).	Precedenza: \(\neg \;&gt;\; \wedge \;&gt;\; \vee \;&gt;\; \to \;=\; \leftrightarrow\)<br>Associatività: tutti <b>a destra</b>. Quindi \(A \to B \to C = A \to (B \to C)\) e \(\neg A \wedge B = (\neg A) \wedge B\).<br>Per \(\to\) conta: \((A \to B) \to C \not\equiv A \to (B \to C)\).
+
+\(A \wedge \vee (\neg B)\) è ben formata? E \(((\neg\bot) \vee (A \wedge C)) \to (B \leftrightarrow (\neg\top))\)?	La prima <b>no</b>: tra \(\wedge\) e \(\vee\) manca una formula. La seconda <b>sì</b>.
+
+Cos'è un'<b>interpretazione</b> di una formula proposizionale \(G\)? Quante ce ne sono?	Un assegnamento di valori di verità (T/F) agli atomi \(A_1,\dots,A_n\) che compaiono in \(G\). Sono \(2^n\).<br>Convenzione: \(\{P, \neg Q\}\) = \(P = T, Q = F\).<br>Ogni atomo è T o F, <b>mai entrambi</b>: è ciò che rende la logica <b>classica</b>.
+
+Cos'è un <b>modello</b> di \(G\)? Come si distinguono i due usi di \(\models\)?	\(I\) è un modello di \(G\), \(I \models G\), se \(G\) è vera in \(I\).<br>Due usi: a sinistra un'<b>interpretazione</b> (\(I \models G\): \(G\) vera in \(I\)) oppure <b>formule</b> (\(F_1,\dots,F_n \models G\): \(G\) vera in tutti i modelli delle \(F_i\)).
+
+Dai la \"spiegazione tarskiana\" dei connettivi.	• \(\neg S\) vera sse \(S\) falsa<br>• \(S_1 \wedge S_2\) vera sse entrambe vere<br>• \(S_1 \vee S_2\) vera sse almeno una vera<br>• \(S_1 \to S_2\) vera sse \(S_1\) falsa o \(S_2\) vera (falsa solo con \(S_1\) vera e \(S_2\) falsa)<br>• \(S_1 \leftrightarrow S_2\) vera sse \(S_1 \to S_2\) e \(S_2 \to S_1\) vere
+
+Quali sono i modelli di \(G = (P \vee Q) \wedge \neg(P \wedge Q)\)?	È lo <b>XOR</b>: modelli \(\{\neg P, Q\}\) e \(\{P, \neg Q\}\) (righe 01 e 10). Ogni riga della tavola è un'interpretazione.
+
+Verifica con la tavola: \(A \wedge B,\ B \to C \models A \wedge C\)?	Si guardano solo le righe con <b>tutte</b> le premesse vere: solo \(A=B=C=1\), e lì \(A \wedge C = 1\). Vale.<br>Trucco: appena una premessa è falsa la riga si scarta.
+
+Definisci formula <b>valida</b> e formula <b>inconsistente</b>, con i sinonimi.	• <b>Valida</b> (tautologia, \(\models F\)): vera in <b>tutte</b> le interpretazioni; altrimenti <b>invalida</b><br>• <b>Inconsistente</b> (insoddisfacibile): falsa in <b>tutte</b>; altrimenti <b>consistente</b> (soddisfacibile)<br>Invalida \(\ne\) inconsistente!
+
+Relazioni tra validità e inconsistenza.	• \(F\) valida sse \(\neg F\) inconsistente<br>• inconsistente ⇒ invalida (non viceversa)<br>• valida ⇒ consistente (non viceversa)<br>Es. \(P \vee Q\): invalida ma consistente.
+
+Quali sono le <b>tre domande</b> su un insieme di assiomi \(AX\) e una formula \(F\)?	1. \(AX \models F\)? (conseguenza logica)<br>2. \(\models F\)? (validità)<br>3. \(F\) è soddisfacibile? (es. un guasto in un circuito può verificarsi?)<br>Ci interessa se sono <b>decidibili</b>.
+
+Perché la logica proposizionale è <b>decidibile</b>?	Metodo che termina sempre: enumerare tutte le \(2^n\) interpretazioni (finite) e valutare la formula in ciascuna.<br>C'è un <b>trade-off</b> tra potere espressivo e decidibilità (la FOL non è decidibile).
+
+Descrivi l'algoritmo di <b>Davis–Putnam</b>.	Su una lista di clausole \(S\):<br>• <b>Unit propagation</b>: per ogni clausola unitaria \(L\), cancella le clausole che contengono \(L\) e togli \(\neg L\) dalle altre. \(S\) vuota → TRUE; clausola vuota → FALSE; ripeti finché cambia qualcosa.<br>• <b>Splitting</b>: scegli \(L\), prova \(S \cup \{L\}\), poi \(S \cup \{\neg L\}\) (backtracking).
+
+Applica Davis–Putnam a \(\{P \vee Q,\ \neg P \vee R,\ \neg R,\ \neg Q \vee R\}\).	Unit \(\neg R\): \(\{P \vee Q, \neg P, \neg Q\}\)<br>Unit \(\neg P\): \(\{Q, \neg Q\}\)<br>Unit \(Q\): \(\neg Q\) diventa la clausola vuota → <b>FALSE</b>, insoddisfacibile.
+
+Quando due formule sono <b>logicamente equivalenti</b>? Elenca le regole principali.	\(F \equiv G\) sse hanno lo stesso valore in ogni interpretazione.<br>Commutatività, associatività, \(\neg\neg P \equiv P\), \(P \to Q \equiv \neg Q \to \neg P\), \(P \to Q \equiv \neg P \vee Q\), \(P \leftrightarrow Q \equiv (P \to Q)\wedge(Q \to P)\), De Morgan, distributività di \(\wedge\) su \(\vee\) e di \(\vee\) su \(\wedge\).
+
+Regole con \(\top\) e \(\bot\): identità, elemento assorbente, assorbimento.	\(P \wedge \top \equiv P\), \(P \vee \bot \equiv P\)<br>\(P \wedge \bot \equiv \bot\), \(P \vee \top \equiv \top\)<br>\((P \wedge Q) \vee Q \equiv Q\), \((P \vee Q) \wedge Q \equiv Q\) (pensa a \(\max(\min(P,Q),Q) = Q\))<br>\(\neg\bot \equiv \top\), \(\neg\top \equiv \bot\)
+
+Definisci <b>letterale</b>, <b>NNF</b>, <b>CNF</b>, <b>DNF</b>, <b>clausola</b>.	• <b>Letterale</b>: atomo o sua negazione<br>• <b>NNF</b>: \(\neg\) solo davanti agli atomi<br>• <b>CNF</b>: NNF e congiunzione di <b>clausole</b> (clausola = disgiunzione di letterali); detta forma a clausole<br>• <b>DNF</b>: NNF e disgiunzione di congiunzioni di letterali
+
+\(\neg(P \vee Q) \wedge (\neg P \vee R)\) è in CNF? E \((\neg P \vee Q) \wedge (\neg P \vee R)\)?	La prima <b>no</b>: \(\neg\) davanti a una formula non atomica. La seconda <b>sì</b>: insieme di clausole \(\{\neg P \vee Q, \neg P \vee R\}\).<br>Albero CNF: \(\wedge\) in radice, poi \(\vee\), poi letterali.
+
+I <b>5 passi</b> per trasformare una formula in CNF.	1. Rimuovere \(\to\) e \(\leftrightarrow\)<br>2. Spingere le negazioni verso gli atomi (De Morgan)<br>3. Rimuovere \(\neg\neg\)<br>4. Distribuire \(\vee\) su \(\wedge\)<br>5. Semplificare \(\top\)/\(\bot\)<br>Per la DNF il passo 4 diventa: distribuire \(\wedge\) su \(\vee\).
+
+Porta in CNF \((P \to Q) \wedge \neg(\neg R \wedge (B \vee A))\).	\((\neg P \vee Q) \wedge (\neg\neg R \vee \neg(B \vee A))\)<br>\(\equiv (\neg P \vee Q) \wedge (R \vee (\neg B \wedge \neg A))\)<br>\(\equiv (\neg P \vee Q) \wedge (R \vee \neg B) \wedge (R \vee \neg A)\)
+
+Semplifica \((\neg P \vee Q) \wedge (R \vee (A \wedge \neg A)) \wedge (R \vee (A \vee \neg A))\). Che refuso c'è sulla slide?	\(\equiv (\neg P \vee Q) \wedge (R \vee \bot) \wedge (R \vee \top) \equiv (\neg P \vee Q) \wedge R\).<br>Refuso: la slide scrive \(R \vee (A \to \neg A)\) → \(R \vee False\), ma \(A \to \neg A \equiv \neg A\), non è falso.
+
+Mostra che \((P \vee Q) \wedge \neg(P \wedge Q) \equiv (\neg P \wedge Q) \vee (P \wedge \neg Q)\).	De Morgan: \((P \vee Q) \wedge (\neg P \vee \neg Q)\) (CNF).<br>Distribuendo: \((P\wedge\neg P) \vee (P \wedge \neg Q) \vee (Q \wedge \neg P) \vee (Q \wedge \neg Q)\) \(\equiv (\neg P \wedge Q) \vee (P \wedge \neg Q)\) (DNF).
+
+Esame 06/07/2021: metti in DNF \(\neg(A \to B \vee C) \vee ((B \vee A) \to C \wedge D)\).	Precedenze: \(A \to (B \vee C)\), \((B \vee A) \to (C \wedge D)\).<br>\(\neg(\neg A \vee B \vee C) \vee \neg(B \vee A) \vee (C \wedge D)\)<br>\(\equiv (A \wedge \neg B \wedge \neg C) \vee (\neg B \wedge \neg A) \vee (C \wedge D)\)
+
+Definisci <b>conseguenza logica</b> \(F_1 \wedge\dots\wedge F_n \models G\).	In ogni interpretazione in cui \(F_1 \wedge\dots\wedge F_n\) è vera, anche \(G\) è vera. Le \(F_i\) sono <b>assiomi/premesse</b>.<br>\(F \equiv Q\) sse \(F \models Q\) e \(Q \models F\).
+
+Enuncia il <b>teorema di deduzione</b> e dimostralo.	\(F_1\wedge\dots\wedge F_n \models G\) sse \(\models (F_1\wedge\dots\wedge F_n) \to G\).<br>(⇒) Dove le premesse sono vere \(G\) è vera; dove sono false l'implicazione è vera comunque. (⇐) Se l'implicazione è valida, dove le premesse sono vere \(G\) deve esserlo.
+
+Enuncia il <b>teorema di refutazione</b> e dimostralo.	\(F_1\wedge\dots\wedge F_n \models G\) sse \(F_1\wedge\dots\wedge F_n \wedge \neg G\) è <b>inconsistente</b>.<br>Dim.: la conseguenza vale sse non esiste interpretazione con premesse vere e \(G\) falsa, cioè sse \(F_1\wedge\dots\wedge F_n\wedge\neg G\) è falsa ovunque.
+
+Perché i teoremi di deduzione e refutazione sono importanti oltre la logica proposizionale?	Non usano nessuna proprietà specifica della logica proposizionale: valgono anche per la FOL. La refutazione è la base della <b>risoluzione</b>.
+
+Mostra \(P \to Q,\ \neg Q \models \neg P\) (modus tollens) nei tre modi.	1. <b>Definizione</b>: unica riga con premesse vere è \(P=Q=0\), lì \(\neg P\) vera<br>2. <b>Deduzione</b>: \((F_1 \wedge F_2) \to \neg P\) valida<br>3. <b>Refutazione</b>: \((\neg P \vee Q) \wedge \neg Q \wedge P \equiv \neg P \wedge \neg Q \wedge P \equiv \bot\)
+
+Chang–Lee 2.12 (sciopero): \(F_1 = P \to (\neg Q \vee R \vee S)\), \(F_2 = P\), \(F_3 = \neg S\). Segue che lo sciopero (\(Q\)) finisce?	Da \(F_1, F_2\): \(\neg Q \vee R \vee S\); con \(F_3\): \(\neg Q \vee R\) = \(Q \to R\). <b>Non segue né \(Q\) né \(\neg Q\)</b> (modelli \(\{P,Q,R,\neg S\}\) e \(\{P,\neg Q,\neg R,\neg S\}\)).<br>Se la condizione fosse \(R \wedge S\), seguirebbe \(\neg Q\).
+
+\"Se sono ricco sono felice. Sono felice. Quindi sono ricco.\" È valido? E \"Se beve birra ha 18 anni. Non beve birra. Quindi non ha 18 anni\"?	Entrambi <b>non validi</b>:<br>• affermazione del conseguente: \(w \to h, h \not\models w\), controesempio \(\{\neg w, h\}\)<br>• negazione dell'antecedente: \(b \to a, \neg b \not\models \neg a\), controesempio \(\{\neg b, a\}\)
+
+\(s \to \neg f,\ \neg c \to s,\ f \models c\)? (studio / bocciato / carte)	<b>Valido</b>: da \(f\) e \(s \to \neg f\) (modus tollens) \(\neg s\); da \(\neg s\) e \(\neg c \to s\) (modus tollens) \(c\).
+
+Lettere di Lewis Carroll: come si mostra \(x \to \neg u\) dalle 9 premesse?	Catena di implicazioni (con contrapposizioni):<br>\(x \to y \to \neg s \to \neg r \to w \to v \to p \to q \to t \to \neg u\).<br>Con la tavola servirebbero \(2^{10} = 1024\) righe: serve un metodo sintattico.
+
+Esame 12/01/2023: \((A \to B) \wedge (A \to C) \models A \wedge B \to C\)? E \(A \vee B \vee \neg C \models A \wedge B \to C\)?	Prima: <b>sì</b> (dove la premessa è vera, o \(A \wedge B\) è falso o \(C\) è vero).<br>Seconda: <b>no</b>, controesempio \(A=1, B=1, C=0\).
+
+Esame 12/01/2023: \(M \to C,\ \neg M \to T,\ C \vee T \vdash \bot\)?	<b>No</b>: l'insieme è soddisfacibile (modelli \((M,C,T)\) = 001, 011, 110, 111). Per correttezza non si deriva \(\bot\).
+
+Cos'è la <b>proof theory</b> e perché ci interessa?	Un modo <b>sintattico</b> (manipolando simboli) di dimostrare conseguenze logiche, invece del modo semantico (tavole). Permette di fare deduzione automatica con la computazione. Le regole devono essere corrette rispetto alla semantica.
+
+Come si disegnano le derivazioni (alberi)?	Come un albero vero: <b>foglie in alto</b> (ipotesi), <b>radice in basso</b> (conclusione). Si leggono top-down, si costruiscono di solito bottom-up.
+
+Quali connettivi considera la deduzione naturale del corso e perché?	Solo \(\wedge, \to, \bot\): \(\vee\) ha significato molto diverso in approccio costruttivo e non. Non è una limitazione: l'insieme è <b>funzionalmente completo</b>.
+
+Come si definiscono \(\neg\), \(\top\), \(\leftrightarrow\), \(\vee\) con \(\wedge, \to, \bot\)?	\(\neg F \equiv F \to \bot\)<br>\(\top \equiv \bot \to \bot\)<br>\(F \leftrightarrow G \equiv (F \to G) \wedge (G \to F)\)<br>\(F \vee G \equiv \neg(\neg F \wedge \neg G) \equiv ((F \to \bot) \wedge (G \to \bot)) \to \bot\) — <b>solo in logica classica</b> (intuizionisticamente \(F \vee G\) richiede di sapere quale vale).
+
+Scrivi le regole \(\wedge I\), \(\wedge E\), \(\to I\), \(\to E\).	• \(\wedge I\): da \(\varphi\) e \(\psi\) ricavo \(\varphi \wedge \psi\)<br>• \(\wedge E_1/E_2\): da \(\varphi \wedge \psi\) ricavo \(\varphi\) (o \(\psi\))<br>• \(\to I\): se da \([\varphi]\) derivo \(\psi\), ricavo \(\varphi \to \psi\) <b>scaricando</b> \(\varphi\)<br>• \(\to E\) (modus ponens): da \(\varphi\) e \(\varphi \to \psi\) ricavo \(\psi\)
+
+Scrivi le regole \(\bot_E\) e <b>RAA</b>. Qual è solo classica?	• \(\bot_E\) (ex falso quodlibet): da \(\bot\) ricavo qualsiasi \(\varphi\)<br>• <b>RAA</b> (reductio ad absurdum): se da \([\neg\varphi]\) derivo \(\bot\), ricavo \(\varphi\) scaricando \(\neg\varphi\)<br><b>RAA vale solo in logica classica.</b>
+
+Che differenza c'è tra usare \(\to I\) e RAA quando si deriva \(\bot\)?	Da \([\varphi] \vdash \bot\), con \(\to I\) ottengo \(\varphi \to \bot = \neg\varphi\) (costruttivo).<br>Da \([\neg\varphi] \vdash \bot\), con RAA ottengo \(\varphi\) e non solo \(\neg\neg\varphi\): qui entra la logica classica.
+
+Quante occorrenze dell'ipotesi può scaricare \(\to I\)?	Zero, una o più. Un'ipotesi si può usare quante volte si vuole e un solo \(\to I\) le scarica tutte; lo scarico \"a vuoto\" è lecito (da \(\psi\) ricavo \(\varphi \to \psi\) per qualunque \(\varphi\)). Gli indici \([\varphi]^1\), \(\to I_1\) dicono quale regola scarica quale ipotesi.
+
+Quali regole sono <b>invertibili</b> e cosa significa?	Invertibili: \(\wedge I\), \(\to I\), RAA. Non invertibili: \(\wedge E\), \(\to E\), \(\bot_E\).<br>Invertibile: se la conclusione è derivabile lo sono anche le premesse, quindi applicarla bottom-up non fa perdere dimostrabilità. Le non invertibili richiedono di <b>indovinare</b> formule.<br>Strategia: \(\to I\) e \(\wedge I\) dal basso, poi eliminazioni, poi RAA.
+
+Deriva \(\vdash \varphi \wedge \psi \to \psi \wedge \varphi\).	Da \([\varphi \wedge \psi]^1\): \(\wedge E_2\) dà \(\psi\), \(\wedge E_1\) dà \(\varphi\); \(\wedge I\): \(\psi \wedge \varphi\); \(\to I_1\) scarica l'ipotesi.
+
+Deriva \(\vdash \varphi \to \neg\neg\varphi\), cioè \(\varphi \to ((\varphi \to \bot) \to \bot)\).	Da \([\varphi]^2\) e \([\varphi \to \bot]^1\), \(\to E\): \(\bot\).<br>\(\to I_1\): \((\varphi \to \bot) \to \bot\).<br>\(\to I_2\): \(\varphi \to ((\varphi \to \bot) \to \bot)\).
+
+Deriva \(\vdash (\varphi \to (\psi \to \sigma)) \to (\varphi \wedge \psi \to \sigma)\).	Ipotesi \([\varphi \wedge \psi]^1\), \([\varphi \to (\psi \to \sigma)]^2\).<br>\(\wedge E\): \(\varphi\) e \(\psi\). \(\to E\) con \(\varphi\): \(\psi \to \sigma\); \(\to E\) con \(\psi\): \(\sigma\).<br>\(\to I_1\): \(\varphi \wedge \psi \to \sigma\); \(\to I_2\): tesi.
+
+Deriva \(A \to B,\ C \to \bot \vdash A \to (D \to B) \wedge (C \to D)\).	Ipotesi \([A]^3\): con \(A \to B\), \(\to E\): \(B\); \(\to I_1\) (scarico <b>a vuoto</b> di \(D\)): \(D \to B\).<br>\([C]^2\) con \(C \to \bot\): \(\bot\); \(\bot_E\): \(D\); \(\to I_2\): \(C \to D\).<br>\(\wedge I\), poi \(\to I_3\).
+
+Perché \(\vdash \neg\neg A \to A\) richiede RAA? Scrivi la derivazione.	Senza RAA, da \([(A\to\bot)\to\bot]\) servirebbe \(A \to \bot\) per usare \(\to E\): non è derivabile (Van Dalen).<br>Con RAA: \([(A\to\bot)\to\bot]^2\) e \([A\to\bot]^1\), \(\to E\): \(\bot\); RAA\(_1\): \(A\); \(\to I_2\): \(\neg\neg A \to A\).
+
+Deriva \(((A \wedge B) \to \bot) \to \bot \vdash A\).	Conclusione atomica → si parte con RAA assumendo \([A \to \bot]^2\).<br>\([A \wedge B]^1\), \(\wedge E_1\): \(A\); con \(A \to \bot\): \(\bot\); \(\to I_1\): \((A \wedge B) \to \bot\).<br>Con la premessa, \(\to E\): \(\bot\); RAA\(_2\): \(A\).
+
+Esame 06/07/2021: deriva \(\vdash (F \to G) \to \neg(F \wedge \neg G)\).	Ipotesi \([F \to G]^2\), \([F \wedge (G \to \bot)]^1\).<br>\(\wedge E_1\): \(F\); con \(F \to G\): \(G\). \(\wedge E_2\): \(G \to \bot\); \(\to E\): \(\bot\).<br>\(\to I_1\): \(F \wedge \neg G \to \bot\); \(\to I_2\): tesi.<br>Controllo semantico: nessun controesempio (servirebbe \(F=1, G=0\) ma allora \(F \to G = 0\)).
+
+\(\vdash (F \to G) \to (\neg F \to \neg G)\)?	<b>No</b>. Controesempio \(F = 0, G = 1\): \(F \to G = 1\), \(\neg F \to \neg G = 1 \to 0 = 0\). Non è tautologia, quindi per correttezza non è derivabile (errore \"negazione dell'antecedente\").
+
+Metodo d'esame per \"dimostrare o confutare\" \(\Gamma \vdash \varphi\).	• Vale: esibire un <b>albero di derivazione</b><br>• Non vale: esibire un <b>controesempio</b> (interpretazione con \(\Gamma\) vere e \(\varphi\) falsa); per correttezza \(\Gamma \not\models \varphi \Rightarrow \Gamma \not\vdash \varphi\)<br>Conviene cercare prima il controesempio.
+
+Definizione induttiva di <b>derivazione</b> (Van Dalen 1.4.1).	Il più piccolo insieme \(X\) tale che: l'albero con un solo elemento \(\varphi\) è in \(X\); \(X\) è chiuso rispetto alle regole \(\wedge I, \wedge E, \to I, \to E, \bot_E\), RAA.<br>Essendo induttiva, si dimostrano proprietà <b>per induzione sulle derivazioni</b> (es. correttezza).
+
+Cosa significa \(\Gamma \vdash \varphi\)? E \(\vdash \varphi\)?	Esiste una derivazione con conclusione \(\varphi\) e tutte le ipotesi <b>non scaricate</b> in \(\Gamma\). Se \(\Gamma = \emptyset\), \(\varphi\) è un <b>teorema</b>.<br>Monotonia: \(\Gamma \vdash \varphi\) e \(\Gamma \subseteq \Gamma'\) ⇒ \(\Gamma' \vdash \varphi\).
+
+Enuncia correttezza, completezza e il corollario sui teoremi.	• <b>Correttezza</b> (1.5.1): \(\Gamma \vdash \varphi \Rightarrow \Gamma \models \varphi\)<br>• <b>Completezza</b> (1.5.13): \(\Gamma \models \varphi \Rightarrow \Gamma \vdash \varphi\)<br>• Corollario: teoremi = tautologie, \(\vdash \varphi \iff \models \varphi\)
+
+Idea della dimostrazione della <b>correttezza</b>.	Induzione sulle derivazioni. Base: albero \(\varphi\) con \(\varphi \in \Gamma\). Passo: ogni regola conserva la verità; es. \(\to I\): da \(\Gamma, \varphi \models \psi\) segue \(\Gamma \models \varphi \to \psi\); RAA: da \(\Gamma, \neg\varphi \models \bot\) nessuna valutazione rende vero \(\Gamma\) e falsa \(\varphi\).
+
+Idea della dimostrazione della <b>completezza</b>.	Contronominale: \(\Gamma \not\vdash \varphi\) sse \(\Gamma \cup \{\neg\varphi\}\) consistente sse esiste \(v\) che rende vere tutte le formule di \(\Gamma \cup \{\neg\varphi\}\): un controesempio, quindi \(\Gamma \not\models \varphi\).<br>Parte difficile: ogni insieme consistente ha un modello (estensione a insieme massimamente consistente).
+
+Definisci consistenza sintattica ed enuncia il Lemma 1.5.5 di Van Dalen.	\(\Gamma\) consistente se \(\Gamma \not\vdash \bot\), inconsistente se \(\Gamma \vdash \bot\).<br>Lemma: (a) \(\Gamma \cup \{\neg\varphi\}\) inconsistente ⇒ \(\Gamma \vdash \varphi\) (con RAA); (b) \(\Gamma \cup \{\varphi\}\) inconsistente ⇒ \(\Gamma \vdash \neg\varphi\) (con \(\to I\)).
+
+Cosa ci dice in pratica il teorema di completezza?	• Costruire derivazioni (creativo) equivale a controllare tautologie (meccanico)<br>• Consistenza sintattica (\(\Gamma \not\vdash \bot\)) = soddisfacibilità semantica (ha un modello)<br>• Negli esercizi: derivazione per \(\vdash\), controesempio per \(\not\vdash\)
+

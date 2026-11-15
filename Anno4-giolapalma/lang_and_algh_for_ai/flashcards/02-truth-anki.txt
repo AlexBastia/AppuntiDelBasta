@@ -1,0 +1,79 @@
+#separator:tab
+#html:true
+#notetype:Basic
+#deck:Lang and Alg for AI::2 - Truth
+
+Cos'è la verità secondo il senso comune e nelle scienze sperimentali?	L'essere <b>in accordo con i fatti o la realtà</b>.<br>Nelle scienze sperimentali è legata al <b>mondo sensibile</b>: un esperimento ripetibile definisce una verità; se il mondo cambia, cambia la verità.
+
+Quali sono le \"verità probabili\" della geometria che la geometria sferica mette in crisi?	La somma degli angoli interni di un triangolo è 180°, equivalente al <b>V postulato</b> di Euclide: per un punto fuori da una retta passa una e una sola parallela.
+
+Geometria sferica (Riemann 1854): come si reinterpretano punto e retta e cosa succede?	Punto = punto sulla sfera; retta = <b>cerchio massimo</b>.<br>• per due punti passa una sola retta (se non antipodali)<br>• due rette hanno sempre 2 punti in comune: <b>niente parallele</b><br>• somma degli angoli di un triangolo <b>&gt; 180°</b> (polo + due punti sull'equatore a un quarto di giro: 270°)
+
+Cosa descrive il metodo assiomatico, secondo la lezione sulla verità?	Non il mondo sensibile (niente giudizi sintetici a priori alla Kant), ma un <b>insieme di mondi (modelli)</b>:<br>1. le entità si interpretano liberamente purché gli assiomi siano rispettati<br>2. mondi diversi hanno proprietà diverse<br>3. solo alcune proprietà sono dimostrabili dagli assiomi (<b>incompletezza</b>)
+
+Perché il V postulato non è dimostrabile dagli altri assiomi? Che metodo insegna?	È vero nel piano e falso sulla sfera, ed entrambi soddisfano gli altri assiomi: se fosse dimostrabile sarebbe vero in tutti i modelli (idem per la negazione). È <b>indipendente</b>.<br>Metodo: per mostrare \(\Gamma \not\models F\) basta un mondo in cui \(\Gamma\) è vero e \(F\) falso (<b>controesempio</b>).
+
+Definisci teoria, modello, teoria consistente.	• <b>Teoria</b>: insieme di enunciati (assiomi)<br>• <b>Modello</b>: mondo con un'interpretazione dei simboli in cui tutti gli assiomi sono veri<br>• <b>Consistente</b>: da essa non si deriva l'assurdo
+
+Che impatto ha questa visione sulla matematica?	• Una teoria si accetta perché <b>ammette modelli</b>, non perché soddisfatta dal mondo sensibile<br>• Una teoria con un modello <b>non è inconsistente</b><br>• La verità assoluta è sostituita dalla <b>conseguenza logica</b>
+
+Perché \"ha un modello ⇒ consistente\"? E il viceversa?	Le regole di deduzione sono <b>corrette</b> (soundness): in un modello gli assiomi sono veri, quindi è vero tutto ciò che si deriva; \(\bot\) non è vero in nessun mondo, quindi non si deriva.<br>Il viceversa (consistente ⇒ ha un modello) è il <b>teorema di completezza</b>.
+
+Differenza tra verità del mondo sensibile e verità della matematica.	• Mondo sensibile: cambia quando cambia il mondo (mutamenti <b>ristretti</b>, secondo le sue leggi)<br>• Matematica: cambia adottando nuovi mondi (mutamenti <b>non ristretti</b>, qualunque mondo che rispetta gli assiomi)<br>• Inoltre cambia se si interpretano diversamente le parole.<br>Ciò che resta invariato: la <b>conseguenza logica</b>.
+
+Definisci la <b>conseguenza logica</b> \(\Gamma \models F\) (lucidi).	Per tutte le interpretazioni nei vari mondi possibili: <b>se tutte le formule di \(\Gamma\) sono vere, allora anche \(F\) è vera</b>.<br>I mondi in cui qualche premessa è falsa non contano.
+
+Cosa significano \(\Gamma \not\models F\) e \(\models F\)?	• \(\Gamma \not\models F\): esiste <b>almeno un</b> mondo con tutte le premesse vere e \(F\) falsa (controesempio)<br>• \(\models F\) (\(\Gamma = \emptyset\)): \(F\) è vera in tutti i mondi (<b>valida</b>, tautologia)
+
+Definisci l'<b>equivalenza logica</b> \(F \equiv G\) e la sua caratterizzazione.	\(F \equiv G\) sse \(F \models G\) e \(G \models F\).<br>Lemma: \(F \equiv G\) sse in ogni mondo \(F\) e \(G\) hanno lo <b>stesso valore di verità</b>.
+
+Dimostra che \(\equiv\) è una relazione di equivalenza.	• Riflessiva: \(F \models F\) banalmente<br>• Simmetrica: viene dalla definizione (\(F\models G\) e \(G \models F\))<br>• Transitiva: se \(F \models G\), \(G \models H\), in un mondo con \(F\) vera è vera \(G\), quindi \(H\): \(F \models H\); idem al contrario.<br>(Oppure: \"stesso valore in ogni mondo\" è ovviamente di equivalenza.)
+
+Conclusioni sulla verità: cosa è interessante e cosa no?	La verità è sempre relativa a un <b>mondo</b> e a un'<b>interpretazione</b>. La verità di un singolo enunciato non è interessante (cambia col mondo); interessano <b>conseguenza</b> ed <b>equivalenza logica</b>, che non cambiano.
+
+Cos'è una <b>proposizione</b>? E un atomo? Le domande sono proposizioni?	Enunciato <b>dichiarativo</b> a cui si può assegnare (in principio) vero o falso, mai entrambi. Atomo: non ha parti che siano proposizioni. Il valore assegnato è il <b>valore di verità</b>.<br>Non serve conoscere il valore (Goldbach è una proposizione). Domande e ordini <b>non</b> sono proposizioni.
+
+Perché la logica usa pochi connettivi? Esempio \"ma\" vs \"e\".	Per <b>economia</b>: solo quelli utili alle dimostrazioni. \"Ma\" aggiunge un significato emotivo (sorpresa: \"Max è marxista, ma non è privo di umorismo\"), irrilevante per la verità; spesso si può sostituire con \"e\".
+
+Problema 1 dei connettivi: \"and\" e il tempo.	\"John è ripartito e ha investito un pedone\" ≠ \"John ha investito un pedone e è ripartito\": in italiano \"e\" può ordinare nel tempo. In logica no: \(A \wedge B\) e \(B \wedge A\) dicono la stessa cosa.
+
+Problema 2: \"se apro la finestra allora 1+3=4\", \"se 1+2=4 allora aria fresca\", \"Euclide era greco o matematico\". Cosa insegnano?	Le prime due non hanno relazione tra premessa e conclusione ma in logica sono accettabili e <b>vere</b>: <b>implicazione materiale</b> (conclusione vera, o premessa falsa).<br>\"O\" in logica è <b>inclusivo</b>: la terza è vera, anche se nel parlato suona strana.<br>Conclusione: serve un <b>linguaggio artificiale</b> con significato preciso.
+
+Perché l'implicazione materiale è vera quando la premessa è falsa?	\"Se Smith è dentro allora Jones è dentro\" è sicuramente falsa solo con Smith dentro e Jones fuori. Con Smith fuori l'informazione è solo poco utile; dovendo essere vera o falsa, la si dichiara vera. <b>Un solo caso falso</b>: premessa vera, conclusione falsa.
+
+Alfabeto della logica proposizionale (Van Dalen).	(i) simboli proposizionali \(p_0, p_1, \dots\)<br>(ii) connettivi \(\wedge, \vee, \to, \neg, \leftrightarrow, \bot\)<br>(iii) parentesi<br>Atomi: i simboli proposizionali e \(\bot\).
+
+Definisci \(\mathrm{PROP}\). Cosa significa \"il più piccolo insieme\"?	Il più piccolo \(X\) con: atomi \(\in X\); se \(\varphi,\psi \in X\) allora \((\varphi \square \psi) \in X\) per \(\square \in \{\wedge,\vee,\to,\leftrightarrow\}\); se \(\varphi \in X\) allora \((\neg\varphi) \in X\).<br>\"Più piccolo\": contiene <b>solo</b> le stringhe ottenute con un numero finito di applicazioni delle regole.
+
+Cosa sono \(\varphi, \psi\) nelle definizioni? Perché è importante?	<b>Metavariabili</b>: simboli del metalinguaggio che stanno per formule qualsiasi, non formule. È la separazione linguaggio/metalinguaggio che evita i paradossi.
+
+Enuncia e dimostra il <b>principio di induzione sulle formule</b>.	Se \(A\) vale per gli atomi, \(A(\varphi), A(\psi) \Rightarrow A(\varphi\square\psi)\) e \(A(\varphi) \Rightarrow A(\neg\varphi)\), allora \(A\) vale per ogni formula.<br>Dim.: \(X = \{\varphi \mid A(\varphi)\}\) soddisfa le clausole di \(\mathrm{PROP}\), che è il più piccolo: \(\mathrm{PROP} \subseteq X\).
+
+Definisci una <b>valutazione</b> \(v: \mathrm{PROP} \to \{0,1\}\).	\(v(\varphi\wedge\psi) = \min\), \(v(\varphi\vee\psi) = \max\)<br>\(v(\varphi\to\psi) = 0\) sse \(v(\varphi)=1\) e \(v(\psi)=0\)<br>\(v(\varphi\leftrightarrow\psi)=1\) sse \(v(\varphi)=v(\psi)\)<br>\(v(\neg\varphi) = 1-v(\varphi)\), \(v(\bot)=0\)
+
+Tavole di verità di \(\to\) e \(\leftrightarrow\).	\(\varphi\,\psi\): 00 → \(\to\)=1, \(\leftrightarrow\)=1; 01 → 1, 0; 10 → <b>0</b>, 0; 11 → 1, 1.
+
+Cosa dice il teorema di <b>estensione unica</b> e che conseguenza ha?	Ogni funzione dagli atomi in \(\{0,1\}\) con \(v(\bot)=0\) si estende in modo <b>unico</b> a una valutazione [\![\cdot]\!]_v (ricorsione sulla struttura, unicità per induzione).<br>Una valutazione è determinata dai valori sugli atomi: un \"mondo\" proposizionale è un'assegnazione 0/1 agli atomi.
+
+Lemma: da cosa dipende il valore di \(\varphi\)? Conseguenza sulla decidibilità.	Se \(v\) e \(v'\) coincidono sugli atomi di \(\varphi\), allora [\![\varphi]\!]_v \(=\) [\![\varphi]\!]_{v'} (induzione).<br>Corollario: con \(n\) atomi bastano \(2^n\) righe; la validità proposizionale è <b>decidibile</b> (costo esponenziale nel caso peggiore).
+
+Definisci tautologia e conseguenza semantica \(\Gamma \models \varphi\) con le valutazioni.	• \(\models \varphi\): [\![\varphi]\!]_v\(=1\) per ogni \(v\)<br>• \(\Gamma \models \varphi\): per ogni \(v\), se ogni \(\psi \in \Gamma\) vale 1 allora [\![\varphi]\!]_v\(=1\)<br>È la definizione dei lucidi con \"mondo\" = valutazione.
+
+Esempi di tautologie e conseguenze (Van Dalen): modus ponens e modus tollens.	\(\models \varphi\to\varphi\), \(\models \neg\neg\varphi\to\varphi\), \(\models \varphi\vee\psi \leftrightarrow \psi\vee\varphi\); \(\varphi,\psi \models \varphi\wedge\psi\)<br><b>Modus ponens</b>: \(\varphi, \varphi\to\psi \models \psi\)<br><b>Modus tollens</b>: \(\varphi\to\psi, \neg\psi \models \neg\varphi\)
+
+Vale \(\varphi\to\psi, \psi \models \varphi\)?	<b>No</b> (affermazione del conseguente): con \(v(\varphi)=0, v(\psi)=1\) le premesse sono vere e la conclusione falsa. È l'inferenza dell'<b>abduzione</b>: plausibile ma non corretta.
+
+Che legame c'è tra \(\equiv\) e \(\leftrightarrow\)?	\(\varphi \equiv \psi\) sse \(\models \varphi\leftrightarrow\psi\) (stesso valore in ogni \(v\) sse la bi-implicazione vale sempre 1).
+
+Enuncia e dimostra il <b>teorema di deduzione semantico</b>.	\(\Gamma, \varphi \models \psi\) sse \(\Gamma \models \varphi\to\psi\).<br>(⇒) \(v\) rende vero \(\Gamma\): se \(\varphi\) vale 0, \(\varphi\to\psi\) vale 1; se vale 1, \(v\) rende vero \(\Gamma\cup\{\varphi\}\), quindi \(\psi\) vale 1.<br>(⇐) Se \(v\) rende vero \(\Gamma\cup\{\varphi\}\), \(\varphi\to\psi\) e \(\varphi\) valgono 1, quindi \(\psi\) vale 1.<br>Corollario: \(\varphi_1..\varphi_n \models \psi\) sse \(\models (\bigwedge\varphi_i)\to\psi\).
+
+Enuncia il teorema su conseguenza e insoddisfacibilità e perché conta.	\(\Gamma \models \varphi\) sse \(\Gamma \cup \{\neg\varphi\}\) è <b>insoddisfacibile</b>.<br>Dim.: \(\Gamma \not\models\varphi\) sse esiste \(v\) con \(\Gamma\) vero e \(\neg\varphi\) vero, sse \(\Gamma\cup\{\neg\varphi\}\) soddisfacibile.<br>È l'idea della <b>risoluzione</b> e di Prolog: aggiungere la negazione del goal e derivare la clausola vuota.
+
+Elenca le leggi algebriche notevoli (Van Dalen 1.3.1, 1.3.4).	Associatività e commutatività di \(\wedge,\vee\); distributività \(\varphi\vee(\psi\wedge\sigma) \leftrightarrow (\varphi\vee\psi)\wedge(\varphi\vee\sigma)\) e duale; De Morgan; \(\neg\neg\varphi\leftrightarrow\varphi\); \((\varphi\to\psi)\leftrightarrow(\neg\varphi\vee\psi)\); \((\varphi\leftrightarrow\psi)\leftrightarrow(\varphi\to\psi)\wedge(\psi\to\varphi)\); \(\neg\varphi\leftrightarrow(\varphi\to\bot)\).
+
+Dimostra De Morgan \(\neg(\varphi\vee\psi) \equiv \neg\varphi\wedge\neg\psi\) semanticamente.	\(\neg(\varphi\vee\psi)\) vale 1 ⇔ \(\varphi\vee\psi\) vale 0 ⇔ \(\varphi,\psi\) valgono 0 ⇔ \(\neg\varphi, \neg\psi\) valgono 1 ⇔ \(\neg\varphi\wedge\neg\psi\) vale 1, per ogni \(v\).
+
+Dimostra la contrapposizione \((\varphi\to\psi) \equiv (\neg\psi\to\neg\varphi)\).	\(\neg\psi\to\neg\varphi \equiv \neg\neg\psi\vee\neg\varphi \equiv \psi\vee\neg\varphi \equiv \neg\varphi\vee\psi \equiv \varphi\to\psi\).<br>Lecito per transitività di \(\equiv\) e per il <b>teorema di sostituzione</b> (sostituire una sottoformula con una equivalente).
+
+Curry rivisto: esiste \(v\) con \(X\leftrightarrow(X\to Y)\) vera e \(Y\) falsa?	No: con \(Y=0\), \(X\to Y = 1-X\), servirebbe \(X = 1-X\). Quindi \(X\leftrightarrow(X\to Y) \models Y\): l'assunzione del paradosso implica già \(Y\) ed è soddisfacibile solo dove \(Y\) è vero. Nessun paradosso.
+
