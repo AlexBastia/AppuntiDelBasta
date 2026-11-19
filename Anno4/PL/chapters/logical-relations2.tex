@@ -1,0 +1,367 @@
+% \begin{document} 
+\section{Introduction}
+ 
+Last lecture we proved termination of the simply-typed $\lambda$-calculus with a
+logical relation $R_\tau$, following a recipe: (1)~define a relation by induction on
+types, with the property of interest at base types and ``related arguments to related
+results'' at function types; (2)~prove \emph{adequacy} (related terms have the
+property); (3)~prove the \emph{fundamental lemma} (well-typed terms are related). We
+use the same recipe twice more: to give a different proof of type soundness, and to
+make precise what the type of a polymorphic function says about its behavior.
+ 
+\section{Semantic Type Soundness}
+ 
+In Lecture 12 we proved soundness \emph{syntactically}, by progress and preservation.
+A program is \emph{safe} if it never gets stuck:
+\[
+\safe(e) \iff \text{for every } e' \text{ such that } e \to^* e', \text{ either } e' \text{ is a value or } e' \to e'' \text{ for some } e''.
+\]
+Alternatively, we prove soundness \emph{semantically}: give each type a meaning as a
+set of values and show that well-typed programs only produce values in the meaning of
+their type. We use the simply-typed $\lambda$-calculus with $\kw{unit}$, $\kw{bool}$,
+and conditionals. Safety does not require termination: a program that runs forever is
+safe.
+ 
+\subsection{The logical relation}
+ 
+Define by mutual induction on types the set $\V{\tau}$ of closed \emph{values} that
+behave like values of type $\tau$, and the set $\E{\tau}$ of closed \emph{expressions}
+that behave like expressions of type $\tau$:
+\begin{align*}
+\V{\kw{unit}} &= \{()\} \\
+\V{\kw{bool}} &= \{\ttkw{true}, \ttkw{false}\} \\
+\V{\tau_1 \to \tau_2} &= \{\lambda x : \tau_1.\, e \mid \text{for every } v \in \V{\tau_1},\ \tsub{e}{v}{x} \in \E{\tau_2}\} \\
+\E{\tau} &= \{e \mid \text{for every } e',\ \text{if } e \to^* e' \text{ and } e' \nstep \text{ then } e' \in \V{\tau}\}
+\end{align*}
+An expression is in $\E{\tau}$ if whenever it stops, it stops at a value in $\V{\tau}$.
+Since values cannot step, a value $v$ is in $\E{\tau}$ iff it is in $\V{\tau}$. These
+definitions say nothing about syntactic typing. For open expressions we use
+substitutions of related values:
+\begin{itemize}
+  \item $\gamma \in \G{\Gamma}$ iff $\dom(\gamma) = \dom(\Gamma)$ and
+        $\gamma(x) \in \V{\Gamma(x)}$ for each $x \in \dom(\Gamma)$.
+  \item $\Gamma \vDash e : \tau$ iff for every $\gamma \in \G{\Gamma}$,
+        $\gamma(e) \in \E{\tau}$.
+\end{itemize}
+$\Gamma \vDash e : \tau$ is called \emph{semantic typing}.
+ 
+\subsection{Soundness}
+ 
+\mlenma{Adequacy}{
+If $\emptyset \vDash e : \tau$, then $\safe(e)$.
+}
+ 
+\pf{Proof}{
+We have $e \in \E{\tau}$. Let $e \to^* e'$. If $e'$ can step we are done. Otherwise
+$e' \in \V{\tau}$ by the definition of $\E{\tau}$, so $e'$ is a value.
+}
+ 
+\mlenma{Fundamental lemma}{
+If $\Gamma \vdash e : \tau$, then $\Gamma \vDash e : \tau$.
+}
+ 
+\pf{Proof}{
+By induction on the typing derivation, one case per rule. In each case assume the
+induction hypotheses for the premises, let $\gamma \in \G{\Gamma}$, and show
+$\gamma(e) \in \E{\tau}$.
+ 
+\emph{\textsc{T-Var}}: $e = x$ and $\tau = \Gamma(x)$. Then $\gamma(e) = \gamma(x) \in
+\V{\tau}$ by definition of $\G{\Gamma}$, and since values cannot step,
+$\gamma(x) \in \E{\tau}$.
+ 
+\emph{\textsc{T-Unit}, \textsc{T-True}, \textsc{T-False}}: $e$ is $()$, $\ttkw{true}$,
+or $\ttkw{false}$ and $\tau$ is $\kw{unit}$ or $\kw{bool}$. Then $\gamma(e) = e \in
+\V{\tau}$ by definition, hence in $\E{\tau}$.
+ 
+\emph{\textsc{T-Abs}}: $e = \lambda x : \tau_1.\, e_0$ and $\tau = \tau_1 \to \tau_2$
+with $\Gamma, x : \tau_1 \vdash e_0 : \tau_2$. By renaming assume $x \notin \dom(\Gamma)$.
+Then $\gamma(e) = \lambda x : \tau_1.\, \gamma(e_0)$ is a value, so it suffices to show
+it is in $\V{\tau_1 \to \tau_2}$. Let $v \in \V{\tau_1}$. Then $\gamma[x \mapsto v] \in
+\G{\Gamma, x : \tau_1}$, so by the induction hypothesis
+$\tsub{\gamma(e_0)}{v}{x} = \gamma[x \mapsto v](e_0) \in \E{\tau_2}$.
+ 
+\emph{\textsc{T-App}}: $e = e_1\, e_2$ with $\Gamma \vdash e_1 : \tau' \to \tau$ and
+$\Gamma \vdash e_2 : \tau'$. Let $\gamma \in \G{\Gamma}$ and suppose
+$\gamma(e_1)\,\gamma(e_2) \to^* e'$ with $e' \nstep$. Evaluation is deterministic and
+the contexts $E\, e$ and $v\, E$ evaluate left to right. If $\gamma(e_1)$ ran forever,
+so would the application, and there would be no stuck $e'$; so $\gamma(e_1) \to^* e_1'$
+for some $e_1' \nstep$. By the induction hypothesis $\gamma(e_1) \in \E{\tau' \to \tau}$,
+so $e_1' \in \V{\tau' \to \tau}$, i.e.\ $e_1' = \lambda x : \tau'.\, e_0$. Similarly
+$\gamma(e_2) \to^* v_2$ for some $v_2 \nstep$, and by the induction hypothesis
+$\gamma(e_2) \in \E{\tau'}$ so $v_2 \in \V{\tau'}$. Hence
+\[
+\gamma(e_1)\,\gamma(e_2) \to^* (\lambda x : \tau'.\, e_0)\, v_2 \to \tsub{e_0}{v_2}{x} \to^* e'.
+\]
+By definition of $\V{\tau' \to \tau}$, $\tsub{e_0}{v_2}{x} \in \E{\tau}$, so
+$e' \in \V{\tau}$.
+ 
+\emph{\textsc{T-If}}: $e = \ttkw{if}\ e_1\ \ttkw{then}\ e_2\ \ttkw{else}\ e_3$ with
+$\Gamma \vdash e_1 : \kw{bool}$, $\Gamma \vdash e_2 : \tau$, $\Gamma \vdash e_3 : \tau$.
+Suppose $\ttkw{if}\ \gamma(e_1)\ \ttkw{then}\ \gamma(e_2)\ \ttkw{else}\ \gamma(e_3)
+\to^* e'$ with $e' \nstep$. The context $\ttkw{if}\ E\ \ttkw{then}\ e_2\ \ttkw{else}\
+e_3$ evaluates the condition first; if $\gamma(e_1)$ ran forever so would the
+conditional, so $\gamma(e_1) \to^* e_1'$ for some $e_1' \nstep$. By the induction
+hypothesis $\gamma(e_1) \in \E{\kw{bool}}$, so $e_1' \in \V{\kw{bool}}$, i.e.\ it is
+$\ttkw{true}$ or $\ttkw{false}$. If $\ttkw{true}$,
+\[
+\ttkw{if}\ \gamma(e_1)\ \ttkw{then}\ \gamma(e_2)\ \ttkw{else}\ \gamma(e_3) \to^* \ttkw{if}\ \ttkw{true}\ \ttkw{then}\ \gamma(e_2)\ \ttkw{else}\ \gamma(e_3) \to \gamma(e_2) \to^* e'.
+\]
+By the induction hypothesis $\gamma(e_2) \in \E{\tau}$, so $e' \in \V{\tau}$. The case
+$\ttkw{false}$ is symmetric, using $\gamma(e_3)$. We never needed to know anything about
+the branch not taken.
+}
+ 
+Together, adequacy and the fundamental lemma show: if $\vdash e : \tau$ then
+$\safe(e)$.
+ 
+\subsection{Why bother?}
+ 
+Semantic typing is more permissive than syntactic typing. For example
+\[
+\lambda x : \kw{bool}.\ \ttkw{if}\ \ttkw{true}\ \ttkw{then}\ x\ \ttkw{else}\ (()\ ())
+\]
+is not syntactically well-typed, since $()\ ()$ is not, but it is semantically typed at
+$\kw{bool} \to \kw{bool}$: for every $v \in \V{\kw{bool}}$ its body steps to $v \in
+\V{\kw{bool}}$, and the ``bad'' branch is never taken.
+ 
+This matters in practice: real languages have libraries using features the type system
+cannot check, such as \texttt{unsafe} code in Rust. We can prove by hand that such a
+library is semantically well-typed; then the fundamental lemma (proved once and for
+all) shows that any syntactically well-typed client of the library is safe. This is the
+approach of RustBelt (Jung et al., 2018), which proves safety of Rust libraries such as
+\texttt{Vec} and \texttt{Rc}. Combined with step-indexing, it scales to recursive types,
+mutable state, and concurrency.
+ 
+\section{Parametricity}
+ 
+In Lecture 14 we argued informally that a function of type $\forall X.\, X \to X$ must
+be the identity: it knows nothing about $X$, so it can only return its argument. We now
+make this precise. The key idea is that a polymorphic function behaves \emph{uniformly}:
+run twice, at two possibly different types, on arguments related in any way, its
+results are related in the same way. For this we need a \emph{binary} logical relation,
+between pairs of expressions, interpreting each type variable as an arbitrary relation.
+ 
+\subsection{A binary logical relation}
+ 
+We use System F with $\kw{unit}$, $\kw{bool}$, $\kw{int}$. A \emph{relational
+environment} $\rho$ maps each type variable $X$ to a triple $(\tau_1, \tau_2, R)$ where
+$\tau_1, \tau_2$ are closed types and $R$ is any relation between closed values of type
+$\tau_1$ and of type $\tau_2$:
+\[
+R \in \Rel[\tau_1, \tau_2] \triangleq \mathcal{P}\big(\{(v_1, v_2) \mid v_1, v_2 \text{ are values},\ \vdash v_1 : \tau_1,\ \vdash v_2 : \tau_2\}\big).
+\]
+Nothing else is required of $R$; it need not be a function and may be empty. Write
+$\rho_1(\tau)$ and $\rho_2(\tau)$ for $\tau$ with the first and second types of $\rho$
+substituted for each type variable. For $\rho(X) = (\tau_1, \tau_2, R)$,
+$\V{X}_\rho = R$ relates values of type $\rho_1(X) = \tau_1$ to values of type
+$\rho_2(X) = \tau_2$. We write
+\[
+\vdash (e_1, e_2) : \rho(\tau) \quad\text{for}\quad \vdash e_1 : \rho_1(\tau) \text{ and } \vdash e_2 : \rho_2(\tau).
+\]
+The relations $\V{\tau}_\rho$ on values and $\E{\tau}_\rho$ on expressions, each
+containing only well-typed pairs in this sense, are:
+\begin{align*}
+\V{\kw{unit}}_\rho &= \{((), ())\} \\
+\V{\kw{bool}}_\rho &= \{(\ttkw{true}, \ttkw{true}), (\ttkw{false}, \ttkw{false})\} \\
+\V{\kw{int}}_\rho &= \{(n, n) \mid n \in \Z\} \\
+\V{X}_\rho &= R, \quad \text{where } \rho(X) = (\tau_1, \tau_2, R) \\
+\V{\tau \to \tau'}_\rho &= \{(v_1, v_2) \mid\ \vdash (v_1, v_2) : \rho(\tau \to \tau') \text{ and } \\
+  &\qquad\quad \forall (v_1', v_2') \in \V{\tau}_\rho.\ (v_1\, v_1', v_2\, v_2') \in \E{\tau'}_\rho\} \\
+\V{\forall X.\, \tau}_\rho &= \{(v_1, v_2) \mid\ \vdash (v_1, v_2) : \rho(\forall X.\, \tau) \text{ and } \\
+  &\qquad\quad \forall \tau_1, \tau_2,\ R \in \Rel[\tau_1, \tau_2].\ (v_1\,[\tau_1], v_2\,[\tau_2]) \in \E{\tau}_{\rho[X \mapsto (\tau_1, \tau_2, R)]}\} \\
+\E{\tau}_\rho &= \{(e_1, e_2) \mid\ \vdash (e_1, e_2) : \rho(\tau) \text{ and } e_1 \to^* v_1 \text{ and } e_2 \to^* v_2 \text{ for some } (v_1, v_2) \in \V{\tau}_\rho\}
+\end{align*}
+Without the typing conditions the relation could relate ill-typed terms; they are
+explicit for functions, polymorphic types, and expressions, and hold automatically
+elsewhere (base types are constants of the right type; for a type variable, $R \in
+\Rel[\tau_1, \tau_2]$ contains only well-typed pairs). At base types the relation is
+equality; at function types, related functions map related arguments to related results;
+at polymorphic types, related type abstractions give related results for \emph{every}
+choice of types and relation for the type variable.
+ 
+Although $\tau_1, \tau_2$ can be arbitrary types, the definition is still by induction
+on types: the clause for $\forall X.\, \tau$ uses only the relation for the body $\tau$
+with an extended environment, since the meaning of $X$ is given by $R$, not by
+$\tau_1, \tau_2$. And since System F programs terminate, it is reasonable for
+$\E{\tau}_\rho$ to require both expressions to evaluate to values.
+ 
+\subsection{The abstraction theorem}
+ 
+\thm{Abstraction theorem (Reynolds 1983)}{
+If $\vdash e : \tau$, then $(e, e) \in \E{\tau}_\emptyset$.
+}
+ 
+Every well-typed closed term is related to itself. As in the last lecture, the proof
+generalizes to open terms: if $\Delta, \Gamma \vdash e : \tau$, then for every $\rho$
+mapping the type variables in $\Delta$ and every pair of substitutions $\gamma_1,
+\gamma_2$ mapping each $x$ to values related by $\V{\Gamma(x)}_\rho$, the closed terms
+$\rho_1(\gamma_1(e))$ and $\rho_2(\gamma_2(e))$ are related by $\E{\tau}_\rho$.
+ 
+\pf{Proof sketch}{
+By induction on the typing derivation. The key case is \textsc{T-TAbs}: the body of
+$\Lambda X.\, e$ was type checked knowing nothing about $X$, so the induction hypothesis
+applies for every choice of $\tau_1$, $\tau_2$, and $R$.
+}
+ 
+\emph{Why is a term related to itself?} The theorem compares one program with itself,
+run under two interpretations of its type variables. At base types this just means
+producing the same result; the content is at polymorphic types. $(f, f) \in
+\V{\forall X.\, \tau}_\rho$ says the same code $f$, instantiated at $\tau_1$ in one run
+and $\tau_2$ in the other, and given arguments corresponding under any relation $R$,
+produces corresponding results: $f$ is uniform in $X$. This is a consequence of the
+typing rules, not a property of arbitrary code. For instance, if we added an operator
+testing whether a type is $\kw{int}$, some $f : \forall X.\, \kw{int}$ could return $0$
+at $\kw{int}$ and $1$ otherwise; instantiating $X$ with $\kw{int}$ in one run and
+$\kw{bool}$ in the other gives $0 \neq 1$, so $f$ would not be related to itself. The
+proof goes through for System F precisely because no typing rule lets a program inspect
+a type. (Relating two \emph{different} terms by $\E{\tau}_\rho$ expresses program
+equivalence; the abstraction theorem is the special case that every well-typed term is
+equivalent to itself, which lets us plug in a relation of our choice.)
+ 
+\subsection{Free theorems}
+ 
+To derive a ``free theorem'' from a type, apply the abstraction theorem and then choose
+a clever relation $R$.
+ 
+\paragraph{The role of $R$.} Think of a polymorphic function as run twice, at $\tau_1$
+and at $\tau_2$; $R$ says which values of the first run correspond to which of the
+second. The function cannot inspect values of type $X$: it can only copy, drop, or pass
+them to functions it was given. The abstraction theorem says that, whatever $R$ is, the
+function respects it: if the arguments of type $X$ correspond, so do the results.
+Choosing $R$ chooses which correspondence to exploit; the more the arguments constrain
+$R$, the more the result is constrained.
+\begin{itemize}
+  \item If $R$ relates a single value $v$ to itself, the only $X$-valued result the
+        function can produce is $v$.
+  \item If $R$ is empty there are no values of type $X$, so no function can produce one.
+  \item If $R$ is the graph of a function $g$, the second run sees exactly the values of
+        the first converted by $g$; the function must commute with $g$, since it cannot
+        tell the difference.
+\end{itemize}
+ 
+\paragraph{How to pick $R$.} Work backwards from the desired conclusion:
+\begin{enumerate}
+  \item Decide what you want to say about the result of type $X$; written as a relation,
+        this is $R$. E.g.\ ``the result is $v$'' is $R = \{(v, v)\}$, and ``the second
+        result is the conversion by $g$ of the first'' is the graph of $g$.
+  \item Make $R$ as small as possible: include the pairs relating the arguments of type
+        $X$ you provide, and nothing else.
+  \item Check the hypotheses of the theorem: your arguments must be related by
+        $\V{X}_\rho = R$, and if the function is also given functions using $X$ (such as
+        $X \to X$), they must map related arguments to related results, so $R$ must be
+        closed under them.
+  \item Apply the theorem: the result of type $X$ is in $R$, so by the choice of $R$ it
+        is one of the pairs you put there.
+\end{enumerate}
+If a choice fails, it usually either omits the arguments you provide (step 3 fails) or
+contains too much (step 4 says nothing useful).
+ 
+\paragraph{The identity.} Let $\vdash f : \forall X.\, X \to X$, $\tau$ a closed type
+and $v$ a closed value of type $\tau$. Choose $R = \{(v, v)\}$ and
+$\rho = [X \mapsto (\tau, \tau, R)]$.
+ 
+\thm{Identity}{
+If $\vdash f : \forall X.\, X \to X$, then $f\,[\tau]\ v \to^* v$ for every $\tau$ and
+$v$; i.e.\ $f$ behaves like the identity.
+}
+ 
+\pf{Proof}{
+By the abstraction theorem $f$ evaluates to some $f'$ with $(f', f') \in
+\V{\forall X.\, X \to X}_\emptyset$. By definition $(f'\,[\tau], f'\,[\tau]) \in
+\E{X \to X}_\rho$, so $f'\,[\tau] \to^* g$ for some $g$ with $(g, g) \in \V{X \to
+X}_\rho$. Since $(v, v) \in R = \V{X}_\rho$, we get $(g\ v, g\ v) \in \E{X}_\rho$, so
+$g\ v \to^* v'$ for some $v'$ with $(v', v') \in R$, which means $v' = v$.
+}
+ 
+\paragraph{Church Booleans.} Let $\vdash f : \forall X.\, X \to X \to X$, let $a, b$ be
+distinct values of type $\tau_1$ and $a', b'$ distinct values of type $\tau_2$. Choose
+$R = \{(a, a'), (b, b')\}$ and $\rho = [X \mapsto (\tau_1, \tau_2, R)]$.
+ 
+\thm{Church Booleans}{
+If $\vdash f : \forall X.\, X \to X \to X$, then $f$ makes the same choice in both runs:
+it always returns its first argument or always returns its second, like one of the two
+Church Booleans.
+}
+ 
+\pf{Proof}{
+The arguments are related, since $(a, a') \in R$ and $(b, b') \in R$. By the abstraction
+theorem $f\,[\tau_1]\ a\ b$ and $f\,[\tau_2]\ a'\ b'$ evaluate to values $r_1, r_2$ with
+$(r_1, r_2) \in R$. As $R$ has only two pairs, $(r_1, r_2)$ is $(a, a')$ or $(b, b')$;
+the mixed pairs $(a, b')$ and $(b, a')$ are impossible. So if the first run returns $a$
+the second returns $a'$, and if the first returns $b$ the second returns $b'$.
+}
+ 
+\paragraph{An empty type.} 
+\thm{Empty type}{
+There is no closed term $f$ with $\vdash f : \forall X.\, \forall Y.\, X \to Y$.
+}
+ 
+\pf{Proof}{
+Suppose there were. Choose $R_X = \{((), ())\}$ and $R_Y = \emptyset$, and
+$\rho = [X \mapsto (\kw{unit}, \kw{unit}, R_X),\ Y \mapsto (\kw{unit}, \kw{unit}, R_Y)]$.
+$R_X$ must be nonempty so that we have an argument to give, and $R_Y$ empty so that no
+result can be related.
+\begin{enumerate}
+  \item By the abstraction theorem $f$ evaluates to some $f'$ with $(f', f') \in
+        \V{\forall X.\, \forall Y.\, X \to Y}_\emptyset$.
+  \item By the clause for $\forall$ applied twice with $\kw{unit}$, $f'\,[\kw{unit}]\,
+        [\kw{unit}]$ evaluates to some $k$ with $(k, k) \in \V{X \to Y}_\rho$. (The
+        intermediate $f'\,[\kw{unit}]$ evaluates to a value in $\V{\forall Y.\, X \to
+        Y}$ for the extended environment.)
+  \item The arguments are related, since $((), ()) \in R_X = \V{X}_\rho$, so by the
+        function clause $(k\ (), k\ ()) \in \E{Y}_\rho$.
+  \item By definition of $\E{Y}_\rho$, both expressions evaluate to values $(v_1, v_2)
+        \in \V{Y}_\rho = R_Y = \emptyset$, which is impossible.
+\end{enumerate}
+Intuitively, such a function would have to produce a value of an arbitrary type $Y$
+from just a value of an arbitrary type $X$; $R_Y = \emptyset$ expresses that there are
+no such values.
+}
+ 
+\paragraph{Lists.} In a language with lists, related lists have the same length and
+related elements:
+\[
+\V{\tau\ \mathit{list}}_\rho = \{([v_1, \ldots, v_n], [w_1, \ldots, w_n]) \mid \forall i.\ (v_i, w_i) \in \V{\tau}_\rho\}.
+\]
+ 
+\thm{Wadler 1989}{
+If $f : \forall X.\, X\ \mathit{list} \to X\ \mathit{list}$, then for every function
+$g : \tau_1 \to \tau_2$ and list $l : \tau_1\ \mathit{list}$,
+\[
+\mathit{map}\ g\ (f\ l) = f\ (\mathit{map}\ g\ l).
+\]
+}
+ 
+\pf{Proof}{
+Let $l'$ be the value of $\mathit{map}\ g\ l$, choose $R$ to be the graph of $g$,
+$\{(v, w) \mid g\ v \to^* w\}$, and $\rho = [X \mapsto (\tau_1, \tau_2, R)]$. The
+arguments are related: $(l, l') \in \V{X\ \mathit{list}}_\rho$, since each element of
+$l'$ is the image under $g$ of the corresponding element of $l$.
+\begin{enumerate}
+  \item By the abstraction theorem $f$ evaluates to some $f'$ with $(f', f') \in
+        \V{\forall X.\, X\ \mathit{list} \to X\ \mathit{list}}_\emptyset$.
+  \item By the clause for $\forall$ with $\tau_1, \tau_2, R$, $(f'\,[\tau_1],
+        f'\,[\tau_2]) \in \E{X\ \mathit{list} \to X\ \mathit{list}}_\rho$, so
+        $f'\,[\tau_1]$ evaluates to some $h_1$ and $f'\,[\tau_2]$ to some $h_2$ with
+        $(h_1, h_2) \in \V{X\ \mathit{list} \to X\ \mathit{list}}_\rho$.
+  \item By the function clause on the related arguments $(l, l')$,
+        $(h_1\ l, h_2\ l') \in \E{X\ \mathit{list}}_\rho$.
+\end{enumerate}
+Since $f\,[\tau_1]\ l$ evaluates to $h_1\ l$ and $f\,[\tau_2]\ l'$ to $h_2\ l'$, their
+results are related by $\V{X\ \mathit{list}}_\rho$: lists of the same length whose
+elements are related by the graph of $g$. That is, the second result is the first with
+$g$ applied to each element, i.e.\ $\mathit{map}\ g\ (f\ l) = f\ (\mathit{map}\ g\ l)$.
+}
+ 
+In words, $f$ can only rearrange, drop, or duplicate elements. Wadler's ``Theorems for
+free!'' derives many more theorems of this form.
+ 
+\section{Summary}
+ 
+Logical relations define a property of programs by induction on types, so that the
+property is preserved by every way of using a value. Unary relations, as for termination
+and safety, prove properties of single programs; binary relations prove properties of
+pairs of programs, such as parametricity and program equivalence. With step-indexing,
+logical relations scale to recursive types, mutable state, and concurrency, and are the
+foundation of modern program logics such as Iris.
+% \end{document}
