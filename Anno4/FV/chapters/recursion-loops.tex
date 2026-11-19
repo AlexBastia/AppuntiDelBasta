@@ -1,0 +1,207 @@
+% \begin{document}
+ 
+\chapter{Semantics and Verification of Recursion and Loops}
+ 
+\section{Properties of Program Contexts}
+ 
+\subsection*{Some properties of relations}
+ 
+Relation composition and union satisfy the following laws:
+\begin{align*}
+(p_1 \subseteq p_2) &\rightarrow (p_1 \circ p) \subseteq (p_2 \circ p),\\
+(p_1 \subseteq p_2) &\rightarrow (p \circ p_1) \subseteq (p \circ p_2),\\
+(p_1 \subseteq p_2) \wedge (q_1 \subseteq q_2) &\rightarrow (p_1 \cup q_1) \subseteq (p_2 \cup q_2),\\
+(p_1 \cup p_2) \circ q &= (p_1 \circ q) \cup (p_2 \circ q).
+\end{align*}
+ 
+\subsection*{Monotonicity of expressions}
+ 
+Consider relations that are subsets of $S \times S$; the set of all such relations is $C = \{r \mid r \subseteq S^2\}$. Let $E(r)$ be given by any expression built from the relation $r$ and some additional fixed relations $b_1, \ldots, b_n$ using $\cup$ and $\circ$. Then $E$ is a function $C \to C$ mapping relations to relations.
+ 
+\mlenma{Monotonicity of expressions}{Every such $E$ is monotonic on $C$: $r_1 \subseteq r_2 \rightarrow E(r_1) \subseteq E(r_2)$.}
+ 
+\pf{Proof}{By induction on the expression tree defining $E$, using the monotonicity properties of $\cup$ and $\circ$ listed above.}
+ 
+\subsection*{Distributivity over unions}
+ 
+In general $E(\bigcup_{i \in I} r_i) = \bigcup_{i \in I} E(r_i)$ is \emph{false}. If $r$ occurs more than once in $E$, then $E(r_1 \cup r_2)$ contains cross terms such as $r_1 \circ r_2$ that are not in $E(r_1) \cup E(r_2)$ (this happens already for $E(r) = r \circ r$).
+ 
+\mlenma{Distributivity in one direction}{For every such $E$, $E(\bigcup_{i \in I} r_i) \supseteq \bigcup_{i \in I} E(r_i)$.}
+ 
+\pf{Proof}{Let $r = \bigcup_{i \in I} r_i$. For every $i$, $r_i \subseteq r$, so by monotonicity $E(r_i) \subseteq E(r)$. Since all $E(r_i)$ are included in $E(r)$, so is their union.}
+ 
+The equality $E(\bigcup_{i \in I} r_i) = \bigcup_{i \in I} E(r_i)$ does hold in each of the following cases (all proved by induction on the expression for $E$):
+\begin{enumerate}
+  \item $E(r)$ contains $r$ at most once (only one branch of the expression tree contains $r$);
+  \item $E(r)$ contains $r$ any number of times, but $I$ is the set of natural numbers and $r_1 \subseteq r_2 \subseteq r_3 \subseteq \ldots$ is an increasing sequence;
+  \item $E(r)$ contains $r$ any number of times, but $\{r_i\}_{i \in I}$ is a directed family of relations: for each $i, j$ there is $k$ with $r_i \cup r_j \subseteq r_k$, where $I$ may be uncountable. This generalizes the previous case.
+\end{enumerate}
+ 
+\pf{Proof for an increasing sequence}{By induction on the expression tree of $E$. Let $r = \bigcup_{i} r_i$. The inclusion $\supseteq$ holds by monotonicity, so we show $\subseteq$. Consider the case $E(r) = E_1(r) \circ E_2(r)$, where by the induction hypothesis $E_k(\bigcup_i r_i) = \bigcup_i E_k(r_i)$ for $k = 1, 2$. Let $(x, x') \in E(r)$. Then there is $z$ with $(x, z) \in E_1(r)$ and $(z, x') \in E_2(r)$. By the induction hypothesis there are $i_1, i_2$ with $(x, z) \in E_1(r_{i_1})$ and $(z, x') \in E_2(r_{i_2})$. Let $j = \max(i_1, i_2)$. Then $r_{i_1} \subseteq r_j$ and $r_{i_2} \subseteq r_j$, so by monotonicity of $E_1, E_2$ we get $(x, z) \in E_1(r_j)$ and $(z, x') \in E_2(r_j)$. Thus $(x, x') \in E_1(r_j) \circ E_2(r_j) = E(r_j)$, so $(x, x') \in \bigcup_i E(r_i)$. The cases of $\cup$, constants and $r$ itself are similar and simpler.}
+ 
+\section{Local Variables and Specifications as Commands}
+ 
+\subsection*{Local mutable variables}
+ 
+Suppose the global variables are $V$ and a program contains a nested block that introduces a local variable $y$. Each statement is a relation between the variables in scope, so inside the block the variables are $V \cup \{y\}$. We use the convention that the initial values of variables are arbitrary.
+ 
+\dfn{Translation with scoped variables}{Let $R_V(P)$ denote the formula for program $P$ in the scope with variable set $V$. For example,
+\[
+R_V(x = t) = x' = t \wedge \bigwedge_{v \in V \setminus \{x\}} v' = v.
+\]
+A block declaring a local variable is translated by
+\[
+R_V(\{\texttt{var } y;\ P\}) = \exists y, y'.\ R_{V \cup \{y\}}(P).
+\]
+The quantifiers can then be eliminated to simplify the result (e.g.\ by the one-point rule).}
+ 
+In particular, $\texttt{havoc}(x)$ can be expressed using a local variable: $R_V(\texttt{havoc}(x)) \iff R_V(\{\texttt{var } y;\ x = y\})$.
+ 
+\subsection*{Havoc of multiple variables}
+ 
+For $V = \{x_1, \ldots, x_n\}$, the shorthand $\texttt{havoc}(y_1, \ldots, y_m)$ is translated as
+\[
+R(\texttt{havoc}(y_1, \ldots, y_m)) = \bigwedge_{v \in V \setminus \{y_1, \ldots, y_m\}} v' = v,
+\]
+which is the same formula as for $\texttt{havoc}(y_1); \ldots; \texttt{havoc}(y_m)$. Thus the order of distinct havocs does not matter.
+ 
+\subsection*{Programs and specifications are relations}
+ 
+A program denotes a relation on states, described by a formula, and a specification can be given in the same form, as a formula $F(\bar x, \bar x')$ relating old and new values. Adhering to the specification is relation inclusion: the relation of the program is a subset of the relation of the specification. Non-deterministic programs are a way of writing specifications.
+ 
+\dfn{Specification as a command}{Let the global variables be $V = \{x_1, \ldots, x_n\}$. A specification $F(x_1, \ldots, x_n, x_1', \ldots, x_n')$ becomes the command
+\begin{align*}
+&\{\texttt{var } y_1, \ldots, y_n;\\
+&\ \ y_1 = x_1;\ \ldots;\ y_n = x_n;\\
+&\ \ \texttt{havoc}(x_1, \ldots, x_n);\\
+&\ \ \texttt{assume}(F(y_1, \ldots, y_n, x_1, \ldots, x_n))\},
+\end{align*}
+where the local variables store the initial values, $\texttt{havoc}$ forgets the current values, and $\texttt{assume}$ constrains the new values in terms of the old ones. A specification that talks only about the resulting state is simply $\texttt{havoc}$ followed by $\texttt{assume}$.}
+ 
+\section{Program Refinement}
+ 
+\dfn{Refinement and equivalence}{For two programs, $P_1 \sqsubseteq P_2$ (\emph{refinement}) iff $R(P_1) \rightarrow R(P_2)$ is a valid formula, equivalently $\rho(P_1) \subseteq \rho(P_2)$. (Some books use the opposite meaning of $\sqsubseteq$.) As usual $P_2 \sqsupseteq P_1$ iff $P_1 \sqsubseteq P_2$. Two programs are \emph{equivalent}, $P_1 \equiv P_2$, iff $P_1 \sqsubseteq P_2 \wedge P_2 \sqsubseteq P_1$, equivalently $\rho(P_1) = \rho(P_2)$.}
+ 
+To prove a refinement, use $R$ to compute formulas for both sides and simplify, then prove the resulting implication.
+ 
+\subsection*{Stepwise refinement methodology}
+ 
+Start from a possibly non-deterministic specification $P_0$ and refine the program until it becomes deterministic and efficiently executable:
+\[
+P_0 \sqsupseteq P_1 \sqsupseteq \ldots \sqsupseteq P_n.
+\]
+ 
+\subsection*{Monotonicity with respect to refinement}
+ 
+Because of the monotonicity properties of relations:
+\begin{itemize}
+  \item if $P_1 \sqsubseteq P_2$ then $(P_1; P) \sqsubseteq (P_2; P)$ (for relations: $p_1 \subseteq p_2 \rightarrow p_1 \circ p \subseteq p_2 \circ p$);
+  \item if $P_1 \sqsubseteq P_2$ then $(P; P_1) \sqsubseteq (P; P_2)$ (for relations: $p_1 \subseteq p_2 \rightarrow p \circ p_1 \subseteq p \circ p_2$);
+  \item if $P_1 \sqsubseteq P_2$ and $Q_1 \sqsubseteq Q_2$ then $(\texttt{if(*)}\ P_1\ \texttt{else}\ Q_1) \sqsubseteq (\texttt{if(*)}\ P_2\ \texttt{else}\ Q_2)$ (for relations: $p_1 \subseteq p_2 \wedge q_1 \subseteq q_2 \rightarrow p_1 \cup q_1 \subseteq p_2 \cup q_2$).
+\end{itemize}
+Hence a part of a program can be replaced by a refinement of it in any context built from these constructs.
+ 
+\section{Recursion}
+ 
+For simplicity assume procedures have no parameters (they can be simulated using global variables). A recursive call denotes some relation $r_f$, and the body of the procedure gives an expression $E(r_f)$ built from constant relations (the meanings of the other statements, including the diagonal relations $\Delta_{\tilde F}$ for conditions), $r_f$, $\circ$ and $\cup$. We need a relation $r_f$ such that $r_f = E(r_f)$.
+ 
+\subsection*{Meaning of recursion as the least fixpoint}
+ 
+The law $E(\bigcup_i r_i) = \bigcup_i E(r_i)$ holds when $E$ is built from constant relations, $r$, $\circ$ and $\cup$, and $\{r_i\}$ is an increasing sequence indexed by the natural numbers. That is, $E$ is $\omega$-monotonic (called $\omega$-continuous in earlier chapters). Hence its least fixpoint is $\bigcup_{k \ge 0} E^k(\emptyset)$.
+ 
+\dfn{Meaning of a recursive procedure}{A recursive program is a recursive definition of a relation, $E(r) = r$. Its intended meaning is
+\[
+s = \bigcup_{k \ge 0} E^k(\emptyset),
+\]
+which satisfies $E(s) = s$ and is the least among all relations $r$ with $E(r) \subseteq r$ (therefore also the least among those with $E(r) = r$).}
+ 
+Choosing the least fixpoint means that if execution cannot terminate on a state $x$, then there is no $x'$ with $(x, x') \in s$. This model is simple (just relations on states) but has limitations. Let $q$ be a program that never terminates and $c$ one that always does:
+\begin{itemize}
+  \item $\rho(q) = \emptyset$ and $\rho(c\ [\!]\ q) = \rho(c) \cup \emptyset = \rho(c)$, so a program that sometimes does not terminate has the same meaning as $c$;
+  \item $\rho(q) = \rho(\texttt{assume(false)})$, so the absence of results due to path conditions and due to an infinite loop are represented in the same way.
+\end{itemize}
+An alternative is to use error states for non-termination (not pursued here).
+ 
+\subsection*{Modular reasoning for recursive procedures}
+ 
+The condition $E(r) \subseteq r$ says that plugging $r$ in place of the recursive call results in something that conforms to $r$. This justifies modular reasoning.
+ 
+\mlenma{Verifying a recursive procedure against a specification}{Let $s$ be the meaning of a recursive procedure with body $E$ and let $r$ be a specification relation. If $E(r) \subseteq r$, then $s \subseteq r$.}
+ 
+\pf{Proof}{We show by induction that $E^k(\emptyset) \subseteq r$ for all $k$. For $k = 0$, $\emptyset \subseteq r$. If $E^k(\emptyset) \subseteq r$, then by monotonicity $E^{k+1}(\emptyset) = E(E^k(\emptyset)) \subseteq E(r) \subseteq r$. Hence the union $s = \bigcup_k E^k(\emptyset)$ is included in $r$.}
+ 
+The condition $E(r) \subseteq r$ is expressed by a quantifier-free formula obtained by the translation $R$ with the specification $r$ plugged in for the recursive call (so $r$ appears both in $E(r)$ and as the right-hand side of the inclusion). Proving $s \subseteq r$ by $E(r) \subseteq r$ is always sound, whether or not the procedure terminates, because the meaning of the procedure talks only about terminating executions (relations can be partial).
+ 
+\subsection*{Multiple procedures}
+ 
+For mutually recursive procedures $r_1 = E_1(r_1, r_2)$, $r_2 = E_2(r_1, r_2)$, we work on pairs of relations: define $\bar E(r_1, r_2) = (E_1(r_1, r_2), E_2(r_1, r_2))$ and take the semantics to be the least solution of $\bar E(\bar r) = \bar r$, where $(r_1, r_2) \sqsubseteq (r_1', r_2')$ means $r_1 \subseteq r_1'$ and $r_2 \subseteq r_2'$. Set-like operations are defined componentwise, e.g.\ $(r_1, r_2) \sqcup (r_1', r_2') = (r_1 \cup r_1', r_2 \cup r_2')$. The whole theory works for any partial order $\sqsubseteq$ with suitable good properties (lattice elements generalize sets). The semantics is
+\[
+(s_1, s_2) = \bigsqcup_{i \ge 0} \bar E^i(\emptyset, \emptyset).
+\]
+ 
+\mlenma{Induction-like principle for mutual recursion}{For any $c_1, c_2$, if $E_1(c_1, c_2) \subseteq c_1$ and $E_2(c_1, c_2) \subseteq c_2$, then $s_1 \subseteq c_1$ and $s_2 \subseteq c_2$.}
+ 
+Thus, to prove that mutually recursive procedures satisfy two contracts, prove those contracts for the procedure bodies in which the recursive calls are replaced by the contracts. A call replaced by a contract $F(\bar x, \bar x')$ is the command from the previous section: store the initial values in local variables, $\texttt{havoc}$ the global variables, and $\texttt{assume}$ the contract relating old and new values. This reduces the problem to checking non-recursive procedures.
+ 
+\section{Loop Semantics}
+ 
+\subsection*{Transitive closure}
+ 
+Integer programs with loops are Turing complete (large integers can encode a Turing machine tape). Even when no closed-form integer arithmetic formula exists for the meaning of a loop, we may be able to find a formula in a richer logic, or a property of the meaning (e.g.\ a formula for a superset). For this we give a mathematical semantics of loops based on the transitive closure $r^* = \bigcup_{n \ge 0} r^n$.
+ 
+Let $r \subseteq S \times S$ and $\Delta = \{(x, x) \mid x \in S\}$. Then $\Delta \circ r = r = r \circ \Delta$. A relation $r$ is \emph{reflexive} iff $\forall x \in S.\ (x, x) \in r$, equivalently $\Delta \subseteq r$, and \emph{transitive} iff $\forall x, y, z.\ (x, y) \in r \wedge (y, z) \in r \rightarrow (x, z) \in r$, equivalently $r \circ r \subseteq r$.
+ 
+\dfn{Reflexive transitive closure}{For $r \subseteq S \times S$, define $r^0 = \Delta$ and $r^{n+1} = r \circ r^n$, so $(x_0, x_n) \in r^n$ iff there exist $x_1, \ldots, x_{n-1}$ with $(x_i, x_{i+1}) \in r$ for $0 \le i \le n - 1$. The \emph{reflexive transitive closure} of $r$ is
+\[
+r^* = \bigcup_{n \ge 0} r^n.
+\]}
+ 
+Properties that follow from the definition:
+\begin{itemize}
+  \item $(x_0, x_n) \in r^*$ iff there are $n \ge 0$ and $x_1, \ldots, x_{n-1}$ such that $(x_i, x_{i+1}) \in r$ for $0 \le i \le n-1$ (a path in the graph $r$);
+  \item $r^*$ is reflexive and transitive;
+  \item if $s$ is reflexive and transitive and $r \subseteq s$ then $r^* \subseteq s$, so $r^*$ is the smallest reflexive transitive relation containing $r$;
+  \item $(r^{-1})^* = (r^*)^{-1}$;
+  \item $r_1 \subseteq r_2$ implies $r_1^* \subseteq r_2^*$;
+  \item $r^* = \Delta \cup (r \circ r^*)$ and likewise $r^* = \Delta \cup (r^* \circ r)$.
+\end{itemize}
+ 
+\subsection*{Unfolding loops}
+ 
+A loop can describe an infinite number of basic paths (for a larger input the program takes a longer path). For the loop $L \equiv \texttt{while}(F)\ c$ we would like
+\[
+L \equiv \texttt{if}(F)\ (c;\ L) \equiv \texttt{if}(F)\ (c;\ \texttt{if}(F)\ (c;\ L)) \equiv \ldots
+\]
+Let $r_L = \rho(L)$, $r_c = \rho(c)$, $\Delta_1 = \Delta_{\tilde F}$ and $\Delta_2 = \Delta_{\widetilde{\neg F}}$. Then $r_L = (\Delta_1 \circ r_c \circ r_L) \cup \Delta_2$, and unfolding gives
+\[
+r_L = \Delta_2 \cup (\Delta_1 \circ r_c) \circ \Delta_2 \cup (\Delta_1 \circ r_c)^2 \circ \Delta_2 \cup \ldots \cup (\Delta_1 \circ r_c)^{n} \circ r_L.
+\]
+ 
+\mlenma{Unfoldings are included in any solution}{If $r_L = (\Delta_1 \circ r_c \circ r_L) \cup \Delta_2$, then for every $n \ge 0$, $(\Delta_1 \circ r_c)^n \circ \Delta_2 \subseteq r_L$. Consequently $\big(\bigcup_{n \ge 0} (\Delta_1 \circ r_c)^n\big) \circ \Delta_2 \subseteq r_L$.}
+ 
+\pf{Proof}{By induction on $n$. For $n = 0$, $\Delta_2 \subseteq r_L$ by the equation. If $(\Delta_1 \circ r_c)^n \circ \Delta_2 \subseteq r_L$, then $(\Delta_1 \circ r_c)^{n+1} \circ \Delta_2 = \Delta_1 \circ r_c \circ ((\Delta_1 \circ r_c)^n \circ \Delta_2) \subseteq \Delta_1 \circ r_c \circ r_L \subseteq r_L$. Taking the union over all $n$ gives the second claim.}
+ 
+We do not want unnecessary elements in the relation, so we choose the smallest candidate.
+ 
+\dfn{Semantics of while loops}{
+\[
+\rho(\texttt{while}(F)\ c) = (\Delta_{\tilde F} \circ \rho(c))^* \circ \Delta_{\widetilde{\neg F}}.
+\]}
+ 
+\mlenma{The loop semantics satisfies the unfolding equation}{For $r_L = (\Delta_1 \circ r_c)^* \circ \Delta_2$ we have $r_L = (\Delta_1 \circ r_c \circ r_L) \cup \Delta_2$.}
+ 
+\pf{Proof}{Using the property $r^* = \Delta \cup (r \circ r^*)$,
+\begin{align*}
+r_L &= (\Delta_1 \circ r_c)^* \circ \Delta_2\\
+&= [\Delta \cup \Delta_1 \circ r_c \circ (\Delta_1 \circ r_c)^*] \circ \Delta_2\\
+&= \Delta_2 \cup [\Delta_1 \circ r_c \circ (\Delta_1 \circ r_c)^* \circ \Delta_2]\\
+&= \Delta_2 \cup \Delta_1 \circ r_c \circ r_L.
+\end{align*}}
+ 
+Together with the previous lemma, $r_L$ is the smallest relation satisfying the unfolding equation. To find the formula for a concrete loop one computes $(\Delta_{\tilde F} \circ \rho(c))^k$ for general $k$, takes the union over $k \ge 0$ (an existential quantifier over $k$ in the formula), and eliminates $k$ where possible, possibly with heuristics. Intermediate components can be more complex than the final result, because they must account for all possible initial states, even those never reached in actual executions. One must be careful with the base case: a formula that is correct for states where the loop executes at least once may be incorrect for other initial states.
+ 
+\subsection*{Approximate semantics of loops}
+ 
+Instead of computing the exact semantics, it can be sufficient to compute an approximate semantics. The monotonicity $r_1 \subseteq r_2 \rightarrow r_1^* \subseteq r_2^*$ still holds, so replacing the body of a loop by a relation that contains it yields a relation that contains the loop's meaning. If a relation $s$ satisfies $s \circ s \subseteq s$ (and is reflexive), then $s^* \subseteq s$. The approximation can be expressed in the program as a refinement: the loop body is replaced by a command with $\texttt{havoc}$ and $\texttt{assume}$ describing the superset relation $s$, and the result is checked against the specification using the monotonicity of refinement with respect to program constructs.
+ 
+% \end{document}
