@@ -1,0 +1,8 @@
+(* Requirement R4 (ii): pairs with different components are different. *)
+
+axiom A : Type 0
+axiom a : A
+axiom b : A
+axiom W : A * A -> Type 0
+axiom t : W (a, a)
+def test : W (a, b) := t

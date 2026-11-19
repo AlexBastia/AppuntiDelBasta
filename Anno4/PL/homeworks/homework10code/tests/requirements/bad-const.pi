@@ -1,0 +1,5 @@
+(* Requirement R3: renaming has to respect binding. This function returns
+   its second argument, which has type B, not A. *)
+
+def const : Pi (A : Type 0) -> Pi (B : Type 0) -> A -> B -> A :=
+  lambda A B x y. y

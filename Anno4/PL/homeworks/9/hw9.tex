@@ -1,0 +1,176 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{bussproofs}
+\usepackage{enumitem}
+
+\newcommand{\unit}{\mathsf{unit}}
+\newcommand{\bool}{\mathsf{bool}}
+\newcommand{\true}{\mathsf{true}}
+\newcommand{\false}{\mathsf{false}}
+\newcommand{\V}{\mathcal{V}}
+\newcommand{\E}{\mathcal{E}}
+\newcommand{\G}{\mathcal{G}}
+\newcommand{\ok}{\;\mathsf{ok}}
+
+\title{Homework 9 - Alex Bastianini}
+\date{
+  \today
+}
+
+\begin{document}
+\maketitle
+
+%--------------------------------------------------
+\section*{1)}
+\begin{enumerate}[label=\alph*.]
+  \item
+  \begin{itemize}
+    \item $R_{\unit \to \unit \to \unit}(t_1)$ holds
+    \item $t_2$ \texttt{() ()} is of type $\unit$ but fails to terminate
+    \item $t_3$ \texttt{()} is of type $\unit \to \unit$ but fails to terminate
+    \item $t_4$ is of type $\unit \to \unit \to \unit$ but fails to terminate
+    \item $R(t_5)$ holds
+  \end{itemize}
+
+  \item $t_1, t_2, t_5$. $R_\tau$ is defined by induction on the type, so requiring only ``\ldots'' would include $t_2$ in the relation, when in reality $t_2$ \texttt{() ()} doesn't terminate.
+\end{enumerate}
+
+%--------------------------------------------------
+\section*{2)}
+\begin{enumerate}[label=\alph*.]
+  \item
+  \begin{align*}
+    &\lambda f : \bool \to \bool.\\
+    &\quad \textbf{if } f\ \true \textbf{ then}\\
+    &\qquad \textbf{if } f\ \true \textbf{ then } \true\\
+    &\qquad \textbf{else } \bot\\
+    &\quad \textbf{else}\\
+    &\qquad \textbf{if } f\ \true \textbf{ then } \bot\\
+    &\qquad \textbf{else } \true
+  \end{align*}
+
+  \item $g \triangleq \lambda b : \bool.\ \false$
+
+  \[
+    \emptyset \not\vDash e_2 : (\bool \to \bool) \to \bool
+    \iff
+    \exists \gamma \in \G[\![\emptyset]\!].\ \gamma(e_2) \notin \E[\![(\bool \to \bool) \to \bool]\!]
+  \]
+
+  Let $\gamma = \emptyset$ (only possible).
+  We need to prove that $e_2 \notin \V[\![\ldots]\!]$.
+  Because $g \in \V[\![\bool \to \bool]\!]$, it suffices to prove that
+  $e_0\{g/f\} \notin \E[\![\bool]\!]$
+  (where $e_0$ is the body of $e_2$).
+
+  We have that $e_0\{g/f\} \to^{*} \texttt{()()} \notin \V[\![\bool]\!]$.
+
+  \item
+  \[
+    e_3 \triangleq \lambda f : \bool \to \bool.\ \textbf{if } (f\ \true \ \mathsf{OR}\ \true)\ \ldots
+  \]
+\end{enumerate}
+
+%--------------------------------------------------
+\section*{3)}
+\begin{enumerate}[label=\arabic*.]
+  \item None
+
+  \item The two Church Booleans.
+
+  \begin{prooftree}
+    \AxiomC{$X \in \{X\}$}
+    \UnaryInfC{$\{X\} \vdash X \ok$}
+    \AxiomC{$\Gamma(a) = X$}
+    \UnaryInfC{$\{X\}, \{a:X, b:X\} \vdash a : X$}
+    \BinaryInfC{$\{X\}, \{a:X\} \vdash \lambda b{:}X.\ a : X \to X$}
+    \UnaryInfC{$\{X\}, \emptyset \vdash \lambda a{:}X.\ \lambda b{:}X.\ a : X \to X \to X$}
+    \UnaryInfC{$\emptyset, \emptyset \vdash \Lambda X.\ \lambda a{:}X.\ \lambda b{:}X.\ a : \forall X.\ X \to X \to X$}
+  \end{prooftree}
+
+  (similar for $\false$)
+
+  We can't have any other terms since, as proven during lectures, a function with this type signature can only always return the first or only return the second argument.
+
+  \item $\Lambda X.\ \Lambda Y.\ \lambda x{:}X.\ \lambda y{:}Y.\ x$
+
+  \begin{prooftree}
+    \AxiomC{$\{X,Y\} \vdash X, Y \ok$}
+    \AxiomC{$\Gamma(x) = X$}
+    \UnaryInfC{$\{X,Y\}, \{x:X, y:Y\} \vdash x : X$}
+    \BinaryInfC{$\{X,Y\}, \emptyset \vdash \lambda x{:}X.\ \lambda y{:}Y.\ x : X \to Y \to X$}
+    \UnaryInfC{$\vdash \Lambda X.\ \Lambda Y.\ \lambda x{:}X.\ \lambda y{:}Y.\ x : \forall X\, \forall Y.\ X \to Y \to X$}
+  \end{prooftree}
+
+  This is the only term, for the same reason for which $\forall X.\ X \to X$ is the identity.
+
+  \item
+  \begin{align*}
+    &\Lambda X.\ \lambda x{:}X.\ \true\\
+    &\Lambda X.\ \lambda x{:}X.\ \false
+  \end{align*}
+
+  \begin{prooftree}
+    \AxiomC{$\{X\} \vdash X \ok$}
+    \AxiomC{$\{X\}, \{x:X\} \vdash \true : \bool$}
+    \BinaryInfC{$\{X\}, \emptyset \vdash \lambda x{:}X.\ \true : X \to \bool$}
+    \UnaryInfC{$\vdash \Lambda X.\ \lambda x{:}X.\ \true : \forall X.\ X \to \bool$}
+  \end{prooftree}
+
+  We can't access the value of the argument, so we can either return $\true$ or $\false$.
+
+  \item[5.] \phantom{x}
+  \begin{enumerate}[label=\alph*.]
+    \item
+    \begin{align*}
+      &\Lambda X.\ \lambda f{:}X \to X.\ \lambda x{:}X.\ x\\
+      &\phantom{\Lambda X.\ \lambda f{:}X \to X.\ \lambda x{:}X.\ } f\ x\\
+      &\phantom{\Lambda X.\ \lambda f{:}X \to X.\ \lambda x{:}X.\ } f\ (f\ x)\\
+      &\phantom{\Lambda X.\ \lambda f{:}X \to X.\ \lambda x{:}X.\ } \vdots
+    \end{align*}
+    There are infinitely many terms, corresponding to the Church numerals.
+
+    \item
+    \begin{itemize}
+      \item $R_1$: (i), (ii), (iii) hold, it works.
+      \item $R_2$: none hold: $(0,0)$, $(2,7)$, $(1,4)$; doesn't work.
+      \item $R_3$: (i), (iii) hold: $(11,33)$; doesn't work.
+    \end{itemize}
+
+    \item $R = \{(5n, 5n) \mid n \in \mathbb{Z}\}$
+
+    By A.T.\ and (i), (ii), the results of two identical runs of the expression are related, so the expression evaluates to $5n$ for some $n \in \mathbb{Z}$, so it is a multiple of 5.
+  \end{enumerate}
+\end{enumerate}
+
+%--------------------------------------------------
+\section*{4)}
+\begin{enumerate}[label=\alph*.]
+  \item $R = \{(a, -a) \mid a \in \mathbb{Z}\}$
+
+  \item
+  \begin{align*}
+    \mathit{client} \triangleq{}& \textbf{unpack } \{C, c\} = \mathit{counter} \textbf{ in}\\
+    & (\#3\ c)\ \big((\#2\ c)\ ((\#2\ c)\ (\#1\ c))\big)
+  \end{align*}
+
+  \begin{itemize}
+    \item In implementation $a$, $\mathit{client} \to^{*} 2$
+    \item In implementation $c$, $\mathit{client} \to^{*} 0$
+  \end{itemize}
+
+  So $a$ and $c$ are not indistinguishable.
+\end{enumerate}
+
+\subsubsection*{Debriefing}
+AI was used only for translating written solutions to LaTeX.
+
+\begin{enumerate}
+\item 4h
+\item moderate
+\item yes
+\item 85
+\end{enumerate}
+
+\end{document}

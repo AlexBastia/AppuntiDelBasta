@@ -1,0 +1,6 @@
+(* Requirement R4 (ii): function types with different codomains are
+   different. *)
+
+axiom A : Type 0
+axiom f : A -> unit
+def g : A -> empty := f

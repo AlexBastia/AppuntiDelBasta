@@ -1,0 +1,7 @@
+(* The pair of the projections in the wrong order is not equal to p. *)
+
+axiom A : Type 0
+axiom p : A * A
+axiom W : A * A -> Type 0
+axiom w : W p
+def test : W (snd p, fst p) := w

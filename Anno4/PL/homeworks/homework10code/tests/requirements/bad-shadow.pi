@@ -1,0 +1,5 @@
+(* Requirement R3: renaming has to respect binding. The result has the type
+   bound by the outer A, not the inner one. *)
+
+def shadow : Pi (A : Type 0) -> A -> Pi (A : Type 0) -> A :=
+  lambda A x A. x

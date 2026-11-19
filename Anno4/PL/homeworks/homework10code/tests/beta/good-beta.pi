@@ -1,0 +1,20 @@
+(* A function applied to an argument computes (beta), and a constant that
+   is defined computes to its definition (delta). *)
+
+axiom A : Type 0
+axiom a : A
+axiom T : A -> Type 0
+axiom t : T a
+
+def id : A -> A := lambda x. x
+def test1 : T (id a) := t
+def test2 : T (id (id a)) := t
+
+(* Types can be computed by functions, too. *)
+def Endo : Type 0 -> Type 0 := lambda X. X -> X
+def f : Endo A := lambda x. x
+
+def Twice : (Type 0 -> Type 0) -> Type 0 -> Type 0 := lambda F X. F (F X)
+def g : Twice Endo A := lambda h x. h (h x)
+
+eval Twice Endo A

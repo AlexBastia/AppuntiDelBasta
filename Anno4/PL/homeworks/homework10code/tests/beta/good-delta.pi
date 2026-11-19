@@ -1,0 +1,18 @@
+(* Definitions are transparent: a constant introduced by def is equal to
+   its definition. *)
+
+axiom A : Type 0
+axiom a : A
+axiom T : A -> Type 0
+axiom t : T a
+
+def b : A := a
+def c : A := b
+def test1 : T c := t
+
+(* This includes definitions of types. *)
+def B : Type 0 := A
+def x : B := a
+def Fn : Type 0 := B -> B
+def id : Fn := lambda y. y
+def test2 : T (id x) := t

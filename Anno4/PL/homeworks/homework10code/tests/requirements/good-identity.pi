@@ -1,0 +1,18 @@
+(* Requirement R1: every type is equal to itself.
+
+   The polymorphic identity function. With dependent types, polymorphism
+   comes for free: a polymorphic function takes a type as an argument. *)
+
+def id : Pi (A : Type 0) -> A -> A :=
+  lambda A x. x
+
+check id
+check id unit
+check id unit tt
+check id (unit -> unit) (id unit)
+
+def compose : Pi (A : Type 0) -> Pi (B : Type 0) -> Pi (C : Type 0) ->
+              (B -> C) -> (A -> B) -> A -> C :=
+  lambda A B C g f x. g (f x)
+
+check compose unit unit unit (id unit) (id unit)

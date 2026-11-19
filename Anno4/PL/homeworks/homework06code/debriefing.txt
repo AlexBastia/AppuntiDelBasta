@@ -1,4 +1,8 @@
-a. 5 hours
-b. moderate-difficult
-c. yes
-d. 75%
+- 4.12: Lausanne -> Domodossola 11:15 -> 13:53 22CHF
+	Domodossola -> Forli 14:55 -> 21:30 30eu
+	tot: 55eu
+- 6.12: Forli -> Domodossola 14:19 -> 19:43 33eu
+	Domodossola -> Lausanne 19:43 -> 22:15 free
+	tot: 33eu
+
+Mega tot: 88eu

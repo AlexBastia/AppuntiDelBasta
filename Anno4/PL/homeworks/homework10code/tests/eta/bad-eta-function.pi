@@ -1,0 +1,8 @@
+(* lambda x. g x is equal to g, not to f. *)
+
+axiom A : Type 0
+axiom f : A -> A
+axiom g : A -> A
+axiom U : (A -> A) -> Type 0
+axiom t : U f
+def test : U (lambda x. g x) := t

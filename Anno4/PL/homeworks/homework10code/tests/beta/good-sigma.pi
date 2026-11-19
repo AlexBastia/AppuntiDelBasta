@@ -1,0 +1,19 @@
+(* A projection of a pair computes. *)
+
+axiom A : Type 0
+axiom a : A
+axiom b : A
+axiom T : A -> Type 0
+axiom ta : T a
+axiom tb : T b
+
+def p : A * A := (a, b)
+def test1 : T (fst p) := ta
+def test2 : T (snd p) := tb
+
+def q : A * (A * A) := (a, (b, a))
+def test3 : T (fst (snd q)) := tb
+
+(* The type of the second projection mentions the first, which computes. *)
+def dp : Sigma (x : A) * T x := (a, ta)
+def test4 : T a := snd dp

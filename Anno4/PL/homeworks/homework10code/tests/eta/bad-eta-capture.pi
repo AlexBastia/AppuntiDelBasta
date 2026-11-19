@@ -1,0 +1,8 @@
+(* The variable bound by the lambda is not the variable x that is bound
+   outside of it, even though they have the same name. *)
+
+axiom A : Type 0
+axiom g : A -> A -> A
+axiom U : (A -> A) -> Type 0
+axiom t : Pi (x : A) -> U (g x)
+def test : Pi (x : A) -> U (lambda x. g x x) := t

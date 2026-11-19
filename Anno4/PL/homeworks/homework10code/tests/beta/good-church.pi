@@ -1,0 +1,53 @@
+(* Natural numbers, Church encoded: the number n is the function that
+   applies f to x, n times. They live in Type 2, so that X can be Type 0. *)
+
+def Nat : Type 2 := Pi (X : Type 1) -> (X -> X) -> X -> X
+def zero : Nat := lambda X f x. x
+def succ : Nat -> Nat := lambda n X f x. f (n X f x)
+def plus : Nat -> Nat -> Nat := lambda m n X f x. m X f (n X f x)
+def times : Nat -> Nat -> Nat := lambda m n X f. m X (n X f)
+
+def one : Nat := succ zero
+def two : Nat := succ one
+def four : Nat := plus two two
+
+eval plus two two
+
+(* The numbers compute in types: Q (plus two two) and Q (times two two) are
+   the same type as Q four. *)
+axiom Q : Nat -> Type 0
+axiom q : Q four
+def test1 : Q (plus two two) := q
+def test2 : Q (times two two) := q
+def test3 : Q (succ (succ (succ (succ zero)))) := q
+
+(* Vectors, by computing a type from the number: Vec A 0 is unit, and
+   Vec A (n+1) is A * Vec A n. *)
+def Vec : Type 0 -> Nat -> Type 0 :=
+  lambda A n. n (Type 0) (lambda X. A * X) unit
+
+eval Vec unit two
+
+def nil : Pi (A : Type 0) -> Vec A zero := lambda A. tt
+def cons : Pi (A : Type 0) -> Pi (n : Nat) -> A -> Vec A n -> Vec A (succ n) :=
+  lambda A n x xs. (x, xs)
+
+(* The type of head says that the vector is not empty. *)
+def head : Pi (A : Type 0) -> Pi (n : Nat) -> Vec A (succ n) -> A :=
+  lambda A n v. fst v
+def tail : Pi (A : Type 0) -> Pi (n : Nat) -> Vec A (succ n) -> Vec A n :=
+  lambda A n v. snd v
+
+axiom B : Type 0
+axiom b1 : B
+axiom b2 : B
+axiom T : B -> Type 0
+axiom t1 : T b1
+axiom t2 : T b2
+
+def v : Vec B two := cons B one b1 (cons B zero b2 (nil B))
+def test4 : T (head B one v) := t1
+def test5 : T (head B zero (tail B one v)) := t2
+
+(* The length of a longer vector is computed. *)
+def v' : Vec B (plus one two) := cons B two b1 v

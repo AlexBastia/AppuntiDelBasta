@@ -1,0 +1,27 @@
+(* Requirement R3: the names of bound variables do not matter. *)
+
+def const : Pi (A : Type 0) -> Pi (B : Type 0) -> A -> B -> A :=
+  lambda X Y x y. x
+
+(* In a non-dependent function type, the bound variable is not used. *)
+def const' : Pi (A : Type 0) -> Pi (B : Type 0) -> Pi (a : A) -> Pi (b : B) -> A := const
+
+axiom Base : Type 0
+axiom P : Base -> Base -> Type 0
+axiom f : Pi (x : Base) -> Pi (y : Base) -> P x y
+
+(* Swapping the names of both bound variables changes nothing. *)
+def g : Pi (y : Base) -> Pi (x : Base) -> P y x := f
+
+(* An inner variable can shadow an outer one. Here, x has the type bound
+   by the outer A, so the result type must mention the outer A. *)
+def shadow : Pi (A : Type 0) -> A -> Pi (B : Type 0) -> A :=
+  lambda A x A. x
+
+def shadow' : Pi (A : Type 0) -> A -> Pi (A : Type 0) -> A -> A :=
+  lambda B x C y. y
+
+(* The same goes for the variable bound by a pair type. *)
+axiom Q : Base -> Type 0
+axiom w : Sigma (x : Base) * Q x
+def w' : Sigma (y : Base) * Q y := w

@@ -1,0 +1,7 @@
+(* Requirement R4 (iii): if P is a variable or an axiom, and P e is equal to
+   P e', then e is equal to e'. So P unit and P empty are different types,
+   whatever P is. *)
+
+axiom P : Type 0 -> Type 0
+axiom v : P unit
+def w : P empty := v

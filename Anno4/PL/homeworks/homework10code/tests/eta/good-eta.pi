@@ -1,0 +1,48 @@
+(* A function is equal to the lambda that applies it, by eta. This is not a
+   computation: U f and U (lambda x. f x) are both normal forms. *)
+
+axiom A : Type 0
+axiom f : A -> A
+axiom U : (A -> A) -> Type 0
+
+axiom t1 : U f
+def e1 : U (lambda x. f x) := t1
+
+(* It does not matter which side the lambda is on. *)
+axiom t2 : U (lambda x. f x)
+def e2 : U f := t2
+
+(* Functions of two arguments. *)
+axiom h : A -> A -> A
+axiom V : (A -> A -> A) -> Type 0
+axiom v : V h
+def e3 : V (lambda x y. h x y) := v
+def e4 : V (lambda x. h x) := v
+
+(* Composing a function with the identity gives a lambda that applies the
+   function to its argument. *)
+def id : A -> A := lambda x. x
+def compose : (A -> A) -> (A -> A) -> A -> A := lambda g f x. g (f x)
+def e5 : U (compose f id) := t1
+def e6 : U (compose id f) := t1
+
+(* Eta applies anywhere in an expression: in the body of a function, and in
+   the parts of a function type. *)
+axiom v' : V (lambda x. h x)
+def e7 : V (lambda x y. h x y) := v'
+axiom t3 : Pi (x : A) -> U (h x)
+def e8 : Pi (x : A) -> U (lambda y. h x y) := t3
+
+(* A pair is equal to the pair of its projections, on either side. *)
+axiom p : A * A
+axiom W : A * A -> Type 0
+axiom w1 : W p
+def e9 : W (fst p, snd p) := w1
+axiom w2 : W (fst p, snd p)
+def e10 : W p := w2
+
+(* Both rules at once. *)
+axiom k : A -> A * A
+axiom Z : (A -> A * A) -> Type 0
+axiom z : Z k
+def e11 : Z (lambda x. (fst (k x), snd (k x))) := z

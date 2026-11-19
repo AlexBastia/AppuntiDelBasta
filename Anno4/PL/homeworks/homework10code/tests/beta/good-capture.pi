@@ -1,0 +1,10 @@
+(* Substitution must avoid capturing variables. Here, K is applied to the
+   variable x, under a binder for x: the argument refers to the outer x, so
+   it must not be captured by the lambda x inside of K. *)
+
+axiom A : Type 0
+axiom U : (A -> A) -> Type 0
+def K : A -> A -> A := lambda y x. y
+
+axiom t : Pi (x : A) -> U (lambda z. x)
+def test : Pi (x : A) -> U (K x) := t

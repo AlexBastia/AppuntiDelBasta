@@ -1,0 +1,8 @@
+(* Requirement R3: renaming has to respect binding. Swapping the names of
+   the bound variables in only one place does change the type. *)
+
+axiom Base : Type 0
+axiom P : Base -> Base -> Type 0
+axiom f : Pi (x : Base) -> Pi (y : Base) -> P x y
+
+def g : Pi (y : Base) -> Pi (x : Base) -> P x y := f
