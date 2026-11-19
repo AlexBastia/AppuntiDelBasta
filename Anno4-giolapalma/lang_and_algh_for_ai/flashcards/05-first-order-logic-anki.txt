@@ -1,0 +1,145 @@
+#separator:tab
+#html:true
+#notetype:Basic
+#deck:Lang and Alg for AI::5 - First Order Logic
+
+Perché la logica proposizionale non basta? Fai l'esempio di Socrate.	Manca di <b>struttura</b>: con \(P\) = ogni uomo è mortale, \(S\) = Socrate è un uomo, \(Q\) = Socrate è mortale, \(Q\) <b>non</b> è conseguenza di \(P, S\) (tre atomi indipendenti).<br>In FOL: \(\forall x.\ man(x) \to mortal(x),\ man(socrates) \models mortal(socrates)\).
+
+Cos'è una <b>segnatura</b> \(\Sigma\)?	\(\Sigma = (\mathcal{P}, \mathcal{F})\):<br>• \(\mathcal{P}\): insieme finito di <b>simboli di predicato</b> con arità<br>• \(\mathcal{F}\): insieme finito di <b>simboli di funzione</b> con arità<br>Notazione nome/arità, es. \(p/2\).
+
+Cosa sono <b>costanti</b> e <b>proposizioni</b> in termini di segnatura?	• <b>Costante</b> = simbolo di funzione di arità 0<br>• <b>Proposizione</b> = simbolo di predicato di arità 0 (le variabili proposizionali: la logica proposizionale è un caso particolare della FOL).
+
+Definizione induttiva di <b>termine</b>.	Un termine è:<br>• una <b>variabile</b> di \(\mathcal{V}\), oppure<br>• \(f(t_1,\dots,t_n)\) con \(f\) simbolo di funzione \(n\)-ario e \(t_i\) termini (\(n \ge 0\)).
+
+Con \(a/0, f/1, g/2\): perché \(f(g, g(a))\) <b>non</b> è un termine?	\(f\) ha arità 1 ma ha due argomenti; \(g\) ha arità 2 ma compare senza argomenti (e poi con uno solo).
+
+Con \(mortal/1\), \(socrates/0\): perché \(mortal(mortal(socrates))\) non è ben formata?	\(mortal(\dots)\) è una <b>formula</b>, non un termine: non può stare come argomento di un predicato. Un termine denota un oggetto, una formula è vera/falsa; non si mette mai una formula dentro un termine.
+
+Elenca i casi della definizione di <b>formula ben formata</b> FOL.	• atomo \(p(\bar t)\)<br>• \(\bot\), \(\top\)<br>• \(t_1 \doteq t_2\)<br>• \(\neg F\)<br>• \(F \wedge F'\), \(F \vee F'\), \(F \to F'\)<br>• \(\forall X F\), \(\exists X F\)
+
+Cosa sono <b>binder</b>, <b>scope</b>, occorrenza <b>legata</b> e <b>libera</b>?	• <b>Binder</b>: costrutto che introduce una variabile locale (\(\forall X\), \(\exists X\), \(\int\dots dx\), \(\sum_i\), dichiarazione in un programma)<br>• <b>Scope</b>: parte dell'espressione in cui la variabile è legata<br>• <b>Legata</b>: occorrenza nello scope di un binder per quella variabile<br>• <b>Libera</b>: non legata da nessun binder, il valore viene \"da fuori\"
+
+In \(x + \int_{x+2}^{x+10} y \cdot x^2\, dx\) quali occorrenze sono libere e quali legate?	Binder \(dx\), scope = integrando \(y \cdot x^2\): la \(x\) in \(x^2\) è <b>legata</b>.<br>Le \(x\) in \(x+\dots\) e negli <b>estremi</b> sono <b>libere</b> (gli estremi sono fuori dallo scope). Anche \(y\) è libera.
+
+Cos'è lo <b>shadowing</b>?	Un binder interno per la stessa variabile \"oscura\" quello esterno: ogni occorrenza si riferisce al binder <b>più vicino</b> che la contiene (es. il parametro <code>x</code> di una funzione C oscura la <code>x</code> globale).
+
+Quando due espressioni sono \(\alpha\)-<b>equivalenti</b>?	Quando hanno lo stesso <b>diagramma</b> (ogni occorrenza legata collegata al suo binder, le libere all'esterno). In pratica: differiscono solo per i nomi delle variabili <b>legate</b>, rinominate coerentemente e senza catturare variabili libere.
+
+Quali tra queste sono \(\alpha\)-equivalenti alla (1)?<br>(1) \(x + \int_2^4 x y\, dy\)<br>(2) \(x + \int_2^4 x z\, dz\)<br>(3) \(x + \int_2^4 x x\, dx\)<br>(4) \(z + \int_2^4 z y\, dy\)	• (2) <b>sì</b>: rinominata la legata \(y\) in \(z\) fresca<br>• (3) <b>no</b>: la \(x\) libera viene <b>catturata</b> da \(dx\)<br>• (4) <b>no</b>: è stata rinominata una variabile <b>libera</b>
+
+Cos'è il problema della <b>cattura</b> nella sostituzione? Esempio \(\big(i + \prod_{n=1}^{3} i n\big)\{i \mapsto n\}\).	Sostituendo alla cieca: \(n + \prod_{n=1}^3 n \cdot n\): la \(n\) inserita (libera) viene catturata dal binder del prodotto, il significato cambia.<br>Giusto: prima \(\alpha\)-conversione \(\prod_{m=1}^3 i\cdot m\), poi sostituire: \(n + \prod_{m=1}^3 n \cdot m\).
+
+Definizione di \(Fv(F)\) per quantificatori e connettivi.	\(Fv(p(\bar t)) = \bigcup vars(\bar t)\), \(Fv(\top)=Fv(\bot)=\emptyset\)<br>\(Fv(\neg F) = Fv(F)\)<br>\(Fv(F * F') = Fv(F) \cup Fv(F')\)<br>\(Fv(\forall X F) = Fv(\exists X F) = Fv(F) \setminus \{X\}\)
+
+Calcola \(Fv\big((\forall X\, p(X,Y)) \vee q(X)\big)\).	\(Fv(\forall X p(X,Y)) = \{Y\}\), \(Fv(q(X)) = \{X\}\) ⇒ totale \(\{X, Y\}\). La \(X\) di \(q(X)\) è fuori dallo scope di \(\forall X\).
+
+Cosa sono chiusura universale, enunciato, teoria, termine <b>ground</b>?	• <b>Chiusura universale</b>: \(\forall X_1\dots\forall X_n F\) con \(X_i\) tutte le libere di \(F\) (analoga quella esistenziale)<br>• <b>Enunciato</b>: formula chiusa (nessuna variabile libera)<br>• <b>Teoria</b>: insieme di enunciati<br>• <b>Ground</b>: <b>nessuna</b> variabile (es. \(2*3\) sì, \(X*Y\) no)
+
+Cosa serve fissare per dare significato a una formula FOL?	• un <b>universo</b> \(U\) (insieme <b>non vuoto</b>)<br>• un'<b>interpretazione</b> dei simboli di funzione e predicato<br>• una <b>valutazione</b> delle variabili \(\eta: \mathcal{V} \to U\)
+
+Definisci un'<b>interpretazione</b> \(I\) di \(\Sigma\).	• universo \(U \ne \emptyset\)<br>• \(I(f): U^n \to U\) per ogni \(f\) \(n\)-ario (costante: elemento di \(U\))<br>• \(I(p) \subseteq U^n\) per ogni \(p\) \(n\)-ario
+
+Come si definisce \(\eta^I\) sui termini?	\(\eta^I(X) = \eta(X)\)<br>\(\eta^I(f(t_1,\dots,t_n)) = I(f)(\eta^I(t_1),\dots,\eta^I(t_n))\)
+
+Con \(U=\mathbb{N}\), \(I\) standard, \(\eta(X)=3, \eta(Y)=5\): quanto vale \(\eta^I(X * (Y+1))\)? Cosa cambia con le figure piane?	\(3 \cdot (5+1) = 18\) (i \(*, +\) nel termine sono sintassi, quelli nel calcolo sono semantica).<br>Con \(U\) = figure piane, \(I(*) = \cap\), \(I(+) = \cup\), \(I(1)\) = disco: il risultato è una <b>figura</b>. Stessa sintassi, significato diverso.
+
+Quando \(I, \eta \models \forall X F\) e \(I, \eta \models \exists X F\)?	• \(\forall X F\): \(I, \eta[X \mapsto u] \models F\) <b>per ogni</b> \(u \in U\)<br>• \(\exists X F\): per <b>qualche</b> \(u \in U\)<br>dove \(\eta[X\mapsto u]\) è \(\eta\) modificata solo in \(X\).
+
+Perché non si può definire \(I \models \forall X F\) come \"\(I \models F\{X \mapsto t\}\) per ogni termine \(t\)\"?	I termini sono stringhe finite su alfabeto numerabile: sono <b>numerabili</b>. Se \(U = \mathbb{R}\), \(|\mathbb{R}| > |\mathbb{N}|\): la maggior parte degli elementi non è denotata da nessun termine, quindi non si controllano abbastanza elementi.<br>(Il tentativo \(F\{X\mapsto u\}\) con \(u \in U\) è sbagliato perché \(u\) è semantica, non si può sostituire in una formula.) Soluzione: cambiare la valutazione, \(\eta[X \mapsto u]\).
+
+\(\forall X.\ p(X,a,b) \to q(b,X)\) con \(U=\mathbb{N}\), \(a=5\), \(b=10\), \(p\) = \(\_+\_ &gt; \_\), \(q\) = \(\_ &lt; \_\): è un modello?	Significa \"10 è minore di ogni \(X\) con \(X+5 &gt; 10\)\". <b>No</b>: con \(X=6\), \(11 &gt; 10\) ma \(10 &lt; 6\) è falso.<br>(Con \(I_1\): \"Fitz il gatto ama chiunque gli dia del cibo\".)
+
+Quando \(I\) è un <b>modello</b> di \(F\)? E di una teoria \(T\)?	\(I \models F\) se \(I, \eta \models F\) <b>per ogni</b> valutazione \(\eta\) (le variabili libere si leggono come chiuse universalmente).<br>\(I \models T\) se è modello di ogni formula di \(T\).
+
+Definisci enunciato valido, soddisfacibile, falsificabile, insoddisfacibile.	• <b>Valido</b>: vero in ogni interpretazione<br>• <b>Soddisfacibile</b>: vero in qualche interpretazione<br>• <b>Falsificabile</b>: falso in qualche interpretazione<br>• <b>Insoddisfacibile</b>: vero in nessuna<br>Ogni formula ha esattamente due di queste proprietà (sodd./insodd. e valida/falsif.).
+
+Classifica \(A \to \neg A\) e \(A \to (A \to B)\) (\(A, B\) atomi).	Entrambe <b>soddisfacibili e falsificabili</b>:<br>\(A \to \neg A \equiv \neg A\)<br>\(A \to (A \to B) \equiv \neg A \vee B\)
+
+Vero o falso: \"se \(F\) è soddisfacibile allora \(\neg F\) è insoddisfacibile\"?	<b>Falso</b>: con \(F = A\) atomo, sia \(A\) che \(\neg A\) sono soddisfacibili.<br>Vere invece: valida ⇒ soddisfacibile (\(U \ne \emptyset\)); valida ⇒ \(\neg F\) insodd.; insodd. ⇒ \(\neg F\) valida.
+
+Giorni della settimana, \(pair\) = (giorno, giorno uguale o successivo), \(next\) = giorno dopo (Sun ↦ Mon). Vale \(I \models \forall X \forall Y.\ pair(next(X), Y)\)?	<b>No</b>: \(X = Mon, Y = Mon\) dà \((Tue, Mon) \notin I(pair)\).<br>Valgono invece \(\forall X.\ pair(next(X), Sun)\) e \(\forall X \exists Y.\ pair(X,Y)\) (basta \(Y = Sun\)).
+
+Definisci <b>conseguenza logica</b> \(T_2 \models T_1\) ed <b>equivalenza</b>.	\(T_2 \models T_1\) se ogni modello di \(T_2\) è modello di \(T_1\).<br>Equivalenti (\(\Leftrightarrow\)): ciascuno conseguenza logica dell'altro.
+
+Enuncia il teorema che lega conseguenza, validità e insoddisfacibilità.	Sono equivalenti:<br>1. \(F_1,\dots,F_k \models G\)<br>2. \((\bigwedge F_i) \to G\) è <b>valida</b><br>3. \((\bigwedge F_i) \wedge \neg G\) è <b>insoddisfacibile</b><br>Attenzione: \(F \not\models G\) <b>non</b> implica \(F \models \neg G\).
+
+Cosa dice il teorema di <b>Church</b>?	È <b>indecidibile</b> stabilire se una formula FOL è valida (\(\models F\)). Diversamente dal caso proposizionale (\(2^n\) interpretazioni), le interpretazioni sono infinite e non enumerabili.
+
+Su cosa distribuiscono \(\forall\) ed \(\exists\)? Dai un controesempio per il caso sbagliato.	\(\forall X(A \wedge B) \Leftrightarrow \forall X A \wedge \forall X B\); \(\exists X(A \vee B) \Leftrightarrow \exists X A \vee \exists X B\).<br><b>Non</b> il contrario: \(\forall X(pari(X) \vee dispari(X))\) è vera sui naturali, ma \(\forall X\, pari(X) \vee \forall X\, dispari(X)\) è falsa.
+
+Leggi di negazione dei quantificatori e quantificazione vuota.	\(\neg\forall X A \Leftrightarrow \exists X \neg A\)<br>\(\neg\exists X A \Leftrightarrow \forall X \neg A\)<br>\(\forall X B \Leftrightarrow B \Leftrightarrow \exists X B\) se \(X\) non è libera in \(B\) (usa \(U \ne \emptyset\)).
+
+Definisci universo, interpretazione e base di <b>Herbrand</b>.	• <b>Universo</b>: l'insieme dei <b>termini ground</b> \(\mathcal{T}(\Sigma, \emptyset)\)<br>• <b>Interpretazione</b>: ogni \(f\) è interpretata da se stessa (\(\bar t \mapsto\) il termine \(f(\bar t)\))<br>• <b>Base</b>: insieme degli <b>atomi ground</b><br>• <b>Modello di Herbrand</b>: interpretazione di Herbrand che soddisfa la teoria
+
+Perché un'interpretazione di Herbrand si può vedere come un sottoinsieme della base di Herbrand?	I termini denotano se stessi: l'unica libertà rimasta è <b>quali atomi ground sono veri</b>. È l'idea della semantica di Prolog (un programma = insieme di atomi ground).
+
+Qual è l'universo di Herbrand per \(\forall X \forall Y.\ p(X,a) \wedge q(X, f(Y))\)? E se \(\Sigma\) non ha costanti?	\(\{a, f(a), f(f(a)), \dots\}\), infinito (una costante e una funzione).<br>Senza costanti se ne <b>aggiunge una</b>, perché l'universo deve essere non vuoto.
+
+\(F \equiv \exists X \exists Y.\ p(X,a) \wedge \neg p(Y,a)\) ha un modello di Herbrand? Che cosa insegna?	<b>No</b>: l'universo è \(\{a\}\) e \(p(a,a) \wedge \neg p(a,a)\) è falsa. Però \(F\) è <b>soddisfacibile</b> con 2 elementi.<br>Insegna che il teorema di Herbrand vale solo per enunciati <b>universali</b>: prima bisogna skolemizzare (\(p(c_1,a) \wedge \neg p(c_2,a)\) ha modello di Herbrand).
+
+Enuncia il <b>teorema di Herbrand</b> (versione semplice).	Sia \(P\) un insieme di enunciati <b>universali</b>. Sono equivalenti:<br>1. \(P\) ha un modello di Herbrand<br>2. \(P\) ha un modello<br>3. \(ground(P)\) è soddisfacibile<br>(\(ground(P)\): istanze ground delle matrici)
+
+Idea della dimostrazione di \((3) \Rightarrow (1)\) nel teorema di Herbrand.	Da un modello \(\mathbf{M}\) di \(ground(P)\) si costruisce \(\mathbf{A}\) di Herbrand con \(\mathbf{A} \models p(\bar t)\) sse \(\mathbf{M} \models p(\bar t)\). Per \(\forall\varphi \in P\): \(\mathbf{A} \models \varphi\theta\) per ogni \(\theta\) che manda le variabili in termini ground, e questi sono <b>tutti</b> gli elementi del dominio di \(\mathbf{A}\), quindi \(\mathbf{A} \models \forall\varphi\).
+
+Perché il teorema di Herbrand è importante per la dimostrazione automatica?	Riduce la FOL a logica <b>proposizionale</b> (possibilmente infinita): gli atomi ground fanno da variabili proposizionali. Per l'insoddisfacibilità basta un insieme <b>finito</b> di istanze ground insoddisfacibile (compattezza). La risoluzione con unificazione istanzia \"solo quanto serve\".
+
+Quando una formula è in <b>NNF</b>? Come la si calcola?	Nessuna \(\to\), e \(\neg\) solo davanti ad atomi.<br>Si applicano da sinistra a destra: \(\neg\neg F \Rightarrow F\), De Morgan, \(\neg\forall X F \Rightarrow \exists X \neg F\), \(\neg\exists X F \Rightarrow \forall X \neg F\), \(\neg(F \to F') \Rightarrow F \wedge \neg F'\), \(F \to F' \Rightarrow \neg F \vee F'\). Il risultato è <b>equivalente</b>.
+
+Cos'è la <b>skolemizzazione</b>?	In \(F\) in NNF, si sostituisce una sottoformula \(\exists X G\) (con variabili libere \(\bar V\)) con \(G[X \mapsto f(\bar V)]\), dove \(f/|\bar V|\) è un simbolo <b>nuovo</b> (funzione di Skolem; costante di Skolem se \(\bar V = \emptyset\)). Si ripete fino a eliminare tutti gli \(\exists\).
+
+Skolemizza \(\forall z \exists x \forall y\ (p(x,z) \wedge q(g(x,y),x,z))\).	\(\forall z \forall y\ (p(f(z),z) \wedge q(g(f(z),y), f(z), z))\)<br>con \(f/1\) nuova: \(x\) dipende solo da \(z\) (il \(\forall\) esterno), non da \(y\).
+
+La forma skolemizzata è <b>equivalente</b> alla formula originale?	<b>No</b>, solo <b>equisoddisfacibile</b>: \(F\) soddisfacibile sse la skolemizzata lo è.<br>Es. \(\forall X \exists Y\, p(a,Y,a,b)\) vs \(\forall X\, p(a,f(X),a,b)\): con \(f(a)=b\) e solo \(p(a,a,a,b)\) vero, la prima è vera e la seconda no.<br>Per la refutazione basta: interessa solo l'insoddisfacibilità.
+
+Cos'è la <b>forma prenessa</b>? Portala per \(\neg\exists x\, p(x) \vee \forall x\, r(x)\).	\(Q_1X_1\dots Q_nX_n\, G\) con \(G\) senza quantificatori (prefisso + matrice).<br>\(\forall x\neg p(x) \vee \forall x\, r(x) \Rightarrow \forall x\neg p(x) \vee \forall y\, r(y)\) (rinomina!) \(\Rightarrow \forall x \forall y(\neg p(x) \vee r(y))\).<br>La rinomina serve: \(\forall x A \vee \forall x B \ne \forall x(A \vee B)\).
+
+Cosa sono letterale, letterali complementari, clausola, clausola vuota?	• <b>Letterale</b>: atomo (positivo) o negazione di atomo (negativo)<br>• <b>Complementari</b>: \(L\) e \(\neg L\)<br>• <b>Clausola</b>: \(\bigvee_{i=1}^n L_i\)<br>• <b>Clausola vuota</b> (\(n=0\)): \(\bot\), \(\square\)
+
+Qual è la <b>forma a implicazione</b> di una clausola e il legame con Prolog?	\(\neg B_1 \vee\dots\vee \neg B_n \vee H_1 \vee\dots\vee H_m\) = \(\underbrace{B_1\wedge\dots\wedge B_n}_{body} \to \underbrace{H_1\vee\dots\vee H_m}_{head}\).<br>Con \(m=1\): clausola di Horn definita, <code>H :- B1, ..., Bn.</code>; \(n=0\): fatto; \(m=0\): goal.
+
+Quali sono i 3 passi per portare una teoria in <b>forma a clausole</b>?	1. <b>NNF</b><br>2. <b>Skolemizzazione</b> (elimina gli \(\exists\))<br>3. Portare <b>congiunzioni e \(\forall\) all'esterno</b> (distribuire \(\vee\) su \(\wedge\)): clausole chiuse con \(\forall\) impliciti
+
+Porta in forma a clausole \"ogni uomo ha un padre\": \(\forall X(man(X) \to \exists Y\, father(Y,X))\).	NNF: \(\forall X(\neg man(X) \vee \exists Y\, father(Y,X))\)<br>Skolem (\(Y\) dipende da \(X\)): \(\forall X(\neg man(X) \vee father(f(X),X))\)<br>Clausola: \(man(X) \to father(f(X), X)\), \(f\) = \"il padre di\".
+
+Cos'è una <b>sostituzione</b>? Che differenza c'è con una valutazione \(\eta\)?	Funzione \(\sigma: \mathcal{V} \to \mathcal{T}\) che modifica un numero <b>finito</b> di variabili, \(\{X_1\mapsto t_1,\dots\}\), postfissa (\(t\sigma\)), estesa omomorficamente.<br>Sostituzione: variabili → <b>termini</b> (sintassi→sintassi). Valutazione: variabili → <b>elementi di U</b> (sintassi→semantica).
+
+Con \(\sigma=\{X\mapsto Y, Y \mapsto Z\}\), quanto vale \(p(X)\sigma\)? Con \(\sigma=\{X\mapsto Y\}, \tau=\{Y\mapsto 2\}\), \((X*(Y+1))\sigma\tau\) e \(\tau\sigma\)?	\(p(X)\sigma = p(Y)\) (simultanea, non a catena; \(p(X)\sigma\sigma = p(Z)\)).<br>\(\sigma\tau\): \(2*(2+1)\); \(\tau\sigma\): \(Y*(2+1)\). L'ordine conta.
+
+Come si applica una sostituzione a \(\forall X F\)? Calcola \((\forall X\, p(Y))\{Y \mapsto X\}\).	\((\forall X F)\sigma = \forall X'(F[X\mapsto X']\sigma)\) con \(X'\) <b>fresca</b>.<br>\((\forall X p(Y))\{Y\mapsto X\} = \forall X' p(X)\). Senza rinomina si otterrebbe \(\forall X p(X)\): la \(X\) inserita sarebbe <b>catturata</b>.
+
+Definisci <b>istanza</b>, <b>più generale</b>, <b>varianti</b>.	• \(e\) istanza di \(e'\): \(e = e'\sigma\) per qualche \(\sigma\)<br>• \(e'\) più generale di \(e\): \(e\) è istanza di \(e'\)<br>• Varianti: \(e = e'\sigma\) e \(e' = e\tau\) (uguali a meno di rinomina)<br>Es.: \(p(a,f(b))\) istanza di \(p(X,f(Y))\) istanza di \(p(X,Z)\).
+
+Quali condizioni deve soddisfare una <b>rinomina di variabili</b> per \(e\)?	\(\sigma\) deve essere:<br>• iniettiva<br>• variabili → variabili<br>• \(X\sigma\) non compare in \(e\) per le variabili libere \(X\) di \(e\)<br>Es.: \(\{X_1 \mapsto X_2\}\) su \(p(X_1) \wedge q(X_2)\) <b>non</b> è una rinomina (identifica due variabili).
+
+Definisci <b>unificatore</b> e <b>mgu</b>.	• \(\sigma\) unificatore di \(e_1,\dots,e_n\) se \(e_1\sigma = \dots = e_n\sigma\)<br>• \(\sigma\) <b>mgu</b> se ogni unificatore \(\tau\) è istanza di \(\sigma\): \(\tau = \sigma\rho\) per qualche \(\rho\)<br>L'mgu è unico a meno di rinomina.
+
+Trova l'mgu di \(f(X,a) \doteq f(g(U),Y) \doteq Z\). Dai un unificatore non più generale.	mgu: \(\{X\mapsto g(U), Y\mapsto a, Z\mapsto f(g(U),a)\}\).<br>Non mgu: \(\{X\mapsto g(h(b)), U\mapsto h(b), Y\mapsto a, Z\mapsto f(g(h(b)),a)\} = \sigma\{U\mapsto h(b)\}\).
+
+Descrivi l'algoritmo per calcolare l'mgu <b>a mano</b>.	Da \(\epsilon\), scorrere i termini insieme da sinistra a destra:<br>• simboli di funzione diversi → <b>fallimento</b><br>• uguali → continua<br>• variabile non legata vs termine: se compare nel termine → fallimento (<b>occur check</b>), altrimenti aggiungi la sostituzione e applicala<br>• variabile già legata → sostituiscila col suo valore
+
+Unifica \(p(X, f(b)) \doteq p(a, f(X))\).	\(X \mapsto a\); poi \(f(b) \doteq f(X)\) → \(b \doteq a\): costanti diverse, <b>fallimento</b>.<br>(Con \(p(X,f(a)) \doteq p(a,f(X))\) l'mgu è \(\{X\mapsto a\}\).)
+
+Unifica \(f(g(a,X), h(Y)) \doteq f(g(a,b), Y)\).	\(X \mapsto b\), poi \(h(Y) \doteq Y\): \(Y\) compare in \(h(Y)\) → <b>occur check</b>, fallimento (servirebbe \(h(h(h(\dots)))\)).<br>Prolog per efficienza non fa l'occur check (<code>X = f(X)</code> riesce); c'è <code>unify_with_occurs_check/2</code>.
+
+Unifica \(f(a,X) \doteq f(Y,b)\), \(X \doteq Y\), \(f(g(a,X),Y) \doteq f(c,X)\).	• \(\{Y\mapsto a, X\mapsto b\}\)<br>• \(\{X\mapsto Y\}\) o \(\{Y\mapsto X\}\) (varianti)<br>• fallimento: \(g(\dots)\) contro \(c\)
+
+Scrivi le regole del calcolo di risoluzione per la FOL.	<b>Assioma</b>: clausola vuota.<br><b>Risoluzione</b>: \(\dfrac{R \vee A \quad R' \vee \neg A'}{(R \vee R')\sigma}\), \(\sigma\) = mgu di \(A, A'\)<br><b>Fattorizzazione</b>: \(\dfrac{R \vee L \vee L'}{(R \vee L)\sigma}\), \(\sigma\) = mgu di \(L, L'\)<br>Le due clausole vanno prima separate (<b>rename apart</b>).
+
+Perché serve il <b>rename apart</b> prima di risolvere?	Ogni clausola ha i suoi \(\forall\) impliciti: le variabili di clausole diverse sono indipendenti. Senza separarle si perde generalità (e a volte completezza).<br>Es.: \(p(a,X)\vee q(X)\) e \(\neg p(a,b) \vee r(X)\) danno \(q(b)\vee r(b)\), ma rinominando la seconda in \(r(X')\) si ottiene il più generale \(q(b) \vee r(X')\).
+
+Perché nella FOL serve la <b>fattorizzazione</b>? Esempio.	\(\{p(X)\vee p(Y),\ \neg p(U) \vee \neg p(V)\}\) è insoddisfacibile, ma ogni risolvente ha ancora 2 letterali: non si arriva mai a \(\square\).<br>Fattorizzando: \(p(X)\) e \(\neg p(U)\), che risolvono in \(\square\).<br>In logica proposizionale i letterali ripetuti si fondono da soli.
+
+Dimostra con la risoluzione che Socrate è mortale.	Clausole: \(\neg man(X) \vee mortal(X)\), \(man(socrates)\), tesi negata \(\neg mortal(socrates)\).<br>1. Risolvi 1ª e 3ª con \(\{X\mapsto socrates\}\): \(\neg man(socrates)\)<br>2. Con \(man(socrates)\): \(\square\).<br>È ciò che fa Prolog con <code>?- mortal(socrates).</code>
+
+Da \(\forall X\exists Y\, p(X,Y)\) e \(\forall X\forall Y(p(X,Y)\to q(Y))\) segue \(\exists Z\, q(Z)\)? Usa la risoluzione.	Clausole: \(p(X,f(X))\), \(\neg p(X_2,Y_2)\vee q(Y_2)\), \(\neg q(Z)\).<br>Risolvi le prime due con \(\{X_2\mapsto X, Y_2\mapsto f(X)\}\): \(q(f(X))\). Con \(\neg q(Z)\), \(\{Z\mapsto f(X)\}\): \(\square\). Sì, segue.
+
+Enuncia la <b>completezza per refutazione</b> della risoluzione.	Per un insieme di clausole \(F\): \(F \vdash \bot\) sse \(F \models \bot\). Si deriva la clausola vuota <b>sse</b> le clausole sono insoddisfacibili.
+
+Enuncia il <b>teorema di completezza di Gödel</b>.	\(\Gamma \models F\) sse \(\Gamma \vdash F\) (in particolare \(\models F \Rightarrow\ \vdash F\)). Originariamente per Hilbert–Ackermann, vale per i calcoli usuali corretti e completi (es. deduzione naturale).
+
+Come convivono completezza di Gödel e indecidibilità della FOL?	Se \(F\) è valida una dimostrazione <b>esiste</b> e la si trova enumerando le derivazioni: la validità è <b>semi-decidibile</b>. Se \(F\) non è valida la ricerca può non terminare mai (come un programma Prolog che non termina).
+
+Cosa si sa sulla decidibilità della <b>verità aritmetica</b> (nei naturali)?	• È <b>indecidibile</b> se una formula aritmetica è vera<br>• L'insieme delle formule vere <b>non è nemmeno semi-decidibile</b><br>• <b>Incompletezza di Gödel</b>: ogni sistema di dimostrazione corretto per l'aritmetica lascia fuori qualche formula vera
+
+Differenza tra teorema di <b>completezza</b> e di <b>incompletezza</b> di Gödel.	• <b>Completezza</b>: riguarda la verità in <b>tutte</b> le interpretazioni (conseguenza logica): è tutta dimostrabile.<br>• <b>Incompletezza</b>: riguarda la verità in <b>una</b> interpretazione fissata (i naturali): ci sono enunciati veri nei naturali ma falsi in altri modelli degli assiomi, quindi non dimostrabili.
+

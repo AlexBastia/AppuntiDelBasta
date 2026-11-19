@@ -1,0 +1,1 @@
+(fun x y z -> if x then (y + z) else (y * z) : bool -> int -> int -> int)

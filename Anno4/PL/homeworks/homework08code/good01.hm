@@ -1,0 +1,4 @@
+let flip = (fun f x y -> f y x : ('a -> 'b -> 'c) -> 'b -> 'a -> 'c) in
+let f = (fun x y -> x - y : int -> int -> int) in
+let g = (fun x y -> x = y : int -> int -> bool) in
+(flip g (flip f 4 5 : int) (f 4 5 : int) : bool)

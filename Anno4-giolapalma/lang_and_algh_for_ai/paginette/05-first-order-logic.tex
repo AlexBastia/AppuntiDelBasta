@@ -1,0 +1,1434 @@
+\chapter{Logica del primo ordine}
+
+\textit{Lucidi: \texttt{lucidi/5.First\_Order\_Logic} (basati sulle slide di
+Thom Frühwirth, con le annotazioni a mano del prof). Approfondimento: Van
+Dalen, cap.~3 (Predicate Logic); Chang--Lee, cap.~3--5.}
+
+\nt{
+  Sommario: \textbf{sintassi} (alfabeto, espressioni ben formate),
+  \textbf{semantica} (interpretazione, conseguenza logica, modelli di
+  Herbrand), \textbf{calcolo} (regola di refutazione: forma a clausole,
+  sostituzioni, unificazione, risoluzione). In fondo: completezza e
+  indecidibilità.
+
+  Epigrafi della slide iniziale: ``Good, too, Logic, of course; in itself, but
+  not in fine weather'' (A.\,H.~Clough) e ``Die Logik muß für sich selber
+  sorgen'' (Wittgenstein).
+}
+
+\ex{Gli ingredienti della logica del primo ordine (copertina, a mano)}{
+  \[
+    \forall x.\ \exists y.\ \ 2 \cdot x \le y \ \wedge\ x \mid y
+  \]
+  \begin{itemize}
+    \item \textbf{connettivi} ($\wedge$, $\to$, \dots) e \textbf{variabili
+          proposizionali} ($A \wedge B \to C$): già visti;
+    \item \textbf{costanti} ($2$);
+    \item \textbf{variabili del primo ordine} ($x, y$): denotano
+          \emph{elementi del dominio};
+    \item \textbf{funzioni} ($\cdot$);
+    \item \textbf{predicati} ($\le$, $\mid$);
+    \item \textbf{quantificatori} ($\forall$, $\exists$).
+  \end{itemize}
+}
+
+% =====================================================================
+\section{Perché la logica del primo ordine}
+% =====================================================================
+
+La logica proposizionale \textbf{manca di struttura}:
+\begin{itemize}
+  \item $P$ = ogni uomo è mortale;
+  \item $S$ = Socrate è un uomo;
+  \item $Q$ = Socrate è mortale.
+\end{itemize}
+In logica proposizionale $Q$ \textbf{non} è conseguenza logica di $P$ e $S$
+(sono tre atomi indipendenti), ma vorremmo poter esprimere questa relazione.
+In logica del primo ordine (a mano):
+\[
+  \forall x.\ \mathit{man}(x) \to \mathit{mortal}(x),\quad
+  \mathit{man}(\mathit{socrates})\ \ \Vdash\ \ \mathit{mortal}(\mathit{socrates}).
+\]
+
+% =====================================================================
+\section{Sintassi}
+% =====================================================================
+
+\dfn{Segnatura}{
+  Una \textbf{segnatura} $\Sigma = (\mathcal{P}, \mathcal{F})$ di un
+  linguaggio del primo ordine è data da:
+  \begin{itemize}
+    \item $\mathcal{P}$: insieme finito di \textbf{simboli di predicato},
+          ciascuno con un'\textbf{arità} $n \in \mathbb{N}$;
+    \item $\mathcal{F}$: insieme finito di \textbf{simboli di funzione},
+          ciascuno con un'arità $n \in \mathbb{N}$.
+  \end{itemize}
+  Si scrive \textbf{nome/arità}, ad esempio $p/2$.
+}
+
+Convenzioni:
+\begin{itemize}
+  \item \emph{nullary, unary, binary, ternary} per le arità $0, 1, 2, 3$;
+  \item \textbf{costanti}: simboli di funzione di arità $0$;
+  \item \textbf{proposizioni}: simboli di predicato di arità $0$ (a mano: sono
+        le \textbf{variabili proposizionali} della logica proposizionale, che
+        quindi è un caso particolare).
+\end{itemize}
+
+\dfn{Alfabeto}{
+  \begin{itemize}
+    \item $\mathcal{P}$: simboli di predicato $p, q, r, \dots$;
+    \item $\mathcal{F}$: simboli di funzione $a, b, c, \dots, f, g, h, \dots$;
+    \item $\mathcal{V}$: insieme \textbf{numerabile infinito} di variabili
+          $X, Y, Z, \dots$;
+    \item simboli logici:
+      \begin{itemize}
+        \item simboli di verità: $\bot$ (falso), $\top$ (vero);
+        \item connettivi: $\neg, \wedge, \vee, \to$;
+        \item quantificatori: $\forall, \exists$;
+        \item simboli sintattici: ``('', ``)'', ``,''.
+      \end{itemize}
+  \end{itemize}
+}
+
+\subsection{Termini e formule}
+
+\dfn{Termini}{
+  L'insieme dei \textbf{termini} $\mathcal{T}(\Sigma, \mathcal{V})$ è definito
+  induttivamente: un termine è
+  \begin{itemize}
+    \item una \textbf{variabile} di $\mathcal{V}$, oppure
+    \item un \textbf{termine funzionale} $f(\bar t)$, dove $f$ è un simbolo di
+          funzione $n$-ario di $\Sigma$ e gli argomenti $\bar t = t_1, \dots,
+          t_n$ sono termini ($n \ge 0$).
+  \end{itemize}
+}
+
+\ex{Termini ($a/0$, $f/1$, $g/2$)}{
+  $X$, \quad $a$, \quad $f(X)$, \quad $g(f(X), g(Y, f(a)))$.
+
+  A mano: $f(g, g(a))$ \textbf{non} è un termine: $f$ ha arità $1$ ma qui ha
+  due argomenti, e $g$ ha arità $2$ ma compare senza argomenti (e poi con uno
+  solo).
+}
+
+\dfn{Formule ben formate}{
+  L'insieme delle formule $\mathcal{F}(\Sigma, \mathcal{V}) = \{A, B, C,
+  \dots, F, G, \dots\}$: una formula è
+  \begin{itemize}
+    \item una \textbf{formula atomica} (atomo) $p(\bar t)$, dove $p$ è un
+          simbolo di predicato $n$-ario di $\Sigma$ e gli argomenti $\bar t$
+          sono termini, oppure
+    \item $\bot$, oppure $\top$, oppure
+    \item $t_1 \doteq t_2$ per termini $t_1, t_2$ (cioè ${\doteq}(t_1, t_2)$),
+          oppure
+    \item la negazione $\neg F$ di una formula $F$, oppure
+    \item la congiunzione $(F \wedge F')$, la disgiunzione $(F \vee F')$,
+          l'implicazione $(F \to F')$ di due formule, oppure
+    \item una formula quantificata \textbf{universalmente} $\forall X F$ o
+          \textbf{esistenzialmente} $\exists X F$, dove $X$ è una variabile e
+          $F$ una formula.
+  \end{itemize}
+}
+
+\ex{Termini e formule}{
+  $\mathcal{P} = \{\mathit{mortal}/1\}$, $\mathcal{F} =
+  \{\mathit{socrates}/0, \mathit{father}/1\}$, $\mathcal{V} = \{X, \dots\}$.
+  \begin{itemize}
+    \item \textbf{Termini}: $X$, $\mathit{socrates}$,
+          $\mathit{father}(\mathit{socrates})$,
+          $\mathit{father}(\mathit{father}(\mathit{socrates}))$; ma
+          \emph{non} $\mathit{father}(X, \mathit{socrates})$ (arità sbagliata).
+    \item \textbf{Formule atomiche}: $\mathit{mortal}(X)$,
+          $\mathit{mortal}(\mathit{socrates})$,
+          $\mathit{mortal}(\mathit{father}(\mathit{socrates}))$; ma
+          \emph{non} $\mathit{mortal}(\mathit{mortal}(\mathit{socrates}))$
+          ($\mathit{mortal}(\dots)$ è una formula, non un termine: non può
+          stare come argomento di un predicato).
+    \item \textbf{Formule non atomiche}:
+          $\mathit{mortal}(\mathit{socrates}) \wedge
+          \mathit{mortal}(\mathit{father}(\mathit{socrates}))$, \
+          $\forall X.\ \mathit{mortal}(X) \to
+          \mathit{mortal}(\mathit{father}(X))$, \
+          $\exists X.\ X \doteq \mathit{socrates}$.
+  \end{itemize}
+}
+
+\nt{
+  \textbf{Termini vs formule.} Un termine \emph{denota un oggetto} del dominio
+  (un numero, una persona); una formula \emph{è vera o falsa}. I simboli di
+  funzione costruiscono termini da termini; i simboli di predicato costruiscono
+  formule da termini; connettivi e quantificatori costruiscono formule da
+  formule. Non si può mai mettere una formula dentro un termine.
+}
+
+% =====================================================================
+\section{Variabili libere e legate}
+% =====================================================================
+
+\subsection{Le idee, con esempi dalla matematica (lavagna)}
+
+\dfn{Binder, scope, occorrenze libere e legate}{
+  Un \textbf{binder} (legatore) è un costrutto che introduce una variabile
+  locale: $\forall X$, $\exists X$, ma anche $\int \dots dx$, $\sum_{i=\dots}$,
+  $\lim_{z \to \dots}$, la dichiarazione di una variabile in un programma.
+  \begin{itemize}
+    \item Lo \textbf{scope} (campo d'azione) del binder è la parte di
+          espressione in cui la variabile è legata.
+    \item Un'\textbf{occorrenza} di variabile nello scope di un binder per
+          quella variabile è \textbf{legata} (bound), e si riferisce a quel
+          binder.
+    \item Un'occorrenza non legata da nessun binder è \textbf{libera} (free):
+          il suo valore viene ``da fuori''.
+  \end{itemize}
+}
+
+\ex{$x + \int_{x+2}^{x+10} y \cdot x^2\, dx$}{
+  \begin{itemize}
+    \item $dx$ è il \textbf{binder}; lo \textbf{scope} è l'integrando
+          $y \cdot x^2$; la $x$ in $x^2$ è \textbf{legata} da $dx$.
+    \item Le $x$ in $x + \dots$ e negli estremi $x + 2$, $x + 10$ sono
+          \textbf{libere}: gli estremi di integrazione sono \emph{fuori} dallo
+          scope.
+    \item Anche $y$ è libera.
+  \end{itemize}
+  Quindi nella stessa espressione ``$x$'' indica due cose diverse: la $x$
+  libera (un valore dato da fuori) e la $x$ legata (la variabile di
+  integrazione).
+}
+
+\ex{Shadowing}{
+  Nell'espressione (lavagna)
+  \[
+    x^z y^i + \lim_{z \to +\infty} \sum_{i = x}^{z^i}
+    y \cdot \int_{x \cdot i}^{i + z} i^3 + x \cdot y \ di
+  \]
+  ci sono tre $i$ diverse: quella libera in $y^i$ e nell'estremo $z^i$; quella
+  della somma ($i = x$), che lega la $i$ negli estremi dell'integrale; quella
+  dell'integrale ($di$), che lega la $i$ in $i^3$. Il prof scrive:
+  \textbf{$di$ fa shadowing di $i =$}, e \textbf{$i =$ fa shadowing della $i$
+  libera}. Un binder interno per la stessa variabile ``oscura'' quello esterno:
+  ogni occorrenza si riferisce al binder \emph{più vicino} che la contiene.
+}
+
+\ex{Scope nei linguaggi di programmazione (lavagna)}{
+  \begin{center}
+  \begin{tabular}{l}
+    \texttt{int x = 4;} \\
+    \texttt{int f(int y, int x) \{} \\
+    \texttt{\ \ \ \ int z = x + y;} \\
+    \texttt{\ \ \ \ \{ int y = 8;} \\
+    \texttt{\ \ \ \ \ \ return z + y + u; \}} \\
+    \texttt{\}}
+  \end{tabular}
+  \end{center}
+  I parametri $y$, $x$ di \texttt{f} legano le occorrenze nel corpo; il
+  parametro $x$ fa shadowing della \texttt{x} globale. Il blocco interno
+  dichiara una nuova \texttt{y} che oscura il parametro: la \texttt{y} di
+  \texttt{return} è quella che vale $8$. \texttt{u} non è dichiarata da
+  nessuna parte: è \textbf{libera}.
+}
+
+\subsection{$\alpha$-conversione}
+
+\dfn{$\alpha$-equivalenza (lavagna)}{
+  $F \equiv_\alpha G$ ($F$ e $G$ sono \textbf{$\alpha$-convertibili}) sse
+  \textbf{i diagrammi di $F$ e $G$ sono uguali}, dove il diagramma collega
+  ogni occorrenza legata al proprio binder e ogni occorrenza libera
+  all'esterno.
+}
+
+\nt{
+  In pratica: due espressioni sono $\alpha$-equivalenti se differiscono solo
+  per i \textbf{nomi delle variabili legate}, rinominate in modo coerente e
+  \emph{senza} catturare variabili libere. I nomi delle variabili legate non
+  contano: $\forall X\, p(X)$ e $\forall Y\, p(Y)$ dicono la stessa cosa.
+}
+
+\ex{Quali sono $\alpha$-equivalenti?}{
+  \begin{enumerate}
+    \item $x + \int_2^4 x \cdot y\ dy$
+    \item $x + \int_2^4 x \cdot z\ dz$
+    \item $x + \int_2^4 x \cdot x\ dx$
+    \item $z + \int_2^4 z \cdot y\ dy$
+  \end{enumerate}
+  \begin{itemize}
+    \item $1 \equiv_\alpha 2$: ho rinominato la variabile legata $y$ in $z$,
+          che non compare altrove.
+    \item $1 \not\equiv_\alpha 3$: rinominando $y$ in $x$ la $x$ libera
+          dell'integrando viene \textbf{catturata} da $dx$ (il diagramma
+          cambia: ora entrambe le occorrenze puntano al binder).
+    \item $1 \not\equiv_\alpha 4$: ho rinominato una variabile
+          \textbf{libera} ($x \mapsto z$), e le variabili libere non si
+          possono rinominare (cambiano il significato: dipendono da ``fuori'').
+  \end{itemize}
+}
+
+\subsection{Sostituzione e cattura (lavagna)}
+
+Sostituire significa rimpiazzare le occorrenze \emph{libere} di una variabile
+con un termine. Esempio:
+\[
+  \sum_{i=n}^{n+3} i^2 = n^2 + (n+1)^2 + (n+2)^2 + (n+3)^2,
+  \qquad i^2\{i \mapsto n\} = n^2, \quad i^2\{i \mapsto n+2\} = (n+2)^2.
+\]
+
+\ex{Il problema della cattura}{
+  Calcolare $\big(i + \prod_{n=1}^{3} i \cdot n\big)\{i \mapsto n\}$, cioè
+  sostituire $i$ con $n$ (la $i$ è libera, la $n$ è legata dal prodotto).
+  \begin{itemize}
+    \item \textbf{Sbagliato} ($\times$): sostituire alla cieca dà
+          $n + \prod_{n=1}^3 n \cdot n$. La $n$ che abbiamo messo al posto di
+          $i$ era \emph{libera} (veniva da fuori), ma dentro il prodotto viene
+          \textbf{catturata} dal binder $n = 1$: il significato cambia.
+    \item \textbf{Giusto}: prima si fa una $\alpha$-conversione per rinominare
+          la variabile legata con un nome \emph{fresco},
+          \[
+            i + \prod_{n=1}^3 i \cdot n \ \equiv_\alpha\
+            i + \prod_{m=1}^3 i \cdot m,
+          \]
+          poi si sostituisce:
+          \(
+            \big(i + \prod_{m=1}^3 i \cdot m\big)\{i \mapsto n\}
+            = n + \prod_{m=1}^3 n \cdot m.
+          \)
+  \end{itemize}
+  È esattamente il motivo per cui la sostituzione sulle formule quantificate
+  (più avanti) rinomina la variabile legata con una variabile fresca.
+}
+
+\subsection{Variabili libere: definizione formale}
+
+\dfn{Variabili libere}{
+  Una formula quantificata $\forall X F$ o $\exists X F$ \textbf{lega} la
+  variabile $X$ nello \textbf{scope} $F$. L'insieme $\mathit{Fv}(F)$ delle
+  variabili libere (non legate) di $F$:
+  \begin{align*}
+    \mathit{Fv}(t_1 \doteq t_2) &:= \mathit{vars}(t_1) \cup \mathit{vars}(t_2) \\
+    \mathit{Fv}(p(\bar t)) &:= \textstyle\bigcup \mathit{vars}(\bar t) \\
+    \mathit{Fv}(\top) := \mathit{Fv}(\bot) &:= \emptyset \\
+    \mathit{Fv}(\neg F) &:= \mathit{Fv}(F) \\
+    \mathit{Fv}(F * F') &:= \mathit{Fv}(F) \cup \mathit{Fv}(F')
+      \qquad * \in \{\wedge, \vee, \to\} \\
+    \mathit{Fv}(\forall X F) := \mathit{Fv}(\exists X F) &:=
+      \mathit{Fv}(F) \setminus \{X\}
+  \end{align*}
+}
+
+\ex{Esercizio: variabili libere delle parti}{
+  \begin{itemize}
+    \item $p(X) \wedge \exists X p(X)$: \ $\mathit{Fv}(p(X)) = \{X\}$,
+          $\mathit{Fv}(\exists X p(X)) = \emptyset$, totale $\{X\}$.
+          (La prima $X$ è libera, la seconda legata.)
+    \item $(\forall X\, p(X, Y)) \vee q(X)$: \ $\mathit{Fv}(p(X,Y)) =
+          \{X, Y\}$, $\mathit{Fv}(\forall X p(X,Y)) = \{Y\}$,
+          $\mathit{Fv}(q(X)) = \{X\}$, totale $\{X, Y\}$. La $X$ di $q(X)$ è
+          fuori dallo scope di $\forall X$.
+  \end{itemize}
+}
+
+\dfn{Chiusure e convenzioni}{
+  Siano $X_1, \dots, X_n$ tutte le variabili libere di $F$.
+  \begin{itemize}
+    \item \textbf{Chiusura universale}: $\forall F := \forall X_1 \forall X_2
+          \dots \forall X_n F$.
+    \item \textbf{Chiusura esistenziale}: $\exists F := \exists X_1 \exists
+          X_2 \dots \exists X_n F$.
+    \item \textbf{Formula chiusa} o \textbf{enunciato} (sentence): non
+          contiene variabili libere.
+    \item \textbf{Teoria}: insieme di enunciati.
+    \item Termine o formula \textbf{ground}: non contiene \emph{nessuna}
+          variabile (a mano: $2 * 3$ è ground, $X * Y$ no).
+  \end{itemize}
+}
+
+\nt{
+  A mano: ``Theorem: $n + m = m + n$''. Quando in matematica si scrive un
+  teorema con variabili libere si intende la sua \textbf{chiusura
+  universale} $\forall n \forall m.\ n + m = m + n$. Lo stesso farà la
+  definizione di modello (vale per ogni valutazione delle variabili) e lo
+  stesso fa Prolog con le variabili nelle clausole.
+}
+
+% =====================================================================
+\section{Semantica}
+% =====================================================================
+
+Vogliamo capire il \textbf{significato} di una formula del primo ordine. Le
+variabili rendono il compito più difficile che nel caso proposizionale: se
+scriviamo $X \ge 1$ la verità dipende dal valore di $X$ e dal significato che
+diamo al predicato $\ge$ e alla funzione (costante) $1$. (A mano: anche
+$\forall x.\ x + 2 \ge x$ è vera o falsa a seconda di dominio e
+interpretazione.) Bisogna fissare:
+\begin{itemize}
+  \item un \textbf{universo}, cioè un dominio da cui prendere i valori
+        (numeri, grafi, mele, animali, \dots); a mano: \textbf{insieme non
+        vuoto};
+  \item un'\textbf{interpretazione} dei simboli di funzione e di predicato
+        (sull'universo dato);
+  \item una \textbf{valutazione} per le variabili.
+\end{itemize}
+
+\dfn{Interpretazione e valutazione delle variabili}{
+  Un'\textbf{interpretazione} $I$ di $\Sigma$ consiste di:
+  \begin{itemize}
+    \item un \textbf{universo} $U$, insieme \textbf{non vuoto};
+    \item una funzione $I(f) : U^n \to U$ per ogni simbolo di funzione
+          $n$-ario $f$ di $\Sigma$ (per le costanti: un elemento di $U$);
+    \item una relazione $I(p) \subseteq U^n$ per ogni simbolo di predicato
+          $n$-ario $p$ di $\Sigma$.
+  \end{itemize}
+  Una \textbf{valutazione delle variabili} rispetto a $I$ è una funzione
+  $\eta : \mathcal{V} \to U$.
+}
+
+\dfn{Interpretazione dei termini}{
+  Dati $I$ con universo $U$ e $\eta : \mathcal{V} \to U$, la funzione
+  $\eta^I : \mathcal{T}(\Sigma, \mathcal{V}) \to U$ è
+  \begin{align*}
+    \eta^I(X) &:= \eta(X) && \text{per una variabile } X \\
+    \eta^I(f(t_1, \dots, t_n)) &:= I(f)(\eta^I(t_1), \dots, \eta^I(t_n))
+      && \text{per $f$ $n$-ario e termini } t_1, \dots, t_n
+  \end{align*}
+}
+
+\ex{Interpretazione dei termini}{
+  $\Sigma = (\emptyset, \{1/0,\ */2,\ +/2\})$, $U = \mathbb{N}$,
+  $I(1) := 1$, $I(+)(A, B) := A + B$, $I(*)(A, B) := AB$;
+  $\eta(X) := 3$, $\eta(Y) := 5$.
+  \begin{align*}
+    \eta^I(X * (Y + 1)) &= I(*)\big(\eta^I(X), \eta^I(Y + 1)\big) \\
+      &= I(*)\big(3, I(+)(\eta^I(Y), \eta^I(1))\big) = \dots
+       = 3 \cdot (5 + 1) = 18.
+  \end{align*}
+  A mano: il $*$ e il $+$ dentro il termine sono \textbf{sintassi} (simboli),
+  quelli di $3 \cdot (5 + 1)$ sono \textbf{semantica} (le operazioni sui
+  numeri).
+}
+
+\ex{Lo stesso termine, un'altra interpretazione (lavagna)}{
+  Universo = l'insieme delle \textbf{figure piane}. Interpretazione:
+  $I(1)$ = il disco di raggio $1$ centrato nell'origine; $I(*) = \cap$;
+  $I(+) = \cup$. Valutazione: $\eta(X)$ = il quadrato di lato $2$ centrato
+  nell'origine, $\eta(Y)$ = il semipiano superiore. Allora
+  \[
+    \eta^I(X * (Y + 1)) = \text{quadrato} \cap (\text{semipiano sup.} \cup
+    \text{disco}),
+  \]
+  cioè la metà superiore del quadrato più la parte del disco sotto l'asse:
+  una figura, non un numero. La sintassi è la stessa, il significato dipende
+  da $U$ e $I$.
+}
+
+\subsection{Interpretazione delle formule}
+
+Per una funzione $g$, la funzione $g[Y \mapsto a]$ è uguale a $g$ tranne che
+in $Y$:
+\[
+  g[Y \mapsto a](X) :=
+  \begin{cases} g(X) & \text{se } X \ne Y, \\ a & \text{se } X = Y. \end{cases}
+\]
+
+\dfn{Soddisfazione: $I, \eta \models F$}{
+  Dati $I$ interpretazione di $\Sigma$ e $\eta$ valutazione delle variabili,
+  ``$I, \eta$ soddisfa $F$'' è definito da:
+  \begin{itemize}
+    \item $I, \eta \models \top$ e $I, \eta \not\models \bot$;
+    \item $I, \eta \models s \doteq t$ sse $\eta^I(s) = \eta^I(t)$;
+    \item $I, \eta \models p(t_1, \dots, t_n)$ sse $(\eta^I(t_1), \dots,
+          \eta^I(t_n)) \in I(p)$;
+    \item $I, \eta \models \neg F$ sse $I, \eta \not\models F$;
+    \item $I, \eta \models F \wedge F'$ sse $I, \eta \models F$ e
+          $I, \eta \models F'$;
+    \item $I, \eta \models F \vee F'$ sse $I, \eta \models F$ o
+          $I, \eta \models F'$;
+    \item $I, \eta \models F \to F'$ sse $I, \eta \not\models F$ o
+          $I, \eta \models F'$;
+    \item $I, \eta \models \forall X F$ sse $I, \eta[X \mapsto u] \models F$
+          \textbf{per ogni} $u \in U$;
+    \item $I, \eta \models \exists X F$ sse $I, \eta[X \mapsto u] \models F$
+          \textbf{per qualche} $u \in U$.
+  \end{itemize}
+}
+
+\nt{
+  \textbf{Perché proprio $\eta[X \mapsto u]$ (lavagna).} Il prof mostra tre
+  tentativi di definire $I \models \forall X.F$.
+  \begin{enumerate}
+    \item ($\times$) $\forall u \in U.\ I \models F\{X \mapsto u\}$.
+          \textbf{Sbagliato}: $u$ è un elemento del dominio (un oggetto
+          semantico, ad esempio un numero reale), non un simbolo; non si può
+          sostituire dentro una formula, che è sintassi.
+    \item ($\times$) $\forall t \in \mathcal{T}(\Sigma, \mathcal{V}).\ I \models
+          F\{X \mapsto t\}$. Ora la sostituzione ha senso, ma \textbf{i
+          termini non bastano}. Quanti termini ci sono? Sono stringhe finite
+          su un alfabeto numerabile: $|\mathcal{T}(\Sigma, \mathcal{V})| =
+          |\text{Strings}| = |\mathbb{N}|$, sono \textbf{numerabili}. Quanti
+          numeri reali? $|\mathbb{R}| > |\mathbb{N}|$. Quindi se $U =
+          \mathbb{R}$ la soluzione 2 \textbf{non controlla abbastanza
+          elementi}: la maggior parte dei reali non è denotata da nessun
+          termine.
+    \item ($\checkmark$) $\forall u \in U.\ I, \eta[X \mapsto u] \models F$.
+          \textbf{Non si sostituisce} niente nella formula: si cambia la
+          valutazione, assegnando a $X$ direttamente l'elemento $u$.
+  \end{enumerate}
+}
+
+\ex{Una formula, due interpretazioni}{
+  $\forall X.\ p(X, a, b) \to q(b, X)$.
+  \begin{center}
+  \begin{tabular}{l|ll}
+    \toprule
+    & $I_1$ & $I_2$ \\ \midrule
+    $U$ & cose reali & numeri naturali \\
+    $a$ & ``cibo'' & $5$ \\
+    $b$ & ``Fitz il gatto'' & $10$ \\
+    $p$ & ``$\_$ dà $\_$ a $\_$'' & $\_ + \_ > \_$ \\
+    $q$ & ``$\_$ ama $\_$'' & $\_ < \_$ \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+  \begin{itemize}
+    \item $I_1$: ``Fitz il gatto ama chiunque gli dia del cibo.''
+    \item $I_2$: ``$10$ è minore di qualunque $X$ tale che $X + 5 > 10$.''
+          \textbf{Falsa}: controesempio $X = 6$ ($6 + 5 = 11 > 10$, ma
+          $10 < 6$ è falso). Quindi $I_2$ non è un modello della formula.
+  \end{itemize}
+}
+
+\subsection{Modelli e validità}
+
+\dfn{Modello, validità, soddisfacibilità}{
+  Data una segnatura $\Sigma$, un'interpretazione $I$ e una formula $F$:
+  \begin{itemize}
+    \item $I$ è un \textbf{modello} di $F$ (o $I$ soddisfa $F$), $I \models
+          F$, quando $I, \eta \models F$ \textbf{per ogni} valutazione $\eta$;
+    \item $I$ è un modello della teoria $T$ quando è un modello di ogni
+          formula di $T$.
+  \end{itemize}
+  Un enunciato $S$ è:
+  \begin{itemize}
+    \item \textbf{valido}: soddisfatto da ogni interpretazione ($I \models S$
+          per ogni $I$);
+    \item \textbf{soddisfacibile}: soddisfatto da qualche interpretazione;
+    \item \textbf{falsificabile}: non soddisfatto da qualche interpretazione
+          ($I \not\models S$ per qualche $I$);
+    \item \textbf{insoddisfacibile}: non soddisfatto da nessuna
+          interpretazione.
+  \end{itemize}
+}
+
+\ex{Esercizio: classificare le formule ($A$, $B$ formule)}{
+  Svolto pensando ad $A$, $B$ come formule ``generiche'' (ad esempio atomi
+  distinti):
+  \begin{center}
+  \begin{tabular}{l|cccc}
+    \toprule
+    & valida & soddisfacibile & falsificabile & insoddisfacibile \\ \midrule
+    $A \vee \neg A$ & $\checkmark$ & $\checkmark$ & & \\
+    $A \wedge \neg A$ & & & $\checkmark$ & $\checkmark$ \\
+    $A \to \neg A$ & & $\checkmark$ & $\checkmark$ & \\
+    $A \to (B \to A)$ & $\checkmark$ & $\checkmark$ & & \\
+    $A \to (A \to B)$ & & $\checkmark$ & $\checkmark$ & \\
+    $A \leftrightarrow \neg A$ & & & $\checkmark$ & $\checkmark$ \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+  $A \to \neg A \equiv \neg A$ (vera quando $A$ è falsa);
+  $A \to (A \to B) \equiv \neg A \vee B$. Ogni formula è soddisfacibile o
+  insoddisfacibile, e valida o falsificabile: in ogni riga ci sono esattamente
+  due crocette. (Se $A$ fosse a sua volta valida o insoddisfacibile alcune
+  righe cambierebbero: ad esempio con $A = \top$, $A \to \neg A$ è
+  insoddisfacibile.)
+}
+
+\ex{Esercizio: vero o falso? ($F$ formula)}{
+  \begin{center}
+  \begin{tabular}{l|l}
+    \toprule
+    affermazione & corretta / controesempio \\ \midrule
+    Se $F$ è valida, allora $F$ è soddisfacibile. & corretta (esiste
+      almeno un'interpretazione: $U \ne \emptyset$) \\
+    Se $F$ è soddisfacibile, allora $\neg F$ è insoddisfacibile. &
+      \textbf{falsa}: $F = A$ atomo \\
+    Se $F$ è valida, allora $\neg F$ è insoddisfacibile. & corretta \\
+    Se $F$ è insoddisfacibile, allora $\neg F$ è valida. & corretta \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+}
+
+\ex{Interpretazione e modello: i giorni della settimana}{
+  $\Sigma = (\{\mathit{pair}/2\}, \{\mathit{next}/1\})$,
+  $U = \{\mathit{Mon}, \mathit{Tue}, \dots, \mathit{Sun}\}$.
+  \begin{itemize}
+    \item $I(\mathit{pair}) = \{(\mathit{Mon}, \mathit{Tue}), (\mathit{Mon},
+          \mathit{Wed}), \dots, (\mathit{Mon}, \mathit{Sun}),
+          (\mathit{Tue}, \mathit{Wed}), \dots, (\mathit{Sun},
+          \mathit{Sun})\}$: le coppie (giorno, giorno uguale o successivo
+          nella settimana);
+    \item $I(\mathit{next}) : U \to U$ è la funzione ``giorno dopo'':
+          $\mathit{Mon} \mapsto \mathit{Tue}, \dots, \mathit{Sun} \mapsto
+          \mathit{Mon}$.
+  \end{itemize}
+  Con la valutazione $\eta(X) := \mathit{Sun}$, $\eta(Y) := \mathit{Tue}$:
+  \begin{itemize}
+    \item $\eta^I(\mathit{next}(X)) = \mathit{Mon}$;
+    \item $\eta^I(\mathit{next}(\mathit{next}(Y))) = \mathit{Thu}$;
+    \item $I, \eta \models \mathit{pair}(\mathit{next}(X), Y)$, perché
+          $(\mathit{Mon}, \mathit{Tue}) \in I(\mathit{pair})$.
+  \end{itemize}
+  Relazione di modello (``per tutte le valutazioni''):
+  \begin{itemize}
+    \item $I \not\models \forall X \forall Y.\ \mathit{pair}(\mathit{next}(X),
+          Y)$: ad esempio $X = \mathit{Mon}$, $Y = \mathit{Mon}$ dà
+          $(\mathit{Tue}, \mathit{Mon}) \notin I(\mathit{pair})$;
+    \item $I \models \forall X.\ \mathit{pair}(\mathit{next}(X),
+          \mathit{Sun})$: ogni giorno è $\le$ domenica;
+    \item $I \models \forall X \exists Y.\ \mathit{pair}(X, Y)$: basta
+          $Y = \mathit{Sun}$.
+  \end{itemize}
+  Nota: $\mathit{Sun}$ nelle formule è un abuso di notazione, perché $\Sigma$
+  non ha costanti; si intende una costante interpretata come domenica.
+}
+
+\subsection{Conseguenza logica}
+
+\dfn{Conseguenza logica ed equivalenza}{
+  \begin{itemize}
+    \item Un enunciato/teoria $T_1$ è \textbf{conseguenza logica} di un
+          enunciato/teoria $T_2$, $T_2 \models T_1$, se ogni modello di $T_2$
+          è anche modello di $T_1$: $I \models T_2$ implica $I \models T_1$.
+    \item Due enunciati o teorie sono \textbf{equivalenti} ($\Leftrightarrow$)
+          se sono ciascuno conseguenza logica dell'altro.
+  \end{itemize}
+  Esempio: $\neg(A \wedge B) \Leftrightarrow \neg A \vee \neg B$ (De Morgan).
+}
+
+\thm{Indecidibilità (Church)}{
+  È \textbf{indecidibile} stabilire se una formula del primo ordine $F$ è vera
+  in tutte le interpretazioni possibili, cioè se $\models F$.
+}
+
+\nt{
+  Differenza con il caso proposizionale: là le interpretazioni rilevanti erano
+  $2^n$, qui sono infinite (universi di ogni cardinalità, anche infinita) e
+  non si possono enumerare. Vedi anche la fine del capitolo.
+}
+
+\thm{Leggi di equivalenza}{
+  Valgono anche le duali, scambiando $\wedge$ e $\vee$.
+  \begin{center}
+  \begin{tabular}{rcll}
+    $A$ & $\Leftrightarrow$ & $\neg\neg A$ & doppia negazione \\
+    $\neg(A \wedge B)$ & $\Leftrightarrow$ & $\neg A \vee \neg B$ & De Morgan \\
+    $A \wedge A$ & $\Leftrightarrow$ & $A$ & idempotenza \\
+    $A \wedge (A \vee B)$ & $\Leftrightarrow$ & $A$ & assorbimento \\
+    $A \wedge B$ & $\Leftrightarrow$ & $B \wedge A$ & commutatività \\
+    $A \wedge (B \wedge C)$ & $\Leftrightarrow$ & $(A \wedge B) \wedge C$ & associatività \\
+    $A \wedge (B \vee C)$ & $\Leftrightarrow$ & $(A \wedge B) \vee (A \wedge C)$ & distributività \\
+    $A \to B$ & $\Leftrightarrow$ & $\neg A \vee B$ & implicazione \\
+    $A \to B$ & $\Leftrightarrow$ & $\neg B \to \neg A$ & contrapposizione \\
+    $A \to (B \to C)$ & $\Leftrightarrow$ & $(A \wedge B) \to C$ & \\
+    $\neg\forall X A$ & $\Leftrightarrow$ & $\exists X \neg A$ & \\
+    $\neg\exists X A$ & $\Leftrightarrow$ & $\forall X \neg A$ & \\
+    $\forall X (A \wedge B)$ & $\Leftrightarrow$ & $\forall X A \wedge \forall X B$ & \\
+    $\exists X (A \vee B)$ & $\Leftrightarrow$ & $\exists X A \vee \exists X B$ & \\
+    $\forall X B$ & $\Leftrightarrow$ \ $B$ \ $\Leftrightarrow$ & $\exists X B$ & con $X$ non libera in $B$ \\
+  \end{tabular}
+  \end{center}
+}
+
+\nt{
+  \begin{itemize}
+    \item Sulla slide la distributività è scritta $(A \wedge B) \vee (A \wedge
+          B)$: è un refuso, il secondo termine è $A \wedge C$.
+    \item \textbf{Attenzione}: $\forall$ distribuisce su $\wedge$ e $\exists$
+          su $\vee$, \textbf{non} il contrario. $\forall X (p(X) \vee q(X))$
+          non implica $\forall X p(X) \vee \forall X q(X)$ (sui naturali: ogni
+          numero è pari o dispari, ma non tutti sono pari né tutti dispari);
+          $\exists X p(X) \wedge \exists X q(X)$ non implica $\exists X (p(X)
+          \wedge q(X))$.
+    \item L'ultima legge (quantificare una variabile che non compare libera
+          non cambia nulla) usa che $U \ne \emptyset$: per $\exists X B
+          \Leftrightarrow B$ serve almeno un elemento.
+  \end{itemize}
+}
+
+\ex{Esercizio: conseguenza logica}{
+  \begin{center}
+  \begin{tabular}{ll|l}
+    \toprule
+    $F$ & $G$ & $F \models G$ o $F \not\models G$ \\ \midrule
+    $A$ & $A \vee B$ & $\models$ \\
+    $A$ & $A \wedge B$ & $\not\models$ \ ($A$ vera, $B$ falsa) \\
+    $A, B$ & $A \vee B$ & $\models$ \\
+    $A, B$ & $A \wedge B$ & $\models$ \\
+    $A \wedge B$ & $A$ & $\models$ \\
+    $A \vee B$ & $A$ & $\not\models$ \ ($A$ falsa, $B$ vera) \\
+    $A, (A \to B)$ & $B$ & $\models$ \ (modus ponens) \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+  Nota: $I$ è modello di $\{A, B\}$ sse $I \models A$ e $I \models B$ (un
+  insieme di premesse si comporta come la loro congiunzione).
+}
+
+\thm{Conseguenza, validità, insoddisfacibilità}{
+  Sono equivalenti:
+  \begin{enumerate}
+    \item $F_1, \dots, F_k \models G$ ($G$ è conseguenza logica di $F_1,
+          \dots, F_k$);
+    \item $\left(\bigwedge_{i=1}^k F_i\right) \to G$ è valida;
+    \item $\left(\bigwedge_{i=1}^k F_i\right) \wedge \neg G$ è
+          insoddisfacibile.
+  \end{enumerate}
+  Nota: in generale $F \not\models G$ \textbf{non} implica $F \models \neg G$.
+}
+
+\nt{
+  Sono i teoremi di deduzione e di refutazione del caso proposizionale (le
+  dimostrazioni non usavano nulla di specifico, come osservato là). Esempio
+  per la nota: $A \not\models B$ e anche $A \not\models \neg B$ (con $A$, $B$
+  atomi indipendenti): non sapere che $G$ segue non vuol dire sapere che segue
+  il contrario.
+}
+
+% =====================================================================
+\section{Modelli di Herbrand}
+% =====================================================================
+
+\subsection{Motivazione}
+
+La formula $A$ è valida in $I$, $I \models A$, se $I, \eta \models A$ per ogni
+valutazione $\eta$: questo richiede di fissare un universo $U$, perché sia $I$
+sia $\eta$ usano $U$. E gli universi possibili sono infiniti.
+
+\textbf{Jacques Herbrand} (1908--1931) scoprì che esiste un \textbf{dominio
+universale} insieme a un'\textbf{interpretazione universale}, tali che ogni
+formula universalmente valida lì è valida in ogni interpretazione. Quindi
+basta controllare le interpretazioni sull'\textbf{universo di Herbrand}
+(purché questo sia infinito).
+
+\dfn{Interpretazione di Herbrand}{
+  \begin{itemize}
+    \item \textbf{Universo di Herbrand}: l'insieme $\mathcal{T}(\Sigma,
+          \emptyset)$ dei \textbf{termini ground}.
+    \item Ogni simbolo di funzione $n$-ario $f$ di $\Sigma$ è interpretato
+          ``da se stesso'': $I(f)$ manda la tupla di termini ground $(\bar t)$
+          nel termine ground ``$f(\bar t)$''.
+    \item \textbf{Base di Herbrand} per $\Sigma$: l'insieme degli
+          \textbf{atomi ground} in $\mathcal{F}(\Sigma, \emptyset)$, cioè
+          $\{p(\bar t) \mid p$ simbolo di predicato $n$-ario di $\Sigma$,
+          $\bar t \in \mathcal{T}(\Sigma, \emptyset)\}$.
+    \item \textbf{Modello di Herbrand} di un enunciato/teoria:
+          un'interpretazione di Herbrand che lo soddisfa.
+  \end{itemize}
+}
+
+\nt{
+  Nell'interpretazione di Herbrand i termini \textbf{denotano se stessi}: il
+  significato di $f(a)$ è la stringa $f(a)$. L'unica libertà rimasta è quali
+  atomi ground sono veri: un'interpretazione di Herbrand è quindi
+  \textbf{un sottoinsieme della base di Herbrand} (gli atomi veri). È
+  l'idea alla base della semantica di Prolog: il significato di un programma
+  è un insieme di atomi ground.
+}
+
+\ex{Interpretazioni di Herbrand}{
+  \begin{itemize}
+    \item $F \equiv \exists X \exists Y.\ p(X, a) \wedge \neg p(Y, a)$.
+          L'universo di Herbrand è $\{a\}$, e lì $F$ è insoddisfacibile:
+          $p(a, a) \wedge \neg p(a, a)$ è falsa, quindi \textbf{non c'è un
+          modello di Herbrand}. Ma con un altro elemento $b$ si ha $p(a, a)
+          \wedge \neg p(b, a)$: $F$ è soddisfacibile in interpretazioni con
+          universo di cardinalità maggiore di $1$.
+    \item $\forall X \forall Y.\ p(X, a) \wedge q(X, f(Y))$: c'è una costante
+          e un simbolo di funzione, quindi l'universo di Herbrand è infinito:
+          $\{a, f(a), f(f(a)), f(f(f(a))), \dots\}$.
+  \end{itemize}
+}
+
+\nt{
+  \begin{itemize}
+    \item La slide dice che $F$ ``è valida'' per ogni interpretazione con
+          universo di cardinalità $> 1$: è impreciso, è
+          \textbf{soddisfacibile} (lo è scegliendo bene $I(p)$; con $I(p) =
+          \emptyset$ è falsa).
+    \item Il primo esempio mostra perché il teorema di Herbrand vale solo per
+          enunciati \textbf{universali}: $F$ è esistenziale, e ha modelli ma
+          nessun modello di Herbrand. Per questo prima si eliminano gli
+          $\exists$ con la skolemizzazione (sotto): $p(c_1, a) \wedge \neg
+          p(c_2, a)$ con costanti nuove $c_1, c_2$ ha universo di Herbrand
+          $\{a, c_1, c_2\}$ e un modello di Herbrand.
+    \item Se non ci sono costanti in $\Sigma$, se ne aggiunge una, perché
+          l'universo deve essere non vuoto.
+  \end{itemize}
+}
+
+\thm{Teorema di Herbrand (versione semplice)}{
+  Sia $P$ un insieme di enunciati \textbf{universali}. Sono equivalenti:
+  \begin{enumerate}
+    \item $P$ ha un modello di Herbrand;
+    \item $P$ ha un modello;
+    \item $\mathit{ground}(P)$ è soddisfacibile,
+  \end{enumerate}
+  dove $\mathit{ground}(P)$ è l'insieme delle istanze ground delle matrici
+  delle formule di $P$ (si tolgono i $\forall$ e si sostituiscono le
+  variabili con termini ground in tutti i modi possibili).
+}
+
+\pf{Dimostrazione (*)}{
+  $(1) \Rightarrow (2)$: ovvio.
+
+  $(2) \Rightarrow (3)$: ogni enunciato di $\mathit{ground}(P)$ è conseguenza
+  logica di $P$ (esercizio: un'istanza di $\forall \bar X \varphi$ è vera in
+  ogni modello di $\forall \bar X \varphi$). Quindi ogni modello di $P$ è
+  modello di $\mathit{ground}(P)$.
+
+  $(3) \Rightarrow (1)$: se $\mathit{ground}(P)$ è soddisfacibile ha un modello
+  di Herbrand $\mathbf{A}$. Infatti, sia $\mathbf{M}$ un modello di
+  $\mathit{ground}(P)$: si definisce $\mathbf{A}$ come di consueto sui
+  simboli di funzione, e sugli atomi ponendo $\mathbf{A} \models p(t_1, \dots,
+  t_n)$ sse $\mathbf{M} \models p(t_1, \dots, t_n)$, poi induttivamente sulle
+  formule (dettagli per esercizio). Ora $\mathbf{A}$ è anche modello di $P$:
+  sia $\mathbf{A} \models \mathit{ground}(\forall \varphi)$ con $\varphi$
+  senza quantificatori e $\mathit{Var}(\varphi) = \{x_1, \dots, x_n\}$. Presi
+  $n$ termini ground arbitrari $t_1, \dots, t_n$ e $\theta = \{x_1/t_1,
+  \dots, x_n/t_n\}$, si ha $\mathbf{A} \models \varphi\theta$. Poiché i $t_i$
+  sono elementi generici del dominio di $\mathbf{A}$ (che è fatto proprio di
+  termini ground), $\mathbf{A} \models \forall \varphi$.
+}
+
+\nt{
+  \textbf{Perché è importante.} Il punto $(3)$ riduce un problema del primo
+  ordine a uno (possibilmente infinito) di logica \emph{proposizionale}: gli
+  atomi ground si comportano come variabili proposizionali. Per dimostrare
+  che un insieme di clausole è insoddisfacibile basta trovare un insieme
+  \emph{finito} di istanze ground insoddisfacibile (teorema di compattezza).
+  La risoluzione con unificazione fa questo in modo intelligente, istanziando
+  ``solo quanto serve''.
+}
+
+% =====================================================================
+\section{Calcolo per la FOL: risoluzione}
+% =====================================================================
+
+Ricordiamo la nozione di calcolo (assiomi, regole di inferenza, derivazioni)
+e il requisito che $\models$ e $\vdash$ coincidano (correttezza e
+completezza). \textbf{La domanda è: possiamo definire un calcolo corretto e
+completo per la FOL? E possiamo usare la risoluzione?}
+
+L'idea è la stessa della logica proposizionale: la teoria unita alla
+conseguenza negata deve essere insoddisfacibile. Però:
+\begin{itemize}
+  \item prima bisogna trasformare le formule FOL in \textbf{clausole}, il che
+        è più complicato;
+  \item poi bisogna definire la regola di risoluzione per la FOL, che
+        richiede \textbf{sostituzioni} e \textbf{unificazione}.
+\end{itemize}
+
+% =====================================================================
+\section{Forme normali e clausole}
+% =====================================================================
+
+\dfn{Negation Normal Form}{
+  $F$ è in forma normale negativa $F_{\mathit{neg}}$ se:
+  \begin{itemize}
+    \item non ha sottoformule della forma $F \to F'$;
+    \item in ogni sottoformula della forma $\neg F'$, la formula $F'$ è
+          atomica.
+  \end{itemize}
+}
+
+\mprop{Calcolo della NNF}{
+  Per ogni enunciato $F$ esiste un enunciato equivalente $F_{\mathit{neg}}$ in
+  NNF: si applicano le seguenti equivalenze \textbf{da sinistra a destra}.
+
+  \textbf{Negazione}:
+  \begin{gather*}
+    \neg\bot \Leftrightarrow \top \qquad \neg\top \Leftrightarrow \bot \qquad
+    \neg\neg F \Leftrightarrow F \\
+    \neg(F \wedge F') \Leftrightarrow \neg F \vee \neg F' \qquad
+    \neg(F \vee F') \Leftrightarrow \neg F \wedge \neg F' \\
+    \neg\forall X F \Leftrightarrow \exists X \neg F \qquad
+    \neg\exists X F \Leftrightarrow \forall X \neg F \qquad
+    \neg(F \to F') \Leftrightarrow F \wedge \neg F'
+  \end{gather*}
+  \textbf{Implicazione}: $F \to F' \Leftrightarrow \neg F \vee F'$.
+}
+
+\dfn{Skolemizzazione}{
+  Sia $F = F_{\mathit{neg}}$ in NNF, sia $\exists X G$ una sua sottoformula
+  con variabili libere $\bar V$, e sia $f/n$ un simbolo di funzione che
+  \textbf{non compare} in $\Sigma$ ($n = |\bar V|$). Si calcola $F'$
+  sostituendo in $F$ la sottoformula $\exists X G$ con $G[X \mapsto
+  f(\bar V)]$ (tutte le occorrenze di $X$ in $G$ diventano $f(\bar V)$).
+  \begin{itemize}
+    \item $F'$ (dopo aver eliminato tutti gli $\exists$) è la \textbf{forma
+          skolemizzata} di $F$;
+    \item $f/n$ è una \textbf{funzione di Skolem} (se $n = 0$, una
+          \textbf{costante di Skolem}).
+  \end{itemize}
+}
+
+\nt{
+  \textbf{L'idea.} $\forall Z \exists X\, p(X, Z)$ dice che per ogni $Z$ c'è
+  un $X$ adatto, che \emph{dipende da $Z$}: diamo un nome a questa
+  dipendenza con una funzione nuova, $\forall Z\, p(f(Z), Z)$. Le variabili
+  libere $\bar V$ di $\exists X G$ sono proprio le variabili quantificate
+  universalmente \emph{all'esterno} da cui il testimone può dipendere. Se
+  $\exists X$ non è sotto nessun $\forall$, il testimone è una
+  \textbf{costante} nuova.
+}
+
+\thm{Skolemizzazione: equisoddisfacibilità}{
+  \begin{itemize}
+    \item Una formula $F$ è soddisfacibile \textbf{sse} la sua forma
+          skolemizzata è soddisfacibile.
+    \item $F$ e la sua forma skolemizzata \textbf{non} sono in generale
+          logicamente equivalenti.
+  \end{itemize}
+}
+
+\ex{Skolemizzazione non equivalente}{
+  $F = \forall X. \exists Y.\ p(a, Y, a, b)$; la forma skolemizzata è
+  $F' = \forall X.\ p(a, f(X), a, b)$. Sia $I$ un'interpretazione (ad esempio
+  con universo $\{a, b\}$) in cui $f(a) = b$ e vale solo $p(a, a, a, b)$.
+  \begin{itemize}
+    \item $I \models F$: per ogni $X$ basta scegliere $Y = a$.
+    \item $I \not\models F'$: per $X = a$ si ha $f(a) = b$ e $p(a, b, a, b)$ è
+          falso.
+  \end{itemize}
+  Il punto: $F'$ impone che il testimone sia \emph{proprio} $f(X)$, mentre $F$
+  chiede solo che un testimone esista. Ma se $F$ ha un modello, scegliendo
+  bene l'interpretazione di $f$ (mandando ogni $X$ in un testimone) si ottiene
+  un modello di $F'$. Per la refutazione basta questo: ci interessa solo se
+  l'insieme è \emph{insoddisfacibile}.
+}
+
+\dfn{Forma prenessa}{
+  $F = Q_1 X_1 \dots Q_n X_n\, G$, con $Q_i$ quantificatori, $X_i$ variabili e
+  $G$ formula senza quantificatori.
+  \begin{itemize}
+    \item \textbf{prefisso} dei quantificatori: $Q_1 X_1 \dots Q_n X_n$;
+    \item \textbf{matrice}: $G$.
+  \end{itemize}
+  Per ogni enunciato esiste un enunciato equivalente in forma prenessa, e lo
+  si calcola applicando le leggi di equivalenza per \textbf{spostare i
+  quantificatori verso l'esterno}.
+}
+
+\ex{Forma prenessa e skolemizzazione}{
+  \textbf{Forma prenessa}:
+  \begin{align*}
+    \neg\exists x\, p(x) \vee \forall x\, r(x)
+      &\Leftrightarrow \forall x \neg p(x) \vee \forall x\, r(x) \\
+      &\Leftrightarrow \forall x \neg p(x) \vee \forall y\, r(y)
+        && \text{rinomina ($\alpha$-conversione)} \\
+      &\Leftrightarrow \forall x (\neg p(x) \vee \forall y\, r(y))
+        && \text{$x$ non libera in $\forall y\, r(y)$} \\
+      &\Leftrightarrow \forall x \forall y (\neg p(x) \vee r(y))
+        && \text{$y$ non libera in $\neg p(x)$}
+  \end{align*}
+  \textbf{Skolemizzazione}:
+  \[
+    \forall z \exists x \forall y\ (p(x, z) \wedge q(g(x, y), x, z))
+    \ \leadsto\ \forall z \forall y\ (p(f(z), z) \wedge q(g(f(z), y), f(z),
+    z))
+  \]
+  con il nuovo simbolo di funzione $f/1$: $x$ dipende solo da $z$ (l'unico
+  $\forall$ esterno), non da $y$.
+}
+
+\nt{
+  Il passaggio di rinomina serve: $\forall x A \vee \forall x B$ \textbf{non}
+  è $\forall x (A \vee B)$; si può portare fuori un quantificatore solo se la
+  variabile non è libera nell'altra parte. Sulla slide le due righe di
+  skolemizzazione sono legate da $\Leftrightarrow$, ma per quanto visto sopra
+  sono solo \emph{equisoddisfacibili}.
+}
+
+\subsection{Clausole e letterali}
+
+\dfn{Letterali e clausole}{
+  \begin{itemize}
+    \item \textbf{Letterale}: un atomo (\textbf{letterale positivo}) o la
+          negazione di un atomo (\textbf{letterale negativo}).
+    \item \textbf{Letterali complementari}: un letterale positivo $L$ e la
+          sua negazione $\neg L$.
+    \item \textbf{Clausola}: formula della forma $\bigvee_{i=1}^n L_i$ con
+          $L_i$ letterali. La \textbf{clausola vuota} ($n = 0$, disgiunzione
+          vuota) è $\bot$.
+  \end{itemize}
+}
+
+\dfn{Forma a implicazione di una clausola}{
+  Una clausola con letterali negativi $\neg B_1, \dots, \neg B_n$ e positivi
+  $H_1, \dots, H_m$ ($B_j$, $H_k$ atomi)
+  \[
+    F = \bigvee_{i=1}^{n+m} L_i, \qquad
+    L_i = \begin{cases} \neg B_i & i = 1, \dots, n \\
+                        H_{i-n} & i = n+1, \dots, n+m \end{cases}
+  \]
+  si può scrivere in \textbf{forma a implicazione}
+  \[
+    F = \underbrace{\bigwedge_{j=1}^n B_j}_{\text{body}} \to
+        \underbrace{\bigvee_{k=1}^m H_k}_{\text{head}}.
+  \]
+  \begin{itemize}
+    \item \textbf{Clausola chiusa}: enunciato $\forall \bar x\, C$ con $C$
+          clausola.
+    \item \textbf{Forma a clausole} di una teoria: è fatta di clausole chiuse.
+  \end{itemize}
+}
+
+\nt{
+  È il collegamento con Prolog: una clausola con \textbf{esattamente una}
+  testa ($m = 1$) è $B_1 \wedge \dots \wedge B_n \to H$, che in Prolog si
+  scrive \texttt{H :- B1, ..., Bn.} (clausola di Horn definita). Con $n = 0$
+  è un fatto \texttt{H.}; con $m = 0$ è un goal (la negazione di ciò che si
+  vuole dimostrare). Nelle clausole i $\forall$ si lasciano impliciti.
+}
+
+\mprop{Passi di normalizzazione}{
+  Una teoria arbitraria $T$ si trasforma in forma a clausole così:
+  \begin{enumerate}
+    \item convertire ogni formula in una formula equivalente in \textbf{NNF};
+    \item \textbf{skolemizzare} per eliminare tutti i quantificatori
+          esistenziali;
+    \item convertire la teoria risultante (ancora in NNF) in una teoria
+          equivalente in forma a clausole: \textbf{spostare congiunzioni e
+          quantificatori universali verso l'esterno} (distribuendo $\vee$ su
+          $\wedge$, come nel caso proposizionale).
+  \end{enumerate}
+}
+
+\ex{Normalizzazione svolta (approfondimento)}{
+  ``Ogni uomo ha un padre'':
+  \[
+    \forall X\, \big(\mathit{man}(X) \to \exists Y\, \mathit{father}(Y, X)\big)
+  \]
+  \begin{enumerate}
+    \item NNF: $\forall X\, \big(\neg\mathit{man}(X) \vee \exists Y\,
+          \mathit{father}(Y, X)\big)$.
+    \item Skolem: $\exists Y$ ha variabile libera $X$, quindi $Y \mapsto
+          f(X)$: $\forall X\, \big(\neg\mathit{man}(X) \vee
+          \mathit{father}(f(X), X)\big)$.
+    \item È già una clausola: $\{\neg\mathit{man}(X),\
+          \mathit{father}(f(X), X)\}$, in forma a implicazione
+          $\mathit{man}(X) \to \mathit{father}(f(X), X)$. La funzione di
+          Skolem $f$ si legge ``il padre di''.
+  \end{enumerate}
+}
+
+% =====================================================================
+\section{Sostituzioni e unificazione}
+% =====================================================================
+
+\dfn{Sostituzione}{
+  \begin{itemize}
+    \item Una \textbf{sostituzione} è una funzione $\sigma : \mathcal{V} \to
+          \mathcal{T}(\Sigma, \mathcal{V}')$ che modifica un numero
+          \textbf{finito} di variabili; si scrive $\{X_1 \mapsto t_1, \dots,
+          X_n \mapsto t_n\}$ con $X_i$ variabili distinte e $t_i$ termini.
+    \item La \textbf{sostituzione identica} è $\epsilon = \emptyset$.
+    \item Si scrive spesso come operatore \textbf{postfisso} ($t\sigma$);
+          nella composizione si applica da sinistra a destra ($t\sigma\tau =
+          (t\sigma)\tau$).
+    \item Sui termini $\sigma : \mathcal{T}(\Sigma, \mathcal{V}) \to
+          \mathcal{T}(\Sigma, \mathcal{V}')$ è l'estensione omomorfa:
+          $f(\bar t)\sigma := f(t_1\sigma, \dots, t_n\sigma)$.
+  \end{itemize}
+  Esempio: $\sigma = \{X \mapsto 2, Y \mapsto 5\}$: $(X * (Y + 1))\sigma = 2 *
+  (5 + 1)$.
+}
+
+\nt{
+  Differenza con la valutazione $\eta$: una sostituzione manda variabili in
+  \emph{termini} (sintassi in sintassi), una valutazione manda variabili in
+  \emph{elementi del dominio} (sintassi in semantica). $2 * (5 + 1)$ è ancora
+  un termine, non il numero $12$.
+}
+
+\dfn{Sostituzione applicata a una formula}{
+  Estensione omomorfa:
+  \begin{itemize}
+    \item $p(\bar t)\sigma := p(t_1\sigma, \dots, t_n\sigma)$;
+    \item $(s \doteq t)\sigma := (s\sigma) \doteq (t\sigma)$;
+    \item $\bot\sigma := \bot$ e $\top\sigma := \top$;
+    \item $(\neg F)\sigma := \neg(F\sigma)$;
+    \item $(F * F')\sigma := (F\sigma) * (F'\sigma)$ per $* \in \{\wedge,
+          \vee, \to\}$;
+  \end{itemize}
+  \textbf{tranne} che per i quantificatori:
+  \begin{itemize}
+    \item $(\forall X F)\sigma := \forall X' (F[X \mapsto X']\sigma)$;
+    \item $(\exists X F)\sigma := \exists X' (F[X \mapsto X']\sigma)$;
+  \end{itemize}
+  dove $X'$ è una \textbf{variabile fresca}.
+}
+
+\nt{
+  La rinomina in $X'$ fresca è l'$\alpha$-conversione della lavagna: evita
+  sia di sostituire la variabile legata (che non è libera), sia di
+  \textbf{catturare} variabili libere introdotte da $\sigma$.
+}
+
+\ex{Applicazione di sostituzioni}{
+  \begin{itemize}
+    \item $\sigma = \{X \mapsto Y, Z \mapsto 5\}$: $(X * (Z + 1))\sigma = Y *
+          (5 + 1)$.
+    \item $\sigma = \{X \mapsto Y, Y \mapsto Z\}$: $p(X)\sigma = p(Y) \ne
+          p(X)\sigma\sigma = p(Z)$. La sostituzione è \textbf{simultanea}: si
+          applica una volta sola, non ``a catena''.
+    \item $\sigma = \{X \mapsto Y\}$, $\tau = \{Y \mapsto 2\}$: l'ordine conta.
+      \begin{itemize}
+        \item $(X * (Y + 1))\sigma\tau = (Y * (Y + 1))\tau = 2 * (2 + 1)$;
+        \item $(X * (Y + 1))\tau\sigma = (X * (2 + 1))\sigma = Y * (2 + 1)$.
+      \end{itemize}
+    \item $\sigma = \{X \mapsto Y\}$: $(\forall X p(3))\sigma = \forall X'
+          p(3)$.
+    \item $\sigma = \{X \mapsto Y\}$: $(\forall X p(X))\sigma = \forall X'
+          p(X')$ (la $X$ legata non si tocca), \ $(\forall X p(Y))\sigma =
+          \forall X' p(Y)$.
+    \item $\sigma = \{Y \mapsto X\}$: $(\forall X p(X))\sigma = \forall X'
+          p(X')$, \ $(\forall X p(Y))\sigma = \forall X' p(X)$: senza la
+          rinomina avremmo ottenuto $\forall X p(X)$, con la $X$ introdotta
+          \textbf{catturata}.
+  \end{itemize}
+}
+
+\dfn{Espressione logica}{
+  Un'\textbf{espressione logica su $\mathcal{V}$} è: un termine con variabili
+  in $\mathcal{V}$; una formula con variabili libere in $\mathcal{V}$; una
+  sostituzione da un insieme di variabili in $\mathcal{T}(\Sigma,
+  \mathcal{V})$; oppure una tupla di espressioni logiche su $\mathcal{V}$.
+  È un'\textbf{espressione semplice} se non contiene quantificatori.
+
+  Esempi con $\mathcal{V} = \{X\}$: $f(X)$, \ $\forall Y. p(X) \wedge q(Y)$,
+  \ $\{X \mapsto a\}$, \ $\langle p(X), \sigma \rangle$.
+}
+
+\dfn{Istanza, rinomina, varianti}{
+  ($e, e'$ espressioni logiche, $\sigma, \tau$ sostituzioni)
+  \begin{itemize}
+    \item $e$ è \textbf{istanza} di $e'$: $e = e'\sigma$ per qualche
+          $\sigma$;
+    \item $e'$ è \textbf{più generale} di $e$: $e$ è istanza di $e'$;
+    \item \textbf{rinomina di variabili} per $e$: una sostituzione $\sigma$
+      \begin{itemize}
+        \item iniettiva,
+        \item con $X\sigma \in \mathcal{V}$ per ogni $X \in \mathcal{V}$
+              (manda variabili in variabili),
+        \item tale che $X\sigma$ non compare in $e$, per le variabili libere
+              $X$ di $e$;
+      \end{itemize}
+    \item $e$ ed $e'$ sono \textbf{varianti} (identiche a meno di rinomina):
+          $e = e'\sigma$ e $e' = e\tau$.
+  \end{itemize}
+  Esempi: $(\forall X p(X_1))\{X_1 \mapsto X_2\} = \forall X' p(X_2)$ è una
+  rinomina; $(\forall X p(X_1) \wedge q(X_2))\{X_1 \mapsto X_2\} =
+  \forall X'. p(X_2) \wedge q(X_2)$ \textbf{non} lo è: $X_2$ compare già
+  libera, e due variabili diverse vengono identificate.
+}
+
+\ex{Istanze}{
+  $p(a, f(b))$ è istanza di $p(X, f(Y))$ (con $\{X \mapsto a, Y \mapsto
+  b\}$), che è istanza di $p(X, Z)$ (con $\{Z \mapsto f(Y)\}$). Quindi
+  $p(X, Z)$ è il più generale dei tre. $p(X, Y)$ e $p(U, V)$ sono varianti.
+}
+
+\subsection{Unificatori}
+
+\dfn{Unificatore e m.g.u.}{
+  ($e_1, \dots, e_n$ espressioni semplici, $\sigma, \tau, \rho$ sostituzioni)
+  \begin{itemize}
+    \item $\sigma$ è un \textbf{unificatore} per $e_1, \dots, e_n$ se
+          $e_1\sigma = \dots = e_n\sigma$;
+    \item $e_1, \dots, e_n$ sono \textbf{unificabili} se esiste un
+          unificatore;
+    \item $\sigma$ è un \textbf{unificatore più generale} (\textbf{mgu}) per
+          $e_1, \dots, e_n$ se ogni unificatore $\tau$ è istanza di $\sigma$,
+          cioè $\tau = \sigma\rho$ per qualche $\rho$.
+  \end{itemize}
+}
+
+\ex{m.g.u.}{
+  Unificare $f(X, a) \doteq f(g(U), Y) \doteq Z$.
+  \begin{itemize}
+    \item \textbf{mgu}: $\sigma = \{X \mapsto g(U),\ Y \mapsto a,\ Z \mapsto
+          f(g(U), a)\}$. Infatti $f(X, a)\sigma = f(g(U), Y)\sigma = Z\sigma =
+          f(g(U), a)$: un solo elemento.
+    \item \textbf{Unificatore ma non mgu}: $\sigma' = \{X \mapsto g(h(b)),\ U
+          \mapsto h(b),\ Y \mapsto a,\ Z \mapsto f(g(h(b)), a)\}$. È meno
+          generale: $\sigma' = \sigma\{U \mapsto h(b)\}$ (fissa inutilmente
+          $U$).
+  \end{itemize}
+}
+
+\mprop{m.g.u. a mano}{
+  Una variabile è \textbf{non legata} (unbound) se non c'è ancora una
+  sostituzione per essa.
+  \begin{itemize}
+    \item Si parte da $\epsilon$.
+    \item Si scorrono i termini \textbf{simultaneamente da sinistra a destra}
+          seguendo la loro struttura.
+    \item Si controlla l'uguaglianza sintattica dei simboli incontrati;
+          ripetere:
+      \begin{itemize}
+        \item \textbf{simboli di funzione diversi}: stop con
+              \textbf{fallimento};
+        \item \textbf{uguali}: continuare;
+        \item \textbf{uno è una variabile non legata e l'altro un termine}:
+          \begin{itemize}
+            \item se la variabile \textbf{compare nell'altro termine}: stop
+                  con fallimento (\textbf{occur check});
+            \item altrimenti aggiungere la sostituzione corrispondente e
+                  applicarla alle espressioni logiche;
+          \end{itemize}
+        \item \textbf{la variabile non è non legata}: rimpiazzarla applicando
+              la sostituzione.
+      \end{itemize}
+  \end{itemize}
+}
+
+\ex{m.g.u. passo per passo}{
+  \begin{center}
+  \begin{tabular}{ll}
+    \toprule
+    da unificare & sostituzione corrente, note \\ \midrule
+    $p(X, f(a)) \doteq p(a, f(X))$ & $\epsilon$, inizio \\
+    $X \doteq a$ & $\{X \mapsto a\}$, sostituzione aggiunta \\
+    $f(a) \doteq f(X)$ & continua \\
+    $a \doteq X$ & $\{X \mapsto a\}$, la variabile non è non legata \\
+    $a \doteq a$ & continua \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+  mgu: $\{X \mapsto a\}$.
+
+  \textbf{E $p(X, f(b)) \doteq p(a, f(X))$?} Primo argomento: $X \mapsto a$.
+  Secondo: $f(b) \doteq f(X)$, cioè $b \doteq X$, ma $X$ è già legata ad $a$:
+  $b \doteq a$, costanti diverse, \textbf{fallimento}. Non unificabili.
+}
+
+\ex{Tabella di unificazioni}{
+  \begin{center}
+  \begin{tabular}{lll}
+    \toprule
+    $s$ & $t$ & mgu \\ \midrule
+    $f$ & $g$ & fallimento \\
+    $a$ & $a$ & $\epsilon$ \\
+    $X$ & $a$ & $\{X \mapsto a\}$ \\
+    $X$ & $Y$ & $\{X \mapsto Y\}$, ma anche $\{Y \mapsto X\}$ \\
+    $f(a, X)$ & $f(Y, b)$ & $\{Y \mapsto a, X \mapsto b\}$ \\
+    $f(g(a, X), Y)$ & $f(c, X)$ & fallimento \\
+    $f(g(a, X), h(c))$ & $f(g(a, b), Y)$ & $\{X \mapsto b, Y \mapsto h(c)\}$ \\
+    $f(g(a, X), h(Y))$ & $f(g(a, b), Y)$ & fallimento \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+  Spiegazioni:
+  \begin{itemize}
+    \item $X \doteq Y$: l'mgu non è unico, ma i due sono varianti (unici a
+          meno di rinomina).
+    \item $f(g(a, X), Y) \doteq f(c, X)$: al primo argomento $g(\dots)$ contro
+          $c$, simboli diversi.
+    \item $f(g(a, X), h(Y)) \doteq f(g(a, b), Y)$: da $g(a, X) \doteq g(a,
+          b)$ si ottiene $X \mapsto b$; poi $h(Y) \doteq Y$: $Y$ compare in
+          $h(Y)$, \textbf{occur check}, fallimento (servirebbe il termine
+          infinito $h(h(h(\dots)))$).
+  \end{itemize}
+}
+
+\nt{
+  Prolog per efficienza \textbf{non} fa l'occur check: \texttt{X = f(X)} ha
+  successo e crea un termine ciclico. Il predicato
+  \texttt{unify\_with\_occurs\_check/2} fa l'unificazione corretta.
+}
+
+% =====================================================================
+\section{La regola di risoluzione per la FOL}
+% =====================================================================
+
+\dfn{Calcolo di risoluzione: regole di inferenza}{
+  Lavora per contraddizione: la teoria unita alla conseguenza negata deve
+  essere insoddisfacibile (``derivare la clausola vuota'').
+
+  \textbf{Assioma}: la clausola vuota (la contraddizione elementare).
+
+  \textbf{Risoluzione}:
+  \[
+    \frac{R \vee A \qquad R' \vee \neg A'}{(R \vee R')\sigma}
+    \qquad \sigma \text{ mgu degli atomi } A \text{ e } A'
+  \]
+  \textbf{Fattorizzazione} (factoring):
+  \[
+    \frac{R \vee L \vee L'}{(R \vee L)\sigma}
+    \qquad \sigma \text{ mgu dei letterali } L \text{ e } L'
+  \]
+  $R \vee A$ e $R' \vee \neg A'$ devono avere \textbf{variabili diverse}:
+  si rinominano le variabili \emph{prima} (\textbf{rename apart}).
+}
+
+\mprop{Osservazioni}{
+  \begin{itemize}
+    \item \textbf{Regola di risoluzione}:
+      \begin{itemize}
+        \item due clausole $C$ e $C'$ vengono istanziate in modo che un
+              letterale di $C$ e uno di $C'$ diventino complementari;
+        \item le due clausole istanziate si combinano in una nuova clausola;
+        \item si aggiunge il \textbf{risolvente}.
+      \end{itemize}
+    \item \textbf{Regola di fattorizzazione}:
+      \begin{itemize}
+        \item una clausola $C$ viene istanziata in modo che due letterali
+              diventino uguali;
+        \item se ne toglie uno;
+        \item si aggiunge il \textbf{fattore}.
+      \end{itemize}
+  \end{itemize}
+}
+
+\ex{Risoluzione e fattorizzazione}{
+  \textbf{Risoluzione}:
+  \[
+    \frac{p(a, X) \vee q(X) \qquad \neg p(a, b) \vee r(X)}
+         {(q(X) \vee r(X))\{X \mapsto b\}}
+    \;=\; q(b) \vee r(b)
+  \]
+  \textbf{Fattorizzazione}:
+  \[
+    \frac{p(X) \vee p(b)}{p(X)\{X \mapsto b\}} \;=\; p(b)
+  \]
+}
+
+\nt{
+  Nell'esempio della slide le due clausole hanno in comune la variabile $X$,
+  quindi a rigore andrebbero prima \textbf{separate}: con $\neg p(a, b) \vee
+  r(X')$ il risolvente è $q(b) \vee r(X')$, più generale di $q(b) \vee r(b)$.
+  Le variabili di clausole diverse sono indipendenti (ogni clausola ha i suoi
+  $\forall$ impliciti), quindi non separarle fa perdere generalità e, in
+  certi casi, completezza.
+}
+
+\nt{
+  \textbf{Perché serve la fattorizzazione.} L'insieme $\{p(X) \vee p(Y),\
+  \neg p(U) \vee \neg p(V)\}$ è insoddisfacibile (la prima dice che $p$ vale
+  per tutti, la seconda che non vale per nessuno). Ma ogni risolvente ha
+  ancora due letterali (ad esempio $p(Y) \vee \neg p(V)$), e non si arriva mai
+  a $\square$. Con la fattorizzazione: $p(X) \vee p(Y) \leadsto p(X)$ e
+  $\neg p(U) \vee \neg p(V) \leadsto \neg p(U)$, che risolte danno $\square$.
+  Nel caso proposizionale non serviva, perché i letterali ripetuti si fondono
+  da soli (clausole come insiemi).
+}
+
+\ex{Socrate con la risoluzione (approfondimento)}{
+  $\forall X (\mathit{man}(X) \to \mathit{mortal}(X)),\
+  \mathit{man}(\mathit{socrates}) \models \mathit{mortal}(\mathit{socrates})$?
+  Clausole: $\neg\mathit{man}(X) \vee \mathit{mortal}(X)$, \
+  $\mathit{man}(\mathit{socrates})$, e la tesi negata
+  $\neg\mathit{mortal}(\mathit{socrates})$.
+  \begin{prooftree}
+    \AxiomC{$\neg\mathit{man}(X) \vee \mathit{mortal}(X)$}
+    \AxiomC{$\neg\mathit{mortal}(\mathit{socrates})$}
+    \RightLabel{$\{X \mapsto \mathit{socrates}\}$}
+    \BinaryInfC{$\neg\mathit{man}(\mathit{socrates})$}
+    \AxiomC{$\mathit{man}(\mathit{socrates})$}
+    \RightLabel{$\epsilon$}
+    \BinaryInfC{$\square$}
+  \end{prooftree}
+  È esattamente ciò che fa Prolog con il programma
+  \texttt{mortal(X) :- man(X).\ man(socrates).} e il goal
+  \texttt{?- mortal(socrates).}: si parte dal goal negato e si risolve.
+}
+
+\ex{Una risoluzione con funzioni di Skolem (approfondimento)}{
+  $\forall X\, p(X, f(X))$ (cioè, prima di skolemizzare, $\forall X \exists
+  Y\, p(X, Y)$) e $\forall X \forall Y (p(X, Y) \to q(Y))$. Segue $\exists Z\,
+  q(Z)$? Clausole, con la tesi negata $\neg\exists Z q(Z) \equiv \forall Z
+  \neg q(Z)$:
+  \[
+    C_1 = p(X, f(X)), \qquad C_2 = \neg p(X_2, Y_2) \vee q(Y_2), \qquad
+    C_3 = \neg q(Z).
+  \]
+  $C_1$ e $C_2$ (variabili già separate) su $p$: mgu $\{X_2 \mapsto X,\ Y_2
+  \mapsto f(X)\}$, risolvente $q(f(X))$. Con $C_3$: mgu $\{Z \mapsto f(X)\}$,
+  risolvente $\square$. Quindi la conseguenza vale.
+}
+
+% =====================================================================
+\section{Completezza e indecidibilità}
+% =====================================================================
+
+\thm{Completezza per refutazione della risoluzione}{
+  Sia $\vdash$ la risoluzione e $F$ un insieme di clausole. Allora
+  \[ F \vdash \bot \quad\text{sse}\quad F \models \bot. \]
+  Cioè: dalle clausole si deriva la clausola vuota \textbf{sse} sono
+  insoddisfacibili.
+}
+
+\thm{Teorema di completezza di Gödel}{
+  Se $\models F$ allora $\vdash F$. Più in generale
+  \[ \Gamma \models F \quad\text{sse}\quad \Gamma \vdash F. \]
+  (Nella dimostrazione originale $\vdash$ è il sistema di Hilbert--Ackermann;
+  vale per tutti i calcoli corretti e completi usuali, ad esempio la
+  deduzione naturale.)
+}
+
+\thm{Indecidibilità della FOL}{
+  È \textbf{indecidibile} se una formula del primo ordine è dimostrabile (o,
+  equivalentemente, vera in tutte le interpretazioni).
+}
+
+\nt{
+  \textbf{Completezza e indecidibilità non si contraddicono.} Per la
+  completezza, se $F$ è valida una dimostrazione esiste, e la si trova
+  enumerando tutte le derivazioni (o facendo risoluzione in ampiezza): la
+  validità è \textbf{semi-decidibile}. Ma se $F$ non è valida la ricerca può
+  andare avanti per sempre, e non c'è modo di sapere in generale quando
+  fermarsi. È lo stesso fenomeno per cui un programma Prolog può non
+  terminare.
+}
+
+\subsection{L'aritmetica del primo ordine}
+
+\begin{itemize}
+  \item L'\textbf{aritmetica del primo ordine} è un linguaggio di termini e
+        formule. I termini (polinomi a coefficienti positivi) sono costruiti
+        da variabili $X, Y, Z, \dots$, dalle costanti $0$ e $1$ e dagli
+        operatori $+$ e $\times$ (la moltiplicazione di solito non si scrive).
+        Le formule più semplici sono le \textbf{equazioni}, ad esempio
+        $X + Y^2 = 2Z^3$, abbreviazione di $X + YY = (1 + 1)ZZZ$. Formule più
+        complesse si costruiscono con i connettivi e i quantificatori usuali.
+  \item L'aritmetica è interpretata sui \textbf{numeri naturali}. Ogni formula
+        è vera o falsa (una formula con variabili libere si considera
+        equivalente alla sua chiusura universale).
+\end{itemize}
+
+\thm{Altri risultati di indecidibilità}{
+  \begin{itemize}
+    \item È indecidibile se una formula aritmetica è \textbf{vera} (nei
+          naturali).
+    \item L'insieme delle formule aritmetiche vere \textbf{non è nemmeno
+          semi-decidibile}.
+    \item \textbf{Teorema di incompletezza di Gödel}: se un sistema di
+          dimostrazione per l'aritmetica è corretto (dimostra solo formule
+          vere) allora esiste una formula vera che non è dimostrabile.
+  \end{itemize}
+}
+
+\nt{
+  Attenzione a non confondere i due teoremi di Gödel.
+  \begin{itemize}
+    \item \textbf{Completezza}: riguarda la \emph{conseguenza logica}, cioè la
+          verità in \emph{tutte} le interpretazioni. Tutto ciò che è vero in
+          ogni modello è dimostrabile.
+    \item \textbf{Incompletezza}: riguarda la verità in \emph{una}
+          interpretazione fissata, i numeri naturali. Nessun sistema corretto
+          (ed effettivo) dimostra tutte le verità dell'aritmetica: ci sono
+          enunciati veri nei naturali ma falsi in qualche altro modello degli
+          assiomi, e quindi non conseguenze logiche degli assiomi.
+  \end{itemize}
+}

@@ -1,0 +1,119 @@
+% \begin{document}
+\chapter{Streaming algorithms}
+ 
+\textbf{Setting.} We want to compute (approximately) a statistic $\varphi(\sigma)$ of a massive data stream $\sigma=\langle a_1,\ldots,a_m\rangle$ with each $a_i\in[n]$, processing it left to right in small space $s$ (bits). Examples: the most frequent Google queries, or the number of distinct cities on Facebook.
+ 
+\textbf{Goals.} The algorithm must be very fast and cannot store the whole input. We want $s=o(\min\{m,n\})$, ideally $s=O(\log m+\log n)$, and ideally a single pass ($p=1$); more passes make problems easier. Exact answers usually need too much space, so we allow approximation and randomization.
+ 
+%--------------------------------------------------------------------
+\section{Finding frequent items deterministically}
+ 
+The stream defines a frequency vector $f=(f_1,\ldots,f_n)$ with $\sum_j f_j=m$.
+\begin{itemize}
+  \item \textsc{Majority}: if some $j$ has $f_j>m/2$, output $j$; otherwise output ``$\bot$''.
+  \item \textsc{Frequent}$(k)$: output $\{j:f_j>m/k\}$.
+\end{itemize}
+Both require $\Omega(\min\{m,n\})$ space for deterministic one-pass algorithms. The Misra--Gries algorithm (1982) instead estimates the frequencies $f_j$, and this solves both problems with a second pass.
+ 
+\subsection{The Misra--Gries algorithm}
+ 
+Maintain an associative array $A$ with at most $k-1$ keys.
+\begin{itemize}
+  \item \textbf{Initialization:} $A\leftarrow\emptyset$.
+  \item \textbf{Process $j$:} if $j\in\mathrm{keys}(A)$, increment $A[j]$. Else if $|\mathrm{keys}(A)|<k-1$, set $A[j]=1$. Else decrement every counter $A[\ell]$ for $\ell\in\mathrm{keys}(A)$ and remove those that reach $0$.
+  \item \textbf{Output:} on query $a$, report $\hat f_a=A[a]$ if $a\in\mathrm{keys}(A)$, else $\hat f_a=0$.
+\end{itemize}
+ 
+\textbf{Space.} At most $k-1$ pairs, each needing $\log n$ bits for the key and at most $\log m$ bits for the value: $O(k(\log n+\log m))$ bits.
+ 
+\textbf{Quality.} A counter is incremented only when its token occurs, so $\hat f_j\le f_j$. Each decrement step (counting the new token as incremented to $1$ and immediately decremented) decreases $k$ counters at once, and the stream has $m$ elements, so there are at most $m/k$ decrement steps. Hence $\hat f_j\ge f_j-m/k$.
+ 
+\thm{}{
+The Misra--Gries algorithm with parameter $k$ uses one pass and $O(k(\log m+\log n))$ bits of space, and for every token $j$ gives an estimate $\hat f_j$ with
+\[
+  f_j-\frac mk\le\hat f_j\le f_j.
+\]
+}
+ 
+\textbf{Solving \textsc{Frequent} with a second pass.} If $f_j>m/k$ then $A[j]>0$ at the end. A second pass counts exactly the frequencies of the tokens in $\mathrm{keys}(A)$, and we output those with $f_j>m/k$.
+ 
+%--------------------------------------------------------------------
+\section{Estimating the number of distinct elements}
+ 
+\textsc{Distinct-Elements}: approximate $d(\sigma)=|\{j:f_j>0\}|$. This is provably impossible in sublinear space for deterministic or exact algorithms, so we seek a randomized approximation with
+\[
+  \Pr\big[d(\sigma)/3\le A(\sigma)\le3d(\sigma)\big]\ge1-\delta,
+\]
+using $O(\log(1/\delta)\log n)$ space. (The factor $3$ can be improved to $1+\varepsilon$ with more work.)
+ 
+\subsection{Ingredients}
+ 
+\textbf{Pairwise independent hashing.} A family $\mathcal H$ of functions $[n]\to[n]$ is pairwise independent if for all $x\neq x'$ and all $y,y'$, $\Pr_{h}[h(x)=y\wedge h(x')=y']=1/n^2$ (which implies $\Pr_h[h(x)=y]=1/n$).
+ 
+\mlenma{}{
+There is a pairwise independent hash family such that $h$ can be sampled with $O(\log n)$ random bits, and $h(x)$ can be computed in space $O(\log n)$.
+}
+ 
+\textbf{The zeros function.} $\mathrm{zeros}(p)=\max\{i:2^i\text{ divides }p\}$, the number of trailing zeros in the binary representation (e.g.\ $\mathrm{zeros}(4)=2$, $\mathrm{zeros}(6)=1$, $\mathrm{zeros}(7)=0$).
+ 
+\subsection{The algorithm}
+ 
+\textbf{Intuition.} A random number $x$ has $\mathrm{zeros}(x)\ge\log d$ with probability $1/d$, so among $d$ distinct values we expect some $j$ with $\mathrm{zeros}(h(j))\ge\log d$.
+\begin{itemize}
+  \item \textbf{Initialization:} choose $h:[n]\to[n]$ from a pairwise independent family (assume $n$ is a power of $2$), and set $z=0$.
+  \item \textbf{Process $j$:} if $\mathrm{zeros}(h(j))>z$, set $z=\mathrm{zeros}(h(j))$.
+  \item \textbf{Output:} $2^{z+1/2}$.
+\end{itemize}
+The space used is $O(\log n)$.
+ 
+\subsection{Analysis}
+ 
+For $r\ge0$ let $X_{r,j}=\mathbf 1[\mathrm{zeros}(h(j))\ge r]$ and $Y_r=\sum_{j:f_j>0}X_{r,j}$. Let $t$ be the final value of $z$. Then
+\[
+  Y_r>0\iff t\ge r,\qquad Y_r=0\iff t\le r-1.
+\]
+Since $h(j)$ is uniform, $\mathbb E[X_{r,j}]=\Pr[2^r\mid h(j)]=2^{-r}$, so $\mathbb E[Y_r]=d/2^r$. By pairwise independence the variance is a sum of per-term variances, so
+\[
+  \mathrm{Var}[Y_r]=\sum_{j:f_j>0}\big(\mathbb E[X_{r,j}^2]-\mathbb E[X_{r,j}]^2\big)\le\sum_{j:f_j>0}\mathbb E[X_{r,j}]=\frac d{2^r}.
+\]
+Markov's inequality gives
+\begin{equation}\label{eq:markov}
+  \Pr[Y_r>0]\le\mathbb E[Y_r]=\frac d{2^r},
+\end{equation}
+and Chebyshev's inequality gives
+\begin{equation}\label{eq:cheb}
+  \Pr[Y_r=0]\le\Pr\Big[|Y_r-\mathbb E[Y_r]|\ge\frac d{2^r}\Big]\le\frac{\mathrm{Var}[Y_r]}{(d/2^r)^2}\le\frac{2^r}d.
+\end{equation}
+ 
+Let $\hat d=2^{t+1/2}$.
+\begin{itemize}
+  \item \textbf{Overestimate.} Let $a$ be the smallest integer with $2^{a+1/2}\ge3d$. By \eqref{eq:markov},
+  \[
+    \Pr[\hat d\ge3d]=\Pr[t\ge a]=\Pr[Y_a>0]\le\frac d{2^a}\le\frac{\sqrt2}3.
+  \]
+  \item \textbf{Underestimate.} Let $b$ be the largest integer with $2^{b+1/2}\le d/3$. By \eqref{eq:cheb},
+  \[
+    \Pr[\hat d\le d/3]=\Pr[t\le b]=\Pr[Y_{b+1}=0]\le\frac{2^{b+1}}d\le\frac{\sqrt2}3.
+  \]
+\end{itemize}
+These guarantees are weak: $\hat d$ is only a constant-factor estimate, and each failure probability is $\sqrt2/3\approx47\%$.
+ 
+\subsection{The median trick}
+ 
+Run $k$ independent copies (independent hash functions) in parallel and output the median of the $k$ estimates. If the median exceeds $3d$, then at least $k/2$ copies exceed $3d$, whereas we expect at most $k\sqrt2/3<k/2$ of them to. By a Chernoff bound this has probability $2^{-\Omega(k)}$, and likewise for the median falling below $d/3$. Choosing $k=\Theta(\log(1/\delta))$ makes the sum of the two probabilities at most $\delta$, so
+\[
+  \Pr\big[\hat d\notin[d/3,3d]\big]\le\delta.
+\]
+Each copy uses $O(\log n)$ bits for the hash function and $O(\log\log n)$ bits for $z$, so the total space is $O(\log(1/\delta)\log n)$.
+ 
+%--------------------------------------------------------------------
+\section{Summary}
+ 
+\begin{itemize}
+  \item Streaming algorithms handle massive data with severely limited memory and time.
+  \item Misra--Gries gives deterministic frequency estimates (error at most $m/k$) and solves \textsc{Frequent} and \textsc{Majority} with a second pass.
+  \item One-pass algorithms typically need randomization and approximation: build an unbiased estimator, then bound the variance to get high-probability guarantees.
+  \item Hash functions are a crucial tool, as seen in the \textsc{Distinct-Elements} algorithm together with the median trick.
+\end{itemize}
+ 
+% \end{document}
