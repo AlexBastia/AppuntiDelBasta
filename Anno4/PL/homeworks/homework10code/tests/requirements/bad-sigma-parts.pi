@@ -1,0 +1,5 @@
+(* Requirement R4 (ii): pair types with different parts are different. *)
+
+axiom A : Type 0
+axiom f : A * unit -> A
+def g : A * empty -> A := f

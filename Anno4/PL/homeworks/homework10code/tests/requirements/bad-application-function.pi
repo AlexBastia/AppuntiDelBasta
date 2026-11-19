@@ -1,0 +1,9 @@
+(* Requirement R4 (iii): applications of different axioms are different,
+   even if their arguments are the same. *)
+
+axiom A : Type 0
+axiom a : A
+axiom P : A -> Type 0
+axiom Q : A -> Type 0
+axiom v : P a
+def w : Q a := v

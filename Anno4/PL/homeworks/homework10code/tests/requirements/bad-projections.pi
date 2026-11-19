@@ -1,0 +1,8 @@
+(* Requirement R4 (iii): the first projection of an axiom is not its second
+   projection. *)
+
+axiom A : Type 0
+axiom p : A * A
+axiom T : A -> Type 0
+axiom t : T (fst p)
+def test : T (snd p) := t

@@ -1,0 +1,9 @@
+(* If beta reduction captured the variable x, this would be accepted:
+   K x would become lambda x. x. *)
+
+axiom A : Type 0
+axiom U : (A -> A) -> Type 0
+def K : A -> A -> A := lambda y x. y
+
+axiom t : Pi (x : A) -> U (lambda z. z)
+def test : Pi (x : A) -> U (K x) := t

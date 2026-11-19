@@ -1,0 +1,121 @@
+#separator:tab
+#html:true
+#notetype:Basic
+#deck:Lang and Alg for AI::1 - Intro
+
+Come è organizzato il corso / l'esame del modulo 2 (Gabbrielli)?	• 1° modulo: Felli; 2° modulo: Gabbrielli (il corso integrato con Dal Lago è stato cancellato)<br>• Esami <b>separati</b> per modulo; per questo modulo esame <b>solo scritto</b><br>• Materiale in parte dal corso di logica di Claudio Sacerdoti Coen, poi Russell–Norvig, Van Dalen, Clarke
+
+Quali sono i 4 blocchi del programma del modulo 2?	1. AI simbolica e bisogno della logica<br>2. Logica: proposizionale, FOL, risoluzione, unificazione<br>3. Logic Programming: interpretazione procedurale e dichiarativa, Prolog<br>4. Constraint Programming: CLP, MiniZinc
+
+Quali sono i testi di riferimento del modulo?	Dispense (Virtuale); <b>Van Dalen</b>, <i>Logic and Structure</i> (logica); <b>Bratko</b>, <i>Prolog Programming for AI</i>; Triska, <i>The Power of Prolog</i>; Russell–Norvig; <i>MiniZinc Handbook</i>.
+
+Qual è il problema combinatorio dell'introduzione (sequenza di Langford a tre copie)?	Disporre tre 1, tre 2, …, tre 9 (27 numeri) in modo che, per ogni \(i \in [1,9]\), tra due occorrenze <b>successive</b> di \(i\) ci siano <b>esattamente \(i\) numeri</b>.<br>Es.: 1,9,1,2,1,8,2,4,6,2,7,9,4,5,8,6,3,4,7,5,3,9,6,8,3,5,7
+
+Come si risolve in Prolog la sequenza di Langford? Che cosa dice il programma?	<code>sequence(S)</code>: S lista di 27 variabili; poi per ogni \(i\) <code>sublist([i,_,…,_,i,_,…,_,i], S)</code> con \(i\) variabili anonime tra le occorrenze.<br>Dice solo <b>che cosa</b> è una soluzione, non come cercarla: il \"come\" lo fanno <b>unificazione</b> e <b>backtracking</b> dell'interprete.
+
+Cos'è la variabile <code>_</code> in Prolog? Come si può definire <code>sublist/2</code>?	<code>_</code> è una <b>variabile anonima</b>: ogni occorrenza è una variabile nuova.<br><code>sublist(L, S) :- append(_, T, S), append(L, _, T).</code> (\(S = A \cdot L \cdot B\)). Non è un predicato standard di SWI-Prolog.
+
+Perché nel programma di Langford conviene mettere per primo il pattern del 9?	È il pattern più lungo: ha meno posizioni possibili nella lista, quindi riduce lo spazio di ricerca del backtracking.
+
+Qual è il problema delle torte (Cakes) e la sua soluzione ottima?	Banana: 250g farina, 2 banane, 75g zucchero, 100g burro (\$4.00). Cioccolato: 200g farina, 75g cacao, 150g zucchero, 150g burro (\$4.50). Disponibili: 4kg farina, 6 banane, 2kg zucchero, 500g burro, 500g cacao. Massimizzare il profitto.<br>Vincolo stringente: burro \(2b+3c \le 10\), più \(b \le 3\). Ottimo: \(b=2, c=2\), profitto <b>\$17.00</b>.
+
+Struttura di un modello MiniZinc (esempio Cakes).	• <code>var 0..100: b;</code> variabile decisionale intera con dominio<br>• <code>constraint ...;</code> vincolo<br>• <code>solve maximize f;</code> soluzione ottima (<code>solve satisfy</code> = una qualsiasi)<br>• <code>output [...]</code><br>Prezzi in centesimi per restare negli interi.
+
+Cosa dice lo slogan di Kowalski \"Algorithm = Logic + Control\"?	• <b>Logic</b>: <i>che cosa</i> va calcolato (la specifica)<br>• <b>Control</b>: <i>come</i> lo si calcola (ordine dei passi, strategia di ricerca)
+
+Differenza tra programmazione tradizionale e dichiarativa.	Tradizionale (imperativa): il programmatore gestisce <b>Logic e Control</b>.<br>Dichiarativa: il programmatore si occupa <b>solo della Logic</b>, il Control lo gestisce l'interprete. Si dichiara <b>cosa</b>, non <b>come</b>.
+
+Quali sono i tre paradigmi dichiarativi e su cosa si basano?	1. <b>Logic Programming</b> (Prolog): relazioni<br>2. <b>Functional</b> (ML, Haskell, OCaml): composizione di funzioni<br>3. <b>Constraint Programming</b> (MiniZinc, CLP, ILOG): relazioni + solver specifici di dominio
+
+Chi ha detto che il constraint programming è vicino al \"Holy Grail of programming\"? Cosa intende?	E. C. <b>Freuder</b>: \"the user states the problem, the computer solves it\".
+
+In Prolog la separazione Logic/Control è perfetta?	No. Il Control è fissato: clausole dall'alto in basso, letterali da sinistra a destra, profondità + backtracking. L'ordine delle clausole può cambiare efficienza e perfino terminazione. Il significato dichiarativo (insieme delle risposte vere) però non dipende dall'ordine.
+
+Che cos'è la <b>logica</b>? Cos'è un'inferenza valida?	Lo studio sistematico della <b>forma delle inferenze valide</b> e delle leggi più generali della <b>verità</b>.<br>Inferenza valida: c'è una specifica relazione di supporto logico tra <b>premesse</b> e <b>conclusione</b>.
+
+Cosa conserva un'inferenza in logica classica, intuizionista, lineare, epistemica, temporale? E dove si usano?	• <b>Classica</b>: se \(X,Y\) veri, \(W\) vero? (AI, linguaggi logici, verifica)<br>• <b>Intuizionista</b>: da prove di \(X,Y\) costruisco una prova di \(W\)? (software corretto per costruzione)<br>• <b>Lineare</b>: posso scambiare \(X,Y\) per \(W\)? (risorse)<br>• <b>Epistemica</b>: se credo che tu sappia \(X,Y\), credo \(W\)? (sicurezza)<br>• <b>Temporale</b>: se \(X,Y\) accadranno, \(W\) potrà accadere? (specifica e verifica)
+
+Cos'è la <b>logica matematica</b>?	L'applicazione del metodo matematico allo studio della logica, <b>ma anche</b> la logica come fondamento della matematica (logiche diverse ⇒ matematiche diverse).
+
+Quali sono i 5 motivi per studiare la logica in informatica?	1. L'informatica deriva dalla logica<br>2. Fonda la computazione e i linguaggi dichiarativi<br>3. Fonda l'informatica teorica (calcolabilità)<br>4. Serve a dimostrare la correttezza del software<br>5. È un linguaggio privo di paradossi
+
+È nato prima il computer o l'informatica? Racconta in breve.	L'informatica, come <b>studio della calcolabilità</b>. Si cercano basi formali per la matematica nella logica; la derivazione logica diventa un calcolo (<i>calculemus!</i>); si scoprono funzioni <b>non calcolabili</b> (la maggioranza) e che formalismi diversi (λ-calcolo, MdT, programmi logici, RAM) definiscono la stessa classe. Nasce intorno al 1930.<br>Dijkstra: \"CS is no more about computers than Astronomy is about telescopes\".
+
+Cos'è la tesi di Church–Turing?	Le funzioni calcolabili da un procedimento effettivo sono esattamente quelle calcolabili da una macchina di Turing. È supportata dal fatto che formalismi molto diversi definiscono la stessa classe di funzioni.
+
+Che legame hanno con la logica i linguaggi funzionali, logici e a vincoli?	• <b>Funzionali</b>: programmare = dimostrare, tipi = enunciati (Curry–Howard)<br>• <b>Logici</b> (Prolog, CLP, CHR, CCP): <b>computazione = deduzione</b><br>• <b>A vincoli</b> (CLP, CHR, CCP, MiniZinc): relazioni + solver di dominio, molto usati in pratica
+
+Le due domande di calcolabilità/dimostrabilità e la loro risposta.	1. Un'affermazione vera o falsa si può sempre dimostrare? 2. Ogni funzione si può calcolare?<br><b>No</b> in entrambi i casi (incompletezza, non calcolabilità): limiti inevitabili per informatica e AI.
+
+Si può avere uno strumento automatico che decida se un programma generico è corretto?	No: la maggior parte delle proprietà non banali dei programmi è <b>indecidibile</b> (teorema di Rice), es. la terminazione.<br>Vie d'uscita: specifica + dimostrazione in logica; prove automatiche solo su casi specifici o approssimazioni; <b>prove assistite</b> (l'umano dimostra, il computer verifica).
+
+Cos'è la <b>trusted code base</b> nel disegno del prof?	Un oracolo che decide la correttezza è non decidibile. Allora l'umano scrive specifica e dimostrazione, e un piccolo <b>verificatore di prove</b> le controlla (controllare una prova è decidibile, trovarla no). Ci si fida solo del verificatore: è la trusted code base (idea dei proof assistant: Coq/Rocq, Lean, Isabelle).
+
+Scrivi la specifica (pre/post) di un algoritmo di ordinamento vista a lezione. Che difetto ha?	Pre: \(b\) array di interi. Post: \((\forall i &lt; a.len-1.\ a[i] \le a[i+1]) \wedge (\forall i &lt; a.len.\ \exists j.\ a[i]=b[j]) \wedge (\forall i &lt; b.len.\ \exists j.\ b[i]=a[j])\).<br>Difetto: dice \"stessi valori\" ma non \"stesse molteplicità\" (\(a=[1,2,2]\) va bene per \(b=[2,1,1]\)). Serve che \(a\) sia una <b>permutazione</b> di \(b\).
+
+I tre limiti delle funzioni calcolate valgono per quali linguaggi?	Per i linguaggi <b>Turing-completi</b> (massimo potere espressivo noto).
+
+Limite 1: perché le funzioni calcolate dai programmi sono in generale <b>parziali</b>?	Sia \(f(g) = \mathtt{not}(g(g))\). Allora \(f(f) = \mathtt{not}(f(f))\): se restituisse un booleano \(v\) avremmo \(v = \neg v\). Quindi \(f(f)\) <b>non termina</b>.<br>È la stessa costruzione del paradosso di Russell (\(X = \{Y \mid Y \notin Y\}\)), che qui dà una funzione parziale invece di una contraddizione.
+
+Limite 2: dimostra che la terminazione non è decidibile.	Per assurdo esista \(f(g,x)\) totale = true sse \(g(x)\) termina. Definisco <code>h(g) = if f(g,g) = true then while true do skip else return 0</code>. Allora \(h(h)\) termina ⇔ \(f(h,h)=\)false ⇔ \(h(h)\) non termina. Contraddizione (diagonalizzazione).
+
+Perché i programmi sono <b>numerabili</b>?	Un programma è una stringa finita su un alfabeto finito \(\Sigma\). Le stringhe di lunghezza \(n\) sono \(|\Sigma|^n\), finite: elencandole per lunghezza crescente (e in ordine lessicografico) si enumera \(\Sigma^*\). I programmi sono un sottoinsieme.
+
+Dimostra che \(F = \{f \mid f: \mathbb{N} \to \{0,1\}\}\) non è numerabile.	Diagonale: se \(f_1, f_2, \dots\) le enumerasse tutte, \(f^*(n) = 1 - f_n(n)\) sta in \(F\) ma \(f^*(i) \ne f_i(i)\) per ogni \(i\), quindi non è nell'elenco. Assurdo.
+
+Limite 3: perché nessun linguaggio esprime tutte le funzioni booleane \(\mathbb{N} \to \{0,1\}\)?	I programmi sono numerabili, le funzioni \(\mathbb{N}\to\{0,1\}\) no: non esiste una suriezione dai programmi sulle funzioni. I linguaggi esprimono \"pochissime\" funzioni.
+
+Enuncia e dimostra il teorema di <b>Cantor</b> \(|T| &lt; |T^T|\).	\(T\) con almeno 2 elementi. \(t \mapsto\) costante \(t\) è iniettiva, quindi \(|T| \le |T^T|\). Se \(g: T \to T^T\) fosse biiettiva, definisco \(f(t) \ne g(t)(t)\) (possibile con 2 elementi): \(f \ne g(t)\) per ogni \(t\), quindi \(g\) non è suriettiva.
+
+Versione alternativa del limite 3 tramite Cantor.	Se \(T\) (valori del linguaggio, che contiene booleani e funzioni) contenesse tutte le funzioni \(T \to T\), avremmo \(T \supseteq \{0,1\} \cup T^T\), quindi \(|T| \ge |T^T|\), contro Cantor.
+
+Cos'è un <b>paradosso</b>?	Un ragionamento apparentemente corretto, da premesse apparentemente corrette, che porta a una conclusione apparentemente contraddittoria.
+
+Trova l'errore: \(x=1 \Rightarrow x^2=x \Rightarrow x^2-1=x-1 \Rightarrow (x-1)(x+1)=x-1 \Rightarrow x+1=1 \Rightarrow x=0\).	Si divide per \(x-1\), che vale 0. È un <b>falso paradosso</b>.
+
+Paradosso del <b>mentitore</b> e paradosso di <b>Berry</b>.	• Mentitore: \"Io sono un bugiardo\": sono bugiardo sse quello che dico non è vero.<br>• Berry: \"il più piccolo numero non definibile con meno di 1000 parole\": è definito con meno di 1000 parole sse non lo è.
+
+Cos'è un <b>metalinguaggio</b> e perché nascono i paradossi del linguaggio naturale?	Metalinguaggio = linguaggio usato per parlare di un linguaggio.<br>Cause: 1. uso <b>metalinguistico</b> del linguaggio naturale; 2. <b>auto-applicazione</b> (la frase parla di sé).<br>Rimedio: linguaggio della logica matematica, con linguaggio oggetto e metalinguaggio separati.
+
+Enuncia il paradosso di <b>Russell</b> e la sua soluzione.	\(X = \{Y \mid Y \notin Y\}\): \(X \in X \iff X \notin X\).<br>Soluzione: \(X\) <b>non è un insieme</b>. Gli insiemi si costruiscono solo selezionando da un insieme dato (separazione di ZF: \(\{Y \in A \mid \varphi(Y)\}\)); la collezione di tutti gli insiemi è una <b>classe</b>.
+
+Cosa succede ai paradossi in informatica?	Funzioni di ordine superiore permettono l'auto-applicazione: i paradossi <b>non sono evitabili</b>, ma invece di contraddizioni mostrano i <b>limiti</b> dei modelli di calcolo (funzioni parziali, indecidibilità).
+
+Racconta il paradosso di <b>Curry</b> (Babbo Natale).	\(A\) = \"se questa frase è vera, Babbo Natale esiste\" (\(B\)). Per dimostrare \(A = A\to B\) assumo \(A\); allora per modus ponens \(B\): ho dimostrato \(A\to B\), cioè \(A\). Ora \(A\) e \(A \to B\) danno \(B\): Babbo Natale esiste.
+
+Curry in contesto logico: quali sono i 6 passi?	1. \(X := (X \to Y)\) (assunzione)<br>2. \(X \to X\) (identità)<br>3. \(X \to (X\to Y)\) (da 2 e 1)<br>4. \(X \to Y\) (<b>contrazione</b>)<br>5. \(X\) (da 4 e 1)<br>6. \(Y\) (modus ponens 5, 4)
+
+Il paradosso di Curry è un vero paradosso in logica proposizionale classica?	No. Se \(Y\) è falso, \(X \leftrightarrow (X\to Y)\) diventa \(X \leftrightarrow \neg X\), insoddisfacibile: non esiste \(X\) che realizzi il passo 1. La derivazione è corretta ma parte da un'ipotesi impossibile. Il problema nasce solo se una frase può riferirsi a sé stessa.
+
+Perché studiare la logica in AI? (a–d)	a) Esprime il ragionamento umano<br>b) Fonda un approccio classico all'AI<br>c) Fonda i linguaggi dichiarativi usati in AI<br>d) Applicazione diretta in Prolog e CLP
+
+Precursori dell'AI prima dei computer: Llull, Cartesio, Leibniz.	• <b>Llull</b> (1232–1316): <i>Ars combinatoria</i>, dischi che combinano concetti simbolici<br>• <b>Cartesio</b>: dualismo mente-corpo, automi come processo cognitivo<br>• <b>Leibniz</b>: <i>calculus ratiocinator</i>, risolvere controversie calcolando (\"calculemus!\")
+
+Automi del XVIII secolo e il Turco meccanico.	Vaucanson (anatra che \"mangia\"), Jaquet-Droz (scrivano e musicista controllati da un disco metallico, programma ante litteram).<br>Il <b>Turco meccanico</b> giocava a scacchi con un umano nascosto: AI \"fake\" (nome ripreso da Amazon Mechanical Turk).
+
+Tappe di Turing verso l'AI.	1935 macchina universale; 1947 \"a machine that can learn from experience\"; 1948 <i>Intelligent Machinery</i> (manifesto, simbolico + reti neurali, non pubblicato); 1950 <i>Computing Machinery and Intelligence</i> (imitation game).
+
+Neuroni e apprendimento: McCulloch–Pitts, Hebb, Rosenblatt. E Dartmouth?	McCulloch–Pitts (1943) primo modello computazionale del neurone; Hebb (1949) apprendimento hebbiano; Rosenblatt (1958) <b>perceptron</b>.<br><b>1956 Dartmouth</b>: John McCarthy conia \"Artificial Intelligence\" (inventa anche il LISP).
+
+Quali sono le quattro visioni dell'AI di Russell–Norvig?	Thinking humanly | Thinking rationally<br>Acting humanly | Acting rationally
+
+Thinking humanly vs Thinking rationally.	• <b>Humanly</b>: imitare il cervello; non ne sappiamo abbastanza; è l'approccio delle scienze cognitive (top-down o bottom-up), oggi distinto dall'AI<br>• <b>Rationally</b>: \"leggi del pensiero\" = <b>logica</b>, approccio normativo. Problemi: non tutto il comportamento intelligente è deliberazione logica; quali pensieri <i>dovrei</i> avere?
+
+Cosa significa Acting rationally?	Fare la cosa giusta: quella che ci si aspetta massimizzi il raggiungimento dell'obiettivo date le informazioni. Non richiede necessariamente pensiero (riflesso di chiudere gli occhi), ma il pensiero dovrebbe servire all'azione razionale.
+
+Cos'è il <b>test di Turing</b> e quali sono i suoi limiti?	Acting humanly: \"le macchine possono comportarsi in modo intelligente?\". Imitation game: un interrogatore dialoga per scritto con umano e macchina e deve capire chi è chi. Previsione: entro il 2000 30% di inganno in 5 minuti.<br>Limiti: non riproducibile, non costruttivo, non analizzabile matematicamente.
+
+Qual è la posizione del corso sull'AI e la definizione ufficiale?	Punto di vista \"semplice\" di Turing: AI = sistemi che agiscono umanamente (o almeno razionalmente).<br>Definizione: capacità di un computer di svolgere compiti associati a esseri intelligenti. Due approcci: <b>simbolica</b> e <b>sub-simbolica</b> (connessionista, ML). Norvig: \"knowing what to do when you don't know what to do\".
+
+Cos'è un <b>sistema esperto</b>? Cosa sa fare in più di ChatGPT (esempio MYCIN)?	Usa conoscenza di dominio fornita da umani come <b>regole logiche</b> (knowledge base), risolve problemi in un dominio limitato come un esperto, con un <b>motore inferenziale</b>.<br>Sa <b>spiegare</b>: WHY? (perché chiede un'informazione: la regola che sta provando) e HOW? (come ha dedotto: regola e premesse).
+
+Caratteristiche della computazione simbolica vs sub-simbolica.	<b>Simbolica</b>: ragionamento logico; fornisce spiegazioni; non adatta al riconoscimento di immagini.<br><b>Sub-simbolica</b>: reti neurali e ML; ottima per immagini e problemi non algoritmici; <b>non spiega</b> le decisioni (es. mappa di probabilità di tumore: dice dove, non perché).
+
+Diagnosi in logica: fatti e regole R1–R5 dell'esempio.	Fatti: \(gram(neg)\), \(\neg allergic(antb)\).<br>R1 \(gram(neg) \to id(ecoli)\); R2 \(gram(pos) \to id(strep)\); R3 \(id(strep) \vee id(bact) \to ind(pen)\); R4 \(ind(X) \wedge \neg allergic(X) \to prescribe(X)\); R5 \(id(ecoli) \to ind(antb)\).<br>Goal: \(prescribe(Drug)\).
+
+Come procede il <b>backward chaining</b> sull'esempio della diagnosi?	Goal \(prescribe(Drug)\) → R4: sotto-goal \(ind(X)\), \(\neg allergic(X)\). \(ind(X)\): ramo R3 (\(X/pen\)) fallisce (né \(gram(pos)\) né regole per \(id(bact)\)); ramo R5 (\(X/antb\)): \(id(ecoli)\) via R1 da \(gram(neg)\) ✓, e \(\neg allergic(antb)\) ✓.<br>Risposta: \(prescribe(antb)\).
+
+Come si scrive la diagnosi in Prolog? Quali adattamenti servono?	Fatti <code>gram(neg).</code> <code>not_allergic(antb).</code>, regole <code>id(ecoli) :- gram(neg).</code> ecc., <code>prescribe(X) :- ind(X), not_allergic(X).</code> → <code>Drug = antb</code>.<br>La disgiunzione di R3 diventa <b>due clausole</b>; il fatto negativo diventa un predicato positivo (clausole di Horn).
+
+Deduzione, abduzione, induzione con la regola \(A \to B\).	• <b>Deduzione</b>: da \(A\) e \(A\to B\) concludo \(B\) (corretta)<br>• <b>Abduzione</b>: da \(B\) e \(A\to B\) ipotizzo \(A\) (diagnosi; non corretta in generale)<br>• <b>Induzione</b>: da molti casi di \(A\) e \(B\) generalizzo \(A\to B\) (ML)
+

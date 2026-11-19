@@ -1,0 +1,5 @@
+(* Requirement R4 (i): a function type is not a pair type. *)
+
+axiom A : Type 0
+axiom f : A -> A
+def p : A * A := f

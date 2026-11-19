@@ -82,7 +82,7 @@ Secondly, when we choose $n/4$ edges uniformly at random many of them may be par
 }}
 
 \thm{}{
-For any graph $G=(V,E)$ with $n$ nodes and any min-cut $(S^*,\overline{S^*})$, Algorithm 1 returns $(S^*,\overline{S^*})$ with probability at least $\frac{2}{n(n-1)}$.
+For any graph $G=(V,E)$ with $n$ nodes and any min-cut $(S^*,\overline{S^*})$, Karger's Algorithm returns $(S^*,\overline{S^*})$ with probability at least $\frac{2}{n(n-1)}$.
 }
 
 \pf{}{
@@ -107,7 +107,7 @@ The following corollary is immediate from the above theorem.
 \cor{}{ Any graph has at most $\binom n2$ min-cuts.}
 
 \pf{}{
-Suppose there is a graph $G$ that has more than $\binom n2$ min-cuts. Then, for one of those cuts, say $(S,\overline{S})$ the probability that Algorithm 1, finds $(S,\overline{S})$ is less than $1/\binom n2$. But, this is a contradiction.
+Suppose there is a graph $G$ that has more than $\binom n2$ min-cuts. Then, for one of those cuts, say $(S,\overline{S})$ the probability that Karger's algorithm, finds $(S,\overline{S})$ is less than $1/\binom n2$. But, this is a contradiction.
 }
 
 In fact, the above bound is tight: you will give an example showing that it is tight in the exercise session.

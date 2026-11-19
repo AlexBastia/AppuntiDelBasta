@@ -1,0 +1,55 @@
+#separator:tab
+#html:true
+#notetype:Basic
+#deck:Lang and Alg for AI::4 - Resolution PL
+
+Quali sono le tre componenti di una <b>logica</b>?	• <b>Sintassi</b>: le \"regole di ortografia\" delle espressioni<br>• <b>Semantica</b>: il significato (conseguenza logica \(\models\))<br>• <b>Calcolo</b>: formule date + regole <b>sintattiche</b> per fare dimostrazioni (derivazione \(\varphi \vdash \rho\))
+
+Di cosa è fatto un <b>calcolo</b>?	• <b>Assiomi</b>: formule date, tautologie/contraddizioni elementari non derivabili nel calcolo<br>• <b>Regole di inferenza</b>: derivano nuove formule da formule date<br>• <b>Derivazione</b> \(\varphi \vdash \psi\): sequenza di applicazioni di regole da \(\varphi\) a \(\psi\)
+
+Definisci <b>correttezza</b> e <b>completezza</b> di un calcolo.	• <b>Correttezza</b>: \(\varphi \vdash \rho \Rightarrow \varphi \models \rho\) (ciò che si deriva è vero)<br>• <b>Completezza</b>: \(\varphi \models \rho \Rightarrow \varphi \vdash \rho\) (ciò che è vero si deriva)
+
+Cos'è una <b>regola di inferenza</b>? Passo di derivazione e derivazione?	\(\dfrac{F_1,\dots,F_n}{F}\): premesse \(F_i\), conclusione \(F\). Se le premesse sono in \(X\), la conclusione si aggiunge a \(X\).<br>• Passo: \(F_1,\dots,F_n \vdash F\), un'applicazione<br>• Derivazione: sequenza di passi, le conclusioni fanno da premesse per i successivi<br>L'applicazione è <b>non deterministica</b>; si rappresenta con alberi.
+
+Perché la deduzione naturale è scomoda da automatizzare?	Ha molte regole, a ogni passo bisogna scegliere quale applicare e (per \(\wedge E\), \(\to E\)) <b>indovinare</b> formule intermedie. La risoluzione nasce per avere un calcolo facile da automatizzare.
+
+Chi ha introdotto la <b>risoluzione</b> e quali sono le sue caratteristiche?	<b>Robinson, 1965</b>:<br>• regola di inferenza facile da implementare<br>• meccanismo di esecuzione di Prolog e CLP<br>• usa la forma a clausole (CNF) e, in FOL, l'<b>unificazione</b>
+
+Su quale idea si basa la risoluzione?	<b>Refutazione</b>: per dimostrare \(\varphi \models \psi\) si mostra che \(\varphi \wedge \neg\psi\) è <b>insoddisfacibile</b> (teoria + conseguenza negata ⇒ contraddizione).
+
+Che imprecisione c'è sulla slide nel teorema di refutazione?	La slide scrive \(\varphi \models \psi\) sse \(\not\models \varphi \wedge \neg\psi\), che significa \"non valida\" (più debole). Serve che \(\varphi \wedge \neg\psi\) sia <b>insoddisfacibile</b>, cioè \(\models \neg(\varphi \wedge \neg\psi)\).
+
+I <b>tre passi</b> del calcolo di risoluzione.	1. Trasformare le formule (premesse e tesi negata) in <b>CNF</b> (clausole)<br>2. Applicare la <b>regola di risoluzione</b><br>3. Fermarsi quando si deriva la <b>clausola vuota</b> \(\square\) (false)
+
+Come si rappresenta una CNF nella risoluzione? Cosa succede a \(A \vee A \vee B\)?	Come <b>insieme di clausole</b> (congiunzione implicita), ogni clausola come <b>insieme di letterali</b> (disgiunzione implicita). \(A \vee A \vee B\) = \(A \vee B\): i letterali ripetuti si fondono.
+
+Scrivi la <b>regola di risoluzione</b> proposizionale.	\(\dfrac{R \vee A \qquad R' \vee \neg A}{R \vee R'}\)<br>\(R, R'\) disgiunzioni di letterali, \(A\) atomo. \(R \vee R'\) è il <b>risolvente</b>. Assioma: la clausola vuota \(\square\).
+
+Quali casi particolari noti contiene la regola di risoluzione?	• \(R\) vuoto: \(\dfrac{A \quad \neg A \vee R'}{R'}\) = <b>modus ponens</b><br>• \(R, R'\) vuoti: \(\dfrac{A \quad \neg A}{\square}\): contraddizione
+
+Perché derivare \(\square\) significa aver trovato una contraddizione? Che imprecisione c'è sulla slide?	\(\square\) è una disgiunzione di <b>zero</b> letterali: falsa in ogni interpretazione.<br>La slide la chiama \"assioma\", ma non è una formula di partenza: è il <b>bersaglio</b> della ricerca.
+
+Enuncia correttezza e completezza della risoluzione proposizionale.	Un insieme di clausole \(S\) è insoddisfacibile <b>sse</b> dalla chiusura di \(S\) rispetto alla risoluzione si deriva \(\square\).
+
+Dimostra la <b>correttezza</b> della regola di risoluzione.	Sia \(I\) che rende vere \(R \vee A\) e \(R' \vee \neg A\):<br>• \(A\) vera ⇒ \(\neg A\) falsa ⇒ \(R'\) vera<br>• \(A\) falsa ⇒ \(R\) vera<br>In entrambi i casi \(R \vee R'\) vera. Per induzione ogni clausola derivata è conseguenza di \(S\); se si deriva \(\square\), \(S\) non ha modelli.
+
+La risoluzione è completa per la <b>derivazione</b>? Esempio.	<b>No</b>, solo per <b>refutazione</b>. \(A \models A \vee B\), ma dalla sola clausola \(A\) non si risolve nulla.<br>Per refutazione: \(\{A, \neg A, \neg B\}\), da \(A\) e \(\neg A\) si ottiene \(\square\).
+
+Perché la risoluzione proposizionale <b>termina</b>? Cos'è la saturazione?	Con \(n\) atomi ci sono al più \(3^n\) clausole distinte (ogni atomo positivo, negato o assente). Generando tutti i risolventi si arriva a <b>saturazione</b> (niente di nuovo): se c'è \(\square\) insoddisfacibile, altrimenti soddisfacibile. È una <b>procedura di decisione</b> (in FOL invece può non terminare).
+
+Mostra con la risoluzione \(\{A \to B, A\} \models B\).	Clausole: \(\neg A \vee B\), \(A\); tesi negata \(\neg B\).<br>\(\neg A \vee B\) + \(A\) → \(B\); \(B\) + \(\neg B\) → \(\square\). Quindi \(F \models B\).
+
+Perché preferire la risoluzione alla deduzione naturale per l'automazione?	• <b>Meno regole</b> (una sola)<br>• <b>Meno non determinismo</b>: si scelgono solo le due clausole e l'atomo, non si inventano formule<br>• la ricerca può essere <b>guidata dal goal</b> (come Prolog, che parte dal goal negato)
+
+Modus tollens con la risoluzione: \(P \to Q, \neg Q \models \neg P\).	Clausole \(\neg P \vee Q\), \(\neg Q\); tesi negata \(P\).<br>\(\neg P \vee Q\) + \(P\) → \(Q\); \(Q\) + \(\neg Q\) → \(\square\).
+
+Esame 12/01/2023 con risoluzione: \((A \to B) \wedge (A \to C) \models A \wedge B \to C\).	Clausole \(\neg A \vee B\), \(\neg A \vee C\); tesi negata \(\neg(\neg A \vee \neg B \vee C) = A, B, \neg C\).<br>\(\neg A \vee C\) + \(A\) → \(C\); \(C\) + \(\neg C\) → \(\square\). Vale (\(\neg A \vee B\) e \(B\) non servono).
+
+\(\{M \to C, \neg M \to T, C \vee T\}\) è contraddittorio? Usa la risoluzione.	Clausole \(\neg M \vee C\), \(M \vee T\), \(C \vee T\). L'unica coppia complementare (su \(M\)) dà \(C \vee T\), già presente: <b>saturazione</b> senza \(\square\) ⇒ <b>soddisfacibile</b> (es. \(M=0, C=0, T=1\)).
+
+Cos'è la <b>risoluzione lineare</b>? Come si applica alle lettere di Lewis Carroll?	Si parte dalla tesi negata e si risolve ogni volta l'ultima clausola ottenuta con una premessa.<br>Tesi negata \(x, u\): \(x \to y \to \neg s \to \neg r \to w \to v \to p \to q \to t \to \neg u\), poi con \(u\): \(\square\). Le contrapposizioni le fa la regola da sola (\(\neg q \vee t = t \vee \neg q\)).
+
+Da \(A \vee B\) e \(\neg A \vee \neg B\) si ottiene \(\square\)?	<b>No</b>: la regola elimina <b>una sola</b> coppia complementare. Risolventi: \(B \vee \neg B\) e \(A \vee \neg A\), tautologie. L'insieme è soddisfacibile (\(A=1, B=0\)). Le clausole tautologiche si possono scartare.
+
+Che legame c'è tra risoluzione e <b>Davis–Putnam</b>?	La <b>unit propagation</b> è una risoluzione con una clausola unitaria: da \(L\) e \(\neg L \vee R\) si ottiene \(R\) (\"cancellare \(\neg L\)\"). La \"null clause\" è \(\square\).
+

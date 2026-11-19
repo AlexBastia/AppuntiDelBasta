@@ -1,0 +1,378 @@
+\chapter{Logica e calcolo: la risoluzione per la logica proposizionale}
+
+\textit{Lucidi: \texttt{lucidi/4.Resolution\_PL}. Approfondimento:
+Chang--Lee, cap.~4 (The Resolution Principle); Gabbrielli--Martini, capitolo
+su LP.}
+
+% =====================================================================
+\section{Logica e calcolo}
+% =====================================================================
+
+\dfn{Logica}{
+  Una \textbf{logica} è un linguaggio formale per esprimere enunciati, con:
+  \begin{itemize}
+    \item \textbf{sintassi}: le ``regole di ortografia'' delle espressioni;
+    \item \textbf{semantica}: il significato delle espressioni (conseguenza
+          logica $\models$);
+    \item \textbf{calcolo}: un insieme di formule date e di regole
+          \textbf{sintattiche} per manipolare le formule ed eseguire
+          dimostrazioni. Una \textbf{derivazione} si scrive $\varphi \vdash
+          \rho$ ($\varphi, \rho$ formule).
+  \end{itemize}
+}
+
+\dfn{Calcolo}{
+  Un calcolo è fatto di:
+  \begin{itemize}
+    \item \textbf{assiomi}: formule date, tautologie e contraddizioni
+          elementari che non si possono derivare all'interno del calcolo;
+    \item \textbf{regole di inferenza}: permettono di derivare nuove formule da
+          formule date;
+    \item \textbf{derivazione} $\varphi \vdash \psi$: una sequenza di
+          applicazioni di regole di inferenza che parte dalla formula $\varphi$
+          e termina con la formula $\psi$.
+  \end{itemize}
+}
+
+$\models$ e $\vdash$ dovrebbero coincidere:
+\begin{itemize}
+  \item \textbf{Correttezza} (soundness): $\varphi \vdash \rho$ implica
+        $\varphi \models \rho$ (ciò che si deriva è vero);
+  \item \textbf{Completezza} (completeness): $\varphi \models \rho$ implica
+        $\varphi \vdash \rho$ (ciò che è vero si deriva).
+\end{itemize}
+
+\dfn{Regola di inferenza}{
+  Una regola di inferenza ha la forma
+  \[ \frac{F_1, \dots, F_n}{F} \]
+  \begin{itemize}
+    \item le formule $F_1, \dots, F_n$ sono le \textbf{premesse};
+    \item la formula $F$ è la \textbf{conclusione}.
+  \end{itemize}
+  Dato un insieme di formule $X$, se le premesse sono date (cioè contenute in
+  $X$) allora la conclusione viene aggiunta a $X$.
+  \begin{itemize}
+    \item Un \textbf{passo di derivazione} $F_1, \dots, F_n \vdash F$ è
+          l'applicazione di una regola di inferenza.
+    \item Una \textbf{derivazione} è una sequenza di passi di derivazione, in
+          cui le conclusioni vengono prese come premesse per i passi
+          successivi.
+  \end{itemize}
+}
+
+\begin{itemize}
+  \item L'applicazione delle regole è di solito \textbf{non deterministica}
+        (in ogni momento ci sono più regole applicabili, a più formule).
+  \item L'insieme delle derivazioni si può rappresentare con \textbf{alberi di
+        derivazione}.
+\end{itemize}
+
+\ex{La logica proposizionale vista finora}{
+  \begin{itemize}
+    \item \textbf{Sintassi}: simboli proposizionali (detti anche variabili
+          proposizionali) e connettivi.
+    \item \textbf{Semantica} $\models$: tavole di verità e assegnamento di
+          valori di verità ai simboli proposizionali.
+    \item \textbf{Calcolo} $\vdash$: la deduzione naturale.
+      \begin{itemize}
+        \item regole di inferenza: regole di introduzione ed eliminazione dei
+              connettivi;
+        \item derivazioni: alberi ottenuti usando regole e assiomi.
+      \end{itemize}
+  \end{itemize}
+  Teorema di correttezza e completezza: $\varphi \vdash \rho$ sse
+  $\varphi \models \rho$ (capitolo precedente).
+}
+
+\nt{
+  La deduzione naturale è comoda per un umano ma scomoda per una macchina:
+  ha molte regole, e a ogni passo bisogna scegliere quale applicare e
+  (per $\wedge E$, $\to E$) \emph{indovinare} formule intermedie. La
+  risoluzione nasce proprio per avere un calcolo facile da automatizzare.
+}
+
+% =====================================================================
+\section{Il principio di risoluzione}
+% =====================================================================
+
+La risoluzione è stata introdotta da \textbf{Robinson (1965)}:
+\begin{itemize}
+  \item è una regola di inferenza \textbf{facile da implementare};
+  \item è il meccanismo di esecuzione della programmazione logica (Prolog) e
+        della programmazione logica \emph{con vincoli} (CLP);
+  \item usa la \textbf{forma normale a clausole} (CNF) e, per la logica del
+        primo ordine, l'\textbf{unificazione}.
+\end{itemize}
+
+\subsection{L'idea: refutazione}
+
+Si lavora \textbf{per assurdo}, cioè per \textbf{refutazione}: la teoria
+unita alla \textbf{negazione} della conseguenza deve essere
+\textbf{insoddisfacibile}. Vogliamo dimostrare $\varphi \models \psi$; per il
+teorema di refutazione (capitolo precedente)
+\[
+  \varphi \models \psi \quad\text{sse}\quad \varphi \wedge \neg\psi
+  \ \text{è insoddisfacibile (inconsistente).}
+\]
+
+\nt{
+  Sulla slide il teorema è scritto $\varphi \models \psi$ sse
+  $\not\models \varphi \wedge \neg\psi$. Letto alla lettera,
+  $\not\models F$ significa ``$F$ non è valida'', che è più debole (e qui
+  sbagliato): $\varphi \wedge \neg\psi$ deve essere \textbf{falsa in tutte le
+  interpretazioni}, non solo in almeno una. La versione giusta è quella del
+  capitolo precedente: $\varphi \wedge \neg\psi$ \textbf{inconsistente},
+  ovvero $\models \neg(\varphi \wedge \neg\psi)$.
+}
+
+\mprop{Il calcolo di risoluzione in tre passi}{
+  Per dimostrare $\varphi \models \psi$:
+  \begin{enumerate}
+    \item[\textbf{1.}] trasformare tutte le formule (di $\varphi$ e
+          $\neg\psi$) in formule equivalenti in \textbf{forma normale
+          congiuntiva}, cioè in \textbf{clausole};
+    \item[\textbf{2.}] applicare la \textbf{regola di risoluzione};
+    \item[\textbf{3.}] fermarsi quando si deriva la \textbf{clausola vuota}
+          (la contraddizione elementare, cioè \emph{false}).
+  \end{enumerate}
+}
+
+\nt{
+  Una formula in CNF $C_1 \wedge \dots \wedge C_k$ si tratta come
+  l'\textbf{insieme di clausole} $\{C_1, \dots, C_k\}$ (la congiunzione è
+  implicita), e ogni clausola come \textbf{insieme di letterali} (la
+  disgiunzione è implicita). Così $A \vee A \vee B$ è la stessa clausola di
+  $A \vee B$: i letterali ripetuti si fondono. Un insieme di formule
+  $\{F_1, \dots, F_n\}$ diventa l'unione degli insiemi di clausole delle
+  $F_i$.
+}
+
+\subsection{La regola di risoluzione}
+
+\dfn{Calcolo di risoluzione per la logica proposizionale}{
+  \textbf{Assioma}: la clausola vuota (cioè la contraddizione elementare).
+
+  \textbf{Regola di risoluzione}:
+  \[
+    \frac{R \vee A \qquad R' \vee \neg A}{R \vee R'}
+  \]
+  dove $R$ e $R'$ sono disgiunzioni di letterali e $A$ è una formula
+  atomica. La clausola $R \vee R'$ si chiama \textbf{risolvente}. La clausola
+  vuota si indica di solito con $\square$.
+}
+
+\nt{
+  \textbf{Come leggerla.}
+  \begin{itemize}
+    \item Si prendono due clausole che contengono una lo stesso atomo $A$
+          positivo e l'altra negato (\textbf{letterali complementari}); si
+          cancellano $A$ e $\neg A$ e si fa la disgiunzione di ciò che resta.
+    \item Casi particolari già noti: con $R$ vuoto, cioè $\dfrac{A \quad
+          \neg A \vee R'}{R'}$, è il \emph{modus ponens} ($A$ e $A \to R'$
+          danno $R'$). Con $R$ e $R'$ entrambi vuoti, $\dfrac{A \quad \neg
+          A}{\square}$: da una contraddizione si ottiene la clausola vuota.
+    \item La clausola vuota è una disgiunzione di \emph{zero} letterali,
+          quindi è \textbf{falsa in ogni interpretazione}: derivarla significa
+          aver trovato una contraddizione.
+    \item Sulla slide la clausola vuota è chiamata ``assioma''. È un uso un po'
+          improprio: non è una formula di partenza ma il \emph{bersaglio}
+          della ricerca, la contraddizione elementare a cui si vuole arrivare.
+  \end{itemize}
+}
+
+\thm{Correttezza e completezza della risoluzione}{
+  La risoluzione è \textbf{corretta e completa} per la logica proposizionale.
+  Precisamente: un insieme di clausole $S$ è insoddisfacibile \textbf{sse}
+  dalla chiusura di $S$ rispetto alla regola di risoluzione si deriva
+  $\square$.
+}
+
+\pf{Correttezza: il risolvente è conseguenza logica delle premesse}{
+  Sia $I$ un'interpretazione che rende vere $R \vee A$ e $R' \vee \neg A$.
+  \begin{itemize}
+    \item Se $A$ è vera in $I$, allora $\neg A$ è falsa, quindi deve essere
+          vera $R'$; dunque $R \vee R'$ è vera.
+    \item Se $A$ è falsa in $I$, allora deve essere vera $R$; dunque $R \vee
+          R'$ è vera.
+  \end{itemize}
+  Quindi $R \vee A,\ R' \vee \neg A \models R \vee R'$. Per induzione sul
+  numero di passi, ogni clausola derivata da $S$ è conseguenza logica di $S$.
+  Se si deriva $\square$, che non ha modelli, allora $S$ non ha modelli: è
+  insoddisfacibile.
+}
+
+\nt{
+  \textbf{Attenzione: completa per la refutazione, non per la derivazione.}
+  La risoluzione \emph{non} deriva tutte le conseguenze logiche: ad esempio
+  $A \models A \vee B$, ma dalla sola clausola $A$ non si può applicare
+  nessuna risoluzione, quindi $A \vee B$ non si deriva. Quello che vale è la
+  \textbf{completezza per refutazione}: se l'insieme è insoddisfacibile,
+  $\square$ si deriva. È per questo che si lavora sempre per assurdo:
+  per mostrare $A \models A \vee B$ si considera $\{A, \neg A, \neg B\}$
+  (la negazione di $A \vee B$ in clausole è $\neg A \wedge \neg B$), e da $A$
+  e $\neg A$ si ottiene $\square$.
+}
+
+\nt{
+  \textbf{Terminazione e decidibilità.} Con $n$ atomi esistono solo un numero
+  finito di clausole distinte (ogni atomo compare positivo, negato o non
+  compare: al più $3^n$ clausole). Quindi generando tutti i risolventi prima
+  o poi non si ottiene più niente di nuovo (\textbf{saturazione}). A quel
+  punto: se c'è $\square$ l'insieme è insoddisfacibile, altrimenti è
+  soddisfacibile. La risoluzione proposizionale è quindi una
+  \textbf{procedura di decisione}, coerente con la decidibilità vista nel
+  capitolo precedente. (Nella logica del primo ordine invece la ricerca può
+  non terminare.)
+}
+
+\subsection{Un esempio}
+
+\ex{$\{A \to B,\ A\} \models B$}{
+  \begin{enumerate}
+    \item Trasformiamo le formule di $F = \{A \to B, A\}$ in forma a
+          clausole: $F' = \{\neg A \vee B,\ A\}$.
+    \item Aggiungiamo la negazione della conclusione che vogliamo dimostrare:
+          $F'' = \{\neg A \vee B,\ A,\ \neg B\}$.
+    \item Applichiamo la risoluzione:
+          \begin{prooftree}
+            \AxiomC{$\neg A \vee B$}
+            \AxiomC{$A$}
+            \BinaryInfC{$B$}
+            \AxiomC{$\neg B$}
+            \BinaryInfC{$\square$}
+          \end{prooftree}
+    \item Abbiamo ottenuto la clausola vuota: $F''$ è inconsistente, quindi
+          $F \models B$.
+  \end{enumerate}
+}
+
+\mprop{Perché la risoluzione e non la deduzione naturale}{
+  Questo procedimento è molto più facile da automatizzare e implementare
+  della deduzione naturale:
+  \begin{itemize}
+    \item \textbf{meno regole} (una sola);
+    \item \textbf{meno non determinismo} (si sceglie solo quali due clausole
+          risolvere, e su quale atomo; non bisogna inventare formule);
+    \item inoltre (lo vedremo) la ricerca può essere \textbf{guidata dalla
+          formula che vogliamo dimostrare}: è quello che fa Prolog, partendo
+          sempre dal goal negato.
+  \end{itemize}
+}
+
+% =====================================================================
+\section{Esercizi svolti (approfondimento)}
+% =====================================================================
+
+\nt{
+  Le slide contengono un solo esempio. Qui rifaccio con la risoluzione alcuni
+  esercizi del capitolo precedente, risolti là con tavole e deduzione
+  naturale. Lo schema è sempre lo stesso: (1) premesse in clausole,
+  (2) negazione della tesi in clausole, (3) risolvere fino a $\square$.
+}
+
+\ex{Modus tollens (Chang--Lee 2.11)}{
+  $P \to Q,\ \neg Q \models \neg P$?
+  \begin{itemize}
+    \item Premesse: $\neg P \vee Q$, \ $\neg Q$.
+    \item Negazione della tesi: $\neg\neg P \equiv P$.
+  \end{itemize}
+  \begin{prooftree}
+    \AxiomC{$\neg P \vee Q$}
+    \AxiomC{$P$}
+    \BinaryInfC{$Q$}
+    \AxiomC{$\neg Q$}
+    \BinaryInfC{$\square$}
+  \end{prooftree}
+  Quindi la conseguenza vale.
+}
+
+\ex{Esame 12/01/2023, es.\ 2 (prima parte)}{
+  $(A \to B) \wedge (A \to C) \models A \wedge B \to C$?
+  \begin{itemize}
+    \item Premesse: $\neg A \vee B$, \ $\neg A \vee C$.
+    \item Negazione della tesi: $\neg(A \wedge B \to C) \equiv \neg(\neg A
+          \vee \neg B \vee C) \equiv A \wedge B \wedge \neg C$, cioè le tre
+          clausole unitarie $A$, $B$, $\neg C$.
+  \end{itemize}
+  \begin{prooftree}
+    \AxiomC{$\neg A \vee C$}
+    \AxiomC{$A$}
+    \BinaryInfC{$C$}
+    \AxiomC{$\neg C$}
+    \BinaryInfC{$\square$}
+  \end{prooftree}
+  La conseguenza vale. Notare che le clausole $\neg A \vee B$ e $B$ non
+  servono: la risoluzione usa solo le clausole rilevanti.
+}
+
+\ex{Un insieme soddisfacibile: saturazione senza $\square$}{
+  (Esame 12/01/2023, es.\ 3) $\{M \to C,\ \neg M \to T,\ C \vee T\}$ è
+  contraddittorio? Clausole:
+  \[
+    C_1 = \neg M \vee C, \qquad C_2 = M \vee T, \qquad C_3 = C \vee T.
+  \]
+  L'unica coppia con letterali complementari è $C_1, C_2$ (su $M$), che dà
+  $C \vee T$, cioè $C_3$: niente di nuovo. Le altre coppie non hanno
+  letterali complementari. Siamo a \textbf{saturazione} senza aver ottenuto
+  $\square$: l'insieme è \textbf{soddisfacibile} (come già trovato con la
+  tavola, ad esempio $M = 0, C = 0, T = 1$).
+}
+
+\ex{Le lettere di Lewis Carroll}{
+  Le nove premesse del capitolo precedente, in clausole:
+  \begin{multicols}{3}
+  \begin{enumerate}
+    \item $\neg p \vee q$
+    \item $s \vee \neg r$
+    \item $\neg u \vee \neg t$
+    \item $\neg v \vee p$
+    \item $w \vee r$
+    \item $\neg x \vee y$
+    \item $\neg q \vee t$
+    \item $v \vee \neg w$
+    \item $\neg y \vee \neg s$
+  \end{enumerate}
+  \end{multicols}
+  Tesi $x \to \neg u$; la sua negazione $\neg(\neg x \vee \neg u) \equiv x
+  \wedge u$ dà le clausole \textbf{10.}~$x$ e \textbf{11.}~$u$.
+
+  Partendo dalla tesi negata e risolvendo ogni volta con una premessa
+  (\textbf{risoluzione lineare}):
+  \begin{center}
+  \begin{tabular}{rlcl}
+    12. & $y$         & da & 10, 6 \\
+    13. & $\neg s$    & da & 12, 9 \\
+    14. & $\neg r$    & da & 13, 2 \\
+    15. & $w$         & da & 14, 5 \\
+    16. & $v$         & da & 15, 8 \\
+    17. & $p$         & da & 16, 4 \\
+    18. & $q$         & da & 17, 1 \\
+    19. & $t$         & da & 18, 7 \\
+    20. & $\neg u$    & da & 19, 3 \\
+    21. & $\square$   & da & 20, 11
+  \end{tabular}
+  \end{center}
+  L'argomento è valido. È la stessa catena di implicazioni del capitolo
+  precedente, ma ottenuta in modo meccanico, senza dover ``vedere'' le
+  contrapposizioni: le fa da sola la regola, perché nelle clausole
+  $\neg q \vee t$ e $t \vee \neg q$ sono la stessa cosa.
+}
+
+\nt{
+  \textbf{Errore classico: risolvere su due atomi alla volta.}
+  Da $A \vee B$ e $\neg A \vee \neg B$ \textbf{non} si ottiene $\square$
+  cancellando insieme $A/\neg A$ e $B/\neg B$: la regola elimina \emph{una
+  sola} coppia complementare. I risolventi corretti sono $B \vee \neg B$ (su
+  $A$) e $A \vee \neg A$ (su $B$), entrambi tautologie. Infatti l'insieme è
+  soddisfacibile: $A = 1, B = 0$. Le clausole tautologiche (che contengono
+  un letterale e il suo complementare) non servono mai a derivare $\square$ e
+  si possono scartare.
+}
+
+\nt{
+  \textbf{Legame con Davis--Putnam.} La \emph{unit propagation} dell'algoritmo
+  di Davis--Putnam (capitolo precedente) è una risoluzione con una clausola
+  unitaria: da $L$ e $\neg L \vee R$ si ottiene $R$, cioè ``si cancella $\neg
+  L$ dalla clausola''. La ``null clause'' di Davis--Putnam è esattamente
+  $\square$.
+}

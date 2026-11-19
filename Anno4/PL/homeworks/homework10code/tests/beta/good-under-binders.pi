@@ -1,0 +1,24 @@
+(* A normal form has no redexes anywhere: not in the body of a function,
+   not in the components of a pair, and not in the parts of a type. *)
+
+axiom A : Type 0
+axiom U : (A -> A) -> Type 0
+def id : A -> A := lambda x. x
+
+(* A redex in the body of a function. *)
+axiom t : U (lambda x. x)
+def test1 : U (lambda x. id x) := t
+
+(* Redexes in the domain and the codomain of a function type. *)
+def Id : Type 0 -> Type 0 := lambda X. X
+def Id1 : Type 1 -> Type 1 := lambda X. X
+axiom F : (Pi (X : Type 0) -> X -> X) -> A
+def test2 : (Pi (X : Id1 (Type 0)) -> Id X -> X) -> Id A := F
+
+(* Redexes in the components of a pair, and in the parts of a pair type. *)
+axiom a : A
+axiom W : A * A -> Type 0
+axiom w : W (a, a)
+def test3 : W (id a, id a) := w
+axiom G : A * A -> A
+def test4 : Id A * Id A -> A := G

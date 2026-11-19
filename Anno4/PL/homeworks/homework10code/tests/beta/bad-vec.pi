@@ -1,0 +1,14 @@
+(* We cannot take the head of an empty vector. *)
+
+def Nat : Type 2 := Pi (X : Type 1) -> (X -> X) -> X -> X
+def zero : Nat := lambda X f x. x
+def succ : Nat -> Nat := lambda n X f x. f (n X f x)
+
+def Vec : Type 0 -> Nat -> Type 0 :=
+  lambda A n. n (Type 0) (lambda X. A * X) unit
+
+def nil : Pi (A : Type 0) -> Vec A zero := lambda A. tt
+def head : Pi (A : Type 0) -> Pi (n : Nat) -> Vec A (succ n) -> A :=
+  lambda A n v. fst v
+
+def bad : unit := head unit zero (nil unit)

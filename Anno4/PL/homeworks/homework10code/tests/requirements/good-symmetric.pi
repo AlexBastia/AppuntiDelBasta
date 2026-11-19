@@ -1,0 +1,14 @@
+(* Requirement R1: equality is symmetric. If x is equal to y, then y is equal
+   to x. The type checker compares the expected type with the actual type,
+   so the two definitions below ask for the comparison in different orders.
+   The two expressions differ in the names of their bound variables, which
+   every definition of equality allows. *)
+
+axiom A : Type 0
+axiom U : (A -> A) -> Type 0
+
+axiom t1 : U (lambda x. x)
+def s1 : U (lambda y. y) := t1
+
+axiom t2 : U (lambda y. y)
+def s2 : U (lambda x. x) := t2

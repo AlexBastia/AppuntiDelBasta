@@ -1,0 +1,4 @@
+(* Requirement R4 (i): different universes stay distinct. Type 0 is not in
+   Type 0: it is in Type 1. There is no Type : Type. *)
+
+def x : Type 0 := Type 0

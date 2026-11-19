@@ -1,0 +1,13 @@
+(* Two plus two is not three. *)
+
+def Nat : Type 2 := Pi (X : Type 1) -> (X -> X) -> X -> X
+def zero : Nat := lambda X f x. x
+def succ : Nat -> Nat := lambda n X f x. f (n X f x)
+def plus : Nat -> Nat -> Nat := lambda m n X f x. m X f (n X f x)
+
+def two : Nat := succ (succ zero)
+def three : Nat := succ two
+
+axiom Q : Nat -> Type 0
+axiom q : Q three
+def test : Q (plus two two) := q

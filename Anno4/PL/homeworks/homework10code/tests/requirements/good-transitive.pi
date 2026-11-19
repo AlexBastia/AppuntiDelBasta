@@ -1,0 +1,11 @@
+(* Requirement R1: equality is transitive. If x is equal to y, and y is
+   equal to z, then x is equal to z. Each step renames the bound variable,
+   so that the three expressions are written differently. *)
+
+axiom A : Type 0
+axiom U : (A -> A) -> Type 0
+
+axiom x : U (lambda x. x)
+def y : U (lambda y. y) := x
+def z : U (lambda z. z) := y
+def x_z : U (lambda z. z) := x

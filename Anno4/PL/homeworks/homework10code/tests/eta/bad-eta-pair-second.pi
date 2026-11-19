@@ -1,0 +1,9 @@
+(* p is equal to the pair of its projections, but not to a pair with a
+   different second component. *)
+
+axiom A : Type 0
+axiom a : A
+axiom p : A * A
+axiom W : A * A -> Type 0
+axiom w : W p
+def test : W (fst p, a) := w

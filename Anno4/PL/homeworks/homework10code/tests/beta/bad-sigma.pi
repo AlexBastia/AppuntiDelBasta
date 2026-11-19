@@ -1,0 +1,10 @@
+(* The first projection of (a, b) is a, not b. *)
+
+axiom A : Type 0
+axiom a : A
+axiom b : A
+axiom T : A -> Type 0
+axiom tb : T b
+
+def p : A * A := (a, b)
+def test : T (fst p) := tb

@@ -1,0 +1,7 @@
+(* A variable applied to an argument does not compute. *)
+
+axiom A : Type 0
+axiom a : A
+axiom T : A -> Type 0
+axiom t : Pi (f : A -> A) -> T a
+def test : Pi (f : A -> A) -> T (f a) := t

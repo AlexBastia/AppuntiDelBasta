@@ -1,0 +1,1524 @@
+\chapter{Logica proposizionale classica: sintassi, semantica, deduzione naturale}
+
+\textit{Lucidi: \texttt{lucidi/3.Propositional\_Logic} (con le annotazioni a
+mano del prof). Approfondimento: Van Dalen, \emph{Logic and Structure}, §1.1,
+§1.2, §1.4 (Natural Deduction), §1.5 (Completeness); Chang--Lee, cap.~2.}
+
+\nt{
+  Sommario della lezione: (1) sintassi, (2) semantica, (3) forme normali,
+  (4) deduzione e refutazione, (5) deduzione naturale. Le prime slide
+  (proposizioni, connettivi e i loro problemi, alfabeto, definizione induttiva
+  di $\PROP$, principio di induzione) ripetono quanto già visto nel capitolo
+  precedente: qui riporto solo ciò che è nuovo, comprese le note scritte a mano.
+  Il prof scrive a mano \textbf{``proposition = you can ask if it is true''}.
+}
+
+% =====================================================================
+\section{Sintassi e semantica di un sistema formale}
+% =====================================================================
+
+Per \emph{qualsiasi} sistema formale (linguaggio di programmazione, logica,
+\dots) si distinguono:
+
+\dfn{Sintassi e semantica}{
+  \begin{itemize}
+    \item \textbf{Sintassi}: le regole che dicono come si costruiscono le frasi
+          \textbf{ben formate}. Si può dare con definizioni informali, con una
+          \textbf{BNF}, con \textbf{definizioni induttive}, \dots
+    \item \textbf{Semantica}: le regole che dicono qual è il
+          \textbf{significato} delle frasi ben formate. Esistono semantiche
+          operazionali, denotazionali, logiche, \dots
+  \end{itemize}
+}
+
+Per le logiche:
+\begin{itemize}
+  \item \textbf{sintassi}: quali simboli rappresentano proposizioni, variabili,
+        funzioni, predicati, e quali i connettivi, in modo da ottenere le
+        \textbf{formule ben formate} (wff);
+  \item \textbf{semantica}, due grandi ``regni'':
+    \begin{itemize}
+      \item \textbf{model theory}: che cosa è \textbf{vero};
+      \item \textbf{proof theory}: che cosa è \textbf{dimostrabile};
+      \item \emph{si spera che le due coincidano} (è il teorema di completezza,
+            in fondo al capitolo).
+    \end{itemize}
+\end{itemize}
+
+% =====================================================================
+\section{Sintassi della logica proposizionale}
+% =====================================================================
+
+L'alfabeto è quello della Definizione 1.1.1 di Van Dalen (capitolo
+precedente). Annotazioni del prof sulla slide:
+\begin{itemize}
+  \item come simboli proposizionali usiamo anche $A, B, C, \dots$;
+  \item $\to$ è l'\textbf{implicazione materiale};
+  \item oltre a $\bot$ (falso) usiamo $\top$ (\textbf{true}).
+\end{itemize}
+
+La stessa sintassi viene data in tre modi equivalenti.
+
+\dfn{Sintassi I: definizione ricorsiva delle formule ben formate}{
+  \begin{enumerate}[start=0]
+    \item (aggiunta a mano) se $S$ è una formula, $(S)$ è una formula;
+    \item un atomo è una formula;
+    \item se $S$ è una formula, $\neg S$ è una formula (\textbf{negazione});
+    \item se $S_1$ e $S_2$ sono formule, $S_1 \wedge S_2$ è una formula
+          (\textbf{congiunzione});
+    \item se $S_1$ e $S_2$ sono formule, $S_1 \vee S_2$ è una formula
+          (\textbf{disgiunzione});
+    \item tutte le formule ben formate si ottengono applicando le regole sopra.
+  \end{enumerate}
+  Abbreviazione: $S_1 \to S_2$ si può scrivere come $\neg S_1 \vee S_2$.
+}
+
+\dfn{Sintassi II: Backus--Naur Form (BNF)}{
+  \[
+  \begin{array}{rcl}
+    \langle\text{formula}\rangle & ::= & \text{Atomic Proposition} \\
+      & \mid & \neg \langle\text{formula}\rangle \\
+      & \mid & \langle\text{formula}\rangle \wedge \langle\text{formula}\rangle \\
+      & \mid & \langle\text{formula}\rangle \vee \langle\text{formula}\rangle \\
+      & \mid & \langle\text{formula}\rangle \to \langle\text{formula}\rangle \\
+      & \mid & \langle\text{formula}\rangle \leftrightarrow \langle\text{formula}\rangle \\
+      & \mid & (\langle\text{formula}\rangle)
+  \end{array}
+  \]
+  Si legge: ``$::=$'' = \emph{is}, ``$\mid$'' = \emph{or}.
+}
+
+\ex{BNF dei numeri naturali (lavagna)}{
+  \[
+    \langle\text{natural}\rangle ::= 0 \;\mid\; \langle\text{natural}\rangle\, S
+  \]
+  dove $S$ è il successore. Il numero $3$ è $(((0)S)S)S$: tre applicazioni
+  della seconda produzione. È lo stesso schema ``caso base + passo'' della
+  definizione induttiva di $\PROP$.
+}
+
+\textbf{Sintassi III: definizione induttiva} (Van Dalen 1.1.2): $\PROP$ è il più
+piccolo insieme $X$ chiuso rispetto ad atomi, connettivi binari e negazione
+(vedi capitolo precedente). È la forma \textbf{utile per dimostrare per
+induzione} proprietà delle formule (Teorema 1.1.3, dove $\square$ indica un
+connettivo binario qualsiasi).
+
+\subsection{Sintassi concreta e sintassi astratta}
+
+\dfn{Sintassi concreta e astratta}{
+  \begin{itemize}
+    \item La \textbf{sintassi concreta} è la stringa che scriviamo, ad esempio
+          $A \wedge B \vee C$.
+    \item La \textbf{sintassi astratta} è l'\textbf{albero} della formula: i
+          nodi interni sono connettivi, le foglie atomi.
+  \end{itemize}
+  Una stringa senza parentesi può corrispondere a più alberi: servono
+  \textbf{precedenze} e \textbf{associatività} per sceglierne uno solo.
+}
+
+\ex{$A \wedge B \vee C$}{
+  \begin{center}
+  \begin{tikzpicture}[level distance=8mm, sibling distance=12mm, baseline=(r.base)]
+    \node (r) {$\vee$}
+      child {node {$\wedge$} child {node {$A$}} child {node {$B$}}}
+      child {node {$C$}};
+  \end{tikzpicture}
+  \qquad\qquad
+  \begin{tikzpicture}[level distance=8mm, sibling distance=12mm, baseline=(r.base)]
+    \node (r) {$\wedge$}
+      child {node {$A$}}
+      child {node {$\vee$} child {node {$B$}} child {node {$C$}}};
+  \end{tikzpicture}
+  \end{center}
+  L'albero giusto è il \textbf{primo}, cioè $(A \wedge B) \vee C$, perché
+  $\wedge$ lega più di $\vee$. Il secondo, $A \wedge (B \vee C)$, sulla lavagna
+  è \textbf{barrato}.
+}
+
+\dfn{Precedenza e associatività (lavagna)}{
+  \begin{itemize}
+    \item \textbf{Precedenza}:
+      \[ \neg \;>\; \wedge \;>\; \vee \;>\; \to \;=\; \leftrightarrow \]
+    \item \textbf{Associatività}: $\wedge, \vee, \to, \leftrightarrow$ sono
+          \textbf{associativi a destra}.
+  \end{itemize}
+}
+
+\nt{
+  Quindi $A \to B \to C$ significa $A \to (B \to C)$ (lo useremo negli esercizi
+  di deduzione naturale) e $\neg A \wedge B$ significa $(\neg A) \wedge B$. Per
+  $\wedge$ e $\vee$ l'associatività è irrilevante semanticamente (sono
+  associativi), per $\to$ no: $(A \to B) \to C \not\equiv A \to (B \to C)$.
+  Una slide successiva elenca il ``rango decrescente''
+  $\leftrightarrow,\ \to,\ \vee,\ \wedge,\ \neg$ (dal più debole al più forte),
+  coerente con la lavagna salvo che lì $\to$ e $\leftrightarrow$ sono alla
+  pari.
+}
+
+\ex{Formule ben formate e non (lavagna)}{
+  \begin{itemize}
+    \item $\big((\neg\bot) \vee (A \wedge C)\big) \to \big(B \leftrightarrow
+          (\neg\top)\big)$ è ben formata.
+    \item $A \wedge \vee\, (\neg B)$ \textbf{non} è ben formata (barrata): tra
+          $\wedge$ e $\vee$ manca una formula.
+  \end{itemize}
+}
+
+% =====================================================================
+\section{Semantica I (classica): modelli, cioè tavole di verità}
+% =====================================================================
+
+\nt{
+  Il prof aggiunge a mano \textbf{``CLASSICAL''} al titolo: quella che segue è
+  la semantica della logica \emph{classica} (a due valori). A lavagna scrive la
+  conseguenza logica come $\Gamma \Vdash F$, con $\Gamma$ insieme
+  \textbf{finito} di formule, e annota che la restrizione al caso finito è
+  \textbf{``not standard!!!''}: normalmente $\Gamma$ può essere infinito (come
+  in Van Dalen).
+}
+
+Per definire il significato di una formula serve il significato dei simboli
+proposizionali: ``It is raining'' è vera o falsa? Dipende dal ``mondo''.
+Serve la nozione di \textbf{interpretazione}.
+
+\dfn{Interpretazione}{
+  Data una formula proposizionale $G$, sia $\{A_1, \dots, A_n\}$ l'insieme
+  degli atomi (a mano: \textbf{variabili}) che compaiono in $G$.
+  Un'\textbf{interpretazione} $I$ di $G$ è un assegnamento di valori di verità
+  ad $A_1, \dots, A_n$.
+}
+
+\ex{}{
+  $G \triangleq (P \vee Q) \wedge \neg(P \wedge Q)$. Insieme delle variabili:
+  $\{P, Q\}$. \emph{Una} interpretazione per $G$: $I = \{P = \mathbf{T},\
+  Q = \mathbf{F}\}$.
+}
+
+\begin{itemize}
+  \item Ogni atomo $A_i$ può valere \textbf{True} o \textbf{False}, mai
+        entrambi \hfill (a mano: è questo che rende la logica \textbf{classica}).
+  \item Data un'interpretazione $I$, una formula $G$ è \textbf{vera in $I$} sse
+        $G$ viene valutata a True in $I$.
+  \item Una formula con $n$ atomi distinti ha $2^n$ interpretazioni distinte.
+  \item \textbf{Convenzione}: $\{P, \neg Q, \neg R, S\}$ rappresenta
+        l'interpretazione $I : \{P = T,\ Q = F,\ R = F,\ S = T\}$.
+\end{itemize}
+
+\dfn{Modello}{
+  Se $G$ è vera sotto l'interpretazione $I$ diciamo che $I$ è un
+  \textbf{modello} di $G$ e scriviamo
+  \[ I \models G. \]
+  Si usa lo \textbf{stesso simbolo} $\models$ della conseguenza logica.
+}
+
+\nt{
+  Un'interpretazione è la ``valutazione ristretta agli atomi'' del capitolo
+  precedente; per il lemma di dipendenza dai soli atomi presenti, tanto basta.
+  I due usi di $\models$ si distinguono da cosa c'è a sinistra:
+  un'interpretazione ($I \models G$: $G$ è vera in $I$) oppure formule
+  ($F_1, \dots, F_n \models G$: $G$ è vera in tutti i modelli delle $F_i$).
+}
+
+\subsection{Semantica dei connettivi}
+
+Il significato dei connettivi è definito dalle \textbf{tavole di verità}: dati
+i valori degli argomenti danno il valore della formula composta. In parole
+(a mano: \textbf{``Tarskian explanation''}):
+
+\begin{center}
+\begin{tabular}{ll}
+  \toprule
+  $\neg S$ è vera sse & $S$ è falsa \\
+  $S_1 \wedge S_2$ è vera sse & $S_1$ è vera \textbf{e} $S_2$ è vera \\
+  $S_1 \vee S_2$ è vera sse & $S_1$ è vera \textbf{o} $S_2$ è vera \\
+  $S_1 \to S_2$ è vera sse & $S_1$ è falsa \textbf{o} $S_2$ è vera \\
+  \quad cioè è falsa sse & $S_1$ è vera \textbf{e} $S_2$ è falsa \\
+  $S_1 \leftrightarrow S_2$ è vera sse & $S_1 \to S_2$ è vera \textbf{e}
+      $S_2 \to S_1$ è vera \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\nt{
+  ``Spiegazione tarskiana'': la verità di una formula composta è definita in
+  funzione della verità delle sue parti, usando nel metalinguaggio le stesse
+  parole (``e'', ``o'', ``non'') che i connettivi formalizzano. La tavola di
+  verità completa è nel capitolo precedente (con $1 = T$, $0 = F$).
+}
+
+\subsection{Valutazione di una formula}
+
+Una volta fissato il significato dei simboli proposizionali, il valore di una
+formula si calcola ricorsivamente con le tavole.
+
+\ex{Valutazione ricorsiva}{
+  $G \triangleq \neg P_1 \wedge (P_2 \vee P_3)$ con $P_1 = F$, $P_2 = F$,
+  $P_3 = T$:
+  \[
+    \neg P_1 \wedge (P_2 \vee P_3) = \mathit{true} \wedge (\mathit{false} \vee
+    \mathit{true}) = \mathit{true} \wedge \mathit{true} = \mathit{true}.
+  \]
+  Si valuta $\neg P_1$ prima di $P_1 \wedge \dots$ perché $\neg$ ha precedenza
+  più alta.
+}
+
+\ex{Esercizio: XOR}{
+  Tavola di verità di $G \triangleq (P \vee Q) \wedge \neg(P \wedge Q)$:
+  \begin{center}
+  \begin{tabular}{cc|ccc|c}
+    $P$ & $Q$ & $P \vee Q$ & $P \wedge Q$ & $\neg(P \wedge Q)$ & $G$ \\ \hline
+    0 & 0 & 0 & 0 & 1 & 0 \\
+    0 & 1 & 1 & 0 & 1 & \textbf{1} \\
+    1 & 0 & 1 & 0 & 1 & \textbf{1} \\
+    1 & 1 & 1 & 1 & 0 & 0
+  \end{tabular}
+  \end{center}
+  Annotazioni a lavagna: \textbf{ogni riga è un'interpretazione}; le righe
+  $01$ e $10$ sono i \textbf{modelli} di $G$: $\{\neg P, Q\} \models G$ e
+  $\{P, \neg Q\} \models G$.
+}
+
+\ex{Conseguenza logica con la tavola (lavagna)}{
+  $A \wedge B,\ B \to C \models A \wedge C$? Si guardano solo le righe in cui
+  \emph{tutte} le premesse sono vere.
+  \begin{center}
+  \begin{tabular}{ccc|cc|c}
+    $A$ & $B$ & $C$ & $A \wedge B$ & $B \to C$ & $A \wedge C$ \\ \hline
+    0 & 0 & 0 & 0 &   &   \\
+    0 & 0 & 1 & 0 &   &   \\
+    0 & 1 & 0 & 0 &   &   \\
+    0 & 1 & 1 & 0 &   &   \\
+    1 & 0 & 0 & 0 &   &   \\
+    1 & 0 & 1 & 0 &   &   \\
+    1 & 1 & 0 & 1 & 0 &   \\
+    1 & 1 & 1 & 1 & 1 & \textbf{1}
+  \end{tabular}
+  \end{center}
+  L'unica riga con entrambe le premesse vere è $111$, e lì la conclusione è
+  vera: la conseguenza vale ($\checkmark$). Trucco pratico: appena una premessa
+  è falsa la riga si scarta, senza calcolare il resto.
+}
+
+% =====================================================================
+\section{Validità, inconsistenza, decidibilità}
+% =====================================================================
+
+\dfn{Formula valida}{
+  Una formula $F$ è \textbf{valida} sse è vera in \textbf{tutte} le sue
+  interpretazioni.
+  \begin{itemize}
+    \item Una formula valida si dice anche \textbf{tautologia}.
+    \item Una formula non valida è \textbf{invalida}.
+    \item Se $F$ è valida si scrive $\models F$.
+  \end{itemize}
+}
+
+\ex{Legge di De Morgan}{
+  $\neg(P \wedge Q) \leftrightarrow (\neg P \vee \neg Q)$ è valida:
+  \begin{center}
+  \begin{tabular}{cc|cc|c}
+    $P$ & $Q$ & $\neg(P \wedge Q)$ & $\neg P \vee \neg Q$ &
+      $\neg(P \wedge Q) \leftrightarrow (\neg P \vee \neg Q)$ \\ \hline
+    1 & 1 & 0 & 0 & 1 \\
+    1 & 0 & 1 & 1 & 1 \\
+    0 & 1 & 1 & 1 & 1 \\
+    0 & 0 & 1 & 1 & 1
+  \end{tabular}
+  \end{center}
+}
+
+\dfn{Formula inconsistente}{
+  Una formula $F$ è \textbf{inconsistente} sse è falsa in \textbf{tutte} le
+  sue interpretazioni.
+  \begin{itemize}
+    \item Una formula inconsistente si dice anche \textbf{insoddisfacibile}.
+    \item Una formula non inconsistente è \textbf{consistente} o
+          \textbf{soddisfacibile}.
+    \item \textbf{Invalida è diverso da inconsistente.}
+  \end{itemize}
+}
+
+\ex{}{
+  $\neg\big(\neg(P \wedge Q) \leftrightarrow (\neg P \vee \neg Q)\big)$ è
+  inconsistente: è la negazione della tautologia precedente, quindi la sua
+  colonna è tutta $0$.
+}
+
+\mprop{Inconsistenza vs validità}{
+  \begin{itemize}
+    \item Una formula è valida sse la sua negazione è inconsistente (e
+          viceversa).
+    \item Una formula è invalida sse esiste almeno un'interpretazione in cui è
+          falsa; è consistente sse esiste almeno un'interpretazione in cui è
+          vera.
+    \item Una formula inconsistente è invalida, \textbf{ma non vale il
+          viceversa}.
+    \item Una formula valida è consistente, \textbf{ma non vale il viceversa}.
+  \end{itemize}
+}
+
+\ex{}{
+  $G \triangleq P \vee Q$ è \textbf{invalida} (falsa quando $P$ e $Q$ sono
+  falsi) ma \textbf{non inconsistente} (vera in tutti gli altri casi). Detto
+  al contrario: è \textbf{consistente} ma \textbf{non valida}.
+}
+
+\nt{
+  Schema riassuntivo: ogni formula sta in esattamente una di tre classi.
+  \begin{center}
+  \begin{tabular}{lccc}
+    \toprule
+    & sempre vera & a volte vera, a volte falsa & sempre falsa \\ \midrule
+    valida (tautologia) & $\checkmark$ & & \\
+    soddisfacibile / consistente & $\checkmark$ & $\checkmark$ & \\
+    invalida & & $\checkmark$ & $\checkmark$ \\
+    insoddisfacibile / inconsistente & & & $\checkmark$ \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+}
+
+\subsection{Le tre domande e la decidibilità}
+
+Sia $AX$ un insieme di assiomi che descrive un ``mondo'' e $F$ una formula.
+Ci interessano tre domande:
+\begin{enumerate}
+  \item $AX \models F$? Cioè $F$ è conseguenza logica di $AX$?
+  \item $\models F$? Cioè $F$ è valida?
+  \item $F$ è soddisfacibile? Cioè esiste $I$ tale che $I \models F$?
+\end{enumerate}
+Esempio per la 3: $F$ descrive un guasto in un circuito elettrico con
+variabili $X_1, \dots, X_n$; sapere se è soddisfacibile vuol dire sapere se il
+guasto può verificarsi. È importante sapere se a queste domande si può
+\emph{sempre} rispondere sì o no, cioè se i problemi sono \textbf{decidibili}.
+
+\thm{La logica proposizionale è decidibile}{
+  Esiste un metodo che \textbf{termina sempre} per decidere se una formula è
+  valida:
+  \begin{enumerate}
+    \item si enumerano tutte le interpretazioni possibili;
+    \item per ciascuna si valuta la formula.
+  \end{enumerate}
+  Le interpretazioni di una formula sono in numero finito ($2^n$).
+}
+
+\begin{itemize}
+  \item La decidibilità è una proprietà molto forte e desiderabile per un
+        sistema logico.
+  \item C'è un \textbf{trade-off tra potere espressivo e decidibilità} (la
+        logica del primo ordine è più espressiva ma non decidibile).
+\end{itemize}
+
+\subsection{Decidere la soddisfacibilità: Davis--Putnam}
+
+Gli algoritmi più veloci noti per la soddisfacibilità proposizionale si basano
+sull'\textbf{algoritmo di Davis--Putnam}. Lavora su una lista di clausole
+(formula in CNF, vedi sotto). Una \textbf{unit clause} è una clausola formata
+da un solo letterale.
+
+\begin{lstlisting}[mathescape=true]
+function Satisfiable(clause list S) returns boolean
+    /* unit propagation */
+    repeat
+        for each unit clause L in S do
+            delete from S every clause containing L
+            delete $\neg$L from every clause of S in which it occurs
+        end for
+        if S is empty then return TRUE
+        else if null clause is in S then return FALSE
+    until no further changes result
+    /* splitting */
+    choose a literal L occurring in S
+    if Satisfiable(S $\cup$ {L}) then return TRUE
+    else if Satisfiable(S $\cup$ {$\neg$L}) then return TRUE
+    else return FALSE
+end function
+\end{lstlisting}
+
+\nt{
+  \textbf{Come leggerlo.}
+  \begin{itemize}
+    \item \emph{Unit propagation}: se c'è la clausola unitaria $L$, $L$ deve
+          essere vero. Allora ogni clausola che contiene $L$ è già soddisfatta
+          (si cancella) e in ogni altra clausola $\neg L$ è falso (si toglie il
+          letterale).
+    \item $S$ vuota: non restano vincoli, \textbf{soddisfacibile}. Clausola
+          vuota (null clause): una disgiunzione di zero letterali è falsa,
+          \textbf{insoddisfacibile} su questo ramo.
+    \item \emph{Splitting}: si sceglie un letterale e si provano i due casi
+          ($L$ vero, $L$ falso), aggiungendolo come clausola unitaria.
+          È una ricerca con backtracking: caso peggiore esponenziale (SAT è
+          NP-completo), ma in pratica molto più veloce della tavola di verità.
+  \end{itemize}
+}
+
+\ex{Davis--Putnam a mano}{
+  $S = \{\,P \vee Q,\ \neg P \vee R,\ \neg R,\ \neg Q \vee R\,\}$.
+  \begin{enumerate}
+    \item Unit clause $\neg R$: cancello $\neg R$; tolgo $R$ da
+          $\neg P \vee R$ e $\neg Q \vee R$. Resta
+          $\{P \vee Q,\ \neg P,\ \neg Q\}$.
+    \item Unit clause $\neg P$: cancello $\neg P$; tolgo $P$ da $P \vee Q$.
+          Resta $\{Q,\ \neg Q\}$.
+    \item Unit clause $Q$: cancello $Q$; tolgo $\neg Q$ da $\neg Q$, che
+          diventa la \textbf{clausola vuota}. Risposta: FALSE,
+          $S$ è insoddisfacibile.
+  \end{enumerate}
+}
+
+% =====================================================================
+\section{Equivalenza logica e regole di riscrittura}
+% =====================================================================
+
+\dfn{Equivalenza logica}{
+  Due formule $F$ e $G$ sono \textbf{logicamente equivalenti}, $F \equiv G$,
+  sse hanno lo stesso valore di verità in ogni interpretazione di $F$ e $G$.
+}
+
+\thm{Regole di equivalenza utili}{
+  \begin{center}
+  \begin{tabular}{rcll}
+    $P \wedge Q$ & $\equiv$ & $Q \wedge P$ & commutatività di $\wedge$ \\
+    $P \vee Q$ & $\equiv$ & $Q \vee P$ & commutatività di $\vee$ \\
+    $(P \wedge Q) \wedge R$ & $\equiv$ & $P \wedge (Q \wedge R)$ & associatività di $\wedge$ \\
+    $(P \vee Q) \vee R$ & $\equiv$ & $P \vee (Q \vee R)$ & associatività di $\vee$ \\
+    $\neg(\neg P)$ & $\equiv$ & $P$ & eliminazione della doppia negazione \\
+    $P \to Q$ & $\equiv$ & $\neg Q \to \neg P$ & contrapposizione \\
+    $P \to Q$ & $\equiv$ & $\neg P \vee Q$ & eliminazione dell'implicazione \\
+    $P \leftrightarrow Q$ & $\equiv$ & $(P \to Q) \wedge (Q \to P)$ & eliminazione del bicondizionale \\
+    $\neg(P \wedge Q)$ & $\equiv$ & $\neg P \vee \neg Q$ & De Morgan \\
+    $\neg(P \vee Q)$ & $\equiv$ & $\neg P \wedge \neg Q$ & De Morgan \\
+    $P \wedge (Q \vee R)$ & $\equiv$ & $(P \wedge Q) \vee (P \wedge R)$ & distributività di $\wedge$ su $\vee$ \\
+    $P \vee (Q \wedge R)$ & $\equiv$ & $(P \vee Q) \wedge (P \vee R)$ & distributività di $\vee$ su $\wedge$ \\
+  \end{tabular}
+  \end{center}
+}
+
+\thm{Regole con $\top$ e $\bot$ (aggiunte a lavagna)}{
+  \begin{center}
+  \begin{tabular}{rclcrcll}
+    $P \wedge \top$ & $\equiv$ & $P$ & \qquad & $P \vee \bot$ & $\equiv$ & $P$ & identità \\
+    $P \wedge \bot$ & $\equiv$ & $\bot$ & & $P \vee \top$ & $\equiv$ & $\top$ & elemento assorbente \\
+    $(P \wedge Q) \vee Q$ & $\equiv$ & $Q$ & & $(P \vee Q) \wedge Q$ & $\equiv$ & $Q$ & assorbimento \\
+    $\neg\bot$ & $\equiv$ & $\top$ & & $\neg\top$ & $\equiv$ & $\bot$ & \\
+  \end{tabular}
+  \end{center}
+}
+
+\nt{
+  Per l'assorbimento conviene pensare all'ordine ``$0 \le 1$'':
+  $P \wedge Q$ è ``più falso'' di $Q$ (è il minimo), quindi
+  $(P \wedge Q) \vee Q = \max(\min(P,Q), Q) = Q$; dualmente $P \vee Q$ è ``più
+  vero'' di $Q$, quindi $(P \vee Q) \wedge Q = Q$. È il disegno della retta
+  fatto a lavagna.
+}
+
+% =====================================================================
+\section{Forme normali}
+% =====================================================================
+
+Le forme normali sono modi \emph{standard} di scrivere le formule. Le due
+principali: \textbf{CNF} (Conjunctive Normal Form) e \textbf{DNF} (Disjunctive
+Normal Form).
+
+\dfn{Letterale}{
+  Un \textbf{letterale} è un atomo (a mano: cioè una variabile) o la negazione
+  di un atomo. Esempi: $A$, $\neg B$, $C$.
+}
+
+\dfn{Negation Normal Form (NNF)}{
+  Una formula è in \textbf{NNF} sse le negazioni compaiono \textbf{solo
+  davanti agli atomi}.
+}
+
+\dfn{Conjunctive Normal Form (CNF)}{
+  Una formula $F$ è in \textbf{CNF} sse è in NNF e ha la forma
+  \[ F \triangleq F_1 \wedge F_2 \wedge \dots \wedge F_n \]
+  dove ogni $F_i$ è una \textbf{disgiunzione di letterali}.
+  \begin{itemize}
+    \item Ogni $F_i$ si chiama \textbf{clausola}: una clausola è una formula
+          $L_1 \vee \dots \vee L_n$ con ogni $L_i$ letterale.
+    \item La CNF si chiama anche \textbf{forma a clausole} (Clausal Form).
+  \end{itemize}
+}
+
+\nt{
+  A lavagna: l'albero di una CNF ha \textbf{un $\wedge$ in radice, sotto solo
+  $\vee$, sotto solo letterali}, ad esempio
+  $(A \vee \neg B \vee C) \wedge (D \vee A) \wedge A$. Per la DNF è il
+  contrario: $\vee$ in radice, poi $\wedge$, poi letterali.
+}
+
+\ex{}{
+  \begin{itemize}
+    \item $G \triangleq (\neg P \vee Q) \wedge (\neg P \vee R)$ è in CNF. Si
+          può scrivere come \textbf{insieme di clausole} $\{C_1, C_2\}$ con
+          $C_1 = \neg P \vee Q$ e $C_2 = \neg P \vee R$.
+    \item $G \triangleq \neg(P \vee Q) \wedge (\neg P \vee R)$ \textbf{non} è
+          in CNF: la negazione compare davanti a una formula e non solo davanti
+          ad atomi.
+  \end{itemize}
+}
+
+\dfn{Disjunctive Normal Form (DNF)}{
+  Una formula $F$ è in \textbf{DNF} sse è in NNF e ha la forma
+  \[ F \triangleq F_1 \vee F_2 \vee \dots \vee F_n \]
+  dove ogni $F_i$ è una \textbf{congiunzione di letterali}.
+  Esempio: $(\neg P \wedge R) \vee (Q \wedge \neg P) \vee (Q \wedge P)$.
+}
+
+\thm{Esistenza delle forme normali}{
+  Ogni formula può essere trasformata in una forma normale (CNF o DNF)
+  equivalente usando le regole di equivalenza viste sopra.
+}
+
+\subsection{Algoritmo di trasformazione}
+
+\mprop{Trasformazione in CNF in 5 passi (lavagna)}{
+  \begin{enumerate}
+    \item \textbf{Rimuovere} $\to$ e $\leftrightarrow$
+          \hfill ($F \to G \equiv \neg F \vee G$, ecc.);
+    \item \textbf{spingere le negazioni verso il basso} (verso gli atomi)
+          \hfill (De Morgan);
+    \item \textbf{rimuovere} $\neg\neg$ \hfill (doppia negazione);
+    \item \textbf{distribuire $\vee$ su $\wedge$}
+          \hfill ($P \vee (Q \wedge R) \equiv (P \vee Q) \wedge (P \vee R)$);
+    \item \textbf{semplificare} $\bot$ / $\top$.
+  \end{enumerate}
+  Per la \textbf{DNF} il passo 4 diventa: distribuire $\wedge$ su $\vee$.
+}
+
+\ex{CNF svolta a lavagna}{
+  \begin{align*}
+    & (P \to Q) \wedge \neg(\neg R \wedge (B \vee A)) \\
+    \equiv\ & (\neg P \vee Q) \wedge (\neg\neg R \vee \neg(B \vee A))
+       && \text{1: via $\to$; 2: De Morgan} \\
+    \equiv\ & (\neg P \vee Q) \wedge (\neg\neg R \vee (\neg B \wedge \neg A))
+       && \text{2: De Morgan} \\
+    \equiv\ & (\neg P \vee Q) \wedge (R \vee (\neg B \wedge \neg A))
+       && \text{3: via $\neg\neg$} \\
+    \equiv\ & (\neg P \vee Q) \wedge (R \vee \neg B) \wedge (R \vee \neg A)
+       && \text{4: distribuzione} \quad \textbf{CNF}
+  \end{align*}
+}
+
+\ex{Trasformazione in CNF (slide)}{
+  \begin{align*}
+    & (P \to Q) \wedge (R \vee (B \wedge A)) \\
+    \equiv\ & (\neg P \vee Q) \wedge (R \vee (B \wedge A)) \\
+    \equiv\ & (\neg P \vee Q) \wedge ((R \vee B) \wedge (R \vee A)) \\
+    \equiv\ & (\neg P \vee Q) \wedge (R \vee B) \wedge (R \vee A)
+  \end{align*}
+}
+
+\ex{Altro esempio (slide): semplificazione di $\top$ e $\bot$}{
+  \begin{align*}
+    & (\neg P \vee Q) \wedge (R \vee (A \wedge \neg A)) \wedge
+      (R \vee (A \vee \neg A)) \\
+    \equiv\ & (\neg P \vee Q) \wedge (R \vee \bot) \wedge (R \vee \top) \\
+    \equiv\ & (\neg P \vee Q) \wedge (R \vee \bot) \wedge \top \\
+    \equiv\ & (\neg P \vee Q) \wedge (R \vee \bot) \\
+    \equiv\ & (\neg P \vee Q) \wedge R
+  \end{align*}
+}
+
+\nt{
+  \textbf{Attenzione, probabile refuso nella slide.} Sulla slide la seconda
+  clausola è scritta $R \vee (A \to \neg A)$ e viene semplificata in
+  $R \vee \mathit{False}$. Ma $A \to \neg A \equiv \neg A \vee \neg A \equiv
+  \neg A$, che \textbf{non} è equivalente a falso (è vera quando $A$ è falso).
+  Il passaggio è corretto solo con una contraddizione, cioè
+  $A \wedge \neg A \equiv \bot$: sopra ho scritto questa versione.
+}
+
+\ex{Trasformazione di formule: XOR}{
+  Dimostrare, trasformando le formule, che
+  \[
+    (P \vee Q) \wedge \neg(P \wedge Q) \;\equiv\;
+    (P \vee Q) \wedge (\neg P \vee \neg Q) \;\equiv\;
+    (\neg P \wedge Q) \vee (P \wedge \neg Q).
+  \]
+  \textbf{Prima equivalenza} (slide): De Morgan sulla seconda parte dà
+  direttamente $(P \vee Q) \wedge (\neg P \vee \neg Q)$, che è la CNF.
+
+  \textbf{Seconda equivalenza} (``try to prove''): distribuendo $\wedge$ su
+  $\vee$,
+  \begin{align*}
+    (P \vee Q) \wedge (\neg P \vee \neg Q)
+    &\equiv (P \wedge \neg P) \vee (P \wedge \neg Q) \vee (Q \wedge \neg P)
+       \vee (Q \wedge \neg Q) \\
+    &\equiv \bot \vee (P \wedge \neg Q) \vee (\neg P \wedge Q) \vee \bot \\
+    &\equiv (\neg P \wedge Q) \vee (P \wedge \neg Q),
+  \end{align*}
+  che è la DNF. (Altri esempi: Chang--Lee, esempi 2.8 e 2.9.)
+}
+
+\ex{Esame 06/07/2021, es.\ 2: mettere in DNF}{
+  \begin{align*}
+    & \neg(A \to B \vee C) \;\vee\; ((B \vee A) \to C \wedge D) \\
+    \equiv\ & \neg(\neg A \vee B \vee C) \;\vee\; \neg(B \vee A) \vee (C \wedge D)
+       && \text{via le due $\to$} \\
+    \equiv\ & (A \wedge \neg B \wedge \neg C) \;\vee\; (\neg B \wedge \neg A)
+       \;\vee\; (C \wedge D)
+       && \text{De Morgan, $\neg\neg$}
+  \end{align*}
+  Attenzione alle precedenze: $A \to B \vee C$ è $A \to (B \vee C)$ e
+  $(B \vee A) \to C \wedge D$ è $(B \vee A) \to (C \wedge D)$.
+}
+
+% =====================================================================
+\section{Conseguenza logica, deduzione e refutazione}
+% =====================================================================
+
+\dfn{Conseguenza logica}{
+  Dati un insieme di formule $\{F_1, \dots, F_n\}$ e una formula $G$, $G$ è
+  \textbf{conseguenza logica} di $F_1, \dots, F_n$ sse in ogni interpretazione
+  $I$ in cui $F_1 \wedge \dots \wedge F_n$ è vera anche $G$ è vera. Si scrive
+  \[ F_1 \wedge \dots \wedge F_n \models G. \]
+  \begin{itemize}
+    \item $F_1, \dots, F_n$ si chiamano \textbf{assiomi} o \textbf{premesse}
+          di $G$.
+    \item $F \equiv Q$ sse $F \models Q$ e $Q \models F$.
+  \end{itemize}
+  Esempio: $S \to C$, $C \to F$, $S$ sono premesse per $F$.
+}
+
+\thm{Teorema di deduzione}{
+  Dati $\{F_1, \dots, F_n\}$ e $G$:
+  \[
+    (F_1 \wedge \dots \wedge F_n) \models G
+    \quad\text{sse}\quad
+    \models (F_1 \wedge \dots \wedge F_n) \to G.
+  \]
+}
+
+\pf{Schema della dimostrazione}{
+  ($\Rightarrow$) In ogni interpretazione $I$ in cui $F_1 \wedge \dots \wedge
+  F_n$ è vera, $G$ è vera, quindi $I \models (F_1 \wedge \dots \wedge F_n) \to
+  G$. In ogni interpretazione $I'$ in cui $F_1 \wedge \dots \wedge F_n$ è
+  falsa, l'implicazione è vera (premessa falsa), quindi $I' \models (F_1
+  \wedge \dots \wedge F_n) \to G$. Dunque l'implicazione è vera in tutte le
+  interpretazioni: è valida.
+
+  ($\Leftarrow$) Se l'implicazione è valida, in ogni interpretazione in cui
+  $F_1 \wedge \dots \wedge F_n$ è vera deve essere vera anche $G$ (altrimenti
+  l'implicazione sarebbe falsa). Quindi $(F_1 \wedge \dots \wedge F_n) \models
+  G$.
+}
+
+\thm{Dimostrazione per refutazione}{
+  Dati $\{F_1, \dots, F_n\}$ e $G$:
+  \[
+    (F_1 \wedge \dots \wedge F_n) \models G
+    \quad\text{sse}\quad
+    F_1 \wedge \dots \wedge F_n \wedge \neg G \ \text{è inconsistente.}
+  \]
+}
+
+\pf{Schema della dimostrazione}{
+  $(F_1 \wedge \dots \wedge F_n) \models G$ vale sse in ogni interpretazione
+  in cui $F_1 \wedge \dots \wedge F_n$ è vera anche $G$ è vera. Questo vale
+  sse non c'è nessuna interpretazione in cui $F_1 \wedge \dots \wedge F_n$ è
+  vera e $G$ è falsa, cioè esattamente quando $F_1 \wedge \dots \wedge F_n
+  \wedge \neg G$ è falsa in ogni interpretazione: è inconsistente.
+}
+
+\mprop{Discussione}{
+  I due teoremi mostrano che:
+  \begin{itemize}
+    \item si può dimostrare una conseguenza logica dimostrando la
+          \textbf{validità} di una formula;
+    \item si può dimostrare una conseguenza logica \textbf{refutando} una
+          formula, cioè dimostrando che è inconsistente.
+  \end{itemize}
+  \textbf{Non abbiamo usato nessuna proprietà specifica della logica
+  proposizionale}: gli stessi teoremi valgono (con gli stessi argomenti) per la
+  logica del primo ordine, ed è su questo che si basa la risoluzione.
+}
+
+\ex{Modus ponens nei tre modi}{
+  Vogliamo mostrare $(P \to Q) \wedge P \models Q$.
+  \begin{center}
+  \begin{tabular}{cc|c|c|c}
+    $P$ & $Q$ & $(P \to Q) \wedge P$ & $((P \to Q) \wedge P) \to Q$ &
+      $(P \to Q) \wedge P \wedge \neg Q$ \\ \hline
+    0 & 0 & 0 & 1 & 0 \\
+    0 & 1 & 0 & 1 & 0 \\
+    1 & 0 & 0 & 1 & 0 \\
+    1 & 1 & 1 & 1 & 0
+  \end{tabular}
+  \end{center}
+  \begin{itemize}
+    \item \textbf{Con la definizione}: nell'unica interpretazione in cui
+          $(P \to Q) \wedge P$ è vera (riga $11$), $Q$ è vera.
+    \item \textbf{Con il teorema di deduzione}: $((P \to Q) \wedge P) \to Q$ è
+          valida (colonna tutta $1$).
+    \item \textbf{Per refutazione}: $(P \to Q) \wedge P \wedge \neg Q$ è
+          inconsistente (colonna tutta $0$).
+  \end{itemize}
+}
+
+\ex{Esercizio (Chang--Lee 2.11): modus tollens nei tre modi}{
+  $F_1 \triangleq P \to Q$, $F_2 \triangleq \neg Q$, $G \triangleq \neg P$.
+  Mostrare $F_1 \wedge F_2 \models G$.
+  \begin{center}
+  \begin{tabular}{cc|cc|c|c|c}
+    $P$ & $Q$ & $F_1$ & $F_2$ & $G$ & $(F_1 \wedge F_2) \to G$ &
+      $F_1 \wedge F_2 \wedge \neg G$ \\ \hline
+    0 & 0 & 1 & 1 & 1 & 1 & 0 \\
+    0 & 1 & 1 & 0 & 1 & 1 & 0 \\
+    1 & 0 & 0 & 1 & 0 & 1 & 0 \\
+    1 & 1 & 1 & 0 & 0 & 1 & 0
+  \end{tabular}
+  \end{center}
+  (1) L'unica riga con $F_1$ e $F_2$ vere è $00$, e lì $G$ è vera. (2)
+  $(F_1 \wedge F_2) \to G$ è valida. (3) $F_1 \wedge F_2 \wedge \neg G$ è
+  inconsistente. In alternativa al punto (3), per trasformazione:
+  $(\neg P \vee Q) \wedge \neg Q \wedge P \equiv ((\neg P \wedge \neg Q) \vee
+  (Q \wedge \neg Q)) \wedge P \equiv \neg P \wedge \neg Q \wedge P \equiv
+  \bot$.
+}
+
+\ex{Esercizio (Chang--Lee 2.12): lo sciopero}{
+  ``Dato che, se il congresso rifiuta di approvare nuove leggi, allora lo
+  sciopero non finirà a meno che non duri più di un anno o il presidente
+  dell'azienda si dimetta: lo sciopero finirà se il congresso rifiuta di agire
+  e lo sciopero è appena cominciato?''
+
+  Atomi: $P$ = il congresso rifiuta di agire; $Q$ = lo sciopero finisce;
+  $R$ = il presidente si dimette; $S$ = lo sciopero dura più di un anno.
+  \begin{itemize}
+    \item $F_1 \triangleq P \to (\neg Q \vee R \vee S)$ \quad (``non $Q$ a
+          meno che $R$ o $S$'' = $Q \to (R \vee S)$);
+    \item $F_2 \triangleq P$; \quad $F_3 \triangleq \neg S$ (è appena
+          cominciato).
+  \end{itemize}
+  Da $F_1, F_2$ per modus ponens: $\neg Q \vee R \vee S$; con $F_3$:
+  $\neg Q \vee R$, cioè $Q \to R$. Con la formulazione della slide (``\emph{or}
+  the president resigns'') \textbf{non segue né $Q$ né $\neg Q$}:
+  l'interpretazione $\{P, Q, R, \neg S\}$ rende vere le premesse con $Q$ vero,
+  $\{P, \neg Q, \neg R, \neg S\}$ con $Q$ falso. Quello che si può dire è solo
+  che lo sciopero finisce \emph{solo se} il presidente si dimette.
+
+  Se invece la condizione è una congiunzione (``dura più di un anno \emph{e}
+  il presidente si dimette''), $F_1 \triangleq P \to (\neg Q \vee (R \wedge
+  S))$ e allora $F_1 \wedge F_2 \wedge F_3 \models \neg Q$: lo sciopero
+  \textbf{non} finirà. Per refutazione: $F_1 \wedge P \wedge \neg S \wedge Q$
+  forza $R \wedge S$ vero, contro $\neg S$.
+}
+
+\ex{Esercizio: argomenti validi e non validi}{
+  \begin{enumerate}
+    \item ``Se sono ricco allora sono felice. Sono felice. Quindi sono
+          ricco.'' \ $w \to h,\ h \models w$? \textbf{Non valido}
+          (affermazione del conseguente): controesempio $\{\neg w, h\}$.
+    \item ``Se John beve birra ha almeno 18 anni. John non beve birra. Quindi
+          non ha ancora 18 anni.'' \ $b \to a,\ \neg b \models \neg a$?
+          \textbf{Non valido} (negazione dell'antecedente): controesempio
+          $\{\neg b, a\}$.
+    \item ``Se le ragazze sono bionde, sono popolari. Le brutte sono
+          impopolari. Le intellettuali sono brutte. Quindi le bionde non sono
+          intellettuali.'' \ $b \to p,\ u \to \neg p,\ i \to u \models b \to
+          \neg i$? \textbf{Valido}: $b \to p$, poi $p \to \neg u$
+          (contrapposizione della seconda), poi $\neg u \to \neg i$
+          (contrapposizione della terza); per transitività $b \to \neg i$.
+    \item ``Se studio non vengo bocciato. Se non gioco troppo a carte, studio.
+          Sono stato bocciato. Quindi ho giocato troppo a carte.''
+          \ $s \to \neg f,\ \neg c \to s,\ f \models c$? \textbf{Valido}:
+          da $f$ e $s \to \neg f$ (modus tollens) $\neg s$; da $\neg s$ e
+          $\neg c \to s$ (modus tollens) $c$.
+  \end{enumerate}
+}
+
+\ex{Esercizio: le lettere di Lewis Carroll}{
+  Atomi: $p$ = datata; $q$ = su carta blu; $r$ = in inchiostro nero; $s$ = in
+  terza persona; $t$ = archiviata; $u$ = la so leggere; $v$ = su un solo
+  foglio; $w$ = cancellata; $x$ = scritta da Brown; $y$ = comincia con ``Dear
+  Sir''. Le nove premesse:
+  \begin{multicols}{3}
+  \begin{enumerate}
+    \item $p \to q$
+    \item $\neg s \to \neg r$
+    \item $u \to \neg t$
+    \item $v \to p$
+    \item $\neg w \to r$
+    \item $x \to y$
+    \item $q \to t$
+    \item $\neg v \to \neg w$
+    \item $y \to \neg s$
+  \end{enumerate}
+  \end{multicols}
+  Tesi: $x \to \neg u$ (``non so leggere nessuna lettera di Brown'').
+
+  \textbf{Soluzione.} Si costruisce una catena di implicazioni, usando la
+  contrapposizione dove serve:
+  \[
+    x \xrightarrow{6} y \xrightarrow{9} \neg s \xrightarrow{2} \neg r
+      \xrightarrow{5^c} w \xrightarrow{8^c} v \xrightarrow{4} p
+      \xrightarrow{1} q \xrightarrow{7} t \xrightarrow{3^c} \neg u
+  \]
+  dove $5^c$ è $\neg r \to w$, $8^c$ è $w \to v$, $3^c$ è $t \to \neg u$.
+  Per transitività dell'implicazione $x \to \neg u$ è conseguenza logica delle
+  premesse: l'argomento è valido. (Con la tavola di verità servirebbero
+  $2^{10} = 1024$ righe: ecco perché serve un metodo \emph{sintattico}.)
+}
+
+\ex{Esame 12/01/2023, es.\ 2}{
+  \begin{itemize}
+    \item $(A \to B) \wedge (A \to C) \models A \wedge B \to C$? \textbf{Sì}
+          ($\checkmark$). Le righe in cui la premessa è vera sono
+          $000, 001, 010, 011, 111$; nelle prime quattro $A \wedge B$ è falso
+          (implicazione vera), nell'ultima $C$ è vero.
+    \item $A \vee B \vee \neg C \models A \wedge B \to C$? \textbf{No}
+          ($\times$). Controesempio: riga $A = 1, B = 1, C = 0$: la premessa è
+          vera, $A \wedge B = 1$ e $C = 0$, quindi la conclusione è falsa.
+  \end{itemize}
+}
+
+\ex{Esame 12/01/2023, es.\ 3: un insieme non contraddittorio}{
+  $M \to C,\ \neg M \to T,\ C \vee T \vdash \bot$? \textbf{No}: l'insieme
+  \textbf{non è contraddittorio}. Dalla tavola, le righe $(M,C,T)$ che rendono
+  vere tutte e tre le formule sono
+  \[ 001,\quad 011,\quad 110,\quad 111. \]
+  Basta un modello per concludere che l'insieme è soddisfacibile, quindi (per
+  la correttezza, vedi sotto) da esso non si deriva $\bot$.
+}
+
+% =====================================================================
+\section{Semantica II: proof theory}
+% =====================================================================
+
+\begin{itemize}
+  \item Ci interessano le \textbf{conseguenze logiche}: permettono di ricavare
+        conclusioni sulla verità in mondi specifici descritti da assiomi
+        specifici.
+  \item Abbiamo visto un modo \textbf{semantico} di dimostrarle, basato sulla
+        nozione di modello: le tavole di verità.
+  \item Esiste un modo di dimostrarle usando la \textbf{sintassi}, cioè
+        manipolando i simboli delle formule? Questo permetterebbe di usare la
+        \emph{computazione} per fare \textbf{deduzione (o inferenza)} in
+        automatico.
+  \item La risposta è sì, e la dà la \textbf{proof theory}.
+\end{itemize}
+
+Esistono molti sistemi, per molte logiche diverse, fatti di \textbf{regole}
+che permettono di dedurre (derivare) \textbf{conclusioni da premesse}.
+Naturalmente vogliamo che le regole siano \textbf{corrette} rispetto alla
+semantica delle tavole di verità. Vediamo un caso specifico: la
+\textbf{deduzione naturale} per (a mano: un \textbf{sottoinsieme} della)
+logica proposizionale \textbf{classica}.
+
+\nt{
+  \textbf{Gli alberi (lavagna).} Un albero vero ha le radici in basso e le
+  foglie in alto; gli alberi dell'informatica hanno la radice in alto. Le
+  \textbf{derivazioni} sono disegnate come l'albero vero: \textbf{foglie in
+  alto} (le ipotesi), \textbf{radice in basso} (la conclusione). Si possono
+  leggere \emph{top-down} (dalle ipotesi alla conclusione) o costruire
+  \emph{bottom-up} (dalla conclusione verso le ipotesi), che è il modo in cui
+  di solito si cerca una dimostrazione.
+}
+
+\subsection{Deduzione naturale}
+
+\begin{itemize}
+  \item Un insieme di \textbf{regole} per derivare conclusioni da premesse.
+  \item Le regole \textbf{introducono} o \textbf{eliminano} connettivi.
+  \item Le regole si compongono a formare \textbf{derivazioni}.
+  \item È un sistema \textbf{corretto e completo} (vedi oltre).
+\end{itemize}
+
+\mprop{Connettivi considerati}{
+  Consideriamo solo $\wedge$, $\to$ e $\bot$. Il motivo è che $\vee$ ha un
+  significato molto diverso nell'approccio costruttivo e in quello non
+  costruttivo. Non è una limitazione: questo insieme di connettivi è
+  \textbf{funzionalmente completo}.
+}
+
+\thm{Gli altri connettivi come abbreviazioni (lavagna)}{
+  Teniamo $\wedge, \to, \bot$ e definiamo:
+  \begin{align*}
+    \neg F &\equiv F \to \bot \\
+    \top &\equiv \neg\bot \equiv \bot \to \bot \\
+    F \leftrightarrow G &\equiv (F \to G) \wedge (G \to F) \\
+    F \vee G &\equiv \neg\neg(F \vee G) \equiv \neg(\neg F \wedge \neg G)
+      \equiv \big((F \to \bot) \wedge (G \to \bot)\big) \to \bot
+  \end{align*}
+  L'ultima riga vale \textbf{solo in logica classica}.
+}
+
+\nt{
+  Nella logica intuizionista (costruttiva) dimostrare $F \vee G$ significa
+  saper dire \emph{quale} dei due vale; $\neg(\neg F \wedge \neg G)$ dice solo
+  che non possono essere entrambi falsi, senza dire quale è vero. Per questo
+  la traduzione di $\vee$ è accettabile solo classicamente.
+}
+
+\dfn{Regole della deduzione naturale}{
+  \begin{center}
+  \begin{tabular}{c@{\qquad\qquad}c}
+    \textsc{introduzione} & \textsc{eliminazione} \\[2ex]
+    \AxiomC{$\varphi$}
+    \AxiomC{$\psi$}
+    \RightLabel{$\wedge I$}
+    \BinaryInfC{$\varphi \wedge \psi$}
+    \DisplayProof
+    &
+    \AxiomC{$\varphi \wedge \psi$}
+    \RightLabel{$\wedge E_1$}
+    \UnaryInfC{$\varphi$}
+    \DisplayProof
+    \quad
+    \AxiomC{$\varphi \wedge \psi$}
+    \RightLabel{$\wedge E_2$}
+    \UnaryInfC{$\psi$}
+    \DisplayProof
+    \\[5ex]
+    \AxiomC{$[\varphi]$}
+    \noLine
+    \UnaryInfC{$\vdots$}
+    \noLine
+    \UnaryInfC{$\psi$}
+    \RightLabel{$\to I$}
+    \UnaryInfC{$\varphi \to \psi$}
+    \DisplayProof
+    &
+    \AxiomC{$\varphi$}
+    \AxiomC{$\varphi \to \psi$}
+    \RightLabel{$\to E$}
+    \BinaryInfC{$\psi$}
+    \DisplayProof
+  \end{tabular}
+  \end{center}
+  Le parentesi quadre $[\ ]$ indicano lo \textbf{scarico} (cancellazione)
+  dell'ipotesi.
+
+  Per $\bot$ ci sono due regole; entrambe eliminano $\bot$ e introducono una
+  formula:
+  \begin{center}
+  \begin{tabular}{c@{\qquad\qquad}c}
+    \emph{Ex falso sequitur quodlibet} & \emph{Reductio ad absurdum} \\[2ex]
+    \AxiomC{$\bot$}
+    \RightLabel{$\bot_E$}
+    \UnaryInfC{$\varphi$}
+    \DisplayProof
+    &
+    \AxiomC{$[\neg\varphi]$}
+    \noLine
+    \UnaryInfC{$\vdots$}
+    \noLine
+    \UnaryInfC{$\bot$}
+    \RightLabel{RAA}
+    \UnaryInfC{$\varphi$}
+    \DisplayProof
+  \end{tabular}
+  \end{center}
+  $\neg\varphi$ è usato come abbreviazione di $\varphi \to \bot$.
+  \textbf{RAA vale solo per la logica classica.}
+}
+
+\nt{
+  \textbf{Come leggere le regole.}
+  \begin{itemize}
+    \item $\wedge I$: se ho $\varphi$ e ho $\psi$, ho $\varphi \wedge \psi$.
+          $\wedge E$: da $\varphi \wedge \psi$ ricavo ciascuna delle due.
+    \item $\to E$ è il \emph{modus ponens}.
+    \item $\to I$: per dimostrare $\varphi \to \psi$ \emph{assumo} $\varphi$,
+          derivo $\psi$, e poi \textbf{scarico} l'assunzione: la conclusione
+          $\varphi \to \psi$ non dipende più da $\varphi$. Si possono scaricare
+          zero, una o più occorrenze di $\varphi$ (anche \emph{nessuna}: da
+          $\psi$ ricavo $\varphi \to \psi$ per qualunque $\varphi$).
+    \item $\bot_E$: dall'assurdo segue qualsiasi cosa.
+    \item RAA: se assumere $\neg\varphi$ porta all'assurdo, allora $\varphi$.
+          Attenzione alla differenza con $\to I$: se da $\varphi$ derivo
+          $\bot$, con $\to I$ ottengo $\varphi \to \bot = \neg\varphi$
+          (costruttivo). Con RAA da $\neg\varphi \vdash \bot$ ottengo
+          $\varphi$ e non solo $\neg\neg\varphi$: è qui che entra la logica
+          classica.
+    \item Gli indici $[\varphi]^1$ e $\to I_1$ dicono \emph{quale} regola
+          scarica \emph{quale} ipotesi.
+  \end{itemize}
+}
+
+\mprop{Regole invertibili (lavagna)}{
+  \begin{center}
+  \begin{tabular}{ll}
+    \toprule
+    \textbf{invertibili} & $\wedge I$, \quad $\to I$, \quad RAA \\
+    \textbf{non invertibili} & $\wedge E$, \quad $\to E$, \quad $\bot_E$ \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+}
+
+\nt{
+  (Approfondimento.) Una regola è \textbf{invertibile} se, quando la
+  conclusione è derivabile, lo sono anche le premesse: applicarla
+  \emph{bottom-up} non fa mai perdere la dimostrabilità, quindi si applica
+  ``senza pensare''.
+  \begin{itemize}
+    \item $\wedge I$: se $\Gamma \vdash \varphi \wedge \psi$ allora
+          $\Gamma \vdash \varphi$ e $\Gamma \vdash \psi$.
+    \item $\to I$: se $\Gamma \vdash \varphi \to \psi$ allora
+          $\Gamma, \varphi \vdash \psi$.
+    \item RAA: se $\Gamma \vdash \varphi$ allora $\Gamma, \neg\varphi \vdash
+          \bot$.
+    \item $\wedge E$ no: per derivare $\varphi$ devo \emph{indovinare} un
+          $\psi$ tale che $\varphi \wedge \psi$ sia derivabile. $\to E$ no:
+          devo indovinare $\varphi$. $\bot_E$ no: $\varphi$ può essere
+          derivabile senza che lo sia $\bot$.
+  \end{itemize}
+  \textbf{Strategia pratica}: partire dal basso applicando $\to I$ e
+  $\wedge I$ finché si può (scrivendo in alto le ipotesi disponibili), poi
+  combinare le ipotesi con le regole di eliminazione; se non si chiude,
+  provare RAA.
+}
+
+\subsection{Esempi di derivazioni}
+
+\ex{I: $\vdash \varphi \wedge \psi \to \psi \wedge \varphi$}{
+  \begin{prooftree}
+    \AxiomC{$[\varphi \wedge \psi]^1$}
+    \RightLabel{$\wedge E$}
+    \UnaryInfC{$\psi$}
+    \AxiomC{$[\varphi \wedge \psi]^1$}
+    \RightLabel{$\wedge E$}
+    \UnaryInfC{$\varphi$}
+    \RightLabel{$\wedge I$}
+    \BinaryInfC{$\psi \wedge \varphi$}
+    \RightLabel{$\to I_1$}
+    \UnaryInfC{$\varphi \wedge \psi \to \psi \wedge \varphi$}
+  \end{prooftree}
+  A lavagna la versione con ipotesi \emph{non} scaricata, cioè
+  $A \wedge B \vdash B \wedge A$: è lo stesso albero senza l'ultimo passo.
+  \begin{prooftree}
+    \AxiomC{$A \wedge B$}
+    \RightLabel{$\wedge E_2$}
+    \UnaryInfC{$B$}
+    \AxiomC{$A \wedge B$}
+    \RightLabel{$\wedge E_1$}
+    \UnaryInfC{$A$}
+    \RightLabel{$\wedge I$}
+    \BinaryInfC{$B \wedge A$}
+  \end{prooftree}
+}
+
+\ex{$\vdash A \wedge (B \wedge C) \to B \wedge (C \wedge A)$ (lavagna)}{
+  Ipotesi disponibile (da $\to I$): $[A \wedge (B \wedge C)]$.
+  \begin{prooftree}
+    \AxiomC{$[A \wedge (B \wedge C)]^1$}
+    \RightLabel{$\wedge E_2$}
+    \UnaryInfC{$B \wedge C$}
+    \RightLabel{$\wedge E_1$}
+    \UnaryInfC{$B$}
+    \AxiomC{$[A \wedge (B \wedge C)]^1$}
+    \RightLabel{$\wedge E_2$}
+    \UnaryInfC{$B \wedge C$}
+    \RightLabel{$\wedge E_2$}
+    \UnaryInfC{$C$}
+    \AxiomC{$[A \wedge (B \wedge C)]^1$}
+    \RightLabel{$\wedge E_1$}
+    \UnaryInfC{$A$}
+    \RightLabel{$\wedge I$}
+    \BinaryInfC{$C \wedge A$}
+    \RightLabel{$\wedge I$}
+    \BinaryInfC{$B \wedge (C \wedge A)$}
+    \RightLabel{$\to I_1$}
+    \UnaryInfC{$A \wedge (B \wedge C) \to B \wedge (C \wedge A)$}
+  \end{prooftree}
+  La stessa ipotesi si usa tre volte: un'ipotesi si può usare quante volte si
+  vuole, e un solo $\to I$ scarica tutte le occorrenze.
+}
+
+\ex{II: $\vdash \varphi \to ((\varphi \to \bot) \to \bot)$}{
+  \begin{prooftree}
+    \AxiomC{$[\varphi]^2$}
+    \AxiomC{$[\varphi \to \bot]^1$}
+    \RightLabel{$\to E$}
+    \BinaryInfC{$\bot$}
+    \RightLabel{$\to I_1$}
+    \UnaryInfC{$(\varphi \to \bot) \to \bot$}
+    \RightLabel{$\to I_2$}
+    \UnaryInfC{$\varphi \to ((\varphi \to \bot) \to \bot)$}
+  \end{prooftree}
+  Con l'abbreviazione $\neg\varphi$ per $\varphi \to \bot$ è la derivazione
+  II$'$ di $\varphi \to \neg\neg\varphi$:
+  \begin{prooftree}
+    \AxiomC{$[\varphi]^2$}
+    \AxiomC{$[\neg\varphi]^1$}
+    \RightLabel{$\to E$}
+    \BinaryInfC{$\bot$}
+    \RightLabel{$\to I_1$}
+    \UnaryInfC{$\neg\neg\varphi$}
+    \RightLabel{$\to I_2$}
+    \UnaryInfC{$\varphi \to \neg\neg\varphi$}
+  \end{prooftree}
+}
+
+\ex{III: $\vdash (\varphi \to (\psi \to \sigma)) \to (\varphi \wedge \psi \to
+\sigma)$}{
+  \begin{prooftree}
+    \AxiomC{$[\varphi \wedge \psi]^1$}
+    \RightLabel{$\wedge E$}
+    \UnaryInfC{$\psi$}
+    \AxiomC{$[\varphi \wedge \psi]^1$}
+    \RightLabel{$\wedge E$}
+    \UnaryInfC{$\varphi$}
+    \AxiomC{$[\varphi \to (\psi \to \sigma)]^2$}
+    \RightLabel{$\to E$}
+    \BinaryInfC{$\psi \to \sigma$}
+    \RightLabel{$\to E$}
+    \BinaryInfC{$\sigma$}
+    \RightLabel{$\to I_1$}
+    \UnaryInfC{$\varphi \wedge \psi \to \sigma$}
+    \RightLabel{$\to I_2$}
+    \UnaryInfC{$(\varphi \to (\psi \to \sigma)) \to (\varphi \wedge \psi \to
+      \sigma)$}
+  \end{prooftree}
+  A lavagna è la stessa con $A, B, C$:
+  $\vdash (A \to B \to C) \to A \wedge B \to C$, dove $A \to B \to C$ sta per
+  $A \to (B \to C)$ (associatività a destra).
+}
+
+\ex{$A \to B,\ C \to \bot \vdash A \to (D \to B) \wedge (C \to D)$
+(lavagna)}{
+  Ipotesi: le due premesse (non scaricate), più $[A]$, $[D]$, $[C]$ dalle
+  introduzioni di $\to$.
+  \begin{prooftree}
+    \AxiomC{$A \to B$}
+    \AxiomC{$[A]^3$}
+    \RightLabel{$\to E$}
+    \BinaryInfC{$B$}
+    \RightLabel{$\to I_1$}
+    \UnaryInfC{$D \to B$}
+    \AxiomC{$C \to \bot$}
+    \AxiomC{$[C]^2$}
+    \RightLabel{$\to E$}
+    \BinaryInfC{$\bot$}
+    \RightLabel{$\bot_E$}
+    \UnaryInfC{$D$}
+    \RightLabel{$\to I_2$}
+    \UnaryInfC{$C \to D$}
+    \RightLabel{$\wedge I$}
+    \BinaryInfC{$(D \to B) \wedge (C \to D)$}
+    \RightLabel{$\to I_3$}
+    \UnaryInfC{$A \to (D \to B) \wedge (C \to D)$}
+  \end{prooftree}
+  Due cose da notare: $\to I_1$ scarica l'ipotesi $D$ che \textbf{non è mai
+  stata usata} (scarico ``a vuoto'', lecito); nel ramo destro $D$ si ottiene
+  con \textbf{ex falso}.
+}
+
+\ex{$\vdash \neg\neg A \to A$: serve RAA (lavagna)}{
+  \textbf{Senza RAA} il tentativo fallisce ($\times$): dopo $\to I$ ho
+  l'ipotesi $[(A \to \bot) \to \bot]$ e devo derivare $A$, ma per usare
+  l'ipotesi con $\to E$ servirebbe $A \to \bot$, che non ho. In effetti
+  $\neg\neg\varphi \to \varphi$ \textbf{non è derivabile nel sistema senza
+  RAA} (Van Dalen).
+
+  \textbf{Con RAA}: assumo anche $[A \to \bot]$, che RAA poi scarica.
+  \begin{prooftree}
+    \AxiomC{$[(A \to \bot) \to \bot]^2$}
+    \AxiomC{$[A \to \bot]^1$}
+    \RightLabel{$\to E$}
+    \BinaryInfC{$\bot$}
+    \RightLabel{RAA$_1$}
+    \UnaryInfC{$A$}
+    \RightLabel{$\to I_2$}
+    \UnaryInfC{$\neg\neg A \to A$}
+  \end{prooftree}
+}
+
+\ex{$((A \wedge B) \to \bot) \to \bot \vdash A$ (lavagna)}{
+  Cioè $\neg\neg(A \wedge B) \vdash A$. La conclusione è un atomo, nessuna
+  introduzione si applica: si parte con RAA, assumendo $[A \to \bot]$.
+  \begin{prooftree}
+    \AxiomC{$((A \wedge B) \to \bot) \to \bot$}
+    \AxiomC{$[A \to \bot]^2$}
+    \AxiomC{$[A \wedge B]^1$}
+    \RightLabel{$\wedge E_1$}
+    \UnaryInfC{$A$}
+    \RightLabel{$\to E$}
+    \BinaryInfC{$\bot$}
+    \RightLabel{$\to I_1$}
+    \UnaryInfC{$(A \wedge B) \to \bot$}
+    \RightLabel{$\to E$}
+    \BinaryInfC{$\bot$}
+    \RightLabel{RAA$_2$}
+    \UnaryInfC{$A$}
+  \end{prooftree}
+}
+
+\ex{Esame 06/07/2021, es.\ 1: $\vdash (F \to G) \to \neg(F \wedge \neg G)$}{
+  Scrivendo le negazioni con $\bot$: $(F \to G) \to ((F \wedge (G \to \bot))
+  \to \bot)$. Due $\to I$ danno le ipotesi $[F \to G]$ e
+  $[F \wedge (G \to \bot)]$; resta da derivare $\bot$.
+  \begin{prooftree}
+    \AxiomC{$[F \wedge (G \to \bot)]^1$}
+    \RightLabel{$\wedge E_2$}
+    \UnaryInfC{$G \to \bot$}
+    \AxiomC{$[F \to G]^2$}
+    \AxiomC{$[F \wedge (G \to \bot)]^1$}
+    \RightLabel{$\wedge E_1$}
+    \UnaryInfC{$F$}
+    \RightLabel{$\to E$}
+    \BinaryInfC{$G$}
+    \RightLabel{$\to E$}
+    \BinaryInfC{$\bot$}
+    \RightLabel{$\to I_1$}
+    \UnaryInfC{$F \wedge \neg G \to \bot$}
+    \RightLabel{$\to I_2$}
+    \UnaryInfC{$(F \to G) \to \neg(F \wedge \neg G)$}
+  \end{prooftree}
+  \textbf{Controllo semantico (lavagna)}: cerchiamo un controesempio. Perché
+  la formula sia falsa serve $F \to G = 1$ e $\neg(F \wedge \neg G) = 0$, cioè
+  $F = 1$ e $G = 0$; ma allora $F \to G = 0$. \textbf{Nessun controesempio}:
+  la formula è una tautologia, quindi (per completezza) una dimostrazione
+  esiste.
+}
+
+\ex{Una formula non dimostrabile: $(F \to G) \to (\neg F \to \neg G)$}{
+  Il tentativo bottom-up porta a tre ipotesi, $[F \to G]$, $[F \to \bot]$,
+  $[G]$, da cui bisognerebbe derivare $\bot$: \textbf{nessuna dimostrazione}
+  ($\times$). Per esserne sicuri si cerca un \textbf{controesempio}:
+  \[
+    F = 0,\ G = 1: \qquad \underbrace{F \to G}_{1} \to
+    \underbrace{(\underbrace{\neg F}_{1} \to \underbrace{\neg G}_{0})}_{0}
+    \;=\; 0.
+  \]
+  La formula non è una tautologia, quindi (per correttezza) \textbf{non è
+  derivabile}: $\not\vdash (F \to G) \to (\neg F \to \neg G)$. È l'errore
+  ``negazione dell'antecedente'' (la contrapposizione corretta è
+  $\neg G \to \neg F$).
+}
+
+\nt{
+  \textbf{Metodo d'esame.} Per ``dimostrare o confutare'' $\Gamma \vdash
+  \varphi$:
+  \begin{itemize}
+    \item per mostrare che \emph{vale} si esibisce un albero di derivazione;
+    \item per mostrare che \emph{non vale} si esibisce un'interpretazione che
+          rende vere le formule di $\Gamma$ e falsa $\varphi$ (un
+          controesempio): per correttezza, se $\Gamma \not\models \varphi$
+          allora $\Gamma \not\vdash \varphi$.
+  \end{itemize}
+  Conviene cercare prima il controesempio: se non c'è, si sa che la
+  derivazione esiste.
+}
+
+\subsection{Le derivazioni sono alberi}
+
+Ogni derivazione è un \textbf{albero}: le \textbf{foglie} contengono le
+premesse (ipotesi), la \textbf{radice} è la conclusione. Formalmente:
+
+\dfn{Derivazioni (Van Dalen 1.4.1)}{
+  L'insieme delle derivazioni è il più piccolo insieme $X$ tale che:
+  \begin{enumerate}
+    \item[(1)] l'albero con un solo elemento $\varphi$ appartiene a $X$, per
+          ogni $\varphi \in \PROP$;
+    \item[(2$\wedge$)] se
+          $\begin{array}{c}\mathcal{D}\\ \varphi\end{array}$,
+          $\begin{array}{c}\mathcal{D}'\\ \varphi'\end{array} \in X$, allora
+          \AxiomC{$\mathcal{D}$}
+          \noLine
+          \UnaryInfC{$\varphi$}
+          \AxiomC{$\mathcal{D}'$}
+          \noLine
+          \UnaryInfC{$\varphi'$}
+          \BinaryInfC{$\varphi \wedge \varphi'$}
+          \DisplayProof
+          $\in X$; \quad se
+          $\begin{array}{c}\mathcal{D}\\ \varphi \wedge \psi\end{array} \in X$,
+          allora
+          \AxiomC{$\mathcal{D}$}
+          \noLine
+          \UnaryInfC{$\varphi \wedge \psi$}
+          \UnaryInfC{$\varphi$}
+          \DisplayProof
+          ,
+          \AxiomC{$\mathcal{D}$}
+          \noLine
+          \UnaryInfC{$\varphi \wedge \psi$}
+          \UnaryInfC{$\psi$}
+          \DisplayProof
+          $\in X$;
+    \item[(2$\to$)] se
+          $\begin{array}{c}\varphi\\ \mathcal{D}\\ \psi\end{array} \in X$,
+          allora
+          \AxiomC{$[\varphi]$}
+          \noLine
+          \UnaryInfC{$\mathcal{D}$}
+          \noLine
+          \UnaryInfC{$\psi$}
+          \UnaryInfC{$\varphi \to \psi$}
+          \DisplayProof
+          $\in X$; \quad se
+          $\begin{array}{c}\mathcal{D}\\ \varphi\end{array}$,
+          $\begin{array}{c}\mathcal{D}'\\ \varphi \to \psi\end{array} \in X$,
+          allora
+          \AxiomC{$\mathcal{D}$}
+          \noLine
+          \UnaryInfC{$\varphi$}
+          \AxiomC{$\mathcal{D}'$}
+          \noLine
+          \UnaryInfC{$\varphi \to \psi$}
+          \BinaryInfC{$\psi$}
+          \DisplayProof
+          $\in X$;
+    \item[(2$\bot$)] se
+          $\begin{array}{c}\mathcal{D}\\ \bot\end{array} \in X$, allora
+          \AxiomC{$\mathcal{D}$}
+          \noLine
+          \UnaryInfC{$\bot$}
+          \UnaryInfC{$\varphi$}
+          \DisplayProof
+          $\in X$; \quad se
+          $\begin{array}{c}\neg\varphi\\ \mathcal{D}\\ \bot\end{array} \in X$,
+          allora
+          \AxiomC{$[\neg\varphi]$}
+          \noLine
+          \UnaryInfC{$\mathcal{D}$}
+          \noLine
+          \UnaryInfC{$\bot$}
+          \UnaryInfC{$\varphi$}
+          \DisplayProof
+          $\in X$.
+  \end{enumerate}
+}
+
+\nt{
+  È di nuovo una definizione induttiva (come $\PROP$): quindi si possono
+  dimostrare proprietà \textbf{per induzione sulle derivazioni} e definire
+  funzioni per ricorsione su di esse. È lo strumento con cui si dimostra la
+  correttezza.
+}
+
+\dfn{Derivabilità e teoremi (Van Dalen 1.4.2)}{
+  Scriviamo
+  \[ \Gamma \vdash \varphi \]
+  se esiste una derivazione con conclusione $\varphi$ e con tutte le ipotesi
+  \textbf{non scaricate} in $\Gamma$. Si dice che $\varphi$ è
+  \textbf{derivabile} da $\Gamma$; il simbolo $\vdash$ si chiama
+  \emph{turnstile}.
+  Se $\Gamma = \emptyset$ scriviamo $\vdash \varphi$ e diciamo che $\varphi$
+  è un \textbf{teorema}.
+}
+
+\nt{
+  $\Gamma$ può contenere ipotesi superflue: se $\Gamma \vdash \varphi$ e
+  $\Gamma \subseteq \Gamma'$ allora $\Gamma' \vdash \varphi$. Gli esempi I,
+  II, III sopra hanno tutte le ipotesi scaricate: le loro conclusioni sono
+  teoremi.
+}
+
+% =====================================================================
+\section{Correttezza e completezza}
+% =====================================================================
+
+\thm{Teorema di completezza (in senso lato)}{
+  Le nozioni di derivabilità e di verità \textbf{coincidono}:
+  \[ \Gamma \vdash \varphi \iff \Gamma \models \varphi. \]
+}
+
+\cor{}{
+  L'insieme dei \textbf{teoremi} coincide con l'insieme delle
+  \textbf{tautologie}: $\vdash \varphi \iff \models \varphi$.
+}
+
+Le due direzioni hanno nomi diversi.
+
+\thm{Correttezza (Soundness, Van Dalen 1.5.1)}{
+  \[ \Gamma \vdash \varphi \ \Rightarrow\ \Gamma \models \varphi. \]
+}
+
+\pf{Idea della dimostrazione}{
+  Per induzione sulle derivazioni: si mostra che per ogni derivazione
+  $\mathcal{D}$ con conclusione $\varphi$ e ipotesi in $\Gamma$ vale
+  $\Gamma \models \varphi$. Caso base: l'albero di un solo elemento $\varphi$
+  ha $\varphi \in \Gamma$, quindi $\Gamma \models \varphi$. Passo: ogni regola
+  conserva la verità. Ad esempio per $\to I$: per ipotesi induttiva
+  $\Gamma, \varphi \models \psi$, quindi per il teorema di deduzione semantico
+  $\Gamma \models \varphi \to \psi$; per RAA: da $\Gamma, \neg\varphi \models
+  \bot$ segue che nessuna valutazione rende vero $\Gamma$ e falsa $\varphi$,
+  cioè $\Gamma \models \varphi$. (Dettagli sul libro.)
+}
+
+\thm{Completezza (Van Dalen 1.5.13)}{
+  \[ \Gamma \models \varphi \ \Rightarrow\ \Gamma \vdash \varphi. \]
+}
+
+\pf{Idea della dimostrazione}{
+  Si dimostra la contronominale $\Gamma \not\vdash \varphi \Rightarrow \Gamma
+  \not\models \varphi$, mostrando che:
+  \begin{center}
+    $\Gamma \not\vdash \varphi$ \quad sse \quad $\Gamma \cup \{\neg\varphi\}$
+    è consistente \quad sse \quad esiste una valutazione $v$ tale che
+    $\sem{\psi}_v = 1$ per ogni $\psi \in \Gamma \cup \{\neg\varphi\}$.
+  \end{center}
+  Una tale $v$ rende vero $\Gamma$ e falsa $\varphi$: è un controesempio,
+  quindi $\Gamma \not\models \varphi$. La prima equivalenza usa il lemma
+  seguente; la seconda (``ogni insieme consistente ha un modello'') è la parte
+  difficile, e si ottiene estendendo l'insieme a uno \emph{massimamente
+  consistente} (vedi libro).
+}
+
+\dfn{Consistenza (sintattica)}{
+  \begin{itemize}
+    \item $\Gamma$ è \textbf{consistente} se $\Gamma \not\vdash \bot$;
+    \item $\Gamma$ è \textbf{inconsistente} se $\Gamma \vdash \bot$.
+  \end{itemize}
+}
+
+\mlenma{Un lemma utile (Van Dalen 1.5.5)}{
+  \begin{enumerate}[label=(\alph*)]
+    \item $\Gamma \cup \{\neg\varphi\}$ è inconsistente
+          $\ \Rightarrow\ \Gamma \vdash \varphi$;
+    \item $\Gamma \cup \{\varphi\}$ è inconsistente
+          $\ \Rightarrow\ \Gamma \vdash \neg\varphi$.
+  \end{enumerate}
+  Detto altrimenti (contronominale di (a)): se $\Gamma \not\vdash \varphi$
+  allora $\Gamma \cup \{\neg\varphi\}$ è consistente.
+}
+
+\pf{Dimostrazione}{
+  Le ipotesi di (a) e (b) danno due derivazioni di $\bot$, con ipotesi in
+  $\Gamma \cup \{\neg\varphi\}$ e in $\Gamma \cup \{\varphi\}$
+  rispettivamente. Applicando RAA alla prima e $\to I$ alla seconda si
+  scarica l'ipotesi in più:
+  \begin{center}
+    \AxiomC{$[\neg\varphi]$}
+    \noLine
+    \UnaryInfC{$\mathcal{D}$}
+    \noLine
+    \UnaryInfC{$\bot$}
+    \RightLabel{RAA}
+    \UnaryInfC{$\varphi$}
+    \DisplayProof
+    \qquad\qquad
+    \AxiomC{$[\varphi]$}
+    \noLine
+    \UnaryInfC{$\mathcal{D}'$}
+    \noLine
+    \UnaryInfC{$\bot$}
+    \RightLabel{$\to I$}
+    \UnaryInfC{$\neg\varphi$}
+    \DisplayProof
+  \end{center}
+  Le derivazioni ottenute hanno conclusione $\varphi$ (risp.\ $\neg\varphi$)
+  e ipotesi in $\Gamma$.
+}
+
+\nt{
+  \textbf{Che cosa ci dice la completezza.}
+  \begin{itemize}
+    \item Il compito ``creativo'' di costruire derivazioni può essere
+          sostituito da quello (noioso ma automatico) di controllare
+          tautologie con le tavole di verità, e viceversa.
+    \item La consistenza \emph{sintattica} ($\Gamma \not\vdash \bot$) coincide
+          con la soddisfacibilità \emph{semantica} (esiste un modello): è il
+          legame ``ha un modello $\iff$ consistente'' anticipato nel capitolo
+          sulla verità.
+    \item Negli esercizi: per mostrare $\Gamma \vdash \varphi$ si dà una
+          derivazione; per mostrare $\Gamma \not\vdash \varphi$ si dà un
+          controesempio semantico (correttezza).
+  \end{itemize}
+}

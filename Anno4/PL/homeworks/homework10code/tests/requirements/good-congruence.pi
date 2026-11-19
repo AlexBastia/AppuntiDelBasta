@@ -1,0 +1,46 @@
+(* Requirement R2: equality is a congruence. If the parts of two expressions
+   are equal, then the expressions are equal, wherever the parts are. Here,
+   the parts differ in the names of their bound variables, and each
+   definition puts them in a different position. *)
+
+axiom A : Type 0
+axiom a : A
+axiom T : A -> Type 0
+axiom h : (A -> A) -> A -> A
+
+(* the argument of an application *)
+axiom t1 : T (h (lambda x. x) a)
+def c1 : T (h (lambda y. y) a) := t1
+
+(* the function of an application: here, it is h (lambda x. x) *)
+axiom t2 : T (h (lambda x. x) (h (lambda x. x) a))
+def c2 : T (h (lambda y. y) (h (lambda z. z) a)) := t2
+
+(* the body of a function *)
+axiom V : ((A -> A) -> A) -> Type 0
+axiom t3 : V (lambda f. h (lambda x. f x) a)
+def c3 : V (lambda g. h (lambda y. g y) a) := t3
+
+(* the domain and the codomain of a function type *)
+axiom t4 : (Pi (B : Type 0) -> B -> B) -> A
+def c4 : (Pi (C : Type 0) -> C -> C) -> A := t4
+axiom t5 : A -> (Pi (B : Type 0) -> B -> B)
+def c5 : A -> (Pi (C : Type 0) -> C -> C) := t5
+
+(* the components of a pair *)
+axiom W : (A -> A) * (A -> A) -> Type 0
+axiom t6 : W (lambda x. x, lambda x. x)
+def c6 : W (lambda y. y, lambda z. z) := t6
+
+(* a projection *)
+axiom k : (A -> A) -> A * A
+axiom t7 : T (fst (k (lambda x. x)))
+def c7 : T (fst (k (lambda y. y))) := t7
+axiom t8 : T (snd (k (lambda x. x)))
+def c8 : T (snd (k (lambda y. y))) := t8
+
+(* the parts of a pair type *)
+axiom t9 : (Pi (B : Type 0) -> B -> B) * A
+def c9 : (Pi (C : Type 0) -> C -> C) * A := t9
+axiom t10 : A * (Pi (B : Type 0) -> B -> B)
+def c10 : A * (Pi (C : Type 0) -> C -> C) := t10

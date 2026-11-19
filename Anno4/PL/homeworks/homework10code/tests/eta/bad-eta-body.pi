@@ -1,0 +1,8 @@
+(* Eta compares the whole body: lambda x. f a is not equal to f. *)
+
+axiom A : Type 0
+axiom a : A
+axiom f : A -> A
+axiom U : (A -> A) -> Type 0
+axiom t : U f
+def test : U (lambda x. f a) := t

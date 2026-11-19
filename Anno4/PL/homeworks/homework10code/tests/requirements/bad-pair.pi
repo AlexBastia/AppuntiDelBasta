@@ -1,0 +1,4 @@
+(* Requirement R4 (i): the second component of the pair has type unit, and
+   unit is not empty. *)
+
+def np : unit * empty := (tt, tt)

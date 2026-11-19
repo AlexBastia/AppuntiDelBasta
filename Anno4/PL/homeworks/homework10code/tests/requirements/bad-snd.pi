@@ -1,0 +1,8 @@
+(* Requirement R4 (iii): the second projection of dp has type P (fst dp).
+   Since dp is an axiom, fst dp is not equal to a. *)
+
+axiom A : Type 0
+axiom a : A
+axiom P : A -> Type 0
+axiom dp : Sigma (x : A) * P x
+def y : P a := snd dp

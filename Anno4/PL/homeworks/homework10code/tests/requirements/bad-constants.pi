@@ -1,0 +1,4 @@
+(* Requirement R4 (i): different constants stay distinct. unit is not
+   empty. *)
+
+def x : empty := tt

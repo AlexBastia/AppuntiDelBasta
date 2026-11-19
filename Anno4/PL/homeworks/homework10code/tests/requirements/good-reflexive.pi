@@ -1,0 +1,36 @@
+(* Requirement R1: equality is reflexive. Every expression is equal to
+   itself, whatever its form. Each definition has an expression t of type
+   T e, and uses it where the same type T e is expected. *)
+
+axiom A : Type 0
+axiom a : A
+axiom f : A -> A
+axiom T : A -> Type 0
+axiom U : (A -> A) -> Type 0
+
+(* a constant, and an application *)
+axiom t1 : T a
+def r1 : T a := t1
+axiom t2 : T (f (f a))
+def r2 : T (f (f a)) := t2
+
+(* a function, and a variable *)
+axiom t3 : U (lambda x. f x)
+def r3 : U (lambda x. f x) := t3
+axiom t4 : Pi (x : A) -> T (f x)
+def r4 : Pi (x : A) -> T (f x) := t4
+
+(* Types are expressions too. *)
+axiom t5 : (Pi (B : Type 0) -> B -> B) -> A
+def r5 : (Pi (B : Type 0) -> B -> B) -> A := t5
+def r6 : Type 1 := Type 0
+
+(* pairs, projections, and pair types *)
+axiom p : A * A
+axiom W : A * A -> Type 0
+axiom t7 : W (f a, a)
+def r7 : W (f a, a) := t7
+axiom t8 : T (fst p)
+def r8 : T (fst p) := t8
+axiom t9 : (Sigma (x : A) * T x) -> A * A
+def r9 : (Sigma (x : A) * T x) -> A * A := t9
